@@ -3,16 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { Course, MediaBoardNode, SchoolEntity } from '@shared/domain/entity';
+import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	courseFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	mediaBoardNodeFactory,
-} from '@shared/testing';
+import { courseFactory, schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardExternalReferenceType } from '@src/modules/board';
+import { mediaBoardEntityFactory } from '@src/modules/board/testing';
 import { Response } from 'supertest';
 import {
 	CustomParameterLocation,
@@ -363,7 +358,7 @@ describe('ToolLaunchController (API)', () => {
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const mediaBoard: MediaBoardNode = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: { id: teacherUser.id, type: BoardExternalReferenceType.User },
 				});
 
@@ -433,7 +428,7 @@ describe('ToolLaunchController (API)', () => {
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const mediaBoard: MediaBoardNode = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: { id: teacherUser.id, type: BoardExternalReferenceType.User },
 				});
 
@@ -502,7 +497,7 @@ describe('ToolLaunchController (API)', () => {
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.CONTEXT_TOOL_USER,
 					]);
-					const mediaBoard: MediaBoardNode = mediaBoardNodeFactory.buildWithId({
+					const mediaBoard = mediaBoardEntityFactory.build({
 						context: { id: teacherUser.id, type: BoardExternalReferenceType.User },
 					});
 
@@ -568,7 +563,7 @@ describe('ToolLaunchController (API)', () => {
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const mediaBoard: MediaBoardNode = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: { id: teacherUser.id, type: BoardExternalReferenceType.User },
 				});
 

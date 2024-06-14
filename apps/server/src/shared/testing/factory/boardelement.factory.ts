@@ -7,7 +7,7 @@ import {
 	TaskBoardElement,
 } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
-import { columnBoardNodeFactory } from './boardnode';
+import { columnBoardNodeFactory } from './column-board-node.factory';
 import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';
 

@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { MongoPatterns, Scope } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 
 export class GroupScope extends Scope<GroupEntity> {

@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,8 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { ColumnBoardNode } from '@shared/domain/entity';
-import { BoardNodeRepo } from '@modules/board/repo';
+import { ColumnBoardNodeRepo } from '../repo';
 import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
@@ -25,8 +23,7 @@ describe('rooms service', () => {
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
-	let columnBoardService: DeepMocked<ColumnBoardService>;
-	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
+	let columnBoardNodeRepo: DeepMocked<ColumnBoardNodeRepo>;
 	let configBefore: IConfig;
 
 	afterAll(async () => {
@@ -52,28 +49,8 @@ describe('rooms service', () => {
 					useValue: createMock<LegacyBoardRepo>(),
 				},
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
-				},
-				{
-					provide: ColumnService,
-					useValue: createMock<ColumnService>(),
-				},
-				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
-				},
-				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
-				},
-				{
-					provide: ColumnBoardNode,
-					useValue: createMock<ColumnBoardNode>(),
-				},
-				{
-					provide: BoardNodeRepo,
-					useValue: createMock<BoardNodeRepo>(),
+					provide: ColumnBoardNodeRepo,
+					useValue: createMock<ColumnBoardNodeRepo>(),
 				},
 			],
 		}).compile();
@@ -81,8 +58,7 @@ describe('rooms service', () => {
 		lessonService = module.get(LessonService);
 		taskService = module.get(TaskService);
 		legacyBoardRepo = module.get(LegacyBoardRepo);
-		columnBoardService = module.get(ColumnBoardService);
-		boardNodeRepo = module.get(BoardNodeRepo);
+		columnBoardNodeRepo = module.get(ColumnBoardNodeRepo);
 	});
 
 	afterEach(() => {
@@ -107,8 +83,7 @@ describe('rooms service', () => {
 				const tasksSpy = taskService.findBySingleParent.mockResolvedValue([tasks, 3]);
 				const lessonsSpy = lessonService.findByCourseIds.mockResolvedValue([lessons, 3]);
 
-				columnBoardService.findIdsByExternalReference.mockResolvedValue([columnBoardNode.id]);
-				boardNodeRepo.findById.mockResolvedValue(columnBoardNode);
+				columnBoardNodeRepo.findByExternalReference.mockResolvedValue([columnBoardNode]);
 
 				const syncBoardElementReferencesSpy = jest.spyOn(legacyBoard, 'syncBoardElementReferences');
 				const saveSpy = legacyBoardRepo.save.mockResolvedValue();
@@ -145,15 +120,10 @@ describe('rooms service', () => {
 
 				await roomsService.updateLegacyBoard(board, room.id, user.id);
 
-				expect(columnBoardService.findIdsByExternalReference).toHaveBeenCalledWith({
+				expect(columnBoardNodeRepo.findByExternalReference).toHaveBeenCalledWith({
 					type: 'course',
 					id: room.id,
 				});
-			});
-			it('should fetch all column boards', async () => {
-				const { board, room, user, columnBoardNode } = setup();
-				await roomsService.updateLegacyBoard(board, room.id, user.id);
-				expect(boardNodeRepo.findById).toHaveBeenCalledWith(columnBoardNode.id);
 			});
 
 			it('should sync legacy boards lessons with fetched tasks and lessons and columnBoards', async () => {

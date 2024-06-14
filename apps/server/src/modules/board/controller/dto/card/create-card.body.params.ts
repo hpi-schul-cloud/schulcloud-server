@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain/domainobject';
 import { IsEnum, IsOptional } from 'class-validator';
+import { ContentElementType } from '../../../domain';
 
 export class CreateCardBodyParams {
 	@IsEnum(ContentElementType, { each: true })

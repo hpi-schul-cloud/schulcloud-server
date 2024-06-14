@@ -59,7 +59,7 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        timeout-minutes: 11
+        timeout-minutes: 15
         run: export RUN_WITHOUT_JEST_COVERAGE='true' && export NODE_OPTIONS='--max_old_space_size=4096' && ./node_modules/.bin/jest --shard=${{ matrix.shard }}/${{ strategy.job-total }} --coverage --force-exit
       - name: save-coverage
         run: mv coverage/lcov.info coverage/${{matrix.shard}}.info

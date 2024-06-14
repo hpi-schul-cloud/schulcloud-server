@@ -2,16 +2,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardExternalReferenceType, BoardLayout } from '../../domain';
+
+import { cardEntityFactory, columnEntityFactory, columnBoardEntityFactory } from '../../testing';
 import { BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
@@ -47,14 +41,14 @@ describe(`board lookup (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course, teacherAccount]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode1 = cardNodeFactory.buildWithId({ parent: columnNode });
-			const cardNode2 = cardNodeFactory.buildWithId({ parent: columnNode });
-			const cardNode3 = cardNodeFactory.buildWithId({ parent: columnNode });
-			const notOfThisBoardCardNode = cardNodeFactory.buildWithId();
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+			const cardNode1 = cardEntityFactory.withParent(columnNode).build();
+			const cardNode2 = cardEntityFactory.withParent(columnNode).build();
+			const cardNode3 = cardEntityFactory.withParent(columnNode).build();
+			const notOfThisBoardCardNode = cardEntityFactory.build();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]);
 			em.clear();
@@ -116,7 +110,7 @@ describe(`board lookup (api)`, () => {
 			const course = courseFactory.build();
 			await em.persistAndFlush([teacherUser, course, teacherAccount]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			await em.persistAndFlush([columnBoardNode]);

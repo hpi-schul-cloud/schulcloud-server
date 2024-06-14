@@ -7,18 +7,15 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
+import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { ColumnBoardService } from '@src/modules/board';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
-	courseFactory,
-	lessonFactory,
 	linkElementFactory,
 	richTextElementFactory,
-	setupEntities,
-	taskFactory,
-} from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
+} from '@src/modules/board/testing';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
@@ -89,7 +86,7 @@ describe('CommonCartridgeExportService', () => {
 		lessonServiceMock.findByCourseIds.mockResolvedValue([lessons, lessons.length]);
 		taskServiceMock.findBySingleParent.mockResolvedValue([tasks, tasks.length]);
 		configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
-		columnBoardServiceMock.findIdsByExternalReference.mockResolvedValue([columnBoard.id]);
+		columnBoardServiceMock.findByExternalReference.mockResolvedValue([columnBoard]);
 		columnBoardServiceMock.findById.mockResolvedValue(columnBoard);
 
 		const buffer = await sut.exportCourse(
@@ -198,14 +195,14 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, column } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', column.title));
+				expect(manifest).toContain(createXmlString('title', column.title ?? ''));
 			});
 
 			it('should add card', async () => {
 				const { archive, card } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', card.title));
+				expect(manifest).toContain(createXmlString('title', card.title ?? ''));
 			});
 
 			it('should add content element of cards', async () => {
@@ -275,14 +272,14 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, column } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', column.title));
+				expect(manifest).toContain(createXmlString('title', column.title ?? ''));
 			});
 
 			it('should add card', async () => {
 				const { archive, card } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', card.title));
+				expect(manifest).toContain(createXmlString('title', card.title ?? ''));
 			});
 
 			it('should add content element of cards', async () => {

@@ -20,6 +20,7 @@ import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
+import { ColumnBoardNodeRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
@@ -75,6 +76,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		RoomsService,
 		UserRepo,
 		GroupDeletedHandlerService,
+		ColumnBoardNodeRepo,
 	],
 	exports: [
 		CourseCopyService,

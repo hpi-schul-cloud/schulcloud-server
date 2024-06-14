@@ -1,4 +1,3 @@
-export * from './base.uc';
 export * from './board.uc';
 export * from './card.uc';
 export * from './column.uc';

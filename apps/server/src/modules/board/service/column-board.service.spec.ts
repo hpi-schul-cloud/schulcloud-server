@@ -1,245 +1,130 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	BoardExternalReference,
-	BoardExternalReferenceType,
-	BoardLayout,
-	ColumnBoard,
-	ContentElementFactory,
-} from '@shared/domain/domainobject';
-import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
-import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { BoardDoRepo } from '../repo';
-import { BoardDoService } from './board-do.service';
+import { EntityId } from '@shared/domain/types';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ColumnBoardService } from './column-board.service';
+import { BoardNodeRepo } from '../repo';
+import { BoardNodeService } from './board-node.service';
+import { ColumnBoardCopyService, ColumnBoardLinkService } from './internal';
+import { ColumnBoard, BoardExternalReference, BoardExternalReferenceType } from '../domain';
 
-describe(ColumnBoardService.name, () => {
+import { columnBoardFactory } from '../testing';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
+
+describe('ColumnBoardService', () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
-	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	let boardDoService: DeepMocked<BoardDoService>;
-	let configBefore: IConfig;
+	let repo: jest.Mocked<BoardNodeRepo>;
+	let boardNodeService: jest.Mocked<BoardNodeService>;
+	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
+	let columnBoardLinkService: DeepMocked<ColumnBoardLinkService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ColumnBoardService,
 				{
-					provide: BoardDoRepo,
-					useValue: createMock<BoardDoRepo>(),
+					provide: BoardNodeRepo,
+					useValue: createMock<BoardNodeRepo>(),
 				},
 				{
-					provide: BoardDoService,
-					useValue: createMock<BoardDoService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: ContentElementFactory,
-					useValue: createMock<ContentElementFactory>(),
+					provide: ColumnBoardCopyService,
+					useValue: createMock<ColumnBoardCopyService>(),
+				},
+				{
+					provide: ColumnBoardLinkService,
+					useValue: createMock<ColumnBoardLinkService>(),
 				},
 			],
 		}).compile();
 
-		service = module.get(ColumnBoardService);
-		boardDoRepo = module.get(BoardDoRepo);
-		boardDoService = module.get(BoardDoService);
-		configBefore = Configuration.toObject({ plainSecrets: true });
-		await setupEntities();
-	});
-
-	afterEach(() => {
-		jest.clearAllMocks();
-		Configuration.reset(configBefore);
+		service = module.get<ColumnBoardService>(ColumnBoardService);
+		repo = module.get(BoardNodeRepo);
+		boardNodeService = module.get(BoardNodeService);
+		columnBoardCopyService = module.get(ColumnBoardCopyService);
+		columnBoardLinkService = module.get(ColumnBoardLinkService);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	const setup = () => {
-		const board = columnBoardFactory.build();
-		const boardId = board.id;
-		const column = columnFactory.build();
-		const courseId = new ObjectId().toHexString();
-		const externalReference: BoardExternalReference = {
-			id: courseId,
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
+	it('should find ColumnBoard by id', async () => {
+		const columnBoard = columnBoardFactory.build();
+		boardNodeService.findByClassAndId.mockResolvedValue(columnBoard);
+
+		const result = await service.findById('1');
+
+		expect(result).toBe(columnBoard);
+		expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, '1', undefined);
+	});
+
+	it('should find ColumnBoards by external reference', async () => {
+		const columnBoard = columnBoardFactory.build();
+		repo.findByExternalReference.mockResolvedValueOnce([columnBoard]);
+		const reference: BoardExternalReference = {
 			type: BoardExternalReferenceType.Course,
+			id: '1',
 		};
 
-		return { board, boardId, column, courseId, externalReference };
-	};
+		const result = await service.findByExternalReference(reference);
 
-	describe('findById', () => {
-		it('should call the board do repository', async () => {
-			const { boardId, board } = setup();
-			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
-
-			await service.findById(boardId);
-
-			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
-		});
-
-		it('should return the columnBoard object of the given', async () => {
-			const { board } = setup();
-			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
-
-			const result = await service.findById(board.id);
-
-			expect(result).toEqual(board);
-		});
+		expect(result).toEqual([columnBoard]);
+		expect(repo.findByExternalReference).toHaveBeenCalledWith(reference, undefined);
 	});
 
-	describe('findIdsByExternalReference', () => {
-		it('should call the board do repository', async () => {
-			const { boardId, externalReference } = setup();
+	it('should update ColumnBoard visibility', async () => {
+		const columnBoard = columnBoardFactory.build();
 
-			boardDoRepo.findIdsByExternalReference.mockResolvedValue([boardId]);
+		await service.updateVisibility(columnBoard, true);
 
-			await service.findIdsByExternalReference(externalReference);
-
-			expect(boardDoRepo.findIdsByExternalReference).toHaveBeenCalledWith(externalReference);
-		});
+		expect(boardNodeService.updateVisibility).toHaveBeenCalledWith(columnBoard, true);
 	});
 
-	describe('findByDescendant', () => {
-		const setup2 = () => {
-			const element = richTextElementFactory.build();
-			const board = columnBoardFactory.build({ children: [element] });
-			boardDoService.getRootBoardDo.mockResolvedValue(board);
-			return {
-				element,
-				board,
-			};
+	it('should delete ColumnBoards by course id', async () => {
+		const columnBoard = columnBoardFactory.build();
+		repo.findByExternalReference.mockResolvedValueOnce([columnBoard]);
+		const reference: BoardExternalReference = {
+			type: BoardExternalReferenceType.Course,
+			id: '1',
 		};
 
-		it('should call board-do service to get the rootDo', async () => {
-			const { element } = setup2();
+		await service.deleteByCourseId('1');
 
-			await service.findByDescendant(element);
-
-			expect(boardDoService.getRootBoardDo).toHaveBeenCalledWith(element);
-		});
-
-		it('should return the root boardDo', async () => {
-			const { element, board } = setup2();
-
-			const result = await service.findByDescendant(element);
-
-			expect(result).toEqual(board);
-		});
+		expect(repo.findByExternalReference).toHaveBeenCalledWith(reference, undefined);
+		expect(repo.delete).toHaveBeenCalledWith([columnBoard]);
 	});
 
-	describe('getBoardObjectTitlesById', () => {
-		describe('when asking for a list of boardObject-ids', () => {
-			const setupBoards = () => {
-				return {
-					boardNodes: columnBoardNodeFactory.buildListWithId(3),
-				};
-			};
-
-			it('should call the boardDoRepo.getTitleById with the same parameters', async () => {
-				const { boardNodes } = setupBoards();
-				const ids = boardNodes.map((n) => n.id);
-
-				await service.getBoardObjectTitlesById(ids);
-
-				expect(boardDoRepo.getTitlesByIds).toHaveBeenCalledWith(ids);
-			});
-		});
-	});
-
-	describe('create', () => {
-		const setupBoards = () => {
-			const context: BoardExternalReference = {
+	it('should copy ColumnBoard', async () => {
+		const copyStatus: CopyStatus = { status: CopyStatusEnum.SUCCESS, type: CopyElementType.COLUMNBOARD };
+		columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
+		const result = await service.copyColumnBoard({
+			originalColumnBoardId: '1',
+			destinationExternalReference: {
 				type: BoardExternalReferenceType.Course,
-				id: new ObjectId().toHexString(),
-			};
-
-			return { context };
-		};
-
-		describe('when creating a fresh column board', () => {
-			it('should return a columnBoardInfo of that board', async () => {
-				const { context } = setupBoards();
-				const title = `My brand new Mainboard`;
-
-				const columnBoardInfo = await service.create(context, BoardLayout.COLUMNS, title);
-
-				expect(columnBoardInfo).toEqual(expect.objectContaining({ title }));
-			});
+				id: '1',
+			},
+			userId: '1',
 		});
+
+		expect(result).toEqual(copyStatus);
 	});
 
-	describe('delete', () => {
-		it('should call the service to delete the board', async () => {
-			const { board } = setup();
+	it('should swap Linked Ids', async () => {
+		const idMap = new Map<EntityId, EntityId>();
+		idMap.set('1', '2');
+		const columnBoard = columnBoardFactory.build();
+		columnBoardLinkService.swapLinkedIds.mockResolvedValueOnce(columnBoard);
 
-			await service.delete(board);
+		const result = await service.swapLinkedIds('1', idMap);
 
-			expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
-		});
-	});
-
-	describe('deleteByCourseId', () => {
-		describe('when deleting by courseId', () => {
-			it('should call boardDoRepo.findIdsByExternalReference to find the board ids', async () => {
-				const { boardId, courseId, externalReference } = setup();
-
-				boardDoRepo.findIdsByExternalReference.mockResolvedValue([boardId]);
-
-				await service.deleteByCourseId(courseId);
-
-				expect(boardDoRepo.findIdsByExternalReference).toHaveBeenCalledWith(externalReference);
-			});
-
-			it('should call boardDoService.deleteWithDescendants to delete the board', async () => {
-				const { board, courseId } = setup();
-
-				await service.deleteByCourseId(courseId);
-
-				expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
-			});
-		});
-	});
-
-	describe('updateTitle', () => {
-		describe('when updating the title', () => {
-			it('should call the service', async () => {
-				const board = columnBoardFactory.build();
-				const newTitle = 'new title';
-
-				await service.updateTitle(board, newTitle);
-
-				expect(boardDoRepo.save).toHaveBeenCalledWith(
-					expect.objectContaining({
-						id: expect.any(String),
-						title: newTitle,
-						children: [],
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-					})
-				);
-			});
-		});
-	});
-
-	describe('updateBoardVisibility', () => {
-		it('should call the boardDoRepo.save with the updated board', async () => {
-			const board = columnBoardFactory.build();
-			const isVisible = true;
-
-			await service.updateBoardVisibility(board, isVisible);
-
-			expect(boardDoRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					id: board.id,
-					isVisible,
-					createdAt: expect.any(Date),
-					updatedAt: expect.any(Date),
-				})
-			);
-		});
+		expect(result).toEqual(columnBoard);
 	});
 });

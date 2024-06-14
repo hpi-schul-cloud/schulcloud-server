@@ -4,16 +4,10 @@ import { ServerTestModule } from '@modules/server';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	columnBoardNodeFactory,
-	externalToolElementNodeFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@src/modules/board/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
@@ -771,9 +765,9 @@ describe('ToolController (API)', () => {
 		describe('when externalToolId is given ', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({ id: toolId });
 
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.build();
 				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
@@ -785,20 +779,16 @@ describe('ToolController (API)', () => {
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
+				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
 					schoolTool: schoolExternalToolEntitys[1],
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
-				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
-					2,
-					{
-						contextExternalTool: boardTools[0],
-						parent: board,
-					}
-				);
+				const board = columnBoardEntityFactory.build();
+				const externalToolElements = externalToolElementEntityFactory
+					.withParent(board)
+					.buildList(2, { contextExternalToolId: boardTools[0].id });
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([

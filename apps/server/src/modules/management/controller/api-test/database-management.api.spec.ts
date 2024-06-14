@@ -1,7 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ManagementServerTestModule } from '@modules/management/management-server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { createCollections } from '@shared/testing';
 import request from 'supertest';
 
 describe('Database Management Controller (API)', () => {
@@ -18,6 +20,9 @@ describe('Database Management Controller (API)', () => {
 		await app.init();
 		orm = module.get(MikroORM);
 		await orm.getSchemaGenerator().clearDatabase();
+
+		const em = module.get(EntityManager);
+		await createCollections(em);
 	});
 
 	afterAll(async () => {

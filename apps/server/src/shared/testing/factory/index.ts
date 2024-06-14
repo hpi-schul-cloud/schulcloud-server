@@ -2,7 +2,7 @@ export * from './axios-response.factory';
 export * from './base.factory';
 export * from './board.factory';
 export * from './boardelement.factory';
-export * from './boardnode';
+export * from './column-board-node.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './domainobject';

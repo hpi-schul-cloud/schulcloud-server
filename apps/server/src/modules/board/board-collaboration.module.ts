@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { ConsoleWriterModule } from '@src/infra/console';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { AuthorizationModule } from '../authorization';
 import { config } from './board-collaboration.config';
@@ -18,7 +17,6 @@ import { AuthenticationModule } from '../authentication';
 		CoreModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		RabbitMQWrapperModule,
-		ConsoleWriterModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',

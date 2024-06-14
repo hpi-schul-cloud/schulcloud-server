@@ -1,4 +1,4 @@
-import { MediaBoard } from '@shared/domain/domainobject';
+import { MediaBoard } from '../../domain';
 import { InvalidBoardTypeLoggableException } from './invalid-board-type.loggable-exception';
 
 describe(InvalidBoardTypeLoggableException.name, () => {

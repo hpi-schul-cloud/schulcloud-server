@@ -1,5 +1,5 @@
 import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { AnyBoardDo, FileElement, RichTextElement } from '@shared/domain/domainobject';
+import { AnyBoardNode, FileElement, RichTextElement } from '../../domain';
 import {
 	AnyContentElementResponse,
 	FileElementResponse,
@@ -27,7 +27,7 @@ export class ContentElementResponseFactory {
 		CollaborativeTextEditorElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {
+	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
 		const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 
 		if (!elementMapper) {

@@ -2,16 +2,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { ColumnBoardNode } from '@shared/domain/entity';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	courseFactory,
-} from '@shared/testing';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 
@@ -46,7 +41,7 @@ describe(`board copy (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -81,7 +76,7 @@ describe(`board copy (api)`, () => {
 			expect(body).toEqual(expectedBody);
 
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const result = await em.findOneOrFail(ColumnBoardNode, body.id!);
+			const result = await em.findOneOrFail(BoardNodeEntity, body.id!);
 
 			expect(result).toBeDefined();
 		});
@@ -114,7 +109,7 @@ describe(`board copy (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
