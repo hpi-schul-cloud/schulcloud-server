@@ -173,18 +173,20 @@ export class SchulconnexResponseMapper {
 	}
 
 	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
-		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos.map((license: SchulconnexLizenzInfoResponse) => {
-			if (license.target.partOf === '') {
-				license.target.partOf = undefined;
-			}
+		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
+			.map((license: SchulconnexLizenzInfoResponse) => {
+				if (license.target.partOf === '') {
+					license.target.partOf = undefined;
+				}
 
-			const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-				mediumId: license.target.uid,
-				mediaSourceId: license.target.partOf,
-			});
+				const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
+					mediumId: license.target.uid,
+					mediaSourceId: license.target.partOf,
+				});
 
-			return externalLicenseDto;
-		});
+				return externalLicenseDto;
+			})
+			.filter((license: ExternalLicenseDto) => license.mediumId !== '');
 
 		return externalLicenseDtos;
 	}

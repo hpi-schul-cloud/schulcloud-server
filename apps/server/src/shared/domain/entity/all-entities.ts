@@ -11,7 +11,7 @@ import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
@@ -98,4 +98,5 @@ export const ALL_ENTITIES = [
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
 	InstanceEntity,
+	MediaSourceEntity,
 ];

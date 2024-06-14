@@ -1,6 +1,5 @@
 import { MediaBoardConfig } from '@modules/board/media-board.config';
-import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
@@ -19,7 +18,6 @@ import { ContextExternalToolLaunchable } from '../domain';
 export class ToolConfigurationStatusService {
 	constructor(
 		private readonly commonToolValidationService: CommonToolValidationService,
-		private readonly userLicenseService: UserLicenseService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
@@ -79,7 +77,9 @@ export class ToolConfigurationStatusService {
 
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
+			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
+				userId
+			);
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium) {

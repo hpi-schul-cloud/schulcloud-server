@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
-import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service';
+import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
@@ -23,7 +22,6 @@ describe(ToolConfigurationStatusService.name, () => {
 	let service: ToolConfigurationStatusService;
 
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
-	let userLicenseService: DeepMocked<UserLicenseService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
@@ -34,10 +32,6 @@ describe(ToolConfigurationStatusService.name, () => {
 				{
 					provide: CommonToolValidationService,
 					useValue: createMock<CommonToolValidationService>(),
-				},
-				{
-					provide: UserLicenseService,
-					useValue: createMock<UserLicenseService>(),
 				},
 				{
 					provide: MediaUserLicenseService,
@@ -52,7 +46,6 @@ describe(ToolConfigurationStatusService.name, () => {
 
 		service = module.get(ToolConfigurationStatusService);
 		commonToolValidationService = module.get(CommonToolValidationService);
-		userLicenseService = module.get(UserLicenseService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		configService = module.get(ConfigService);
 	});
@@ -547,7 +540,7 @@ describe(ToolConfigurationStatusService.name, () => {
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
 
 				return {
 					externalTool,
@@ -563,7 +556,7 @@ describe(ToolConfigurationStatusService.name, () => {
 
 				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
 
-				expect(userLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
+				expect(mediaUserLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
 			});
 
 			it('should check if user has license for external tool', async () => {

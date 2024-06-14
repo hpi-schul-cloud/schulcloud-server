@@ -3,13 +3,13 @@ import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
+	schulconnexLizenzInfoResponseFactory,
 	SchulconnexPersonenkontextResponse,
 	SchulconnexResponse,
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
-import { schulconnexLizenzInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
@@ -43,25 +43,21 @@ describe(SchulconnexResponseMapper.name, () => {
 		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
-	const setupSchulconnexResponse = () => {
-		const externalUserId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
-		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
-
-		const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-		const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.build();
-
-		return {
-			externalUserId,
-			externalSchoolId,
-			schulconnexResponse,
-			licenseResponse,
-		};
-	};
-
 	describe('mapToExternalSchoolDto', () => {
 		describe('when a schulconnex response is provided', () => {
+			const setup = () => {
+				const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
+
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+
+				return {
+					externalSchoolId,
+					schulconnexResponse,
+				};
+			};
+
 			it('should map the response to an ExternalSchoolDto', () => {
-				const { schulconnexResponse, externalSchoolId } = setupSchulconnexResponse();
+				const { schulconnexResponse, externalSchoolId } = setup();
 
 				const result: ExternalSchoolDto = mapper.mapToExternalSchoolDto(schulconnexResponse);
 
@@ -77,8 +73,19 @@ describe(SchulconnexResponseMapper.name, () => {
 
 	describe('mapToExternalUserDto', () => {
 		describe('when a schulconnex response is provided', () => {
+			const setup = () => {
+				const externalUserId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
+
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+
+				return {
+					externalUserId,
+					schulconnexResponse,
+				};
+			};
+
 			it('should map the response to an ExternalUserDto', () => {
-				const { schulconnexResponse, externalUserId } = setupSchulconnexResponse();
+				const { schulconnexResponse, externalUserId } = setup();
 
 				const result: ExternalUserDto = mapper.mapToExternalUserDto(schulconnexResponse);
 
@@ -97,7 +104,7 @@ describe(SchulconnexResponseMapper.name, () => {
 	describe('mapToExternalGroupDtos', () => {
 		describe('when no group is given', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen = undefined;
 
 				return {
@@ -116,10 +123,8 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when unknown group type is given', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				schulconnexResponse.personenkontexte[0].gruppen?.[0].gruppe.typ = 'unknown';
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.typ = 'unknown' as SchulconnexGroupType;
 
 				return {
 					schulconnexResponse,
@@ -141,7 +146,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					schulconnexOtherGroupusersEnabled: true,
 				});
 
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const personenkontext: SchulconnexPersonenkontextResponse = schulconnexResponse.personenkontexte[0];
 				const group: SchulconnexGruppenResponse = personenkontext.gruppen![0];
 				const otherParticipant: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
@@ -179,7 +184,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type other is provided', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.OTHER;
 
 				return {
@@ -202,7 +207,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type course is provided', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.COURSE;
 
 				return {
@@ -225,7 +230,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when the group role mapping for the user is missing', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [
 					SchulconnexGroupRole.SCHOOL_SUPPORT,
 				];
@@ -246,7 +251,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when the user has no role in the group', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
 
 				return {
@@ -268,7 +273,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
 					schulconnexOtherGroupusersEnabled: false,
 				});
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
 				return {
@@ -291,7 +296,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					schulconnexOtherGroupusersEnabled: true,
 				});
 
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
 				return {
@@ -310,7 +315,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when other participants have unknown roles', () => {
 			const setup = () => {
-				const { schulconnexResponse } = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
 					{
 						ktid: 'ktid',
@@ -334,9 +339,19 @@ describe(SchulconnexResponseMapper.name, () => {
 	});
 
 	describe('mapToExternalLicenses', () => {
-		describe('when a sanis response with license is provided', () => {
+		describe('when a license response has a medium id and no media source', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+					target: { uid: 'bildungscloud', partOf: '' },
+				});
+
+				return {
+					licenseResponse,
+				};
+			};
+
 			it('should map the response to an ExternalLicenseDto', () => {
-				const { licenseResponse } = setupSchulconnexResponse();
+				const { licenseResponse } = setup();
 
 				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
@@ -346,6 +361,51 @@ describe(SchulconnexResponseMapper.name, () => {
 						mediaSourceId: undefined,
 					},
 				]);
+			});
+		});
+
+		describe('when a license response has a medium id and a media source', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+					target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
+				});
+
+				return {
+					licenseResponse,
+				};
+			};
+
+			it('should map the response to an ExternalLicenseDto', () => {
+				const { licenseResponse } = setup();
+
+				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([
+					{
+						mediumId: 'bildungscloud',
+						mediaSourceId: 'bildungscloud-source',
+					},
+				]);
+			});
+		});
+
+		describe('when a license response has no medium id', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+					target: { uid: '', partOf: 'bildungscloud-source' },
+				});
+
+				return {
+					licenseResponse,
+				};
+			};
+
+			it('should should be filtered out', () => {
+				const { licenseResponse } = setup();
+
+				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([]);
 			});
 		});
 	});
