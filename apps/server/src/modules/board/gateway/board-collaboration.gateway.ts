@@ -2,7 +2,6 @@ import { WsValidationPipe, Socket } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import {
-	OnGatewayConnection,
 	OnGatewayDisconnect,
 	SubscribeMessage,
 	WebSocketGateway,
@@ -42,7 +41,7 @@ import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
-export class BoardCollaborationGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@WebSocketServer()
 	server?: Server;
 
@@ -82,17 +81,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		await this.metricsService.trackRoleOfClient(socket.id, user?.userId);
 	}
 
-	public handleConnection(socket: Socket): Promise<void> {
-		if (!socket) {
-			throw new Error('Server is not initialized');
-		}
-		return this.updateRoomsAndUsersMetrics(socket);
-	}
-
 	public handleDisconnect(socket: Socket): void {
-		if (!socket) {
-			throw new Error('Server is not initialized');
-		}
 		this.metricsService.untrackClient(socket.id);
 	}
 
