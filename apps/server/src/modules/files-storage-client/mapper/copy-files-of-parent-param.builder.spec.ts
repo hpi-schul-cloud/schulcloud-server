@@ -24,13 +24,15 @@ describe('CopyFilesOfParentParamBuilder', () => {
 			userId,
 			source: {
 				parentType: FileRecordParentType.Task,
-				schoolId: sourceEntity.getSchoolId(),
 				parentId: sourceEntity.id,
+				storageLocationId: sourceEntity.getSchoolId(),
+				storageLocation: StorageLocation.SCHOOL,
 			},
 			target: {
 				parentType: FileRecordParentType.Task,
-				schoolId: targetEntity.getSchoolId(),
 				parentId: targetEntity.id,
+				storageLocationId: targetEntity.getSchoolId(),
+				storageLocation: StorageLocation.SCHOOL,
 			},
 		};
 
@@ -51,13 +53,15 @@ describe('CopyFilesOfParentParamBuilder', () => {
 			userId,
 			source: {
 				parentType: FileRecordParentType.Lesson,
-				schoolId: sourceEntity.getSchoolId(),
 				parentId: sourceEntity.id,
+				storageLocationId: sourceEntity.getSchoolId(),
+				storageLocation: StorageLocation.SCHOOL,
 			},
 			target: {
 				parentType: FileRecordParentType.Lesson,
-				schoolId: targetEntity.getSchoolId(),
 				parentId: targetEntity.id,
+				storageLocationId: targetEntity.getSchoolId(),
+				storageLocation: StorageLocation.SCHOOL,
 			},
 		};
 
