@@ -11,7 +11,6 @@ describe('FileParamBuilder', () => {
 	it('Should throw for not supported parent type', () => {
 		const schoolId = '123';
 		const parentType = 'abc';
-		const parentId = '123';
 
 		// @ts-expect-error: Test case
 		expect(() => FileParamBuilder.build(schoolId, parentType, StorageLocation.SCHOOL)).toThrowError();
