@@ -14,7 +14,7 @@ describe('FileParamBuilder', () => {
 		const parentId = '123';
 
 		// @ts-expect-error: Test case
-		expect(() => FileParamBuilder.build(schoolId, parentType, parentId)).toThrowError();
+		expect(() => FileParamBuilder.build(schoolId, parentType, StorageLocation.SCHOOL)).toThrowError();
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {
@@ -22,7 +22,7 @@ describe('FileParamBuilder', () => {
 		const parentType = FileRecordParentType.Task;
 		const task = taskFactory.buildWithId();
 
-		const result = FileParamBuilder.build(schoolId, task);
+		const result = FileParamBuilder.build(schoolId, task, StorageLocation.SCHOOL);
 
 		const expectedResult = {
 			storageLocationId: schoolId,
@@ -39,7 +39,7 @@ describe('FileParamBuilder', () => {
 		const parentType = FileRecordParentType.Lesson;
 		const lesson = lessonFactory.buildWithId();
 
-		const result = FileParamBuilder.build(schoolId, lesson);
+		const result = FileParamBuilder.build(schoolId, lesson, StorageLocation.SCHOOL);
 
 		const expectedResult = {
 			storageLocationId: schoolId,

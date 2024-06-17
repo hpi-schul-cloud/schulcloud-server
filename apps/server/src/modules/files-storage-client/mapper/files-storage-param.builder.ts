@@ -4,12 +4,16 @@ import { EntitiesWithFiles, FileRequestInfo } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 export class FileParamBuilder {
-	static build(storageLocationId: EntityId, parent: EntitiesWithFiles): FileRequestInfo {
+	static build(
+		storageLocationId: EntityId,
+		parent: EntitiesWithFiles,
+		storageLocation: StorageLocation = StorageLocation.SCHOOL
+	): FileRequestInfo {
 		const parentType = FilesStorageClientMapper.mapEntityToParentType(parent);
 		const fileRequestInfo = {
 			parentType,
 			storageLocationId,
-			storageLocation: StorageLocation.SCHOOL,
+			storageLocation,
 			parentId: parent.id,
 		};
 

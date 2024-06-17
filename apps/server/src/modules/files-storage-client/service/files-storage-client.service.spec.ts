@@ -74,8 +74,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
@@ -98,8 +98,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 

@@ -1,5 +1,5 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
 import { FileParamBuilder } from './files-storage-param.builder';
@@ -14,8 +14,8 @@ describe('CopyFilesOfParentParamBuilder', () => {
 		const sourceEntity = taskFactory.buildWithId({});
 		const targetEntity = taskFactory.buildWithId();
 
-		const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-		const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+		const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+		const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 		const result = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
@@ -41,8 +41,8 @@ describe('CopyFilesOfParentParamBuilder', () => {
 		const sourceEntity = lessonFactory.buildWithId({});
 		const targetEntity = lessonFactory.buildWithId();
 
-		const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-		const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+		const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+		const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 		const result = CopyFilesOfParentParamBuilder.build(userId, source, target);
 

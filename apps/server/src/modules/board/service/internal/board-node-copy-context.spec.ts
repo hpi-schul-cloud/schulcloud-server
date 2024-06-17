@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { FileRecordParentType } from '@src/infra/rabbitmq';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { BoardNodeCopyContext } from './board-node-copy-context';
@@ -8,8 +9,10 @@ describe(BoardNodeCopyContext.name, () => {
 	describe('copyFilesOfParent', () => {
 		const setup = () => {
 			const contextProps = {
-				sourceSchoolId: new ObjectId().toHexString(),
-				targetSchoolId: new ObjectId().toHexString(),
+				sourceStorageLocationId: new ObjectId().toHexString(),
+				targetStorageLocationId: new ObjectId().toHexString(),
+				sourceStorageLocation: StorageLocation.SCHOOL,
+				targetStorageLocation: StorageLocation.SCHOOL,
 				userId: new ObjectId().toHexString(),
 				filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
 			};
@@ -31,12 +34,14 @@ describe(BoardNodeCopyContext.name, () => {
 				source: {
 					parentId: sourceParentId,
 					parentType: FileRecordParentType.BoardNode,
-					schoolId: contextProps.sourceSchoolId,
+					storageLocationId: contextProps.sourceStorageLocationId,
+					storageLocation: contextProps.sourceStorageLocation,
 				},
 				target: {
 					parentId: targetParentId,
 					parentType: FileRecordParentType.BoardNode,
-					schoolId: contextProps.targetSchoolId,
+					storageLocationId: contextProps.targetStorageLocationId,
+					storageLocation: contextProps.targetStorageLocation,
 				},
 				userId: contextProps.userId,
 			});

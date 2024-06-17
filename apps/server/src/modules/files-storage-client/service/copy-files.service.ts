@@ -23,8 +23,8 @@ export class CopyFilesService {
 		fileUrlReplacements: FileUrlReplacement[];
 		fileCopyStatus: CopyStatus;
 	}> {
-		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
-		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
+		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity, StorageLocation.SCHOOL);
+		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity, StorageLocation.SCHOOL);
 		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const fileDtos = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
