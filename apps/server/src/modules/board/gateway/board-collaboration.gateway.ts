@@ -1,14 +1,23 @@
-import { WsValidationPipe, Socket } from '@infra/socketio';
+import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { WsJwtAuthGuard } from '@modules/authentication';
 import { UseGuards, UsePipes } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import { WsJwtAuthGuard } from '@modules/authentication/guard/ws-jwt-auth.guard';
+import {
+	OnGatewayDisconnect,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
+	WsException,
+} from '@nestjs/websockets';
+import { Server } from 'socket.io';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
 	ColumnResponseMapper,
 	ContentElementResponseFactory,
 } from '../controller/mapper';
+import { MetricsService } from '../metrics/metrics.service';
+import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardNodeAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
@@ -36,20 +45,44 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
-export class BoardCollaborationGateway {
+export class BoardCollaborationGateway implements OnGatewayDisconnect {
+	@WebSocketServer()
+	server!: Server;
+
+	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
+		private readonly metricsService: MetricsService,
 		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
 	) {}
+
+	trackExecutionTime(methodName: string, executionTimeMs: number) {
+		if (this.metricsService) {
+			this.metricsService.setExecutionTime(methodName, executionTimeMs);
+		}
+	}
 
 	private getCurrentUser(socket: Socket) {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
+	}
+
+	private async updateRoomsAndUsersMetrics(socket: Socket) {
+		const roomCount = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) =>
+			key.startsWith('board_')
+		).length;
+		this.metricsService.setNumberOfBoardRooms(roomCount);
+		const { user } = socket.handshake;
+		await this.metricsService.trackRoleOfClient(socket.id, user?.userId);
+	}
+
+	public handleDisconnect(socket: Socket): void {
+		this.metricsService.untrackClient(socket.id);
 	}
 
 	@SubscribeMessage('delete-board-request')
@@ -64,9 +97,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-title' });
@@ -78,9 +113,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-title' });
@@ -92,6 +129,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-height-request')
@@ -106,6 +144,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-card-request')
@@ -120,9 +159,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createCard(socket: Socket, data: CreateCardMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'create-card' });
@@ -140,6 +181,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-column-request')
@@ -167,6 +209,7 @@ export class BoardCollaborationGateway {
 	}
 
 	@SubscribeMessage('fetch-board-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'fetch-board' });
@@ -179,6 +222,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-card-request')
@@ -193,6 +237,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-column-request')
@@ -207,9 +252,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-column-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'update-column-title' });
@@ -221,6 +268,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
@@ -235,6 +283,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-column-request')
@@ -249,9 +298,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('fetch-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card' });
@@ -264,6 +315,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-element-request')
@@ -282,9 +334,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'update-element' });
@@ -296,6 +350,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-element-request')
@@ -310,6 +365,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-element-request')
@@ -324,6 +380,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	private async buildBoardSocketEmitter({ socket, id, action }: { socket: Socket; id: string; action: string }) {

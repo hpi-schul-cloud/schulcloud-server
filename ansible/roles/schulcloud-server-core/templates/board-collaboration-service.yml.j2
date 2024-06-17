@@ -13,9 +13,9 @@ spec:
       targetPort: 4450
       protocol: TCP
       name: websocket
-    #- port: {{ PORT_METRICS_SERVER }}
-    #  targetPort: 9090 # TODO
-    #  protocol: TCP
-    #  name: api-metrics
+    - port: {{ PORT_METRICS_SERVER }}
+      targetPort: 9090 # TODO
+      protocol: TCP
+      name: api-metrics
   selector:
     app: board-collaboration

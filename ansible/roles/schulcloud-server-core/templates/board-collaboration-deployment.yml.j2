@@ -49,9 +49,9 @@ spec:
         - containerPort: 4450
           name: websocket
           protocol: TCP
-        # - containerPort: 9090
-        #  name: api-metrics
-        #  protocol: TCP
+        - containerPort: 9090
+          name: api-metrics
+          protocol: TCP
         envFrom:
         - configMapRef:
             name: api-configmap
