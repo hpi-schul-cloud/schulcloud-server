@@ -1,6 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -63,8 +64,10 @@ describe(BoardNodeCopyService.name, () => {
 
 	const setup = () => {
 		const contextProps: BoardNodeCopyContextProps = {
-			sourceSchoolId: new ObjectId().toHexString(),
-			targetSchoolId: new ObjectId().toHexString(),
+			sourceStorageLocationId: new ObjectId().toHexString(),
+			sourceStorageLocation: StorageLocation.SCHOOL,
+			targetStorageLocationId: new ObjectId().toHexString(),
+			targetStorageLocation: StorageLocation.SCHOOL,
 			userId: new ObjectId().toHexString(),
 			filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
 		};

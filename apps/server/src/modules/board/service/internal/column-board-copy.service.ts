@@ -1,13 +1,14 @@
 import { CopyStatus } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../../domain';
+import { BoardNodeService } from '../board-node.service';
 import { BoardNodeCopyContext } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { BoardNodeService } from '../board-node.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 
 @Injectable()
@@ -37,8 +38,10 @@ export class ColumnBoardCopyService {
 		const course = await this.courseRepo.findById(originalBoard.context.id); // TODO: get rid of this
 
 		const copyContext = new BoardNodeCopyContext({
-			sourceSchoolId: course.school.id,
-			targetSchoolId: user.schoolId,
+			sourceStorageLocationId: course.school.id,
+			targetStorageLocationId: user.schoolId,
+			sourceStorageLocation: StorageLocation.SCHOOL,
+			targetStorageLocation: StorageLocation.SCHOOL,
 			userId: props.userId,
 			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
 		});
