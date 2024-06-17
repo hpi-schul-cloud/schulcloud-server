@@ -1,9 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageProducer } from './files-storage.producer';
@@ -53,12 +54,14 @@ describe('FilesStorageProducer', () => {
 					userId: new ObjectId().toHexString(),
 					source: {
 						parentType: FileRecordParentType.Task,
-						schoolId: '633d59e1c7a36834ad61e525',
+						storageLocationId: '633d59e1c7a36834ad61e525',
+						storageLocation: StorageLocation.SCHOOL,
 						parentId: '633d59e1c7a36834ad61e526',
 					},
 					target: {
 						parentType: FileRecordParentType.Task,
-						schoolId: '633d59e1c7a36834ad61e525',
+						storageLocationId: '633d59e1c7a36834ad61e525',
+						storageLocation: StorageLocation.SCHOOL,
 						parentId: '633d59e1c7a36834ad61e527',
 					},
 				};
@@ -88,12 +91,14 @@ describe('FilesStorageProducer', () => {
 					userId,
 					source: {
 						parentType: FileRecordParentType.Task,
-						schoolId,
+						storageLocationId: schoolId,
+						storageLocation: StorageLocation.SCHOOL,
 						parentId: parentIdSource,
 					},
 					target: {
 						parentType: FileRecordParentType.Task,
-						schoolId,
+						storageLocationId: schoolId,
+						storageLocation: StorageLocation.SCHOOL,
 						parentId: parentIdTarget,
 					},
 				};
