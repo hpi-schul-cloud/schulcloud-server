@@ -630,13 +630,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardWsApiModule.html" data-type="entity-link" >BoardWsApiModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-5d9de1768320c4988f88d4cc43ca550fa9409bf3fb8668d4eb7979a6d46f3dad79488377434195f8356a2c8a6ff635c0bf3a212cab8853372932abb849803841"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-5d9de1768320c4988f88d4cc43ca550fa9409bf3fb8668d4eb7979a6d46f3dad79488377434195f8356a2c8a6ff635c0bf3a212cab8853372932abb849803841"' }>
+                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-8cb2cc7231f2955b21fc65f2337b6ce2992939eb06923016fd260f6c39f034b0400811dfd5d90716271e19eff52513aba1fda3b36b5822e407e8cc424858635c"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-8cb2cc7231f2955b21fc65f2337b6ce2992939eb06923016fd260f6c39f034b0400811dfd5d90716271e19eff52513aba1fda3b36b5822e407e8cc424858635c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-5d9de1768320c4988f88d4cc43ca550fa9409bf3fb8668d4eb7979a6d46f3dad79488377434195f8356a2c8a6ff635c0bf3a212cab8853372932abb849803841"' :
-                                        'id="xs-injectables-links-module-BoardWsApiModule-5d9de1768320c4988f88d4cc43ca550fa9409bf3fb8668d4eb7979a6d46f3dad79488377434195f8356a2c8a6ff635c0bf3a212cab8853372932abb849803841"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-8cb2cc7231f2955b21fc65f2337b6ce2992939eb06923016fd260f6c39f034b0400811dfd5d90716271e19eff52513aba1fda3b36b5822e407e8cc424858635c"' :
+                                        'id="xs-injectables-links-module-BoardWsApiModule-8cb2cc7231f2955b21fc65f2337b6ce2992939eb06923016fd260f6c39f034b0400811dfd5d90716271e19eff52513aba1fda3b36b5822e407e8cc424858635c"' }>
                                         <li class="link">
                                             <a href="injectables/BoardNodePermissionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardNodePermissionService</a>
                                         </li>
@@ -654,6 +654,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/ElementUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ElementUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -7884,7 +7887,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/MetaTagExtractorUc.html" data-type="entity-link" >MetaTagExtractorUc</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/MetricsService.html" data-type="entity-link" >MetricsService</a>
+                                    <a href="injectables/MetricsService-1.html" data-type="entity-link" >MetricsService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/MeUc.html" data-type="entity-link" >MeUc</a>

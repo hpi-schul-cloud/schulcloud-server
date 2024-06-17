@@ -125,12 +125,33 @@
 
 
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                        <code>OnGatewayDisconnect</code>
+            </p>
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#server" >server</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -146,6 +167,7 @@
                                 <a href="#buildBoardSocketEmitter" >buildBoardSocketEmitter</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
@@ -190,10 +212,12 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#fetchBoard" >fetchBoard</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
@@ -207,6 +231,10 @@
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getRootIdForId" >getRootIdForId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#handleDisconnect" >handleDisconnect</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -227,6 +255,10 @@
                                 <a href="#moveElement" >moveElement</a>
                             </li>
                             <li>
+                                <a href="#trackExecutionTime" >trackExecutionTime</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
@@ -247,10 +279,12 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateCardTitle" >updateCardTitle</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
@@ -259,8 +293,14 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateElement" >updateElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateRoomsAndUsersMetrics" >updateRoomsAndUsersMetrics</a>
                             </li>
                         </ul>
                     </td>
@@ -280,12 +320,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, authorizableService: <a href="../injectables/BoardNodeAuthorizableService.html" target="_self">BoardNodeAuthorizableService</a>)</code>
+<code>constructor(orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, authorizableService: <a href="../injectables/BoardNodeAuthorizableService.html" target="_self">BoardNodeAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:39</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:50</a></div>
                             </td>
                         </tr>
 
@@ -363,6 +403,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>metricsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MetricsService.html" target="_self" >MetricsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>authorizableService</td>
                                                   
                                                         <td>
@@ -383,6 +435,48 @@
         </table>
 </section>
 
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="server"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>server</b></span>
+                        <a href="#server"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Server</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @WebSocketServer()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -412,8 +506,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="329"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:329</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="386"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:386</a></div>
                         </td>
                     </tr>
 
@@ -466,6 +560,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>createCard</b></span>
                         <a href="#createCard"><span class="icon ion-ios-link"></span></a>
@@ -483,14 +578,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;create-card-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;create-card-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="168"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:168</a></div>
                         </td>
                     </tr>
 
@@ -579,8 +674,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="147"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:147</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:189</a></div>
                         </td>
                     </tr>
 
@@ -669,8 +764,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="271"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:271</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="323"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:323</a></div>
                         </td>
                     </tr>
 
@@ -759,8 +854,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -849,8 +944,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -939,8 +1034,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="242"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:242</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="291"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:291</a></div>
                         </td>
                     </tr>
 
@@ -1029,8 +1124,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="303"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:303</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:358</a></div>
                         </td>
                     </tr>
 
@@ -1096,6 +1191,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>fetchBoard</b></span>
                         <a href="#fetchBoard"><span class="icon ion-ios-link"></span></a>
@@ -1113,14 +1209,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;fetch-board-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;fetch-board-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="214"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:214</a></div>
                         </td>
                     </tr>
 
@@ -1186,6 +1282,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>fetchCards</b></span>
                         <a href="#fetchCards"><span class="icon ion-ios-link"></span></a>
@@ -1203,14 +1300,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;fetch-card-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;fetch-card-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="256"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:256</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="307"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:307</a></div>
                         </td>
                     </tr>
 
@@ -1290,8 +1387,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -1360,8 +1457,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="348"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:348</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="405"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:405</a></div>
                         </td>
                     </tr>
 
@@ -1411,6 +1508,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handleDisconnect"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>handleDisconnect</b></span>
+                        <a href="#handleDisconnect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleDisconnect(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="moveCard"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -1438,8 +1604,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="186"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:186</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="230"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:230</a></div>
                         </td>
                     </tr>
 
@@ -1528,8 +1694,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="245"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:245</a></div>
                         </td>
                     </tr>
 
@@ -1618,8 +1784,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="317"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:317</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="373"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:373</a></div>
                         </td>
                     </tr>
 
@@ -1681,8 +1847,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="trackExecutionTime"></a>
+                    <span class="name">
+                        <span ><b>trackExecutionTime</b></span>
+                        <a href="#trackExecutionTime"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>trackExecutionTime(methodName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, executionTimeMs: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>methodName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>executionTimeMs</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateBoardTitle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Async</span>
@@ -1702,14 +1948,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;update-board-title-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;update-board-title-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -1798,8 +2044,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="228"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:228</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="276"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:276</a></div>
                         </td>
                     </tr>
 
@@ -1888,8 +2134,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="137"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:137</a></div>
                         </td>
                     </tr>
 
@@ -1955,6 +2201,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>updateCardTitle</b></span>
                         <a href="#updateCardTitle"><span class="icon ion-ios-link"></span></a>
@@ -1972,14 +2219,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;update-card-title-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;update-card-title-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:122</a></div>
                         </td>
                     </tr>
 
@@ -2045,6 +2292,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>updateColumnTitle</b></span>
                         <a href="#updateColumnTitle"><span class="icon ion-ios-link"></span></a>
@@ -2062,14 +2310,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;update-column-title-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;update-column-title-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="261"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:261</a></div>
                         </td>
                     </tr>
 
@@ -2135,6 +2383,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>updateElement</b></span>
                         <a href="#updateElement"><span class="icon ion-ios-link"></span></a>
@@ -2152,14 +2401,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;update-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;update-element-request&#x27;)<br />@TrackExecutionTime()<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="289"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:289</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="343"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:343</a></div>
                         </td>
                     </tr>
 
@@ -2217,6 +2466,76 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateRoomsAndUsersMetrics"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateRoomsAndUsersMetrics</b></span>
+                        <a href="#updateRoomsAndUsersMetrics"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateRoomsAndUsersMetrics(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -2227,17 +2546,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { WsValidationPipe, Socket } from &#x27;@infra/socketio&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Socket, WsValidationPipe } from &#x27;@infra/socketio&#x27;;
 import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import { WsJwtAuthGuard } from &#x27;@modules/authentication&#x27;;
 import { UseGuards, UsePipes } from &#x27;@nestjs/common&#x27;;
-import { SubscribeMessage, WebSocketGateway, WsException } from &#x27;@nestjs/websockets&#x27;;
-import { WsJwtAuthGuard } from &#x27;@modules/authentication/guard/ws-jwt-auth.guard&#x27;;
+import {
+	OnGatewayDisconnect,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
+	WsException,
+} from &#x27;@nestjs/websockets&#x27;;
+import { Server } from &#x27;socket.io&#x27;;
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
 	ColumnResponseMapper,
 	ContentElementResponseFactory,
 } from &#x27;../controller/mapper&#x27;;
+import { MetricsService } from &#x27;../metrics/metrics.service&#x27;;
+import { TrackExecutionTime } from &#x27;../metrics/track-execution-time.decorator&#x27;;
 import { BoardNodeAuthorizableService } from &#x27;../service&#x27;;
 import { BoardUc, CardUc, ColumnUc, ElementUc } from &#x27;../uc&#x27;;
 import {
@@ -2265,20 +2593,44 @@ import { UpdateContentElementMessageParams } from &#x27;./dto/update-content-ele
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
-export class BoardCollaborationGateway {
+export class BoardCollaborationGateway implements OnGatewayDisconnect {
+	@WebSocketServer()
+	server!: Server;
+
+	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
+		private readonly metricsService: MetricsService,
 		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
 	) {}
+
+	trackExecutionTime(methodName: string, executionTimeMs: number) {
+		if (this.metricsService) {
+			this.metricsService.setExecutionTime(methodName, executionTimeMs);
+		}
+	}
 
 	private getCurrentUser(socket: Socket) {
 		const { user } &#x3D; socket.handshake;
 		if (!user) throw new WsException(&#x27;Not Authenticated.&#x27;);
 		return user;
+	}
+
+	private async updateRoomsAndUsersMetrics(socket: Socket) {
+		const roomCount &#x3D; Array.from(this.server.of(&#x27;/&#x27;).adapter.rooms.keys()).filter((key) &#x3D;&gt;
+			key.startsWith(&#x27;board_&#x27;)
+		).length;
+		this.metricsService.setNumberOfBoardRooms(roomCount);
+		const { user } &#x3D; socket.handshake;
+		await this.metricsService.trackRoleOfClient(socket.id, user?.userId);
+	}
+
+	public handleDisconnect(socket: Socket): void {
+		this.metricsService.untrackClient(socket.id);
 	}
 
 	@SubscribeMessage(&#x27;delete-board-request&#x27;)
@@ -2293,9 +2645,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;update-board-title-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;update-board-title&#x27; });
@@ -2307,9 +2661,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;update-card-title-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: &#x27;update-card-title&#x27; });
@@ -2321,6 +2677,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;update-card-height-request&#x27;)
@@ -2335,6 +2692,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;delete-card-request&#x27;)
@@ -2349,9 +2707,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;create-card-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createCard(socket: Socket, data: CreateCardMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: &#x27;create-card&#x27; });
@@ -2369,6 +2729,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;create-column-request&#x27;)
@@ -2396,6 +2757,7 @@ export class BoardCollaborationGateway {
 	}
 
 	@SubscribeMessage(&#x27;fetch-board-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;fetch-board&#x27; });
@@ -2408,6 +2770,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;move-card-request&#x27;)
@@ -2422,6 +2785,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;move-column-request&#x27;)
@@ -2436,9 +2800,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;update-column-title-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: &#x27;update-column-title&#x27; });
@@ -2450,6 +2816,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;update-board-visibility-request&#x27;)
@@ -2464,6 +2831,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;delete-column-request&#x27;)
@@ -2478,9 +2846,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;fetch-card-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: &#x27;fetch-card&#x27; });
@@ -2493,6 +2863,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;create-element-request&#x27;)
@@ -2511,9 +2882,11 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;update-element-request&#x27;)
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: &#x27;update-element&#x27; });
@@ -2525,6 +2898,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;delete-element-request&#x27;)
@@ -2539,6 +2913,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage(&#x27;move-element-request&#x27;)
@@ -2553,6 +2928,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	private async buildBoardSocketEmitter({ socket, id, action }: { socket: Socket; id: string; action: string }) {

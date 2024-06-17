@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tldraw/metrics/metrics.service.ts</code>
+            <code>apps/server/src/modules/board/metrics/metrics.service.ts</code>
         </p>
 
 
@@ -136,11 +136,23 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#numberOfBoardsOnServerCounter" >numberOfBoardsOnServerCounter</a>
+                                <a href="#executionTimesSummary" >executionTimesSummary</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#numberOfUsersOnServerCounter" >numberOfUsersOnServerCounter</a>
+                                <a href="#knownClientRoles" >knownClientRoles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#numberOfBoardroomsOnServerCounter" >numberOfBoardroomsOnServerCounter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#numberOfEditorsOnServerCounter" >numberOfEditorsOnServerCounter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#numberOfViewersOnServerCounter" >numberOfViewersOnServerCounter</a>
                             </li>
                         </ul>
                     </td>
@@ -155,20 +167,33 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#decrementNumberOfBoardsOnServerCounter" >decrementNumberOfBoardsOnServerCounter</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#countByRole" >countByRole</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapRole" >mapRole</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#decrementNumberOfUsersOnServerCounter" >decrementNumberOfUsersOnServerCounter</a>
+                                <a href="#setExecutionTime" >setExecutionTime</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#incrementNumberOfBoardsOnServerCounter" >incrementNumberOfBoardsOnServerCounter</a>
+                                <a href="#setNumberOfBoardRooms" >setNumberOfBoardRooms</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#incrementNumberOfUsersOnServerCounter" >incrementNumberOfUsersOnServerCounter</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#trackRoleOfClient" >trackRoleOfClient</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#untrackClient" >untrackClient</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#updateRoleCounts" >updateRoleCounts</a>
                             </li>
                         </ul>
                     </td>
@@ -188,15 +213,45 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor()</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:20</a></div>
                             </td>
                         </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
 </section>
@@ -210,26 +265,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="decrementNumberOfBoardsOnServerCounter"></a>
+                    <a name="countByRole"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>decrementNumberOfBoardsOnServerCounter</b></span>
-                        <a href="#decrementNumberOfBoardsOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>countByRole</b></span>
+                        <a href="#countByRole"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>decrementNumberOfBoardsOnServerCounter()</code>
+                    <code>countByRole(role: <a href="../entitys/Role.html" target="_self">Role</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -237,10 +292,40 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>role</td>
+                                            <td>
+                                                            <code><a href="../entitys/Role.html" target="_self" >Role</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -249,26 +334,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="decrementNumberOfUsersOnServerCounter"></a>
+                    <a name="mapRole"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>decrementNumberOfUsersOnServerCounter</b></span>
-                        <a href="#decrementNumberOfUsersOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>mapRole</b></span>
+                        <a href="#mapRole"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>decrementNumberOfUsersOnServerCounter()</code>
+                    <code>mapRole(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -276,10 +361,40 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>&quot;editor&quot; | &quot;viewer&quot; | undefined</code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -288,26 +403,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="incrementNumberOfBoardsOnServerCounter"></a>
+                    <a name="setExecutionTime"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
-                        <span ><b>incrementNumberOfBoardsOnServerCounter</b></span>
-                        <a href="#incrementNumberOfBoardsOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>setExecutionTime</b></span>
+                        <a href="#setExecutionTime"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>incrementNumberOfBoardsOnServerCounter()</code>
+                    <code>setExecutionTime(actionName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, value: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -315,10 +430,52 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>actionName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>value</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -327,26 +484,246 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="incrementNumberOfUsersOnServerCounter"></a>
+                    <a name="setNumberOfBoardRooms"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
-                        <span ><b>incrementNumberOfUsersOnServerCounter</b></span>
-                        <a href="#incrementNumberOfUsersOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>setNumberOfBoardRooms</b></span>
+                        <a href="#setNumberOfBoardRooms"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>incrementNumberOfUsersOnServerCounter()</code>
+                    <code>setNumberOfBoardRooms(value: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="trackRoleOfClient"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>trackRoleOfClient</b></span>
+                        <a href="#trackRoleOfClient"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>trackRoleOfClient(clientId: <a href="../undefineds/ClientId.html" target="_self">ClientId</a>, userId: string | undefined)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>clientId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#ClientId" target="_self" >ClientId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                        <code>string | undefined</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="untrackClient"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>untrackClient</b></span>
+                        <a href="#untrackClient"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>untrackClient(clientId: <a href="../undefineds/ClientId.html" target="_self">ClientId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>clientId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#ClientId" target="_self" >ClientId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateRoleCounts"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>updateRoleCounts</b></span>
+                        <a href="#updateRoleCounts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateRoleCounts()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -372,23 +749,28 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="numberOfBoardsOnServerCounter"></a>
+                    <a name="executionTimesSummary"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>numberOfBoardsOnServerCounter</b></span>
-                        <a href="#numberOfBoardsOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>executionTimesSummary</b></span>
+                        <a href="#executionTimesSummary"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>Gauge&lt;string&gt;</code>
+                        <i>Type : </i>    <code>Map&lt;string | Summary&lt;string&gt;&gt;</code>
 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map()</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -399,11 +781,43 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="numberOfUsersOnServerCounter"></a>
+                    <a name="knownClientRoles"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>numberOfUsersOnServerCounter</b></span>
-                        <a href="#numberOfUsersOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>knownClientRoles</b></span>
+                        <a href="#knownClientRoles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/Role.html" target="_self" >Map&lt;ClientId | Role&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="numberOfBoardroomsOnServerCounter"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>numberOfBoardroomsOnServerCounter</b></span>
+                        <a href="#numberOfBoardroomsOnServerCounter"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -415,7 +829,61 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/tldraw/metrics/metrics.service.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="numberOfEditorsOnServerCounter"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>numberOfEditorsOnServerCounter</b></span>
+                        <a href="#numberOfEditorsOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Gauge&lt;string&gt;</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="numberOfViewersOnServerCounter"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>numberOfViewersOnServerCounter</b></span>
+                        <a href="#numberOfViewersOnServerCounter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Gauge&lt;string&gt;</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -429,43 +897,103 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Gauge, register } from &#x27;prom-client&#x27;;
+import { UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { RoleName } from &#x27;@shared/domain/interface&#x27;;
+import { UserService } from &#x27;@src/modules/user&#x27;;
+import { Gauge, Summary, register } from &#x27;prom-client&#x27;;
+
+type ClientId &#x3D; string;
+type Role &#x3D; &#x27;owner&#x27; | &#x27;editor&#x27; | &#x27;viewer&#x27;;
 
 @Injectable()
 export class MetricsService {
-	private numberOfUsersOnServerCounter: Gauge&lt;string&gt;;
+	private knownClientRoles: Map&lt;ClientId, Role&gt; &#x3D; new Map();
 
-	private numberOfBoardsOnServerCounter: Gauge&lt;string&gt;;
+	private numberOfBoardroomsOnServerCounter: Gauge&lt;string&gt;;
 
-	constructor() {
-		this.numberOfUsersOnServerCounter &#x3D; new Gauge({
-			name: &#x27;sc_tldraw_users&#x27;,
-			help: &#x27;Number of active users per pod&#x27;,
-		});
+	public numberOfEditorsOnServerCounter: Gauge&lt;string&gt;;
 
-		this.numberOfBoardsOnServerCounter &#x3D; new Gauge({
-			name: &#x27;sc_tldraw_boards&#x27;,
+	private numberOfViewersOnServerCounter: Gauge&lt;string&gt;;
+
+	private executionTimesSummary: Map&lt;string, Summary&lt;string&gt;&gt; &#x3D; new Map();
+
+	constructor(private readonly userService: UserService) {
+		this.numberOfBoardroomsOnServerCounter &#x3D; new Gauge({
+			name: &#x27;sc_boards_rooms&#x27;,
 			help: &#x27;Number of active boards per pod&#x27;,
 		});
 
-		register.registerMetric(this.numberOfUsersOnServerCounter);
-		register.registerMetric(this.numberOfBoardsOnServerCounter);
+		this.numberOfEditorsOnServerCounter &#x3D; new Gauge({
+			name: &#x27;sc_boards_editors&#x27;,
+			help: &#x27;Number of active editors per pod&#x27;,
+		});
+
+		this.numberOfViewersOnServerCounter &#x3D; new Gauge({
+			name: &#x27;sc_boards_viewers&#x27;,
+			help: &#x27;Number of active viewers per pod&#x27;,
+		});
+
+		register.registerMetric(this.numberOfEditorsOnServerCounter);
+		register.registerMetric(this.numberOfViewersOnServerCounter);
+		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
-	public incrementNumberOfUsersOnServerCounter(): void {
-		this.numberOfUsersOnServerCounter.inc();
+	private mapRole(user: UserDO): &#x27;editor&#x27; | &#x27;viewer&#x27; | undefined {
+		const EDITOR_ROLES &#x3D; [RoleName.TEACHER, RoleName.COURSESUBSTITUTIONTEACHER, RoleName.COURSETEACHER];
+		if (user.roles.find((r) &#x3D;&gt; EDITOR_ROLES.includes(r.name))) {
+			return &#x27;editor&#x27;;
+		}
+		return &#x27;viewer&#x27;;
 	}
 
-	public decrementNumberOfUsersOnServerCounter(): void {
-		this.numberOfUsersOnServerCounter.dec();
+	public async trackRoleOfClient(clientId: ClientId, userId: string | undefined): Promise&lt;string | undefined&gt; {
+		let role &#x3D; this.knownClientRoles.get(clientId);
+		if (role &#x3D;&#x3D;&#x3D; undefined &amp;&amp; userId) {
+			const userDo &#x3D; await this.userService.findById(userId);
+			if (userDo) {
+				role &#x3D; this.mapRole(userDo);
+				if (role) {
+					this.knownClientRoles.set(clientId, role);
+					this.updateRoleCounts();
+				}
+			}
+		}
+		return role;
 	}
 
-	public incrementNumberOfBoardsOnServerCounter(): void {
-		this.numberOfBoardsOnServerCounter.inc();
+	public untrackClient(clientId: ClientId): void {
+		this.knownClientRoles.delete(clientId);
+		this.updateRoleCounts();
 	}
 
-	public decrementNumberOfBoardsOnServerCounter(): void {
-		this.numberOfBoardsOnServerCounter.dec();
+	private updateRoleCounts(): void {
+		this.numberOfEditorsOnServerCounter.set(this.countByRole(&#x27;editor&#x27;));
+		this.numberOfViewersOnServerCounter.set(this.countByRole(&#x27;viewer&#x27;));
+	}
+
+	private countByRole(role: Role) {
+		return Array.from(this.knownClientRoles.values()).filter((r) &#x3D;&gt; r &#x3D;&#x3D;&#x3D; role).length;
+	}
+
+	public setNumberOfBoardRooms(value: number): void {
+		this.numberOfBoardroomsOnServerCounter.set(value);
+	}
+
+	public setExecutionTime(actionName: string, value: number): void {
+		let summary &#x3D; this.executionTimesSummary.get(actionName);
+
+		if (!summary) {
+			summary &#x3D; new Summary({
+				name: &#x60;sc_boards_execution_time_${actionName}&#x60;,
+				help: &#x27;Average execution time of a specific action in milliseconds&#x27;,
+				maxAgeSeconds: 60,
+				ageBuckets: 5,
+				percentiles: [0.01, 0.1, 0.9, 0.99],
+			});
+			this.executionTimesSummary.set(actionName, summary);
+			register.registerMetric(summary);
+		}
+		summary.observe(value);
 	}
 }
 </code></pre>
