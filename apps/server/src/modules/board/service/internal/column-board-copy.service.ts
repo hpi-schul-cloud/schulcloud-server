@@ -1,5 +1,6 @@
 import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -39,6 +40,8 @@ export class ColumnBoardCopyService {
 		const copyContext = new BoardNodeCopyContext({
 			sourceStorageLocationId: course.school.id,
 			targetStorageLocationId: user.schoolId,
+			sourceStorageLocation: StorageLocation.SCHOOL,
+			targetStorageLocation: StorageLocation.SCHOOL,
 			userId: props.userId,
 			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
 		});

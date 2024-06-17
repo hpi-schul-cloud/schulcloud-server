@@ -1,4 +1,5 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { FileParamBuilder } from './files-storage-param.builder';
 
@@ -24,9 +25,10 @@ describe('FileParamBuilder', () => {
 		const result = FileParamBuilder.build(schoolId, task);
 
 		const expectedResult = {
-			schoolId,
+			storageLocationId: schoolId,
 			parentType,
 			parentId: task.id,
+			storageLocation: StorageLocation.SCHOOL,
 		};
 
 		expect(result).toStrictEqual(expectedResult);
@@ -40,7 +42,8 @@ describe('FileParamBuilder', () => {
 		const result = FileParamBuilder.build(schoolId, lesson);
 
 		const expectedResult = {
-			schoolId,
+			storageLocationId: schoolId,
+			storageLocation: StorageLocation.SCHOOL,
 			parentType,
 			parentId: lesson.id,
 		};
