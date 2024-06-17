@@ -162,7 +162,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/service/internal/column-board-copy.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/board/service/internal/column-board-copy.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -287,8 +287,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/board/service/internal/column-board-copy.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/column-board-copy.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -341,15 +341,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CopyStatus } from &#x27;@modules/copy-helper&#x27;;
+import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { StorageLocation } from &#x27;@modules/files-storage/entity&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, InternalServerErrorException, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
-import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from &#x27;../../domain&#x27;;
+import { BoardNodeService } from &#x27;../board-node.service&#x27;;
 import { BoardNodeCopyContext } from &#x27;./board-node-copy-context&#x27;;
 import { BoardNodeCopyService } from &#x27;./board-node-copy.service&#x27;;
-import { BoardNodeService } from &#x27;../board-node.service&#x27;;
 import { ColumnBoardTitleService } from &#x27;./column-board-title.service&#x27;;
 
 @Injectable()
@@ -379,8 +380,10 @@ export class ColumnBoardCopyService {
 		const course &#x3D; await this.courseRepo.findById(originalBoard.context.id); // TODO: get rid of this
 
 		const copyContext &#x3D; new BoardNodeCopyContext({
-			sourceSchoolId: course.school.id,
-			targetSchoolId: user.schoolId,
+			sourceStorageLocationId: course.school.id,
+			targetStorageLocationId: user.schoolId,
+			sourceStorageLocation: StorageLocation.SCHOOL,
+			targetStorageLocation: StorageLocation.SCHOOL,
 			userId: props.userId,
 			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
 		});

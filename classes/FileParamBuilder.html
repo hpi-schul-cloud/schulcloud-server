@@ -178,15 +178,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parent: <a href="../undefineds/EntitiesWithFiles.html" target="_self">EntitiesWithFiles</a>)</code>
+                    <code>build(storageLocationId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parent: <a href="../undefineds/EntitiesWithFiles.html" target="_self">EntitiesWithFiles</a>, storageLocation: <a href="../undefineds/StorageLocation.html" target="_self">StorageLocation</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/mapper/files-storage-param.builder.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/mapper/files-storage-param.builder.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -203,11 +203,12 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolId</td>
+                                                <td>storageLocationId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -216,6 +217,8 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -228,6 +231,23 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>storageLocation</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#StorageLocation" target="_self" >StorageLocation</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>StorageLocation.SCHOOL</code>
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -254,16 +274,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { StorageLocation } from &#x27;@modules/files-storage/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { EntitiesWithFiles, FileRequestInfo } from &#x27;../interfaces&#x27;;
 import { FilesStorageClientMapper } from &#x27;./files-storage-client.mapper&#x27;;
 
 export class FileParamBuilder {
-	static build(schoolId: EntityId, parent: EntitiesWithFiles): FileRequestInfo {
+	static build(
+		storageLocationId: EntityId,
+		parent: EntitiesWithFiles,
+		storageLocation: StorageLocation &#x3D; StorageLocation.SCHOOL
+	): FileRequestInfo {
 		const parentType &#x3D; FilesStorageClientMapper.mapEntityToParentType(parent);
 		const fileRequestInfo &#x3D; {
 			parentType,
-			schoolId,
+			storageLocationId,
+			storageLocation,
 			parentId: parent.id,
 		};
 
