@@ -1577,6 +1577,11 @@
 					"type": "string",
 					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
 					"examples": ["image/gif,image/jpeg,video/webm"]
+				},
+				"PERFORMANCE_MEASURE_ENABLED": {
+					"type": "boolean",
+					"description": "Activate the performance measure for overserved areas.",
+					"default": true
 				}
 			},
 			"default": {

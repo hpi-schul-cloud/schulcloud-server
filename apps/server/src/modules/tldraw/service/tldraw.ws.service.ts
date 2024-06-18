@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
@@ -7,6 +7,8 @@ import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-
 import { Buffer } from 'node:buffer';
 import { YMap } from 'yjs/dist/src/types/YMap';
 import { DomainErrorHandler } from '@src/core';
+import { Logger } from '@src/core/logger';
+import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
 import { TldrawRedisService } from '../redis';
 import {
 	CloseConnectionLoggable,
@@ -28,7 +30,7 @@ import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
 
 @Injectable()
-export class TldrawWsService {
+export class TldrawWsService implements OnModuleInit {
 	public docs = new Map<string, WsSharedDocDo>();
 
 	constructor(
@@ -36,12 +38,20 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly domainErrorHandler: DomainErrorHandler,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisService: TldrawRedisService
+		private readonly tldrawRedisService: TldrawRedisService,
+		private readonly logger: Logger
 	) {
 		this.tldrawRedisService.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}
 
+	onModuleInit() {
+		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
+			initilisedPerformanceObserver(this.logger);
+		}
+	}
+
 	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
+		performance.mark('closeConnection - start');
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws);
 			doc.connections.delete(ws);
@@ -52,6 +62,12 @@ export class TldrawWsService {
 
 		ws.close();
 		await this.finalizeIfNoConnections(doc);
+		performance.mark('closeConnection - end');
+		performance.measure(
+			`tldraw:TldrawWsService:closeConnection::${doc.name}`,
+			'closeConnection - start',
+			'closeConnection - end'
+		);
 	}
 
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
@@ -181,9 +197,16 @@ export class TldrawWsService {
 	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 
+		performance.mark('get document - start');
 		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
+		performance.mark('ws connection to doc - done');
+		performance.measure(
+			`tldraw:TldrawWsService:setupWsConnection::${docName}`,
+			'get document - start',
+			'ws connection to doc - done'
+		);
 
 		ws.on('error', (err) => {
 			this.domainErrorHandler.exec(new WebsocketErrorLoggable(err));

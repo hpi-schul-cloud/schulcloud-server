@@ -1,5 +1,5 @@
 import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
@@ -7,6 +7,8 @@ import * as encoding from 'lib0/encoding';
 import * as promise from 'lib0/promise';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector, mergeUpdates } from 'yjs';
 import { DomainErrorHandler } from '@src/core';
+import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
+import { Logger } from '@src/core/logger';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain';
 import { TldrawDrawing } from '../entities';
@@ -16,7 +18,7 @@ import { KeyFactory, Version } from './key.factory';
 import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
-export class YMongodb {
+export class YMongodb implements OnModuleInit {
 	private readonly _transact: <T extends Promise<YTransaction>>(docName: string, fn: () => T) => T;
 
 	// scope the queue of the transaction to each docName
@@ -26,7 +28,8 @@ export class YMongodb {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly repo: TldrawRepo,
-		private readonly domainErrorHandler: DomainErrorHandler
+		private readonly domainErrorHandler: DomainErrorHandler,
+		private readonly logger: Logger
 	) {
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
@@ -62,6 +65,12 @@ export class YMongodb {
 		};
 	}
 
+	onModuleInit() {
+		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
+			initilisedPerformanceObserver(this.logger);
+		}
+	}
+
 	public async createIndex(): Promise<void> {
 		await this.repo.ensureIndexes();
 	}
@@ -94,7 +103,8 @@ export class YMongodb {
 
 	// return value is not void, need to be changed
 	public compressDocumentTransactional(docName: string): Promise<void> {
-		// return value can be null, need to be defined
+		performance.mark('compressDocumentTransactional - start');
+
 		return this._transact(docName, async () => {
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
@@ -105,10 +115,17 @@ export class YMongodb {
 			const stateAsUpdate = encodeStateAsUpdate(ydoc);
 			const sv = encodeStateVector(ydoc);
 			const clock = await this.storeUpdate(docName, stateAsUpdate);
+
 			await this.writeStateVector(docName, sv, clock);
 			await this.clearUpdatesRange(docName, 0, clock);
 
 			ydoc.destroy();
+			performance.mark('compressDocumentTransactional - end');
+			performance.measure(
+				`tldraw:YMongodb:compressDocumentTransactional::${docName}`,
+				'compressDocumentTransactional - start',
+				'compressDocumentTransactional - end'
+			);
 		});
 	}
 

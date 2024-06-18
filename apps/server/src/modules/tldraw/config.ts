@@ -17,6 +17,7 @@ export interface TldrawConfig {
 	API_HOST: number;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
 	TLDRAW_FINALIZE_DELAY: number;
+	PERFORMANCE_MEASURE_ENABLED: boolean;
 }
 
 export const TLDRAW_DB_URL: string = Configuration.get('TLDRAW_DB_URL') as string;
@@ -39,6 +40,7 @@ const tldrawConfig = {
 	API_HOST: Configuration.get('API_HOST') as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
 	TLDRAW_FINALIZE_DELAY: Configuration.get('TLDRAW__FINALIZE_DELAY') as number,
+	PERFORMANCE_MEASURE_ENABLED: Configuration.get('TLDRAW__PERFORMANCE_MEASURE_ENABLED') as boolean,
 };
 
 export const config = () => tldrawConfig;
