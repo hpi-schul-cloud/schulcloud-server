@@ -2,6 +2,7 @@ import { PerformanceObserver, PerformanceEntry } from 'node:perf_hooks';
 import { Loggable, LoggableMessage } from '../loggable';
 
 interface InfoLogger {
+	alert(input: Loggable): void;
 	info(input: Loggable): void;
 }
 
@@ -22,7 +23,7 @@ class MeasureLoggable implements Loggable {
 	}
 }
 
-class InitalisePerformanceLogger implements Loggable {
+class InitalisePerformanceLoggable implements Loggable {
 	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Initialise PerformanceObserver...',
@@ -50,12 +51,12 @@ let obs: PerformanceObserver | null = null;
  */
 export const initilisedPerformanceObserver = (infoLogger: InfoLogger): PerformanceObserver => {
 	if (obs === null) {
-		infoLogger.info(new InitalisePerformanceLogger());
+		infoLogger.alert(new InitalisePerformanceLoggable());
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		obs = new PerformanceObserver((perfObserverList, observer) => {
 			const entries = perfObserverList.getEntries();
 			const loggable = new MeasureLoggable(entries);
-			infoLogger.info(loggable);
+			infoLogger.alert(loggable);
 		});
 		obs.observe({ type: 'measure', buffered: true });
 	}
