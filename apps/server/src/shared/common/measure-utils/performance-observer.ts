@@ -2,7 +2,6 @@ import { PerformanceObserver, PerformanceEntry } from 'node:perf_hooks';
 import { Loggable, LoggableMessage } from '../loggable';
 
 interface InfoLogger {
-	alert(input: Loggable): void;
 	info(input: Loggable): void;
 }
 
@@ -51,12 +50,12 @@ let obs: PerformanceObserver | null = null;
  */
 export const initilisedPerformanceObserver = (infoLogger: InfoLogger): PerformanceObserver => {
 	if (obs === null) {
-		infoLogger.alert(new InitalisePerformanceLoggable());
+		infoLogger.info(new InitalisePerformanceLoggable());
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		obs = new PerformanceObserver((perfObserverList, observer) => {
 			const entries = perfObserverList.getEntries();
 			const loggable = new MeasureLoggable(entries);
-			infoLogger.alert(loggable);
+			infoLogger.info(loggable);
 		});
 		obs.observe({ type: 'measure', buffered: true });
 	}
