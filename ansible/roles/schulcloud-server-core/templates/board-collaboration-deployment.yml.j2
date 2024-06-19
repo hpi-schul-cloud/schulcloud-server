@@ -59,6 +59,8 @@ spec:
             name: board-collaboration-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:board-collaboration:prod']
         resources:
           limits:

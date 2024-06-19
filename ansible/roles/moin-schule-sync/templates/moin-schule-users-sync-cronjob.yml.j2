@@ -27,6 +27,8 @@ spec:
                 name: moin-schule-users-sync-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh','-c']
             args: ['npm run nest:start:idp-console -- sync users --systemType moin.schule --systemId $SYSTEM_ID']
             resources:
