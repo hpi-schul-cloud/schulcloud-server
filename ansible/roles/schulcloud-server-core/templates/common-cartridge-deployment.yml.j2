@@ -54,6 +54,8 @@ spec:
             name: common-cartridge-configmap
         - secretRef:
             name: common-cartridge-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:common-cartridge']
         resources:
           limits:

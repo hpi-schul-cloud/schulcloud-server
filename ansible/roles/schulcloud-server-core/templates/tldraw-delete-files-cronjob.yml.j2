@@ -28,6 +28,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh', '-c']
             args: ['npm run nest:start:tldraw-console -- files deletion-job 24']
             resources:

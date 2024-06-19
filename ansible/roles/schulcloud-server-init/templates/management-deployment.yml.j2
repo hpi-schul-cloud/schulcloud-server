@@ -53,6 +53,8 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:management:prod']
         readinessProbe:
           httpGet:
