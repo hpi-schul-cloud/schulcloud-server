@@ -24,443 +24,443 @@
 <title>cluster_LearnroomModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 5314,-268 5314,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_LearnroomModule_exports</title>
-<polygon fill="none" stroke="black" points="2025,-208 2025,-260 3289,-260 3289,-208 2025,-208"/>
+<g id="clust6" class="cluster">
+<title>cluster_LearnroomModule_providers</title>
+<polygon fill="none" stroke="black" points="847,-78 847,-130 5306,-130 5306,-78 847,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_LearnroomModule_imports</title>
-<polygon fill="none" stroke="black" points="4483,-78 4483,-130 5306,-130 5306,-78 4483,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 839,-130 839,-78 16,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LearnroomModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 4475,-130 4475,-78 16,-78"/>
+<g id="clust4" class="cluster">
+<title>cluster_LearnroomModule_exports</title>
+<polygon fill="none" stroke="black" points="1764,-208 1764,-260 3028,-260 3028,-208 1764,-208"/>
 </g>
 <!-- ContextExternalToolModule -->
 <g id="node1" class="node">
 <title>ContextExternalToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="5297.75,-122 5294.75,-126 5273.75,-126 5270.75,-122 5120.25,-122 5120.25,-86 5297.75,-86 5297.75,-122"/>
-<text text-anchor="middle" x="5209" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="830.75,-122 827.75,-126 806.75,-126 803.75,-122 653.25,-122 653.25,-86 830.75,-86 830.75,-122"/>
+<text text-anchor="middle" x="742" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolModule</text>
 </g>
 <!-- LearnroomModule -->
 <g id="node7" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2614.74,-187 2611.74,-191 2590.74,-191 2587.74,-187 2493.26,-187 2493.26,-151 2614.74,-151 2614.74,-187"/>
-<text text-anchor="middle" x="2554" y="-164.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2353.74,-187 2350.74,-191 2329.74,-191 2326.74,-187 2232.26,-187 2232.26,-151 2353.74,-151 2353.74,-187"/>
+<text text-anchor="middle" x="2293" y="-164.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- ContextExternalToolModule&#45;&gt;LearnroomModule -->
 <g id="edge1" class="edge">
 <title>ContextExternalToolModule&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M5209,-122.16C5209,-144.35 5209,-179 5209,-179 5209,-179 2624.76,-179 2624.76,-179"/>
-<polygon fill="black" stroke="black" points="2624.76,-175.5 2614.76,-179 2624.76,-182.5 2624.76,-175.5"/>
+<path fill="none" stroke="black" d="M742,-122.17C742,-141.09 742,-168 742,-168 742,-168 2222.2,-168 2222.2,-168"/>
+<polygon fill="black" stroke="black" points="2222.2,-171.5 2232.2,-168 2222.2,-164.5 2222.2,-171.5"/>
 </g>
 <!-- CopyHelperModule -->
 <g id="node2" class="node">
 <title>CopyHelperModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="5101.97,-122 5098.97,-126 5077.97,-126 5074.97,-122 4974.03,-122 4974.03,-86 5101.97,-86 5101.97,-122"/>
-<text text-anchor="middle" x="5038" y="-99.8" font-family="Times,serif" font-size="14.00">CopyHelperModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="634.97,-122 631.97,-126 610.97,-126 607.97,-122 507.03,-122 507.03,-86 634.97,-86 634.97,-122"/>
+<text text-anchor="middle" x="571" y="-99.8" font-family="Times,serif" font-size="14.00">CopyHelperModule</text>
 </g>
 <!-- CopyHelperModule&#45;&gt;LearnroomModule -->
 <g id="edge2" class="edge">
 <title>CopyHelperModule&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M5038,-122.04C5038,-143.66 5038,-177 5038,-177 5038,-177 2624.79,-177 2624.79,-177"/>
-<polygon fill="black" stroke="black" points="2624.79,-173.5 2614.79,-177 2624.79,-180.5 2624.79,-173.5"/>
+<path fill="none" stroke="black" d="M571,-122.31C571,-142.15 571,-171 571,-171 571,-171 2222.22,-171 2222.22,-171"/>
+<polygon fill="black" stroke="black" points="2222.22,-174.5 2232.22,-171 2222.22,-167.5 2222.22,-174.5"/>
 </g>
 <!-- LessonModule -->
 <g id="node3" class="node">
 <title>LessonModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="4955.71,-122 4952.71,-126 4931.71,-126 4928.71,-122 4856.29,-122 4856.29,-86 4955.71,-86 4955.71,-122"/>
-<text text-anchor="middle" x="4906" y="-99.8" font-family="Times,serif" font-size="14.00">LessonModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="488.71,-122 485.71,-126 464.71,-126 461.71,-122 389.29,-122 389.29,-86 488.71,-86 488.71,-122"/>
+<text text-anchor="middle" x="439" y="-99.8" font-family="Times,serif" font-size="14.00">LessonModule</text>
 </g>
 <!-- LessonModule&#45;&gt;LearnroomModule -->
 <g id="edge3" class="edge">
 <title>LessonModule&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4906,-122.28C4906,-143.32 4906,-175 4906,-175 4906,-175 2624.8,-175 2624.8,-175"/>
-<polygon fill="black" stroke="black" points="2624.8,-171.5 2614.8,-175 2624.8,-178.5 2624.8,-171.5"/>
+<path fill="none" stroke="black" d="M439,-122.13C439,-142.57 439,-173 439,-173 439,-173 2222.11,-173 2222.11,-173"/>
+<polygon fill="black" stroke="black" points="2222.11,-176.5 2232.11,-173 2222.11,-169.5 2222.11,-176.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node4" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="4837.98,-122 4834.98,-126 4813.98,-126 4810.98,-122 4738.02,-122 4738.02,-86 4837.98,-86 4837.98,-122"/>
-<text text-anchor="middle" x="4788" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="370.98,-122 367.98,-126 346.98,-126 343.98,-122 271.02,-122 271.02,-86 370.98,-86 370.98,-122"/>
+<text text-anchor="middle" x="321" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;LearnroomModule -->
 <g id="edge4" class="edge">
 <title>LoggerModule&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4788,-122.13C4788,-142.57 4788,-173 4788,-173 4788,-173 2624.91,-173 2624.91,-173"/>
-<polygon fill="black" stroke="black" points="2624.91,-169.5 2614.91,-173 2624.91,-176.5 2624.91,-169.5"/>
+<path fill="none" stroke="black" d="M321,-122.28C321,-143.32 321,-175 321,-175 321,-175 2222.09,-175 2222.09,-175"/>
+<polygon fill="black" stroke="black" points="2222.09,-178.5 2232.09,-175 2222.09,-171.5 2222.09,-178.5"/>
 </g>
 <!-- TaskModule -->
 <g id="node5" class="node">
 <title>TaskModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="4720.26,-122 4717.26,-126 4696.26,-126 4693.26,-122 4633.74,-122 4633.74,-86 4720.26,-86 4720.26,-122"/>
-<text text-anchor="middle" x="4677" y="-99.8" font-family="Times,serif" font-size="14.00">TaskModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="253.26,-122 250.26,-126 229.26,-126 226.26,-122 166.74,-122 166.74,-86 253.26,-86 253.26,-122"/>
+<text text-anchor="middle" x="210" y="-99.8" font-family="Times,serif" font-size="14.00">TaskModule</text>
 </g>
 <!-- TaskModule&#45;&gt;LearnroomModule -->
 <g id="edge5" class="edge">
 <title>TaskModule&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4677,-122.31C4677,-142.15 4677,-171 4677,-171 4677,-171 2624.96,-171 2624.96,-171"/>
-<polygon fill="black" stroke="black" points="2624.96,-167.5 2614.96,-171 2624.96,-174.5 2624.96,-167.5"/>
+<path fill="none" stroke="black" d="M210,-122.04C210,-143.66 210,-177 210,-177 210,-177 2222.07,-177 2222.07,-177"/>
+<polygon fill="black" stroke="black" points="2222.07,-180.5 2232.07,-177 2222.07,-173.5 2222.07,-180.5"/>
 </g>
 <!-- ToolConfigModule -->
 <g id="node6" class="node">
 <title>ToolConfigModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="4615.38,-122 4612.38,-126 4591.38,-126 4588.38,-122 4490.62,-122 4490.62,-86 4615.38,-86 4615.38,-122"/>
-<text text-anchor="middle" x="4553" y="-99.8" font-family="Times,serif" font-size="14.00">ToolConfigModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="148.38,-122 145.38,-126 124.38,-126 121.38,-122 23.62,-122 23.62,-86 148.38,-86 148.38,-122"/>
+<text text-anchor="middle" x="86" y="-99.8" font-family="Times,serif" font-size="14.00">ToolConfigModule</text>
 </g>
 <!-- ToolConfigModule&#45;&gt;LearnroomModule -->
 <g id="edge6" class="edge">
 <title>ToolConfigModule&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4553,-122.17C4553,-141.09 4553,-168 4553,-168 4553,-168 2624.92,-168 2624.92,-168"/>
-<polygon fill="black" stroke="black" points="2624.92,-164.5 2614.92,-168 2624.92,-171.5 2624.92,-164.5"/>
+<path fill="none" stroke="black" d="M86,-122.16C86,-144.35 86,-179 86,-179 86,-179 2222.25,-179 2222.25,-179"/>
+<polygon fill="black" stroke="black" points="2222.25,-182.5 2232.25,-179 2222.25,-175.5 2222.25,-182.5"/>
 </g>
 <!-- CommonCartridgeExportService  -->
 <g id="node8" class="node">
 <title>CommonCartridgeExportService </title>
-<polygon fill="#fb8072" stroke="black" points="3281.07,-252 3076.93,-252 3076.93,-216 3281.07,-216 3281.07,-252"/>
-<text text-anchor="middle" x="3179" y="-229.8" font-family="Times,serif" font-size="14.00">CommonCartridgeExportService </text>
+<polygon fill="#fb8072" stroke="black" points="3020.07,-252 2815.93,-252 2815.93,-216 3020.07,-216 3020.07,-252"/>
+<text text-anchor="middle" x="2918" y="-229.8" font-family="Times,serif" font-size="14.00">CommonCartridgeExportService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;CommonCartridgeExportService  -->
 <g id="edge7" class="edge">
 <title>LearnroomModule&#45;&gt;CommonCartridgeExportService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2614.86,-181C2770.02,-181 3168.24,-181 3168.24,-181 3168.24,-181 3168.24,-205.76 3168.24,-205.76"/>
-<polygon fill="black" stroke="black" points="3164.74,-205.76 3168.24,-215.76 3171.74,-205.76 3164.74,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2353.83,-181C2498.12,-181 2849.08,-181 2849.08,-181 2849.08,-181 2849.08,-205.76 2849.08,-205.76"/>
+<polygon fill="black" stroke="black" points="2845.58,-205.76 2849.08,-215.76 2852.58,-205.76 2845.58,-205.76"/>
 </g>
 <!-- CommonCartridgeImportService  -->
 <g id="node9" class="node">
 <title>CommonCartridgeImportService </title>
-<polygon fill="#fb8072" stroke="black" points="3058.07,-252 2853.93,-252 2853.93,-216 3058.07,-216 3058.07,-252"/>
-<text text-anchor="middle" x="2956" y="-229.8" font-family="Times,serif" font-size="14.00">CommonCartridgeImportService </text>
+<polygon fill="#fb8072" stroke="black" points="2797.07,-252 2592.93,-252 2592.93,-216 2797.07,-216 2797.07,-252"/>
+<text text-anchor="middle" x="2695" y="-229.8" font-family="Times,serif" font-size="14.00">CommonCartridgeImportService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;CommonCartridgeImportService  -->
 <g id="edge8" class="edge">
 <title>LearnroomModule&#45;&gt;CommonCartridgeImportService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2614.89,-183C2716.16,-183 2908.2,-183 2908.2,-183 2908.2,-183 2908.2,-205.88 2908.2,-205.88"/>
-<polygon fill="black" stroke="black" points="2904.7,-205.88 2908.2,-215.88 2911.7,-205.88 2904.7,-205.88"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2353.98,-183C2454.83,-183 2645.37,-183 2645.37,-183 2645.37,-183 2645.37,-205.88 2645.37,-205.88"/>
+<polygon fill="black" stroke="black" points="2641.87,-205.88 2645.37,-215.88 2648.87,-205.88 2641.87,-205.88"/>
 </g>
 <!-- CourseCopyService  -->
 <g id="node10" class="node">
 <title>CourseCopyService </title>
-<polygon fill="#fb8072" stroke="black" points="2835.97,-252 2704.03,-252 2704.03,-216 2835.97,-216 2835.97,-252"/>
-<text text-anchor="middle" x="2770" y="-229.8" font-family="Times,serif" font-size="14.00">CourseCopyService </text>
+<polygon fill="#fb8072" stroke="black" points="2574.97,-252 2443.03,-252 2443.03,-216 2574.97,-216 2574.97,-252"/>
+<text text-anchor="middle" x="2509" y="-229.8" font-family="Times,serif" font-size="14.00">CourseCopyService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;CourseCopyService  -->
 <g id="edge9" class="edge">
 <title>LearnroomModule&#45;&gt;CourseCopyService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2615.03,-185C2678.9,-185 2770,-185 2770,-185 2770,-185 2770,-205.75 2770,-205.75"/>
-<polygon fill="black" stroke="black" points="2766.5,-205.75 2770,-215.75 2773.5,-205.75 2766.5,-205.75"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2353.75,-185C2404.81,-185 2469.52,-185 2469.52,-185 2469.52,-185 2469.52,-205.75 2469.52,-205.75"/>
+<polygon fill="black" stroke="black" points="2466.02,-205.75 2469.52,-215.75 2473.02,-205.75 2466.02,-205.75"/>
 </g>
 <!-- CourseDoService  -->
 <g id="node11" class="node">
 <title>CourseDoService </title>
-<polygon fill="#fb8072" stroke="black" points="2686.24,-252 2567.76,-252 2567.76,-216 2686.24,-216 2686.24,-252"/>
-<text text-anchor="middle" x="2627" y="-229.8" font-family="Times,serif" font-size="14.00">CourseDoService </text>
+<polygon fill="#fb8072" stroke="black" points="2425.24,-252 2306.76,-252 2306.76,-216 2425.24,-216 2425.24,-252"/>
+<text text-anchor="middle" x="2366" y="-229.8" font-family="Times,serif" font-size="14.00">CourseDoService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;CourseDoService  -->
 <g id="edge10" class="edge">
 <title>LearnroomModule&#45;&gt;CourseDoService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2591.38,-187.11C2591.38,-187.11 2591.38,-205.99 2591.38,-205.99"/>
-<polygon fill="black" stroke="black" points="2587.88,-205.99 2591.38,-215.99 2594.88,-205.99 2587.88,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2330.38,-187.11C2330.38,-187.11 2330.38,-205.99 2330.38,-205.99"/>
+<polygon fill="black" stroke="black" points="2326.88,-205.99 2330.38,-215.99 2333.88,-205.99 2326.88,-205.99"/>
 </g>
 <!-- CourseGroupService  -->
 <g id="node12" class="node">
 <title>CourseGroupService </title>
-<polygon fill="#fb8072" stroke="black" points="2549.4,-252 2412.6,-252 2412.6,-216 2549.4,-216 2549.4,-252"/>
-<text text-anchor="middle" x="2481" y="-229.8" font-family="Times,serif" font-size="14.00">CourseGroupService </text>
+<polygon fill="#fb8072" stroke="black" points="2288.4,-252 2151.6,-252 2151.6,-216 2288.4,-216 2288.4,-252"/>
+<text text-anchor="middle" x="2220" y="-229.8" font-family="Times,serif" font-size="14.00">CourseGroupService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;CourseGroupService  -->
 <g id="edge11" class="edge">
 <title>LearnroomModule&#45;&gt;CourseGroupService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2521.29,-187.11C2521.29,-187.11 2521.29,-205.99 2521.29,-205.99"/>
-<polygon fill="black" stroke="black" points="2517.79,-205.99 2521.29,-215.99 2524.79,-205.99 2517.79,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2260.29,-187.11C2260.29,-187.11 2260.29,-205.99 2260.29,-205.99"/>
+<polygon fill="black" stroke="black" points="2256.79,-205.99 2260.29,-215.99 2263.79,-205.99 2256.79,-205.99"/>
 </g>
 <!-- CourseService  -->
 <g id="node13" class="node">
 <title>CourseService </title>
-<polygon fill="#fb8072" stroke="black" points="2394.63,-252 2293.37,-252 2293.37,-216 2394.63,-216 2394.63,-252"/>
-<text text-anchor="middle" x="2344" y="-229.8" font-family="Times,serif" font-size="14.00">CourseService </text>
+<polygon fill="#fb8072" stroke="black" points="2133.63,-252 2032.37,-252 2032.37,-216 2133.63,-216 2133.63,-252"/>
+<text text-anchor="middle" x="2083" y="-229.8" font-family="Times,serif" font-size="14.00">CourseService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;CourseService  -->
 <g id="edge12" class="edge">
 <title>LearnroomModule&#45;&gt;CourseService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2492.98,-185C2430.97,-185 2344,-185 2344,-185 2344,-185 2344,-205.75 2344,-205.75"/>
-<polygon fill="black" stroke="black" points="2340.5,-205.75 2344,-215.75 2347.5,-205.75 2340.5,-205.75"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2231.98,-185C2169.97,-185 2083,-185 2083,-185 2083,-185 2083,-205.75 2083,-205.75"/>
+<polygon fill="black" stroke="black" points="2079.5,-205.75 2083,-215.75 2086.5,-205.75 2079.5,-205.75"/>
 </g>
 <!-- DashboardService  -->
 <g id="node14" class="node">
 <title>DashboardService </title>
-<polygon fill="#fb8072" stroke="black" points="2275.12,-252 2152.88,-252 2152.88,-216 2275.12,-216 2275.12,-252"/>
-<text text-anchor="middle" x="2214" y="-229.8" font-family="Times,serif" font-size="14.00">DashboardService </text>
+<polygon fill="#fb8072" stroke="black" points="2014.12,-252 1891.88,-252 1891.88,-216 2014.12,-216 2014.12,-252"/>
+<text text-anchor="middle" x="1953" y="-229.8" font-family="Times,serif" font-size="14.00">DashboardService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;DashboardService  -->
 <g id="edge13" class="edge">
 <title>LearnroomModule&#45;&gt;DashboardService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2493.16,-183C2407.17,-183 2260.39,-183 2260.39,-183 2260.39,-183 2260.39,-205.88 2260.39,-205.88"/>
-<polygon fill="black" stroke="black" points="2256.89,-205.88 2260.39,-215.88 2263.89,-205.88 2256.89,-205.88"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2231.99,-183C2147.54,-183 2005.31,-183 2005.31,-183 2005.31,-183 2005.31,-205.88 2005.31,-205.88"/>
+<polygon fill="black" stroke="black" points="2001.81,-205.88 2005.31,-215.88 2008.81,-205.88 2001.81,-205.88"/>
 </g>
 <!-- RoomsService  -->
 <g id="node15" class="node">
 <title>RoomsService </title>
-<polygon fill="#fb8072" stroke="black" points="2134.65,-252 2033.35,-252 2033.35,-216 2134.65,-216 2134.65,-252"/>
-<text text-anchor="middle" x="2084" y="-229.8" font-family="Times,serif" font-size="14.00">RoomsService </text>
+<polygon fill="#fb8072" stroke="black" points="1873.65,-252 1772.35,-252 1772.35,-216 1873.65,-216 1873.65,-252"/>
+<text text-anchor="middle" x="1823" y="-229.8" font-family="Times,serif" font-size="14.00">RoomsService </text>
 </g>
 <!-- LearnroomModule&#45;&gt;RoomsService  -->
 <g id="edge14" class="edge">
 <title>LearnroomModule&#45;&gt;RoomsService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2493.07,-181C2369.75,-181 2102.21,-181 2102.21,-181 2102.21,-181 2102.21,-205.76 2102.21,-205.76"/>
-<polygon fill="black" stroke="black" points="2098.71,-205.76 2102.21,-215.76 2105.71,-205.76 2098.71,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2232.04,-181C2104.87,-181 1823,-181 1823,-181 1823,-181 1823,-205.76 1823,-205.76"/>
+<polygon fill="black" stroke="black" points="1819.5,-205.76 1823,-215.76 1826.5,-205.76 1819.5,-205.76"/>
 </g>
 <!-- BoardCopyService -->
 <g id="node16" class="node">
 <title>BoardCopyService</title>
-<ellipse fill="#fdb462" stroke="black" cx="4382" cy="-104" rx="84.53" ry="18"/>
-<text text-anchor="middle" x="4382" y="-99.8" font-family="Times,serif" font-size="14.00">BoardCopyService</text>
+<ellipse fill="#fdb462" stroke="black" cx="5213" cy="-104" rx="84.53" ry="18"/>
+<text text-anchor="middle" x="5213" y="-99.8" font-family="Times,serif" font-size="14.00">BoardCopyService</text>
 </g>
 <!-- BoardCopyService&#45;&gt;LearnroomModule -->
 <g id="edge15" class="edge">
 <title>BoardCopyService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4382,-122.27C4382,-140.56 4382,-166 4382,-166 4382,-166 2624.82,-166 2624.82,-166"/>
-<polygon fill="black" stroke="black" points="2624.82,-162.5 2614.82,-166 2624.82,-169.5 2624.82,-162.5"/>
+<path fill="none" stroke="black" d="M5213,-122.16C5213,-144.35 5213,-179 5213,-179 5213,-179 2363.99,-179 2363.99,-179"/>
+<polygon fill="black" stroke="black" points="2363.99,-175.5 2353.99,-179 2363.99,-182.5 2363.99,-175.5"/>
 </g>
 <!-- BoardNodeRepo -->
 <g id="node17" class="node">
 <title>BoardNodeRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="4204" cy="-104" rx="75.87" ry="18"/>
-<text text-anchor="middle" x="4204" y="-99.8" font-family="Times,serif" font-size="14.00">BoardNodeRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="5035" cy="-104" rx="75.87" ry="18"/>
+<text text-anchor="middle" x="5035" y="-99.8" font-family="Times,serif" font-size="14.00">BoardNodeRepo</text>
 </g>
 <!-- BoardNodeRepo&#45;&gt;LearnroomModule -->
 <g id="edge16" class="edge">
 <title>BoardNodeRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4204,-122C4204,-139.68 4204,-164 4204,-164 4204,-164 2625.17,-164 2625.17,-164"/>
-<polygon fill="black" stroke="black" points="2625.18,-160.5 2615.17,-164 2625.17,-167.5 2625.18,-160.5"/>
+<path fill="none" stroke="black" d="M5035,-122.04C5035,-143.66 5035,-177 5035,-177 5035,-177 2363.79,-177 2363.79,-177"/>
+<polygon fill="black" stroke="black" points="2363.79,-173.5 2353.79,-177 2363.79,-180.5 2363.79,-173.5"/>
 </g>
 <!-- ColumnBoardNodeRepo -->
 <g id="node18" class="node">
 <title>ColumnBoardNodeRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="4003" cy="-104" rx="107.11" ry="18"/>
-<text text-anchor="middle" x="4003" y="-99.8" font-family="Times,serif" font-size="14.00">ColumnBoardNodeRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="4834" cy="-104" rx="107.11" ry="18"/>
+<text text-anchor="middle" x="4834" y="-99.8" font-family="Times,serif" font-size="14.00">ColumnBoardNodeRepo</text>
 </g>
 <!-- ColumnBoardNodeRepo&#45;&gt;LearnroomModule -->
 <g id="edge17" class="edge">
 <title>ColumnBoardNodeRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M4003,-122.03C4003,-139.06 4003,-162 4003,-162 4003,-162 2624.88,-162 2624.88,-162"/>
-<polygon fill="black" stroke="black" points="2624.88,-158.5 2614.88,-162 2624.88,-165.5 2624.88,-158.5"/>
+<path fill="none" stroke="black" d="M4834,-122.28C4834,-143.32 4834,-175 4834,-175 4834,-175 2363.93,-175 2363.93,-175"/>
+<polygon fill="black" stroke="black" points="2363.93,-171.5 2353.93,-175 2363.93,-178.5 2363.93,-171.5"/>
 </g>
 <!-- CommonCartridgeExportService -->
 <g id="node19" class="node">
 <title>CommonCartridgeExportService</title>
-<ellipse fill="#fdb462" stroke="black" cx="3739" cy="-104" rx="138.89" ry="18"/>
-<text text-anchor="middle" x="3739" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeExportService</text>
+<ellipse fill="#fdb462" stroke="black" cx="4570" cy="-104" rx="138.89" ry="18"/>
+<text text-anchor="middle" x="4570" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeExportService</text>
 </g>
 <!-- CommonCartridgeExportService&#45;&gt;LearnroomModule -->
 <g id="edge18" class="edge">
 <title>CommonCartridgeExportService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M3739,-122.03C3739,-138.4 3739,-160 3739,-160 3739,-160 2624.8,-160 2624.8,-160"/>
-<polygon fill="black" stroke="black" points="2624.8,-156.5 2614.8,-160 2624.8,-163.5 2624.8,-156.5"/>
+<path fill="none" stroke="black" d="M4570,-122.13C4570,-142.57 4570,-173 4570,-173 4570,-173 2363.9,-173 2363.9,-173"/>
+<polygon fill="black" stroke="black" points="2363.9,-169.5 2353.9,-173 2363.9,-176.5 2363.9,-169.5"/>
 </g>
 <!-- CommonCartridgeFileValidatorPipe -->
 <g id="node20" class="node">
 <title>CommonCartridgeFileValidatorPipe</title>
-<ellipse fill="#fdb462" stroke="black" cx="3430" cy="-104" rx="152.22" ry="18"/>
-<text text-anchor="middle" x="3430" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeFileValidatorPipe</text>
+<ellipse fill="#fdb462" stroke="black" cx="4261" cy="-104" rx="152.22" ry="18"/>
+<text text-anchor="middle" x="4261" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeFileValidatorPipe</text>
 </g>
 <!-- CommonCartridgeFileValidatorPipe&#45;&gt;LearnroomModule -->
 <g id="edge19" class="edge">
 <title>CommonCartridgeFileValidatorPipe&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M3431.7,-122.28C3431.7,-137.95 3431.7,-158 3431.7,-158 3431.7,-158 2625.02,-158 2625.02,-158"/>
-<polygon fill="black" stroke="black" points="2625.02,-154.5 2615.02,-158 2625.02,-161.5 2625.02,-154.5"/>
+<path fill="none" stroke="black" d="M4261,-122.31C4261,-142.15 4261,-171 4261,-171 4261,-171 2363.78,-171 2363.78,-171"/>
+<polygon fill="black" stroke="black" points="2363.78,-167.5 2353.78,-171 2363.78,-174.5 2363.78,-167.5"/>
 </g>
 <!-- CommonCartridgeImportMapper -->
 <g id="node21" class="node">
 <title>CommonCartridgeImportMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="3120" cy="-104" rx="139.53" ry="18"/>
-<text text-anchor="middle" x="3120" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeImportMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="3951" cy="-104" rx="139.53" ry="18"/>
+<text text-anchor="middle" x="3951" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeImportMapper</text>
 </g>
 <!-- CommonCartridgeImportMapper&#45;&gt;LearnroomModule -->
 <g id="edge20" class="edge">
 <title>CommonCartridgeImportMapper&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M3019.26,-116.59C3019.26,-131.98 3019.26,-156 3019.26,-156 3019.26,-156 2624.82,-156 2624.82,-156"/>
-<polygon fill="black" stroke="black" points="2624.82,-152.5 2614.82,-156 2624.82,-159.5 2624.82,-152.5"/>
+<path fill="none" stroke="black" d="M3951,-122.17C3951,-141.09 3951,-168 3951,-168 3951,-168 2363.98,-168 2363.98,-168"/>
+<polygon fill="black" stroke="black" points="2363.98,-164.5 2353.98,-168 2363.98,-171.5 2363.98,-164.5"/>
 </g>
 <!-- CommonCartridgeImportService -->
 <g id="node22" class="node">
 <title>CommonCartridgeImportService</title>
-<ellipse fill="#fdb462" stroke="black" cx="2824" cy="-104" rx="138.88" ry="18"/>
-<text text-anchor="middle" x="2824" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeImportService</text>
+<ellipse fill="#fdb462" stroke="black" cx="3655" cy="-104" rx="138.88" ry="18"/>
+<text text-anchor="middle" x="3655" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeImportService</text>
 </g>
 <!-- CommonCartridgeImportService&#45;&gt;LearnroomModule -->
 <g id="edge21" class="edge">
 <title>CommonCartridgeImportService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M2695.19,-110.95C2695.19,-124.69 2695.19,-154 2695.19,-154 2695.19,-154 2625.11,-154 2625.11,-154"/>
-<polygon fill="black" stroke="black" points="2625.11,-150.5 2615.11,-154 2625.11,-157.5 2625.11,-150.5"/>
+<path fill="none" stroke="black" d="M3655,-122.27C3655,-140.56 3655,-166 3655,-166 3655,-166 2364.17,-166 2364.17,-166"/>
+<polygon fill="black" stroke="black" points="2364.17,-162.5 2354.17,-166 2364.17,-169.5 2364.17,-162.5"/>
 </g>
 <!-- CommonCartridgeMapper -->
 <g id="node23" class="node">
 <title>CommonCartridgeMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="2554" cy="-104" rx="113.47" ry="18"/>
-<text text-anchor="middle" x="2554" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="3385" cy="-104" rx="113.47" ry="18"/>
+<text text-anchor="middle" x="3385" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeMapper</text>
 </g>
 <!-- CommonCartridgeMapper&#45;&gt;LearnroomModule -->
 <g id="edge22" class="edge">
 <title>CommonCartridgeMapper&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M2554,-122.11C2554,-122.11 2554,-140.99 2554,-140.99"/>
-<polygon fill="black" stroke="black" points="2550.5,-140.99 2554,-150.99 2557.5,-140.99 2550.5,-140.99"/>
+<path fill="none" stroke="black" d="M3385,-122C3385,-139.68 3385,-164 3385,-164 3385,-164 2364.05,-164 2364.05,-164"/>
+<polygon fill="black" stroke="black" points="2364.05,-160.5 2354.05,-164 2364.05,-167.5 2364.05,-160.5"/>
 </g>
 <!-- CourseCopyService -->
 <g id="node24" class="node">
 <title>CourseCopyService</title>
-<ellipse fill="#fdb462" stroke="black" cx="2334" cy="-104" rx="88.04" ry="18"/>
-<text text-anchor="middle" x="2334" y="-99.8" font-family="Times,serif" font-size="14.00">CourseCopyService</text>
+<ellipse fill="#fdb462" stroke="black" cx="3165" cy="-104" rx="88.04" ry="18"/>
+<text text-anchor="middle" x="3165" y="-99.8" font-family="Times,serif" font-size="14.00">CourseCopyService</text>
 </g>
 <!-- CourseCopyService&#45;&gt;LearnroomModule -->
 <g id="edge23" class="edge">
 <title>CourseCopyService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M2417.41,-110.13C2417.41,-123.48 2417.41,-154 2417.41,-154 2417.41,-154 2482.9,-154 2482.9,-154"/>
-<polygon fill="black" stroke="black" points="2482.9,-157.5 2492.9,-154 2482.9,-150.5 2482.9,-157.5"/>
+<path fill="none" stroke="black" d="M3165,-122.03C3165,-139.06 3165,-162 3165,-162 3165,-162 2363.97,-162 2363.97,-162"/>
+<polygon fill="black" stroke="black" points="2363.97,-158.5 2353.97,-162 2363.97,-165.5 2363.97,-158.5"/>
 </g>
 <!-- CourseDoService -->
 <g id="node25" class="node">
 <title>CourseDoService</title>
-<ellipse fill="#fdb462" stroke="black" cx="2149" cy="-104" rx="79.29" ry="18"/>
-<text text-anchor="middle" x="2149" y="-99.8" font-family="Times,serif" font-size="14.00">CourseDoService</text>
+<ellipse fill="#fdb462" stroke="black" cx="2980" cy="-104" rx="79.29" ry="18"/>
+<text text-anchor="middle" x="2980" y="-99.8" font-family="Times,serif" font-size="14.00">CourseDoService</text>
 </g>
 <!-- CourseDoService&#45;&gt;LearnroomModule -->
 <g id="edge24" class="edge">
 <title>CourseDoService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M2190.54,-119.6C2190.54,-134.92 2190.54,-156 2190.54,-156 2190.54,-156 2483.17,-156 2483.17,-156"/>
-<polygon fill="black" stroke="black" points="2483.17,-159.5 2493.17,-156 2483.17,-152.5 2483.17,-159.5"/>
+<path fill="none" stroke="black" d="M2960.57,-121.72C2960.57,-138.12 2960.57,-160 2960.57,-160 2960.57,-160 2364.01,-160 2364.01,-160"/>
+<polygon fill="black" stroke="black" points="2364.01,-156.5 2354.01,-160 2364.01,-163.5 2364.01,-156.5"/>
 </g>
 <!-- CourseGroupRepo -->
 <g id="node26" class="node">
 <title>CourseGroupRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1968" cy="-104" rx="83.39" ry="18"/>
-<text text-anchor="middle" x="1968" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="2799" cy="-104" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="2799" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupRepo</text>
 </g>
 <!-- CourseGroupRepo&#45;&gt;LearnroomModule -->
 <g id="edge25" class="edge">
 <title>CourseGroupRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M2042.44,-112.44C2042.44,-127.62 2042.44,-158 2042.44,-158 2042.44,-158 2483.05,-158 2483.05,-158"/>
-<polygon fill="black" stroke="black" points="2483.05,-161.5 2493.05,-158 2483.05,-154.5 2483.05,-161.5"/>
+<path fill="none" stroke="black" d="M2756.42,-119.62C2756.42,-135.57 2756.42,-158 2756.42,-158 2756.42,-158 2364.06,-158 2364.06,-158"/>
+<polygon fill="black" stroke="black" points="2364.06,-154.5 2354.06,-158 2364.06,-161.5 2364.06,-154.5"/>
 </g>
 <!-- CourseGroupService -->
 <g id="node27" class="node">
 <title>CourseGroupService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1775" cy="-104" rx="92.04" ry="18"/>
-<text text-anchor="middle" x="1775" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupService</text>
+<ellipse fill="#fdb462" stroke="black" cx="2606" cy="-104" rx="92.04" ry="18"/>
+<text text-anchor="middle" x="2606" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupService</text>
 </g>
 <!-- CourseGroupService&#45;&gt;LearnroomModule -->
 <g id="edge26" class="edge">
 <title>CourseGroupService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M1775,-122.03C1775,-138.4 1775,-160 1775,-160 1775,-160 2483.2,-160 2483.2,-160"/>
-<polygon fill="black" stroke="black" points="2483.2,-163.5 2493.2,-160 2483.2,-156.5 2483.2,-163.5"/>
+<path fill="none" stroke="black" d="M2544.36,-117.39C2544.36,-132.8 2544.36,-156 2544.36,-156 2544.36,-156 2363.85,-156 2363.85,-156"/>
+<polygon fill="black" stroke="black" points="2363.85,-152.5 2353.85,-156 2363.85,-159.5 2363.85,-152.5"/>
 </g>
 <!-- CourseRepo -->
 <g id="node28" class="node">
 <title>CourseRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1606" cy="-104" rx="58.55" ry="18"/>
-<text text-anchor="middle" x="1606" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="2437" cy="-104" rx="58.55" ry="18"/>
+<text text-anchor="middle" x="2437" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRepo</text>
 </g>
 <!-- CourseRepo&#45;&gt;LearnroomModule -->
 <g id="edge27" class="edge">
 <title>CourseRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M1606,-122.03C1606,-139.06 1606,-162 1606,-162 1606,-162 2483.26,-162 2483.26,-162"/>
-<polygon fill="black" stroke="black" points="2483.26,-165.5 2493.26,-162 2483.26,-158.5 2483.26,-165.5"/>
+<path fill="none" stroke="black" d="M2401.67,-118.46C2401.67,-133.23 2401.67,-154 2401.67,-154 2401.67,-154 2364.01,-154 2364.01,-154"/>
+<polygon fill="black" stroke="black" points="2364.01,-150.5 2354.01,-154 2364.01,-157.5 2364.01,-150.5"/>
 </g>
 <!-- CourseService -->
 <g id="node29" class="node">
 <title>CourseService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1462" cy="-104" rx="67.19" ry="18"/>
-<text text-anchor="middle" x="1462" y="-99.8" font-family="Times,serif" font-size="14.00">CourseService</text>
+<ellipse fill="#fdb462" stroke="black" cx="2293" cy="-104" rx="67.19" ry="18"/>
+<text text-anchor="middle" x="2293" y="-99.8" font-family="Times,serif" font-size="14.00">CourseService</text>
 </g>
 <!-- CourseService&#45;&gt;LearnroomModule -->
 <g id="edge28" class="edge">
 <title>CourseService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M1462,-122C1462,-139.68 1462,-164 1462,-164 1462,-164 2482.95,-164 2482.95,-164"/>
-<polygon fill="black" stroke="black" points="2482.95,-167.5 2492.95,-164 2482.95,-160.5 2482.95,-167.5"/>
+<path fill="none" stroke="black" d="M2293,-122.11C2293,-122.11 2293,-140.99 2293,-140.99"/>
+<polygon fill="black" stroke="black" points="2289.5,-140.99 2293,-150.99 2296.5,-140.99 2289.5,-140.99"/>
 </g>
 <!-- DashboardElementRepo -->
 <g id="node30" class="node">
 <title>DashboardElementRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1271" cy="-104" rx="105.36" ry="18"/>
-<text text-anchor="middle" x="1271" y="-99.8" font-family="Times,serif" font-size="14.00">DashboardElementRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="2102" cy="-104" rx="105.36" ry="18"/>
+<text text-anchor="middle" x="2102" y="-99.8" font-family="Times,serif" font-size="14.00">DashboardElementRepo</text>
 </g>
 <!-- DashboardElementRepo&#45;&gt;LearnroomModule -->
 <g id="edge29" class="edge">
 <title>DashboardElementRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M1271,-122.27C1271,-140.56 1271,-166 1271,-166 1271,-166 2482.98,-166 2482.98,-166"/>
-<polygon fill="black" stroke="black" points="2482.98,-169.5 2492.98,-166 2482.98,-162.5 2482.98,-169.5"/>
+<path fill="none" stroke="black" d="M2179.49,-116.36C2179.49,-131.17 2179.49,-154 2179.49,-154 2179.49,-154 2221.93,-154 2221.93,-154"/>
+<polygon fill="black" stroke="black" points="2221.93,-157.5 2231.93,-154 2221.93,-150.5 2221.93,-157.5"/>
 </g>
 <!-- DashboardModelMapper -->
 <g id="node31" class="node">
 <title>DashboardModelMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="1039" cy="-104" rx="108.21" ry="18"/>
-<text text-anchor="middle" x="1039" y="-99.8" font-family="Times,serif" font-size="14.00">DashboardModelMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="1870" cy="-104" rx="108.21" ry="18"/>
+<text text-anchor="middle" x="1870" y="-99.8" font-family="Times,serif" font-size="14.00">DashboardModelMapper</text>
 </g>
 <!-- DashboardModelMapper&#45;&gt;LearnroomModule -->
 <g id="edge30" class="edge">
 <title>DashboardModelMapper&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M1039,-122.17C1039,-141.09 1039,-168 1039,-168 1039,-168 2483.21,-168 2483.21,-168"/>
-<polygon fill="black" stroke="black" points="2483.21,-171.5 2493.21,-168 2483.21,-164.5 2483.21,-171.5"/>
+<path fill="none" stroke="black" d="M1935.02,-118.48C1935.02,-133.87 1935.02,-156 1935.02,-156 1935.02,-156 2221.87,-156 2221.87,-156"/>
+<polygon fill="black" stroke="black" points="2221.87,-159.5 2231.87,-156 2221.87,-152.5 2221.87,-159.5"/>
 </g>
 <!-- DashboardService -->
 <g id="node32" class="node">
 <title>DashboardService</title>
-<ellipse fill="#fdb462" stroke="black" cx="831" cy="-104" rx="81.64" ry="18"/>
-<text text-anchor="middle" x="831" y="-99.8" font-family="Times,serif" font-size="14.00">DashboardService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1662" cy="-104" rx="81.64" ry="18"/>
+<text text-anchor="middle" x="1662" y="-99.8" font-family="Times,serif" font-size="14.00">DashboardService</text>
 </g>
 <!-- DashboardService&#45;&gt;LearnroomModule -->
 <g id="edge31" class="edge">
 <title>DashboardService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M831,-122.31C831,-142.15 831,-171 831,-171 831,-171 2483.18,-171 2483.18,-171"/>
-<polygon fill="black" stroke="black" points="2483.18,-174.5 2493.18,-171 2483.18,-167.5 2483.18,-174.5"/>
+<path fill="none" stroke="black" d="M1662,-122.28C1662,-137.95 1662,-158 1662,-158 1662,-158 2222.21,-158 2222.21,-158"/>
+<polygon fill="black" stroke="black" points="2222.21,-161.5 2232.21,-158 2222.21,-154.5 2222.21,-161.5"/>
 </g>
 <!-- GroupDeletedHandlerService -->
 <g id="node33" class="node">
 <title>GroupDeletedHandlerService</title>
-<ellipse fill="#fdb462" stroke="black" cx="605" cy="-104" rx="125.58" ry="18"/>
-<text text-anchor="middle" x="605" y="-99.8" font-family="Times,serif" font-size="14.00">GroupDeletedHandlerService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1436" cy="-104" rx="125.58" ry="18"/>
+<text text-anchor="middle" x="1436" y="-99.8" font-family="Times,serif" font-size="14.00">GroupDeletedHandlerService</text>
 </g>
 <!-- GroupDeletedHandlerService&#45;&gt;LearnroomModule -->
 <g id="edge32" class="edge">
 <title>GroupDeletedHandlerService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M605,-122.13C605,-142.57 605,-173 605,-173 605,-173 2482.99,-173 2482.99,-173"/>
-<polygon fill="black" stroke="black" points="2482.99,-176.5 2492.99,-173 2482.99,-169.5 2482.99,-176.5"/>
+<path fill="none" stroke="black" d="M1436,-122.03C1436,-138.4 1436,-160 1436,-160 1436,-160 2222.05,-160 2222.05,-160"/>
+<polygon fill="black" stroke="black" points="2222.05,-163.5 2232.05,-160 2222.05,-156.5 2222.05,-163.5"/>
 </g>
 <!-- LegacyBoardRepo -->
 <g id="node34" class="node">
 <title>LegacyBoardRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="378" cy="-104" rx="83.37" ry="18"/>
-<text text-anchor="middle" x="378" y="-99.8" font-family="Times,serif" font-size="14.00">LegacyBoardRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1209" cy="-104" rx="83.37" ry="18"/>
+<text text-anchor="middle" x="1209" y="-99.8" font-family="Times,serif" font-size="14.00">LegacyBoardRepo</text>
 </g>
 <!-- LegacyBoardRepo&#45;&gt;LearnroomModule -->
 <g id="edge33" class="edge">
 <title>LegacyBoardRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M378,-122.28C378,-143.32 378,-175 378,-175 378,-175 2483.24,-175 2483.24,-175"/>
-<polygon fill="black" stroke="black" points="2483.24,-178.5 2493.24,-175 2483.24,-171.5 2483.24,-178.5"/>
+<path fill="none" stroke="black" d="M1209,-122.03C1209,-139.06 1209,-162 1209,-162 1209,-162 2222.01,-162 2222.01,-162"/>
+<polygon fill="black" stroke="black" points="2222.01,-165.5 2232.01,-162 2222.01,-158.5 2222.01,-165.5"/>
 </g>
 <!-- RoomsService -->
 <g id="node35" class="node">
 <title>RoomsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="209" cy="-104" rx="67.21" ry="18"/>
-<text text-anchor="middle" x="209" y="-99.8" font-family="Times,serif" font-size="14.00">RoomsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1040" cy="-104" rx="67.21" ry="18"/>
+<text text-anchor="middle" x="1040" y="-99.8" font-family="Times,serif" font-size="14.00">RoomsService</text>
 </g>
 <!-- RoomsService&#45;&gt;LearnroomModule -->
 <g id="edge34" class="edge">
 <title>RoomsService&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M209,-122.04C209,-143.66 209,-177 209,-177 209,-177 2483.08,-177 2483.08,-177"/>
-<polygon fill="black" stroke="black" points="2483.08,-180.5 2493.08,-177 2483.08,-173.5 2483.08,-180.5"/>
+<path fill="none" stroke="black" d="M1040,-122C1040,-139.68 1040,-164 1040,-164 1040,-164 2222.14,-164 2222.14,-164"/>
+<polygon fill="black" stroke="black" points="2222.14,-167.5 2232.14,-164 2222.14,-160.5 2222.14,-167.5"/>
 </g>
 <!-- UserRepo -->
 <g id="node36" class="node">
 <title>UserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="74" cy="-104" rx="49.8" ry="18"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="905" cy="-104" rx="49.8" ry="18"/>
+<text text-anchor="middle" x="905" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
 </g>
 <!-- UserRepo&#45;&gt;LearnroomModule -->
 <g id="edge35" class="edge">
 <title>UserRepo&#45;&gt;LearnroomModule</title>
-<path fill="none" stroke="black" d="M74,-122.16C74,-144.35 74,-179 74,-179 74,-179 2483,-179 2483,-179"/>
-<polygon fill="black" stroke="black" points="2483,-182.5 2493,-179 2483,-175.5 2483,-182.5"/>
+<path fill="none" stroke="black" d="M905,-122.27C905,-140.56 905,-166 905,-166 905,-166 2222.02,-166 2222.02,-166"/>
+<polygon fill="black" stroke="black" points="2222.02,-169.5 2232.02,-166 2222.02,-162.5 2222.02,-169.5"/>
 </g>
 </g>
 </svg>
