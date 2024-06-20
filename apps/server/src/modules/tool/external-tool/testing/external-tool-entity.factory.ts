@@ -76,10 +76,10 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, E
 	withMedium(medium?: ExternalToolMediumEntity): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
 			medium: new ExternalToolMediumEntity({
-				...medium,
 				mediumId: 'mediumId',
 				publisher: 'publisher',
 				mediaSourceId: 'mediaSourceId',
+				...medium,
 			}),
 		};
 

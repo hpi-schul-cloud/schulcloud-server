@@ -4,7 +4,7 @@ import {
 	RichTextElement,
 	SubmissionItem,
 	UserWithBoardRoles,
-} from '@shared/domain/domainobject';
+} from '../../domain';
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 

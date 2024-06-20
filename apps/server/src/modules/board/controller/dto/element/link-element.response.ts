@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain/domainobject';
+import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class LinkElementContent {

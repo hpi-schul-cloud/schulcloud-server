@@ -12,10 +12,13 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaAvailableLine, MediaBoard, MediaExternalToolElement, Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { mediaBoardFactory, mediaExternalToolElementFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
+import { mediaBoardFactory, mediaExternalToolElementFactory } from '@modules/board/testing';
+import { Page } from '@shared/domain/domainobject';
+import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
+import { MediaBoardService } from './media-board.service';
 
 describe(MediaAvailableLineService.name, () => {
 	let module: TestingModule;
@@ -25,6 +28,7 @@ describe(MediaAvailableLineService.name, () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
+	let mediaBoardService: DeepMocked<MediaBoardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,6 +50,10 @@ describe(MediaAvailableLineService.name, () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
+				{
+					provide: MediaBoardService,
+					useValue: createMock<MediaBoardService>(),
+				},
 			],
 		}).compile();
 
@@ -54,6 +62,7 @@ describe(MediaAvailableLineService.name, () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
+		mediaBoardService = module.get(MediaBoardService);
 
 		await setupEntities();
 	});
@@ -85,13 +94,15 @@ describe(MediaAvailableLineService.name, () => {
 				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build({
 					contextExternalToolId: usedContextExternalTool.id,
 				});
-				const board: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+				const board: MediaBoard = mediaBoardFactory.build({ children: [mediaExternalToolElement] });
 
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool,
 					usedSchoolExternalTool,
 				]);
 				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
+
+				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
 				return { user, board, mediaExternalToolElement, schoolExternalTool };
 			};
@@ -152,12 +163,12 @@ describe(MediaAvailableLineService.name, () => {
 						contextExternalToolId: new ObjectId().toHexString(),
 					}
 				);
-				const board: MediaBoard = mediaBoardFactory
-					.addChild(mediaExternalToolElement)
-					.addChild(mediaExternalToolElementWithDeletedTool)
-					.build();
+				const board: MediaBoard = mediaBoardFactory.build({
+					children: [mediaExternalToolElement, mediaExternalToolElementWithDeletedTool],
+				});
+				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool,
 					usedSchoolExternalTool,
 				]);
@@ -370,8 +381,8 @@ describe(MediaAvailableLineService.name, () => {
 						logoUrl: undefined,
 					},
 				],
-				backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
-				collapsed: mediaBoard.mediaAvailableLineCollapsed,
+				backgroundColor: mediaBoard.backgroundColor,
+				collapsed: mediaBoard.collapsed,
 			});
 		});
 	});

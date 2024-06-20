@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardLayout } from '@shared/domain/domainobject';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
+import { BoardLayout } from '@src/modules/board';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { ColumnBoardMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';

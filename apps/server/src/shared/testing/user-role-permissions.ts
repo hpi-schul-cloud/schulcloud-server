@@ -145,4 +145,4 @@ export const adminPermissions = [
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
 ];
 
-export const superheroPermissions = [Permission.USER_LOGIN_MIGRATION_ROLLBACK];
+export const superheroPermissions = [Permission.USER_LOGIN_MIGRATION_ROLLBACK, Permission.INSTANCE_VIEW];

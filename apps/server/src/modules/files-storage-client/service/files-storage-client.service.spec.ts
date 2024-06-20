@@ -10,6 +10,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing';
@@ -74,8 +75,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
@@ -98,8 +99,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 

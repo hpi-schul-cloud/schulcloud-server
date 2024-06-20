@@ -5,7 +5,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IImportUserRoleName, ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { MatchCreatorScope } from '@shared/domain/types';
-import { cleanupCollections, importUserFactory, schoolEntityFactory, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	createCollections,
+	importUserFactory,
+	schoolEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
@@ -29,6 +35,8 @@ describe('ImportUserRepo', () => {
 		repo = module.get(ImportUserRepo);
 		em = module.get(EntityManager);
 		orm = module.get(MikroORM);
+
+		await createCollections(em);
 	});
 
 	afterAll(async () => {

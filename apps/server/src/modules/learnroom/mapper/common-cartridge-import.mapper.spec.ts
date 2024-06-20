@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
-import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
+import { ContentElementType } from '@modules/board/domain';
+import { LinkContentBody, RichTextContentBody } from '@modules/board/controller/dto';
 import {
 	CommonCartridgeImportResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceTypeV1P1,
-} from '@src/modules/common-cartridge';
+} from '@modules/common-cartridge';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
@@ -56,7 +56,7 @@ describe('CommonCartridgeImportMapper', () => {
 
 				const result = sut.mapOrganizationToColumn(organization);
 
-				expect(result).toEqual<ColumnInitProps>({
+				expect(result).toEqual({
 					title: organization.title,
 				});
 			});
@@ -72,7 +72,7 @@ describe('CommonCartridgeImportMapper', () => {
 
 				const result = sut.mapOrganizationToCard(organization);
 
-				expect(result).toEqual<CardInitProps>({
+				expect(result).toEqual({
 					title: organization.title,
 					height: 150,
 				});
@@ -87,7 +87,7 @@ describe('CommonCartridgeImportMapper', () => {
 
 				const result = sut.mapOrganizationToCard(organization, false);
 
-				expect(result).toEqual<CardInitProps>({
+				expect(result).toEqual({
 					title: '',
 					height: 150,
 				});

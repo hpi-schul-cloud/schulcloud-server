@@ -1,7 +1,7 @@
 import { CustomLtiPropertyDO } from '@shared/domain/domainobject/ltitool.do';
 import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain/entity';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
+import { BaseFactory } from './base.factory';
 
 class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
 	withName(name: string): this {

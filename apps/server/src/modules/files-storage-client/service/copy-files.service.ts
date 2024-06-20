@@ -1,4 +1,5 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CopyFileDto } from '../dto';
@@ -23,8 +24,8 @@ export class CopyFilesService {
 		fileUrlReplacements: FileUrlReplacement[];
 		fileCopyStatus: CopyStatus;
 	}> {
-		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
-		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
+		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity, StorageLocation.SCHOOL);
+		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity, StorageLocation.SCHOOL);
 		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const fileDtos = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);

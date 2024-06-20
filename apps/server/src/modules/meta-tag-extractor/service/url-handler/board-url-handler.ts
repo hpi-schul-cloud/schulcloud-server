@@ -1,7 +1,6 @@
-import { ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';

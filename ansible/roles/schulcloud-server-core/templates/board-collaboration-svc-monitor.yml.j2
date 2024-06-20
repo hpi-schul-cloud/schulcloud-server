@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: board-collaboration-svc-monitor
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: board-collaboration
+spec:
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: in
+        values:
+          - board-collaboration-svc
+  endpoints:
+  - path: /metrics
+    port: api-metrics

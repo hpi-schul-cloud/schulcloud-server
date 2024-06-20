@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
-	LegacyBoard,
 	ColumnboardBoardElement,
 	Course,
+	LegacyBoard,
 	LessonBoardElement,
 	TaskBoardElement,
 } from '@shared/domain/entity';

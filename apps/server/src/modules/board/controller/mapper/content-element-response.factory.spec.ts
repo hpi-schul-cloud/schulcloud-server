@@ -5,7 +5,7 @@ import {
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
-} from '@shared/testing';
+} from '../../testing';
 import {
 	FileElementResponse,
 	LinkElementResponse,

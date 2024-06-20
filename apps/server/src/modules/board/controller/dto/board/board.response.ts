@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { BoardLayout } from '@shared/domain/domainobject';
-import { ColumnResponse } from './column.response';
+import { BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
+import { ColumnResponse } from './column.response';
 
 export class BoardResponse {
 	constructor({ id, title, columns, timestamps, isVisible, layout }: BoardResponse) {

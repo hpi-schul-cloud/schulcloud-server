@@ -37,6 +37,13 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: File Storage Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
   - name: Admin Api ingress
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -321,4 +328,11 @@
       namespace: "{{ NAMESPACE }}"
       template: board-collaboration-ingress.yml.j2
       apply: yes
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaborationServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: '{{ NAMESPACE }}'
+      template: board-collaboration-svc-monitor.yml.j2
       state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"

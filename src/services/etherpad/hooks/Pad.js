@@ -11,7 +11,7 @@ const restrictOldPadsToCourse = async (context) => {
 	if (typeof context.data.oldPadId === 'undefined') {
 		return context;
 	}
-	const oldPadURI = Configuration.get('ETHERPAD_OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
+	const oldPadURI = Configuration.get('ETHERPAD__OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
 	try {
 		const lessonsService = context.app.service('/lessons');
 		const foundLessons = await lessonsService.find({
@@ -58,12 +58,12 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
-		  globalHooks.hasPermission(['TOOL_CREATE', 'TOOL_CREATE_ETHERPAD']),
-			injectCourseId,
-			globalHooks.restrictToUsersOwnCourses,
-			getGroupData,
-			restrictOldPadsToCourse,
-	  ],
+		globalHooks.hasPermission(['TOOL_CREATE', 'TOOL_CREATE_ETHERPAD']),
+		injectCourseId,
+		globalHooks.restrictToUsersOwnCourses,
+		getGroupData,
+		restrictOldPadsToCourse,
+	],
 	update: [disallow()],
 	patch: [disallow()],
 	remove: [disallow()],

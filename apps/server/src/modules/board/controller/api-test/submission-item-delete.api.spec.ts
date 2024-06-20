@@ -1,20 +1,17 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { SubmissionItemNode } from '@shared/domain/entity';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	submissionContainerElementNodeFactory,
-	submissionItemNodeFactory,
-} from '@shared/testing';
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	submissionContainerElementEntityFactory,
+	submissionItemEntityFactory,
+} from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/board-submissions';
@@ -46,18 +43,17 @@ describe('submission item delete (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
-			const submissionItemNode = submissionItemNodeFactory.buildWithId({
-				userId: 'foo',
-				parent: submissionContainerNode,
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
+				userId: new ObjectId().toHexString(),
 				completed: true,
 			});
 
@@ -80,7 +76,7 @@ describe('submission item delete (api)', () => {
 
 			await loggedInClient.delete(`${submissionItemNode.id}`);
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});
@@ -93,19 +89,18 @@ describe('submission item delete (api)', () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			const submissionItemNode = submissionItemNodeFactory.buildWithId({
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: studentUser.id,
-				parent: submissionContainerNode,
 				completed: true,
 			});
 
@@ -130,7 +125,7 @@ describe('submission item delete (api)', () => {
 
 			const submissionItemResponse = response.body as SubmissionItemResponse;
 
-			await expect(em.findOneOrFail(SubmissionItemNode, submissionItemResponse.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, submissionItemResponse.id)).rejects.toThrow();
 		});
 	});
 
@@ -143,19 +138,18 @@ describe('submission item delete (api)', () => {
 			const course = courseFactory.build({ students: [studentUser, studentUser2] });
 			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			const submissionItemNode = submissionItemNodeFactory.buildWithId({
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: studentUser.id,
-				parent: submissionContainerNode,
 				completed: true,
 			});
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
@@ -178,7 +172,7 @@ describe('submission item delete (api)', () => {
 
 			await loggedInClient.delete(`${submissionItemNode.id}`);
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});
@@ -192,19 +186,18 @@ describe('submission item delete (api)', () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			const submissionItemNode = submissionItemNodeFactory.buildWithId({
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: studentUser.id,
-				parent: submissionContainerNode,
 				completed: true,
 			});
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
@@ -228,7 +221,7 @@ describe('submission item delete (api)', () => {
 
 			await loggedInClient.delete(`${submissionItemNode.id}`);
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});
