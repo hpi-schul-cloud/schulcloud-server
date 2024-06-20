@@ -78,12 +78,12 @@ const firstLogin = async (data, params, app) => {
 	}
 
 	// email
-	if (data['student-email']) {
-		if (!constants.expressions.email.test(data['student-email'])) {
-			throw new Error('Bitte eine valide E-Mail-Adresse eingeben.');
-		}
-		userUpdate.email = data['student-email'];
-	}
+	// if (data['student-email']) {
+	// 	if (!constants.expressions.email.test(data['student-email'])) {
+	// 		throw new Error('Bitte eine valide E-Mail-Adresse eingeben.');
+	// 	}
+	// 	userUpdate.email = data['student-email'];
+	// }
 
 	// TODO: consent also part of user now, why not patch by this request. Is the third parameter really needed?
 	userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
