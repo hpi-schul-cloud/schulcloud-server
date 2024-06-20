@@ -61,6 +61,14 @@ export class AccountServiceDb {
 		return account;
 	}
 
+	async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
+		const internalId = await this.getInternalId(accountId);
+		const account = await this.accountRepo.findById(internalId);
+		account.lastLogin = lastLogin;
+		await this.accountRepo.save(account);
+		return account;
+	}
+
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
