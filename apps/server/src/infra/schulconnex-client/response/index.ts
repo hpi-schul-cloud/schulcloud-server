@@ -14,4 +14,5 @@ export { SchulconnexAnschriftResponse } from './schulconnex-anschrift-response';
 export { SchulconnexResponseValidationGroups } from './schulconnex-response-validation-groups';
 export { SchulconnexErreichbarkeitenResponse } from './schulconnex-erreichbarkeiten-response';
 export { SchulconnexCommunicationType } from './schulconnex-communication-type';
+export { SchulconnexLaufzeitResponse } from './schulconnex-laufzeit-response';
 export * from './lizenz-info';
