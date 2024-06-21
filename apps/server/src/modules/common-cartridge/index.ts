@@ -1,7 +1,9 @@
 export {
+	CommonCartridgeFileBuilder,
 	CommonCartridgeFileBuilderProps,
 	CommonCartridgeOrganizationProps,
 } from './export/builders/common-cartridge-file-builder';
+export { CommonCartridgeOrganizationNode } from './export/builders/common-cartridge-organization-node';
 export {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
@@ -17,6 +19,8 @@ export {
 	CommonCartridgeFileParserOptions,
 	CommonCartridgeOrganizationProps as CommonCartridgeImportOrganizationProps,
 	CommonCartridgeResourceProps as CommonCartridgeImportResourceProps,
+	CommonCartridgeWebContentResourceProps as CommonCartridgeImportWebContentResourceProps,
+	CommonCartridgeWebLinkResourceProps as CommonCartridgeImportWebLinkResourceProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from './import/common-cartridge-import.types';
 export { CommonCartridgeImportUtils } from './import/utils/common-cartridge-import-utils';
