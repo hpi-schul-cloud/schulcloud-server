@@ -9,6 +9,7 @@ import { LoggerModule } from '@src/core/logger';
 import { UserLoginMigrationRollbackController } from './controller/user-login-migration-rollback.controller';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
 import {
+	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
@@ -36,6 +37,7 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 		ToggleUserLoginMigrationUc,
 		CloseUserLoginMigrationUc,
 		UserLoginMigrationRollbackUc,
+		CloseMigrationWizardUc,
 	],
 	controllers: [UserLoginMigrationController, UserLoginMigrationRollbackController],
 })
