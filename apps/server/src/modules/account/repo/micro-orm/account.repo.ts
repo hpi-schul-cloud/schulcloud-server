@@ -3,15 +3,16 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { AccountEntity } from '../../domain/entity/account.entity';
-import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { LegacyLogger } from '@src/core/logger';
 import { Account } from '../../domain/account';
+import { AccountEntity } from '../../domain/entity/account.entity';
 import { AccountEntityToDoMapper } from './mapper';
+import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 import { AccountScope } from './scope/account-scope';
 
 @Injectable()
 export class AccountRepo {
-	constructor(private readonly em: EntityManager) {}
+	constructor(private readonly em: EntityManager, private readonly logger: LegacyLogger) {}
 
 	get entityName() {
 		return AccountEntity;
@@ -20,6 +21,9 @@ export class AccountRepo {
 	public async save(account: Account): Promise<Account> {
 		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
 		const existing = await this.em.findOne(AccountEntity, { id: account.id });
+
+		this.logger.debug('existing', JSON.stringify(existing));
+		this.logger.debug('Saving account', JSON.stringify(saveEntity));
 
 		let saved: AccountEntity;
 		if (existing) {

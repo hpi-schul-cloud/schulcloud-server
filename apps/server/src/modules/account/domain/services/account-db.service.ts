@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
@@ -15,7 +16,8 @@ export class AccountServiceDb {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<AccountConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>,
+		private readonly logger: LegacyLogger
 	) {}
 
 	async findById(id: EntityId): Promise<Account> {
@@ -62,6 +64,7 @@ export class AccountServiceDb {
 	}
 
 	async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
+		this.logger.debug(`Updating last login for ${accountId} to ${lastLogin.toISOString()}`);
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lastLogin = lastLogin;
