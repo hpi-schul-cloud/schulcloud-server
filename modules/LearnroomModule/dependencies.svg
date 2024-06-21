@@ -28,13 +28,13 @@
 <title>cluster_LearnroomModule_providers</title>
 <polygon fill="none" stroke="black" points="847,-78 847,-130 5306,-130 5306,-78 847,-78"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_LearnroomModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 839,-130 839,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_LearnroomModule_exports</title>
 <polygon fill="none" stroke="black" points="1764,-208 1764,-260 3028,-260 3028,-208 1764,-208"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_LearnroomModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 839,-130 839,-78 16,-78"/>
 </g>
 <!-- ContextExternalToolModule -->
 <g id="node1" class="node">
