@@ -196,7 +196,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLinkContentElementBody(resource: <a href="../undefineds/CommonCartridgeWebLinkResourceProps.html" target="_self">CommonCartridgeWebLinkResourceProps</a>)</code>
+                    <code>createLinkContentElementBody(resource: CommonCartridgeImportWebLinkResourceProps)</code>
                 </td>
             </tr>
 
@@ -227,7 +227,7 @@
                                         <tr>
                                                 <td>resource</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeWebLinkResourceProps" target="_self" >CommonCartridgeWebLinkResourceProps</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeWebLinkResourceProps" target="_self" >CommonCartridgeImportWebLinkResourceProps</a></code>
                                             </td>
 
                                             <td>
@@ -265,7 +265,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createWebContentElementBody(resource: <a href="../undefineds/CommonCartridgeWebContentResourceProps.html" target="_self">CommonCartridgeWebContentResourceProps</a>)</code>
+                    <code>createWebContentElementBody(resource: CommonCartridgeImportWebContentResourceProps)</code>
                 </td>
             </tr>
 
@@ -296,7 +296,7 @@
                                         <tr>
                                                 <td>resource</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeWebContentResourceProps" target="_self" >CommonCartridgeWebContentResourceProps</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeWebContentResourceProps" target="_self" >CommonCartridgeImportWebContentResourceProps</a></code>
                                             </td>
 
                                             <td>
@@ -558,7 +558,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapResourceToContentElementBody(resource: <a href="../undefineds/CommonCartridgeResourceProps.html" target="_self">CommonCartridgeResourceProps</a>)</code>
+                    <code>mapResourceToContentElementBody(resource: CommonCartridgeImportResourceProps)</code>
                 </td>
             </tr>
 
@@ -589,7 +589,7 @@
                                         <tr>
                                                 <td>resource</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeResourceProps" target="_self" >CommonCartridgeResourceProps</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeResourceProps" target="_self" >CommonCartridgeImportResourceProps</a></code>
                                             </td>
 
                                             <td>
@@ -687,16 +687,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ContentElementType } from &#x27;@modules/board/domain&#x27;;
-import { InputFormat } from &#x27;@shared/domain/types&#x27;;
-import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from &#x27;@modules/board/controller/dto&#x27;;
-import { CommonCartridgeOrganizationProps, CommonCartridgeResourceTypeV1P1 } from &#x27;@modules/common-cartridge&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AnyElementContentBody, ContentElementType, LinkContentBody, RichTextContentBody } from &#x27;@modules/board&#x27;;
 import {
-	CommonCartridgeResourceProps,
-	CommonCartridgeWebContentResourceProps,
-	CommonCartridgeWebLinkResourceProps,
-} from &#x27;@src/modules/common-cartridge/import/common-cartridge-import.types&#x27;;
+	CommonCartridgeImportResourceProps,
+	CommonCartridgeImportWebContentResourceProps,
+	CommonCartridgeImportWebLinkResourceProps,
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceTypeV1P1,
+} from &#x27;@modules/common-cartridge&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 
 @Injectable()
 export class CommonCartridgeImportMapper {
@@ -734,7 +734,7 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	public mapResourceToContentElementBody(resource: CommonCartridgeResourceProps): AnyElementContentBody {
+	public mapResourceToContentElementBody(resource: CommonCartridgeImportResourceProps): AnyElementContentBody {
 		switch (resource.type) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createLinkContentElementBody(resource);
@@ -745,7 +745,7 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	private createLinkContentElementBody(resource: CommonCartridgeWebLinkResourceProps): AnyElementContentBody {
+	private createLinkContentElementBody(resource: CommonCartridgeImportWebLinkResourceProps): AnyElementContentBody {
 		const body &#x3D; new LinkContentBody();
 
 		body.title &#x3D; resource.title;
@@ -754,7 +754,7 @@ export class CommonCartridgeImportMapper {
 		return body;
 	}
 
-	private createWebContentElementBody(resource: CommonCartridgeWebContentResourceProps): AnyElementContentBody {
+	private createWebContentElementBody(resource: CommonCartridgeImportWebContentResourceProps): AnyElementContentBody {
 		const body &#x3D; new RichTextContentBody();
 
 		body.text &#x3D; resource.html;

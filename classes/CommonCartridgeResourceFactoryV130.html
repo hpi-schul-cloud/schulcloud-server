@@ -243,8 +243,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeResourceType } from &#x27;../../common-cartridge.enums&#x27;;
+import { ResourceTypeNotSupportedLoggableException } from &#x27;../../errors&#x27;;
 import { CommonCartridgeResource } from &#x27;../../interfaces&#x27;;
-import { createResourceTypeNotSupportedError } from &#x27;../../utils&#x27;;
 import {
 	CommonCartridgeManifestResourcePropsV130,
 	CommonCartridgeManifestResourceV130,
@@ -275,7 +275,7 @@ export class CommonCartridgeResourceFactoryV130 {
 			case CommonCartridgeResourceType.WEB_LINK:
 				return new CommonCartridgeWebLinkResourceV130(props);
 			default:
-				throw createResourceTypeNotSupportedError(type);
+				throw new ResourceTypeNotSupportedLoggableException(type);
 		}
 	}
 }

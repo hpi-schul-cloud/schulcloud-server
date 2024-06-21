@@ -185,8 +185,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/common-cartridge-element-factory.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/common-cartridge-element-factory.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -243,8 +243,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeVersion } from &#x27;../common-cartridge.enums&#x27;;
+import { VersionNotSupportedLoggableException } from &#x27;../errors&#x27;;
 import { CommonCartridgeElement } from &#x27;../interfaces&#x27;;
-import { OmitVersionAndFolder, createVersionNotSupportedError } from &#x27;../utils&#x27;;
+import { OmitVersionAndFolder } from &#x27;../utils&#x27;;
 import {
 	CommonCartridgeElementFactoryV110,
 	CommonCartridgeMetadataElementPropsV110,
@@ -290,7 +291,7 @@ export class CommonCartridgeElementFactory {
 			case CommonCartridgeVersion.V_1_3_0:
 				return CommonCartridgeElementFactoryV130.createElement(props);
 			default:
-				throw createVersionNotSupportedError(version);
+				throw new VersionNotSupportedLoggableException(version);
 		}
 	}
 }

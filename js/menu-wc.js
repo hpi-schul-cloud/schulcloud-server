@@ -1789,13 +1789,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/LearnroomModule.html" data-type="entity-link" >LearnroomModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-LearnroomModule-1e8a0a963b86266fe88b1254f1351e0e2664dff103e33a38fb8fc23ee90c8bd40024ab89f19bfb806be7742e56b6ec9930066523cd695b4f02811f716320705f"' : 'data-bs-target="#xs-injectables-links-module-LearnroomModule-1e8a0a963b86266fe88b1254f1351e0e2664dff103e33a38fb8fc23ee90c8bd40024ab89f19bfb806be7742e56b6ec9930066523cd695b4f02811f716320705f"' }>
+                                        'data-bs-target="#injectables-links-module-LearnroomModule-e92aa04ed0e85cef44111e6a18c476f7ec2d68139abb07447147f6325d027252b1e8330c2a51dc0992b785c05d327dd39e3b1c489f337441e73b173765f2e048"' : 'data-bs-target="#xs-injectables-links-module-LearnroomModule-e92aa04ed0e85cef44111e6a18c476f7ec2d68139abb07447147f6325d027252b1e8330c2a51dc0992b785c05d327dd39e3b1c489f337441e73b173765f2e048"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LearnroomModule-1e8a0a963b86266fe88b1254f1351e0e2664dff103e33a38fb8fc23ee90c8bd40024ab89f19bfb806be7742e56b6ec9930066523cd695b4f02811f716320705f"' :
-                                        'id="xs-injectables-links-module-LearnroomModule-1e8a0a963b86266fe88b1254f1351e0e2664dff103e33a38fb8fc23ee90c8bd40024ab89f19bfb806be7742e56b6ec9930066523cd695b4f02811f716320705f"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LearnroomModule-e92aa04ed0e85cef44111e6a18c476f7ec2d68139abb07447147f6325d027252b1e8330c2a51dc0992b785c05d327dd39e3b1c489f337441e73b173765f2e048"' :
+                                        'id="xs-injectables-links-module-LearnroomModule-e92aa04ed0e85cef44111e6a18c476f7ec2d68139abb07447147f6325d027252b1e8330c2a51dc0992b785c05d327dd39e3b1c489f337441e73b173765f2e048"' }>
                                         <li class="link">
                                             <a href="injectables/BoardCopyService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardCopyService</a>
                                         </li>
@@ -1804,6 +1804,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/ColumnBoardNodeRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" class="deprecated-name">ColumnBoardNodeRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/CommonCartridgeExportMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeExportMapper</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CommonCartridgeExportService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeExportService</a>
@@ -1816,9 +1819,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CommonCartridgeImportService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeImportService</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/CommonCartridgeMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeMapper</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CourseCopyService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CourseCopyService</a>
@@ -4433,6 +4433,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ColumnUrlParams.html" data-type="entity-link" >ColumnUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CommonCartridgeBase.html" data-type="entity-link" >CommonCartridgeBase</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CommonCartridgeElement.html" data-type="entity-link" >CommonCartridgeElement</a>
                             </li>
                             <li class="link">
@@ -4449,6 +4452,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeFileParser.html" data-type="entity-link" >CommonCartridgeFileParser</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeGuard.html" data-type="entity-link" >CommonCartridgeGuard</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeImportUtils.html" data-type="entity-link" >CommonCartridgeImportUtils</a>
@@ -4472,13 +4478,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CommonCartridgeMetadataElementV130.html" data-type="entity-link" >CommonCartridgeMetadataElementV130</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeOrganizationBuilder.html" data-type="entity-link" >CommonCartridgeOrganizationBuilder</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/CommonCartridgeOrganizationElementV110.html" data-type="entity-link" >CommonCartridgeOrganizationElementV110</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeOrganizationElementV130.html" data-type="entity-link" >CommonCartridgeOrganizationElementV130</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeOrganizationNode.html" data-type="entity-link" >CommonCartridgeOrganizationNode</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeOrganizationsWrapperElement.html" data-type="entity-link" >CommonCartridgeOrganizationsWrapperElement</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeOrganizationsWrapperElementV110.html" data-type="entity-link" >CommonCartridgeOrganizationsWrapperElementV110</a>
@@ -4493,6 +4502,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CommonCartridgeResource.html" data-type="entity-link" >CommonCartridgeResource</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CommonCartridgeResourceCollectionBuilder.html" data-type="entity-link" >CommonCartridgeResourceCollectionBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CommonCartridgeResourceFactory.html" data-type="entity-link" >CommonCartridgeResourceFactory</a>
                             </li>
                             <li class="link">
@@ -4505,7 +4517,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CommonCartridgeResourceFactoryV130.html" data-type="entity-link" >CommonCartridgeResourceFactoryV130</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CommonCartridgeResourceNode.html" data-type="entity-link" >CommonCartridgeResourceNode</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CommonCartridgeResourceNotFoundException.html" data-type="entity-link" >CommonCartridgeResourceNotFoundException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeResourcesWrapperElement.html" data-type="entity-link" >CommonCartridgeResourcesWrapperElement</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeResourcesWrapperElementV110.html" data-type="entity-link" >CommonCartridgeResourcesWrapperElementV110</a>
@@ -4986,6 +5004,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ElementContentBody.html" data-type="entity-link" >ElementContentBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ElementTypeNotSupportedLoggableException.html" data-type="entity-link" >ElementTypeNotSupportedLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ElementUrlParams.html" data-type="entity-link" >ElementUrlParams</a>
@@ -5510,6 +5531,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Instance.html" data-type="entity-link" >Instance</a>
                             </li>
                             <li class="link">
+                                <a href="classes/IntendedUseNotSupportedLoggableException.html" data-type="entity-link" >IntendedUseNotSupportedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/InvalidBoardTypeLoggableException.html" data-type="entity-link" >InvalidBoardTypeLoggableException</a>
                             </li>
                             <li class="link">
@@ -5865,6 +5889,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/MissingMediaLicenseLoggableException.html" data-type="entity-link" >MissingMediaLicenseLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MissingMetadataLoggableException.html" data-type="entity-link" >MissingMetadataLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MissingSchoolNumberException.html" data-type="entity-link" >MissingSchoolNumberException</a>
@@ -6249,6 +6276,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ResolvedUserResponse.html" data-type="entity-link" >ResolvedUserResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ResourceTypeNotSupportedLoggableException.html" data-type="entity-link" >ResourceTypeNotSupportedLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ResponseInfo.html" data-type="entity-link" >ResponseInfo</a>
@@ -7260,6 +7290,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ValidationErrorLoggableException.html" data-type="entity-link" >ValidationErrorLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VersionNotSupportedLoggableException.html" data-type="entity-link" >VersionNotSupportedLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConference.html" data-type="entity-link" >VideoConference</a>
@@ -9545,6 +9578,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/XApiKeyConfig.html" data-type="entity-link" >XApiKeyConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/XmlObject.html" data-type="entity-link" >XmlObject</a>
                             </li>
                         </ul>
                     </li>

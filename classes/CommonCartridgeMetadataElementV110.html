@@ -137,6 +137,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#baseProps" >baseProps</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -146,6 +162,10 @@
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getManifestMetadataXmlObjectInternal" >getManifestMetadataXmlObjectInternal</a>
+                            </li>
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#getManifestXmlObject" >getManifestXmlObject</a>
@@ -181,7 +201,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-metadata-element.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-metadata-element.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -219,12 +239,92 @@
         </table>
 </section>
 
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="baseProps"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>baseProps</b></span>
+                        <a href="#baseProps"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeBaseProps" target="_self" >CommonCartridgeBaseProps</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeBase.html" target="_self" >CommonCartridgeBase</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeBase.html#source" target="_self" >CommonCartridgeBase:11</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getManifestMetadataXmlObjectInternal"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getManifestMetadataXmlObjectInternal</b></span>
+                        <a href="#getManifestMetadataXmlObjectInternal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getManifestMetadataXmlObjectInternal()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-metadata-element.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>{ schema: string; schemaversion: string; &#x27;mnf:lom&#x27;: { &#x27;mnf:general&#x27;: { &#x27;mnf:title&#x27;: { &#x27;mnf:string&#x27;: string; }; }; &#x27;mnf:rights&#x27;: { &#x27;mnf:copyrightAndOtherRestrictions&#x27;: { &#x27;mnf:value&#x27;: string; }; &#x27;mnf:description&#x27;: { ...; }; }; }; }</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -240,7 +340,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getManifestXmlObject()</code>
+                    <code>getManifestXmlObject(elementType: <a href="../undefineds/CommonCartridgeElementType.html" target="_self">CommonCartridgeElementType</a>)</code>
                 </td>
             </tr>
 
@@ -253,7 +353,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:21</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:22</a></code>
 </div>
                         </td>
                     </tr>
@@ -262,10 +362,40 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>elementType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#CommonCartridgeElementType" target="_self" >CommonCartridgeElementType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Record&lt;string, &gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/XmlObject.html" target="_self" >XmlObject</a></code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -292,13 +422,13 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeBase.html" target="_self" >CommonCartridgeBase</a></code>
 </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:17</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeBase.html#source" target="_self" >CommonCartridgeBase:18</a></code>
 </div>
                         </td>
                     </tr>
@@ -337,13 +467,13 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeBase.html" target="_self" >CommonCartridgeBase</a></code>
 </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:38</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeBase.html#source" target="_self" >CommonCartridgeBase:25</a></code>
 </div>
                         </td>
                     </tr>
@@ -401,7 +531,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElementType, CommonCartridgeVersion } from &#x27;../../common-cartridge.enums&#x27;;
-import { CommonCartridgeElement } from &#x27;../../interfaces&#x27;;
+import { ElementTypeNotSupportedLoggableException } from &#x27;../../errors&#x27;;
+import { CommonCartridgeElement, XmlObject } from &#x27;../../interfaces&#x27;;
 
 export type CommonCartridgeMetadataElementPropsV110 &#x3D; {
 	type: CommonCartridgeElementType.METADATA;
@@ -420,7 +551,16 @@ export class CommonCartridgeMetadataElementV110 extends CommonCartridgeElement {
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestXmlObject(): Record&lt;string, unknown&gt; {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.METADATA:
+				return this.getManifestMetadataXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	private getManifestMetadataXmlObjectInternal() {
 		return {
 			schema: &#x27;IMS Common Cartridge&#x27;,
 			schemaversion: &#x27;1.1.0&#x27;,

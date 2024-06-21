@@ -185,8 +185,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/resources/common-cartridge-resource-factory.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/resources/common-cartridge-resource-factory.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -243,8 +243,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeVersion } from &#x27;../common-cartridge.enums&#x27;;
+import { VersionNotSupportedLoggableException } from &#x27;../errors&#x27;;
 import { CommonCartridgeResource } from &#x27;../interfaces&#x27;;
-import { OmitVersionAndFolder, createVersionNotSupportedError } from &#x27;../utils&#x27;;
+import { OmitVersionAndFolder } from &#x27;../utils&#x27;;
 import {
 	CommonCartridgeManifestResourcePropsV110,
 	CommonCartridgeResourceFactoryV110,
@@ -264,7 +265,7 @@ export type CommonCartridgeResourceProps &#x3D;
 	| OmitVersionAndFolder&lt;CommonCartridgeWebContentResourcePropsV130&gt;
 	| OmitVersionAndFolder&lt;CommonCartridgeWebLinkResourcePropsV130&gt;;
 
-type CommonCartridgeResourcePropsInternal &#x3D;
+export type CommonCartridgeResourcePropsInternal &#x3D;
 	| CommonCartridgeManifestResourcePropsV110
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110
@@ -282,7 +283,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeVersion.V_1_3_0:
 				return CommonCartridgeResourceFactoryV130.createResource(props);
 			default:
-				throw createVersionNotSupportedError(version);
+				throw new VersionNotSupportedLoggableException(version);
 		}
 	}
 }
