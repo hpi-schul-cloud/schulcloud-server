@@ -1,18 +1,19 @@
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@modules/board';
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	BoardNodeFactory,
+	BoardNodeService,
+	Card,
+	Column,
+	ColumnBoard,
+	ContentElementType,
+} from '@modules/board';
 import {
 	CommonCartridgeFileParser,
 	CommonCartridgeImportOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '@modules/common-cartridge';
 import { Injectable } from '@nestjs/common';
-import {
-	BoardExternalReferenceType,
-	BoardLayout,
-	Card,
-	Column,
-	ColumnBoard,
-	ContentElementType,
-} from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
@@ -21,10 +22,8 @@ import { CourseService } from './course.service';
 export class CommonCartridgeImportService {
 	constructor(
 		private readonly courseService: CourseService,
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnService: ColumnService,
-		private readonly cardService: CardService,
-		private readonly contentElementService: ContentElementService,
+		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
@@ -51,14 +50,15 @@ export class CommonCartridgeImportService {
 		boardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
-		const columnBoard = await this.columnBoardService.create(
-			{
+		const columnBoard = this.boardNodeFactory.buildColumnBoard({
+			context: {
 				type: BoardExternalReferenceType.Course,
 				id: course.id,
 			},
-			BoardLayout.COLUMNS,
-			boardProps.title || ''
-		);
+			layout: BoardLayout.COLUMNS,
+			title: boardProps.title || '',
+		});
+		await this.boardNodeService.addRoot(columnBoard);
 
 		await this.createColumns(parser, columnBoard, boardProps, organizations);
 	}
@@ -93,7 +93,10 @@ export class CommonCartridgeImportService {
 		columnBoard: ColumnBoard,
 		columnProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
-		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
+		const column = this.boardNodeFactory.buildColumn();
+		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
+		column.title = title;
+		await this.boardNodeService.addToParent(columnBoard, column);
 		await this.createCardWithElement(parser, column, columnProps, false);
 	}
 
@@ -103,7 +106,11 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
-		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
+		const column = this.boardNodeFactory.buildColumn();
+		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
+		column.title = title;
+		await this.boardNodeService.addToParent(columnBoard, column);
+
 		const cards = organizations.filter(
 			(organization) => organization.pathDepth === 2 && organization.path.startsWith(columnProps.path)
 		);
@@ -127,19 +134,20 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeImportOrganizationProps,
 		withTitle = true
 	): Promise<void> {
-		const card = await this.cardService.create(
-			column,
-			undefined,
-			this.mapper.mapOrganizationToCard(cardProps, withTitle)
-		);
+		const card = this.boardNodeFactory.buildCard();
+		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, withTitle);
+		card.title = title;
+		card.height = height;
+		await this.boardNodeService.addToParent(column, card);
 		const resource = parser.getResource(cardProps);
 		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
 
 		if (resource && contentElementType) {
-			const contentElement = await this.contentElementService.create(card, contentElementType);
+			const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
+			await this.boardNodeService.addToParent(card, contentElement);
 			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
 
-			await this.contentElementService.update(contentElement, contentElementBody);
+			await this.boardNodeService.updateContent(contentElement, contentElementBody);
 		}
 	}
 
@@ -149,7 +157,11 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	) {
-		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps, true));
+		const card = this.boardNodeFactory.buildCard();
+		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, true);
+		card.title = title;
+		card.height = height;
+		await this.boardNodeService.addToParent(column, column);
 
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= 3 && organization.path.startsWith(cardProps.path)
@@ -170,16 +182,17 @@ export class CommonCartridgeImportService {
 			const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
 
 			if (resource && contentElementType) {
-				const contentElement = await this.contentElementService.create(card, contentElementType);
+				const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
+				await this.boardNodeService.addToParent(card, contentElement);
 				const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
-
-				await this.contentElementService.update(contentElement, contentElementBody);
+				await this.boardNodeService.updateContent(contentElement, contentElementBody);
 			}
 		} else {
-			const contentElement = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+			const contentElement = this.boardNodeFactory.buildContentElement(ContentElementType.RICH_TEXT);
+			await this.boardNodeService.addToParent(card, contentElement);
 			const contentElementBody = this.mapper.mapOrganizationToTextElement(cardElementProps);
 
-			await this.contentElementService.update(contentElement, contentElementBody);
+			await this.boardNodeService.updateContent(contentElement, contentElementBody);
 		}
 	}
 }

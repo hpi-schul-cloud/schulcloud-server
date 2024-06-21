@@ -1,12 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { BoardDoAuthorizableService, ColumnBoardCopyService, ColumnBoardService } from '@modules/board';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardNodeAuthorizableService, BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -30,13 +29,12 @@ export class ShareTokenUC {
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
-		private readonly columnBoardService: ColumnBoardService,
 		private readonly schoolService: SchoolService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
@@ -187,7 +185,7 @@ export class ShareTokenUC {
 	): Promise<CopyStatus> {
 		await this.checkCourseWritePermission(user, courseId, Permission.COURSE_EDIT);
 
-		const copyStatus = this.columnBoardCopyService.copyColumnBoard({
+		const copyStatus = this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
 			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
 			userId: user.id,
@@ -239,11 +237,11 @@ export class ShareTokenUC {
 
 	private async checkColumnBoardWritePermission(user: User, boardNodeId: EntityId, permission: Permission) {
 		const columBoard = await this.columnBoardService.findById(boardNodeId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(columBoard);
+		const boardNodeAuthorizableService = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
 
 		this.authorizationService.checkPermission(
 			user,
-			boardDoAuthorizable,
+			boardNodeAuthorizableService,
 			AuthorizationContextBuilder.write([permission])
 		);
 	}

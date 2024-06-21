@@ -5,17 +5,11 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import {
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import { CardResponse } from '../dto';
 
 const baseRouteName = '/columns';
@@ -77,11 +71,11 @@ describe(`card create (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
 		await em.persistAndFlush([columnBoardNode, columnNode]);
 		em.clear();

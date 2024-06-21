@@ -28,6 +28,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/schulcloud-server/scripts/ldapSync.sh']
             resources:
               limits:

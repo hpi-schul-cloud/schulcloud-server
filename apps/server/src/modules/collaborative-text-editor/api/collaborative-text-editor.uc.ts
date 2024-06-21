@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { BoardDoAuthorizableService, ContentElementService } from '@src/modules/board';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
 import { CollaborativeTextEditorService } from '../service/collaborative-text-editor.service';
 import {
@@ -16,8 +16,8 @@ export class CollaborativeTextEditorUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly collaborativeTextEditorService: CollaborativeTextEditorService,
-		private readonly contentElementService: ContentElementService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
 	async getOrCreateCollaborativeTextEditorForParent(
@@ -50,8 +50,8 @@ export class CollaborativeTextEditorUc {
 	}
 
 	private async authorizeForContentElement(params: GetCollaborativeTextEditorForParentParams, user: User) {
-		const contentElement = await this.contentElementService.findById(params.parentId);
-		const contentElementDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(contentElement);
+		const contentElement = await this.boardNodeService.findContentElementById(params.parentId);
+		const contentElementDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(contentElement);
 
 		this.authorizationService.checkPermission(
 			user,

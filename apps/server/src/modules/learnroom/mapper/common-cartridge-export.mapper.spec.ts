@@ -15,15 +15,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import {
-	courseFactory,
-	lessonFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { linkElementFactory, richTextElementFactory } from '@modules/board/testing';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 

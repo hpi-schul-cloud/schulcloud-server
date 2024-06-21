@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
-import { axiosResponseFactory } from '@shared/testing';
 import { AxiosError, AxiosHeaders } from 'axios';
 import { Factory } from 'fishery';
+import { axiosResponseFactory } from './axios-response.factory';
 
 class AxiosErrorFactory extends Factory<AxiosError> {
 	withError(error: unknown): this {

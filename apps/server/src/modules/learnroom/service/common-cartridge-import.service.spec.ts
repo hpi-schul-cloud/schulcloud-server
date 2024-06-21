@@ -1,8 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
+import { BoardNodeFactory, BoardNodeService } from '@src/modules/board';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
@@ -13,10 +13,8 @@ describe('CommonCartridgeImportService', () => {
 	let moduleRef: TestingModule;
 	let sut: CommonCartridgeImportService;
 	let courseServiceMock: DeepMocked<CourseService>;
-	let columnBoardServiceMock: DeepMocked<ColumnBoardService>;
-	let columnServiceMock: DeepMocked<ColumnService>;
-	let cardServiceMock: DeepMocked<CardService>;
-	let contentElementServiceMock: DeepMocked<ContentElementService>;
+	let boardNodeFactoryMock: DeepMocked<BoardNodeFactory>;
+	let boardNodeServiceMock: DeepMocked<BoardNodeService>;
 
 	beforeEach(async () => {
 		orm = await setupEntities();
@@ -29,30 +27,20 @@ describe('CommonCartridgeImportService', () => {
 					useValue: createMock<CourseService>(),
 				},
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
+					provide: BoardNodeFactory,
+					useValue: createMock<BoardNodeFactory>(),
 				},
 				{
-					provide: ColumnService,
-					useValue: createMock<ColumnService>(),
-				},
-				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
-				},
-				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 			],
 		}).compile();
 
 		sut = moduleRef.get(CommonCartridgeImportService);
 		courseServiceMock = moduleRef.get(CourseService);
-		columnBoardServiceMock = moduleRef.get(ColumnBoardService);
-		columnServiceMock = moduleRef.get(ColumnService);
-		cardServiceMock = moduleRef.get(CardService);
-		contentElementServiceMock = moduleRef.get(ContentElementService);
+		boardNodeFactoryMock = moduleRef.get(BoardNodeFactory);
+		boardNodeServiceMock = moduleRef.get(BoardNodeService);
 	});
 
 	afterAll(async () => {
@@ -61,7 +49,7 @@ describe('CommonCartridgeImportService', () => {
 	});
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -93,7 +81,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnBoardServiceMock.create).toHaveBeenCalledTimes(14);
+				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(14);
+				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(14);
 			});
 
 			it('should create columns', async () => {
@@ -101,7 +90,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnServiceMock.create).toHaveBeenCalledTimes(103);
+				expect(boardNodeFactoryMock.buildColumn).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
 			});
 
 			it('should create cards', async () => {
@@ -109,7 +99,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(cardServiceMock.create).toHaveBeenCalled();
+				expect(boardNodeFactoryMock.buildCard).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
 			});
 
 			it('should create elements', async () => {
@@ -117,7 +108,9 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(contentElementServiceMock.create).toHaveBeenCalled();
+				expect(boardNodeFactoryMock.buildContentElement).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
+				expect(boardNodeServiceMock.updateContent).toHaveBeenCalled();
 			});
 		});
 
@@ -138,7 +131,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnBoardServiceMock.create).toHaveBeenCalledTimes(3);
+				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(3);
+				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create columns', async () => {
@@ -146,7 +140,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnServiceMock.create).toHaveBeenCalledTimes(6);
+				expect(boardNodeFactoryMock.buildColumn).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
 			});
 
 			it('should create cards', async () => {
@@ -154,7 +149,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(cardServiceMock.create).toHaveBeenCalled();
+				expect(boardNodeFactoryMock.buildCard).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
 			});
 
 			it('should create elements', async () => {
@@ -162,7 +158,9 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(contentElementServiceMock.create).toHaveBeenCalled();
+				expect(boardNodeFactoryMock.buildContentElement).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
+				expect(boardNodeServiceMock.updateContent).toHaveBeenCalled();
 			});
 		});
 	});

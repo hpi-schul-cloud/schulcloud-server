@@ -1,4 +1,4 @@
-import { ContentElementService } from '@modules/board';
+import { BoardCommonToolService } from '@modules/board';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
@@ -14,8 +14,8 @@ export class CommonToolMetadataService {
 	constructor(
 		private readonly schoolToolRepo: SchoolExternalToolRepo,
 		private readonly contextToolRepo: ContextExternalToolRepo,
-		@Inject(forwardRef(() => ContentElementService))
-		private readonly contentElementService: ContentElementService
+		@Inject(forwardRef(() => BoardCommonToolService))
+		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
 	async getMetadataForExternalTool(toolId: EntityId): Promise<ExternalToolMetadata> {
@@ -74,7 +74,7 @@ export class CommonToolMetadataService {
 	): Promise<number> {
 		let count = 0;
 		if (contextType === ContextExternalToolType.BOARD_ELEMENT) {
-			count = await this.contentElementService.countBoardUsageForExternalTools(contextExternalTools);
+			count = await this.boardCommonToolService.countBoardUsageForExternalTools(contextExternalTools);
 		} else {
 			const contextIds: EntityId[] = contextExternalTools.map(
 				(contextExternalTool: ContextExternalTool): EntityId => contextExternalTool.contextRef.id

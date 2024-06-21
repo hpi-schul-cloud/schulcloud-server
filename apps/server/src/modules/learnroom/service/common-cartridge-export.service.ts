@@ -1,21 +1,23 @@
-import { ColumnBoardService } from '@modules/board';
-import { CommonCartridgeVersion } from '@modules/common-cartridge';
-import { CommonCartridgeFileBuilder } from '@modules/common-cartridge/export/builders/common-cartridge-file-builder';
-import { CommonCartridgeOrganizationNode } from '@modules/common-cartridge/export/builders/common-cartridge-organization-node';
-import { createIdentifier } from '@modules/common-cartridge/export/utils';
-import { LessonService } from '@modules/lesson';
-import { TaskService } from '@modules/task';
-import { Injectable } from '@nestjs/common';
 import {
-	AnyBoardDo,
+	AnyBoardNode,
 	BoardExternalReferenceType,
 	Card,
 	Column,
+	ColumnBoardService,
 	isCard,
 	isColumn,
 	isLinkElement,
 	isRichTextElement,
-} from '@shared/domain/domainobject';
+} from '@modules/board';
+import {
+	CommonCartridgeFileBuilder,
+	CommonCartridgeOrganizationNode,
+	CommonCartridgeVersion,
+	createIdentifier,
+} from '@modules/common-cartridge';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
+import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
@@ -108,16 +110,14 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		exportedColumnBoards: string[]
 	): Promise<void> {
-		const columnBoardIds = (
-			await this.columnBoardService.findIdsByExternalReference({
+		const columnBoards = (
+			await this.columnBoardService.findByExternalReference({
 				type: BoardExternalReferenceType.Course,
 				id: courseId,
 			})
-		).filter((id) => exportedColumnBoards.includes(id));
+		).filter((cb) => exportedColumnBoards.includes(cb.id));
 
-		for await (const columnBoardId of columnBoardIds) {
-			const columnBoard = await this.columnBoardService.findById(columnBoardId);
-
+		for (const columnBoard of columnBoards) {
 			const columnBoardOrganization = builder.createOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
@@ -132,7 +132,7 @@ export class CommonCartridgeExportService {
 	private addColumnToOrganization(column: Column, columnBoardOrganization: CommonCartridgeOrganizationNode): void {
 		const { id } = column;
 		const columnOrganization = columnBoardOrganization.createChild({
-			title: column.title,
+			title: column.title || '',
 			identifier: createIdentifier(id),
 		});
 
@@ -143,14 +143,14 @@ export class CommonCartridgeExportService {
 
 	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
 		const cardOrganization = columnOrganization.createChild({
-			title: card.title,
+			title: card.title || '',
 			identifier: createIdentifier(card.id),
 		});
 
 		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization));
 	}
 
-	private addCardElementToOrganization(element: AnyBoardDo, cardOrganization: CommonCartridgeOrganizationNode): void {
+	private addCardElementToOrganization(element: AnyBoardNode, cardOrganization: CommonCartridgeOrganizationNode): void {
 		if (isRichTextElement(element)) {
 			const resource = this.mapper.mapRichTextElementToResource(element);
 

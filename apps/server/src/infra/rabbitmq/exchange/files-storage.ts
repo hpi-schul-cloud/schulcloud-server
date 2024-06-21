@@ -1,3 +1,4 @@
+import { StorageLocation } from '@modules/files-storage/entity';
 import { EntityId } from '@shared/domain/types';
 
 export enum FilesStorageEvents {
@@ -35,7 +36,8 @@ export interface CopyFilesOfParentParams {
 }
 
 export interface FileRecordParams {
-	schoolId: EntityId;
+	storageLocationId: EntityId;
+	storageLocation: StorageLocation;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }

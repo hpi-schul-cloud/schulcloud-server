@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { MediaBoardColors } from '../../../domain';
+import { MediaBoardColors } from '../../../domain/media-board/types';
 import { TimestampsResponse } from '../../dto';
 import { MediaExternalToolElementResponse } from './media-external-tool-element.response';
 

@@ -1,5 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { MediaBoardColors, MediaBoardLayoutType } from '@modules/board/domain';
+import { MediaBoardColors, BoardLayout } from '@modules/board/domain';
 
 export class Migration20240517135008 extends Migration {
 	async up(): Promise<void> {
@@ -7,7 +7,7 @@ export class Migration20240517135008 extends Migration {
 			'boardnodes',
 			{ type: 'media-board' },
 			{
-				layout: MediaBoardLayoutType.LIST,
+				layout: BoardLayout.LIST,
 				mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 				mediaAvailableLineCollapsed: false,
 			}

@@ -21,7 +21,7 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { MediaExternalToolElement } from '@shared/domain/domainobject';
+import { MediaExternalToolElement } from '../../domain';
 import { MediaElementUc } from '../../uc';
 import {
 	CreateMediaElementBodyParams,

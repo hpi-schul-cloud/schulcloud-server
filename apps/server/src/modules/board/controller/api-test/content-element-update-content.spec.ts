@@ -3,21 +3,18 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
+import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	fileElementNodeFactory,
-	richTextElementNodeFactory,
-	submissionContainerElementNodeFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	fileElementEntityFactory,
+	richTextElementEntityFactory,
+	submissionContainerElementEntityFactory,
+} from '../../testing';
 
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;
@@ -50,24 +47,24 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
-			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({
-				parent: parentCard,
-				dueDate: null,
+			const column = columnEntityFactory.withParent(columnBoardNode).build();
+			const parentCard = cardEntityFactory.withParent(column).build();
+			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
+			const fileElement = fileElementEntityFactory.withParent(parentCard).build();
+			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build({
+				dueDate: undefined,
 			});
 
 			const tomorrow = new Date(Date.now() + 86400000);
-			const submissionContainerElementWithDueDate = submissionContainerElementNodeFactory.buildWithId({
-				parent: parentCard,
-				dueDate: tomorrow,
-			});
+			const submissionContainerElementWithDueDate = submissionContainerElementEntityFactory
+				.withParent(parentCard)
+				.build({
+					dueDate: tomorrow,
+				});
 
 			await em.persistAndFlush([
 				teacherAccount,
@@ -115,7 +112,7 @@ describe(`content element update content (api)`, () => {
 					type: ContentElementType.RICH_TEXT,
 				},
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, richTextElement.id);
 
 			expect(result.text).toEqual('hello world');
 		});
@@ -130,7 +127,7 @@ describe(`content element update content (api)`, () => {
 			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: ContentElementType.RICH_TEXT },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, richTextElement.id);
 
 			expect(result.text).toEqual(sanitizedText);
 		});
@@ -144,7 +141,7 @@ describe(`content element update content (api)`, () => {
 				data: { content: { caption, alternativeText: '' }, type: ContentElementType.FILE },
 			});
 
-			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, fileElement.id);
 
 			expect(result.caption).toEqual('rich text 1 some more text');
 		});
@@ -157,7 +154,7 @@ describe(`content element update content (api)`, () => {
 			await loggedInClient.patch(`${fileElement.id}/content`, {
 				data: { content: { caption: '', alternativeText }, type: ContentElementType.FILE },
 			});
-			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, fileElement.id);
 
 			expect(result.alternativeText).toEqual('rich text 1 some more text');
 		});
@@ -183,8 +180,9 @@ describe(`content element update content (api)`, () => {
 					type: 'submissionContainer',
 				},
 			});
-			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
-			expect(result.dueDate).toBeNull();
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
+			expect(result.id).toEqual(submissionContainerElement.id);
+			expect(result.dueDate).toBeUndefined();
 		});
 
 		it('should set dueDate value when provided for submission container element', async () => {
@@ -198,7 +196,7 @@ describe(`content element update content (api)`, () => {
 					type: 'submissionContainer',
 				},
 			});
-			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
 
 			expect(result.dueDate).toEqual(inThreeDays);
 		});
@@ -214,9 +212,9 @@ describe(`content element update content (api)`, () => {
 					type: 'submissionContainer',
 				},
 			});
-			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElementWithDueDate.id);
-
-			expect(result.dueDate).toBeNull();
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElementWithDueDate.id);
+			expect(result.id).toEqual(submissionContainerElementWithDueDate.id);
+			expect(result.dueDate).toBeUndefined();
 		});
 
 		it('should return status 400 for wrong date format for submission container element', async () => {
@@ -242,14 +240,14 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [] });
 			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
+			const column = columnEntityFactory.withParent(columnBoardNode).build();
+			const parentCard = cardEntityFactory.withParent(column).build();
+			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
+			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build();
 
 			await em.persistAndFlush([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]);
 			em.clear();
