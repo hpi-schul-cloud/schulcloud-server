@@ -1,6 +1,6 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { createCommonCartridgeMetadataElementPropsV130 } from '../../../testing/common-cartridge-element-props.factory';
-import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException, VersionNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeMetadataElementV130 } from './common-cartridge-metadata-element';
 
 describe('CommonCartridgeMetadataElementV130', () => {
@@ -27,13 +27,15 @@ describe('CommonCartridgeMetadataElementV130', () => {
 			notSupportedProps.version = CommonCartridgeVersion.V_1_1_0;
 
 			it('should throw error', () => {
-				expect(() => new CommonCartridgeMetadataElementV130(notSupportedProps)).toThrow(InternalServerErrorException);
+				expect(() => new CommonCartridgeMetadataElementV130(notSupportedProps)).toThrow(
+					VersionNotSupportedLoggableException
+				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using common cartridge version 1.3', () => {
+		describe('when creating metadata xml object', () => {
 			const setup = () => {
 				const props = createCommonCartridgeMetadataElementPropsV130();
 				const sut = new CommonCartridgeMetadataElementV130(props);
@@ -41,10 +43,10 @@ describe('CommonCartridgeMetadataElementV130', () => {
 				return { sut, props };
 			};
 
-			it('should return correct manifest xml object', () => {
+			it('should return metadata manifest fragment', () => {
 				const { sut, props } = setup();
 
-				const result = sut.getManifestXmlObject();
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.METADATA);
 
 				expect(result).toStrictEqual({
 					schema: 'IMS Common Cartridge',
@@ -65,6 +67,23 @@ describe('CommonCartridgeMetadataElementV130', () => {
 						},
 					},
 				});
+			});
+		});
+
+		describe('when using unsupported element type', () => {
+			const setup = () => {
+				const props = createCommonCartridgeMetadataElementPropsV130();
+				const sut = new CommonCartridgeMetadataElementV130(props);
+
+				return { sut, props };
+			};
+
+			it('should throw error', () => {
+				const { sut } = setup();
+
+				expect(() => sut.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION)).toThrow(
+					ElementTypeNotSupportedLoggableException
+				);
 			});
 		});
 	});
