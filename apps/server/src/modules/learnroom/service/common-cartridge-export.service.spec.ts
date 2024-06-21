@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ColumnBoardService } from '@modules/board';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { CommonCartridgeExportService, CourseService, LearnroomConfig } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson';
@@ -18,7 +19,6 @@ import {
 	setupEntities,
 	taskFactory,
 } from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 

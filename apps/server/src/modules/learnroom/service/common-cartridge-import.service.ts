@@ -1,3 +1,9 @@
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@modules/board';
+import {
+	CommonCartridgeFileParser,
+	CommonCartridgeImportOrganizationProps,
+	DEFAULT_FILE_PARSER_OPTIONS,
+} from '@modules/common-cartridge';
 import { Injectable } from '@nestjs/common';
 import {
 	BoardExternalReferenceType,
@@ -8,12 +14,6 @@ import {
 	ContentElementType,
 } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
-import {
-	CommonCartridgeFileParser,
-	CommonCartridgeImportOrganizationProps,
-	DEFAULT_FILE_PARSER_OPTIONS,
-} from '@src/modules/common-cartridge';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
 

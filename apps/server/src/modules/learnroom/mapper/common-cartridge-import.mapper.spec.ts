@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
-import { InputFormat } from '@shared/domain/types';
-import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
+import { LinkContentBody, RichTextContentBody } from '@modules/board/controller/dto';
 import {
 	CommonCartridgeImportOrganizationProps,
 	CommonCartridgeImportResourceProps,
 	CommonCartridgeResourceTypeV1P1,
-} from '@src/modules/common-cartridge';
+} from '@modules/common-cartridge';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 describe('CommonCartridgeImportMapper', () => {

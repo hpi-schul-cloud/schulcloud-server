@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
-import { InputFormat } from '@shared/domain/types';
-import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
-import { CommonCartridgeOrganizationProps, CommonCartridgeResourceTypeV1P1 } from '@src/modules/common-cartridge';
+import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from '@modules/board/controller/dto';
+import { CommonCartridgeOrganizationProps, CommonCartridgeResourceTypeV1P1 } from '@modules/common-cartridge';
 import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
-} from '@src/modules/common-cartridge/import/common-cartridge-import.types';
+} from '@modules/common-cartridge/import/common-cartridge-import.types';
+import { Injectable } from '@nestjs/common';
+import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 
 @Injectable()
 export class CommonCartridgeImportMapper {

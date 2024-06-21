@@ -1,8 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';

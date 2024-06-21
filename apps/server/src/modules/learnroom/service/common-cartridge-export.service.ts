@@ -1,4 +1,8 @@
+import { ColumnBoardService } from '@modules/board';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
+import { CommonCartridgeFileBuilder } from '@modules/common-cartridge/export/builders/common-cartridge-file-builder';
+import { CommonCartridgeOrganizationNode } from '@modules/common-cartridge/export/builders/common-cartridge-organization-node';
+import { createIdentifier } from '@modules/common-cartridge/export/utils';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
@@ -14,10 +18,6 @@ import {
 } from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ColumnBoardService } from '@src/modules/board';
-import { CommonCartridgeFileBuilder } from '@src/modules/common-cartridge/export/builders/common-cartridge-file-builder';
-import { CommonCartridgeOrganizationNode } from '@src/modules/common-cartridge/export/builders/common-cartridge-organization-node';
-import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 

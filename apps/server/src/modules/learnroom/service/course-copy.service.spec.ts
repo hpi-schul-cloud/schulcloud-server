@@ -4,7 +4,7 @@ import { LessonCopyService } from '@modules/lesson/service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ToolFeatures } from '@modules/tool/tool-config';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
@@ -16,7 +16,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { IToolFeatures } from '@src/modules/tool/tool-config';
 import { contextExternalToolFactory } from '../../tool/context-external-tool/testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
