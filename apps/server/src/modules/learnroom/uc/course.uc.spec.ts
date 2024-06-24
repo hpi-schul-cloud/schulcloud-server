@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
+import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities, UserAndAccountTestFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { RoleDto, RoleService } from '@src/modules/role';
-import { CourseUc } from './course.uc';
 import { CourseService } from '../service';
+import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {
 	let module: TestingModule;

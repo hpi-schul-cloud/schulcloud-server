@@ -1,9 +1,9 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import {
 	createCommonCartridgeOrganizationElementPropsV130,
 	createCommonCartridgeOrganizationsWrapperElementPropsV130,
 } from '../../../testing/common-cartridge-element-props.factory';
-import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException, VersionNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElementFactory } from '../common-cartridge-element-factory';
 import { CommonCartridgeOrganizationsWrapperElementV130 } from './common-cartridge-organizations-wrapper-element';
 
@@ -32,14 +32,14 @@ describe('CommonCartridgeOrganizationsWrapperElementV130', () => {
 
 			it('should throw error', () => {
 				expect(() => new CommonCartridgeOrganizationsWrapperElementV130(notSupportedProps)).toThrow(
-					InternalServerErrorException
+					VersionNotSupportedLoggableException
 				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using common cartridge version 1.3.0', () => {
+		describe('when creating organizations wrapper xml object', () => {
 			const setup = () => {
 				const organizationProps = createCommonCartridgeOrganizationElementPropsV130();
 				const props = createCommonCartridgeOrganizationsWrapperElementPropsV130([
@@ -50,10 +50,10 @@ describe('CommonCartridgeOrganizationsWrapperElementV130', () => {
 				return { sut, organizationProps };
 			};
 
-			it('should return correct manifest xml object', () => {
+			it('should return organizations wrapper manifest fragment', () => {
 				const { sut, organizationProps } = setup();
 
-				const result = sut.getManifestXmlObject();
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATIONS_WRAPPER);
 
 				expect(result).toStrictEqual({
 					organization: [
@@ -81,6 +81,22 @@ describe('CommonCartridgeOrganizationsWrapperElementV130', () => {
 						},
 					],
 				});
+			});
+		});
+
+		describe('when using unsupported element type', () => {
+			const setup = () => {
+				const unknownElementType = 'unknown' as CommonCartridgeElementType;
+				const props = createCommonCartridgeOrganizationsWrapperElementPropsV130();
+				const sut = new CommonCartridgeOrganizationsWrapperElementV130(props);
+
+				return { sut, unknownElementType };
+			};
+
+			it('should throw error', () => {
+				const { sut, unknownElementType } = setup();
+
+				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrow(ElementTypeNotSupportedLoggableException);
 			});
 		});
 	});
