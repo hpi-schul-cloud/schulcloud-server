@@ -1582,6 +1582,12 @@
 					"type": "boolean",
 					"description": "Activate the performance measure for overserved areas.",
 					"default": true
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			},
 			"default": {

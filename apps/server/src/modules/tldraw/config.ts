@@ -25,7 +25,7 @@ export const TLDRAW_SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as nu
 
 const tldrawConfig = {
 	TLDRAW_DB_URL,
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
+	NEST_LOG_LEVEL: Configuration.get('TLDRAW__LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	TLDRAW_DB_COMPRESS_THRESHOLD: Configuration.get('TLDRAW__DB_COMPRESS_THRESHOLD') as number,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,

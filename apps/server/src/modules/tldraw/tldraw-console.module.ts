@@ -7,6 +7,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { ConsoleWriterModule } from '@infra/console';
 import { ConsoleModule } from 'nestjs-console';
+import { CoreModule } from '@src/core';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
@@ -23,6 +24,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
+		CoreModule,
 		ConsoleModule,
 		ConsoleWriterModule,
 		RabbitMQWrapperModule,

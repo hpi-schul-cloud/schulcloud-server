@@ -122,7 +122,7 @@ export class YMongodb implements OnModuleInit {
 			ydoc.destroy();
 			performance.mark('compressDocumentTransactional - end');
 			performance.measure(
-				`tldraw:YMongodb:compressDocumentTransactional::${docName}`,
+				`tldraw:YMongodb:compressDocumentTransactional::${docName}, clock=${clock}`,
 				'compressDocumentTransactional - start',
 				'compressDocumentTransactional - end'
 			);
