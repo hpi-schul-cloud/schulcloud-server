@@ -1,4 +1,5 @@
 import {
+	lernperiodeFormat,
 	SchulconnexCommunicationType,
 	SchulconnexErreichbarkeitenResponse,
 	SchulconnexGroupRole,
@@ -10,7 +11,6 @@ import {
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client/response';
-import { lernperiodeFormat } from '@infra/schulconnex-client/response/schulconnex-laufzeit-response';
 import { GroupTypes } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';

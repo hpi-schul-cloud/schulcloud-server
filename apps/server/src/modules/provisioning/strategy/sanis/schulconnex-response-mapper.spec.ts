@@ -3,13 +3,13 @@ import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
+	SchulconnexLizenzInfoResponse,
 	schulconnexLizenzInfoResponseFactory,
 	SchulconnexPersonenkontextResponse,
 	SchulconnexResponse,
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
-import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
@@ -408,7 +408,39 @@ describe(SchulconnexResponseMapper.name, () => {
 				};
 			};
 
-			it('should map the group a duration', () => {
+			it('should map the group with an exact date', () => {
+				const { schulconnexResponse, duration } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						from: new Date(duration.von),
+						until: new Date(duration.bis),
+					}),
+				]);
+			});
+		});
+
+		describe('when the group has a duration as an exact date and as lernperiode', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				const duration = {
+					von: '2024-05-13',
+					bis: '2028-07-12',
+					vonlernperiode: '2024',
+					bislernperiode: '2025',
+				};
+
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = duration;
+
+				return {
+					schulconnexResponse,
+					duration,
+				};
+			};
+
+			it('should map the group with an exact date', () => {
 				const { schulconnexResponse, duration } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
