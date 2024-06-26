@@ -1,4 +1,3 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import {
 	createCommonCartridgeMetadataElementPropsV130,
 	createCommonCartridgeOrganizationElementPropsV130,
@@ -6,6 +5,7 @@ import {
 	createCommonCartridgeResourcesWrapperElementPropsV130,
 } from '../../../testing/common-cartridge-element-props.factory';
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElementFactoryV130 } from './common-cartridge-element-factory';
 import { CommonCartridgeMetadataElementV130 } from './common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationElementV130 } from './common-cartridge-organization-element';
@@ -52,9 +52,9 @@ describe('CommonCartridgeElementFactoryV130', () => {
 			const notSupportedProps = createCommonCartridgeOrganizationsWrapperElementPropsV130();
 			notSupportedProps.type = 'not-supported' as CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
 
-			it('should throw error', () => {
+			it('should throw ElementTypeNotSupportedLoggableException', () => {
 				expect(() => CommonCartridgeElementFactoryV130.createElement(notSupportedProps)).toThrow(
-					InternalServerErrorException
+					ElementTypeNotSupportedLoggableException
 				);
 			});
 		});

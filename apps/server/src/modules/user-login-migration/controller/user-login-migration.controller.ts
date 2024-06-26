@@ -20,6 +20,7 @@ import {
 } from '../loggable';
 import { UserLoginMigrationMapper } from '../mapper';
 import {
+	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
@@ -45,7 +46,8 @@ export class UserLoginMigrationController {
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
 		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
 		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc,
-		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc
+		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc,
+		private readonly closeMigrationWizardUc: CloseMigrationWizardUc
 	) {}
 
 	@Get()
@@ -194,7 +196,7 @@ export class UserLoginMigrationController {
 		description: 'User login migration does not exist',
 		type: UserLoginMigrationNotFoundLoggableException,
 	})
-	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
+	@ApiOkResponse({ description: 'User login migration and migration wizard closed', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiNoContentResponse({ description: 'User login migration was reverted' })
@@ -205,10 +207,13 @@ export class UserLoginMigrationController {
 		);
 
 		if (userLoginMigration) {
+			await this.closeMigrationWizardUc.closeMigrationWizardWhenActive(currentUser.userId);
+
 			const migrationResponse: UserLoginMigrationResponse =
 				UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
 			return migrationResponse;
 		}
+
 		return undefined;
 	}
 
