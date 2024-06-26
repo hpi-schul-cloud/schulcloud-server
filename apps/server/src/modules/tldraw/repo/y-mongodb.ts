@@ -213,7 +213,7 @@ export class YMongodb implements OnModuleInit {
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
 		const uniqueKey = KeyFactory.createForUpdate(docName);
-		const tldrawDrawingEntitiess = await this.getMongoBulkData(uniqueKey, opts);
+		const tldrawDrawingEntities = await this.getMongoBulkData(uniqueKey, opts);
 
 		return this.convertMongoUpdates(tldrawDrawingEntities);
 	}
