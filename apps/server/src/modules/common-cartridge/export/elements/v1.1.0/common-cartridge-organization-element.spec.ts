@@ -1,7 +1,7 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { createCommonCartridgeOrganizationElementPropsV110 } from '../../../testing/common-cartridge-element-props.factory';
 import { createCommonCartridgeWeblinkResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
-import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException, VersionNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResourceFactory } from '../../resources/common-cartridge-resource-factory';
 import { CommonCartridgeElementFactory } from '../common-cartridge-element-factory';
 import { CommonCartridgeOrganizationElementV110 } from './common-cartridge-organization-element';
@@ -31,25 +31,20 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 
 			it('should throw error', () => {
 				expect(() => new CommonCartridgeOrganizationElementV110(notSupportedProps)).toThrowError(
-					InternalServerErrorException
+					VersionNotSupportedLoggableException
 				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when creating organization xml object', () => {
 			const setup = () => {
 				const resourceProps = createCommonCartridgeWeblinkResourcePropsV110();
-
-				const subOrganization1Props = createCommonCartridgeOrganizationElementPropsV110(
-					CommonCartridgeResourceFactory.createResource(resourceProps)
-				);
-
+				const subOrganization1Props = createCommonCartridgeOrganizationElementPropsV110();
 				const subOrganization2Props = createCommonCartridgeOrganizationElementPropsV110([
 					CommonCartridgeResourceFactory.createResource(resourceProps),
 				]);
-
 				const organizationProps = createCommonCartridgeOrganizationElementPropsV110([
 					CommonCartridgeElementFactory.createElement(subOrganization1Props),
 					CommonCartridgeElementFactory.createElement(subOrganization2Props),
@@ -60,10 +55,10 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 				return { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps };
 			};
 
-			it('should return correct manifest xml object', () => {
+			it('should return organization manifest fragment', () => {
 				const { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps } = setup();
 
-				const result = sut.getManifestXmlObject();
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION);
 
 				expect(result).toStrictEqual({
 					$: {
@@ -74,9 +69,9 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 						{
 							$: {
 								identifier: subOrganization1Props.identifier,
-								identifierref: resourceProps.identifier,
 							},
 							title: subOrganization1Props.title,
+							item: [],
 						},
 						{
 							$: {
@@ -95,6 +90,24 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 						},
 					],
 				});
+			});
+		});
+
+		describe('when using unsupported element type', () => {
+			const setup = () => {
+				const unknownElementType = 'unknown' as CommonCartridgeElementType;
+				const props = createCommonCartridgeOrganizationElementPropsV110();
+				const sut = new CommonCartridgeOrganizationElementV110(props);
+
+				return { sut, unknownElementType };
+			};
+
+			it('should throw error', () => {
+				const { sut, unknownElementType } = setup();
+
+				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrowError(
+					ElementTypeNotSupportedLoggableException
+				);
 			});
 		});
 	});

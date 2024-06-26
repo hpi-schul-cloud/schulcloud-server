@@ -1,26 +1,26 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { HttpService } from '@nestjs/axios';
+import { INestApplication, NotAcceptableException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { Test } from '@nestjs/testing';
-import WebSocket from 'ws';
-import { TextEncoder } from 'util';
-import { INestApplication, NotAcceptableException } from '@nestjs/common';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { createConfigModuleOptions } from '@src/config';
-import { of, throwError } from 'rxjs';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios';
-import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
+import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { TldrawRedisFactory, TldrawRedisService } from '../../redis';
-import { TldrawDrawing } from '../../entities';
-import { TldrawWsService } from '../../service';
-import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
-import { TestConnection, tldrawTestConfig } from '../../testing';
-import { MetricsService } from '../../metrics';
+import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
+import { of, throwError } from 'rxjs';
+import { TextEncoder } from 'util';
+import WebSocket from 'ws';
 import { TldrawWs } from '..';
-import { WsCloseCode, WsCloseMessage } from '../../types';
 import { TldrawConfig } from '../../config';
+import { TldrawDrawing } from '../../entities';
+import { MetricsService } from '../../metrics';
+import { TldrawRedisFactory, TldrawRedisService } from '../../redis';
+import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
+import { TldrawWsService } from '../../service';
+import { TestConnection, tldrawTestConfig } from '../../testing';
+import { WsCloseCode, WsCloseMessage } from '../../types';
 
 // This is a unit test, no api test...need to be refactored
 describe('WebSocketController (WsAdapter)', () => {
@@ -170,7 +170,13 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`should refuse connection if jwt is wrong`, async () => {
 			const { wsCloseSpy, httpGetCallSpy } = setup();
-			const error = new Error('unknown error');
+			const error = new AxiosError('unknown error', '401', undefined, undefined, {
+				config: { headers: new AxiosHeaders() },
+				data: undefined,
+				headers: {},
+				statusText: '401',
+				status: 401,
+			});
 
 			httpGetCallSpy.mockReturnValueOnce(throwError(() => error));
 			ws = await TestConnection.setupWs(wsUrl, 'TEST', { cookie: 'jwt=jwt-mocked' });
