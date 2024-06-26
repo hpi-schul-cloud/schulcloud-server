@@ -27,6 +27,7 @@ export class AccountEntity extends BaseEntityWithTimestamps {
 	systemId?: ObjectId;
 
 	@Property({ nullable: true })
+	@Index()
 	lastLogin?: Date;
 
 	@Property({ nullable: true })
