@@ -11,7 +11,6 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm }
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
-import { AccountValidationService } from './domain/services/account.validation.service';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
@@ -29,13 +28,12 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 		AccountServiceDb,
 		AccountServiceIdm,
 		AccountService,
-		AccountValidationService,
 		{
 			provide: AccountIdmToDoMapper,
 			useFactory: accountIdmToDtoMapperFactory,
 			inject: [ConfigService],
 		},
 	],
-	exports: [AccountService, AccountValidationService],
+	exports: [AccountService],
 })
 export class AccountModule {}

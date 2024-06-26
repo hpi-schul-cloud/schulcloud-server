@@ -4,11 +4,11 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { cleanupCollections, userFactory } from '@shared/testing';
-import { AccountRepo } from './account.repo';
 import { AccountEntity } from '../../domain/entity/account.entity';
-import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
-import { AccountEntityToDoMapper } from './mapper';
 import { accountDoFactory, accountFactory } from '../../testing';
+import { AccountRepo } from './account.repo';
+import { AccountEntityToDoMapper } from './mapper';
+import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 
 describe('account repo', () => {
 	let module: TestingModule;
@@ -110,6 +110,35 @@ describe('account repo', () => {
 		describe('When id does not exist', () => {
 			it('should return null', async () => {
 				const account = await repo.findByUserId(new ObjectId().toHexString());
+				expect(account).toBeNull();
+			});
+		});
+	});
+
+	describe('findByUsername', () => {
+		describe('When username is given', () => {
+			const setup = async () => {
+				const accountToFind = accountFactory.build();
+
+				await em.persistAndFlush(accountToFind);
+				em.clear();
+
+				return accountToFind;
+			};
+
+			it('should find user by username', async () => {
+				const accountToFind = await setup();
+
+				const account = await repo.findByUsername(accountToFind.username);
+
+				expect(account?.username).toEqual(accountToFind.username);
+			});
+		});
+
+		describe('When username is not given', () => {
+			it('should return null', async () => {
+				const account = await repo.findByUsername('');
+
 				expect(account).toBeNull();
 			});
 		});
