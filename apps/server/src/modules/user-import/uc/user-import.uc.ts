@@ -1,6 +1,7 @@
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
@@ -12,7 +13,6 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { UserService } from '@modules/user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
@@ -22,7 +22,6 @@ import {
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
 	UserAlreadyMigratedLoggable,
-	UserMigrationCanceledLoggable,
 } from '../loggable';
 
 import { UserImportService } from '../service';
@@ -332,14 +331,7 @@ export class UserImportUc {
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
-
-		school.inUserMigration = undefined;
-		school.inMaintenanceSince = undefined;
-
-		await this.schoolService.save(school, true);
-
-		this.logger.notice(new UserMigrationCanceledLoggable(school));
+		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
