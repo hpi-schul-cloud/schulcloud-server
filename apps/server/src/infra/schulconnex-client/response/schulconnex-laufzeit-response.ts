@@ -1,19 +1,21 @@
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsOptional, Matches } from 'class-validator';
+
+export const lernperiodeFormat = /^(\d{4})(?:-([1-2]))?$/;
 
 export class SchulconnexLaufzeitResponse {
 	@IsOptional()
-	@IsDate()
-	von?: Date;
+	@IsDateString()
+	von?: string;
 
 	@IsOptional()
-	@IsDate()
-	bis?: Date;
+	@IsDateString()
+	bis?: string;
 
 	@IsOptional()
-	@IsString()
+	@Matches(lernperiodeFormat)
 	vonlernperiode?: string;
 
 	@IsOptional()
-	@IsString()
+	@Matches(lernperiodeFormat)
 	bislernperiode?: string;
 }

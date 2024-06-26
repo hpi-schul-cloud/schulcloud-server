@@ -10,11 +10,13 @@ import {
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client/response';
+import { lernperiodeFormat } from '@infra/schulconnex-client/response/schulconnex-laufzeit-response';
 import { GroupTypes } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
+import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import {
 	ExternalGroupDto,
 	ExternalGroupUserDto,
@@ -187,35 +189,39 @@ export class SchulconnexResponseMapper {
 			return undefined;
 		}
 
-		if (duration.von && duration.bis) {
-			return {
-				from: duration.von,
-				until: duration.bis,
-			};
+		let from: Date;
+		let until: Date;
+		if (duration.von) {
+			from = new Date(duration.von);
+		} else if (duration.vonlernperiode) {
+			const fromPeriode: TimePeriode = SchulconnexResponseMapper.mapLernperiode(duration.vonlernperiode);
+
+			from = fromPeriode.from;
+		} else {
+			throw new InvalidLaufzeitResponseLoggableException(duration);
 		}
 
-		if (duration.vonlernperiode && duration.bislernperiode) {
-			const fromPeriode: TimePeriode | undefined = SchulconnexResponseMapper.mapLernperiode(duration.vonlernperiode);
-			const untilPeriode: TimePeriode | undefined = SchulconnexResponseMapper.mapLernperiode(duration.bislernperiode);
+		if (duration.bis) {
+			until = new Date(duration.bis);
+		} else if (duration.bislernperiode) {
+			const untilPeriode: TimePeriode = SchulconnexResponseMapper.mapLernperiode(duration.bislernperiode);
 
-			if (!fromPeriode || !untilPeriode) {
-				return undefined;
-			}
-
-			return {
-				from: fromPeriode.from,
-				until: untilPeriode.until,
-			};
+			until = untilPeriode.until;
+		} else {
+			throw new InvalidLaufzeitResponseLoggableException(duration);
 		}
 
-		return undefined;
+		return {
+			from,
+			until,
+		};
 	}
 
-	public static mapLernperiode(lernperiode: string): TimePeriode | undefined {
-		const matches: RegExpMatchArray | null = lernperiode.match(/^(\d{4})(?:-([1-2]))?$/);
+	public static mapLernperiode(lernperiode: string): TimePeriode {
+		const matches: RegExpMatchArray | null = lernperiode.match(lernperiodeFormat);
 
 		if (!matches || matches.length < 2) {
-			return undefined;
+			throw new InvalidLernperiodeResponseLoggableException(lernperiode);
 		}
 
 		const year = Number(matches[1]);
