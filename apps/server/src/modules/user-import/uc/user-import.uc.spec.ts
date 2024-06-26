@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
@@ -26,14 +27,8 @@ import {
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
-import { UserService } from '@modules/user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import {
-	SchoolNotMigratedLoggableException,
-	UserAlreadyMigratedLoggable,
-	UserMigrationCanceledLoggable,
-} from '../loggable';
-
+import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -1195,35 +1190,12 @@ describe('[ImportUserModule]', () => {
 					expect(userImportService.checkFeatureEnabled).toHaveBeenCalled();
 				});
 
-				it('should delete import users for school', async () => {
-					const { user } = setup();
-
-					await uc.cancelMigration(user.id);
-
-					expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(user.school);
-				});
-
-				it('should save school with reset migration flags', async () => {
+				it('should call reset migration', async () => {
 					const { user, school } = setup();
 
 					await uc.cancelMigration(user.id);
 
-					expect(schoolService.save).toHaveBeenCalledWith(
-						{
-							...school,
-							inUserMigration: undefined,
-							inMaintenanceSince: undefined,
-						},
-						true
-					);
-				});
-
-				it('should log canceled migration', async () => {
-					const { user } = setup();
-
-					await uc.cancelMigration(user.id);
-
-					expect(logger.notice).toHaveBeenCalledWith(new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo)));
+					expect(userImportService.resetMigrationForUsersSchool).toHaveBeenCalledWith(user, school);
 				});
 			});
 		});
