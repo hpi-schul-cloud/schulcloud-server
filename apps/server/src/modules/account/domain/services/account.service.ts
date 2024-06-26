@@ -359,17 +359,12 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 	async updateLastLogin(accountId: string, lastLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastLogin(accountId, lastLogin);
-		// const idmAccount = await this.executeIdmMethod(async () => {
-		// 	this.logger.debug(new UpdatingLastLoginLoggable(accountId));
-		// 	const account = await this.accountIdm.updateLastLogin(accountId, lastLogin);
-		// 	this.logger.debug(new UpdatedLastLoginLoggable(accountId));
-		// 	return account;
-		// });
-
-		return new Account({
-			...ret.getProps(),
-			// idmReferenceId: idmAccount?.idmReferenceId
+		const idmAccount = await this.executeIdmMethod(async () => {
+			const account = await this.accountIdm.updateLastLogin(accountId, lastLogin);
+			return account;
 		});
+
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
