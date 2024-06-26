@@ -5,7 +5,6 @@ import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awaren
 import { decoding, encoding } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
 import { Buffer } from 'node:buffer';
-import { YMap } from 'yjs/dist/src/types/YMap';
 import { DomainErrorHandler } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { formatMessureLog, initilisedPerformanceObserver } from '@shared/common/measure-utils';
@@ -17,14 +16,7 @@ import {
 	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import {
-	AwarenessConnectionsUpdate,
-	TldrawAsset,
-	TldrawShape,
-	UpdateOrigin,
-	UpdateType,
-	WSMessageType,
-} from '../types';
+import { AwarenessConnectionsUpdate, UpdateOrigin, UpdateType, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
