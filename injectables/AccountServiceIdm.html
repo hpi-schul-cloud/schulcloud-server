@@ -194,6 +194,11 @@
                                 <a href="#getOptionalIdmAccount" >getOptionalIdmAccount</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#isUniqueEmail" >isUniqueEmail</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
                             </li>
@@ -1260,6 +1265,82 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isUniqueEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>isUniqueEmail</b></span>
+                        <a href="#isUniqueEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isUniqueEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/AbstractAccountService.html" target="_self" >AbstractAccountService</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:195</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -2145,6 +2226,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 			return account.id;
 		}
 		throw new EntityNotFoundError(&#x60;Account with id ${id.toString()} not found&#x60;);
+	}
+
+	public async isUniqueEmail(email: string): Promise&lt;boolean&gt; {
+		const [, count] &#x3D; await this.identityManager.findAccountsByUsername(email);
+		const isUniqueEmail &#x3D; count &#x3D;&#x3D;&#x3D; 0;
+
+		return isUniqueEmail;
 	}
 }
 </code></pre>

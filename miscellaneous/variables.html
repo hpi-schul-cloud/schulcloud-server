@@ -1543,7 +1543,7 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>AccountFactory.define(AccountEntity, ({ sequence }) &#x3D;&gt; {
 	return {
-		username: &#x60;account${sequence}&#x60;,
+		username: &#x60;account#${sequence}@example.tld&#x60;,
 		password: defaultTestPasswordHash,
 		userId: new ObjectId(),
 	};

@@ -174,6 +174,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
+                                <a href="#isUniqueEmail" >isUniqueEmail</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
                                 <a href="#save" >save</a>
                             </li>
                             <li>
@@ -804,6 +808,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isUniqueEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Abstract</span>
+                        <span ><b>isUniqueEmail</b></span>
+                        <a href="#isUniqueEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isUniqueEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.abstract.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                             <span class="modifier">Abstract</span>
@@ -1418,6 +1491,8 @@ export abstract class AbstractAccountService {
 	abstract deleteByUserId(userId: EntityId): Promise&lt;EntityId[]&gt;;
 
 	abstract searchByUsernameExactMatch(userName: string): Promise&lt;Counted&lt;Account[]&gt;&gt;;
+
+	abstract isUniqueEmail(email: string): Promise&lt;boolean&gt;;
 }
 </code></pre>
     </div>

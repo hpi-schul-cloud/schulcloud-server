@@ -223,6 +223,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#isUniqueEmail" >isUniqueEmail</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#replaceMyTemporaryPassword" >replaceMyTemporaryPassword</a>
                             </li>
                             <li>
@@ -302,12 +307,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/AccountConfig.html" target="_self">ConfigService&lt;AccountConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, eventBus: EventBus, orm: MikroORM)</code>
+<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/AccountConfig.html" target="_self">ConfigService&lt;AccountConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:55</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:54</a></div>
                             </td>
                         </tr>
 
@@ -353,18 +358,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../interfaces/AccountConfig.html" target="_self" >ConfigService&lt;AccountConfig | &gt;</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>accountValidationService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/AccountValidationService.html" target="_self" >AccountValidationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -462,15 +455,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkUniqueEmail(account: <a href="../classes/Account.html" target="_self">Account</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>checkUniqueEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="438"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:438</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="429"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:429</a></div>
                         </td>
                     </tr>
 
@@ -490,30 +483,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>account</td>
-                                            <td>
-                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>user</td>
-                                            <td>
-                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>email</td>
                                             <td>
@@ -563,8 +532,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="149"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:149</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:147</a></div>
                         </td>
                     </tr>
 
@@ -650,7 +619,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:386</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:377</a></code>
 </div>
                         </td>
                     </tr>
@@ -726,7 +695,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:395</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:386</a></code>
 </div>
                         </td>
                     </tr>
@@ -796,8 +765,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="407"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:407</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="398"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:398</a></div>
                         </td>
                     </tr>
 
@@ -866,8 +835,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="427"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:427</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="418"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:418</a></div>
                         </td>
                     </tr>
 
@@ -949,7 +918,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:249</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:247</a></code>
 </div>
                         </td>
                     </tr>
@@ -1024,7 +993,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:257</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:255</a></code>
 </div>
                         </td>
                     </tr>
@@ -1099,7 +1068,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:261</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:259</a></code>
 </div>
                         </td>
                     </tr>
@@ -1168,8 +1137,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="444"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:444</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="435"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:435</a></div>
                         </td>
                     </tr>
 
@@ -1255,7 +1224,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:265</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:263</a></code>
 </div>
                         </td>
                     </tr>
@@ -1347,7 +1316,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:423</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:414</a></code>
 </div>
                         </td>
                     </tr>
@@ -1441,7 +1410,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:253</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:251</a></code>
 </div>
                         </td>
                     </tr>
@@ -1519,8 +1488,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="244"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:244</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:242</a></div>
                         </td>
                     </tr>
 
@@ -1569,6 +1538,82 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isUniqueEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>isUniqueEmail</b></span>
+                        <a href="#isUniqueEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isUniqueEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/AbstractAccountService.html" target="_self" >AbstractAccountService</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:441</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="replaceMyTemporaryPassword"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -1588,8 +1633,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="198"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:198</a></div>
                         </td>
                     </tr>
 
@@ -1687,7 +1732,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:277</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:275</a></code>
 </div>
                         </td>
                     </tr>
@@ -1756,8 +1801,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="344"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:344</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="335"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:335</a></div>
                         </td>
                     </tr>
 
@@ -1831,7 +1876,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:273</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:271</a></code>
 </div>
                         </td>
                     </tr>
@@ -1906,7 +1951,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:269</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:267</a></code>
 </div>
                         </td>
                     </tr>
@@ -2000,8 +2045,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="159"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:159</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -2093,8 +2138,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -2180,7 +2225,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:360</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:351</a></code>
 </div>
                         </td>
                     </tr>
@@ -2262,8 +2307,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -2361,7 +2406,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:371</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:362</a></code>
 </div>
                         </td>
                     </tr>
@@ -2443,8 +2488,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:116</a></div>
                         </td>
                     </tr>
 
@@ -2554,7 +2599,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:349</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:340</a></code>
 </div>
                         </td>
                     </tr>
@@ -2635,8 +2680,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="134"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:134</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -2716,8 +2761,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="301"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:301</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:299</a></div>
                         </td>
                     </tr>
 
@@ -2791,7 +2836,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:382</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:373</a></code>
 </div>
                         </td>
                     </tr>
@@ -2877,7 +2922,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:55</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -2935,7 +2980,6 @@ import {
 import { AccountServiceDb } from &#x27;./account-db.service&#x27;;
 import { AccountServiceIdm } from &#x27;./account-idm.service&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
-import { AccountValidationService } from &#x27;./account.validation.service&#x27;;
 
 type UserPreferences &#x3D; {
 	firstLogin: boolean;
@@ -2950,7 +2994,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService&lt;AccountConfig, true&gt;,
-		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: Logger,
 		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
@@ -3015,7 +3058,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	): Promise&lt;boolean&gt; {
 		if (updateData.email &amp;&amp; user.email !&#x3D;&#x3D; updateData.email) {
 			const newMail &#x3D; updateData.email.toLowerCase();
-			await this.checkUniqueEmail(account, user, newMail);
+			await this.checkUniqueEmail(newMail);
 			user.email &#x3D; newMail;
 			accountSave.username &#x3D; newMail;
 			return true;
@@ -3060,7 +3103,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		if (updateData.username !&#x3D;&#x3D; undefined) {
 			const newMail &#x3D; updateData.username.toLowerCase();
-			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			await this.checkUniqueEmail(newMail);
 			targetUser.email &#x3D; newMail;
 			targetAccount.username &#x3D; newMail;
 			updateUser &#x3D; true;
@@ -3216,14 +3259,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword(&#x27;password&#x27;), will be done by account service ✔
 		// checkUnique ✔
-		if (
-			!(await this.accountValidationService.isUniqueEmail(
-				accountSave.username,
-				accountSave.userId,
-				accountSave.id,
-				accountSave.systemId
-			))
-		) {
+		if (!(await this.isUniqueEmail(accountSave.username))) {
 			throw new ValidationError(&#x27;Username already exists&#x27;);
 		}
 		// removePassword hook is not implemented
@@ -3327,8 +3363,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return null;
 	}
 
-	private async checkUniqueEmail(account: Account, user: User, email: string): Promise&lt;void&gt; {
-		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
+	private async checkUniqueEmail(email: string): Promise&lt;void&gt; {
+		if (!(await this.isUniqueEmail(email))) {
 			throw new ValidationError(&#x60;The email address is already in use!&#x60;);
 		}
 	}
@@ -3337,6 +3373,12 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		const foundAccounts &#x3D; await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
 
 		return foundAccounts;
+	}
+
+	public async isUniqueEmail(email: string): Promise&lt;boolean&gt; {
+		const isUniqueEmail &#x3D; await this.accountImpl.isUniqueEmail(email);
+
+		return isUniqueEmail;
 	}
 }
 </code></pre>
