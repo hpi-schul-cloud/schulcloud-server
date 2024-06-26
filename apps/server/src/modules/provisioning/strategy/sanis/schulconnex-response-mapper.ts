@@ -187,7 +187,7 @@ export class SchulconnexResponseMapper {
 			return undefined;
 		}
 
-		if (duration.von && duration.bis && duration.bis > duration.von) {
+		if (duration.von && duration.bis) {
 			return {
 				from: duration.von,
 				until: duration.bis,
@@ -198,7 +198,7 @@ export class SchulconnexResponseMapper {
 			const fromPeriode: TimePeriode | undefined = SchulconnexResponseMapper.mapLernperiode(duration.vonlernperiode);
 			const untilPeriode: TimePeriode | undefined = SchulconnexResponseMapper.mapLernperiode(duration.bislernperiode);
 
-			if (!fromPeriode || !untilPeriode || fromPeriode > untilPeriode) {
+			if (!fromPeriode || !untilPeriode) {
 				return undefined;
 			}
 
