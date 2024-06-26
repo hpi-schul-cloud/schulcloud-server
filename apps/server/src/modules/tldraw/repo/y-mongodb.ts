@@ -103,7 +103,7 @@ export class YMongodb implements OnModuleInit {
 
 	// return value is not void, need to be changed
 	public compressDocumentTransactional(docName: string): Promise<void> {
-		performance.mark('compressDocumentTransactional - start');
+		performance.mark('compressDocumentTransactional');
 
 		return this._transact(docName, async () => {
 			const updates = await this.getMongoUpdates(docName);
@@ -126,7 +126,7 @@ export class YMongodb implements OnModuleInit {
 					doc_name: docName,
 					clock,
 				}),
-				'compressDocumentTransactional - start'
+				'compressDocumentTransactional'
 			);
 		});
 	}
@@ -162,13 +162,17 @@ export class YMongodb implements OnModuleInit {
 		return this.repo.readAsCursor(query, opts);
 	}
 
-	private mergeDocsTogether(doc: TldrawDrawing, docs: TldrawDrawing[], docIndex: number): Buffer[] {
-		const parts = [Buffer.from(doc.value.buffer)];
-		let currentPartId: number | undefined = doc.part;
-		for (let i = docIndex + 1; i < docs.length; i += 1) {
-			const part = docs[i];
+	private mergeDocsTogether(
+		tldrawDrawingEntity: TldrawDrawing,
+		tldrawDrawingEntities: TldrawDrawing[],
+		docIndex: number
+	): Buffer[] {
+		const parts = [Buffer.from(tldrawDrawingEntity.value.buffer)];
+		let currentPartId: number | undefined = tldrawDrawingEntity.part;
+		for (let i = docIndex + 1; i < tldrawDrawingEntities.length; i += 1) {
+			const part = tldrawDrawingEntities[i];
 
-			if (!this.isSameClock(part, doc)) {
+			if (!this.isSameClock(part, tldrawDrawingEntity)) {
 				break;
 			}
 
@@ -184,12 +188,12 @@ export class YMongodb implements OnModuleInit {
 	/**
 	 * Convert the mongo document array to an array of values (as buffers)
 	 */
-	private convertMongoUpdates(docs: TldrawDrawing[]): Buffer[] {
-		if (!Array.isArray(docs) || !docs.length) return [];
+	private convertMongoUpdates(tldrawDrawingEntities: TldrawDrawing[]): Buffer[] {
+		if (!Array.isArray(tldrawDrawingEntities) || !tldrawDrawingEntities.length) return [];
 
 		const updates: Buffer[] = [];
-		for (let i = 0; i < docs.length; i += 1) {
-			const doc = docs[i];
+		for (let i = 0; i < tldrawDrawingEntities.length; i += 1) {
+			const doc = tldrawDrawingEntities[i];
 
 			if (!doc.part) {
 				updates.push(Buffer.from(doc.value.buffer));
@@ -197,7 +201,7 @@ export class YMongodb implements OnModuleInit {
 
 			if (doc.part === 1) {
 				// merge the docs together that got split because of mongodb size limits
-				const parts = this.mergeDocsTogether(doc, docs, i);
+				const parts = this.mergeDocsTogether(doc, tldrawDrawingEntities, i);
 				updates.push(Buffer.concat(parts));
 			}
 		}
@@ -209,9 +213,9 @@ export class YMongodb implements OnModuleInit {
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
 		const uniqueKey = KeyFactory.createForUpdate(docName);
-		const docs = await this.getMongoBulkData(uniqueKey, opts);
+		const tldrawDrawingEntitiess = await this.getMongoBulkData(uniqueKey, opts);
 
-		return this.convertMongoUpdates(docs);
+		return this.convertMongoUpdates(tldrawDrawingEntities);
 	}
 
 	private async writeStateVector(docName: string, sv: Uint8Array, clock: number): Promise<void> {
