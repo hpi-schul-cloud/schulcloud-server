@@ -43,7 +43,6 @@ import {
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountValidationService } from './account.validation.service';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -58,7 +57,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<AccountConfig, true>,
-		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: Logger,
 		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
@@ -123,7 +121,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	): Promise<boolean> {
 		if (updateData.email && user.email !== updateData.email) {
 			const newMail = updateData.email.toLowerCase();
-			await this.checkUniqueEmail(account, user, newMail);
+			await this.checkUniqueEmail(newMail);
 			user.email = newMail;
 			accountSave.username = newMail;
 			return true;
@@ -168,7 +166,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		if (updateData.username !== undefined) {
 			const newMail = updateData.username.toLowerCase();
-			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			await this.checkUniqueEmail(newMail);
 			targetUser.email = newMail;
 			targetAccount.username = newMail;
 			updateUser = true;
@@ -324,14 +322,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		if (
-			!(await this.accountValidationService.isUniqueEmail(
-				accountSave.username,
-				accountSave.userId,
-				accountSave.id,
-				accountSave.systemId
-			))
-		) {
+		if (!(await this.isUniqueEmail(accountSave.username))) {
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
@@ -435,8 +426,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return null;
 	}
 
-	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
-		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
+	private async checkUniqueEmail(email: string): Promise<void> {
+		if (!(await this.isUniqueEmail(email))) {
 			throw new ValidationError(`The email address is already in use!`);
 		}
 	}
@@ -445,5 +436,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
 
 		return foundAccounts;
+	}
+
+	public async isUniqueEmail(email: string): Promise<boolean> {
+		const isUniqueEmail = await this.accountImpl.isUniqueEmail(email);
+
+		return isUniqueEmail;
 	}
 }

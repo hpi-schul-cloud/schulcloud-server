@@ -1,4 +1,3 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { ObjectId } from 'bson';
 import { Builder } from 'xml2js';
 
@@ -17,29 +16,10 @@ export function buildXmlString(obj: unknown): string {
 	return xmlBuilder.buildObject(obj);
 }
 
-export function createVersionNotSupportedError(version: string): Error {
-	return new InternalServerErrorException(`Common Cartridge version ${version} is not supported`);
-}
-
-export function createResourceTypeNotSupportedError(type: string): Error {
-	return new InternalServerErrorException(`Common Cartridge resource type ${type} is not supported`);
-}
-
-export function createElementTypeNotSupportedError(type: string): Error {
-	// AI next 1 line
-	return new InternalServerErrorException(`Common Cartridge element type ${type} is not supported`);
-}
-
 export function createIdentifier(identifier?: string | ObjectId): string {
 	if (!identifier) {
 		return `i${new ObjectId().toString()}`;
 	}
 
 	return `i${identifier.toString()}`;
-}
-
-export function checkIntendedUse(intendedUse: string, supportedIntendedUses: string[]): void | never {
-	if (!supportedIntendedUses.includes(intendedUse)) {
-		throw new Error(`Intended use ${intendedUse} is not supported`);
-	}
 }

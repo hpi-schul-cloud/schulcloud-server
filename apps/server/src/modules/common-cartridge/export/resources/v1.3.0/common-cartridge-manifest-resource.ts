@@ -7,7 +7,8 @@ import {
 	CommonCartridgeOrganizationsWrapperElementV130,
 	CommonCartridgeResourcesWrapperElementV130,
 } from '../../elements/v1.3.0';
-import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV130 = {
@@ -24,23 +25,28 @@ export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource
 		super(props);
 	}
 
-	public canInline(): boolean {
-		return false;
-	}
-
 	public getFilePath(): string {
 		return 'imsmanifest.xml';
 	}
 
 	public getFileContent(): string {
-		return buildXmlString(this.getManifestXmlObject());
+		return buildXmlString(this.getManifestXmlObject(CommonCartridgeElementType.MANIFEST));
 	}
 
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.MANIFEST:
+				return this.getManifestXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	public getManifestXmlObjectInternal(): XmlObject {
 		return {
 			manifest: {
 				$: {
@@ -54,17 +60,17 @@ export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource
 						'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest https://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd ' +
 						'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource https://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd',
 				},
-				metadata: this.props.metadata.getManifestXmlObject(),
+				metadata: this.props.metadata.getManifestXmlObject(CommonCartridgeElementType.METADATA),
 				organizations: new CommonCartridgeOrganizationsWrapperElementV130({
 					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
 					version: this.props.version,
 					items: this.props.organizations,
-				}).getManifestXmlObject(),
+				}).getManifestXmlObject(CommonCartridgeElementType.ORGANIZATIONS_WRAPPER),
 				...new CommonCartridgeResourcesWrapperElementV130({
 					type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 					version: this.props.version,
 					items: this.props.resources,
-				}).getManifestXmlObject(),
+				}).getManifestXmlObject(CommonCartridgeElementType.RESOURCES_WRAPPER),
 			},
 		};
 	}

@@ -3,10 +3,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { AccountEntity } from '../../domain/entity/account.entity';
-import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 import { Account } from '../../domain/account';
+import { AccountEntity } from '../../domain/entity/account.entity';
 import { AccountEntityToDoMapper } from './mapper';
+import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 import { AccountScope } from './scope/account-scope';
 
 @Injectable()
@@ -62,6 +62,16 @@ export class AccountRepo {
 
 	public async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
 		const entity = await this.em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
+
+		return AccountEntityToDoMapper.mapToDo(entity);
+	}
+
+	public async findByUsername(username: string): Promise<Account | null> {
+		const entity = await this.em.findOne(AccountEntity, { username });
+
+		if (!entity) {
+			return null;
+		}
 
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}

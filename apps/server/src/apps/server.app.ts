@@ -4,7 +4,6 @@ import { Mail, MailService } from '@infra/mail';
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
-import { AccountValidationService } from '@src/modules/account/domain/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/api/account.uc';
 import { SystemRule } from '@modules/authorization/domain/rules';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
@@ -82,8 +81,6 @@ async function bootstrap() {
 	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-	feathersExpress.services['nest-account-validation-service'] = nestApp.get(AccountValidationService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment

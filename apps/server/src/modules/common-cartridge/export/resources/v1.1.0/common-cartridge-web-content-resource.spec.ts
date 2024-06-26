@@ -1,28 +1,9 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { createCommonCartridgeWebContentResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
-import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException, VersionNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeWebContentResourceV110 } from './common-cartridge-web-content-resource';
 
 describe('CommonCartridgeWebContentResourceV110', () => {
-	describe('canInline', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
-			const setup = () => {
-				const props = createCommonCartridgeWebContentResourcePropsV110();
-				const sut = new CommonCartridgeWebContentResourceV110(props);
-
-				return { sut };
-			};
-
-			it('should return false', () => {
-				const { sut } = setup();
-
-				const result = sut.canInline();
-
-				expect(result).toBe(false);
-			});
-		});
-	});
-
 	describe('getFilePath', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
 			const setup = () => {
@@ -85,14 +66,14 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 
 			it('should throw error', () => {
 				expect(() => new CommonCartridgeWebContentResourceV110(notSupportedProps)).toThrow(
-					InternalServerErrorException
+					VersionNotSupportedLoggableException
 				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when creating organization xml object', () => {
 			const setup = () => {
 				const props = createCommonCartridgeWebContentResourcePropsV110();
 				const sut = new CommonCartridgeWebContentResourceV110(props);
@@ -100,10 +81,33 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 				return { sut, props };
 			};
 
-			it('should return the correct XML object', () => {
+			it('should return organization manifest fragment', () => {
 				const { sut, props } = setup();
 
-				const result = sut.getManifestXmlObject();
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION);
+
+				expect(result).toEqual({
+					$: {
+						identifier: expect.any(String),
+						identifierref: props.identifier,
+					},
+					title: props.title,
+				});
+			});
+		});
+
+		describe('when creating resource xml object', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWebContentResourcePropsV110();
+				const sut = new CommonCartridgeWebContentResourceV110(props);
+
+				return { sut, props };
+			};
+
+			it('should return resource manifest fragment', () => {
+				const { sut, props } = setup();
+
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.RESOURCE);
 
 				expect(result).toEqual({
 					$: {
@@ -117,6 +121,22 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 						},
 					},
 				});
+			});
+		});
+
+		describe('when using unsupported element type', () => {
+			const setup = () => {
+				const unknownElementType = 'unknown' as CommonCartridgeElementType;
+				const props = createCommonCartridgeWebContentResourcePropsV110();
+				const sut = new CommonCartridgeWebContentResourceV110(props);
+
+				return { sut, unknownElementType };
+			};
+
+			it('should throw error', () => {
+				const { sut, unknownElementType } = setup();
+
+				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrow(ElementTypeNotSupportedLoggableException);
 			});
 		});
 	});

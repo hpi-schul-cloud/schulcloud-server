@@ -1,80 +1,81 @@
 import AdmZip from 'adm-zip';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../common-cartridge.enums';
 import {
 	CommonCartridgeElementFactory,
 	CommonCartridgeElementProps,
 } from '../elements/common-cartridge-element-factory';
-import { CommonCartridgeElement, CommonCartridgeResource } from '../interfaces';
+import { MissingMetadataLoggableException } from '../errors';
+import { CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
-import { OmitVersion } from '../utils';
 import {
-	CommonCartridgeOrganizationBuilder,
-	CommonCartridgeOrganizationBuilderOptions,
-} from './common-cartridge-organization-builder';
+	CommonCartridgeOrganizationNode,
+	CommonCartridgeOrganizationNodeProps,
+} from './common-cartridge-organization-node';
+import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
 export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 };
 
+export type CommonCartridgeOrganizationProps = Omit<CommonCartridgeOrganizationNodeProps, 'version' | 'type'>;
+
 export class CommonCartridgeFileBuilder {
-	private readonly archive: AdmZip = new AdmZip();
+	private readonly resourcesBuilder: CommonCartridgeResourceCollectionBuilder =
+		new CommonCartridgeResourceCollectionBuilder();
 
-	private readonly organizationBuilders = new Array<CommonCartridgeOrganizationBuilder>();
+	private readonly organizationsRoot: CommonCartridgeOrganizationNode[] = [];
 
-	private readonly resources = new Array<CommonCartridgeResource>();
-
-	private metadata?: CommonCartridgeElement;
+	private metadataElement: CommonCartridgeElement | null = null;
 
 	constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
 
-	public addMetadata(props: CommonCartridgeElementProps): CommonCartridgeFileBuilder {
-		this.metadata = CommonCartridgeElementFactory.createElement({
+	public addMetadata(metadataProps: CommonCartridgeElementProps): void {
+		this.metadataElement = CommonCartridgeElementFactory.createElement({
 			version: this.props.version,
-			...props,
+			...metadataProps,
 		});
-
-		return this;
 	}
 
-	public addOrganization(
-		props: OmitVersion<CommonCartridgeOrganizationBuilderOptions>
-	): CommonCartridgeOrganizationBuilder {
-		const builder = new CommonCartridgeOrganizationBuilder(
-			{ ...props, version: this.props.version },
-			(resource: CommonCartridgeResource) => this.resources.push(resource)
+	public createOrganization(organizationProps: CommonCartridgeOrganizationProps): CommonCartridgeOrganizationNode {
+		const organization = new CommonCartridgeOrganizationNode(
+			{ ...organizationProps, version: this.props.version, type: CommonCartridgeElementType.ORGANIZATION },
+			this.resourcesBuilder,
+			null
 		);
 
-		this.organizationBuilders.push(builder);
+		this.organizationsRoot.push(organization);
 
-		return builder;
+		return organization;
 	}
 
-	public async build(): Promise<Buffer> {
-		if (!this.metadata) {
-			throw new Error('Metadata is not defined');
+	public build(): Buffer {
+		if (!this.metadataElement) {
+			throw new MissingMetadataLoggableException();
 		}
 
-		const organizations = this.organizationBuilders.map((builder) => builder.build());
+		const archive = new AdmZip();
+		const organizations = this.organizationsRoot.map((organization) => organization.build());
+		const resources = this.resourcesBuilder.build();
 		const manifest = CommonCartridgeResourceFactory.createResource({
 			type: CommonCartridgeResourceType.MANIFEST,
 			version: this.props.version,
 			identifier: this.props.identifier,
-			metadata: this.metadata,
+			metadata: this.metadataElement,
 			organizations,
-			resources: this.resources,
+			resources,
 		});
 
-		for (const resources of this.resources) {
-			if (!resources.canInline()) {
-				this.archive.addFile(resources.getFilePath(), Buffer.from(resources.getFileContent()));
-			}
-		}
+		archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
 
-		this.archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
+		resources.forEach((resource) => {
+			archive.addFile(resource.getFilePath(), Buffer.from(resource.getFileContent()));
+		});
 
-		const buffer = await this.archive.toBufferPromise();
-
-		return buffer;
+		return archive.toBuffer();
 	}
 }

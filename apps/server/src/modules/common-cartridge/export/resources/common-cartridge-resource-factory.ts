@@ -1,6 +1,7 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { VersionNotSupportedLoggableException } from '../errors';
 import { CommonCartridgeResource } from '../interfaces';
-import { OmitVersionAndFolder, createVersionNotSupportedError } from '../utils';
+import { OmitVersionAndFolder } from '../utils';
 import {
 	CommonCartridgeManifestResourcePropsV110,
 	CommonCartridgeResourceFactoryV110,
@@ -20,7 +21,7 @@ export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV130>
 	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV130>;
 
-type CommonCartridgeResourcePropsInternal =
+export type CommonCartridgeResourcePropsInternal =
 	| CommonCartridgeManifestResourcePropsV110
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110
@@ -38,7 +39,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeVersion.V_1_3_0:
 				return CommonCartridgeResourceFactoryV130.createResource(props);
 			default:
-				throw createVersionNotSupportedError(version);
+				throw new VersionNotSupportedLoggableException(version);
 		}
 	}
 }
