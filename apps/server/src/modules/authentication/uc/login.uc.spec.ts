@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AccountService } from '@src/modules/account';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoginDto } from './dto';
 import { LoginUc } from './login.uc';
@@ -9,6 +10,7 @@ describe('LoginUc', () => {
 	let loginUc: LoginUc;
 
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -18,11 +20,16 @@ describe('LoginUc', () => {
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
 				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
 			],
 		}).compile();
 
 		loginUc = await module.get(LoginUc);
 		authenticationService = await module.get(AuthenticationService);
+		accountService = await module.get(AccountService);
 	});
 
 	describe('getLoginData', () => {
@@ -61,6 +68,14 @@ describe('LoginUc', () => {
 					support: userInfo.impersonated,
 					isExternalUser: userInfo.isExternalUser,
 				});
+			});
+
+			it('should call updateLastLogin', async () => {
+				const { userInfo } = setup();
+
+				await loginUc.getLoginData(userInfo);
+
+				expect(accountService.updateLastLogin).toHaveBeenCalledWith(userInfo.accountId, expect.any(Date));
 			});
 
 			it('should return a loginDto', async () => {

@@ -569,6 +569,14 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('updateFailedLogin', () => {
+		it('should call updateLastLogin in accountServiceDb', async () => {
+			await accountService.updateLastLogin('accountId', new Date());
+
+			expect(accountServiceDb.updateLastLogin).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('updateLastTriedFailedLogin', () => {
 		describe('When calling updateLastTriedFailedLogin in accountService', () => {
 			it('should call updateLastTriedFailedLogin in accountServiceDb', async () => {
