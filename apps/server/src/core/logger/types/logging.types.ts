@@ -7,7 +7,7 @@ export type ErrorLogMessage = {
 	error?: Error;
 	type: string; // TODO: use enum
 	stack?: string;
-	data?: LogMessageData;
+	data?: LogMessageDataObject;
 };
 
 export type ValidationErrorLogMessage = {
