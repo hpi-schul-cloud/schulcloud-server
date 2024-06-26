@@ -3,9 +3,9 @@ import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeepPartial } from 'fishery';
-import { AccountEntity, IdmAccountProperties } from '@src/modules/account/domain/entity/account.entity';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { AccountEntity, IdmAccountProperties } from '@src/modules/account/domain/entity/account.entity';
+import { DeepPartial } from 'fishery';
 
 export const defaultTestPassword = 'DummyPasswd!1';
 export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -58,7 +58,7 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 // !!! important username should not be contain a space !!!
 export const accountFactory = AccountFactory.define(AccountEntity, ({ sequence }) => {
 	return {
-		username: `account${sequence}`,
+		username: `account#${sequence}@example.tld`,
 		password: defaultTestPasswordHash,
 		userId: new ObjectId(),
 	};
