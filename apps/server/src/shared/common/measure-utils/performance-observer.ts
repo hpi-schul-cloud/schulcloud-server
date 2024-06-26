@@ -13,7 +13,12 @@ class MeasureLoggable implements Loggable {
 	}
 
 	getLogMessage(): LoggableMessage {
-		const data = JSON.stringify(this.entries);
+		const formatedStrings = this.entries.map((entry) => {
+			const mappedInfos = `${entry.name}, duration:${entry.duration} }`;
+
+			return mappedInfos;
+		});
+		const data = `[${formatedStrings.join(', ')}]`;
 
 		return {
 			message: 'Measure result',
@@ -53,7 +58,7 @@ export const initilisedPerformanceObserver = (infoLogger: InfoLogger): Performan
 		infoLogger.info(new InitalisePerformanceLoggable());
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		obs = new PerformanceObserver((perfObserverList, observer) => {
-			const entries = perfObserverList.getEntries();
+			const entries = perfObserverList.getEntriesByType('measure');
 			const loggable = new MeasureLoggable(entries);
 			infoLogger.info(loggable);
 		});
@@ -61,4 +66,10 @@ export const initilisedPerformanceObserver = (infoLogger: InfoLogger): Performan
 	}
 
 	return obs;
+};
+
+export const formatMessureLog = (object: Record<string, unknown>): string => {
+	const jsonString = Object.entries(object).map((array) => array.join(': '));
+
+	return `{ ${jsonString.join(', ')}  `;
 };

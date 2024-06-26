@@ -8,7 +8,7 @@ import { Buffer } from 'node:buffer';
 import { YMap } from 'yjs/dist/src/types/YMap';
 import { DomainErrorHandler } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
+import { formatMessureLog, initilisedPerformanceObserver } from '@shared/common/measure-utils';
 import { TldrawRedisService } from '../redis';
 import {
 	CloseConnectionLoggable,
@@ -51,7 +51,7 @@ export class TldrawWsService implements OnModuleInit {
 	}
 
 	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
-		performance.mark('closeConnection - start');
+		performance.mark('closeConnection');
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws);
 			doc.connections.delete(ws);
@@ -62,11 +62,13 @@ export class TldrawWsService implements OnModuleInit {
 
 		ws.close();
 		await this.finalizeIfNoConnections(doc);
-		performance.mark('closeConnection - end');
 		performance.measure(
-			`tldraw:TldrawWsService:closeConnection::${doc.name}`,
-			'closeConnection - start',
-			'closeConnection - end'
+			formatMessureLog({
+				location: 'tldraw:TldrawWsService:closeConnection',
+				doc_name: doc.name,
+				doc_connection_total: doc.connections.size,
+			}),
+			'closeConnection'
 		);
 	}
 
@@ -197,16 +199,10 @@ export class TldrawWsService implements OnModuleInit {
 	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 
-		performance.mark('get document - start');
+		performance.mark('setupWsConnection');
 		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
-		performance.mark('ws connection to doc - done');
-		performance.measure(
-			`tldraw:TldrawWsService:setupWsConnection::${docName}`,
-			'get document - start',
-			'ws connection to doc - done'
-		);
 
 		ws.on('error', (err) => {
 			this.domainErrorHandler.exec(new WebsocketErrorLoggable(err));
@@ -247,27 +243,37 @@ export class TldrawWsService implements OnModuleInit {
 			pongReceived = true;
 		});
 
-		{
-			// send initial doc state to client as update
-			this.sendInitialState(ws, doc);
+		// send initial doc state to client as update
+		this.sendInitialState(ws, doc);
 
-			const syncEncoder = encoding.createEncoder();
-			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
-			writeSyncStep1(syncEncoder, doc);
-			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
+		const syncEncoder = encoding.createEncoder();
+		encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
+		writeSyncStep1(syncEncoder, doc);
+		this.send(doc, ws, encoding.toUint8Array(syncEncoder));
 
-			const awarenessStates = doc.awareness.getStates();
-			if (awarenessStates.size > 0) {
-				const awarenessEncoder = encoding.createEncoder();
-				encoding.writeVarUint(awarenessEncoder, WSMessageType.AWARENESS);
-				encoding.writeVarUint8Array(
-					awarenessEncoder,
-					encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
-				);
-				this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
-			}
+		const awarenessStates = doc.awareness.getStates();
+		if (awarenessStates.size > 0) {
+			const awarenessEncoder = encoding.createEncoder();
+			encoding.writeVarUint(awarenessEncoder, WSMessageType.AWARENESS);
+			encoding.writeVarUint8Array(
+				awarenessEncoder,
+				encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
+			);
+			this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
 		}
+
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
+
+		performance.measure(
+			formatMessureLog({
+				location: 'tldraw:TldrawWsService:setupWsConnection',
+				doc_name: docName,
+				doc_awareness_state_total: awarenessStates.size,
+				doc_connection_total: doc.connections.size,
+				pod_doc_total: this.docs.size,
+			}),
+			'setupWsConnection'
+		);
 	}
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {

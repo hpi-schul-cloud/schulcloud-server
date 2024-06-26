@@ -7,7 +7,7 @@ import * as encoding from 'lib0/encoding';
 import * as promise from 'lib0/promise';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector, mergeUpdates } from 'yjs';
 import { DomainErrorHandler } from '@src/core';
-import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
+import { formatMessureLog, initilisedPerformanceObserver } from '@shared/common/measure-utils';
 import { Logger } from '@src/core/logger';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain';
@@ -120,11 +120,13 @@ export class YMongodb implements OnModuleInit {
 			await this.clearUpdatesRange(docName, 0, clock);
 
 			ydoc.destroy();
-			performance.mark('compressDocumentTransactional - end');
 			performance.measure(
-				`tldraw:YMongodb:compressDocumentTransactional::${docName}, clock=${clock}`,
-				'compressDocumentTransactional - start',
-				'compressDocumentTransactional - end'
+				formatMessureLog({
+					location: 'tldraw:YMongodb:compressDocumentTransactional',
+					doc_name: docName,
+					clock,
+				}),
+				'compressDocumentTransactional - start'
 			);
 		});
 	}
