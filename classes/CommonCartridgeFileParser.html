@@ -832,7 +832,7 @@ export class CommonCartridgeFileParser {
 	public getResource(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
 		this.checkOrganization(organization);
 
-		const resource &#x3D; this.resourceFactory.create(organization);
+		const resource &#x3D; this.resourceFactory.create(organization, this.options.inputFormat);
 
 		return resource;
 	}
