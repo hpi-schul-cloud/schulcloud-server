@@ -161,7 +161,7 @@ export class CommonCartridgeImportService {
 		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, true);
 		card.title = title;
 		card.height = height;
-		await this.boardNodeService.addToParent(column, column);
+		await this.boardNodeService.addToParent(column, card);
 
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= 3 && organization.path.startsWith(cardProps.path)
