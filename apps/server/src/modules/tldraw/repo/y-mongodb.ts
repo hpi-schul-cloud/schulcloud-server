@@ -170,16 +170,16 @@ export class YMongodb implements OnModuleInit {
 		const parts = [Buffer.from(tldrawDrawingEntity.value.buffer)];
 		let currentPartId: number | undefined = tldrawDrawingEntity.part;
 		for (let i = docIndex + 1; i < tldrawDrawingEntities.length; i += 1) {
-			const part = tldrawDrawingEntities[i];
+			const entity = tldrawDrawingEntities[i];
 
-			if (!this.isSameClock(part, tldrawDrawingEntity)) {
+			if (!this.isSameClock(entity, tldrawDrawingEntity)) {
 				break;
 			}
 
-			this.checkIfPartIsNextPartAfterCurrent(part, currentPartId);
+			this.checkIfPartIsNextPartAfterCurrent(entity, currentPartId);
 
-			parts.push(Buffer.from(part.value.buffer));
-			currentPartId = part.part;
+			parts.push(Buffer.from(entity.value.buffer));
+			currentPartId = entity.part;
 		}
 
 		return parts;
@@ -193,15 +193,15 @@ export class YMongodb implements OnModuleInit {
 
 		const updates: Buffer[] = [];
 		for (let i = 0; i < tldrawDrawingEntities.length; i += 1) {
-			const doc = tldrawDrawingEntities[i];
+			const tldrawDrawingEntity = tldrawDrawingEntities[i];
 
-			if (!doc.part) {
-				updates.push(Buffer.from(doc.value.buffer));
+			if (!tldrawDrawingEntity.part) {
+				updates.push(Buffer.from(tldrawDrawingEntity.value.buffer));
 			}
 
-			if (doc.part === 1) {
+			if (tldrawDrawingEntity.part === 1) {
 				// merge the docs together that got split because of mongodb size limits
-				const parts = this.mergeDocsTogether(doc, tldrawDrawingEntities, i);
+				const parts = this.mergeDocsTogether(tldrawDrawingEntity, tldrawDrawingEntities, i);
 				updates.push(Buffer.concat(parts));
 			}
 		}
