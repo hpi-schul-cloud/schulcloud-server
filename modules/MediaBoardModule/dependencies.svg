@@ -24,119 +24,119 @@
 <title>cluster_MediaBoardModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 992,-268 992,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_MediaBoardModule_providers</title>
-<polygon fill="none" stroke="black" points="126,-78 126,-130 984,-130 984,-78 126,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_MediaBoardModule_exports</title>
-<polygon fill="none" stroke="black" points="199,-208 199,-260 723,-260 723,-208 199,-208"/>
+<polygon fill="none" stroke="black" points="337,-208 337,-260 861,-260 861,-208 337,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_MediaBoardModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 118,-130 118,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="882,-78 882,-130 984,-130 984,-78 882,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_MediaBoardModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 874,-130 874,-78 16,-78"/>
 </g>
 <!-- ToolModule -->
 <g id="node1" class="node">
 <title>ToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.99,-122 106.99,-126 85.99,-126 82.99,-122 24.01,-122 24.01,-86 109.99,-86 109.99,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">ToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="975.99,-122 972.99,-126 951.99,-126 948.99,-122 890.01,-122 890.01,-86 975.99,-86 975.99,-122"/>
+<text text-anchor="middle" x="933" y="-99.8" font-family="Times,serif" font-size="14.00">ToolModule</text>
 </g>
 <!-- MediaBoardModule -->
 <g id="node2" class="node">
 <title>MediaBoardModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="502.53,-187 499.53,-191 478.53,-191 475.53,-187 373.47,-187 373.47,-151 502.53,-151 502.53,-187"/>
-<text text-anchor="middle" x="438" y="-164.8" font-family="Times,serif" font-size="14.00">MediaBoardModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="640.53,-187 637.53,-191 616.53,-191 613.53,-187 511.47,-187 511.47,-151 640.53,-151 640.53,-187"/>
+<text text-anchor="middle" x="576" y="-164.8" font-family="Times,serif" font-size="14.00">MediaBoardModule</text>
 </g>
 <!-- ToolModule&#45;&gt;MediaBoardModule -->
 <g id="edge1" class="edge">
 <title>ToolModule&#45;&gt;MediaBoardModule</title>
-<path fill="none" stroke="black" d="M67,-122.11C67,-141.34 67,-169 67,-169 67,-169 363.38,-169 363.38,-169"/>
-<polygon fill="black" stroke="black" points="363.38,-172.5 373.38,-169 363.38,-165.5 363.38,-172.5"/>
+<path fill="none" stroke="black" d="M933,-122.11C933,-141.34 933,-169 933,-169 933,-169 650.65,-169 650.65,-169"/>
+<polygon fill="black" stroke="black" points="650.65,-165.5 640.65,-169 650.65,-172.5 650.65,-165.5"/>
 </g>
 <!-- MediaAvailableLineService  -->
 <g id="node3" class="node">
 <title>MediaAvailableLineService </title>
-<polygon fill="#fb8072" stroke="black" points="714.82,-252 537.18,-252 537.18,-216 714.82,-216 714.82,-252"/>
-<text text-anchor="middle" x="626" y="-229.8" font-family="Times,serif" font-size="14.00">MediaAvailableLineService </text>
+<polygon fill="#fb8072" stroke="black" points="852.82,-252 675.18,-252 675.18,-216 852.82,-216 852.82,-252"/>
+<text text-anchor="middle" x="764" y="-229.8" font-family="Times,serif" font-size="14.00">MediaAvailableLineService </text>
 </g>
 <!-- MediaBoardModule&#45;&gt;MediaAvailableLineService  -->
 <g id="edge2" class="edge">
 <title>MediaBoardModule&#45;&gt;MediaAvailableLineService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M502.71,-178C524.1,-178 542.53,-178 542.53,-178 542.53,-178 542.53,-205.97 542.53,-205.97"/>
-<polygon fill="black" stroke="black" points="539.03,-205.97 542.53,-215.97 546.03,-205.97 539.03,-205.97"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M640.72,-178C664.45,-178 685.62,-178 685.62,-178 685.62,-178 685.62,-205.97 685.62,-205.97"/>
+<polygon fill="black" stroke="black" points="682.12,-205.97 685.62,-215.97 689.12,-205.97 682.12,-205.97"/>
 </g>
 <!-- MediaBoardNodeFactory  -->
 <g id="node4" class="node">
 <title>MediaBoardNodeFactory </title>
-<polygon fill="#fb8072" stroke="black" points="519.06,-252 356.94,-252 356.94,-216 519.06,-216 519.06,-252"/>
-<text text-anchor="middle" x="438" y="-229.8" font-family="Times,serif" font-size="14.00">MediaBoardNodeFactory </text>
+<polygon fill="#fb8072" stroke="black" points="657.06,-252 494.94,-252 494.94,-216 657.06,-216 657.06,-252"/>
+<text text-anchor="middle" x="576" y="-229.8" font-family="Times,serif" font-size="14.00">MediaBoardNodeFactory </text>
 </g>
 <!-- MediaBoardModule&#45;&gt;MediaBoardNodeFactory  -->
 <g id="edge3" class="edge">
 <title>MediaBoardModule&#45;&gt;MediaBoardNodeFactory </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M438,-187.11C438,-187.11 438,-205.99 438,-205.99"/>
-<polygon fill="black" stroke="black" points="434.5,-205.99 438,-215.99 441.5,-205.99 434.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M576,-187.11C576,-187.11 576,-205.99 576,-205.99"/>
+<polygon fill="black" stroke="black" points="572.5,-205.99 576,-215.99 579.5,-205.99 572.5,-205.99"/>
 </g>
 <!-- MediaBoardService  -->
 <g id="node5" class="node">
 <title>MediaBoardService </title>
-<polygon fill="#fb8072" stroke="black" points="338.95,-252 207.05,-252 207.05,-216 338.95,-216 338.95,-252"/>
-<text text-anchor="middle" x="273" y="-229.8" font-family="Times,serif" font-size="14.00">MediaBoardService </text>
+<polygon fill="#fb8072" stroke="black" points="476.95,-252 345.05,-252 345.05,-216 476.95,-216 476.95,-252"/>
+<text text-anchor="middle" x="411" y="-229.8" font-family="Times,serif" font-size="14.00">MediaBoardService </text>
 </g>
 <!-- MediaBoardModule&#45;&gt;MediaBoardService  -->
 <g id="edge4" class="edge">
 <title>MediaBoardModule&#45;&gt;MediaBoardService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M373.31,-178C351.93,-178 333.5,-178 333.5,-178 333.5,-178 333.5,-205.97 333.5,-205.97"/>
-<polygon fill="black" stroke="black" points="330.01,-205.97 333.5,-215.97 337.01,-205.97 330.01,-205.97"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M511.3,-178C487.58,-178 466.41,-178 466.41,-178 466.41,-178 466.41,-205.97 466.41,-205.97"/>
+<polygon fill="black" stroke="black" points="462.91,-205.97 466.41,-215.97 469.91,-205.97 462.91,-205.97"/>
 </g>
 <!-- BoardNodeRepo -->
 <g id="node6" class="node">
 <title>BoardNodeRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="900" cy="-104" rx="75.87" ry="18"/>
-<text text-anchor="middle" x="900" y="-99.8" font-family="Times,serif" font-size="14.00">BoardNodeRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="790" cy="-104" rx="75.87" ry="18"/>
+<text text-anchor="middle" x="790" y="-99.8" font-family="Times,serif" font-size="14.00">BoardNodeRepo</text>
 </g>
 <!-- BoardNodeRepo&#45;&gt;MediaBoardModule -->
 <g id="edge5" class="edge">
 <title>BoardNodeRepo&#45;&gt;MediaBoardModule</title>
-<path fill="none" stroke="black" d="M900,-122.11C900,-141.34 900,-169 900,-169 900,-169 512.73,-169 512.73,-169"/>
-<polygon fill="black" stroke="black" points="512.73,-165.5 502.73,-169 512.73,-172.5 512.73,-165.5"/>
+<path fill="none" stroke="black" d="M783.36,-122.03C783.36,-138.4 783.36,-160 783.36,-160 783.36,-160 650.76,-160 650.76,-160"/>
+<polygon fill="black" stroke="black" points="650.76,-156.5 640.76,-160 650.76,-163.5 650.76,-156.5"/>
 </g>
 <!-- MediaAvailableLineService -->
 <g id="node7" class="node">
 <title>MediaAvailableLineService</title>
-<ellipse fill="#fdb462" stroke="black" cx="686" cy="-104" rx="119.8" ry="18"/>
-<text text-anchor="middle" x="686" y="-99.8" font-family="Times,serif" font-size="14.00">MediaAvailableLineService</text>
+<ellipse fill="#fdb462" stroke="black" cx="576" cy="-104" rx="119.8" ry="18"/>
+<text text-anchor="middle" x="576" y="-99.8" font-family="Times,serif" font-size="14.00">MediaAvailableLineService</text>
 </g>
 <!-- MediaAvailableLineService&#45;&gt;MediaBoardModule -->
 <g id="edge6" class="edge">
 <title>MediaAvailableLineService&#45;&gt;MediaBoardModule</title>
-<path fill="none" stroke="black" d="M640.38,-120.8C640.38,-137.3 640.38,-160 640.38,-160 640.38,-160 512.59,-160 512.59,-160"/>
-<polygon fill="black" stroke="black" points="512.59,-156.5 502.59,-160 512.59,-163.5 512.59,-156.5"/>
+<path fill="none" stroke="black" d="M576,-122.11C576,-122.11 576,-140.99 576,-140.99"/>
+<polygon fill="black" stroke="black" points="572.5,-140.99 576,-150.99 579.5,-140.99 572.5,-140.99"/>
 </g>
 <!-- MediaBoardNodeFactory -->
 <g id="node8" class="node">
 <title>MediaBoardNodeFactory</title>
-<ellipse fill="#fdb462" stroke="black" cx="438" cy="-104" rx="109.93" ry="18"/>
-<text text-anchor="middle" x="438" y="-99.8" font-family="Times,serif" font-size="14.00">MediaBoardNodeFactory</text>
+<ellipse fill="#fdb462" stroke="black" cx="328" cy="-104" rx="109.93" ry="18"/>
+<text text-anchor="middle" x="328" y="-99.8" font-family="Times,serif" font-size="14.00">MediaBoardNodeFactory</text>
 </g>
 <!-- MediaBoardNodeFactory&#45;&gt;MediaBoardModule -->
 <g id="edge7" class="edge">
 <title>MediaBoardNodeFactory&#45;&gt;MediaBoardModule</title>
-<path fill="none" stroke="black" d="M438,-122.11C438,-122.11 438,-140.99 438,-140.99"/>
-<polygon fill="black" stroke="black" points="434.5,-140.99 438,-150.99 441.5,-140.99 434.5,-140.99"/>
+<path fill="none" stroke="black" d="M391.5,-118.71C391.5,-135.31 391.5,-160 391.5,-160 391.5,-160 501.47,-160 501.47,-160"/>
+<polygon fill="black" stroke="black" points="501.47,-163.5 511.47,-160 501.47,-156.5 501.47,-163.5"/>
 </g>
 <!-- MediaBoardService -->
 <g id="node9" class="node">
 <title>MediaBoardService</title>
-<ellipse fill="#fdb462" stroke="black" cx="222" cy="-104" rx="88.02" ry="18"/>
-<text text-anchor="middle" x="222" y="-99.8" font-family="Times,serif" font-size="14.00">MediaBoardService</text>
+<ellipse fill="#fdb462" stroke="black" cx="112" cy="-104" rx="88.02" ry="18"/>
+<text text-anchor="middle" x="112" y="-99.8" font-family="Times,serif" font-size="14.00">MediaBoardService</text>
 </g>
 <!-- MediaBoardService&#45;&gt;MediaBoardModule -->
 <g id="edge8" class="edge">
 <title>MediaBoardService&#45;&gt;MediaBoardModule</title>
-<path fill="none" stroke="black" d="M258.77,-120.5C258.77,-137.02 258.77,-160 258.77,-160 258.77,-160 363.29,-160 363.29,-160"/>
-<polygon fill="black" stroke="black" points="363.29,-163.5 373.29,-160 363.29,-156.5 363.29,-163.5"/>
+<path fill="none" stroke="black" d="M112,-122.11C112,-141.34 112,-169 112,-169 112,-169 500.99,-169 500.99,-169"/>
+<polygon fill="black" stroke="black" points="500.99,-172.5 510.99,-169 500.99,-165.5 500.99,-172.5"/>
 </g>
 </g>
 </svg>

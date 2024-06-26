@@ -847,6 +847,9 @@
                             <a href="#legacySchoolDoFactory" title="apps/server/src/shared/testing/factory/domainobject/legacy-school.factory.ts" ><b>legacySchoolDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../legacy-school.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#lernperiodeFormat" title="apps/server/src/infra/schulconnex-client/response/schulconnex-laufzeit-response.ts" ><b>lernperiodeFormat</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-laufzeit-response.ts)</a>
+                        </li>
+                        <li>
                             <a href="#lessonBoardElementFactory" title="apps/server/src/shared/testing/factory/boardelement.factory.ts" ><b>lessonBoardElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.factory.ts)</a>
                         </li>
                         <li>
@@ -15466,6 +15469,29 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/infra/schulconnex-client/response/schulconnex-laufzeit-response.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lernperiodeFormat"></a>
+                    <span class="name">
+                        <span ><b>lernperiodeFormat</b></span>
+                        <a href="#lernperiodeFormat"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>/^(\d{4})(?:-([1-2]))?$/</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/lesson.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -21091,6 +21117,10 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 							id: new UUID().toString(),
 							bezeichnung: &#x27;bezeichnung&#x27;,
 							typ: SchulconnexGroupType.CLASS,
+							laufzeit: {
+								vonlernperiode: &#x27;2024-1&#x27;,
+								bislernperiode: &#x27;2024-2&#x27;,
+							},
 						},
 						gruppenzugehoerigkeit: {
 							rollen: [SchulconnexGroupRole.TEACHER],

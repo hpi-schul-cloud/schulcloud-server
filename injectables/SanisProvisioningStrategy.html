@@ -191,7 +191,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, schulconnexLicenseProvisioningService: <a href="../injectables/SchulconnexLicenseProvisioningService.html" target="_self">SchulconnexLicenseProvisioningService</a>, schulconnexToolProvisioningService: <a href="../injectables/SchulconnexToolProvisioningService.html" target="_self">SchulconnexToolProvisioningService</a>, responseMapper: <a href="../injectables/SchulconnexResponseMapper.html" target="_self">SchulconnexResponseMapper</a>, schulconnexRestClient: <a href="../classes/SchulconnexRestClient.html" target="_self">SchulconnexRestClient</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
+<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, schulconnexLicenseProvisioningService: <a href="../injectables/SchulconnexLicenseProvisioningService.html" target="_self">SchulconnexLicenseProvisioningService</a>, schulconnexToolProvisioningService: <a href="../injectables/SchulconnexToolProvisioningService.html" target="_self">SchulconnexToolProvisioningService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>, responseMapper: <a href="../injectables/SchulconnexResponseMapper.html" target="_self">SchulconnexResponseMapper</a>, schulconnexRestClient: <a href="../classes/SchulconnexRestClient.html" target="_self">SchulconnexRestClient</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -310,6 +310,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ConfigService&lt;ProvisioningConfig | &gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>responseMapper</td>
                                                   
                                                         <td>
@@ -326,18 +338,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../classes/SchulconnexRestClient.html" target="_self" >SchulconnexRestClient</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>configService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ConfigService&lt;ProvisioningConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -921,9 +921,9 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly groupService: GroupService,
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
+		protected readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;,
 		private readonly responseMapper: SchulconnexResponseMapper,
-		private readonly schulconnexRestClient: SchulconnexRestClient,
-		protected readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;
+		private readonly schulconnexRestClient: SchulconnexRestClient
 	) {
 		super(
 			provisioningFeatures,

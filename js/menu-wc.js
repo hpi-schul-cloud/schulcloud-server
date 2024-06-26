@@ -5540,6 +5540,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/InvalidBoardTypeLoggableException.html" data-type="entity-link" >InvalidBoardTypeLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/InvalidLaufzeitResponseLoggableException.html" data-type="entity-link" >InvalidLaufzeitResponseLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/InvalidLernperiodeResponseLoggableException.html" data-type="entity-link" >InvalidLernperiodeResponseLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/InvalidOriginForLogoutUrlLoggableException.html" data-type="entity-link" >InvalidOriginForLogoutUrlLoggableException</a>
                             </li>
                             <li class="link">
@@ -6597,6 +6603,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchulconnexImportUserMapper.html" data-type="entity-link" >SchulconnexImportUserMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexLaufzeitResponse.html" data-type="entity-link" >SchulconnexLaufzeitResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchulconnexLizenzInfoPermissionResponse.html" data-type="entity-link" >SchulconnexLizenzInfoPermissionResponse</a>
