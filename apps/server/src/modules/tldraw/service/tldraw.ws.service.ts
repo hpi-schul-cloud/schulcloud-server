@@ -302,7 +302,7 @@ export class TldrawWsService implements OnModuleInit {
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
 		}
 	}
-
+	/*
 	private syncDocumentAssetsWithShapes(doc: WsSharedDocDo): TldrawAsset[] {
 		// clean up assets that are not used as shapes anymore
 		// which can happen when users do undo/redo operations on assets
@@ -330,6 +330,7 @@ export class TldrawWsService implements OnModuleInit {
 
 		return usedAssets;
 	}
+	*/
 
 	private sendUpdateToConnectedClients(update: Uint8Array, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();

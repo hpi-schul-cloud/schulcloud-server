@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { DomainErrorHandler } from '@src/core';
+import { Logger } from '@src/core/logger';
 import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 import { TldrawWs } from '../controller';
 import { TldrawDrawing } from '../entities';
@@ -100,6 +101,10 @@ describe('TldrawWSService', () => {
 				{
 					provide: DomainErrorHandler,
 					useValue: createMock<DomainErrorHandler>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: HttpService,

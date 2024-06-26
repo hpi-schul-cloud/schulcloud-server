@@ -7,6 +7,7 @@ import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { DomainErrorHandler } from '@src/core';
+import { Logger } from '@src/core/logger';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
@@ -39,6 +40,10 @@ describe('YMongoDb', () => {
 				{
 					provide: DomainErrorHandler,
 					useValue: createMock<DomainErrorHandler>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
