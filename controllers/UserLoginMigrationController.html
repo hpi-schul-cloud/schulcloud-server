@@ -256,14 +256,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;close&#x27;)<br />@HttpCode(HttpStatus.OK)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. It cannot be restarted.&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiNotFoundResponse({description: &#x27;User login migration does not exist&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiNoContentResponse({description: &#x27;User login migration was reverted&#x27;})<br /></code>
+                    <code>@Post(&#x27;close&#x27;)<br />@HttpCode(HttpStatus.OK)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. It cannot be restarted.&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiNotFoundResponse({description: &#x27;User login migration does not exist&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration and migration wizard closed&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiNoContentResponse({description: &#x27;User login migration was reverted&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="201"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:201</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:203</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -435,8 +435,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -526,8 +526,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="218"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:218</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="223"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:223</a></div>
                         </td>
                     </tr>
 
@@ -632,8 +632,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -715,8 +715,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="167"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:167</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -808,8 +808,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="115"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:115</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -881,6 +881,7 @@ import {
 } from &#x27;../loggable&#x27;;
 import { UserLoginMigrationMapper } from &#x27;../mapper&#x27;;
 import {
+	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
@@ -906,7 +907,8 @@ export class UserLoginMigrationController {
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
 		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
 		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc,
-		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc
+		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc,
+		private readonly closeMigrationWizardUc: CloseMigrationWizardUc
 	) {}
 
 	@Get()
@@ -1055,7 +1057,7 @@ export class UserLoginMigrationController {
 		description: &#x27;User login migration does not exist&#x27;,
 		type: UserLoginMigrationNotFoundLoggableException,
 	})
-	@ApiOkResponse({ description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse })
+	@ApiOkResponse({ description: &#x27;User login migration and migration wizard closed&#x27;, type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiNoContentResponse({ description: &#x27;User login migration was reverted&#x27; })
@@ -1066,10 +1068,13 @@ export class UserLoginMigrationController {
 		);
 
 		if (userLoginMigration) {
+			await this.closeMigrationWizardUc.closeMigrationWizardWhenActive(currentUser.userId);
+
 			const migrationResponse: UserLoginMigrationResponse &#x3D;
 				UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
 			return migrationResponse;
 		}
+
 		return undefined;
 	}
 

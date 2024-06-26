@@ -136,6 +136,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#closeMigration" >closeMigration</a>
                             </li>
@@ -247,6 +248,7 @@
                 <td class="col-md-4">
                     <a name="closeMigration"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>closeMigration</b></span>
                         <a href="#closeMigration"><span class="icon ion-ios-link"></span></a>
@@ -346,7 +348,7 @@ export class CloseUserLoginMigrationUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async closeMigration(userId: EntityId, schoolId: EntityId): Promise&lt;UserLoginMigrationDO | undefined&gt; {
+	public async closeMigration(userId: EntityId, schoolId: EntityId): Promise&lt;UserLoginMigrationDO | undefined&gt; {
 		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
 		);
