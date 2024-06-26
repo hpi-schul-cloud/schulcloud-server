@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -10,12 +11,12 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { Account } from '../account';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
+import { accountDoFactory } from '../../testing';
+import { Account } from '../account';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
-import { accountDoFactory } from '../../testing';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -921,6 +922,7 @@ describe('AccountDbService', () => {
 			});
 		});
 	});
+
 	describe('findMany', () => {
 		describe('when find many one time', () => {
 			const setup = () => {
@@ -952,6 +954,45 @@ describe('AccountDbService', () => {
 				const foundAccounts = await accountService.findMany();
 				expect(accountRepo.findMany).toHaveBeenCalledWith(0, 100);
 				expect(foundAccounts).toBeDefined();
+			});
+		});
+	});
+
+	describe('isUniqueEmail', () => {
+		describe('when email is unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+
+				accountRepo.findByUsername.mockResolvedValue(null);
+
+				return { email };
+			};
+
+			it('should return true', async () => {
+				const { email } = setup();
+
+				const result = await accountService.isUniqueEmail(email);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when email is not unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.findByUsername.mockResolvedValue(mockTeacherAccount);
+
+				return { email, mockTeacherAccount };
+			};
+
+			it('should return false', async () => {
+				const { email } = setup();
+
+				const result = await accountService.isUniqueEmail(email);
+
+				expect(result).toBe(false);
 			});
 		});
 	});
