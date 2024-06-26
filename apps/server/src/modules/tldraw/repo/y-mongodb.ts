@@ -270,20 +270,23 @@ export class YMongodb implements OnModuleInit {
 		return clock + 1;
 	}
 
-	private isSameClock(doc1: TldrawDrawing, doc2: TldrawDrawing): boolean {
-		return doc1.clock === doc2.clock;
+	private isSameClock(tldrawDrawingEntity1: TldrawDrawing, tldrawDrawingEntity2: TldrawDrawing): boolean {
+		return tldrawDrawingEntity1.clock === tldrawDrawingEntity2.clock;
 	}
 
-	private checkIfPartIsNextPartAfterCurrent(part: TldrawDrawing, currentPartId: number | undefined): void {
-		if (part.part === undefined || currentPartId !== part.part - 1) {
+	private checkIfPartIsNextPartAfterCurrent(
+		tldrawDrawingEntity: TldrawDrawing,
+		currentPartId: number | undefined
+	): void {
+		if (tldrawDrawingEntity.part === undefined || currentPartId !== tldrawDrawingEntity.part - 1) {
 			throw new Error('Could not merge updates together because a part is missing');
 		}
 	}
 
-	private extractClock(updates: TldrawDrawing[]): number {
-		if (updates.length === 0 || updates[0].clock == null) {
+	private extractClock(tldrawDrawingEntities: TldrawDrawing[]): number {
+		if (tldrawDrawingEntities.length === 0 || tldrawDrawingEntities[0].clock == null) {
 			return -1;
 		}
-		return updates[0].clock;
+		return tldrawDrawingEntities[0].clock;
 	}
 }
