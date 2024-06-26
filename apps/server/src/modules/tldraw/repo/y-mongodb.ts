@@ -212,10 +212,22 @@ export class YMongodb implements OnModuleInit {
 	 * Get all document updates for a specific document.
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
+		performance.mark('getMongoUpdates');
 		const uniqueKey = KeyFactory.createForUpdate(docName);
 		const tldrawDrawingEntities = await this.getMongoBulkData(uniqueKey, opts);
 
-		return this.convertMongoUpdates(tldrawDrawingEntities);
+		const buffer = this.convertMongoUpdates(tldrawDrawingEntities);
+
+		performance.measure(
+			formatMessureLog({
+				location: 'tldraw:YMongodb:getMongoUpdates',
+				doc_name: docName,
+				loaded_tldraw_entities_total: tldrawDrawingEntities.length,
+			}),
+			'getMongoUpdates'
+		);
+
+		return buffer;
 	}
 
 	private async writeStateVector(docName: string, sv: Uint8Array, clock: number): Promise<void> {
