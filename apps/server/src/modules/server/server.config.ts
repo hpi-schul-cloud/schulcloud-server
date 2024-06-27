@@ -18,14 +18,13 @@ import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
 import type { ToolConfig } from '@modules/tool/tool-config';
 import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
+import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { UserImportConfig } from '../user-import/user-import-config';
 import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
@@ -56,7 +55,7 @@ export interface ServerConfig
 		BoardConfig,
 		MediaBoardConfig,
 		SharingConfig,
-		IUserImportFeatures,
+		UserImportConfig,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
 		DeletionConfig,
@@ -257,7 +256,6 @@ const config: ServerConfig = {
 	) as number,
 	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
-	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
@@ -280,6 +278,11 @@ const config: ServerConfig = {
 	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
 	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,
 	VIDEOCONFERENCE_DEFAULT_PRESENTATION: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
+	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
+	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
+	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
+		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
+	) as boolean,
 };
 
 export const serverConfig = () => config;

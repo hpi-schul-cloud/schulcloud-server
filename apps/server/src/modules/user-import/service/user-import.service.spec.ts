@@ -4,6 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
@@ -19,8 +20,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
 
 describe(UserImportService.name, () => {
@@ -34,10 +35,11 @@ describe(UserImportService.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
-	const features: IUserImportFeatures = {
-		userMigrationSystemId: new ObjectId().toHexString(),
-		userMigrationEnabled: true,
-		useWithUserLoginMigration: true,
+	const config: UserImportConfig = {
+		FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
+		FEATURE_USER_MIGRATION_ENABLED: true,
+		FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: true,
+		IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 8000,
 	};
 
 	beforeAll(async () => {
@@ -47,6 +49,12 @@ describe(UserImportService.name, () => {
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				UserImportService,
+				{
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof UserImportConfig) => config[key]),
+					},
+				},
 				{
 					provide: ImportUserRepo,
 					useValue: createMock<ImportUserRepo>(),
@@ -58,10 +66,6 @@ describe(UserImportService.name, () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
-				},
-				{
-					provide: UserImportFeatures,
-					useValue: features,
 				},
 				{
 					provide: Logger,
@@ -115,7 +119,10 @@ describe(UserImportService.name, () => {
 	describe('getMigrationSystem', () => {
 		describe('when fetching the migration system', () => {
 			const setup = () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId(undefined, features.userMigrationSystemId);
+				const system: SystemEntity = systemEntityFactory.buildWithId(
+					undefined,
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID
+				);
 
 				legacySystemRepo.findById.mockResolvedValueOnce(system);
 
@@ -137,7 +144,7 @@ describe(UserImportService.name, () => {
 	describe('checkFeatureEnabled', () => {
 		describe('when the global feature is enabled', () => {
 			const setup = () => {
-				features.userMigrationEnabled = true;
+				config.FEATURE_USER_MIGRATION_ENABLED = true;
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined });
 
@@ -155,7 +162,7 @@ describe(UserImportService.name, () => {
 
 		describe('when the school feature is enabled', () => {
 			const setup = () => {
-				features.userMigrationEnabled = false;
+				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeature.LDAP_UNIVENTION_MIGRATION],
@@ -173,9 +180,9 @@ describe(UserImportService.name, () => {
 			});
 		});
 
-		describe('when the features are disabled', () => {
+		describe('when the config are disabled', () => {
 			const setup = () => {
-				features.userMigrationEnabled = false;
+				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [],
