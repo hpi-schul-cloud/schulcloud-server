@@ -21,8 +21,10 @@ export enum CommonCartridgeIntendedUseType {
 }
 
 export enum CommonCartridgeElementType {
+	MANIFEST = 'manifest',
 	METADATA = 'metadata',
 	ORGANIZATION = 'organization',
-	RESOURCES_WRAPPER = 'resourceswrapper',
-	ORGANIZATIONS_WRAPPER = 'organizationswrapper',
+	ORGANIZATIONS_WRAPPER = 'organizations-wrapper',
+	RESOURCES_WRAPPER = 'resources-wrapper',
+	RESOURCE = 'resource',
 }

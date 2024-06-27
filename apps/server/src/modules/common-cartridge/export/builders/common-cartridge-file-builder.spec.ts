@@ -1,109 +1,95 @@
 import { faker } from '@faker-js/faker';
-import AdmZip from 'adm-zip';
 import {
-	CommonCartridgeElementType,
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../common-cartridge.enums';
-import { CommonCartridgeElementProps } from '../elements/common-cartridge-element-factory';
-import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
-import { CommonCartridgeFileBuilder } from './common-cartridge-file-builder';
-import { CommonCartridgeOrganizationBuilderOptions } from './common-cartridge-organization-builder';
+	createCommonCartridgeMetadataElementProps,
+	createCommonCartridgeOrganizationProps,
+} from '../../testing/common-cartridge-element-props.factory';
+import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
+import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
+import { MissingMetadataLoggableException } from '../errors';
+import { CommonCartridgeFileBuilder, CommonCartridgeFileBuilderProps } from './common-cartridge-file-builder';
+import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 
 describe('CommonCartridgeFileBuilder', () => {
-	const getFileContentAsString = (zip: AdmZip, path: string): string | undefined =>
-		zip.getEntry(path)?.getData().toString();
+	let sut: CommonCartridgeFileBuilder;
 
-	describe('build', () => {
-		describe('when a common cartridge archive has been created', () => {
-			const setup = async () => {
-				const metadataProps: CommonCartridgeElementProps = {
-					type: CommonCartridgeElementType.METADATA,
-					title: faker.lorem.words(),
-					creationDate: new Date(),
-					copyrightOwners: ['John Doe', 'Jane Doe'],
-				};
-				const organizationOptions: CommonCartridgeOrganizationBuilderOptions = {
-					identifier: faker.string.uuid(),
-					title: faker.lorem.words(),
-				};
-				const resourceProps: CommonCartridgeResourceProps = {
-					type: CommonCartridgeResourceType.WEB_CONTENT,
-					identifier: faker.string.uuid(),
-					title: faker.lorem.words(),
-					html: faker.lorem.paragraphs(),
-					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
-				};
-				const builder = new CommonCartridgeFileBuilder({
-					version: CommonCartridgeVersion.V_1_1_0,
-					identifier: faker.string.uuid(),
-				});
+	const builderProps: CommonCartridgeFileBuilderProps = {
+		version: CommonCartridgeVersion.V_1_1_0,
+		identifier: faker.string.uuid(),
+	};
 
-				builder
-					.addMetadata(metadataProps)
-					.addOrganization(organizationOptions)
-					.addResource(resourceProps)
-					.addSubOrganization(organizationOptions)
-					.addResource(resourceProps)
-					.addSubOrganization(organizationOptions)
-					.addResource(resourceProps);
+	beforeEach(() => {
+		sut = new CommonCartridgeFileBuilder(builderProps);
+		jest.clearAllMocks();
+	});
 
-				const archive = new AdmZip(await builder.build());
+	describe('addMetadata', () => {
+		describe('when metadata is added to the CommonCartridgeFileBuilder', () => {
+			const setup = () => {
+				const createElementSpy = jest.spyOn(CommonCartridgeElementFactory, 'createElement');
+				const metadataProps = createCommonCartridgeMetadataElementProps();
 
-				return { archive, metadataProps, organizationOptions, resourceProps };
+				return { metadataProps, createElementSpy };
 			};
 
-			it('should have a imsmanifest.xml in archive root', async () => {
-				const { archive } = await setup();
+			it('should set the metadata element', () => {
+				const { metadataProps, createElementSpy } = setup();
 
-				const manifest = getFileContentAsString(archive, 'imsmanifest.xml');
+				sut.addMetadata(metadataProps);
 
-				expect(manifest).toBeDefined();
+				expect(createElementSpy).toHaveBeenCalledWith({ ...metadataProps, version: builderProps.version });
 			});
+		});
+	});
 
-			it('should have included the resource in organization folder', async () => {
-				const { archive, organizationOptions, resourceProps } = await setup();
+	describe('createOrganization', () => {
+		describe('when an organization is created in the CommonCartridgeFileBuilder', () => {
+			const setup = () => {
+				const organizationProps = createCommonCartridgeOrganizationProps();
 
-				const resource = getFileContentAsString(
-					archive,
-					`${organizationOptions.identifier}/${resourceProps.identifier}.html`
-				);
+				return { organizationProps };
+			};
 
-				expect(resource).toBeDefined();
+			it('should create and return an organization node', () => {
+				const { organizationProps } = setup();
+
+				const organizationNode = sut.createOrganization(organizationProps);
+
+				expect(organizationNode).toBeInstanceOf(CommonCartridgeOrganizationNode);
 			});
+		});
+	});
 
-			it('should have included the resource in sub-organization folder', async () => {
-				const { archive, organizationOptions, resourceProps } = await setup();
-
-				const resource = getFileContentAsString(
-					archive,
-					`${organizationOptions.identifier}/${organizationOptions.identifier}/${resourceProps.identifier}.html`
-				);
-
-				expect(resource).toBeDefined();
-			});
-
-			it('should have included the resource in sub-sub-organization folder', async () => {
-				const { archive, organizationOptions, resourceProps } = await setup();
-
-				const resource = getFileContentAsString(
-					archive,
-					`${organizationOptions.identifier}/${organizationOptions.identifier}/${organizationOptions.identifier}/${resourceProps.identifier}.html`
-				);
-
-				expect(resource).toBeDefined();
+	describe('build', () => {
+		describe('when metadata has not been provided', () => {
+			it('should throw MissingMetadataLoggableException', () => {
+				expect(() => {
+					sut.build();
+				}).toThrow(MissingMetadataLoggableException);
 			});
 		});
 
-		describe('when metadata has not been provide', () => {
-			const sut = new CommonCartridgeFileBuilder({
-				version: CommonCartridgeVersion.V_1_1_0,
-				identifier: faker.string.uuid(),
-			});
+		describe('when metadata has been provided', () => {
+			const setup = () => {
+				const metadataProps = createCommonCartridgeMetadataElementProps();
+				const organizationProps = createCommonCartridgeOrganizationProps();
+				const resourceProps = createCommonCartridgeWebLinkResourceProps();
 
-			it('should throw an error', async () => {
-				await expect(sut.build()).rejects.toThrow('Metadata is not defined');
+				return { metadataProps, organizationProps, resourceProps };
+			};
+
+			it('should build the common cartridge file', () => {
+				const { metadataProps, organizationProps, resourceProps } = setup();
+
+				sut.addMetadata(metadataProps);
+
+				const org = sut.createOrganization(organizationProps);
+
+				org.addResource(resourceProps);
+
+				const result = sut.build();
+
+				expect(result).toBeDefined();
 			});
 		});
 	});

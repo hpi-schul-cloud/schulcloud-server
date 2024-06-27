@@ -14,7 +14,6 @@ import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../domain/entity/account.entity';
 import { AccountService } from '../domain/services';
-import { AccountValidationService } from '../domain/services/account.validation.service';
 import { AccountEntityToDoMapper } from '../repo/micro-orm/mapper';
 import { AccountUc } from './account.uc';
 import { AccountSearchDto, AccountSearchType, UpdateAccountDto } from './dto';
@@ -49,10 +48,6 @@ describe('AccountUc', () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
-				},
-				{
-					provide: AccountValidationService,
-					useValue: createMock<AccountValidationService>(),
 				},
 				{
 					provide: AuthorizationService,

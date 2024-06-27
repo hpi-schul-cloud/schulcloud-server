@@ -1,5 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ColumnBoardService } from '@modules/board';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	linkElementFactory,
+	richTextElementFactory,
+} from '@modules/board/testing';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { CommonCartridgeExportService, CourseService, LearnroomConfig } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson';
@@ -8,16 +16,8 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	linkElementFactory,
-	richTextElementFactory,
-} from '@src/modules/board/testing';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -107,7 +107,7 @@ describe('CommonCartridgeExportService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeExportService,
-				CommonCartridgeMapper,
+				CommonCartridgeExportMapper,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),

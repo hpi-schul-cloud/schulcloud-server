@@ -1,8 +1,8 @@
+import { AuthorizationService } from '@modules/authorization';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationService } from '@src/modules/authorization';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeImportService } from '../service';
 

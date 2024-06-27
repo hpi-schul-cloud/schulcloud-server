@@ -3,18 +3,19 @@ import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
+	SchulconnexLizenzInfoResponse,
 	schulconnexLizenzInfoResponseFactory,
 	SchulconnexPersonenkontextResponse,
 	SchulconnexResponse,
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
-import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
+import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
@@ -147,6 +148,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				});
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+
 				const personenkontext: SchulconnexPersonenkontextResponse = schulconnexResponse.personenkontexte[0];
 				const group: SchulconnexGruppenResponse = personenkontext.gruppen![0];
 				const otherParticipant: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
@@ -178,6 +180,8 @@ describe(SchulconnexResponseMapper.name, () => {
 							roleName: RoleName.STUDENT,
 						},
 					],
+					from: new Date('2024-08-01'),
+					until: new Date('2025-07-31'),
 				});
 			});
 		});
@@ -334,6 +338,226 @@ describe(SchulconnexResponseMapper.name, () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result?.[0].otherUsers).toHaveLength(0);
+			});
+		});
+
+		describe('when the group has no duration', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = undefined;
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should map the group without a duration', () => {
+				const { schulconnexResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						from: undefined,
+						until: undefined,
+					}),
+				]);
+			});
+		});
+
+		describe('when the group has a duration as lernperiode', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+					vonlernperiode: '2023-2',
+					bislernperiode: '2026-1',
+				};
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should map the group a duration', () => {
+				const { schulconnexResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						from: new Date('2024-02-01'),
+						until: new Date('2027-01-31'),
+					}),
+				]);
+			});
+		});
+
+		describe('when the group has a duration as an exact date', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				const duration = {
+					von: '2024-05-13',
+					bis: '2028-07-12',
+				};
+
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = duration;
+
+				return {
+					schulconnexResponse,
+					duration,
+				};
+			};
+
+			it('should map the group with an exact date', () => {
+				const { schulconnexResponse, duration } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						from: new Date(duration.von),
+						until: new Date(duration.bis),
+					}),
+				]);
+			});
+		});
+
+		describe('when the group has a duration as an exact date and as lernperiode', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				const duration = {
+					von: '2024-05-13',
+					bis: '2028-07-12',
+					vonlernperiode: '2024',
+					bislernperiode: '2025',
+				};
+
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = duration;
+
+				return {
+					schulconnexResponse,
+					duration,
+				};
+			};
+
+			it('should map the group with an exact date', () => {
+				const { schulconnexResponse, duration } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						from: new Date(duration.von),
+						until: new Date(duration.bis),
+					}),
+				]);
+			});
+		});
+
+		describe('when the group has an invalid duration as lernperiode', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+					vonlernperiode: '2024-3',
+					bislernperiode: '2021-01-02',
+				};
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should throw an error', () => {
+				const { schulconnexResponse } = setup();
+
+				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
+					InvalidLernperiodeResponseLoggableException
+				);
+			});
+		});
+
+		describe('when the group has no from date', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+					bislernperiode: '2024-2',
+				};
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should throw an error', () => {
+				const { schulconnexResponse } = setup();
+
+				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
+					InvalidLaufzeitResponseLoggableException
+				);
+			});
+		});
+
+		describe('when the group has no until date', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+					vonlernperiode: '2024-2',
+				};
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should throw an error', () => {
+				const { schulconnexResponse } = setup();
+
+				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
+					InvalidLaufzeitResponseLoggableException
+				);
+			});
+		});
+	});
+
+	describe('mapLernperiode', () => {
+		describe('when the lernperiode is a full year', () => {
+			it('should map the correct date', () => {
+				const result = SchulconnexResponseMapper.mapLernperiode('2024');
+
+				expect(result).toEqual({
+					from: new Date('2024-08-01'),
+					until: new Date('2025-07-31'),
+				});
+			});
+		});
+
+		describe('when the lernperiode is the first half year', () => {
+			it('should map the correct date', () => {
+				const result = SchulconnexResponseMapper.mapLernperiode('2024-1');
+
+				expect(result).toEqual({
+					from: new Date('2024-08-01'),
+					until: new Date('2025-01-31'),
+				});
+			});
+		});
+
+		describe('when the lernperiode is the second half year', () => {
+			it('should map the correct date', () => {
+				const result = SchulconnexResponseMapper.mapLernperiode('2024-2');
+
+				expect(result).toEqual({
+					from: new Date('2025-02-01'),
+					until: new Date('2025-07-31'),
+				});
+			});
+		});
+
+		describe('when the lernperiode is invalid', () => {
+			it('should throw an error', () => {
+				expect(() => SchulconnexResponseMapper.mapLernperiode('2024-3')).toThrow(
+					InvalidLernperiodeResponseLoggableException
+				);
 			});
 		});
 	});

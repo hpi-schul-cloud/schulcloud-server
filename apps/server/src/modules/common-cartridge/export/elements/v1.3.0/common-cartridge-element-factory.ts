@@ -1,6 +1,6 @@
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElement } from '../../interfaces';
-import { createElementTypeNotSupportedError } from '../../utils';
 import {
 	CommonCartridgeMetadataElementPropsV130,
 	CommonCartridgeMetadataElementV130,
@@ -39,7 +39,7 @@ export class CommonCartridgeElementFactoryV130 {
 			case CommonCartridgeElementType.RESOURCES_WRAPPER:
 				return new CommonCartridgeResourcesWrapperElementV130(props);
 			default:
-				throw createElementTypeNotSupportedError(type);
+				throw new ElementTypeNotSupportedLoggableException(type);
 		}
 	}
 }

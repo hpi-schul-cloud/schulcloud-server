@@ -5,7 +5,7 @@ import {
 	CommonCartridgeElementType,
 	CommonCartridgeFileBuilderProps,
 	CommonCartridgeIntendedUseType,
-	CommonCartridgeOrganizationBuilderOptions,
+	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
@@ -18,25 +18,25 @@ import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { linkElementFactory, richTextElementFactory } from '@modules/board/testing';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 
-describe('CommonCartridgeMapper', () => {
+describe('CommonCartridgeExportMapper', () => {
 	let module: TestingModule;
-	let sut: CommonCartridgeMapper;
+	let sut: CommonCartridgeExportMapper;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 
 	beforeAll(async () => {
 		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
-				CommonCartridgeMapper,
+				CommonCartridgeExportMapper,
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
 				},
 			],
 		}).compile();
-		sut = module.get(CommonCartridgeMapper);
+		sut = module.get(CommonCartridgeExportMapper);
 		configServiceMock = module.get(ConfigService);
 	});
 
@@ -88,7 +88,7 @@ describe('CommonCartridgeMapper', () => {
 				const { lesson } = setup();
 				const organizationProps = sut.mapLessonToOrganization(lesson);
 
-				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationProps>>({
 					identifier: createIdentifier(lesson.id),
 					title: lesson.name,
 				});
@@ -117,7 +117,7 @@ describe('CommonCartridgeMapper', () => {
 				const { componentProps } = setup();
 				const organizationProps = sut.mapContentToOrganization(componentProps);
 
-				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationProps>>({
 					identifier: expect.any(String),
 					title: componentProps.title,
 				});
@@ -188,7 +188,7 @@ describe('CommonCartridgeMapper', () => {
 				const { task } = setup();
 				const organizationProps = sut.mapTaskToOrganization(task);
 
-				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationProps>>({
 					identifier: expect.any(String),
 					title: task.name,
 				});
@@ -415,10 +415,7 @@ describe('CommonCartridgeMapper', () => {
 				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: expect.any(String),
-					title: richTextElement.text
-						.slice(0, 50)
-						.replace(/<[^>]*>?/gm, '')
-						.concat('...'),
+					title: richTextElement.text.slice(0, 50).replace(/<[^>]*>?/gm, ''),
 					html: `<p>${richTextElement.text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
