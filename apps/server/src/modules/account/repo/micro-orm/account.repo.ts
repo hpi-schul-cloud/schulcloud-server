@@ -66,6 +66,16 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
+	public async findByUsername(username: string): Promise<Account | null> {
+		const entity = await this.em.findOne(AccountEntity, { username });
+
+		if (!entity) {
+			return null;
+		}
+
+		return AccountEntityToDoMapper.mapToDo(entity);
+	}
+
 	public async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
 		const entity = await this.em.findOne(AccountEntity, { username, systemId: new ObjectId(systemId) });
 

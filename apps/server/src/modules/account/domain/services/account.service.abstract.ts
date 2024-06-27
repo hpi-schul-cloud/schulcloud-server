@@ -46,4 +46,6 @@ export abstract class AbstractAccountService {
 	abstract deleteByUserId(userId: EntityId): Promise<EntityId[]>;
 
 	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>>;
+
+	abstract isUniqueEmail(email: string): Promise<boolean>;
 }

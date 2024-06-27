@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -28,14 +29,13 @@ import { IdmCallbackLoggableException } from '../error';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
-import { AccountValidationService } from './account.validation.service';
+import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let accountServiceIdm: DeepMocked<AccountServiceIdm>;
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
-	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<Logger>;
 	let userRepo: DeepMocked<UserRepo>;
@@ -48,7 +48,6 @@ describe('AccountService', () => {
 			accountServiceDb,
 			accountServiceIdm,
 			configService,
-			accountValidationService,
 			logger,
 			userRepo,
 			accountRepo,
@@ -91,12 +90,6 @@ describe('AccountService', () => {
 					useValue: createMock<AccountRepo>(),
 				},
 				{
-					provide: AccountValidationService,
-					useValue: {
-						isUniqueEmail: jest.fn().mockResolvedValue(true),
-					},
-				},
-				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
@@ -115,7 +108,6 @@ describe('AccountService', () => {
 		accountServiceDb = module.get(AccountServiceDb);
 		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
-		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 		userRepo = module.get(UserRepo);
@@ -366,7 +358,7 @@ describe('AccountService', () => {
 						return { id: '' };
 					},
 				} as Account);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 
 				return spy;
 			};
@@ -405,7 +397,7 @@ describe('AccountService', () => {
 						return { id: '' };
 					},
 				} as Account);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 			};
 
 			it('should not throw an error', async () => {
@@ -425,7 +417,7 @@ describe('AccountService', () => {
 						return { id: '' };
 					},
 				} as Account);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 			};
 
 			it('should not throw an error', async () => {
@@ -459,9 +451,9 @@ describe('AccountService', () => {
 			});
 		});
 
-		describe('When username already exists', () => {
+		describe('When username already exists in mongoDB', () => {
 			const setup = () => {
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
 			};
 
 			it('should throw username already exists', async () => {
@@ -473,6 +465,24 @@ describe('AccountService', () => {
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
 			});
 		});
+
+		describe('When username already exists in identity management', () => {
+			const setup = () => {
+				configService.get.mockReturnValue(true);
+
+				accountServiceIdm.isUniqueEmail.mockResolvedValueOnce(false);
+			};
+
+			it('should throw username already exists', async () => {
+				setup();
+				const params: AccountSave = {
+					username: 'john.doe@mail.tld',
+					password: 'JohnsPassword_123',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
+			});
+		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -485,7 +495,7 @@ describe('AccountService', () => {
 				accountServiceDb.save.mockResolvedValueOnce(account);
 				accountServiceIdm.save.mockResolvedValueOnce(account);
 
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceIdm.isUniqueEmail.mockResolvedValueOnce(true);
 
 				return { service: newAccountService(), account };
 			};
@@ -1060,7 +1070,7 @@ describe('AccountService', () => {
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
 				const spyAccountServiceSave = jest.spyOn(accountServiceDb, 'save');
 
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave };
 			};
@@ -1096,7 +1106,7 @@ describe('AccountService', () => {
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1128,7 +1138,7 @@ describe('AccountService', () => {
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
 				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
 
@@ -1165,7 +1175,7 @@ describe('AccountService', () => {
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 
 				const userUpdateSpy = jest.spyOn(userRepo, 'save');
 
@@ -1200,7 +1210,7 @@ describe('AccountService', () => {
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 
 				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
 				const userUpdateSpy = jest.spyOn(userRepo, 'save');
@@ -1236,7 +1246,7 @@ describe('AccountService', () => {
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1336,7 +1346,7 @@ describe('AccountService', () => {
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
 
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1369,7 +1379,7 @@ describe('AccountService', () => {
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockRejectedValueOnce(new ValidationError('fail to update'));
 
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1439,7 +1449,7 @@ describe('AccountService', () => {
 					Object.assign(mockStudentAccount, account);
 					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				});
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1501,7 +1511,7 @@ describe('AccountService', () => {
 				userRepo.save.mockResolvedValue();
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
 
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1530,7 +1540,7 @@ describe('AccountService', () => {
 
 				userRepo.save.mockRejectedValueOnce(undefined);
 
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1591,7 +1601,7 @@ describe('AccountService', () => {
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userRepo.save.mockRejectedValueOnce(undefined);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
 			};
@@ -2078,6 +2088,26 @@ describe('AccountService', () => {
 				await accountService.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+	});
+
+	describe('isUniqueEmail', () => {
+		describe('when checking if email is unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+				const accountImpl = Reflect.get(accountService, 'accountImpl') as DeepMocked<AbstractAccountService>;
+				const isUniqueEmailSpy = jest.spyOn(accountImpl, 'isUniqueEmail');
+
+				return { email, isUniqueEmailSpy };
+			};
+
+			it('should call the underlying account service implementation', async () => {
+				const { email, isUniqueEmailSpy } = setup();
+
+				await accountService.isUniqueEmail(email);
+
+				expect(isUniqueEmailSpy).toHaveBeenCalledWith(email);
 			});
 		});
 	});

@@ -1,3 +1,5 @@
+import { sanitizeRichText } from '@shared/controller';
+import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
@@ -11,7 +13,10 @@ import {
 export class CommonCartridgeResourceFactory {
 	constructor(private readonly archive: AdmZip) {}
 
-	public create(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
+	public create(
+		organization: CommonCartridgeOrganizationProps,
+		inputFormat: InputFormat
+	): CommonCartridgeResourceProps | undefined {
 		if (!this.isValidOrganization(organization)) {
 			return undefined;
 		}
@@ -23,7 +28,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, title);
+				return this.createWebContentResource(content, title, inputFormat);
 			default:
 				return undefined;
 		}
@@ -52,14 +57,18 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private createWebContentResource(content: string, title: string): CommonCartridgeWebContentResourceProps | undefined {
+	private createWebContentResource(
+		content: string,
+		title: string,
+		inputFormat: InputFormat
+	): CommonCartridgeWebContentResourceProps | undefined {
 		const document = this.tryCreateDocument(content, 'text/html');
 
 		if (!document) {
 			return undefined;
 		}
 
-		const html = document.body.textContent?.trim() ?? '';
+		const html = sanitizeRichText(document.body.innerHTML?.trim() ?? '', inputFormat);
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
