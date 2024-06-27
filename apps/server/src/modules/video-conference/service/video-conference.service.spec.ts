@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import { Course, TeamUserEntity } from '@shared/domain/entity';
@@ -16,14 +18,14 @@ import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory }
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceConfig } from '../video-conference-config';
 import { VideoConferenceService } from './video-conference.service';
 
-describe('VideoConferenceService', () => {
+describe(VideoConferenceService.name, () => {
 	let service: DeepMocked<VideoConferenceService>;
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
@@ -32,17 +34,15 @@ describe('VideoConferenceService', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let videoConferenceSettings: DeepMocked<IVideoConferenceSettings>;
+	let configService: DeepMocked<ConfigService<VideoConferenceConfig, true>>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				VideoConferenceService,
 				{
-					provide: VideoConferenceSettings,
-					useValue: createMock<IVideoConferenceSettings>({
-						hostUrl: 'https://api.example.com',
-					}),
+					provide: ConfigService,
+					useValue: createMock<ConfigService<VideoConferenceConfig, true>>(),
 				},
 				{
 					provide: CourseService,
@@ -83,13 +83,15 @@ describe('VideoConferenceService', () => {
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
-		videoConferenceSettings = module.get(VideoConferenceSettings);
+		configService = module.get(ConfigService);
 
 		await setupEntities();
 	});
 
 	describe('canGuestJoin', () => {
 		const setup = (isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean) => {
+			configService.get.mockReturnValue('https://api.example.com');
+
 			return {
 				isGuest,
 				state,
@@ -139,6 +141,7 @@ describe('VideoConferenceService', () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
+				configService.get.mockReturnValue('https://api.example.com');
 				userService.findById.mockResolvedValue(user);
 
 				return {
@@ -492,7 +495,8 @@ describe('VideoConferenceService', () => {
 		describe('when video conference feature is globally disabled', () => {
 			it('should throw a ForbiddenException', async () => {
 				const { schoolId } = setup(false);
-				videoConferenceSettings.enabled = false;
+
+				configService.get.mockReturnValue(false);
 
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
@@ -539,6 +543,8 @@ describe('VideoConferenceService', () => {
 			const userId = 'user-id';
 			const conferenceScope: VideoConferenceScope = VideoConferenceScope.COURSE;
 			const scopeId = new ObjectId().toHexString();
+
+			configService.get.mockReturnValue('https://api.example.com');
 
 			return {
 				userId,
@@ -604,6 +610,8 @@ describe('VideoConferenceService', () => {
 			const team = teamFactory
 				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
 				.build();
+
+			configService.get.mockReturnValue('https://api.example.com');
 
 			return {
 				user,

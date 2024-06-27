@@ -20,12 +20,13 @@ import type { ToolConfig } from '@modules/tool/tool-config';
 import type { UserConfig } from '@modules/user';
 import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
+import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { UserImportConfig } from '../user-import/user-import-config';
+import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -52,7 +53,6 @@ export interface ServerConfig
 		TldrawClientConfig,
 		UserLoginMigrationConfig,
 		LessonConfig,
-		IVideoConferenceSettings,
 		BoardConfig,
 		MediaBoardConfig,
 		SharingConfig,
@@ -63,9 +63,12 @@ export interface ServerConfig
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		UserImportConfig,
+		VideoConferenceConfig,
+		BbbConfig,
 		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
+	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
@@ -254,7 +257,6 @@ const config: ServerConfig = {
 	) as number,
 	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
-	...VideoConferenceConfiguration.videoConference,
 	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
@@ -273,6 +275,11 @@ const config: ServerConfig = {
 	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
+	HOST: Configuration.get('HOST') as string,
+	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
+	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
+	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,
+	VIDEOCONFERENCE_DEFAULT_PRESENTATION: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
 };
 
 export const serverConfig = () => config;
