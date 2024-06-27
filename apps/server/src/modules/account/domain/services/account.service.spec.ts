@@ -579,7 +579,7 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('updateFailedLogin', () => {
+	describe('updateLastLogin', () => {
 		it('should call updateLastLogin in accountServiceDb', async () => {
 			await accountService.updateLastLogin('accountId', new Date());
 
