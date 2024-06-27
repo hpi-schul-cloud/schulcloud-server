@@ -16,11 +16,11 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import type { ToolConfig } from '@modules/tool/tool-config';
 import type { UserConfig } from '@modules/user';
-import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
@@ -48,7 +48,7 @@ export interface ServerConfig
 		XApiKeyConfig,
 		LearnroomConfig,
 		AuthenticationConfig,
-		IToolFeatures,
+		ToolConfig,
 		TldrawClientConfig,
 		UserLoginMigrationConfig,
 		LessonConfig,
@@ -254,7 +254,6 @@ const config: ServerConfig = {
 	) as number,
 	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
-	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,
 	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
@@ -266,6 +265,14 @@ const config: ServerConfig = {
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get('FEATURE_NEW_LAYOUT_ENABLED') as boolean,
+	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
+	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
+	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
+		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
+	) as number,
+	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
+	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 };
 
 export const serverConfig = () => config;

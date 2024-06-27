@@ -3,7 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/entity';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -43,13 +44,13 @@ import { BoardNodeCopyService } from './board-node-copy.service';
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
-	const toolFeatures: IToolFeatures = {
-		ctlToolsTabEnabled: false,
-		ltiToolsTabEnabled: false,
-		maxExternalToolLogoSizeInBytes: 0,
-		backEndUrl: '',
-		ctlToolsCopyEnabled: false,
-		ctlToolsReloadTimeMs: 0,
+	const toolFeatures: ToolConfig = {
+		FEATURE_CTL_TOOLS_TAB_ENABLED: false,
+		FEATURE_LTI_TOOLS_TAB_ENABLED: false,
+		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
+		CTL_TOOLS_BACKEND_URL: '',
+		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
+		CTL_TOOLS_RELOAD_TIME_MS: 0,
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -59,8 +60,8 @@ describe(BoardNodeCopyService.name, () => {
 			providers: [
 				BoardNodeCopyService,
 				{
-					provide: ToolFeatures,
-					useValue: toolFeatures,
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: ContextExternalToolService,
@@ -404,7 +405,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyEnabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				toolFeatures.ctlToolsCopyEnabled = true;
+				toolFeatures.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
 
 				return { copyContext, externalToolElement };
 			};
@@ -474,7 +475,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyDisabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				toolFeatures.ctlToolsCopyEnabled = false;
+				toolFeatures.FEATURE_CTL_TOOLS_COPY_ENABLED = false;
 
 				return { copyContext, externalToolElement };
 			};
