@@ -85,14 +85,6 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return [accounts, total];
 	}
 
-	async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
-		const attributeName = 'lastLogin';
-		const id = await this.getIdmAccountId(accountId);
-		await this.identityManager.setUserAttribute(id, attributeName, lastLogin.toISOString());
-		const updatedAccount = await this.identityManager.findAccountById(id);
-		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
-	}
-
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
 		const attributeName = 'lastTriedFailedLogin';
 		const id = await this.getIdmAccountId(accountId);
