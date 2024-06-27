@@ -37,11 +37,12 @@ export class ElementUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<AnyContentElement> {
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 
 		await this.boardNodeService.delete(element);
+		return element;
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
