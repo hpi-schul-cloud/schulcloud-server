@@ -1,25 +1,25 @@
 import { Injectable, NotAcceptableException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import WebSocket from 'ws';
-import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { decoding, encoding } from 'lib0';
-import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
-import { Buffer } from 'node:buffer';
+import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
 import { DomainErrorHandler } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { formatMessureLog, initilisedPerformanceObserver } from '@shared/common/measure-utils';
-import { TldrawRedisService } from '../redis';
+import { decoding, encoding } from 'lib0';
+import { Buffer } from 'node:buffer';
+import WebSocket from 'ws';
+import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
+import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
+import { TldrawConfig } from '../config';
+import { WsSharedDocDo } from '../domain';
 import {
 	CloseConnectionLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
 	WsSharedDocErrorLoggable,
 } from '../loggable';
-import { TldrawConfig } from '../config';
-import { AwarenessConnectionsUpdate, UpdateOrigin, UpdateType, WSMessageType } from '../types';
-import { WsSharedDocDo } from '../domain';
-import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
+import { TldrawRedisService } from '../redis';
+import { TldrawBoardRepo } from '../repo';
+import { AwarenessConnectionsUpdate, UpdateOrigin, UpdateType, WSMessageType } from '../types';
 
 @Injectable()
 export class TldrawWsService implements OnModuleInit {
@@ -54,14 +54,10 @@ export class TldrawWsService implements OnModuleInit {
 
 		ws.close();
 		await this.finalizeIfNoConnections(doc);
-		performance.measure(
-			formatMessureLog({
-				location: 'tldraw:TldrawWsService:closeConnection',
-				doc_name: doc.name,
-				doc_connection_total: doc.connections.size,
-			}),
-			'closeConnection'
-		);
+		performance.measure('tldraw:TldrawWsService:closeConnection', {
+			detail: { doc_name: doc.name, doc_connection_total: doc.connections.size },
+			start: 'closeConnection',
+		});
 	}
 
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
@@ -256,16 +252,15 @@ export class TldrawWsService implements OnModuleInit {
 
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 
-		performance.measure(
-			formatMessureLog({
-				location: 'tldraw:TldrawWsService:setupWsConnection',
-				doc_name: docName,
+		performance.measure('tldraw:TldrawWsService:setupWsConnection', {
+			detail: {
+				doc_name: doc.name,
 				doc_awareness_state_total: awarenessStates.size,
 				doc_connection_total: doc.connections.size,
 				pod_doc_total: this.docs.size,
-			}),
-			'setupWsConnection'
-		);
+			},
+			start: 'setupWsConnection',
+		});
 	}
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {

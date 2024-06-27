@@ -1,14 +1,14 @@
 import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
+import { DomainErrorHandler } from '@src/core';
+import { Logger } from '@src/core/logger';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
 import * as promise from 'lib0/promise';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector, mergeUpdates } from 'yjs';
-import { DomainErrorHandler } from '@src/core';
-import { formatMessureLog, initilisedPerformanceObserver } from '@shared/common/measure-utils';
-import { Logger } from '@src/core/logger';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain';
 import { TldrawDrawing } from '../entities';
@@ -120,14 +120,10 @@ export class YMongodb implements OnModuleInit {
 			await this.clearUpdatesRange(docName, 0, clock);
 
 			ydoc.destroy();
-			performance.measure(
-				formatMessureLog({
-					location: 'tldraw:YMongodb:compressDocumentTransactional',
-					doc_name: docName,
-					clock,
-				}),
-				'compressDocumentTransactional'
-			);
+			performance.measure('tldraw:YMongodb:compressDocumentTransactional', {
+				start: 'compressDocumentTransactional',
+				detail: { doc_name: docName, clock },
+			});
 		});
 	}
 
@@ -218,14 +214,10 @@ export class YMongodb implements OnModuleInit {
 
 		const buffer = this.convertMongoUpdates(tldrawDrawingEntities);
 
-		performance.measure(
-			formatMessureLog({
-				location: 'tldraw:YMongodb:getMongoUpdates',
-				doc_name: docName,
-				loaded_tldraw_entities_total: tldrawDrawingEntities.length,
-			}),
-			'getMongoUpdates'
-		);
+		performance.measure('tldraw:YMongodb:getMongoUpdates', {
+			start: 'getMongoUpdates',
+			detail: { doc_name: docName, loaded_tldraw_entities_total: tldrawDrawingEntities.length },
+		});
 
 		return buffer;
 	}
