@@ -581,7 +581,9 @@ describe('AccountService', () => {
 
 	describe('updateLastLogin', () => {
 		it('should call updateLastLogin in accountServiceDb', async () => {
-			await accountService.updateLastLogin('accountId', new Date());
+			const someId = new ObjectId().toHexString();
+
+			await accountService.updateLastLogin(someId, new Date());
 
 			expect(accountServiceDb.updateLastLogin).toHaveBeenCalledTimes(1);
 		});
