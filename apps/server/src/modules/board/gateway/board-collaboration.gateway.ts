@@ -90,9 +90,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.boardUc.deleteBoard(userId, data.boardId);
-
-			emitter.emitToClientAndRoom(data, result);
+			const board = await this.boardUc.deleteBoard(userId, data.boardId);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -106,9 +105,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-title' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
-
-			emitter.emitToClientAndRoom(data, result);
+			const board = await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -122,9 +120,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-title' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
-
-			emitter.emitToClientAndRoom(data, result);
+			const card = await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -137,9 +134,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-height' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
-
-			emitter.emitToClientAndRoom(data, result);
+			const card = await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -152,9 +148,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.cardUc.deleteCard(userId, data.cardId);
-
-			emitter.emitToClientAndRoom(data, result);
+			const card = await this.cardUc.deleteCard(userId, data.cardId);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -215,10 +210,9 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const board = await this.boardUc.findBoard(userId, data.boardId);
-
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 			await emitter.joinRoom(board);
-			emitter.emitToClient(responsePayload);
+			emitter.emitSuccess(responsePayload);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -231,9 +225,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-
-			emitter.emitToClientAndRoom(data, result);
+			const card = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -246,14 +239,13 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.boardUc.moveColumn(
+			const column = await this.boardUc.moveColumn(
 				userId,
 				data.columnMove.columnId,
 				data.targetBoardId,
 				data.columnMove.addedIndex
 			);
-
-			emitter.emitToClientAndRoom(data, result);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -267,9 +259,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-column-title' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
-
-			emitter.emitToClientAndRoom(data, result);
+			const column = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -282,9 +273,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-visibility' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
-
-			emitter.emitToClientAndRoom(data, result);
+			const board = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -297,9 +287,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.columnUc.deleteColumn(userId, data.columnId);
-
-			emitter.emitToClientAndRoom(data, result);
+			const column = await this.columnUc.deleteColumn(userId, data.columnId);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -316,7 +305,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			emitter.emitToClient({ cards: cardResponses, isOwnAction: false });
+			emitter.emitSuccess({ cards: cardResponses });
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -349,9 +338,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-element' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const result = await this.elementUc.updateElement(userId, data.elementId, data.data.content);
-
-			emitter.emitToClientAndRoom(data, result);
+			const element = await this.elementUc.updateElement(userId, data.elementId, data.data.content);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -365,8 +353,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 
 		try {
-			const result = await this.elementUc.deleteElement(userId, data.elementId);
-			emitter.emitToClientAndRoom(data, result);
+			const element = await this.elementUc.deleteElement(userId, data.elementId);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -380,8 +368,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 
 		try {
-			const result = await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
-			emitter.emitToClientAndRoom(data, result);
+			const element = await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -396,7 +384,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				const room = `board_${rootId}`;
 				await socket.join(room);
 			},
-			emitToClient(data: object) {
+			emitSuccess(data: object) {
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
 			emitToClientAndRoom(data: object, boardNode: AnyBoardNode) {
