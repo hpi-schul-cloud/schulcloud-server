@@ -1580,13 +1580,13 @@
 				},
 				"PERFORMANCE_MEASURE_ENABLED": {
 					"type": "boolean",
-					"description": "Activate the performance measure for overserved areas.",
+					"description": "Activate the performance measure for observed areas.",
 					"default": true
 				},
 				"LOG_LEVEL": {
 					"type": "string",
 					"default": "info",
-					"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
+					"description": "Define log level for tldraw.",
 					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			},
