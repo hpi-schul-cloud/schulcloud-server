@@ -1,10 +1,13 @@
 import {
+	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
-import { CommonCartridgeResource } from '../../interfaces';
-import { checkIntendedUse } from '../../utils';
+import { CommonCartridgeGuard } from '../../common-cartridge.guard';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV130 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -26,11 +29,25 @@ export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResour
 
 	constructor(private readonly props: CommonCartridgeWebContentResourcePropsV130) {
 		super(props);
-		checkIntendedUse(props.intendedUse, CommonCartridgeWebContentResourceV130.SUPPORTED_INTENDED_USES);
+		CommonCartridgeGuard.checkIntendedUse(
+			props.intendedUse,
+			CommonCartridgeWebContentResourceV130.SUPPORTED_INTENDED_USES
+		);
 	}
 
-	public canInline(): boolean {
-		return false;
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_3_0;
+	}
+
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.RESOURCE:
+				return this.getManifestResourceXmlObject();
+			case CommonCartridgeElementType.ORGANIZATION:
+				return this.getManifestOrganizationXmlObject();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
 	}
 
 	public getFilePath(): string {
@@ -41,11 +58,17 @@ export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResour
 		return this.props.html;
 	}
 
-	public getSupportedVersion(): CommonCartridgeVersion {
-		return CommonCartridgeVersion.V_1_3_0;
+	private getManifestOrganizationXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: createIdentifier(),
+				identifierref: this.props.identifier,
+			},
+			title: this.props.title,
+		};
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	private getManifestResourceXmlObject(): XmlObject {
 		return {
 			$: {
 				identifier: this.props.identifier,

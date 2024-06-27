@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
@@ -7,8 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { AccountConfig } from '../../account-config';
 import { Account, AccountSave } from '..';
+import { AccountConfig } from '../../account-config';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 
@@ -530,6 +531,44 @@ describe('AccountIdmService', () => {
 
 		it('findMany should throw not implemented Exception', async () => {
 			await expect(accountIdmService.findMany(0, 0)).rejects.toThrow(NotImplementedException);
+		});
+	});
+
+	describe('isUniqueEmail', () => {
+		describe('when email is unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+
+				idmServiceMock.findAccountsByUsername.mockResolvedValue([[], 0]);
+
+				return { email };
+			};
+
+			it('should return true', async () => {
+				const { email } = setup();
+
+				const result = await accountIdmService.isUniqueEmail(email);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when email is not unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+
+				idmServiceMock.findAccountsByUsername.mockResolvedValue([[mockIdmAccount], 1]);
+
+				return { email };
+			};
+
+			it('should return false', async () => {
+				const { email } = setup();
+
+				const result = await accountIdmService.isUniqueEmail(email);
+
+				expect(result).toBe(false);
+			});
 		});
 	});
 });

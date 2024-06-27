@@ -1,10 +1,13 @@
+import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { TestApiClient, cleanupCollections, roleFactory, schoolEntityFactory, userFactory } from '@shared/testing';
-import { ServerTestModule } from '@modules/server/server.module';
+import { AccountEntity } from '../../domain/entity/account.entity';
+import { accountFactory } from '../../testing';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
@@ -12,8 +15,6 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '../dto';
-import { AccountEntity } from '../../domain/entity/account.entity';
-import { accountFactory } from '../../testing';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';
@@ -495,8 +496,8 @@ describe('Account Controller (API)', () => {
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 
-				const studentAccount = mapUserToAccount(studentUser);
-				const superheroAccount = mapUserToAccount(superheroUser);
+				const studentAccount = accountFactory.withUser(studentUser).build({ username: faker.internet.email() });
+				const superheroAccount = accountFactory.withUser(superheroUser).build();
 
 				em.persist(school);
 				em.persist([studentRoles, superheroRoles]);
