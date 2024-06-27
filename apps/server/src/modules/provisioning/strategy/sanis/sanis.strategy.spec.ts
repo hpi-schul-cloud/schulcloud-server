@@ -17,7 +17,6 @@ import { ValidationErrorLoggableException } from '@shared/common/loggable-except
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalLicenseDto,
@@ -52,9 +51,8 @@ describe(SanisProvisioningStrategy.name, () => {
 		ArgsType<typeof classValidator.validate>
 	>;
 
-	let provisioningFeatures: IProvisioningFeatures;
-	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
+	const config: Partial<ProvisioningConfig> = {};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -93,12 +91,10 @@ describe(SanisProvisioningStrategy.name, () => {
 					useValue: createMock<SchulconnexToolProvisioningService>(),
 				},
 				{
-					provide: ProvisioningFeatures,
-					useValue: {},
-				},
-				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ProvisioningConfig, true>>(),
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
+					},
 				},
 				{
 					provide: SchulconnexRestClient,
@@ -109,17 +105,17 @@ describe(SanisProvisioningStrategy.name, () => {
 
 		strategy = module.get(SanisProvisioningStrategy);
 		mapper = module.get(SchulconnexResponseMapper);
-		provisioningFeatures = module.get(ProvisioningFeatures);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
-		configService = module.get(ConfigService);
 
 		validationFunction = jest.spyOn(classValidator, 'validate');
 	});
 
 	beforeEach(() => {
-		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-			schulconnexGroupProvisioningEnabled: true,
-		});
+		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+		config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
+		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
+		config.PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL = 'https://lizenz =info';
+		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 	});
 
 	afterEach(() => {
@@ -185,7 +181,6 @@ describe(SanisProvisioningStrategy.name, () => {
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
 				validationFunction.mockResolvedValueOnce([]);
 				validationFunction.mockResolvedValueOnce([]);
-				configService.get.mockReturnValueOnce(true);
 				schulconnexRestClient.getLizenzInfo.mockResolvedValueOnce(schulconnexLizenzInfoResponses);
 				validationFunction.mockResolvedValueOnce([]);
 
@@ -287,7 +282,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				validationFunction.mockResolvedValueOnce([]);
 
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = false;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
 
 				return {
 					input,
@@ -342,7 +337,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				validationFunction.mockResolvedValueOnce([]);
 				validationFunction.mockResolvedValueOnce([]);
 
-				configService.get.mockReturnValueOnce(false);
+				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = false;
 
 				return {
 					input,

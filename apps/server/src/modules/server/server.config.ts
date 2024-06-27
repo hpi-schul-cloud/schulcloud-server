@@ -283,6 +283,7 @@ const config: ServerConfig = {
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,
+	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;
