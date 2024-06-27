@@ -38,6 +38,10 @@ export const schulconnexResponseFactory = Factory.define<SchulconnexResponse>(()
 							id: new UUID().toString(),
 							bezeichnung: 'bezeichnung',
 							typ: SchulconnexGroupType.CLASS,
+							laufzeit: {
+								vonlernperiode: '2024-1',
+								bislernperiode: '2024-2',
+							},
 						},
 						gruppenzugehoerigkeit: {
 							rollen: [SchulconnexGroupRole.TEACHER],

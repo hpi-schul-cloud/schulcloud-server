@@ -1,11 +1,11 @@
+import { AuthorizationService } from '@modules/authorization';
+import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
 import { Course } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
-import { RoleService } from '@src/modules/role';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseService } from '../service';
 

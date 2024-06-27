@@ -2,21 +2,21 @@ import { LinkElement, RichTextElement } from '@modules/board/domain';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
-	CommonCartridgeFileBuilderProps,
 	CommonCartridgeIntendedUseType,
-	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 	createIdentifier,
 } from '@modules/common-cartridge';
+import { CommonCartridgeOrganizationProps } from '@modules/common-cartridge/export/builders/common-cartridge-file-builder';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
+import sanitizeHtml from 'sanitize-html';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
-export class CommonCartridgeMapper {
+export class CommonCartridgeExportMapper {
 	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
 	public mapCourseToMetadata(course: Course): CommonCartridgeElementProps {
@@ -28,21 +28,21 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	public mapLessonToOrganization(lesson: LessonEntity): CommonCartridgeOrganizationBuilderOptions {
+	public mapLessonToOrganization(lesson: LessonEntity): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(lesson.id),
 			title: lesson.name,
 		};
 	}
 
-	public mapContentToOrganization(content: ComponentProperties): CommonCartridgeOrganizationBuilderOptions {
+	public mapContentToOrganization(content: ComponentProperties): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(content._id),
 			title: content.title,
 		};
 	}
 
-	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationBuilderOptions {
+	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(),
 			title: task.name,
@@ -112,7 +112,10 @@ export class CommonCartridgeMapper {
 		}
 	}
 
-	public mapCourseToManifest(version: CommonCartridgeVersion, course: Course): CommonCartridgeFileBuilderProps {
+	public mapCourseToManifest(
+		version: CommonCartridgeVersion,
+		course: Course
+	): { version: CommonCartridgeVersion; identifier: string } {
 		return {
 			version,
 			identifier: createIdentifier(course.id),
@@ -139,10 +142,11 @@ export class CommonCartridgeMapper {
 	}
 
 	private getTextTitle(text: string): string {
-		const title = text
-			.slice(0, 50)
-			.replace(/<[^>]*>?/gm, '')
-			.concat('...');
+		const title = sanitizeHtml(text, {
+			allowedTags: [],
+			allowedAttributes: {},
+		}).slice(0, 50);
+
 		return title;
 	}
 }

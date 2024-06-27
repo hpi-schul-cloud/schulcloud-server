@@ -27,6 +27,8 @@ spec:
                 name: moin-schule-users-deletion-queueing-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh','-c']
             args: ['npm run nest:start:deletion-console -- queue unsynced --systemId $SYSTEM_ID']
             resources:

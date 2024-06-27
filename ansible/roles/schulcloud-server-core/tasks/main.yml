@@ -37,6 +37,13 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: File Storage Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
   - name: Admin Api ingress
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

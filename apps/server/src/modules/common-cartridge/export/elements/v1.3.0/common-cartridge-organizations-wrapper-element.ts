@@ -1,39 +1,13 @@
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces';
+import {
+	CommonCartridgeOrganizationsWrapperElement,
+	CommonCartridgeOrganizationsWrapperElementProps,
+} from '../abstract/common-cartridge-organizations-wrapper-element';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 
-export type CommonCartridgeOrganizationsWrapperElementPropsV130 = {
-	type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
-	version: CommonCartridgeVersion;
-	items: CommonCartridgeElement[];
-};
+export type CommonCartridgeOrganizationsWrapperElementPropsV130 = CommonCartridgeOrganizationsWrapperElementProps;
 
-export class CommonCartridgeOrganizationsWrapperElementV130 extends CommonCartridgeElement {
-	constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementPropsV130) {
-		super(props);
-	}
-
+export class CommonCartridgeOrganizationsWrapperElementV130 extends CommonCartridgeOrganizationsWrapperElement {
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
-	}
-
-	public getManifestXmlObject(): Record<string, unknown> {
-		return {
-			organization: [
-				{
-					$: {
-						identifier: 'org-1',
-						structure: 'rooted-hierarchy',
-					},
-					item: [
-						{
-							$: {
-								identifier: 'LearningModules',
-							},
-							item: this.props.items.map((items) => items.getManifestXmlObject()),
-						},
-					],
-				},
-			],
-		};
 	}
 }

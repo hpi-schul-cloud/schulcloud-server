@@ -28,6 +28,7 @@ describe('CommonCartridgeOrganizationVisitor', () => {
 				const sut = new CommonCartridgeOrganizationVisitor(document, {
 					maxSearchDepth: 1,
 					pathSeparator: DEFAULT_FILE_PARSER_OPTIONS.pathSeparator,
+					inputFormat: DEFAULT_FILE_PARSER_OPTIONS.inputFormat,
 				});
 
 				return { sut };
