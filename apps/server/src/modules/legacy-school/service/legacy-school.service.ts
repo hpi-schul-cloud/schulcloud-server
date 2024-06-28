@@ -4,6 +4,7 @@ import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
 import { FederalStateService } from './federal-state.service';
 import { SchoolValidationService } from './validation';
+import { SchoolYearService } from './school-year.service';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.
@@ -13,7 +14,8 @@ export class LegacySchoolService {
 	constructor(
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly schoolValidationService: SchoolValidationService,
-		private readonly federalStateService: FederalStateService
+		private readonly federalStateService: FederalStateService,
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {
@@ -59,7 +61,17 @@ export class LegacySchoolService {
 
 	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
 		const federalState = await this.federalStateService.findFederalStateByName(props.federalStateName);
-		const school = new LegacySchoolDo({ name: props.name, federalState });
+		const schoolYear = await this.schoolYearService.getCurrentOrNextSchoolYear();
+		const defaults = {
+			// fileStorageType: 'awsS3',
+			schoolYear,
+			permissions: {
+				teacher: {
+					STUDENT_LIST: true,
+				},
+			},
+		};
+		const school = new LegacySchoolDo({ ...defaults, name: props.name, federalState });
 		await this.schoolRepo.save(school);
 		return school;
 	}
