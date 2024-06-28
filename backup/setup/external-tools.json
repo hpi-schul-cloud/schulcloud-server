@@ -115,6 +115,33 @@
 	},
 	{
 		"_id": {
+			"$oid": "667e4fe648ea6a22a5474359"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"name": "CY Test Tool Course Restriction",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [
+			"course"
+		]
+	},
+	{
+		"_id": {
 			"$oid": "644a4593d0a8301e6cf25d86"
 		},
 		"createdAt": {
@@ -138,6 +165,60 @@
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"board-element"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "667e50f6162707ce02b9ac02"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"name": "CY Test Tool Media-Board Restriction",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [
+			"media-board"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "667e52a4162707ce02b9ac04"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"name": "CY Test Tool All Restrictions",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [
+			"course","board-element","media-board"
 		]
 	},
 	{
