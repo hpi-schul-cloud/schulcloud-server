@@ -110,16 +110,8 @@ describe(SanisProvisioningStrategy.name, () => {
 		validationFunction = jest.spyOn(classValidator, 'validate');
 	});
 
-	beforeEach(() => {
-		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
-		config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
-		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
-		config.PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL = 'https://lizenz =info';
-		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
-	});
-
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	const setupSchulconnexResponse = (): SchulconnexResponse => schulconnexResponseFactory.build();
@@ -175,6 +167,8 @@ describe(SanisProvisioningStrategy.name, () => {
 					schulconnexLizenzInfoResponse,
 				]);
 
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
