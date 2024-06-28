@@ -1,18 +1,17 @@
+import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { ConfigModule } from '@nestjs/config';
-import { createMock } from '@golevelup/ts-jest';
-import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { DomainErrorHandler } from '@src/core';
-import { Logger } from '@src/core/logger';
-import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
+import * as Yjs from 'yjs';
 import { TldrawDrawing } from '../entities';
+import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
+import { Version } from './key.factory';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
-import { Version } from './key.factory';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -40,10 +39,6 @@ describe('YMongoDb', () => {
 				{
 					provide: DomainErrorHandler,
 					useValue: createMock<DomainErrorHandler>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

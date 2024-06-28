@@ -1,7 +1,6 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DomainErrorHandler } from '@src/core';
-import { Logger } from '@src/core/logger';
 import { decoding, encoding } from 'lib0';
 import { Buffer } from 'node:buffer';
 import WebSocket from 'ws';
@@ -29,8 +28,7 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly domainErrorHandler: DomainErrorHandler,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisService: TldrawRedisService,
-		private readonly logger: Logger
+		private readonly tldrawRedisService: TldrawRedisService
 	) {
 		this.tldrawRedisService.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}

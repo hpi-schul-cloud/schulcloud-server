@@ -1,30 +1,29 @@
-import { Test } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { HttpService } from '@nestjs/axios';
 import { INestApplication } from '@nestjs/common';
-import WebSocket from 'ws';
+import { ConfigModule } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { TextEncoder } from 'util';
-import * as Yjs from 'yjs';
-import * as SyncProtocols from 'y-protocols/sync';
-import * as AwarenessProtocol from 'y-protocols/awareness';
+import { Test } from '@nestjs/testing';
+import { WebSocketReadyStateEnum } from '@shared/testing';
+import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
+import { createConfigModuleOptions } from '@src/config';
+import { DomainErrorHandler } from '@src/core';
 import * as Ioredis from 'ioredis';
 import { encoding } from 'lib0';
-import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
-import { HttpService } from '@nestjs/axios';
-import { WebSocketReadyStateEnum } from '@shared/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { DomainErrorHandler } from '@src/core';
-import { Logger } from '@src/core/logger';
-import { TldrawRedisFactory, TldrawRedisService } from '../redis';
+import { TextEncoder } from 'util';
+import WebSocket from 'ws';
+import * as AwarenessProtocol from 'y-protocols/awareness';
+import * as SyncProtocols from 'y-protocols/sync';
+import * as Yjs from 'yjs';
+import { TldrawWsService } from '.';
 import { TldrawWs } from '../controller';
+import { WsSharedDocDo } from '../domain';
 import { TldrawDrawing } from '../entities';
+import { MetricsService } from '../metrics';
+import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
-import { WsSharedDocDo } from '../domain';
-import { MetricsService } from '../metrics';
-import { TldrawWsService } from '.';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -101,10 +100,6 @@ describe('TldrawWSService', () => {
 				{
 					provide: DomainErrorHandler,
 					useValue: createMock<DomainErrorHandler>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 				{
 					provide: HttpService,

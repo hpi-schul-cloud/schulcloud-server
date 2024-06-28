@@ -2,7 +2,6 @@ import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DomainErrorHandler } from '@src/core';
-import { Logger } from '@src/core/logger';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
@@ -27,8 +26,7 @@ export class YMongodb {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly repo: TldrawRepo,
-		private readonly domainErrorHandler: DomainErrorHandler,
-		private readonly logger: Logger
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
