@@ -1,6 +1,5 @@
-import { Injectable, NotAcceptableException, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
 import { DomainErrorHandler } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { decoding, encoding } from 'lib0';
@@ -22,7 +21,7 @@ import { TldrawBoardRepo } from '../repo';
 import { AwarenessConnectionsUpdate, UpdateOrigin, UpdateType, WSMessageType } from '../types';
 
 @Injectable()
-export class TldrawWsService implements OnModuleInit {
+export class TldrawWsService {
 	public docs = new Map<string, WsSharedDocDo>();
 
 	constructor(
@@ -34,12 +33,6 @@ export class TldrawWsService implements OnModuleInit {
 		private readonly logger: Logger
 	) {
 		this.tldrawRedisService.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
-	}
-
-	onModuleInit() {
-		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
-			initilisedPerformanceObserver(this.logger);
-		}
 	}
 
 	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
@@ -54,9 +47,10 @@ export class TldrawWsService implements OnModuleInit {
 
 		ws.close();
 		await this.finalizeIfNoConnections(doc);
+
 		performance.measure('tldraw:TldrawWsService:closeConnection', {
-			detail: { doc_name: doc.name, doc_connection_total: doc.connections.size },
 			start: 'closeConnection',
+			detail: { doc_name: doc.name, doc_connection_total: doc.connections.size },
 		});
 	}
 
@@ -185,9 +179,10 @@ export class TldrawWsService implements OnModuleInit {
 	};
 
 	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
+		performance.mark('setupWsConnection');
+
 		ws.binaryType = 'arraybuffer';
 
-		performance.mark('setupWsConnection');
 		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
@@ -253,13 +248,13 @@ export class TldrawWsService implements OnModuleInit {
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 
 		performance.measure('tldraw:TldrawWsService:setupWsConnection', {
+			start: 'setupWsConnection',
 			detail: {
 				doc_name: doc.name,
 				doc_awareness_state_total: awarenessStates.size,
 				doc_connection_total: doc.connections.size,
 				pod_doc_total: this.docs.size,
 			},
-			start: 'setupWsConnection',
 		});
 	}
 

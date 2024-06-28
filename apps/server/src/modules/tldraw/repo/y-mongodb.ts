@@ -1,7 +1,6 @@
 import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { initilisedPerformanceObserver } from '@shared/common/measure-utils';
 import { DomainErrorHandler } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { Buffer } from 'buffer';
@@ -18,7 +17,7 @@ import { KeyFactory, Version } from './key.factory';
 import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
-export class YMongodb implements OnModuleInit {
+export class YMongodb {
 	private readonly _transact: <T extends Promise<YTransaction>>(docName: string, fn: () => T) => T;
 
 	// scope the queue of the transaction to each docName
@@ -63,12 +62,6 @@ export class YMongodb implements OnModuleInit {
 
 			return this.tr[docName] as T;
 		};
-	}
-
-	onModuleInit() {
-		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
-			initilisedPerformanceObserver(this.logger);
-		}
 	}
 
 	public async createIndex(): Promise<void> {
@@ -120,6 +113,7 @@ export class YMongodb implements OnModuleInit {
 			await this.clearUpdatesRange(docName, 0, clock);
 
 			ydoc.destroy();
+
 			performance.measure('tldraw:YMongodb:compressDocumentTransactional', {
 				start: 'compressDocumentTransactional',
 				detail: { doc_name: docName, clock },
@@ -209,6 +203,7 @@ export class YMongodb implements OnModuleInit {
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
 		performance.mark('getMongoUpdates');
+
 		const uniqueKey = KeyFactory.createForUpdate(docName);
 		const tldrawDrawingEntities = await this.getMongoBulkData(uniqueKey, opts);
 
