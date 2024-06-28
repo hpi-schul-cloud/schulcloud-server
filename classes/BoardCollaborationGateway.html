@@ -2717,7 +2717,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: &#x27;create-card&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			const card &#x3D; await this.columnUc.createCard(userId, data.columnId);
+			const card &#x3D; await this.columnUc.createCard(userId, data.columnId, data.requiredEmptyElements);
 			const newCard &#x3D; CardResponseMapper.mapToResponse(card);
 
 			const responsePayload &#x3D; {
