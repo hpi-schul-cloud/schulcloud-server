@@ -112,6 +112,9 @@ describe(SanisProvisioningStrategy.name, () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+		validationFunction.mockReset();
+		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+		config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = false;
 	});
 
 	const setupSchulconnexResponse = (): SchulconnexResponse => schulconnexResponseFactory.build();
