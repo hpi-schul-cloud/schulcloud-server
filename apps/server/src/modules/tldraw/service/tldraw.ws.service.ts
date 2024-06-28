@@ -282,35 +282,6 @@ export class TldrawWsService {
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
 		}
 	}
-	/*
-	private syncDocumentAssetsWithShapes(doc: WsSharedDocDo): TldrawAsset[] {
-		// clean up assets that are not used as shapes anymore
-		// which can happen when users do undo/redo operations on assets
-		const assets: YMap<TldrawAsset> = doc.getMap('assets');
-		const shapes: YMap<TldrawShape> = doc.getMap('shapes');
-		const usedShapesAsAssets: TldrawShape[] = [];
-		const usedAssets: TldrawAsset[] = [];
-
-		for (const [, shape] of shapes) {
-			if (shape.assetId) {
-				usedShapesAsAssets.push(shape);
-			}
-		}
-
-		doc.transact(() => {
-			for (const [, asset] of assets) {
-				const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
-				if (!foundAsset) {
-					assets.delete(asset.id);
-				} else {
-					usedAssets.push(asset);
-				}
-			}
-		});
-
-		return usedAssets;
-	}
-	*/
 
 	private sendUpdateToConnectedClients(update: Uint8Array, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
