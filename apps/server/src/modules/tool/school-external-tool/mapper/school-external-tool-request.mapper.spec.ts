@@ -3,8 +3,6 @@ import { SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 
 describe('SchoolExternalToolRequestMapper', () => {
-	const mapper: SchoolExternalToolRequestMapper = new SchoolExternalToolRequestMapper();
-
 	describe('mapSchoolExternalToolRequest', () => {
 		describe('when SchoolExternalToolPostParams is given', () => {
 			const setup = () => {
@@ -28,7 +26,8 @@ describe('SchoolExternalToolRequestMapper', () => {
 			it('should return an schoolExternalTool', () => {
 				const { param, params } = setup();
 
-				const schoolExternalToolDto: SchoolExternalToolProps = mapper.mapSchoolExternalToolRequest(params);
+				const schoolExternalToolDto: SchoolExternalToolProps =
+					SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(params);
 
 				expect(schoolExternalToolDto).toEqual<SchoolExternalToolProps>({
 					id: expect.any(String),
@@ -57,7 +56,8 @@ describe('SchoolExternalToolRequestMapper', () => {
 			it('should return an schoolExternalTool without parameter', () => {
 				const { params } = setup();
 
-				const schoolExternalToolDto: SchoolExternalToolProps = mapper.mapSchoolExternalToolRequest(params);
+				const schoolExternalToolDto: SchoolExternalToolProps =
+					SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(params);
 
 				expect(schoolExternalToolDto).toEqual<SchoolExternalToolProps>({
 					id: expect.any(String),
