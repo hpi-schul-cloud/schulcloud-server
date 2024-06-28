@@ -1,18 +1,19 @@
+import { ConsoleWriterModule } from '@infra/console';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { ConsoleWriterModule } from '@infra/console';
 import { ConsoleModule } from 'nestjs-console';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { config, TLDRAW_DB_URL } from './config';
+import { TLDRAW_DB_URL, config } from './config';
 import { TldrawDrawing } from './entities';
-import { TldrawFilesStorageAdapterService } from './service';
-import { TldrawRepo, YMongodb } from './repo';
 import { TldrawFilesConsole } from './job';
+import { TldrawRepo, YMongodb } from './repo';
+import { TldrawFilesStorageAdapterService } from './service';
 import { TldrawDeleteFilesUc } from './uc';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -28,6 +29,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		RabbitMQWrapperModule,
 		FilesStorageClientModule,
 		LoggerModule,
+		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
