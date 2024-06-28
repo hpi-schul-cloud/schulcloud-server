@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
@@ -34,7 +35,6 @@ import {
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
-import { serverConfig, ServerConfig } from '../../../server';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
