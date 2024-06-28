@@ -3148,13 +3148,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawConsoleModule.html" data-type="entity-link" >TldrawConsoleModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawConsoleModule-779d84223f3b87bbdbd8a5f4a42f172317237102e1fb853b46799f032e7f4187c116e6a3cf14ece78ccaed8733c09eca43cfd7c4fccde27aa2da8c9ef594bbba"' : 'data-bs-target="#xs-injectables-links-module-TldrawConsoleModule-779d84223f3b87bbdbd8a5f4a42f172317237102e1fb853b46799f032e7f4187c116e6a3cf14ece78ccaed8733c09eca43cfd7c4fccde27aa2da8c9ef594bbba"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawConsoleModule-b2354943d1234b7693fa3c9e8d93b23fdbc58c52f50f014ce34afb5cc8181b57212117c76944b473ec5ee8012a6cd6a15149b285526d1502586bc676d05d9041"' : 'data-bs-target="#xs-injectables-links-module-TldrawConsoleModule-b2354943d1234b7693fa3c9e8d93b23fdbc58c52f50f014ce34afb5cc8181b57212117c76944b473ec5ee8012a6cd6a15149b285526d1502586bc676d05d9041"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawConsoleModule-779d84223f3b87bbdbd8a5f4a42f172317237102e1fb853b46799f032e7f4187c116e6a3cf14ece78ccaed8733c09eca43cfd7c4fccde27aa2da8c9ef594bbba"' :
-                                        'id="xs-injectables-links-module-TldrawConsoleModule-779d84223f3b87bbdbd8a5f4a42f172317237102e1fb853b46799f032e7f4187c116e6a3cf14ece78ccaed8733c09eca43cfd7c4fccde27aa2da8c9ef594bbba"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawConsoleModule-b2354943d1234b7693fa3c9e8d93b23fdbc58c52f50f014ce34afb5cc8181b57212117c76944b473ec5ee8012a6cd6a15149b285526d1502586bc676d05d9041"' :
+                                        'id="xs-injectables-links-module-TldrawConsoleModule-b2354943d1234b7693fa3c9e8d93b23fdbc58c52f50f014ce34afb5cc8181b57212117c76944b473ec5ee8012a6cd6a15149b285526d1502586bc676d05d9041"' }>
                                         <li class="link">
                                             <a href="injectables/TldrawDeleteFilesUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawDeleteFilesUc</a>
                                         </li>
