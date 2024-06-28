@@ -49,7 +49,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 export class TldrawWsModule {
 	constructor(private readonly logger: Logger, private readonly configService: ConfigService<TldrawConfig, true>) {
 		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
-			this.logger.setContext('PerformanceObserver');
+			this.logger.setContext('PerformanceObserver:TldrawWsModule');
 			initialisePerformanceObserver(this.logger);
 		}
 	}
