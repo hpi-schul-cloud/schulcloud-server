@@ -18,7 +18,7 @@ class MeasureLoggable implements Loggable {
 	}
 }
 
-class InitalisePerformanceLoggable implements Loggable {
+class InitialisePerformanceObserverLoggable implements Loggable {
 	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Initialise PerformanceObserver...',
@@ -26,8 +26,8 @@ class InitalisePerformanceLoggable implements Loggable {
 	}
 }
 
-export const initilisedPerformanceObserver = (infoLogger: InfoLogger): void => {
-	infoLogger.info(new InitalisePerformanceLoggable());
+export const initialisePerformanceObserver = (infoLogger: InfoLogger): void => {
+	infoLogger.info(new InitialisePerformanceObserverLoggable());
 
 	const obs = new PerformanceObserver((perfObserverList) => {
 		const entries = perfObserverList.getEntriesByType('measure');
