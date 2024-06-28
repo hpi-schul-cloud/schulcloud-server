@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -34,14 +35,12 @@ import {
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
-import { UserImportConfig, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
-	let userImportFeatures: UserImportConfig;
 
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
@@ -66,9 +65,9 @@ describe('ImportUser Controller (API)', () => {
 	};
 
 	const setConfig = (systemId?: string) => {
-		userImportFeatures.FEATURE_USER_MIGRATION_ENABLED = true;
-		userImportFeatures.FEATURE_USER_MIGRATION_SYSTEM_ID = systemId || new ObjectId().toString();
-		userImportFeatures.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
+		Configuration.set('FEATURE_USER_MIGRATION_ENABLED', true);
+		Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', systemId || new ObjectId().toString());
+		Configuration.set('FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION', false);
 	};
 
 	beforeAll(async () => {
@@ -82,7 +81,6 @@ describe('ImportUser Controller (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
-		userImportFeatures = app.get(UserImportFeatures);
 	});
 
 	afterAll(async () => {
@@ -115,8 +113,8 @@ describe('ImportUser Controller (API)', () => {
 						Permission.IMPORT_USER_VIEW,
 					]));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.FEATURE_USER_MIGRATION_ENABLED = false;
-					userImportFeatures.FEATURE_USER_MIGRATION_SYSTEM_ID = '';
+					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', '');
 				});
 
 				afterEach(() => {
@@ -172,7 +170,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ account, system } = await authenticatedUser());
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
 
 				it('GET /user/import is UNAUTHORIZED', async () => {
@@ -224,8 +222,8 @@ describe('ImportUser Controller (API)', () => {
 						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
-					userImportFeatures.FEATURE_USER_MIGRATION_ENABLED = false;
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
+					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
 				});
 
 				it('GET user/import is authorized, despite feature not enabled', async () => {
@@ -243,7 +241,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ school, system, account } = await authenticatedUser([Permission.IMPORT_USER_VIEW]));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
 
 				it('GET /user/import responds with importusers', async () => {
@@ -1081,7 +1079,7 @@ describe('ImportUser Controller (API)', () => {
 					it('should set in user migration mode', async () => {
 						({ account, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]));
 						testApiClient = await testApiClient.login(account);
-						userImportFeatures.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
+						Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 
 						await testApiClient.post('startUserMigration').expect(HttpStatus.CREATED);
 					});
