@@ -44,7 +44,7 @@ import { BoardNodeCopyService } from './board-node-copy.service';
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
-	const toolFeatures: ToolConfig = {
+	const config: ToolConfig = {
 		FEATURE_CTL_TOOLS_TAB_ENABLED: false,
 		FEATURE_LTI_TOOLS_TAB_ENABLED: false,
 		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
@@ -61,7 +61,9 @@ describe(BoardNodeCopyService.name, () => {
 				BoardNodeCopyService,
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ToolConfig) => config[key]),
+					},
 				},
 				{
 					provide: ContextExternalToolService,
@@ -82,7 +84,7 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	afterAll(async () => {
@@ -405,7 +407,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyEnabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				toolFeatures.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
+				config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
 
 				return { copyContext, externalToolElement };
 			};
@@ -475,7 +477,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyDisabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				toolFeatures.FEATURE_CTL_TOOLS_COPY_ENABLED = false;
+				config.FEATURE_CTL_TOOLS_COPY_ENABLED = false;
 
 				return { copyContext, externalToolElement };
 			};
