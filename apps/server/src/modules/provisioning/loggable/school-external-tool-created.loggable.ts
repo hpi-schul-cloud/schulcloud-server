@@ -12,7 +12,7 @@ export class SchoolExternalToolCreatedLoggable implements Loggable {
 				userId: this.license.userId,
 				schoolId: this.schoolExternalTool.schoolId,
 				mediumId: this.license.mediumId,
-				mediaSourceId: this.license.mediaSourceId,
+				mediaSourceId: this.license.mediaSource?.sourceId,
 				schoolExternalToolId: this.schoolExternalTool.id,
 			},
 		};

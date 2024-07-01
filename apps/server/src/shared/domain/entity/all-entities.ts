@@ -1,6 +1,8 @@
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
+import { InstanceEntity } from '@modules/instance';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
@@ -9,27 +11,11 @@ import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
-import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
-import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
-import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import {
-	BoardNode,
-	CardNode,
-	CollaborativeTextEditorElementNode,
-	ColumnBoardNode,
-	ColumnNode,
-	DrawingElementNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	MediaBoardNode,
-	MediaExternalToolElementNode,
-	MediaLineNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from './boardnode';
+import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
+import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
+import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
+import { ColumnBoardNode } from './column-board-node.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -62,25 +48,12 @@ export const ALL_ENTITIES = [
 	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
-	BoardNode,
-	CardNode,
+	BoardNodeEntity,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
-	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,
 	DeletionLogEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	DrawingElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-	ExternalToolElementNodeEntity,
-	CollaborativeTextEditorElementNode,
-	MediaBoardNode,
-	MediaLineNode,
-	MediaExternalToolElementNode,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,
@@ -124,4 +97,6 @@ export const ALL_ENTITIES = [
 	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
+	InstanceEntity,
+	MediaSourceEntity,
 ];

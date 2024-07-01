@@ -51,7 +51,7 @@ export class CommonCartridgeFileParser {
 	public getResource(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
 		this.checkOrganization(organization);
 
-		const resource = this.resourceFactory.create(organization);
+		const resource = this.resourceFactory.create(organization, this.options.inputFormat);
 
 		return resource;
 	}

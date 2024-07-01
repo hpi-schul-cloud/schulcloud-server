@@ -1,9 +1,9 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import {
 	createCommonCartridgeWebContentResourcePropsV110,
 	createCommonCartridgeWebContentResourcePropsV130,
 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { VersionNotSupportedLoggableException } from '../errors';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourcePropsV110, CommonCartridgeWebContentResourceV110 } from './v1.1.0';
 import { CommonCartridgeWebContentResourceV130 } from './v1.3.0';
@@ -35,14 +35,14 @@ describe('CommonCartridgeResourceVersion', () => {
 				CommonCartridgeVersion.V_1_4_0,
 			];
 
-			it('should throw InternalServerErrorException', () => {
+			it('should throw VersionNotSupportedLoggableException', () => {
 				notSupportedVersions.forEach((version) => {
 					expect(() =>
 						CommonCartridgeResourceFactory.createResource({
 							version,
 							type: CommonCartridgeResourceType.WEB_CONTENT,
 						} as CommonCartridgeWebContentResourcePropsV110)
-					).toThrow(InternalServerErrorException);
+					).toThrow(VersionNotSupportedLoggableException);
 				});
 			});
 		});

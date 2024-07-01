@@ -6,7 +6,7 @@ import { CustomParameterScope } from '@modules/tool/common/enum';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
@@ -17,7 +17,7 @@ export class SchulconnexToolProvisioningService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly userLicenseService: UserLicenseService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly logger: Logger
 	) {}
@@ -30,13 +30,15 @@ export class SchulconnexToolProvisioningService {
 			return;
 		}
 
-		const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
+		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
+			userId
+		);
 
 		await Promise.all(
 			mediaUserLicenses.map(async (license) => {
 				const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
 					license.mediumId,
-					license.mediaSourceId
+					license.mediaSource?.sourceId
 				);
 
 				if (!externalTool || !this.hasOnlyGlobalParamters(externalTool)) {

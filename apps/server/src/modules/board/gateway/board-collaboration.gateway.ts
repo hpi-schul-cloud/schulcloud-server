@@ -1,11 +1,24 @@
+import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { WsJwtAuthGuard } from '@modules/authentication';
 import { UseGuards, UsePipes } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import { LegacyLogger } from '@src/core/logger';
-import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
-import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
-import { BoardDoAuthorizableService } from '../service';
+import {
+	OnGatewayDisconnect,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
+	WsException,
+} from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import {
+	BoardResponseMapper,
+	CardResponseMapper,
+	ColumnResponseMapper,
+	ContentElementResponseFactory,
+} from '../controller/mapper';
+import { MetricsService } from '../metrics/metrics.service';
+import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
+import { BoardNodeAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
 	CreateCardMessageParams,
@@ -28,408 +41,370 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import { BoardObjectType, ErrorType, Socket } from './types';
-import { WsValidationPipe } from './ws-validation.pipe';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
-export class BoardCollaborationGateway {
+export class BoardCollaborationGateway implements OnGatewayDisconnect {
+	@WebSocketServer()
+	server!: Server;
+
 	// TODO: use loggables instead of legacy logger
 	constructor(
-		private readonly logger: LegacyLogger,
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
-		private readonly authorizableService: BoardDoAuthorizableService // to be removed
+		private readonly metricsService: MetricsService,
+		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
 	) {}
 
-	private getCurrentUser(client: Socket) {
-		const { user } = client.handshake;
+	trackExecutionTime(methodName: string, executionTimeMs: number) {
+		if (this.metricsService) {
+			this.metricsService.setExecutionTime(methodName, executionTimeMs);
+		}
+	}
+
+	private getCurrentUser(socket: Socket) {
+		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
 	}
 
-	public afterInit(): void {
-		this.logger.log('Socket gateway initialized');
+	private async updateRoomsAndUsersMetrics(socket: Socket) {
+		const roomCount = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) =>
+			key.startsWith('board_')
+		).length;
+		this.metricsService.setNumberOfBoardRooms(roomCount);
+		const { user } = socket.handshake;
+		await this.metricsService.trackRoleOfClient(socket.id, user?.userId);
+	}
+
+	public handleDisconnect(socket: Socket): void {
+		this.metricsService.untrackClient(socket.id);
 	}
 
 	@SubscribeMessage('delete-board-request')
 	@UseRequestContext()
-	async deleteBoard(client: Socket, data: DeleteBoardMessageParams) {
+	async deleteBoard(socket: Socket, data: DeleteBoardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'delete-board' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.boardId);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			client.to(room).emit('delete-board-success', { ...data, isOwnAction: false });
-			client.emit('delete-board-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('delete-board-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async updateBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
+	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-title' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('update-board-title-success', { ...data, isOwnAction: false });
-			client.emit('update-board-title-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('update-board-title-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async updateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
+	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-title' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('update-card-title-success', { ...data, isOwnAction: false });
-			client.emit('update-card-title-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('update-card-title-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-height-request')
 	@UseRequestContext()
-	async updateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
+	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-height' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('update-card-height-success', { ...data, isOwnAction: false });
-			client.emit('update-card-height-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('update-card-height-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-card-request')
 	@UseRequestContext()
-	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
+	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'delete-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.cardId);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			client.to(room).emit('delete-card-success', { ...data, isOwnAction: false });
-			client.emit('delete-card-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('delete-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async createCard(client: Socket, data: CreateCardMessageParams) {
+	async createCard(socket: Socket, data: CreateCardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'create-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const card = await this.columnUc.createCard(userId, data.columnId);
+			const card = await this.columnUc.createCard(userId, data.columnId, data.requiredEmptyElements);
+			const newCard = CardResponseMapper.mapToResponse(card);
+
 			const responsePayload = {
 				...data,
-				newCard: card.getProps(),
+				newCard,
 			};
 
-			const room = await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit('create-card-success', { ...responsePayload, isOwnAction: false });
-			client.emit('create-card-success', { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom(responsePayload);
 		} catch (err) {
-			client.emit('create-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_CREATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
-	async createColumn(client: Socket, data: CreateColumnMessageParams) {
+	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'create-column' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			const column = await this.boardUc.createColumn(userId, data.boardId);
+
 			const newColumn = ColumnResponseMapper.mapToResponse(column);
 			const responsePayload = {
 				...data,
 				newColumn,
 			};
-
-			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('create-column-success', { ...responsePayload, isOwnAction: false });
-			client.emit('create-column-success', { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom(responsePayload);
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
 			return responsePayload;
 		} catch (err) {
-			client.emit('create-column-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_CREATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 			return {};
 		}
 	}
 
 	@SubscribeMessage('fetch-board-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async fetchBoard(client: Socket, data: FetchBoardMessageParams) {
+	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'fetch-board' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			const board = await this.boardUc.findBoard(userId, data.boardId);
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
-
-			client.emit('fetch-board-success', responsePayload);
+			await emitter.emitToClient(responsePayload);
 		} catch (err) {
-			client.emit('fetch-board-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_LOADED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-card-request')
 	@UseRequestContext()
-	async moveCard(client: Socket, data: MoveCardMessageParams) {
+	async moveCard(socket: Socket, data: MoveCardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'move-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('move-card-success', { ...data, isOwnAction: false });
-			client.emit('move-card-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('move-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-column-request')
 	@UseRequestContext()
-	async moveColumn(client: Socket, data: MoveColumnMessageParams) {
+	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.targetBoardId, action: 'move-column' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
-			const room = await this.ensureUserInRoom(client, data.targetBoardId);
-			client.to(room).emit('move-column-success', { ...data, isOwnAction: false });
-			client.emit('move-column-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('move-column-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-column-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async updateColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
+	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'update-column-title' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
-			const room = await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit('update-column-title-success', { ...data, isOwnAction: false });
-			client.emit('update-column-title-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('update-column-title-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
 	@UseRequestContext()
-	async updateBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
+	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-visibility' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('update-board-visibility-success', { ...data, isOwnAction: false });
-			client.emit('update-board-visibility-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('update-board-visibility-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-column-request')
 	@UseRequestContext()
-	async deleteColumn(client: Socket, data: DeleteColumnMessageParams) {
+	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'delete-column' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.columnId);
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
-			client.to(room).emit('delete-column-success', { ...data, isOwnAction: false });
-			client.emit('delete-column-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('delete-column-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('fetch-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async fetchCards(client: Socket, data: FetchCardsMessageParams) {
+	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			await this.ensureUserInRoom(client, data.cardIds[0]);
-			client.emit('fetch-card-success', { cards: cardResponses, isOwnAction: true });
+			await emitter.emitToClient({ cards: cardResponses, isOwnAction: false });
 		} catch (err) {
-			client.emit('fetch-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_LOADED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-element-request')
 	@UseRequestContext()
-	async createElement(client: Socket, data: CreateContentElementMessageParams) {
+	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'create-element' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			const element = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
+
 			const responsePayload = {
 				...data,
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
-
-			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('create-element-success', { ...responsePayload, isOwnAction: false });
-			client.emit('create-element-success', { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom(responsePayload);
 		} catch (err) {
-			client.emit('create-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_CREATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
-	async updateElement(client: Socket, data: UpdateContentElementMessageParams) {
+	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'update-element' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { userId } = this.getCurrentUser(client);
 			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 
-			const room = await this.ensureUserInRoom(client, data.elementId);
-			client.to(room).emit('update-element-success', { ...data, isOwnAction: false });
-			client.emit('update-element-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('update-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-element-request')
 	@UseRequestContext()
-	async deleteElement(client: Socket, data: DeleteContentElementMessageParams) {
-		try {
-			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.elementId);
-			await this.elementUc.deleteElement(userId, data.elementId);
+	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'delete-element' });
+		const { userId } = this.getCurrentUser(socket);
 
-			client.to(room).emit('delete-element-success', { ...data, isOwnAction: false });
-			client.emit('delete-element-success', { ...data, isOwnAction: true });
+		try {
+			await this.elementUc.deleteElement(userId, data.elementId);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('delete-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-element-request')
 	@UseRequestContext()
-	async moveElement(client: Socket, data: MoveContentElementMessageParams) {
-		try {
-			const { userId } = this.getCurrentUser(client);
-			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'move-element' });
+		const { userId } = this.getCurrentUser(socket);
 
-			const room = await this.ensureUserInRoom(client, data.elementId);
-			client.to(room).emit('move-element-success', { ...data, isOwnAction: false });
-			client.emit('move-element-success', { ...data, isOwnAction: true });
+		try {
+			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			client.emit('move-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			emitter.emitFailure(data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
-	private async ensureUserInRoom(client: Socket, id: string) {
+	private async buildBoardSocketEmitter({ socket, id, action }: { socket: Socket; id: string; action: string }) {
 		const rootId = await this.getRootIdForId(id);
 		const room = `board_${rootId}`;
-		await client.join(room);
-		return room;
+		return {
+			async emitToClient(data: object) {
+				await socket.join(room);
+				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			async emitToClientAndRoom(data: object) {
+				await socket.join(room);
+				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
+				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			emitFailure(data: object) {
+				socket.emit(`${action}-failure`, data);
+			},
+		};
 	}
-
-	// private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
-	// 	return anyDo.ancestorIds[0];
-	// }
 
 	private async getRootIdForId(id: string) {
 		const authorizable = await this.authorizableService.findById(id);
-		const rootId = authorizable.rootDo.id;
+		const rootId = authorizable.rootNode.id;
 
 		return rootId;
 	}

@@ -1,6 +1,6 @@
 import { columnBoardNodeFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { LegacyBoardElementType } from './legacy-boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
+import { LegacyBoardElementType } from './legacy-boardelement.entity';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
 

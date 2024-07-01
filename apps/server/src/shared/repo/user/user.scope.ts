@@ -1,6 +1,7 @@
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { MongoPatterns, Scope } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 
 export class UserScope extends Scope<User> {
 	isOutdated(isOutdated?: boolean): UserScope {

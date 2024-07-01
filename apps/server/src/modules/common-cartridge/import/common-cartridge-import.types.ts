@@ -1,13 +1,16 @@
+import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 
 export type CommonCartridgeFileParserOptions = {
 	maxSearchDepth: number;
 	pathSeparator: string;
+	inputFormat: InputFormat;
 };
 
 export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
-	maxSearchDepth: 3,
+	maxSearchDepth: 5,
 	pathSeparator: '/',
+	inputFormat: InputFormat.RICH_TEXT_CK5,
 };
 
 export type CommonCartridgeOrganizationProps = {

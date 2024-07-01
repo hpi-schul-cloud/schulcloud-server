@@ -1,48 +1,49 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service';
+import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { User } from '@shared/domain/entity';
+import { setupEntities, userFactory as userEntityFactory, userFactory } from '@shared/testing';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import {
-	BoardDoAuthorizable,
 	MediaAvailableLine,
 	MediaAvailableLineElement,
 	MediaBoard,
 	MediaExternalToolElement,
-} from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
+	MediaBoardColors,
+} from '../../domain';
+import type { MediaBoardConfig } from '../../media-board.config';
 import {
-	boardDoAuthorizableFactory,
-	mediaAvailableLineElementFactory,
+	BoardNodePermissionService,
+	BoardNodeService,
+	MediaAvailableLineService,
+	MediaBoardService,
+} from '../../service';
+import { MediaAvailableLineUc } from './media-available-line.uc';
+
+import {
 	mediaAvailableLineFactory,
+	mediaAvailableLineElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
-	setupEntities,
-	userFactory as userEntityFactory,
-	userFactory,
-} from '@shared/testing';
-import { MediaBoardColors } from '../../domain';
-import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
-import { MediaAvailableLineUc } from './media-available-line.uc';
+} from '../../testing';
 
 describe(MediaAvailableLineUc.name, () => {
 	let module: TestingModule;
 	let uc: MediaAvailableLineUc;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
-	let userLicenseService: DeepMocked<UserLicenseService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 
 	beforeAll(async () => {
@@ -56,8 +57,12 @@ describe(MediaAvailableLineUc.name, () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodePermissionService,
+					useValue: createMock<BoardNodePermissionService>(),
+				},
+				{
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
 					provide: MediaAvailableLineService,
@@ -72,10 +77,6 @@ describe(MediaAvailableLineUc.name, () => {
 					useValue: createMock<MediaBoardService>(),
 				},
 				{
-					provide: UserLicenseService,
-					useValue: createMock<UserLicenseService>(),
-				},
-				{
 					provide: MediaUserLicenseService,
 					useValue: createMock<MediaUserLicenseService>(),
 				},
@@ -84,11 +85,11 @@ describe(MediaAvailableLineUc.name, () => {
 
 		uc = module.get(MediaAvailableLineUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodePermissionService = module.get(BoardNodePermissionService);
+		boardNodeService = module.get(BoardNodeService);
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
-		userLicenseService = module.get(UserLicenseService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 	});
 
@@ -107,21 +108,23 @@ describe(MediaAvailableLineUc.name, () => {
 				configService.get.mockReturnValueOnce(false);
 
 				const user: User = userFactory.build();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
 				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-				const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
-				const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
+
+				const mediaBoard = mediaBoardFactory.build({ children: [mediaExternalToolElement] });
+				const mediaAvailableLineElement = mediaAvailableLineElementFactory.build();
 				const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
 					.withElement(mediaAvailableLineElement)
 					.build();
+
 				const externalTool1: ExternalTool = externalToolFactory.build();
 				const externalTool2: ExternalTool = externalToolFactory.build();
 				const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
 				const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
-				const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+
 				mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool1,
 					schoolExternalTool2,
@@ -153,16 +156,23 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-				expect(mediaBoardService.findById).toHaveBeenCalledWith(mediaBoard.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaBoard, mediaBoard.id);
 			});
 
-			it('should check the authorization', async () => {
+			it('should check the permissions', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.read);
+			});
+
+			it('should get the user from authrorization service', async () => {
 				const { user, mediaBoard } = setup();
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
-				expect(boardDoAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(mediaBoard);
 			});
 
 			it('should call the service to get the unused available school external tools', async () => {
@@ -173,7 +183,7 @@ describe(MediaAvailableLineUc.name, () => {
 				expect(mediaAvailableLineService.getUnusedAvailableSchoolExternalTools).toHaveBeenCalledWith(user, mediaBoard);
 			});
 
-			it('should call the service to get the unused available school external tools', async () => {
+			it('should call the service to get the unused available external tools for school', async () => {
 				const { user, mediaBoard, schoolExternalTool1, schoolExternalTool2 } = setup();
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
@@ -209,8 +219,8 @@ describe(MediaAvailableLineUc.name, () => {
 				const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
 				expect(line).toEqual<MediaAvailableLine>({
-					collapsed: mediaBoard.mediaAvailableLineCollapsed,
-					backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+					collapsed: mediaBoard.collapsed,
+					backgroundColor: mediaBoard.backgroundColor,
 					elements: [
 						{
 							schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
@@ -229,8 +239,7 @@ describe(MediaAvailableLineUc.name, () => {
 					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
-					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-					const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
 					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
 						.withElement(mediaAvailableLineElement)
@@ -239,13 +248,10 @@ describe(MediaAvailableLineUc.name, () => {
 					const externalTool2: ExternalTool = externalToolFactory.build();
 					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
 					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
-					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
 
-					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([
 						schoolExternalTool1,
 						schoolExternalTool2,
@@ -281,8 +287,8 @@ describe(MediaAvailableLineUc.name, () => {
 					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
 					expect(line).toEqual<MediaAvailableLine>({
-						collapsed: mediaBoard.mediaAvailableLineCollapsed,
-						backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+						collapsed: mediaBoard.collapsed,
+						backgroundColor: mediaBoard.backgroundColor,
 						elements: [
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
@@ -300,8 +306,7 @@ describe(MediaAvailableLineUc.name, () => {
 					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
-					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-					const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
 					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
 						.withElement(mediaAvailableLineElement)
@@ -310,17 +315,15 @@ describe(MediaAvailableLineUc.name, () => {
 					const externalTool2: ExternalTool = externalToolFactory.build();
 					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
 					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
-					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 					mediaUserlicense.mediumId = 'mediumId';
 
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
 					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
 
-					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+
 					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([
 						schoolExternalTool1,
 						schoolExternalTool2,
@@ -356,8 +359,8 @@ describe(MediaAvailableLineUc.name, () => {
 					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
 					expect(line).toEqual<MediaAvailableLine>({
-						collapsed: mediaBoard.mediaAvailableLineCollapsed,
-						backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+						collapsed: mediaBoard.collapsed,
+						backgroundColor: mediaBoard.backgroundColor,
 						elements: [
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
@@ -375,21 +378,18 @@ describe(MediaAvailableLineUc.name, () => {
 					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
-					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-					const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory.build();
 					const externalTool1: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
 					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
-					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
 					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
 
-					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+
 					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool1]);
 					mediaAvailableLineService.getAvailableExternalToolsForSchool.mockResolvedValueOnce([externalTool1]);
 					mediaAvailableLineService.matchTools.mockReturnValueOnce([[externalTool1, schoolExternalTool1]]);
@@ -407,8 +407,8 @@ describe(MediaAvailableLineUc.name, () => {
 					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
 					expect(line).toEqual<MediaAvailableLine>({
-						collapsed: mediaBoard.mediaAvailableLineCollapsed,
-						backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+						collapsed: mediaBoard.collapsed,
+						backgroundColor: mediaBoard.backgroundColor,
 						elements: [],
 					});
 				});
@@ -443,30 +443,22 @@ describe(MediaAvailableLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 
 				return {
 					user,
 					mediaBoard,
-					boardDoAuthorizable,
 				};
 			};
 
-			it('should check the authorization', async () => {
-				const { user, mediaBoard, boardDoAuthorizable } = setup();
+			it('should check the permission', async () => {
+				const { user, mediaBoard } = setup();
 
 				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
 			});
 
 			it('should collapse the line', async () => {
@@ -474,7 +466,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
 
-				expect(mediaBoardService.updateAvailableLineColor).toHaveBeenCalledWith(mediaBoard, MediaBoardColors.RED);
+				expect(mediaBoardService.updateBackgroundColor).toHaveBeenCalledWith(mediaBoard, MediaBoardColors.RED);
 			});
 		});
 
@@ -506,30 +498,22 @@ describe(MediaAvailableLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 
 				return {
 					user,
 					mediaBoard,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaBoard, boardDoAuthorizable } = setup();
+				const { user, mediaBoard } = setup();
 
 				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
 			});
 
 			it('should collapse the line', async () => {
@@ -537,7 +521,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
 
-				expect(mediaBoardService.collapseAvailableLine).toHaveBeenCalledWith(mediaBoard, true);
+				expect(mediaBoardService.updateCollapsed).toHaveBeenCalledWith(mediaBoard, true);
 			});
 		});
 

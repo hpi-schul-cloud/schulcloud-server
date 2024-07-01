@@ -1,21 +1,22 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
+import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { FilesService } from './files.service';
-import { FilesRepo } from '../repo';
-import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { FileEntity } from '../entity';
+import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
+import { FilesRepo } from '../repo';
+import { FilesService } from './files.service';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;
@@ -24,6 +25,8 @@ describe(FilesService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				FilesService,
@@ -41,14 +44,16 @@ describe(FilesService.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesService);
 		repo = module.get(FilesRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

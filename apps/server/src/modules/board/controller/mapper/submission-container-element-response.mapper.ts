@@ -1,4 +1,4 @@
-import { ContentElementType, SubmissionContainerElement } from '@shared/domain/domainobject';
+import { ContentElementType, SubmissionContainerElement } from '../../domain';
 import { SubmissionContainerElementContent, SubmissionContainerElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
@@ -19,7 +19,7 @@ export class SubmissionContainerElementResponseMapper implements BaseResponseMap
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.SUBMISSION_CONTAINER,
 			content: new SubmissionContainerElementContent({
-				dueDate: element.dueDate,
+				dueDate: element.dueDate ?? null,
 			}),
 		});
 

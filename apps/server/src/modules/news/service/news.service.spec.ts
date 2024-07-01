@@ -1,18 +1,19 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { NewsRepo } from '@shared/repo';
-import { EventBus } from '@nestjs/cqrs';
+import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { NewsRepo } from '@shared/repo';
+import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {
@@ -22,6 +23,8 @@ describe(NewsService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				NewsService,
@@ -39,14 +42,16 @@ describe(NewsService.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(NewsService);
 		repo = module.get(NewsRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

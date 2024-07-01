@@ -1,5 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ColumnBoardService } from '@modules/board';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	linkElementFactory,
+	richTextElementFactory,
+} from '@modules/board/testing';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { CommonCartridgeExportService, CourseService, LearnroomConfig } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson';
@@ -7,20 +15,9 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	courseFactory,
-	lessonFactory,
-	linkElementFactory,
-	richTextElementFactory,
-	setupEntities,
-	taskFactory,
-} from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
+import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -89,7 +86,7 @@ describe('CommonCartridgeExportService', () => {
 		lessonServiceMock.findByCourseIds.mockResolvedValue([lessons, lessons.length]);
 		taskServiceMock.findBySingleParent.mockResolvedValue([tasks, tasks.length]);
 		configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
-		columnBoardServiceMock.findIdsByExternalReference.mockResolvedValue([columnBoard.id]);
+		columnBoardServiceMock.findByExternalReference.mockResolvedValue([columnBoard]);
 		columnBoardServiceMock.findById.mockResolvedValue(columnBoard);
 
 		const buffer = await sut.exportCourse(
@@ -110,7 +107,7 @@ describe('CommonCartridgeExportService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeExportService,
-				CommonCartridgeMapper,
+				CommonCartridgeExportMapper,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
@@ -198,14 +195,14 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, column } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', column.title));
+				expect(manifest).toContain(createXmlString('title', column.title ?? ''));
 			});
 
 			it('should add card', async () => {
 				const { archive, card } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', card.title));
+				expect(manifest).toContain(createXmlString('title', card.title ?? ''));
 			});
 
 			it('should add content element of cards', async () => {
@@ -275,14 +272,14 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, column } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', column.title));
+				expect(manifest).toContain(createXmlString('title', column.title ?? ''));
 			});
 
 			it('should add card', async () => {
 				const { archive, card } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', card.title));
+				expect(manifest).toContain(createXmlString('title', card.title ?? ''));
 			});
 
 			it('should add content element of cards', async () => {

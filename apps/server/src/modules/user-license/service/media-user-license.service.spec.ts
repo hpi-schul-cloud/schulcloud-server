@@ -1,18 +1,37 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaUserLicense, mediaUserLicenseFactory } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service/media-user-license.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MediaUserLicense } from '../domain';
+import { MediaSourceRepo, MediaUserLicenseRepo } from '../repo';
+import { mediaSourceFactory, mediaUserLicenseFactory } from '../testing';
+import { MediaUserLicenseService } from './media-user-license.service';
 
 describe(MediaUserLicenseService.name, () => {
 	let module: TestingModule;
 	let service: MediaUserLicenseService;
 
+	let mediaUserLicenseRepo: DeepMocked<MediaUserLicenseRepo>;
+	let mediaSourceRepo: DeepMocked<MediaSourceRepo>;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [MediaUserLicenseService],
+			providers: [
+				MediaUserLicenseService,
+				{
+					provide: MediaUserLicenseRepo,
+					useValue: createMock<MediaUserLicenseRepo>(),
+				},
+				{
+					provide: MediaSourceRepo,
+					useValue: createMock<MediaSourceRepo>(),
+				},
+			],
 		}).compile();
 
 		service = module.get(MediaUserLicenseService);
+		mediaUserLicenseRepo = module.get(MediaUserLicenseRepo);
+		mediaSourceRepo = module.get(MediaSourceRepo);
 	});
 
 	afterAll(async () => {
@@ -21,6 +40,61 @@ describe(MediaUserLicenseService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('getMediaUserLicensesForUser', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			mediaUserLicenseRepo.findMediaUserLicensesForUser.mockResolvedValue([mediaUserLicense]);
+
+			return { userId, mediaUserLicense };
+		};
+
+		it('should call user license repo with correct arguments', async () => {
+			const { userId } = setup();
+
+			await service.getMediaUserLicensesForUser(userId);
+
+			expect(mediaUserLicenseRepo.findMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
+		});
+
+		it('should return media user licenses for user', async () => {
+			const { userId, mediaUserLicense } = setup();
+
+			const result: MediaUserLicense[] = await service.getMediaUserLicensesForUser(userId);
+
+			expect(result).toEqual([mediaUserLicense]);
+		});
+	});
+
+	describe('saveUserLicense', () => {
+		it('should save the media source', async () => {
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			await service.saveUserLicense(mediaUserLicense);
+
+			expect(mediaSourceRepo.save).toHaveBeenCalledWith(mediaUserLicense.mediaSource);
+		});
+
+		it('should save the media user license', async () => {
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			await service.saveUserLicense(mediaUserLicense);
+
+			expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicense);
+		});
+	});
+
+	describe('deleteUserLicense', () => {
+		it('should call user license repo with correct arguments', async () => {
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			await service.deleteUserLicense(mediaUserLicense);
+
+			expect(mediaUserLicenseRepo.delete).toHaveBeenCalledWith(mediaUserLicense);
+		});
 	});
 
 	describe('hasLicenseForExternalTool', () => {
@@ -32,7 +106,9 @@ describe(MediaUserLicenseService.name, () => {
 				};
 				const medium = mediaUserLicenseFactory.build({
 					mediumId: toolMedium.mediumId,
-					mediaSourceId: toolMedium.mediaSourceId,
+					mediaSource: mediaSourceFactory.build({
+						sourceId: toolMedium.mediaSourceId,
+					}),
 				});
 				const unusedMedium = mediaUserLicenseFactory.build();
 				const mediaUserLicenses: MediaUserLicense[] = [medium, unusedMedium];
@@ -59,7 +135,7 @@ describe(MediaUserLicenseService.name, () => {
 				};
 				const medium = mediaUserLicenseFactory.build({
 					mediumId: toolMedium.mediumId,
-					mediaSourceId: undefined,
+					mediaSource: undefined,
 				});
 				const unusedMedium = mediaUserLicenseFactory.build();
 				const mediaUserLicenses: MediaUserLicense[] = [medium, unusedMedium];

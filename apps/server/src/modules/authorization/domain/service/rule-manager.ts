@@ -3,11 +3,12 @@ import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
-	BoardDoRule,
+	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
 	GroupRule,
+	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
@@ -20,6 +21,7 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from '../rules';
+import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
 
 @Injectable()
@@ -27,7 +29,7 @@ export class RuleManager {
 	private readonly rules: Rule[];
 
 	constructor(
-		private readonly boardDoRule: BoardDoRule,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly courseGroupRule: CourseGroupRule,
 		private readonly courseRule: CourseRule,
@@ -42,10 +44,12 @@ export class RuleManager {
 		private readonly taskRule: TaskRule,
 		private readonly teamRule: TeamRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly userRule: UserRule
+		private readonly userRule: UserRule,
+		private readonly externalToolRule: ExternalToolRule,
+		private readonly instanceRule: InstanceRule
 	) {
 		this.rules = [
-			this.boardDoRule,
+			this.boardNodeRule,
 			this.contextExternalToolRule,
 			this.courseGroupRule,
 			this.courseRule,
@@ -61,6 +65,8 @@ export class RuleManager {
 			this.teamRule,
 			this.userLoginMigrationRule,
 			this.userRule,
+			this.externalToolRule,
+			this.instanceRule,
 		];
 	}
 

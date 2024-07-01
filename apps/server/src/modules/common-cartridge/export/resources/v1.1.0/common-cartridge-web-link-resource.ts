@@ -1,6 +1,11 @@
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeResource } from '../../interfaces';
-import { buildXmlString } from '../../utils';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { buildXmlString, createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebLinkResourcePropsV110 = {
 	type: CommonCartridgeResourceType.WEB_LINK;
@@ -18,8 +23,19 @@ export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource 
 		super(props);
 	}
 
-	public canInline(): boolean {
-		return false;
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_1_0;
+	}
+
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.RESOURCE:
+				return this.getManifestResourceXmlObject();
+			case CommonCartridgeElementType.ORGANIZATION:
+				return this.getManifestOrganizationXmlObject();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
 	}
 
 	public getFilePath(): string {
@@ -47,14 +63,20 @@ export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource 
 		});
 	}
 
-	public getSupportedVersion(): CommonCartridgeVersion {
-		return CommonCartridgeVersion.V_1_1_0;
-	}
-
-	public getManifestXmlObject(): Record<string, unknown> {
+	private getManifestOrganizationXmlObject(): XmlObject {
 		return {
 			$: {
-				identifier: this.props.identifier,
+				identifier: createIdentifier(),
+				identifierref: this.identifier,
+			},
+			title: this.title,
+		};
+	}
+
+	private getManifestResourceXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: this.identifier,
 				type: 'imswl_xmlv1p1',
 			},
 			file: {

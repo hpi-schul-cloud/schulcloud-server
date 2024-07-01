@@ -1,79 +1,103 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import type { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference, ColumnBoard, MediaBoard } from '@shared/domain/domainobject';
-import type { EntityId } from '@shared/domain/types';
-import { MediaBoardColors, MediaBoardLayoutType } from '../../domain';
-import { InvalidBoardTypeLoggableException } from '../../loggable';
-import { BoardDoRepo } from '../../repo';
-import { BoardDoService } from '../board-do.service';
+import { EntityId } from '@shared/domain/types';
+
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	AnyMediaBoardNode,
+	BoardExternalReference,
+	isMediaBoard,
+	isMediaExternalToolElement,
+	MediaBoard,
+	MediaExternalToolElement,
+} from '../../domain';
+import { BoardNodeRepo } from '../../repo';
+
+type WithLayout<T> = Extract<T, { layout: unknown }>;
+type WithCollapsed<T> = Extract<T, { collapsed: unknown }>;
+type WithBackgroundColor<T> = Extract<T, { backgroundColor: unknown }>;
 
 @Injectable()
-export class MediaBoardService implements AuthorizationLoaderServiceGeneric<MediaBoard> {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+export class MediaBoardService {
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly contextExternalToolService: ContextExternalToolService
+	) {}
 
-	public async findById(boardId: EntityId): Promise<MediaBoard> {
-		const board: MediaBoard = await this.boardDoRepo.findByClassAndId(MediaBoard, boardId);
+	async findByExternalReference(reference: BoardExternalReference): Promise<MediaBoard[]> {
+		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference);
 
-		return board;
+		const boards = boardNodes.filter((bn): bn is MediaBoard => isMediaBoard(bn));
+
+		return boards;
 	}
 
-	public async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const ids: EntityId[] = await this.boardDoRepo.findIdsByExternalReference(reference);
+	public async createContextExternalToolForMediaBoard(
+		schoolId: EntityId,
+		schoolExternalTool: SchoolExternalTool,
+		mediaBoard: MediaBoard
+	): Promise<ContextExternalTool> {
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
+			new ContextExternalTool({
+				id: new ObjectId().toHexString(),
+				schoolToolRef: new SchoolExternalToolRef({ schoolId, schoolToolId: schoolExternalTool.id }),
+				contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
+				parameters: [],
+			})
+		);
 
-		return ids;
+		return contextExternalTool;
 	}
 
-	public async findByDescendant(descendant: AnyBoardDo): Promise<MediaBoard> {
-		const mediaBoard: MediaBoard | ColumnBoard = await this.boardDoService.getRootBoardDo(descendant);
-
-		if (!(mediaBoard instanceof MediaBoard)) {
-			throw new InvalidBoardTypeLoggableException(MediaBoard, mediaBoard.id);
-		}
-
-		return mediaBoard;
-	}
-
-	public async create(context: BoardExternalReference): Promise<MediaBoard> {
-		const mediaBoard: MediaBoard = new MediaBoard({
-			id: new ObjectId().toHexString(),
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			context,
-			layout: MediaBoardLayoutType.LIST,
-			mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
-			mediaAvailableLineCollapsed: false,
+	public async checkElementExists(mediaBoard: MediaBoard, schoolExternalTool: SchoolExternalTool): Promise<boolean> {
+		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
+			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
 
-		await this.boardDoRepo.save(mediaBoard);
+		const existing = this.findMediaElements(mediaBoard);
 
-		return mediaBoard;
+		const exists = existing.some((element) =>
+			contextExternalTools.some((tool) => tool.id === element.contextExternalToolId)
+		);
+
+		return exists;
 	}
 
-	public async updateAvailableLineColor(mediaBoard: MediaBoard, color: MediaBoardColors): Promise<void> {
-		mediaBoard.mediaAvailableLineBackgroundColor = color;
+	public findMediaElements(boardNode: AnyMediaBoardNode): MediaExternalToolElement[] {
+		const elements = boardNode.children.reduce((result: MediaExternalToolElement[], bn) => {
+			result.push(...this.findMediaElements(bn as AnyMediaBoardNode));
 
-		await this.boardDoRepo.save(mediaBoard);
+			if (isMediaExternalToolElement(bn)) {
+				result.push(bn);
+			}
+
+			return result;
+		}, []);
+
+		return elements;
 	}
 
-	public async collapseAvailableLine(mediaBoard: MediaBoard, mediaAvailableLineCollapsed: boolean): Promise<void> {
-		mediaBoard.mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
+	public async updateBackgroundColor<T extends WithBackgroundColor<AnyMediaBoardNode>>(
+		node: T,
+		backgroundColor: T['backgroundColor']
+	) {
+		node.backgroundColor = backgroundColor;
 
-		await this.boardDoRepo.save(mediaBoard);
+		await this.boardNodeRepo.save(node);
 	}
 
-	public async setLayout(mediaBoard: MediaBoard, layout: MediaBoardLayoutType): Promise<void> {
-		mediaBoard.layout = layout;
+	public async updateCollapsed<T extends WithCollapsed<AnyMediaBoardNode>>(node: T, collapsed: T['collapsed']) {
+		node.collapsed = collapsed;
 
-		await this.boardDoRepo.save(mediaBoard);
+		await this.boardNodeRepo.save(node);
 	}
 
-	public async delete(board: MediaBoard): Promise<void> {
-		await this.boardDoService.deleteWithDescendants(board);
-	}
+	public async updateLayout<T extends WithLayout<AnyMediaBoardNode>>(node: T, layout: T['layout']) {
+		node.layout = layout;
 
-	public async deleteByExternalReference(reference: BoardExternalReference): Promise<number> {
-		return this.boardDoRepo.deleteByExternalReference(reference);
+		await this.boardNodeRepo.save(node);
 	}
 }

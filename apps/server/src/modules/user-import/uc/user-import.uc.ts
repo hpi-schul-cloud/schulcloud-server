@@ -1,6 +1,7 @@
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
@@ -12,7 +13,6 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { UserService } from '@modules/user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
@@ -22,7 +22,6 @@ import {
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
 	UserAlreadyMigratedLoggable,
-	UserMigrationCanceledLoggable,
 } from '../loggable';
 
 import { UserImportService } from '../service';
@@ -33,9 +32,9 @@ import {
 } from './ldap-user-migration.error';
 
 export type UserImportPermissions =
-	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
-	| Permission.SCHOOL_IMPORT_USERS_UPDATE
-	| Permission.SCHOOL_IMPORT_USERS_VIEW;
+	| Permission.IMPORT_USER_MIGRATE
+	| Permission.IMPORT_USER_UPDATE
+	| Permission.IMPORT_USER_VIEW;
 
 @Injectable()
 export class UserImportUc {
@@ -68,7 +67,7 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.userImportService.checkFeatureEnabled(school);
 
@@ -86,7 +85,7 @@ export class UserImportUc {
 	 * @returns importuser and matched user
 	 */
 	public async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -115,7 +114,7 @@ export class UserImportUc {
 	}
 
 	public async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -134,7 +133,7 @@ export class UserImportUc {
 	}
 
 	public async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -167,7 +166,7 @@ export class UserImportUc {
 		query: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -179,7 +178,7 @@ export class UserImportUc {
 	}
 
 	public async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -244,7 +243,7 @@ export class UserImportUc {
 			useCentralLdap = false;
 		}
 
-		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -304,7 +303,7 @@ export class UserImportUc {
 	}
 
 	public async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -327,19 +326,12 @@ export class UserImportUc {
 	}
 
 	public async cancelMigration(currentUserId: EntityId): Promise<void> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
-
-		school.inUserMigration = undefined;
-		school.inMaintenanceSince = undefined;
-
-		await this.schoolService.save(school, true);
-
-		this.logger.notice(new UserMigrationCanceledLoggable(school));
+		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {

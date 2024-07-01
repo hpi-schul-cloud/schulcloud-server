@@ -3,18 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	columnBoardNodeFactory,
-	externalToolElementNodeFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
+import { schoolEntityFactory, TestApiClient, UserAndAccountTestFactory, userFactory } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
+import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@src/modules/board/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
@@ -544,20 +538,19 @@ describe('ToolSchoolController (API)', () => {
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const boardExternalToolEntitys: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
-					schoolTool: schoolExternalToolEntity,
-					contextType: ContextExternalToolType.BOARD_ELEMENT,
-					contextId: new ObjectId().toHexString(),
-				});
-
-				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
-				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+				const boardExternalToolEntitys: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(
 					2,
 					{
-						contextExternalTool: boardExternalToolEntitys[0],
-						parent: board,
+						schoolTool: schoolExternalToolEntity,
+						contextType: ContextExternalToolType.BOARD_ELEMENT,
+						contextId: new ObjectId().toHexString(),
 					}
 				);
+
+				const board = columnBoardEntityFactory.build();
+				const externalToolElements = externalToolElementEntityFactory.withParent(board).buildList(2, {
+					contextExternalToolId: boardExternalToolEntitys[0].id,
+				});
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.SCHOOL_TOOL_ADMIN,

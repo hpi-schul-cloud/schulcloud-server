@@ -35,7 +35,8 @@ export function createFileRecord(
 		parentType: params.parentType,
 		parentId: params.parentId,
 		creatorId: userId,
-		schoolId: params.schoolId,
+		storageLocationId: params.storageLocationId,
+		storageLocation: params.storageLocation,
 		isUploading: true,
 	});
 

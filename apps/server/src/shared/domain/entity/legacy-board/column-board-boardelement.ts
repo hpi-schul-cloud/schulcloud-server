@@ -1,6 +1,6 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
+import { ColumnBoardNode } from '../column-board-node.entity';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-boardelement.entity';
-import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 @Entity({ discriminatorValue: LegacyBoardElementType.ColumnBoard })
 export class ColumnboardBoardElement extends LegacyBoardElement {

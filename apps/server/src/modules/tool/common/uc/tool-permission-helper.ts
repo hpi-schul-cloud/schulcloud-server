@@ -1,9 +1,8 @@
 import { AuthorizationContext, AuthorizationService, ForbiddenLoggableException } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { BoardDoAuthorizableService, ContentElementService } from '@modules/board';
+import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardDoAuthorizable } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -15,8 +14,8 @@ export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
 		private readonly courseService: CourseService,
-		private readonly boardElementService: ContentElementService,
-		private readonly boardService: BoardDoAuthorizableService
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardService: BoardNodeAuthorizableService
 	) {}
 
 	public async ensureContextPermissionsForSchool(
@@ -60,15 +59,13 @@ export class ToolPermissionHelper {
 				break;
 			}
 			case ToolContextType.BOARD_ELEMENT: {
-				const boardElement = await this.boardElementService.findById(contextId);
-				const board: BoardDoAuthorizable = await this.boardService.getBoardAuthorizable(boardElement);
-
+				const boardElement = await this.boardNodeService.findContentElementById(contextId);
+				const board: BoardNodeAuthorizable = await this.boardService.getBoardAuthorizable(boardElement);
 				this.authorizationService.checkPermission(user, board, context);
 				break;
 			}
 			case ToolContextType.MEDIA_BOARD: {
-				const board: BoardDoAuthorizable = await this.boardService.findById(contextId);
-
+				const board: BoardNodeAuthorizable = await this.boardService.findById(contextId);
 				this.authorizationService.checkPermission(user, board, context);
 				break;
 			}

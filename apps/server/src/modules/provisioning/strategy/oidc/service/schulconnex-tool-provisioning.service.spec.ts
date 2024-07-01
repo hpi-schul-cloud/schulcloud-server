@@ -8,7 +8,7 @@ import { customParameterFactory, externalToolFactory } from '@modules/tool/exter
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolSystemOptionsFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -19,7 +19,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
-	let userLicenseService: DeepMocked<UserLicenseService>;
+	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
 
 	beforeAll(async () => {
@@ -35,8 +35,8 @@ describe(SchulconnexToolProvisioningService.name, () => {
 					useValue: createMock<SchoolExternalToolService>(),
 				},
 				{
-					provide: UserLicenseService,
-					useValue: createMock<UserLicenseService>(),
+					provide: MediaUserLicenseService,
+					useValue: createMock<MediaUserLicenseService>(),
 				},
 				{
 					provide: SchoolSystemOptionsService,
@@ -52,7 +52,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 		service = module.get(SchulconnexToolProvisioningService);
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
-		userLicenseService = module.get(UserLicenseService);
+		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
 	});
 
@@ -75,7 +75,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
@@ -83,7 +86,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
 				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 
@@ -114,7 +117,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 
 				await service.provisionSchoolExternalTools(userId, schoolId, systemId);
 
-				expect(userLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
+				expect(mediaUserLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
 			});
 
 			it('should get external tool', async () => {
@@ -124,7 +127,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 
 				expect(externalToolService.findExternalToolByMedium).toHaveBeenCalledWith(
 					mediaUserLicenses[0].mediumId,
-					mediaUserLicenses[0].mediaSourceId
+					mediaUserLicenses[0].mediaSource?.sourceId
 				);
 			});
 
@@ -163,7 +166,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const { provisioningOptions } = schoolSystemOptionsFactory.build({});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 				});
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
@@ -197,7 +203,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({});
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
 				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 
@@ -228,7 +234,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
 				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(null);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 
@@ -258,12 +264,15 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 					parameters: [customParameterFactory.build()],
 				});
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
 				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 
@@ -293,7 +302,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
@@ -301,7 +313,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
 				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
 

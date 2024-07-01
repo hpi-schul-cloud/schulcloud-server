@@ -1,21 +1,29 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaUserLicense, UserLicenseService, UserLicenseType } from '@modules/user-license';
+import {
+	MediaSource,
+	MediaSourceService,
+	MediaUserLicense,
+	MediaUserLicenseService,
+	UserLicenseType,
+} from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ExternalLicenseDto } from '../../../dto';
 
 @Injectable()
 export class SchulconnexLicenseProvisioningService {
-	constructor(private readonly userLicenseService: UserLicenseService) {}
+	constructor(
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly mediaSourceService: MediaSourceService
+	) {}
 
 	public async provisionExternalLicenses(userId: EntityId, externalLicenses?: ExternalLicenseDto[]): Promise<void> {
 		if (!externalLicenses) {
 			return;
 		}
 
-		const existingMediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(
-			userId
-		);
+		const existingMediaUserLicenses: MediaUserLicense[] =
+			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 		await this.provisionNewLicenses(externalLicenses, existingMediaUserLicenses, userId);
 
@@ -31,12 +39,13 @@ export class SchulconnexLicenseProvisioningService {
 			externalLicenses.map(async (externalLicense: ExternalLicenseDto): Promise<void> => {
 				const existingLicense: MediaUserLicense | undefined = mediaUserLicenses.find(
 					(license: MediaUserLicense) =>
-						license.mediumId === externalLicense.mediumId && license.mediaSourceId === externalLicense.mediaSourceId
+						license.mediumId === externalLicense.mediumId &&
+						license.mediaSource?.sourceId === externalLicense.mediaSourceId
 				);
 
 				if (!existingLicense) {
-					const newLicense: MediaUserLicense = this.buildLicense(externalLicense, userId);
-					await this.userLicenseService.saveUserLicense(newLicense);
+					const newLicense: MediaUserLicense = await this.buildLicense(externalLicense, userId);
+					await this.mediaUserLicenseService.saveUserLicense(newLicense);
 				}
 			})
 		);
@@ -51,22 +60,35 @@ export class SchulconnexLicenseProvisioningService {
 				const existingExternalLicense: ExternalLicenseDto | undefined = externalLicenses.find(
 					(externalLicense: ExternalLicenseDto) =>
 						mediaUserLicense.mediumId === externalLicense.mediumId &&
-						mediaUserLicense.mediaSourceId === externalLicense.mediaSourceId
+						mediaUserLicense.mediaSource?.sourceId === externalLicense.mediaSourceId
 				);
 
 				if (!existingExternalLicense) {
-					await this.userLicenseService.deleteUserLicense(mediaUserLicense);
+					await this.mediaUserLicenseService.deleteUserLicense(mediaUserLicense);
 				}
 			})
 		);
 	}
 
-	private buildLicense(externalLicense: ExternalLicenseDto, userId: EntityId): MediaUserLicense {
+	private async buildLicense(externalLicense: ExternalLicenseDto, userId: EntityId): Promise<MediaUserLicense> {
+		let mediaSource: MediaSource | null = null;
+
+		if (externalLicense.mediaSourceId) {
+			mediaSource = await this.mediaSourceService.findBySourceId(externalLicense.mediaSourceId);
+
+			if (!mediaSource) {
+				mediaSource = new MediaSource({
+					id: new ObjectId().toHexString(),
+					sourceId: externalLicense.mediaSourceId,
+				});
+			}
+		}
+
 		const mediaUserLicense: MediaUserLicense = new MediaUserLicense({
 			id: new ObjectId().toHexString(),
 			type: UserLicenseType.MEDIA_LICENSE,
 			userId,
-			mediaSourceId: externalLicense.mediaSourceId,
+			mediaSource: mediaSource ?? undefined,
 			mediumId: externalLicense.mediumId,
 		});
 

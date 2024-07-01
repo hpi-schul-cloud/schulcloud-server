@@ -1,21 +1,22 @@
 import {
-	SchulconnexGruppenResponse,
-	SchulconnexResponse,
-	SchulconnexSonstigeGruppenzugehoerigeResponse,
-} from '@infra/schulconnex-client';
-import {
+	lernperiodeFormat,
 	SchulconnexCommunicationType,
 	SchulconnexErreichbarkeitenResponse,
+	SchulconnexGroupRole,
+	SchulconnexGroupType,
+	SchulconnexGruppenResponse,
+	SchulconnexLaufzeitResponse,
 	SchulconnexLizenzInfoResponse,
+	SchulconnexResponse,
+	SchulconnexRole,
+	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client/response';
-import { SchulconnexGroupRole } from '@infra/schulconnex-client/response/schulconnex-group-role';
-import { SchulconnexGroupType } from '@infra/schulconnex-client/response/schulconnex-group-type';
-import { SchulconnexRole } from '@infra/schulconnex-client/response/schulconnex-role';
 import { GroupTypes } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
+import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import {
 	ExternalGroupDto,
 	ExternalGroupUserDto,
@@ -41,6 +42,11 @@ const GroupTypeMapping: Partial<Record<SchulconnexGroupType, GroupTypes>> = {
 	[SchulconnexGroupType.CLASS]: GroupTypes.CLASS,
 	[SchulconnexGroupType.COURSE]: GroupTypes.COURSE,
 	[SchulconnexGroupType.OTHER]: GroupTypes.OTHER,
+};
+
+type TimePeriode = {
+	from: Date;
+	until: Date;
 };
 
 @Injectable()
@@ -143,13 +149,19 @@ export class SchulconnexResponseMapper {
 				: [];
 		}
 
-		return new ExternalGroupDto({
+		const groupDuration: TimePeriode | undefined = SchulconnexResponseMapper.mapGroupDuration(group.gruppe.laufzeit);
+
+		const externalGroup: ExternalGroupDto = new ExternalGroupDto({
 			name: group.gruppe.bezeichnung,
 			type: groupType,
 			externalId: group.gruppe.id,
 			user,
 			otherUsers,
+			from: groupDuration?.from,
+			until: groupDuration?.until,
 		});
+
+		return externalGroup;
 	}
 
 	private mapToExternalGroupUser(relation: SchulconnexSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
@@ -172,19 +184,76 @@ export class SchulconnexResponseMapper {
 		return mapped;
 	}
 
+	private static mapGroupDuration(duration: SchulconnexLaufzeitResponse | undefined): TimePeriode | undefined {
+		if (!duration) {
+			return undefined;
+		}
+
+		let from: Date;
+		let until: Date;
+		if (duration.von) {
+			from = new Date(duration.von);
+		} else if (duration.vonlernperiode) {
+			const fromPeriode: TimePeriode = SchulconnexResponseMapper.mapLernperiode(duration.vonlernperiode);
+
+			from = fromPeriode.from;
+		} else {
+			throw new InvalidLaufzeitResponseLoggableException(duration);
+		}
+
+		if (duration.bis) {
+			until = new Date(duration.bis);
+		} else if (duration.bislernperiode) {
+			const untilPeriode: TimePeriode = SchulconnexResponseMapper.mapLernperiode(duration.bislernperiode);
+
+			until = untilPeriode.until;
+		} else {
+			throw new InvalidLaufzeitResponseLoggableException(duration);
+		}
+
+		return {
+			from,
+			until,
+		};
+	}
+
+	public static mapLernperiode(lernperiode: string): TimePeriode {
+		const matches: RegExpMatchArray | null = lernperiode.match(lernperiodeFormat);
+
+		if (!matches || matches.length < 2) {
+			throw new InvalidLernperiodeResponseLoggableException(lernperiode);
+		}
+
+		const year = Number(matches[1]);
+		const semester: number = matches.length >= 3 ? Number(matches[2]) : 0;
+
+		const startMonth: string = semester === 2 ? '02' : '08';
+		const endMonth: string = semester === 1 ? '01' : '07';
+
+		const startYear: number = semester === 2 ? year + 1 : year;
+		const endYear: number = year + 1;
+
+		return {
+			from: new Date(`${startYear}-${startMonth}-01`),
+			until: new Date(`${endYear}-${endMonth}-31`),
+		};
+	}
+
 	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
-		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos.map((license: SchulconnexLizenzInfoResponse) => {
-			if (license.target.partOf === '') {
-				license.target.partOf = undefined;
-			}
+		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
+			.map((license: SchulconnexLizenzInfoResponse) => {
+				if (license.target.partOf === '') {
+					license.target.partOf = undefined;
+				}
 
-			const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-				mediumId: license.target.uid,
-				mediaSourceId: license.target.partOf,
-			});
+				const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
+					mediumId: license.target.uid,
+					mediaSourceId: license.target.partOf,
+				});
 
-			return externalLicenseDto;
-		});
+				return externalLicenseDto;
+			})
+			.filter((license: ExternalLicenseDto) => license.mediumId !== '');
 
 		return externalLicenseDtos;
 	}

@@ -1,19 +1,20 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
+import { FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { PreviewOutputMimeTypes } from '../interface';
 
 describe('File Record Helper', () => {
 	const setupFileRecords = () => {
 		const userId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
+		const storageLocationId: EntityId = new ObjectId().toHexString();
 
 		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 		];
 
 		return { fileRecords, userId };
@@ -62,8 +63,9 @@ describe('File Record Helper', () => {
 			const size = 256;
 			const mimeType = 'image/jpeg';
 			const fileRecord = fileRecords[0];
-			const fileRecordParams = {
-				schoolId: fileRecord.schoolId,
+			const fileRecordParams: FileRecordParams = {
+				storageLocation: fileRecord.storageLocation,
+				storageLocationId: fileRecord.storageLocationId,
 				parentId: fileRecord.parentId,
 				parentType: fileRecord.parentType,
 			};
@@ -82,7 +84,8 @@ describe('File Record Helper', () => {
 				parentType: fileRecord.parentType,
 				parentId: fileRecord.parentId,
 				creatorId: userId,
-				schoolId: fileRecord.schoolId,
+				storageLocation: fileRecord.storageLocation,
+				storageLocationId: fileRecord.storageLocationId,
 			};
 
 			expect(newFileRecord).toEqual(expect.objectContaining({ ...expectedObject }));

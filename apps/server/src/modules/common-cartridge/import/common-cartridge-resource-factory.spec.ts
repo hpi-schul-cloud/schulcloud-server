@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
@@ -81,7 +82,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should create a web link resource', async () => {
 				const { organizationProps } = await setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual<CommonCartridgeWebLinkResourceProps>({
 					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
@@ -105,7 +106,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should return undefined', () => {
 				const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toBeUndefined();
 			});
@@ -123,7 +124,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should return undefined', () => {
 				const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toBeUndefined();
 			});
@@ -142,7 +143,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should return undefined', () => {
 				const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toBeUndefined();
 			});
@@ -163,12 +164,12 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should create a web content resource', () => {
 				const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual({
 					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
 					title: organizationProps.title,
-					html: 'Content',
+					html: '<p>Content</p>',
 				});
 			});
 		});
@@ -186,7 +187,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should return an empty value', () => {
 				const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual({
 					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
@@ -208,7 +209,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			it('should return undefined', () => {
 				const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toBeUndefined();
 			});
