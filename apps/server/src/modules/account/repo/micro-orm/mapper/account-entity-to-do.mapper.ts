@@ -13,6 +13,7 @@ export class AccountEntityToDoMapper {
 			activated: account.activated,
 			credentialHash: account.credentialHash,
 			expiresAt: account.expiresAt,
+			lastLogin: account.lastLogin,
 			lasttriedFailedLogin: account.lasttriedFailedLogin,
 			password: account.password,
 			systemId: account.systemId?.toString(),

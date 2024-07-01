@@ -348,6 +348,10 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
+	async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
+		await this.accountDb.updateLastLogin(accountId, lastLogin);
+	}
+
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {

@@ -179,6 +179,14 @@ describe('AuthenticationService', () => {
 		});
 	});
 
+	describe('updateLastLogin', () => {
+		it('should call accountService to update last login', async () => {
+			await authenticationService.updateLastLogin('mockAccountId');
+
+			expect(accountService.updateLastLogin).toHaveBeenCalledWith('mockAccountId', expect.any(Date));
+		});
+	});
+
 	describe('normalizeUsername', () => {
 		describe('when a username is entered', () => {
 			it('should trim username', () => {
