@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
-import { TestApiClient, federalStateFactory } from '@shared/testing';
+import { TestApiClient, federalStateFactory, schoolYearFactory } from '@shared/testing';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
@@ -55,8 +55,9 @@ describe('Admin API - Schools (API)', () => {
 		describe('with api token', () => {
 			const setup = async () => {
 				const federalState = federalStateFactory.build({ name: 'niedersachsen' });
-				await em.persistAndFlush(federalState);
-				return { federalState };
+				const year = schoolYearFactory.build();
+				await em.persistAndFlush(federalState, year);
+				return { federalState, year };
 			};
 
 			it('should return school', async () => {
