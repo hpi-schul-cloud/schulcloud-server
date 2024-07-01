@@ -59,4 +59,20 @@ describe('initialisePerformanceObserver', () => {
 
 		expect(infoLoggerSpy).toHaveBeenNthCalledWith(1, new InitialisePerformanceObserverLoggable());
 	});
+
+	it('should be log messure if it is executed', () => {
+		const { infoLoggerSpy, mockInfoLogger } = setup();
+
+		initialisePerformanceObserver(mockInfoLogger);
+		infoLoggerSpy.mockClear();
+
+		performance.mark('startMark');
+		// execute something
+		performance.measure('myMeasure', {
+			start: 'startMark',
+			detail: { x: 1 },
+		});
+
+		expect(infoLoggerSpy).toHaveBeenCalledWith(MeasuresLoggable);
+	});
 });
