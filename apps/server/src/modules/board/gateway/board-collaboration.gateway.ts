@@ -377,20 +377,17 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {
-		const getRootId = (domainobject: AnyBoardNode) => domainobject.rootId;
+		const getRoomName = (domainobject: AnyBoardNode) => `board_${domainobject.rootId}`;
 		return {
 			async joinRoom(boardNode: AnyBoardNode) {
-				const rootId = getRootId(boardNode);
-				const room = `board_${rootId}`;
+				const room = getRoomName(boardNode);
 				await socket.join(room);
 			},
 			emitSuccess(data: object) {
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
 			emitToClientAndRoom(data: object, boardNode: AnyBoardNode) {
-				const rootId = getRootId(boardNode);
-				const room = `board_${rootId}`;
-
+				const room = getRoomName(boardNode);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
