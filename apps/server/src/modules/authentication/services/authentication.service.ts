@@ -79,6 +79,10 @@ export class AuthenticationService {
 		}
 	}
 
+	async updateLastLogin(accountId: string): Promise<void> {
+		await this.accountService.updateLastLogin(accountId, new Date());
+	}
+
 	async updateLastTriedFailedLogin(id: string): Promise<void> {
 		await this.accountService.updateLastTriedFailedLogin(id, new Date());
 	}
