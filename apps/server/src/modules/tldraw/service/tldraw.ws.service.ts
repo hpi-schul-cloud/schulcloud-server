@@ -35,6 +35,7 @@ export class TldrawWsService {
 
 	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
 		performance.mark('closeConnection');
+
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws);
 			doc.connections.delete(ws);
@@ -251,7 +252,7 @@ export class TldrawWsService {
 				doc_name: doc.name,
 				doc_awareness_state_total: awarenessStates.size,
 				doc_connection_total: doc.connections.size,
-				pod_doc_total: this.docs.size,
+				pod_docs_total: this.docs.size,
 			},
 		});
 	}
