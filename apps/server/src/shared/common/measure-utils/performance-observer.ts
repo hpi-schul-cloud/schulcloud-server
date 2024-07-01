@@ -6,13 +6,16 @@ interface InfoLogger {
 	info(input: Loggable): void;
 }
 
-class MeasureLoggable implements Loggable {
-	constructor(private readonly entry: PerformanceEntry) {}
+class MeasuresLoggable implements Loggable {
+	constructor(private readonly entries: PerformanceEntry[]) {}
 
 	getLogMessage(): LoggableMessage {
-		const detail = util.inspect(this.entry.detail).replace(/\n/g, '').replace(/\\n/g, '');
-		const data = `location: ${this.entry.name}, duration: ${this.entry.duration}, detail: ${detail}`;
-		const message = { message: `Measure result`, data };
+		const stringifiedEntries = this.entries.map((entry) => {
+			const detail = util.inspect(entry.detail).replace(/\n/g, '').replace(/\\n/g, '');
+			return `{ location: ${entry.name}, duration: ${entry.duration}, detail: ${detail} }`;
+		});
+		const data = `[${stringifiedEntries.join(', ')}]`;
+		const message = { message: `Measure results`, data };
 
 		return message;
 	}
@@ -31,9 +34,7 @@ export const initialisePerformanceObserver = (infoLogger: InfoLogger): void => {
 
 	const obs = new PerformanceObserver((perfObserverList) => {
 		const entries = perfObserverList.getEntriesByType('measure');
-		entries.forEach((entry) => {
-			infoLogger.info(new MeasureLoggable(entry));
-		});
+		infoLogger.info(new MeasuresLoggable(entries));
 	});
 
 	obs.observe({ type: 'measure', buffered: true });
