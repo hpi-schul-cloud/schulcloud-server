@@ -16,7 +16,7 @@
       namespace: "{{ NAMESPACE }}"
       template: api-files-svc.yml.j2
 
-  - name: EduSharingService
+  - name: Edu Sharing Service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
@@ -132,13 +132,7 @@
       template: api-files-ingress.yml.j2
       apply: yes
 
-  - name: EduSharingDeployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-edu-sharing-deployment.yml.j2
-
-  - name: EduSharingDeployment
+  - name: Edu Sharing Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
