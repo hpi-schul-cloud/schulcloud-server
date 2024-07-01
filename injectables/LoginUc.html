@@ -296,6 +296,8 @@ export class LoginUc {
 
 		const accessTokenDto: LoginDto &#x3D; await this.authService.generateJwt(createJwtPayload);
 
+		await this.authService.updateLastLogin(userInfo.accountId);
+
 		const loginDto: LoginDto &#x3D; new LoginDto({
 			accessToken: accessTokenDto.accessToken,
 		});

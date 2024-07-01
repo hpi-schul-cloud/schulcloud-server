@@ -162,6 +162,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#updateLastLogin" >updateLastLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateLastTriedFailedLogin" >updateLastTriedFailedLogin</a>
                             </li>
                         </ul>
@@ -572,8 +576,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -639,8 +643,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -759,6 +763,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="updateLastLogin"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updateLastLogin</b></span>
+                        <a href="#updateLastLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateLastLogin(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>accountId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateLastTriedFailedLogin"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -777,8 +850,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -909,6 +982,10 @@ export class AuthenticationService {
 				throw new BruteForceError(timeToWait, &#x60;Brute Force Prevention! Time to wait: ${timeToWait} s&#x60;);
 			}
 		}
+	}
+
+	async updateLastLogin(accountId: string): Promise&lt;void&gt; {
+		await this.accountService.updateLastLogin(accountId, new Date());
 	}
 
 	async updateLastTriedFailedLogin(id: string): Promise&lt;void&gt; {

@@ -210,6 +210,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#updateLastLogin" >updateLastLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateLastTriedFailedLogin" >updateLastTriedFailedLogin</a>
                             </li>
                             <li>
@@ -336,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:125</a></div>
                         </td>
                     </tr>
 
@@ -405,8 +409,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="136"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:136</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -480,7 +484,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:84</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:92</a></code>
 </div>
                         </td>
                     </tr>
@@ -555,7 +559,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:89</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:97</a></code>
 </div>
                         </td>
                     </tr>
@@ -624,8 +628,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="128"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:128</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -1011,7 +1015,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:132</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:140</a></code>
 </div>
                         </td>
                     </tr>
@@ -1175,8 +1179,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -1251,7 +1255,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:149</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:157</a></code>
 </div>
                         </td>
                     </tr>
@@ -1401,7 +1405,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:97</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:105</a></code>
 </div>
                         </td>
                     </tr>
@@ -1476,7 +1480,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:93</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:101</a></code>
 </div>
                         </td>
                     </tr>
@@ -1551,6 +1555,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="updateLastLogin"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updateLastLogin</b></span>
+                        <a href="#updateLastLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateLastLogin(accountId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, lastLogin: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-db.service.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>accountId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>lastLogin</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateLastTriedFailedLogin"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -1575,7 +1660,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:67</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:75</a></code>
 </div>
                         </td>
                     </tr>
@@ -1662,7 +1747,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:75</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:83</a></code>
 </div>
                         </td>
                     </tr>
@@ -1834,7 +1919,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:101</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:109</a></code>
 </div>
                         </td>
                     </tr>
@@ -1961,6 +2046,14 @@ export class AccountServiceDb extends AbstractAccountService {
 		const internalId &#x3D; await this.getInternalId(accountId);
 		const account &#x3D; await this.accountRepo.findById(internalId);
 		account.username &#x3D; username;
+		await this.accountRepo.save(account);
+		return account;
+	}
+
+	async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise&lt;Account&gt; {
+		const internalId &#x3D; await this.getInternalId(accountId);
+		const account &#x3D; await this.accountRepo.findById(internalId);
+		account.lastLogin &#x3D; lastLogin;
 		await this.accountRepo.save(account);
 		return account;
 	}
