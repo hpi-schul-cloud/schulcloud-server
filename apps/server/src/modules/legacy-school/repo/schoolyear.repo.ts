@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolYearEntity } from '@shared/domain/entity';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { AdminApiSchoolCreateNoIdErrorLoggable } from '../loggable/admin-api-school-create-no-id-error.loggable';
+import { SchoolYearsNoYearsLeft } from '../loggable/schoolyear-no-years-left.loggable';
 
 @Injectable()
 export class SchoolYearRepo extends BaseRepo<SchoolYearEntity> {
@@ -25,7 +25,7 @@ export class SchoolYearRepo extends BaseRepo<SchoolYearEntity> {
 			{ orderBy: { endDate: 'ASC' } }
 		);
 		if (years.length < 1) {
-			throw new AdminApiSchoolCreateNoIdErrorLoggable();
+			throw new SchoolYearsNoYearsLeft();
 		}
 		return years[0];
 	}
