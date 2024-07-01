@@ -185,7 +185,7 @@ describe('schoolyear repo', () => {
 				return { previousYear, nextYear };
 			};
 
-			it('should return the current schoolyear', async () => {
+			it('should return the upcoming schoolyear', async () => {
 				const { nextYear } = await setup();
 
 				const result = await repo.findCurrentOrNextYear();

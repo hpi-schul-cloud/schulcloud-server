@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { LegacySchoolService, SchoolYearService } from '../service';
+import { LegacySchoolService } from '../service';
 
 @Injectable()
 export class AdminApiSchoolUc {
