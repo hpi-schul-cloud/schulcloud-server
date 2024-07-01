@@ -66,14 +66,15 @@ export class CardUc {
 		return card;
 	}
 
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise<Card> {
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const { rootId } = card;
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.delete(card);
-		return card;
+		return rootId;
 	}
 
 	// --- elements ---

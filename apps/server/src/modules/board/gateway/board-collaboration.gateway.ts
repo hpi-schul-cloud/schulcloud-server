@@ -10,6 +10,7 @@ import {
 	WsException,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { EntityId } from '@shared/domain/types';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
@@ -148,8 +149,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const card = await this.cardUc.deleteCard(userId, data.cardId);
-			emitter.emitToClientAndRoom(data, card);
+			const rootId = await this.cardUc.deleteCard(userId, data.cardId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -287,8 +288,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const column = await this.columnUc.deleteColumn(userId, data.columnId);
-			emitter.emitToClientAndRoom(data, column);
+			const rootId = await this.columnUc.deleteColumn(userId, data.columnId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -353,8 +354,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 
 		try {
-			const element = await this.elementUc.deleteElement(userId, data.elementId);
-			emitter.emitToClientAndRoom(data, element);
+			const rootId = await this.elementUc.deleteElement(userId, data.elementId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -377,7 +378,10 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {
-		const getRoomName = (domainobject: AnyBoardNode) => `board_${domainobject.rootId}`;
+		const getRoomName = (boardNode: AnyBoardNode | EntityId) => {
+			const rootId = typeof boardNode === 'string' ? boardNode : boardNode.rootId;
+			return `board_${rootId}`;
+		};
 		return {
 			async joinRoom(boardNode: AnyBoardNode) {
 				const room = getRoomName(boardNode);
@@ -386,8 +390,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 			emitSuccess(data: object) {
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
-			emitToClientAndRoom(data: object, boardNode: AnyBoardNode) {
-				const room = getRoomName(boardNode);
+			emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId) {
+				const room = getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},

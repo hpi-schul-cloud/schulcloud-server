@@ -17,15 +17,16 @@ export class ColumnUc {
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<Column> {
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		const { rootId } = column;
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
 		await this.boardNodeService.delete(column);
 
-		return column;
+		return rootId;
 	}
 
 	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
