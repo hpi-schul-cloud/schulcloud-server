@@ -31,6 +31,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		RabbitMQWrapperModule,
 		FilesStorageClientModule,
 		LoggerModule,
+		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
