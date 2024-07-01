@@ -56,7 +56,7 @@ describe('Admin API - Schools (API)', () => {
 			const setup = async () => {
 				const federalState = federalStateFactory.build({ name: 'niedersachsen' });
 				const year = schoolYearFactory.build();
-				await em.persistAndFlush(federalState, year);
+				await em.persistAndFlush([federalState, year]);
 				return { federalState, year };
 			};
 
