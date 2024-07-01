@@ -13,6 +13,7 @@ export interface AccountProps extends AuthorizableObject {
 	password?: string;
 	token?: string;
 	credentialHash?: string;
+	lastLogin?: Date;
 	lasttriedFailedLogin?: Date;
 	expiresAt?: Date;
 	activated?: boolean;
@@ -71,6 +72,14 @@ export class Account extends DomainObject<AccountProps> {
 
 	public get credentialHash(): string | undefined {
 		return this.props.credentialHash;
+	}
+
+	public get lastLogin(): Date | undefined {
+		return this.props.lastLogin;
+	}
+
+	public set lastLogin(lastLogin: Date | undefined) {
+		this.props.lastLogin = lastLogin;
 	}
 
 	public get lasttriedFailedLogin(): Date | undefined {
