@@ -6,7 +6,7 @@ interface InfoLogger {
 	info(input: Loggable): void;
 }
 
-class MeasuresLoggable implements Loggable {
+export class MeasuresLoggable implements Loggable {
 	constructor(private readonly entries: PerformanceEntry[]) {}
 
 	getLogMessage(): LoggableMessage {
@@ -21,7 +21,7 @@ class MeasuresLoggable implements Loggable {
 	}
 }
 
-class InitialisePerformanceObserverLoggable implements Loggable {
+export class InitialisePerformanceObserverLoggable implements Loggable {
 	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Initialise PerformanceObserver...',
