@@ -20,27 +20,25 @@ import {
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
-import {
-	CreateCardMessageParams,
-	DeleteColumnMessageParams,
-	MoveCardMessageParams,
-	UpdateColumnTitleMessageParams,
-} from './dto';
-import BoardCollaborationConfiguration from './dto/board-collaboration-config';
+import { CreateCardMessageParams } from './dto/create-card.message.param';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { DeleteCardMessageParams } from './dto/delete-card.message.param';
 import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
+import { DeleteColumnMessageParams } from './dto/delete-column.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { FetchCardsMessageParams } from './dto/fetch-cards.message.param';
+import { MoveCardMessageParams } from './dto/move-card.message.param';
 import { MoveColumnMessageParams } from './dto/move-column.message.param';
 import { MoveContentElementMessageParams } from './dto/move-content-element.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
+import { UpdateColumnTitleMessageParams } from './dto/update-column-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
+import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 import { AnyBoardNode } from '../domain';
 
 @UsePipes(new WsValidationPipe())
