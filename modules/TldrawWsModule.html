@@ -332,21 +332,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ConfigModule } from &#x27;@nestjs/config&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
+import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { ConfigModule, ConfigService } from &#x27;@nestjs/config&#x27;;
+import { initialisePerformanceObserver } from &#x27;@shared/common/measure-utils&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
-import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
-import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
-import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { config, TldrawConfig, TLDRAW_DB_URL } from &#x27;./config&#x27;;
+import { TldrawWs } from &#x27;./controller&#x27;;
 import { TldrawDrawing } from &#x27;./entities&#x27;;
 import { MetricsService } from &#x27;./metrics&#x27;;
+import { TldrawRedisFactory, TldrawRedisService } from &#x27;./redis&#x27;;
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from &#x27;./repo&#x27;;
 import { TldrawWsService } from &#x27;./service&#x27;;
-import { TldrawWs } from &#x27;./controller&#x27;;
-import { config, TLDRAW_DB_URL } from &#x27;./config&#x27;;
-import { TldrawRedisFactory, TldrawRedisService } from &#x27;./redis&#x27;;
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) &#x3D;&gt;
@@ -379,7 +380,14 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {
 		TldrawRedisService,
 	],
 })
-export class TldrawWsModule {}
+export class TldrawWsModule {
+	constructor(private readonly logger: Logger, private readonly configService: ConfigService&lt;TldrawConfig, true&gt;) {
+		if (this.configService.get(&#x27;PERFORMANCE_MEASURE_ENABLED&#x27;) &#x3D;&#x3D;&#x3D; true) {
+			this.logger.setContext(&#x27;PerformanceObserver&#x27;);
+			initialisePerformanceObserver(this.logger);
+		}
+	}
+}
 </code></pre>
     </div>
 </div>

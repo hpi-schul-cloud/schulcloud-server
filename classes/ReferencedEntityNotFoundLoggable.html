@@ -282,7 +282,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/Message.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LoggableMessage" target="_self" >LoggableMessage</a></code>
 
                         </div>
                 </td>
@@ -299,8 +299,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
-import { EntityId } from &#x27;../../domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;../../domain/types&#x27;;
+import { Loggable, LoggableMessage } from &#x27;./interfaces&#x27;;
 
 export class ReferencedEntityNotFoundLoggable implements Loggable {
 	constructor(
@@ -310,7 +310,7 @@ export class ReferencedEntityNotFoundLoggable implements Loggable {
 		private readonly referencedEntityId: EntityId
 	) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: &#x27;The requested entity could not been found, but it is still referenced.&#x27;,
 			data: {
