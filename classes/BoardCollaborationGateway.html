@@ -163,7 +163,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#buildBoardSocketEmitter" >buildBoardSocketEmitter</a>
                             </li>
                             <li>
@@ -226,11 +225,6 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getCurrentUser" >getCurrentUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getRootIdForId" >getRootIdForId</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -320,12 +314,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, authorizableService: <a href="../injectables/BoardNodeAuthorizableService.html" target="_self">BoardNodeAuthorizableService</a>)</code>
+<code>constructor(orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:50</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:49</a></div>
                             </td>
                         </tr>
 
@@ -414,18 +408,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>authorizableService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/BoardNodeAuthorizableService.html" target="_self" >BoardNodeAuthorizableService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -469,7 +451,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:50</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -490,7 +472,6 @@
                     <a name="buildBoardSocketEmitter"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
                         <span ><b>buildBoardSocketEmitter</b></span>
                         <a href="#buildBoardSocketEmitter"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -506,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="386"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:386</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="378"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:378</a></div>
                         </td>
                     </tr>
 
@@ -542,7 +523,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >{ joinRoom(boardNode: AnyBoardNode): any; emitSuccess(data: object): void; emitToClientAndRoom(data: object, boardNodeOrRootId: any): void; emitFailure(data: object): void; }</a></code>
 
                         </div>
                             <div class="io-description">
@@ -584,8 +565,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="168"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:168</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:161</a></div>
                         </td>
                     </tr>
 
@@ -674,8 +655,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="189"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:189</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="182"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:182</a></div>
                         </td>
                     </tr>
 
@@ -764,8 +745,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="323"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:323</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="316"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:316</a></div>
                         </td>
                     </tr>
 
@@ -854,8 +835,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -944,8 +925,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="146"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:146</a></div>
                         </td>
                     </tr>
 
@@ -1034,8 +1015,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="291"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:291</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="285"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:285</a></div>
                         </td>
                     </tr>
 
@@ -1124,8 +1105,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="358"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:358</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="350"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:350</a></div>
                         </td>
                     </tr>
 
@@ -1215,8 +1196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:207</a></div>
                         </td>
                     </tr>
 
@@ -1306,8 +1287,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="307"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:307</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="300"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:300</a></div>
                         </td>
                     </tr>
 
@@ -1387,8 +1368,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -1438,76 +1419,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getRootIdForId"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getRootIdForId</b></span>
-                        <a href="#getRootIdForId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getRootIdForId(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="405"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:405</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>id</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="handleDisconnect"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -1526,8 +1437,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -1604,8 +1515,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="230"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:230</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="223"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:223</a></div>
                         </td>
                     </tr>
 
@@ -1694,8 +1605,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="245"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:245</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="237"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:237</a></div>
                         </td>
                     </tr>
 
@@ -1784,8 +1695,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="373"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:373</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="365"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:365</a></div>
                         </td>
                     </tr>
 
@@ -1863,8 +1774,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -1954,8 +1865,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -2044,8 +1955,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="276"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:276</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="271"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:271</a></div>
                         </td>
                     </tr>
 
@@ -2134,8 +2045,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="137"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:137</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -2225,8 +2136,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -2316,8 +2227,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="261"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:261</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="257"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:257</a></div>
                         </td>
                     </tr>
 
@@ -2407,8 +2318,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="343"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:343</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="336"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:336</a></div>
                         </td>
                     </tr>
 
@@ -2489,8 +2400,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -2558,6 +2469,7 @@ import {
 	WsException,
 } from &#x27;@nestjs/websockets&#x27;;
 import { Server } from &#x27;socket.io&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
@@ -2566,29 +2478,27 @@ import {
 } from &#x27;../controller/mapper&#x27;;
 import { MetricsService } from &#x27;../metrics/metrics.service&#x27;;
 import { TrackExecutionTime } from &#x27;../metrics/track-execution-time.decorator&#x27;;
-import { BoardNodeAuthorizableService } from &#x27;../service&#x27;;
 import { BoardUc, CardUc, ColumnUc, ElementUc } from &#x27;../uc&#x27;;
-import {
-	CreateCardMessageParams,
-	DeleteColumnMessageParams,
-	MoveCardMessageParams,
-	UpdateColumnTitleMessageParams,
-} from &#x27;./dto&#x27;;
-import BoardCollaborationConfiguration from &#x27;./dto/board-collaboration-config&#x27;;
+import { CreateCardMessageParams } from &#x27;./dto/create-card.message.param&#x27;;
 import { CreateColumnMessageParams } from &#x27;./dto/create-column.message.param&#x27;;
 import { CreateContentElementMessageParams } from &#x27;./dto/create-content-element.message.param&#x27;;
 import { DeleteBoardMessageParams } from &#x27;./dto/delete-board.message.param&#x27;;
 import { DeleteCardMessageParams } from &#x27;./dto/delete-card.message.param&#x27;;
 import { DeleteContentElementMessageParams } from &#x27;./dto/delete-content-element.message.param&#x27;;
+import { DeleteColumnMessageParams } from &#x27;./dto/delete-column.message.param&#x27;;
 import { FetchBoardMessageParams } from &#x27;./dto/fetch-board.message.param&#x27;;
 import { FetchCardsMessageParams } from &#x27;./dto/fetch-cards.message.param&#x27;;
+import { MoveCardMessageParams } from &#x27;./dto/move-card.message.param&#x27;;
 import { MoveColumnMessageParams } from &#x27;./dto/move-column.message.param&#x27;;
 import { MoveContentElementMessageParams } from &#x27;./dto/move-content-element.message.param&#x27;;
 import { UpdateBoardTitleMessageParams } from &#x27;./dto/update-board-title.message.param&#x27;;
 import { UpdateBoardVisibilityMessageParams } from &#x27;./dto/update-board-visibility.message.param&#x27;;
 import { UpdateCardHeightMessageParams } from &#x27;./dto/update-card-height.message.param&#x27;;
 import { UpdateCardTitleMessageParams } from &#x27;./dto/update-card-title.message.param&#x27;;
+import { UpdateColumnTitleMessageParams } from &#x27;./dto/update-column-title.message.param&#x27;;
 import { UpdateContentElementMessageParams } from &#x27;./dto/update-content-element.message.param&#x27;;
+import BoardCollaborationConfiguration from &#x27;./dto/board-collaboration-config&#x27;;
+import { AnyBoardNode } from &#x27;../domain&#x27;;
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -2604,8 +2514,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
-		private readonly metricsService: MetricsService,
-		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
+		private readonly metricsService: MetricsService
 	) {}
 
 	trackExecutionTime(methodName: string, executionTimeMs: number) {
@@ -2636,12 +2545,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;delete-board-request&#x27;)
 	@UseRequestContext()
 	async deleteBoard(socket: Socket, data: DeleteBoardMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;delete-board&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;delete-board&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.boardUc.deleteBoard(userId, data.boardId);
-
-			await emitter.emitToClientAndRoom(data);
+			const board &#x3D; await this.boardUc.deleteBoard(userId, data.boardId);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2652,12 +2560,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;update-board-title&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;update-board-title&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
-
-			await emitter.emitToClientAndRoom(data);
+			const board &#x3D; await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2668,12 +2575,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: &#x27;update-card-title&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;update-card-title&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
-
-			await emitter.emitToClientAndRoom(data);
+			const card &#x3D; await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2683,12 +2589,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;update-card-height-request&#x27;)
 	@UseRequestContext()
 	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: &#x27;update-card-height&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;update-card-height&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
-
-			await emitter.emitToClientAndRoom(data);
+			const card &#x3D; await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2698,12 +2603,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;delete-card-request&#x27;)
 	@UseRequestContext()
 	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: &#x27;delete-card&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;delete-card&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.cardUc.deleteCard(userId, data.cardId);
-
-			await emitter.emitToClientAndRoom(data);
+			const rootId &#x3D; await this.cardUc.deleteCard(userId, data.cardId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2714,7 +2618,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async createCard(socket: Socket, data: CreateCardMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: &#x27;create-card&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;create-card&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
 			const card &#x3D; await this.columnUc.createCard(userId, data.columnId, data.requiredEmptyElements);
@@ -2725,7 +2629,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				newCard,
 			};
 
-			await emitter.emitToClientAndRoom(responsePayload);
+			emitter.emitToClientAndRoom(responsePayload, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2735,7 +2639,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;create-column-request&#x27;)
 	@UseRequestContext()
 	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;create-column&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;create-column&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
 			const column &#x3D; await this.boardUc.createColumn(userId, data.boardId);
@@ -2745,7 +2649,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				...data,
 				newColumn,
 			};
-			await emitter.emitToClientAndRoom(responsePayload);
+			emitter.emitToClientAndRoom(responsePayload, column);
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
@@ -2760,13 +2664,13 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;fetch-board&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;fetch-board&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
 			const board &#x3D; await this.boardUc.findBoard(userId, data.boardId);
-
 			const responsePayload &#x3D; BoardResponseMapper.mapToResponse(board);
-			await emitter.emitToClient(responsePayload);
+			await emitter.joinRoom(board);
+			emitter.emitSuccess(responsePayload);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2776,12 +2680,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;move-card-request&#x27;)
 	@UseRequestContext()
 	async moveCard(socket: Socket, data: MoveCardMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: &#x27;move-card&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;move-card&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-
-			await emitter.emitToClientAndRoom(data);
+			const card &#x3D; await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2791,12 +2694,16 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;move-column-request&#x27;)
 	@UseRequestContext()
 	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.targetBoardId, action: &#x27;move-column&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;move-column&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
-
-			await emitter.emitToClientAndRoom(data);
+			const column &#x3D; await this.boardUc.moveColumn(
+				userId,
+				data.columnMove.columnId,
+				data.targetBoardId,
+				data.columnMove.addedIndex
+			);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2807,12 +2714,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: &#x27;update-column-title&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;update-column-title&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
-
-			await emitter.emitToClientAndRoom(data);
+			const column &#x3D; await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2822,12 +2728,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;update-board-visibility-request&#x27;)
 	@UseRequestContext()
 	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: &#x27;update-board-visibility&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;update-board-visibility&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
-
-			await emitter.emitToClientAndRoom(data);
+			const board &#x3D; await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2837,12 +2742,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;delete-column-request&#x27;)
 	@UseRequestContext()
 	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: &#x27;delete-column&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;delete-column&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.columnUc.deleteColumn(userId, data.columnId);
-
-			await emitter.emitToClientAndRoom(data);
+			const rootId &#x3D; await this.columnUc.deleteColumn(userId, data.columnId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2853,13 +2757,13 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: &#x27;fetch-card&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;fetch-card&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
 			const cards &#x3D; await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses &#x3D; cards.map((card) &#x3D;&gt; CardResponseMapper.mapToResponse(card));
 
-			await emitter.emitToClient({ cards: cardResponses, isOwnAction: false });
+			emitter.emitSuccess({ cards: cardResponses });
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2869,7 +2773,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;create-element-request&#x27;)
 	@UseRequestContext()
 	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: &#x27;create-element&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;create-element&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
 			const element &#x3D; await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
@@ -2878,7 +2782,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				...data,
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
-			await emitter.emitToClientAndRoom(responsePayload);
+			emitter.emitToClientAndRoom(responsePayload, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2889,12 +2793,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: &#x27;update-element&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;update-element&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 		try {
-			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
-
-			await emitter.emitToClientAndRoom(data);
+			const element &#x3D; await this.elementUc.updateElement(userId, data.elementId, data.data.content);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2904,12 +2807,12 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;delete-element-request&#x27;)
 	@UseRequestContext()
 	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: &#x27;delete-element&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;delete-element&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 
 		try {
-			await this.elementUc.deleteElement(userId, data.elementId);
-			await emitter.emitToClientAndRoom(data);
+			const rootId &#x3D; await this.elementUc.deleteElement(userId, data.elementId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -2919,28 +2822,33 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage(&#x27;move-element-request&#x27;)
 	@UseRequestContext()
 	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
-		const emitter &#x3D; await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: &#x27;move-element&#x27; });
+		const emitter &#x3D; this.buildBoardSocketEmitter({ socket, action: &#x27;move-element&#x27; });
 		const { userId } &#x3D; this.getCurrentUser(socket);
 
 		try {
-			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
-			await emitter.emitToClientAndRoom(data);
+			const element &#x3D; await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
 		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
-	private async buildBoardSocketEmitter({ socket, id, action }: { socket: Socket; id: string; action: string }) {
-		const rootId &#x3D; await this.getRootIdForId(id);
-		const room &#x3D; &#x60;board_${rootId}&#x60;;
+	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {
+		const getRoomName &#x3D; (boardNode: AnyBoardNode | EntityId) &#x3D;&gt; {
+			const rootId &#x3D; typeof boardNode &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? boardNode : boardNode.rootId;
+			return &#x60;board_${rootId}&#x60;;
+		};
 		return {
-			async emitToClient(data: object) {
+			async joinRoom(boardNode: AnyBoardNode) {
+				const room &#x3D; getRoomName(boardNode);
 				await socket.join(room);
+			},
+			emitSuccess(data: object) {
 				socket.emit(&#x60;${action}-success&#x60;, { ...data, isOwnAction: true });
 			},
-			async emitToClientAndRoom(data: object) {
-				await socket.join(room);
+			emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId) {
+				const room &#x3D; getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(&#x60;${action}-success&#x60;, { ...data, isOwnAction: false });
 				socket.emit(&#x60;${action}-success&#x60;, { ...data, isOwnAction: true });
 			},
@@ -2948,13 +2856,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				socket.emit(&#x60;${action}-failure&#x60;, data);
 			},
 		};
-	}
-
-	private async getRootIdForId(id: string) {
-		const authorizable &#x3D; await this.authorizableService.findById(id);
-		const rootId &#x3D; authorizable.rootNode.id;
-
-		return rootId;
 	}
 }
 </code></pre>

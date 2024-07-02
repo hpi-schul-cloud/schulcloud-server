@@ -287,8 +287,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -368,8 +368,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -510,7 +510,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -658,11 +658,13 @@ export class ElementUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId): Promise&lt;void&gt; {
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise&lt;EntityId&gt; {
 		const element &#x3D; await this.boardNodeService.findContentElementById(elementId);
+		const { rootId } &#x3D; element;
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 
 		await this.boardNodeService.delete(element);
+		return rootId;
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise&lt;void&gt; {

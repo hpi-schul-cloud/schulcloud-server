@@ -275,8 +275,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -425,7 +425,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -457,8 +457,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -530,7 +530,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -623,7 +623,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -658,22 +658,26 @@ export class ColumnUc {
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise&lt;void&gt; {
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise&lt;EntityId&gt; {
 		this.logger.debug({ action: &#x27;deleteColumn&#x27;, userId, columnId });
 
 		const column &#x3D; await this.boardNodeService.findByClassAndId(Column, columnId);
+		const { rootId } &#x3D; column;
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
 		await this.boardNodeService.delete(column);
+
+		return rootId;
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise&lt;void&gt; {
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise&lt;Column&gt; {
 		this.logger.debug({ action: &#x27;updateColumnTitle&#x27;, userId, columnId, title });
 
 		const column &#x3D; await this.boardNodeService.findByClassAndId(Column, columnId);
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
 		await this.boardNodeService.updateTitle(column, title);
+		return column;
 	}
 
 	async createCard(
@@ -694,7 +698,7 @@ export class ColumnUc {
 		return card;
 	}
 
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise&lt;void&gt; {
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise&lt;Card&gt; {
 		this.logger.debug({ action: &#x27;moveCard&#x27;, userId, cardId, targetColumnId, toPosition: targetPosition });
 
 		const card &#x3D; await this.boardNodeService.findByClassAndId(Card, cardId);
@@ -704,6 +708,7 @@ export class ColumnUc {
 		await this.boardNodePermissionService.checkPermission(userId, targetColumn, Action.write);
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
+		return card;
 	}
 }
 </code></pre>

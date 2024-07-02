@@ -307,8 +307,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -412,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -461,7 +461,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -574,8 +574,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -647,7 +647,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElement" target="_self" >Promise&lt;AnyContentElement&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -740,7 +740,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -772,8 +772,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -833,7 +833,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -897,31 +897,35 @@ export class CardUc {
 		return allowedCards;
 	}
 
-	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise&lt;void&gt; {
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise&lt;Card&gt; {
 		this.logger.debug({ action: &#x27;updateCardHeight&#x27;, userId, cardId, height });
 
 		const card &#x3D; await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.updateHeight(card, height);
+		return card;
 	}
 
-	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise&lt;void&gt; {
+	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise&lt;Card&gt; {
 		this.logger.debug({ action: &#x27;updateCardTitle&#x27;, userId, cardId, title });
 
 		const card &#x3D; await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.updateTitle(card, title);
+		return card;
 	}
 
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise&lt;void&gt; {
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise&lt;EntityId&gt; {
 		this.logger.debug({ action: &#x27;deleteCard&#x27;, userId, cardId });
 
 		const card &#x3D; await this.boardNodeService.findByClassAndId(Card, cardId);
+		const { rootId } &#x3D; card;
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.delete(card);
+		return rootId;
 	}
 
 	// --- elements ---
@@ -949,7 +953,7 @@ export class CardUc {
 		elementId: EntityId,
 		targetCardId: EntityId,
 		targetPosition: number
-	): Promise&lt;void&gt; {
+	): Promise&lt;AnyContentElement&gt; {
 		this.logger.debug({ action: &#x27;moveElement&#x27;, userId, elementId, targetCardId, targetPosition });
 
 		const element &#x3D; await this.boardNodeService.findContentElementById(elementId);
@@ -959,6 +963,8 @@ export class CardUc {
 		await this.boardNodePermissionService.checkPermission(userId, targetCard, Action.write);
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
+
+		return element;
 	}
 }
 </code></pre>
