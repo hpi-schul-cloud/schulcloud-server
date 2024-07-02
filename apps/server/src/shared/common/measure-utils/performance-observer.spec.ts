@@ -12,10 +12,10 @@ async function wait(timeoutMS: number): Promise<void> {
 	});
 }
 
-async function waitForEventLoopEnd(): Promise<unknown> {
+async function waitForEventLoopEnd(): Promise<void> {
 	return new Promise((resolve) => {
 		process.nextTick(() => {
-			resolve(undefined);
+			resolve();
 		});
 	});
 }
