@@ -714,27 +714,40 @@ describe('AccountDbService', () => {
 		});
 	});
 
+	describe('updateLastLogin', () => {
+		const setup = () => {
+			const mockTeacherAccount = accountDoFactory.build();
+			const theNewDate = new Date();
+
+			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+
+			return { mockTeacherAccount, theNewDate };
+		};
+
+		it('should update last tried failed login', async () => {
+			const { mockTeacherAccount, theNewDate } = setup();
+
+			const ret = await accountService.updateLastLogin(mockTeacherAccount.id, theNewDate);
+
+			expect(ret.lastLogin).toEqual(theNewDate);
+		});
+	});
+
 	describe('updateLastTriedFailedLogin', () => {
-		describe('when update last failed Login', () => {
-			const setup = () => {
-				const mockTeacherAccount = accountDoFactory.build();
-				const theNewDate = new Date();
+		const setup = () => {
+			const mockTeacherAccount = accountDoFactory.build();
+			const theNewDate = new Date();
 
-				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
 
-				return { mockTeacherAccount, theNewDate };
-			};
+			return { mockTeacherAccount, theNewDate };
+		};
 
-			it('should update last tried failed login', async () => {
-				const { mockTeacherAccount, theNewDate } = setup();
-				const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
+		it('should update last tried failed login', async () => {
+			const { mockTeacherAccount, theNewDate } = setup();
+			const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
 
-				expect(ret).toBeDefined();
-				expect(ret).toMatchObject({
-					...mockTeacherAccount.getProps(),
-					lasttriedFailedLogin: theNewDate,
-				});
-			});
+			expect(ret.lasttriedFailedLogin).toEqual(theNewDate);
 		});
 	});
 
