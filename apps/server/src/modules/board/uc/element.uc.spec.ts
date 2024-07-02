@@ -135,6 +135,7 @@ describe(ElementUc.name, () => {
 
 			it('should call the service to find the element', async () => {
 				const { user, element } = setup();
+				boardNodeService.findContentElementById.mockResolvedValueOnce(element);
 
 				await uc.deleteElement(user.id, element.id);
 
