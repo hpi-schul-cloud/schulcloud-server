@@ -6584,6 +6584,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolYearResponseMapper.html" data-type="entity-link" >SchoolYearResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolYearsNoYearsLeft.html" data-type="entity-link" >SchoolYearsNoYearsLeft</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchulconnexAnschriftResponse.html" data-type="entity-link" >SchulconnexAnschriftResponse</a>
                             </li>
                             <li class="link">

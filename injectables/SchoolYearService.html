@@ -141,6 +141,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#getCurrentOrNextSchoolYear" >getCurrentOrNextSchoolYear</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getCurrentSchoolYear" >getCurrentSchoolYear</a>
                             </li>
                         </ul>
@@ -231,8 +235,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/school-year.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/school-year.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -274,6 +278,45 @@
                             <div class="io-description">
                                 
                             </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCurrentOrNextSchoolYear"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getCurrentOrNextSchoolYear</b></span>
+                        <a href="#getCurrentOrNextSchoolYear"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCurrentOrNextSchoolYear()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/school-year.service.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/SchoolYearEntity.html" target="_self" >Promise&lt;SchoolYearEntity&gt;</a></code>
+
+                        </div>
                 </td>
             </tr>
         </tbody>
@@ -335,6 +378,12 @@ export class SchoolYearService {
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 	async getCurrentSchoolYear(): Promise&lt;SchoolYearEntity&gt; {
 		const current: SchoolYearEntity &#x3D; await this.schoolYearRepo.findCurrentYear();
+
+		return current;
+	}
+
+	async getCurrentOrNextSchoolYear(): Promise&lt;SchoolYearEntity&gt; {
+		const current: SchoolYearEntity &#x3D; await this.schoolYearRepo.findCurrentOrNextYear();
 
 		return current;
 	}

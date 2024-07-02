@@ -143,6 +143,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findCurrentOrNextYear" >findCurrentOrNextYear</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findCurrentYear" >findCurrentYear</a>
                             </li>
                             <li>
@@ -196,6 +200,45 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findCurrentOrNextYear"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findCurrentOrNextYear</b></span>
+                        <a href="#findCurrentOrNextYear"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findCurrentOrNextYear()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/repo/schoolyear.repo.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/SchoolYearEntity.html" target="_self" >Promise&lt;SchoolYearEntity&gt;</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findCurrentYear"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -214,8 +257,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/repo/schoolyear.repo.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/repo/schoolyear.repo.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -551,7 +594,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/legacy-school/repo/schoolyear.repo.ts:7</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/legacy-school/repo/schoolyear.repo.ts:8</a></div>
                                 </td>
                             </tr>
 
@@ -565,6 +608,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SchoolYearEntity } from &#x27;@shared/domain/entity&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
+import { SchoolYearsNoYearsLeft } from &#x27;../loggable/schoolyear-no-years-left.loggable&#x27;;
 
 @Injectable()
 export class SchoolYearRepo extends BaseRepo&lt;SchoolYearEntity&gt; {
@@ -578,6 +622,19 @@ export class SchoolYearRepo extends BaseRepo&lt;SchoolYearEntity&gt; {
 			$and: [{ startDate: { $lte: currentDate } }, { endDate: { $gte: currentDate } }],
 		});
 		return year;
+	}
+
+	async findCurrentOrNextYear(): Promise&lt;SchoolYearEntity&gt; {
+		const currentDate &#x3D; new Date();
+		const years: SchoolYearEntity[] &#x3D; await this._em.find(
+			SchoolYearEntity,
+			{ endDate: { $gte: currentDate } },
+			{ orderBy: { endDate: &#x27;ASC&#x27; } }
+		);
+		if (years.length &lt; 1) {
+			throw new SchoolYearsNoYearsLeft();
+		}
+		return years[0];
 	}
 }
 </code></pre>
