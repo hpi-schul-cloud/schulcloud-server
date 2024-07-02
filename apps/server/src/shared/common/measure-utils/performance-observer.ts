@@ -31,15 +31,26 @@ export class InitialisePerformanceObserverLoggable implements Loggable {
 
 let observer: PerformanceObserver | null = null;
 
-export const initialisePerformanceObserver = (infoLogger: InfoLogger): void => {
+export const initialisePerformanceObserver = (infoLogger: InfoLogger): PerformanceObserver => {
 	infoLogger.info(new InitialisePerformanceObserverLoggable());
 
 	if (observer === null) {
-		observer = new PerformanceObserver((perfObserverList) => {
-			const entries = perfObserverList.getEntriesByType('measure');
+		observer = new PerformanceObserver((perfObserverEntryList) => {
+			const entries = perfObserverEntryList.getEntriesByType('measure');
 			infoLogger.info(new MeasuresLoggable(entries));
 		});
 
 		observer.observe({ type: 'measure', buffered: true });
+	}
+
+	return observer;
+};
+
+export const closePerformanceObserver = (): void => {
+	if (observer !== null) {
+		performance.clearMarks();
+		performance.clearMeasures();
+		observer.disconnect();
+		observer = null;
 	}
 };
