@@ -202,6 +202,21 @@ data:
     # the additional namespace intended for use for the testing (and development) purposes if one want
     # to test anything that includes signing in with the IServ on nbc instance, but don't want to use
     # the default dev nbc instance as it would require merging the code to the main branch first.
+    # Removed oauth config
+    #                "oauthConfig": {
+    #                "clientId": "'$ISERV_OAUTH_CLIENT_ID'",
+    #                "clientSecret": "'$ISERV_OAUTH_CLIENT_SECRET'",
+    #                "tokenEndpoint": "'$ISERV_URL'/iserv/auth/public/token",
+    #                "grantType": "authorization_code",
+    #                "scope": "openid uuid",
+    #                "responseType": "code",
+    #                "redirectUri": "https://'$NS'.nbc.dbildungscloud.dev/api/v3/sso/oauth",
+    #                "authEndpoint": "'$ISERV_URL'/iserv/auth/auth",
+    #                "provider": "iserv",
+    #                "logoutEndpoint": "'$ISERV_URL'/iserv/auth/logout",
+    #                "jwksEndpoint": "'$ISERV_URL'/iserv/public/jwk",
+    #                "issuer": "'$ISERV_URL'"
+    #            }
 
     if [ "$SC_THEME" = "n21" ] && [[ "$NS" =~ ^(main|iserv-test)$ ]]; then
         ISERV_SYSTEM_ID=0000d186816abba584714c92
@@ -235,20 +250,6 @@ data:
                 },
                 "type": "ldap",
                 "provisioningStrategy": "iserv",
-                "oauthConfig": {
-                    "clientId": "'$ISERV_OAUTH_CLIENT_ID'",
-                    "clientSecret": "'$ISERV_OAUTH_CLIENT_SECRET'",
-                    "tokenEndpoint": "'$ISERV_URL'/iserv/auth/public/token",
-                    "grantType": "authorization_code",
-                    "scope": "openid uuid",
-                    "responseType": "code",
-                    "redirectUri": "https://'$NS'.nbc.dbildungscloud.dev/api/v3/sso/oauth",
-                    "authEndpoint": "'$ISERV_URL'/iserv/auth/auth",
-                    "provider": "iserv",
-                    "logoutEndpoint": "'$ISERV_URL'/iserv/auth/logout",
-                    "jwksEndpoint": "'$ISERV_URL'/iserv/public/jwk",
-                    "issuer": "'$ISERV_URL'"
-                }
             },
             {
                 "upsert": true

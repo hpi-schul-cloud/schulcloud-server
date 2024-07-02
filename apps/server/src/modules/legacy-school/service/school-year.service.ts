@@ -14,6 +14,12 @@ export class SchoolYearService {
 		return current;
 	}
 
+	async getCurrentOrNextSchoolYear(): Promise<SchoolYearEntity> {
+		const current: SchoolYearEntity = await this.schoolYearRepo.findCurrentOrNextYear();
+
+		return current;
+	}
+
 	async findById(id: EntityId): Promise<SchoolYearEntity> {
 		const year: SchoolYearEntity = await this.schoolYearRepo.findById(id);
 
