@@ -24,6 +24,10 @@
 <title>cluster_CommonToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1514,-268 1514,-70 8,-70"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_CommonToolModule_exports</title>
+<polygon fill="none" stroke="black" points="140,-208 140,-260 1089,-260 1089,-208 140,-208"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_CommonToolModule_providers</title>
 <polygon fill="none" stroke="black" points="256,-78 256,-130 1506,-130 1506,-78 256,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust3" class="cluster">
 <title>cluster_CommonToolModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 248,-130 248,-78 16,-78"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_CommonToolModule_exports</title>
-<polygon fill="none" stroke="black" points="140,-208 140,-260 1089,-260 1089,-208 140,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
