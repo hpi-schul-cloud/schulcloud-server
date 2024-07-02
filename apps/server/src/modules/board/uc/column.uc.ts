@@ -17,22 +17,26 @@ export class ColumnUc {
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<void> {
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		const { rootId } = column;
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
 		await this.boardNodeService.delete(column);
+
+		return rootId;
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
 		await this.boardNodeService.updateTitle(column, title);
+		return column;
 	}
 
 	async createCard(
@@ -53,7 +57,7 @@ export class ColumnUc {
 		return card;
 	}
 
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<Card> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
@@ -63,5 +67,6 @@ export class ColumnUc {
 		await this.boardNodePermissionService.checkPermission(userId, targetColumn, Action.write);
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
+		return card;
 	}
 }
