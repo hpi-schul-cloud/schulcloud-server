@@ -171,7 +171,7 @@
 		"async": "^3.2.2",
 		"async-mutex": "^0.4.0",
 		"aws-sdk": "^2.1375.0",
-		"axios": "^1.6.2",
+		"axios": "^1.7.2",
 		"axios-mock-adapter": "^1.21.2",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "*",
