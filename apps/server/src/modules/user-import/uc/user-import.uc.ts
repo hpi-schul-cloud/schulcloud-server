@@ -1,12 +1,13 @@
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
@@ -20,7 +21,9 @@ import {
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
+	UserAlreadyMigratedLoggable,
 } from '../loggable';
+
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -29,9 +32,9 @@ import {
 } from './ldap-user-migration.error';
 
 export type UserImportPermissions =
-	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
-	| Permission.SCHOOL_IMPORT_USERS_UPDATE
-	| Permission.SCHOOL_IMPORT_USERS_VIEW;
+	| Permission.IMPORT_USER_MIGRATE
+	| Permission.IMPORT_USER_UPDATE
+	| Permission.IMPORT_USER_VIEW;
 
 @Injectable()
 export class UserImportUc {
@@ -42,6 +45,7 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
@@ -63,7 +67,7 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.userImportService.checkFeatureEnabled(school);
 
@@ -81,7 +85,7 @@ export class UserImportUc {
 	 * @returns importuser and matched user
 	 */
 	public async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -110,7 +114,7 @@ export class UserImportUc {
 	}
 
 	public async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -129,7 +133,7 @@ export class UserImportUc {
 	}
 
 	public async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -162,7 +166,7 @@ export class UserImportUc {
 		query: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -174,7 +178,7 @@ export class UserImportUc {
 	}
 
 	public async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -232,14 +236,14 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
+	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			useCentralLdap = false;
 		}
 
-		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -298,8 +302,8 @@ export class UserImportUc {
 		}
 	}
 
-	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
-		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+	public async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
 		this.userImportService.checkFeatureEnabled(school);
@@ -319,6 +323,15 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 
 		this.logger.notice(new SchoolInUserMigrationEndLoggable(school.name));
+	}
+
+	public async cancelMigration(currentUserId: EntityId): Promise<void> {
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+
+		this.userImportService.checkFeatureEnabled(school);
+
+		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
@@ -363,7 +376,13 @@ export class UserImportUc {
 			return;
 		}
 
-		await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		const user: UserDO | null = await this.userService.findByExternalId(importUser.externalId, importUser.system.id);
+
+		if (!user) {
+			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		} else {
+			this.logger.notice(new UserAlreadyMigratedLoggable(importUser.user.id));
+		}
 	}
 
 	private async getAccount(user: User): Promise<Account> {

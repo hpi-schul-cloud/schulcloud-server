@@ -1,27 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
-import { InputFormat } from '@shared/domain/types';
-import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
-import { CommonCartridgeOrganizationProps, CommonCartridgeResourceTypeV1P1 } from '@src/modules/common-cartridge';
+import { AnyElementContentBody, ContentElementType, LinkContentBody, RichTextContentBody } from '@modules/board';
 import {
-	CommonCartridgeResourceProps,
-	CommonCartridgeWebContentResourceProps,
-	CommonCartridgeWebLinkResourceProps,
-} from '@src/modules/common-cartridge/import/common-cartridge-import.types';
+	CommonCartridgeImportResourceProps,
+	CommonCartridgeImportWebContentResourceProps,
+	CommonCartridgeImportWebLinkResourceProps,
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceTypeV1P1,
+} from '@modules/common-cartridge';
+import { Injectable } from '@nestjs/common';
+import { InputFormat } from '@shared/domain/types';
 
 @Injectable()
 export class CommonCartridgeImportMapper {
-	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps): ColumnInitProps {
+	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps) {
 		return {
 			title: organization.title,
 		};
 	}
 
-	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps): CardInitProps {
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps, withTitle = true) {
 		return {
-			title: organization.title,
+			title: withTitle ? organization.title : '',
 			height: 150,
 		};
+	}
+
+	public mapOrganizationToTextElement(organization: CommonCartridgeOrganizationProps): AnyElementContentBody {
+		const body = new RichTextContentBody();
+		body.text = `<b>${organization.title}</b>`;
+		body.inputFormat = InputFormat.RICH_TEXT_CK5_SIMPLE;
+
+		return body;
 	}
 
 	public mapResourceTypeToContentElementType(
@@ -37,7 +45,7 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	public mapResourceToContentElementBody(resource: CommonCartridgeResourceProps): AnyElementContentBody {
+	public mapResourceToContentElementBody(resource: CommonCartridgeImportResourceProps): AnyElementContentBody {
 		switch (resource.type) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createLinkContentElementBody(resource);
@@ -48,7 +56,7 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	private createLinkContentElementBody(resource: CommonCartridgeWebLinkResourceProps): AnyElementContentBody {
+	private createLinkContentElementBody(resource: CommonCartridgeImportWebLinkResourceProps): AnyElementContentBody {
 		const body = new LinkContentBody();
 
 		body.title = resource.title;
@@ -57,7 +65,7 @@ export class CommonCartridgeImportMapper {
 		return body;
 	}
 
-	private createWebContentElementBody(resource: CommonCartridgeWebContentResourceProps): AnyElementContentBody {
+	private createWebContentElementBody(resource: CommonCartridgeImportWebContentResourceProps): AnyElementContentBody {
 		const body = new RichTextContentBody();
 
 		body.text = resource.html;

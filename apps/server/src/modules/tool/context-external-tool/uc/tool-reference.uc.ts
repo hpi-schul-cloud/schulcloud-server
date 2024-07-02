@@ -49,7 +49,8 @@ export class ToolReferenceUc {
 			await this.ensureToolPermissions(user, contextExternalTool);
 
 			const toolReference: ToolReference = await this.toolReferenceService.getToolReference(
-				contextExternalTool.id as string
+				contextExternalTool.id,
+				user.id
 			);
 
 			return toolReference;
@@ -67,7 +68,8 @@ export class ToolReferenceUc {
 		await this.ensureToolPermissions(user, contextExternalTool);
 
 		const toolReference: ToolReference = await this.toolReferenceService.getToolReference(
-			contextExternalTool.id as string
+			contextExternalTool.id,
+			userId
 		);
 
 		return toolReference;

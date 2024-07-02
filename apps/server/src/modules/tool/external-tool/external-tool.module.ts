@@ -10,13 +10,13 @@ import { ToolConfigModule } from '../tool-config.module';
 import { ExternalToolMetadataMapper } from './mapper';
 import {
 	DatasheetPdfService,
+	ExternalToolAuthorizableService,
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
-	ExternalToolVersionIncrementService,
 } from './service';
 
 @Module({
@@ -26,21 +26,21 @@ import {
 		ExternalToolServiceMapper,
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
-		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
 		ExternalToolMetadataMapper,
 		ToolContextMapper,
 		DatasheetPdfService,
+		ExternalToolAuthorizableService,
 	],
 	exports: [
 		ExternalToolService,
 		ExternalToolValidationService,
-		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		DatasheetPdfService,
+		ExternalToolAuthorizableService,
 	],
 })
 export class ExternalToolModule {}

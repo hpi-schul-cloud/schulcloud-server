@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
-import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
+import { ContentElementType, LinkContentBody, RichTextContentBody } from '@modules/board';
 import {
+	CommonCartridgeImportOrganizationProps,
 	CommonCartridgeImportResourceProps,
-	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceTypeV1P1,
-} from '@src/modules/common-cartridge';
+} from '@modules/common-cartridge';
+import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
@@ -15,7 +14,7 @@ describe('CommonCartridgeImportMapper', () => {
 	let sut: CommonCartridgeImportMapper;
 
 	const setupOrganization = () => {
-		const organization: CommonCartridgeOrganizationProps = {
+		const organization: CommonCartridgeImportOrganizationProps = {
 			path: faker.string.uuid(),
 			pathDepth: faker.number.int({ min: 0, max: 3 }),
 			identifier: faker.string.uuid(),
@@ -56,7 +55,7 @@ describe('CommonCartridgeImportMapper', () => {
 
 				const result = sut.mapOrganizationToColumn(organization);
 
-				expect(result).toEqual<ColumnInitProps>({
+				expect(result).toEqual({
 					title: organization.title,
 				});
 			});
@@ -72,9 +71,43 @@ describe('CommonCartridgeImportMapper', () => {
 
 				const result = sut.mapOrganizationToCard(organization);
 
-				expect(result).toEqual<CardInitProps>({
+				expect(result).toEqual({
 					title: organization.title,
 					height: 150,
+				});
+			});
+		});
+
+		describe('when organization is provided and withTitle is false', () => {
+			const setup = () => setupOrganization();
+
+			it('should set the title to an empty string', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization, false);
+
+				expect(result).toEqual({
+					title: '',
+					height: 150,
+				});
+			});
+		});
+	});
+
+	// AI next 17 lines
+	describe('mapOrganizationToTextElement', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to text element', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToTextElement(organization);
+
+				expect(result).toBeInstanceOf(RichTextContentBody);
+				expect(result).toEqual<RichTextContentBody>({
+					text: `<b>${organization.title}</b>`,
+					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
 				});
 			});
 		});

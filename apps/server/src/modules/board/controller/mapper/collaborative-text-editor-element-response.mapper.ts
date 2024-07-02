@@ -1,5 +1,4 @@
-import { ContentElementType } from '@shared/domain/domainobject';
-import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
+import { ContentElementType, CollaborativeTextEditorElement } from '../../domain';
 import { TimestampsResponse } from '../dto';
 import { CollaborativeTextEditorElementResponse } from '../dto/element/collaborative-text-editor-element.response';
 import { BaseResponseMapper } from './base-mapper.interface';

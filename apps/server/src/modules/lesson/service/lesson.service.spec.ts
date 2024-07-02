@@ -1,21 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import { lessonFactory, setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { LessonService } from './lesson.service';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ComponentProperties, ComponentType } from '@shared/domain/entity';
+import { lessonFactory, setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { LessonRepo } from '../repository';
+import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
 	let lessonService: LessonService;
@@ -26,6 +27,8 @@ describe('LessonService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				LessonService,
@@ -47,6 +50,10 @@ describe('LessonService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 		lessonService = module.get(LessonService);
@@ -54,8 +61,6 @@ describe('LessonService', () => {
 		lessonRepo = module.get(LessonRepo);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

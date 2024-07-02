@@ -1,4 +1,3 @@
-import { EntityData } from '@mikro-orm/core';
 import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
 import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
 import { ToolConfigType } from '@modules/tool/common/enum';
@@ -13,9 +12,10 @@ import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
+	ExternalToolEntityProps,
+	ExternalToolMediumEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-	ExternalToolMediumEntity,
 } from '@modules/tool/external-tool/entity';
 import { UnprocessableEntityException } from '@nestjs/common';
 
@@ -50,7 +50,6 @@ export class ExternalToolRepoMapper {
 			isHidden: entity.isHidden,
 			isDeactivated: entity.isDeactivated,
 			openNewTab: entity.openNewTab,
-			version: entity.version,
 			restrictToContexts: entity.restrictToContexts,
 			medium: this.mapExternalToolMediumEntityToDO(entity.medium),
 			createdAt: entity.createdAt,
@@ -65,6 +64,7 @@ export class ExternalToolRepoMapper {
 		return new ExternalToolMedium({
 			mediumId: entity.mediumId,
 			publisher: entity.publisher,
+			mediaSourceId: entity.mediaSourceId,
 		});
 	}
 
@@ -96,7 +96,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
+	static mapDOToEntityProperties(entityDO: ExternalTool): ExternalToolEntityProps {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
@@ -114,6 +114,7 @@ export class ExternalToolRepoMapper {
 		}
 
 		return {
+			id: entityDO.id,
 			name: entityDO.name,
 			description: entityDO.description,
 			url: entityDO.url,
@@ -124,7 +125,6 @@ export class ExternalToolRepoMapper {
 			isHidden: entityDO.isHidden,
 			isDeactivated: entityDO.isDeactivated,
 			openNewTab: entityDO.openNewTab,
-			version: entityDO.version,
 			restrictToContexts: entityDO.restrictToContexts,
 			medium: this.mapExternalToolMediumDOToEntity(entityDO.medium),
 		};
@@ -138,6 +138,7 @@ export class ExternalToolRepoMapper {
 		return new ExternalToolMediumEntity({
 			mediumId: medium.mediumId,
 			publisher: medium.publisher,
+			mediaSourceId: medium.mediaSourceId,
 		});
 	}
 

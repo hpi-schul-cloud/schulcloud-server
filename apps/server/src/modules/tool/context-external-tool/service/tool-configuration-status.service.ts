@@ -1,5 +1,9 @@
+import { MediaBoardConfig } from '@modules/board/media-board.config';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
+import { EntityId } from '@shared/domain/types';
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterMandatoryValueMissingLoggableException,
@@ -12,19 +16,25 @@ import { ContextExternalToolLaunchable } from '../domain';
 
 @Injectable()
 export class ToolConfigurationStatusService {
-	constructor(private readonly commonToolValidationService: CommonToolValidationService) {}
+	constructor(
+		private readonly commonToolValidationService: CommonToolValidationService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly configService: ConfigService<MediaBoardConfig, true>
+	) {}
 
-	public determineToolConfigurationStatus(
+	public async determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalToolLaunchable
-	): ContextExternalToolConfigurationStatus {
+		contextExternalTool: ContextExternalToolLaunchable,
+		userId: EntityId
+	): Promise<ContextExternalToolConfigurationStatus> {
 		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: false,
 			isIncompleteOnScopeContext: false,
 			isIncompleteOperationalOnScopeContext: false,
 			isOutdatedOnScopeSchool: false,
 			isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
+			isNotLicensed: !(await this.isToolLicensed(externalTool, userId)),
 		});
 
 		const schoolParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
@@ -61,11 +71,25 @@ export class ToolConfigurationStatusService {
 		return configurationStatus;
 	}
 
-	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool): boolean {
 		return !!(externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated));
 	}
 
-	private isIncompleteOperational(errors: ValidationError[]) {
+	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
+				userId
+			);
+
+			const externalToolMedium = externalTool.medium;
+			if (externalToolMedium) {
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+			}
+		}
+		return true;
+	}
+
+	private isIncompleteOperational(errors: ValidationError[]): boolean {
 		return errors.some((error: ValidationError) => error instanceof ToolParameterOptionalValueMissingLoggableException);
 	}
 

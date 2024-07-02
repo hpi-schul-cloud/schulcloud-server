@@ -5,14 +5,12 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	fileRecordFactory,
 	mapUserToCurrentUser,
-	roleFactory,
 	schoolEntityFactory,
-	userFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -81,11 +79,9 @@ describe(`${baseRouteName} (api)`, () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		const school = schoolEntityFactory.build();
-		const roles = roleFactory.buildList(1, {
-			permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_EDIT],
-		});
-		const user = userFactory.build({ school, roles });
-		await em.persistAndFlush([user]);
+		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+
+		await em.persistAndFlush([user, account]);
 
 		const fileParams = {
 			schoolId: school.id,

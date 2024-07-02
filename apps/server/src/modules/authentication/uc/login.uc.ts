@@ -14,6 +14,8 @@ export class LoginUc {
 
 		const accessTokenDto: LoginDto = await this.authService.generateJwt(createJwtPayload);
 
+		await this.authService.updateLastLogin(userInfo.accountId);
+
 		const loginDto: LoginDto = new LoginDto({
 			accessToken: accessTokenDto.accessToken,
 		});

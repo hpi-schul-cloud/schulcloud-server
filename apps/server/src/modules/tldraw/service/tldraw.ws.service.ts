@@ -1,31 +1,23 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DomainErrorHandler } from '@src/core';
+import { decoding, encoding } from 'lib0';
+import { Buffer } from 'node:buffer';
 import WebSocket from 'ws';
 import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { decoding, encoding } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
-import { Buffer } from 'node:buffer';
-import { Logger } from '@src/core/logger';
-import { YMap } from 'yjs/dist/src/types/YMap';
-import { TldrawRedisService } from '../redis';
+import { TldrawConfig } from '../config';
+import { WsSharedDocDo } from '../domain';
 import {
 	CloseConnectionLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
 	WsSharedDocErrorLoggable,
 } from '../loggable';
-import { TldrawConfig } from '../config';
-import {
-	AwarenessConnectionsUpdate,
-	TldrawAsset,
-	TldrawShape,
-	UpdateOrigin,
-	UpdateType,
-	WSMessageType,
-} from '../types';
-import { WsSharedDocDo } from '../domain';
-import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
+import { TldrawRedisService } from '../redis';
+import { TldrawBoardRepo } from '../repo';
+import { AwarenessConnectionsUpdate, UpdateOrigin, UpdateType, WSMessageType } from '../types';
 
 @Injectable()
 export class TldrawWsService {
@@ -34,16 +26,16 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly logger: Logger,
+		private readonly domainErrorHandler: DomainErrorHandler,
 		private readonly metricsService: MetricsService,
 		private readonly tldrawRedisService: TldrawRedisService
 	) {
-		this.logger.setContext(TldrawWsService.name);
-
 		this.tldrawRedisService.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}
 
 	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
+		performance.mark('closeConnection');
+
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws);
 			doc.connections.delete(ws);
@@ -54,22 +46,27 @@ export class TldrawWsService {
 
 		ws.close();
 		await this.finalizeIfNoConnections(doc);
+
+		performance.measure('tldraw:TldrawWsService:closeConnection', {
+			start: 'closeConnection',
+			detail: { doc_name: doc.name, doc_connection_total: doc.connections.size },
+		});
 	}
 
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
 		if (this.isClosedOrClosing(ws)) {
 			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('send | isClosedOrClosing', err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable('send | isClosedOrClosing', err));
+			});
+		} else {
+			ws.send(message, (err) => {
+				if (err) {
+					this.closeConnection(doc, ws).catch((e) => {
+						this.domainErrorHandler.exec(new CloseConnectionLoggable('send', e));
+					});
+				}
 			});
 		}
-
-		ws.send(message, (err) => {
-			if (err) {
-				this.closeConnection(doc, ws).catch((e) => {
-					this.logger.warning(new CloseConnectionLoggable('send', e));
-				});
-			}
-		});
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
@@ -97,6 +94,7 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
+	// this is a private method, need to be changed
 	public async getDocument(docName: string) {
 		const existingDoc = this.docs.get(docName);
 
@@ -110,6 +108,7 @@ export class TldrawWsService {
 			return existingDoc;
 		}
 
+		// doc can be null, need to be handled
 		const doc = await this.tldrawBoardRepo.getDocumentFromDb(docName);
 		doc.isLoaded = false;
 
@@ -178,22 +177,24 @@ export class TldrawWsService {
 		this.tldrawRedisService.handleMessage(channelId, update, doc);
 	};
 
-	public async setupWsConnection(ws: WebSocket, docName: string) {
+	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
+		performance.mark('setupWsConnection');
+
 		ws.binaryType = 'arraybuffer';
 
-		// get doc, initialize if it does not exist yet
+		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
 
 		ws.on('error', (err) => {
-			this.logger.warning(new WebsocketErrorLoggable(err));
+			this.domainErrorHandler.exec(new WebsocketErrorLoggable(err));
 		});
 
 		ws.on('message', (message: ArrayBufferLike) => {
 			try {
 				this.messageHandler(ws, doc, new Uint8Array(message));
 			} catch (err) {
-				this.logger.warning(new WebsocketMessageErrorLoggable(err));
+				this.domainErrorHandler.exec(new WebsocketMessageErrorLoggable(err));
 			}
 		});
 
@@ -208,14 +209,14 @@ export class TldrawWsService {
 			}
 
 			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable('pingInterval', err));
 			});
 			clearInterval(pingInterval);
 		}, pingTimeout);
 
 		ws.on('close', () => {
 			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('websocket close', err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable('websocket close', err));
 			});
 			clearInterval(pingInterval);
 		});
@@ -224,27 +225,36 @@ export class TldrawWsService {
 			pongReceived = true;
 		});
 
-		{
-			// send initial doc state to client as update
-			this.sendInitialState(ws, doc);
+		// send initial doc state to client as update
+		this.sendInitialState(ws, doc);
 
-			const syncEncoder = encoding.createEncoder();
-			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
-			writeSyncStep1(syncEncoder, doc);
-			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
+		const syncEncoder = encoding.createEncoder();
+		encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
+		writeSyncStep1(syncEncoder, doc);
+		this.send(doc, ws, encoding.toUint8Array(syncEncoder));
 
-			const awarenessStates = doc.awareness.getStates();
-			if (awarenessStates.size > 0) {
-				const awarenessEncoder = encoding.createEncoder();
-				encoding.writeVarUint(awarenessEncoder, WSMessageType.AWARENESS);
-				encoding.writeVarUint8Array(
-					awarenessEncoder,
-					encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
-				);
-				this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
-			}
+		const awarenessStates = doc.awareness.getStates();
+		if (awarenessStates.size > 0) {
+			const awarenessEncoder = encoding.createEncoder();
+			encoding.writeVarUint(awarenessEncoder, WSMessageType.AWARENESS);
+			encoding.writeVarUint8Array(
+				awarenessEncoder,
+				encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
+			);
+			this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
 		}
+
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
+
+		performance.measure('tldraw:TldrawWsService:setupWsConnection', {
+			start: 'setupWsConnection',
+			detail: {
+				doc_name: doc.name,
+				doc_awareness_state_total: awarenessStates.size,
+				doc_connection_total: doc.connections.size,
+				pod_docs_total: this.docs.size,
+			},
+		});
 	}
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
@@ -266,40 +276,12 @@ export class TldrawWsService {
 			this.tldrawRedisService.unsubscribeFromRedisChannels(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 		} catch (err) {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
+			this.domainErrorHandler.exec(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
 		} finally {
 			doc.destroy();
 			this.docs.delete(doc.name);
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
 		}
-	}
-
-	private syncDocumentAssetsWithShapes(doc: WsSharedDocDo): TldrawAsset[] {
-		// clean up assets that are not used as shapes anymore
-		// which can happen when users do undo/redo operations on assets
-		const assets: YMap<TldrawAsset> = doc.getMap('assets');
-		const shapes: YMap<TldrawShape> = doc.getMap('shapes');
-		const usedShapesAsAssets: TldrawShape[] = [];
-		const usedAssets: TldrawAsset[] = [];
-
-		for (const [, shape] of shapes) {
-			if (shape.assetId) {
-				usedShapesAsAssets.push(shape);
-			}
-		}
-
-		doc.transact(() => {
-			for (const [, asset] of assets) {
-				const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
-				if (!foundAsset) {
-					assets.delete(asset.id);
-				} else {
-					usedAssets.push(asset);
-				}
-			}
-		});
-
-		return usedAssets;
 	}
 
 	private sendUpdateToConnectedClients(update: Uint8Array, doc: WsSharedDocDo): void {

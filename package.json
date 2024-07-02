@@ -104,6 +104,9 @@
 		"nest:start:tldraw-console": "nest start tldraw-console --",
 		"nest:start:tldraw-console:dev": "nest start tldraw-console --watch --",
 		"nest:start:tldraw-console:debug": "nest start tldraw-console --debug --watch --",
+		"nest:start:common-cartridge": "node dist/apps/server/apps/common-cartridge.app",
+		"nest:start:common-cartridge:dev": "nest start common-cartridge --watch --",
+		"nest:start:common-cartridge:debug": "nest start common-cartridge --debug --watch --",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest",
 		"nest:test:unit": "jest \"^((?!\\.api\\.spec\\.ts).)*\\.spec\\.ts$\"",
@@ -116,7 +119,9 @@
 		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
-		"schoolImport": "node ./scripts/schoolImport.js"
+		"schoolImport": "node ./scripts/schoolImport.js",
+		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization-client/authorization-api-client' -c 'openapitools-config.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'",
+		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.100.0",
@@ -152,6 +157,7 @@
 		"@nestjs/platform-ws": "^10.3.0",
 		"@nestjs/swagger": "^7.1.10",
 		"@nestjs/websockets": "^10.3.7",
+		"@socket.io/mongo-adapter": "^0.3.2",
 		"@types/gm": "^1.25.1",
 		"@types/ldapjs": "^2.2.5",
 		"@types/pdfmake": "^0.2.8",
@@ -252,7 +258,7 @@
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
 		"winston": "^3.8.2",
-		"ws": "^8.16.0",
+		"ws": "^8.17.1",
 		"y-protocols": "^1.0.6",
 		"yjs": "^13.6.11"
 	},
@@ -265,6 +271,7 @@
 		"@nestjs/cli": "^10.1.17",
 		"@nestjs/schematics": "^10.0.2",
 		"@nestjs/testing": "^10.2.4",
+		"@openapitools/openapi-generator-cli": "^2.13.4",
 		"@types/adm-zip": "^0.5.0",
 		"@types/amqplib": "^0.8.2",
 		"@types/bcryptjs": "^2.4.2",

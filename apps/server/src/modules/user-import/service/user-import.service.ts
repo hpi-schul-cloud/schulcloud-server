@@ -1,12 +1,13 @@
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
-import { UserService } from '@modules/user';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserMigrationIsNotEnabled } from '../loggable';
+import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 
 @Injectable()
 export class UserImportService {
@@ -15,7 +16,8 @@ export class UserImportService {
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userService: UserService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly schoolService: LegacySchoolService
 	) {}
 
 	public async saveImportUsers(importUsers: ImportUser[]): Promise<void> {
@@ -73,5 +75,16 @@ export class UserImportService {
 
 	public async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
 		await this.userImportRepo.deleteImportUsersBySchool(school);
+	}
+
+	public async resetMigrationForUsersSchool(currentUser: User, school: LegacySchoolDo): Promise<void> {
+		await this.userImportRepo.deleteImportUsersBySchool(currentUser.school);
+
+		school.inUserMigration = undefined;
+		school.inMaintenanceSince = undefined;
+
+		await this.schoolService.save(school, true);
+
+		this.logger.notice(new UserMigrationCanceledLoggable(school));
 	}
 }

@@ -8,7 +8,7 @@ import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPersonenInfoParams } from './request';
-import { SanisResponse, SchulconnexLizenzInfoResponse } from './response';
+import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
@@ -25,22 +25,21 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		this.SCHULCONNEX_API_BASE_URL = options.apiUrl || '';
 	}
 
-	// TODO: N21-1678 use this in provisioning module
-	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SanisResponse> {
+	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/person-info`);
 
-		const response: Promise<SanisResponse> = this.getRequest<SanisResponse>(url, accessToken);
+		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(url, accessToken);
 
 		return response;
 	}
 
-	public async getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SanisResponse[]> {
+	public async getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SchulconnexResponse[]> {
 		const token: OAuthTokenDto = await this.requestClientCredentialToken();
 
 		const url: URL = new URL(`${this.SCHULCONNEX_API_BASE_URL}/personen-info`);
 		url.search = QueryString.stringify(params, { arrayFormat: 'comma' });
 
-		const response: Promise<SanisResponse[]> = this.getRequest<SanisResponse[]>(
+		const response: Promise<SchulconnexResponse[]> = this.getRequest<SchulconnexResponse[]>(
 			url,
 			token.accessToken,
 			this.options.personenInfoTimeoutInMs

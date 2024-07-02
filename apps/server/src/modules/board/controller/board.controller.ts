@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,

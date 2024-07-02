@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { Task, User } from '@shared/domain/entity';
-import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action, AuthorizationContext, Rule } from '../type';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 
 @Injectable()
-export class TaskRule implements Rule {
+export class TaskRule implements Rule<Task> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
 		private readonly lessonRule: LessonRule
 	) {}
 
-	public isApplicable(user: User, entity: Task): boolean {
-		const isMatched = entity instanceof Task;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched = object instanceof Task;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Task, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: Task, context: AuthorizationContext): boolean {
 		let { action } = context;
 		const { requiredPermissions } = context;
 		const hasRequiredPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
@@ -27,12 +27,12 @@ export class TaskRule implements Rule {
 			return false;
 		}
 
-		const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
-		if (entity.isDraft()) {
+		const isCreator = this.authorizationHelper.hasAccessToEntity(user, object, ['creator']);
+		if (object.isDraft()) {
 			action = Action.write;
 		}
 
-		const hasParentPermission = this.hasParentPermission(user, entity, action);
+		const hasParentPermission = this.hasParentPermission(user, object, action);
 
 		// TODO why parent permission has OR cond?
 		const result = isCreator || hasParentPermission;

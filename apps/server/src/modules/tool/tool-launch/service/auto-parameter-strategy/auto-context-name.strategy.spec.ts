@@ -1,21 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ColumnBoardService, ContentElementService } from '@modules/board';
+import { BoardCommonToolService, BoardExternalReferenceType, ColumnBoard, BoardNodeService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ColumnBoard, ExternalToolElement } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
-import {
-	columnBoardFactory,
-	contextExternalToolFactory,
-	courseFactory,
-	externalToolElementFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-} from '@shared/testing';
+import { courseFactory, setupEntities } from '@shared/testing';
+import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { ParameterTypeNotImplementedLoggableException } from '../../error';
 import { AutoContextNameStrategy } from './auto-context-name.strategy';
 
@@ -24,8 +19,8 @@ describe(AutoContextNameStrategy.name, () => {
 	let strategy: AutoContextNameStrategy;
 
 	let courseService: DeepMocked<CourseService>;
-	let contentElementService: DeepMocked<ContentElementService>;
-	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let boardCommonToolService: DeepMocked<BoardCommonToolService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -38,20 +33,20 @@ describe(AutoContextNameStrategy.name, () => {
 					useValue: createMock<CourseService>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardCommonToolService,
+					useValue: createMock<BoardCommonToolService>(),
 				},
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 			],
 		}).compile();
 
 		strategy = module.get(AutoContextNameStrategy);
 		courseService = module.get(CourseService);
-		contentElementService = module.get(ContentElementService);
-		columnBoardService = module.get(ColumnBoardService);
+		boardCommonToolService = module.get(BoardCommonToolService);
+		boardNodeService = module.get(BoardNodeService);
 	});
 
 	afterAll(async () => {
@@ -114,7 +109,7 @@ describe(AutoContextNameStrategy.name, () => {
 					name: 'testName',
 				});
 
-				const externalToolElement: ExternalToolElement = externalToolElementFactory.build();
+				const externalToolElement = externalToolElementFactory.build();
 
 				const columnBoard: ColumnBoard = columnBoardFactory.build({
 					context: {
@@ -124,8 +119,8 @@ describe(AutoContextNameStrategy.name, () => {
 				});
 
 				courseService.findById.mockResolvedValue(course);
-				contentElementService.findById.mockResolvedValue(externalToolElement);
-				columnBoardService.findByDescendant.mockResolvedValue(columnBoard);
+				boardNodeService.findContentElementById.mockResolvedValue(externalToolElement);
+				boardCommonToolService.findByDescendant.mockResolvedValue(columnBoard);
 
 				return {
 					schoolExternalTool,
@@ -154,7 +149,7 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				const externalToolElement: ExternalToolElement = externalToolElementFactory.build();
+				const externalToolElement = externalToolElementFactory.build();
 
 				const columnBoard: ColumnBoard = columnBoardFactory.build({
 					context: {
@@ -163,8 +158,8 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				contentElementService.findById.mockResolvedValue(externalToolElement);
-				columnBoardService.findByDescendant.mockResolvedValue(columnBoard);
+				boardNodeService.findContentElementById.mockResolvedValue(externalToolElement);
+				boardCommonToolService.findByDescendant.mockResolvedValue(columnBoard);
 
 				return {
 					schoolExternalTool,

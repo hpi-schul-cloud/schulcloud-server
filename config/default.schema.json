@@ -783,56 +783,40 @@
 			"default": true,
 			"description": "Etherpad feature enabled"
 		},
-		"ETHERPAD_API_KEY": {
-			"default": "",
-			"type": "string",
-			"description": "The etherpad api key for sending requests."
-		},
-		"ETHERPAD_API_PATH": {
-			"type": "string",
-			"default": "/api/1",
-			"description": "The etherpad api path."
-		},
-		"ETHERPAD_URI": {
-			"type": "string",
-			"default": "https://dbildungscloud.de/etherpad/api/1",
-			"description": "The etherpad api version uri."
-		},
-		"ETHERPAD_OLD_PAD_URI": {
-			"type": "string",
-			"default": "https://etherpad.dbildungscloud.de/p",
-			"description": "The etherpad api version uri."
-		},
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
 			"required": ["PAD_URI"],
 			"properties": {
+				"URI": {
+					"type": "string",
+					"description": "The etherpad api version uri."
+				},
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
+				},
+				"OLD_PAD_URI": {
+					"type": "string",
+					"description": "The etherpad api version uri."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "The etherpad api key for sending requests."
+				},
+				"COOKIE_EXPIRES_SECONDS": {
+					"type": "integer",
+					"default": 7200,
+					"description": "Number of seconds after an etherpad cookie expires."
+				},
+				"COOKIE_RELEASE_THRESHOLD": {
+					"type": "integer",
+					"default": 7200,
+					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
-			},
-			"default": {
-				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
-		},
-		"ETHERPAD_OLD_PAD_DOMAIN": {
-			"type": "string",
-			"default": "etherpad.dbildungscloud.de",
-			"description": "The old etherpad domain."
-		},
-		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
-			"type": "integer",
-			"default": 28800,
-			"description": "Number of seconds after an etherpad cookie expires."
-		},
-		"ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
-			"type": "integer",
-			"default": 7200,
-			"description": "If Session Valid time is smaller than this, a new session is created on request."
 		},
 		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
@@ -1136,7 +1120,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable collaborative text editor in column board."
 		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
@@ -1192,6 +1176,11 @@
 			"type": "string",
 			"default": "",
 			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
+		},
+		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
+			"type": "integer",
+			"description": "Timeout in milliseconds for saving all import user matches",
+			"default": 60000
 		},
 		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -1384,12 +1373,12 @@
 				},
 				"MAX_CONCURRENT_DELETION_REQUESTS": {
 					"type": "number",
-					"default": 10,
+					"default": 100,
 					"description": "max amount of deletion requests proccessed concurently"
 				},
 				"DELETION_DELAY_MILLISECONDS": {
 					"type": "number",
-					"default": 10000,
+					"default": 5000,
 					"description": "deley in milliseconds to give time modules to perform deletion proccess"
 				}
 			},
@@ -1588,6 +1577,17 @@
 					"type": "string",
 					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
 					"examples": ["image/gif,image/jpeg,video/webm"]
+				},
+				"PERFORMANCE_MEASURE_ENABLED": {
+					"type": "boolean",
+					"description": "Activate the performance measure for observed areas.",
+					"default": true
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Define log level for tldraw.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			},
 			"default": {

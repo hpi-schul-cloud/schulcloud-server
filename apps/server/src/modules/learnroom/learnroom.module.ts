@@ -18,8 +18,9 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
+import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
-import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
+import { ColumnBoardNodeRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
@@ -56,7 +57,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CommonCartridgeExportService,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
-		CommonCartridgeMapper,
+		CommonCartridgeExportMapper,
 		CommonCartridgeImportMapper,
 		CourseCopyService,
 		CourseGroupRepo,
@@ -75,6 +76,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		RoomsService,
 		UserRepo,
 		GroupDeletedHandlerService,
+		ColumnBoardNodeRepo,
 	],
 	exports: [
 		CourseCopyService,

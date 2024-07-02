@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
@@ -20,13 +21,14 @@ import {
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
+	userDoFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { SchoolNotMigratedLoggableException } from '../loggable';
+import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -44,10 +46,12 @@ describe('[ImportUserModule]', () => {
 		let schoolService: DeepMocked<LegacySchoolService>;
 		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
+		let userService: DeepMocked<UserService>;
 		let authorizationService: DeepMocked<AuthorizationService>;
 		let userImportService: DeepMocked<UserImportService>;
 		let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 		let userMigrationService: DeepMocked<UserMigrationService>;
+		let logger: DeepMocked<Logger>;
 
 		let userImportFeatures: IUserImportFeatures;
 
@@ -76,6 +80,10 @@ describe('[ImportUserModule]', () => {
 					{
 						provide: UserRepo,
 						useValue: createMock<UserRepo>(),
+					},
+					{
+						provide: UserService,
+						useValue: createMock<UserService>(),
 					},
 					{
 						provide: AuthorizationService,
@@ -110,11 +118,13 @@ describe('[ImportUserModule]', () => {
 			schoolService = module.get(LegacySchoolService);
 			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
+			userService = module.get(UserService);
 			authorizationService = module.get(AuthorizationService);
 			userImportService = module.get(UserImportService);
 			userImportFeatures = module.get(UserImportFeatures);
 			userLoginMigrationService = module.get(UserLoginMigrationService);
 			userMigrationService = module.get(UserMigrationService);
+			logger = module.get(Logger);
 		});
 
 		beforeEach(() => {
@@ -127,6 +137,10 @@ describe('[ImportUserModule]', () => {
 
 		afterAll(async () => {
 			await module.close();
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
 		});
 
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
@@ -167,7 +181,7 @@ describe('[ImportUserModule]', () => {
 					.mockResolvedValueOnce([[], 0]);
 				const result = await uc.findAllImportUsers(user.id, {}, {});
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_VIEW]);
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(user.school, {}, {});
 				expect(result[0]).toHaveLength(0);
 				expect(result[1]).toEqual(0);
@@ -189,7 +203,7 @@ describe('[ImportUserModule]', () => {
 				const query = {};
 				const [result, count] = await uc.findAllUnmatchedUsers(user.id, query);
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_VIEW]);
 				expect(result.length).toEqual(0);
 				expect(count).toEqual(0);
 				expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
@@ -253,7 +267,7 @@ describe('[ImportUserModule]', () => {
 						await uc.setMatch(currentUser.id, importUser.id, usermatch.id);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.IMPORT_USER_UPDATE]);
 						expect(importUserRepoHasMatchdSpy).toHaveBeenCalledWith(usermatch);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).toEqual(usermatch);
@@ -298,7 +312,7 @@ describe('[ImportUserModule]', () => {
 							UserAlreadyAssignedToImportUserError
 						);
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.IMPORT_USER_UPDATE]);
 						expect(importUserRepoHasMatchdSpy).toHaveBeenCalledWith(usermatch);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).not.toEqual(usermatch);
@@ -356,7 +370,7 @@ describe('[ImportUserModule]', () => {
 						const result = await uc.updateFlag(user.id, importUser.id, true);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(importUser.flagged).toEqual(true);
@@ -382,7 +396,7 @@ describe('[ImportUserModule]', () => {
 						const result = await uc.updateFlag(user.id, importUser.id, false);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(importUser.flagged).toEqual(false);
@@ -418,7 +432,7 @@ describe('[ImportUserModule]', () => {
 						const result = await uc.removeMatch(user.id, importUser.id);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(result.user).toBeUndefined();
@@ -449,7 +463,7 @@ describe('[ImportUserModule]', () => {
 						await expect(async () => uc.removeMatch(user.id, importUser.id)).rejects.toThrowError(ForbiddenException);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).toEqual(usermatch);
 						expect(importUser.matchedBy).toEqual(MatchCreator.AUTO);
@@ -547,7 +561,7 @@ describe('[ImportUserModule]', () => {
 				await uc.saveAllUsersMatches(currentUser.id);
 
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.IMPORT_USER_MIGRATE]);
 			});
 			it('should not save ldap info to user if missing mandatory fields', async () => {
 				importUserRepoFindImportUsersSpy = jest
@@ -630,6 +644,7 @@ describe('[ImportUserModule]', () => {
 							}),
 							matchedBy: MatchCreator.AUTO,
 							system,
+							externalId: 'externalId',
 						});
 						const importUserWithoutUser = importUserFactory.buildWithId({
 							school: schoolEntity,
@@ -637,6 +652,7 @@ describe('[ImportUserModule]', () => {
 						});
 
 						userRepo.findById.mockResolvedValueOnce(user);
+						userService.findByExternalId.mockResolvedValueOnce(null);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
 						userImportFeatures.useWithUserLoginMigration = true;
@@ -670,6 +686,69 @@ describe('[ImportUserModule]', () => {
 							importUserWithoutUser.externalId,
 							importUserWithoutUser.system.id
 						);
+					});
+				});
+				describe('when user is already migrated', () => {
+					const setup = () => {
+						const system = systemEntityFactory.buildWithId();
+						const schoolEntity = schoolEntityFactory.buildWithId();
+						const user = userFactory.buildWithId({
+							school: schoolEntity,
+							externalId: 'externalId',
+						});
+						const school = legacySchoolDoFactory.build({
+							id: schoolEntity.id,
+							externalId: 'externalId',
+							officialSchoolNumber: 'officialSchoolNumber',
+							inUserMigration: true,
+							inMaintenanceSince: new Date(),
+							systems: [system.id],
+						});
+						const importUser = importUserFactory.buildWithId({
+							school: schoolEntity,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+							matchedBy: MatchCreator.AUTO,
+							system,
+						});
+						const importUserWithoutUser = importUserFactory.buildWithId({
+							school: schoolEntity,
+							system,
+						});
+
+						userRepo.findById.mockResolvedValueOnce(user);
+						schoolService.getSchoolById.mockResolvedValueOnce(school);
+						userService.findByExternalId.mockResolvedValueOnce(
+							userDoFactory.buildWithId({ id: user.id, externalId: user.externalId })
+						);
+						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
+						userImportFeatures.useWithUserLoginMigration = true;
+
+						return {
+							user,
+							importUser,
+							importUserWithoutUser,
+						};
+					};
+
+					it('should skip import users with externalId', async () => {
+						const { user, importUser } = setup();
+
+						await uc.saveAllUsersMatches(user.id);
+
+						expect(userMigrationService.migrateUser).not.toHaveBeenCalledWith(
+							importUser.user?.id,
+							importUser.user?.externalId,
+							importUser.system.id
+						);
+					});
+					it('should log information for skipped user ', async () => {
+						const { user, importUser } = setup();
+
+						await uc.saveAllUsersMatches(user.id);
+
+						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyMigratedLoggable(importUser.user!.id));
 					});
 				});
 			});
@@ -759,7 +838,7 @@ describe('[ImportUserModule]', () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.IMPORT_USER_MIGRATE]);
 			});
 
 			it('Should save school params', async () => {
@@ -865,7 +944,7 @@ describe('[ImportUserModule]', () => {
 						await uc.startSchoolInUserMigration(user.id);
 
 						expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
-							Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+							Permission.IMPORT_USER_MIGRATE,
 						]);
 					});
 
@@ -1011,7 +1090,7 @@ describe('[ImportUserModule]', () => {
 				await uc.endSchoolInMaintenance(currentUser.id);
 
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.IMPORT_USER_MIGRATE]);
 			});
 			it('should remove inMaitenanceSince for school', async () => {
 				await uc.endSchoolInMaintenance(currentUser.id);
@@ -1072,6 +1151,51 @@ describe('[ImportUserModule]', () => {
 
 						expect(schoolService.save).toHaveBeenCalledWith(expect.objectContaining({ inUserMigration: undefined }));
 					});
+				});
+			});
+		});
+
+		describe('cancelMigration', () => {
+			describe('when user is given', () => {
+				const setup = () => {
+					const school = legacySchoolDoFactory.buildWithId({
+						inMaintenanceSince: new Date(2024, 1, 1),
+						inUserMigration: true,
+					});
+					const user = userFactory.buildWithId();
+
+					userRepo.findById.mockResolvedValueOnce(user);
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					userImportFeatures.useWithUserLoginMigration = true;
+
+					return {
+						user,
+						school,
+					};
+				};
+
+				it('should check users permissions', async () => {
+					const { user } = setup();
+
+					await uc.cancelMigration(user.id);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_MIGRATE]);
+				});
+
+				it('should check if feature is enabled', async () => {
+					setup();
+
+					await uc.cancelMigration(new ObjectId().toHexString());
+
+					expect(userImportService.checkFeatureEnabled).toHaveBeenCalled();
+				});
+
+				it('should call reset migration', async () => {
+					const { user, school } = setup();
+
+					await uc.cancelMigration(user.id);
+
+					expect(userImportService.resetMigrationForUsersSchool).toHaveBeenCalledWith(user, school);
 				});
 			});
 		});

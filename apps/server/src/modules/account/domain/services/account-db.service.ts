@@ -9,14 +9,17 @@ import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { Account } from '../account';
 import { AccountSave } from '../account-save';
+import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
-export class AccountServiceDb {
+export class AccountServiceDb extends AbstractAccountService {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
 		private readonly configService: ConfigService<AccountConfig, true>
-	) {}
+	) {
+		super();
+	}
 
 	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
@@ -57,6 +60,14 @@ export class AccountServiceDb {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
+		await this.accountRepo.save(account);
+		return account;
+	}
+
+	async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
+		const internalId = await this.getInternalId(accountId);
+		const account = await this.accountRepo.findById(internalId);
+		account.lastLogin = lastLogin;
 		await this.accountRepo.save(account);
 		return account;
 	}
@@ -141,5 +152,12 @@ export class AccountServiceDb {
 		});
 
 		return account;
+	}
+
+	public async isUniqueEmail(email: string): Promise<boolean> {
+		const account = await this.accountRepo.findByUsername(email);
+		const isUnique = !account;
+
+		return isUnique;
 	}
 }

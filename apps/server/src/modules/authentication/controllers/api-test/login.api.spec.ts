@@ -218,8 +218,6 @@ describe('Login Controller (api)', () => {
 				const decodedToken = jwt.decode(token);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.accessToken).toBeDefined();
 				expect(decodedToken).toHaveProperty('userId');
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');

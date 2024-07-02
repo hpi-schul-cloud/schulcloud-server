@@ -2,9 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
-import { ColumnBoardNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
+import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { CreateBoardBodyParams } from '../dto';
 
 const baseRouteName = '/boards';
@@ -62,7 +62,7 @@ describe(`create board (api)`, () => {
 				expect(response.status).toEqual(201);
 				expect(boardId).toBeDefined();
 
-				const dbResult = await em.findOneOrFail(ColumnBoardNode, boardId);
+				const dbResult = await em.findOneOrFail(BoardNodeEntity, boardId);
 				expect(dbResult.title).toEqual(title);
 			});
 
@@ -82,7 +82,7 @@ describe(`create board (api)`, () => {
 						expect(response.status).toEqual(201);
 						expect(boardId).toBeDefined();
 
-						const dbResult = await em.findOneOrFail(ColumnBoardNode, boardId);
+						const dbResult = await em.findOneOrFail(BoardNodeEntity, boardId);
 						expect(dbResult.layout).toEqual(BoardLayout.COLUMNS);
 					});
 				});
@@ -102,7 +102,7 @@ describe(`create board (api)`, () => {
 						expect(response.status).toEqual(201);
 						expect(boardId).toBeDefined();
 
-						const dbResult = await em.findOneOrFail(ColumnBoardNode, boardId);
+						const dbResult = await em.findOneOrFail(BoardNodeEntity, boardId);
 						expect(dbResult.layout).toEqual(BoardLayout.LIST);
 					});
 				});

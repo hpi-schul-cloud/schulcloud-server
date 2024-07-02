@@ -1,4 +1,4 @@
-import { SanisResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
@@ -20,7 +20,7 @@ export class SchulconnexFetchImportUsersService {
 			throw new UserImportSchoolExternalIdMissingLoggableException(school.id);
 		}
 
-		const response: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({
+		const response: SchulconnexResponse[] = await this.schulconnexRestClient.getPersonenInfo({
 			vollstaendig: ['personen', 'personenkontexte', 'organisationen', 'gruppen'],
 			'organisation.id': externalSchoolId,
 		});

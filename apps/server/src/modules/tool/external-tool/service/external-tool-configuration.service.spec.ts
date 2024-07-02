@@ -2,19 +2,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import {
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	schoolToolConfigurationStatusFactory,
-	setupEntities,
-} from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
+import {
+	schoolExternalToolConfigurationStatusFactory,
+	schoolExternalToolFactory,
+} from '../../school-external-tool/testing';
 import { ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { customParameterFactory, externalToolFactory } from '../testing';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
 
@@ -129,12 +128,12 @@ describe('ExternalToolConfigurationService', () => {
 
 				availableSchoolExternalTools.forEach((tool): void => {
 					if (tool.id === 'deactivatedToolId') {
-						tool.status = schoolToolConfigurationStatusFactory.build({
+						tool.status = schoolExternalToolConfigurationStatusFactory.build({
 							isDeactivated: true,
 							isOutdatedOnScopeSchool: false,
 						});
 					}
-					tool.status = schoolToolConfigurationStatusFactory.build({
+					tool.status = schoolExternalToolConfigurationStatusFactory.build({
 						isDeactivated: false,
 						isOutdatedOnScopeSchool: false,
 					});

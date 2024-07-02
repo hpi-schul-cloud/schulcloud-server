@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SchulconnexResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
@@ -52,7 +52,11 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	const createImportUser = (externalUserData: SanisResponse, school: SchoolEntity, system: SystemEntity): ImportUser =>
+	const createImportUser = (
+		externalUserData: SchulconnexResponse,
+		school: SchoolEntity,
+		system: SystemEntity
+	): ImportUser =>
 		importUserFactory.build({
 			system,
 			school,
@@ -68,7 +72,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 	describe('getData', () => {
 		describe('when fetching the data', () => {
 			const setup = () => {
-				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
 				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
@@ -132,7 +136,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 	describe('filterAlreadyMigratedUser', () => {
 		describe('when the user was not migrated yet', () => {
 			const setup = () => {
-				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
 				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
@@ -160,7 +164,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 
 		describe('when the user already was migrated', () => {
 			const setup = () => {
-				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
 				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],

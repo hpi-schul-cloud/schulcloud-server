@@ -54,6 +54,8 @@ spec:
             name: admin-api-server-configmap
         - secretRef:
             name: admin-api-server-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:admin-api-server:prod']
         resources:
           limits:

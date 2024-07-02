@@ -1,4 +1,4 @@
-import { toolConfigurationStatusFactory } from '@shared/testing';
+import { toolConfigurationStatusFactory } from '../../external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from './tool-status-not-launchable.loggable-exception';
 
 describe('ToolStatusNotLaunchableLoggableException', () => {
@@ -15,7 +15,8 @@ describe('ToolStatusNotLaunchableLoggableException', () => {
 				toolConfigStatus.isOutdatedOnScopeContext,
 				toolConfigStatus.isIncompleteOnScopeContext,
 				toolConfigStatus.isIncompleteOperationalOnScopeContext,
-				toolConfigStatus.isDeactivated
+				toolConfigStatus.isDeactivated,
+				toolConfigStatus.isNotLicensed
 			);
 
 			return {
@@ -40,6 +41,7 @@ describe('ToolStatusNotLaunchableLoggableException', () => {
 					isIncompleteOnScopeContext: false,
 					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
+					isNotLicensed: false,
 				},
 			});
 		});

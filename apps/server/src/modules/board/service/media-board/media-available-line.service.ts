@@ -6,14 +6,10 @@ import { ExternalToolLogoService, ExternalToolService } from '@modules/tool/exte
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
-import {
-	MediaAvailableLine,
-	MediaAvailableLineElement,
-	MediaBoard,
-	MediaExternalToolElement,
-	Page,
-} from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
+import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
+import { MediaBoardService } from './media-board.service';
 
 @Injectable()
 export class MediaAvailableLineService {
@@ -21,7 +17,8 @@ export class MediaAvailableLineService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly mediaBoardService: MediaBoardService
 	) {}
 
 	public async getUnusedAvailableSchoolExternalTools(user: User, board: MediaBoard): Promise<SchoolExternalTool[]> {
@@ -92,15 +89,17 @@ export class MediaAvailableLineService {
 	}
 
 	private async getContextExternalToolsByBoard(board: MediaBoard): Promise<ContextExternalTool[]> {
-		const contextExternalTools: Promise<ContextExternalTool>[] = board
-			.getChildrenOfType(MediaExternalToolElement)
+		const contextExternalTools: Promise<ContextExternalTool | null>[] = this.mediaBoardService
+			.findMediaElements(board)
 			.map((element: MediaExternalToolElement) =>
-				this.contextExternalToolService.findByIdOrFail(element.contextExternalToolId)
+				this.contextExternalToolService.findById(element.contextExternalToolId)
 			);
 
-		const allContextExternalTools: ContextExternalTool[] = await Promise.all(contextExternalTools);
+		const notNullContextExternalTools: ContextExternalTool[] = (await Promise.all(contextExternalTools)).filter(
+			(tool): tool is ContextExternalTool => tool !== null
+		);
 
-		return allContextExternalTools;
+		return notNullContextExternalTools;
 	}
 
 	public matchTools(
@@ -119,13 +118,20 @@ export class MediaAvailableLineService {
 		return matchedTuples;
 	}
 
-	public createMediaAvailableLine(availableExternalTools: [ExternalTool, SchoolExternalTool][]): MediaAvailableLine {
+	public createMediaAvailableLine(
+		mediaBoard: MediaBoard,
+		availableExternalTools: [ExternalTool, SchoolExternalTool][]
+	): MediaAvailableLine {
 		const lineElements: MediaAvailableLineElement[] = availableExternalTools.map(
 			([externalTool, schoolExternalTool]: [ExternalTool, SchoolExternalTool]) =>
 				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
 		);
 
-		const line: MediaAvailableLine = new MediaAvailableLine({ elements: lineElements });
+		const line: MediaAvailableLine = new MediaAvailableLine({
+			elements: lineElements,
+			backgroundColor: mediaBoard.backgroundColor,
+			collapsed: mediaBoard.collapsed,
+		});
 
 		return line;
 	}

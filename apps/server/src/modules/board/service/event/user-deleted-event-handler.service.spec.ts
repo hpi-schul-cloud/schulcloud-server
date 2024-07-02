@@ -1,10 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EventBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { mediaBoardFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -12,7 +8,13 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	UserDeletedEvent,
-} from '../../../deletion';
+} from '@modules/deletion';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { mediaBoardFactory } from '../../testing';
+import { BoardNodeService } from '../board-node.service';
 import { MediaBoardService } from '../media-board';
 import { UserDeletedEventHandlerService } from './user-deleted-event-handler.service';
 
@@ -20,6 +22,7 @@ describe(UserDeletedEventHandlerService.name, () => {
 	let module: TestingModule;
 	let service: UserDeletedEventHandlerService;
 
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -27,6 +30,10 @@ describe(UserDeletedEventHandlerService.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserDeletedEventHandlerService,
+				{
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
+				},
 				{
 					provide: MediaBoardService,
 					useValue: createMock<MediaBoardService>(),
@@ -39,10 +46,15 @@ describe(UserDeletedEventHandlerService.name, () => {
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
 				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
+				},
 			],
 		}).compile();
 
 		service = module.get(UserDeletedEventHandlerService);
+		boardNodeService = module.get(BoardNodeService);
 		mediaBoardService = module.get(MediaBoardService);
 		eventBus = module.get(EventBus);
 	});
@@ -61,8 +73,7 @@ describe(UserDeletedEventHandlerService.name, () => {
 				const board = mediaBoardFactory.build();
 				const userId = new ObjectId().toHexString();
 
-				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([board.id]);
-				mediaBoardService.deleteByExternalReference.mockResolvedValueOnce(1);
+				mediaBoardService.findByExternalReference.mockResolvedValueOnce([board]);
 
 				return {
 					board,
@@ -71,14 +82,11 @@ describe(UserDeletedEventHandlerService.name, () => {
 			};
 
 			it('should delete all user boards', async () => {
-				const { userId } = setup();
+				const { board, userId } = setup();
 
 				await service.deleteUserData(userId);
 
-				expect(mediaBoardService.deleteByExternalReference).toHaveBeenCalledWith({
-					type: BoardExternalReferenceType.User,
-					id: userId,
-				});
+				expect(boardNodeService.delete).toHaveBeenCalledWith(board);
 			});
 
 			it('should return a report report', async () => {

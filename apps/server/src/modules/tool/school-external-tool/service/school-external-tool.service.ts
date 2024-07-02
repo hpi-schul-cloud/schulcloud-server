@@ -4,7 +4,7 @@ import { SchoolExternalToolRepo } from '@shared/repo';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../domain';
+import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
@@ -16,14 +16,13 @@ export class SchoolExternalToolService {
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {}
 
-	// TODO: N21-1885 - Refactor to return SchoolExternalToolWithId without cast
-	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalToolWithId> {
+	public async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
 
-		return schoolExternalTool as SchoolExternalToolWithId;
+		return schoolExternalTool;
 	}
 
-	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
+	public async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
 		let schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
 			toolId: query.toolId,
@@ -47,7 +46,10 @@ export class SchoolExternalToolService {
 		const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
 		const status: SchoolExternalToolConfigurationStatus = await this.determineSchoolToolStatus(tool, externalTool);
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
-			...tool,
+			id: tool.id,
+			toolId: tool.toolId,
+			schoolId: tool.schoolId,
+			parameters: tool.parameters,
 			status,
 			name: externalTool.name,
 		});
@@ -75,11 +77,11 @@ export class SchoolExternalToolService {
 		}
 	}
 
-	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<void> {
-		await this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
+	public deleteSchoolExternalToolById(schoolExternalToolId: EntityId): void {
+		this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
 	}
 
-	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
+	public async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		let createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 

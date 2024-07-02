@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalTool } from '../domain';
+import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
 describe(SchoolExternalToolValidationService.name, () => {
@@ -42,8 +43,8 @@ describe(SchoolExternalToolValidationService.name, () => {
 	describe('validate', () => {
 		describe('when the schoolExternalTool is valid', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolVersion: 1337 });
-				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 8383 });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);

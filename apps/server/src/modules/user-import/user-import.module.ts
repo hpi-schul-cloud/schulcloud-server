@@ -38,7 +38,7 @@ import { UserImportConfigModule } from './user-import-config.module';
 		UserImportService,
 		SchulconnexFetchImportUsersService,
 	],
-	exports: [],
+	exports: [UserImportService],
 })
 /**
  * Module to provide user migration,

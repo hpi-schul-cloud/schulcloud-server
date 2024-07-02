@@ -1,22 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions } from '@shared/domain/interface';
-import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
-import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
-import { EventBus } from '@nestjs/cqrs';
+import { MikroORM } from '@mikro-orm/core';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
+import { setupEntities } from '@shared/testing';
+import { ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
@@ -50,6 +53,10 @@ describe('PseudonymService', () => {
 					useValue: {
 						publish: jest.fn(),
 					},
+				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
 				},
 			],
 		}).compile();

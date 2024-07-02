@@ -1,4 +1,4 @@
-import { SanisResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
+import { SchulconnexResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -6,7 +6,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import { TestApiClient, roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
+import { roleFactory, schoolEntityFactory, systemEntityFactory, TestApiClient, userFactory } from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -87,7 +87,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		describe('when migration is not activated', () => {
 			const setup = async () => {
-				const { account } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				const { account } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
 				userImportFeatures.userMigrationEnabled = false;
@@ -111,11 +111,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		describe('when users school has no external id', () => {
 			const setup = async () => {
-				const { account, school, system } = await authenticatedUser(
-					[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
-					[],
-					false
-				);
+				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE], [], false);
 				const loggedInClient = await testApiClient.login(account);
 				userImportFeatures.userMigrationSystemId = system.id;
 
@@ -140,7 +136,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		describe('when users were populated successful', () => {
 			const setup = async () => {
-				const { account, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
 				userImportFeatures.userMigrationEnabled = true;
@@ -152,7 +148,7 @@ describe('ImportUser Controller Populate (API)', () => {
 					access_token: 'accessToken',
 				});
 
-				const schulconnexResponse: SanisResponse = schulconnexResponseFactory.build();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				axiosMock.onGet(/(.*)\/personen-info/).reply(HttpStatus.OK, [schulconnexResponse]);
 
 				return { loggedInClient, account, school };

@@ -1,16 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	toolConfigurationStatusFactory,
-} from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
+import { externalToolFactory, toolConfigurationStatusFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolReference } from '../domain';
+import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 import { ToolReferenceService } from './tool-reference.service';
@@ -22,7 +18,7 @@ describe('ToolReferenceService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let toolVersionService: DeepMocked<ToolConfigurationStatusService>;
+	let toolConfigurationStatusService: DeepMocked<ToolConfigurationStatusService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
@@ -56,7 +52,7 @@ describe('ToolReferenceService', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		toolVersionService = module.get(ToolConfigurationStatusService);
+		toolConfigurationStatusService = module.get(ToolConfigurationStatusService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 	});
 
@@ -71,11 +67,12 @@ describe('ToolReferenceService', () => {
 	describe('getToolReference', () => {
 		describe('when a context external tool id is provided', () => {
 			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
 				const contextExternalToolId = new ObjectId().toHexString();
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
-				}) as SchoolExternalToolWithId;
+					toolId: externalTool.id,
+				});
 				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId(undefined, contextExternalToolId);
@@ -84,7 +81,7 @@ describe('ToolReferenceService', () => {
 				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockReturnValue(
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValue(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: true,
 						isOutdatedOnScopeContext: false,
@@ -98,33 +95,35 @@ describe('ToolReferenceService', () => {
 					schoolExternalTool,
 					contextExternalTool,
 					logoUrl,
+					userId,
 				};
 			};
 
 			it('should determine the tool status', async () => {
-				const { contextExternalToolId, externalTool, schoolExternalTool, contextExternalTool } = setup();
+				const { contextExternalToolId, externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-				await service.getToolReference(contextExternalToolId);
+				await service.getToolReference(contextExternalToolId, userId);
 
-				expect(toolVersionService.determineToolConfigurationStatus).toHaveBeenCalledWith(
+				expect(toolConfigurationStatusService.determineToolConfigurationStatus).toHaveBeenCalledWith(
 					externalTool,
 					schoolExternalTool,
-					contextExternalTool
+					contextExternalTool,
+					userId
 				);
 			});
 
 			it('should build the logo url', async () => {
-				const { contextExternalToolId, externalTool } = setup();
+				const { contextExternalToolId, externalTool, userId } = setup();
 
-				await service.getToolReference(contextExternalToolId);
+				await service.getToolReference(contextExternalToolId, userId);
 
 				expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool);
 			});
 
 			it('should return the tool reference', async () => {
-				const { contextExternalToolId, logoUrl, contextExternalTool, externalTool } = setup();
+				const { contextExternalToolId, logoUrl, contextExternalTool, externalTool, userId } = setup();
 
-				const result: ToolReference = await service.getToolReference(contextExternalToolId);
+				const result: ToolReference = await service.getToolReference(contextExternalToolId, userId);
 
 				expect(result).toEqual<ToolReference>({
 					logoUrl,

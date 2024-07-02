@@ -27,6 +27,10 @@ export class AccountEntity extends BaseEntityWithTimestamps {
 	systemId?: ObjectId;
 
 	@Property({ nullable: true })
+	@Index()
+	lastLogin?: Date;
+
+	@Property({ nullable: true })
 	lasttriedFailedLogin?: Date;
 
 	@Property({ nullable: true })
@@ -47,6 +51,7 @@ export class AccountEntity extends BaseEntityWithTimestamps {
 		this.userId = props.userId;
 		this.systemId = props.systemId;
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
+		this.lastLogin = props.lastLogin;
 		this.expiresAt = props.expiresAt;
 		this.activated = props.activated;
 		this.deactivatedAt = props.deactivatedAt;

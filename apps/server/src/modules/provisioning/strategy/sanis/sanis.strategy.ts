@@ -1,20 +1,17 @@
 import {
-	SanisResponse,
-	SanisResponseValidationGroups,
 	SchulconnexLizenzInfoResponse,
+	SchulconnexResponse,
+	SchulconnexResponseValidationGroups,
 } from '@infra/schulconnex-client/response';
 import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
 import { GroupService } from '@modules/group/service/group.service';
-import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { firstValueFrom } from 'rxjs';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
@@ -31,9 +28,10 @@ import {
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from '../oidc/service';
-import { SanisResponseMapper } from './sanis-response.mapper';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 @Injectable()
 export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
@@ -45,10 +43,10 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		protected readonly groupService: GroupService,
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
-		private readonly responseMapper: SanisResponseMapper,
-		private readonly httpService: HttpService,
-		private readonly schulconnexRestClient: SchulconnexRestClient,
-		protected readonly configService: ConfigService<ProvisioningConfig, true>
+		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
+		protected readonly configService: ConfigService<ProvisioningConfig, true>,
+		private readonly responseMapper: SchulconnexResponseMapper,
+		private readonly schulconnexRestClient: SchulconnexRestClient
 	) {
 		super(
 			provisioningFeatures,
@@ -57,6 +55,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			schulconnexGroupProvisioningService,
 			schulconnexCourseSyncService,
 			schulconnexLicenseProvisioningService,
+			schulconnexToolProvisioningService,
 			groupService,
 			configService
 		);
@@ -73,35 +72,30 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			);
 		}
 
-		// TODO: N21-1678 use the schulconnex rest client
-		const axiosConfig: AxiosRequestConfig = {
-			headers: {
-				Authorization: `Bearer ${input.accessToken}`,
-				'Accept-Encoding': 'gzip',
-			},
-		};
-
-		const sanisAxiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
-			this.httpService.get(input.system.provisioningUrl, axiosConfig)
+		const schulconnexAxiosResponse: SchulconnexResponse = await this.schulconnexRestClient.getPersonInfo(
+			input.accessToken,
+			{
+				overrideUrl: input.system.provisioningUrl,
+			}
 		);
 
-		const sanisResponse: SanisResponse = plainToClass(SanisResponse, sanisAxiosResponse.data);
+		const schulconnexResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, schulconnexAxiosResponse);
 
-		await this.checkResponseValidation(sanisResponse, [
-			SanisResponseValidationGroups.USER,
-			SanisResponseValidationGroups.SCHOOL,
+		await this.checkResponseValidation(schulconnexResponse, [
+			SchulconnexResponseValidationGroups.USER,
+			SchulconnexResponseValidationGroups.SCHOOL,
 		]);
 
-		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(sanisAxiosResponse.data);
+		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(schulconnexResponse);
 		this.addTeacherRoleIfAdmin(externalUser);
 
-		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(sanisAxiosResponse.data);
+		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
 		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
-			await this.checkResponseValidation(sanisResponse, [SanisResponseValidationGroups.GROUPS]);
+			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
-			externalGroups = this.responseMapper.mapToExternalGroupDtos(sanisAxiosResponse.data);
+			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);
 		}
 
 		let externalLicenses: ExternalLicenseDto[] | undefined;
@@ -117,7 +111,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			);
 			await this.checkResponseValidation(schulconnexLizenzInfoResponses);
 
-			externalLicenses = SanisResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
+			externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
 		}
 
 		const oauthData: OauthDataDto = new OauthDataDto({
@@ -132,8 +126,8 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	}
 
 	private async checkResponseValidation(
-		response: SanisResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[],
-		groups?: SanisResponseValidationGroups[]
+		response: SchulconnexResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[],
+		groups?: SchulconnexResponseValidationGroups[]
 	): Promise<void> {
 		const responsesArray = Array.isArray(response) ? response : [response];
 

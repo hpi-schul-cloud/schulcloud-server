@@ -20,7 +20,7 @@ export class UserImportFetchUc {
 		this.checkMigrationEnabled(currentUserId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
 
 		const system: SystemEntity = await this.userImportService.getMigrationSystem();
 		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(user.school, system);

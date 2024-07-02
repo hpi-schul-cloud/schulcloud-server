@@ -1,21 +1,21 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { BoardDoAuthorizable, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
-import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoard, MediaLine } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
+import { BoardNodePermissionService, BoardNodeService } from '../../service';
+import { MediaBoardService } from '../../service/media-board';
+import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaLineUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
-		private readonly mediaBoardService: MediaBoardService,
-		private readonly mediaLineService: MediaLineService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		private readonly mediaBoardService: MediaBoardService
 	) {}
 
 	public async moveLine(
@@ -26,41 +26,52 @@ export class MediaLineUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const targetBoard: MediaBoard = await this.mediaBoardService.findById(targetBoardId);
+		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+		const targetBoard = await this.boardNodeService.findByClassAndId(MediaBoard, targetBoardId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			targetBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, targetBoard, Action.write);
 
-		const line: MediaLine = await this.mediaLineService.findById(lineId);
-
-		await this.mediaLineService.move(line, targetBoard, targetPosition);
+		await this.boardNodeService.move(line, targetBoard, targetPosition);
 	}
 
 	public async updateLineTitle(userId: EntityId, lineId: EntityId, title: string): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const line: MediaLine = await this.mediaLineService.findById(lineId);
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-		await this.mediaLineService.updateTitle(line, title);
+		await this.boardNodeService.updateTitle(line, title);
+	}
+
+	public async updateLineColor(userId: EntityId, lineId: EntityId, color: MediaBoardColors): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
+
+		await this.mediaBoardService.updateBackgroundColor(line, color);
+	}
+
+	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
+
+		await this.mediaBoardService.updateCollapsed(line, collapsed);
 	}
 
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const line: MediaLine = await this.mediaLineService.findById(lineId);
+		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-		await this.mediaLineService.delete(line);
+		await this.boardNodeService.delete(line);
 	}
 
 	private checkFeatureEnabled() {

@@ -13,4 +13,8 @@ export class ProvisioningOptionsParams implements ProvisioningOptionsInterface {
 	@IsOptional()
 	@IsBoolean()
 	groupProvisioningOtherEnabled?: boolean;
+
+	@IsOptional()
+	@IsBoolean()
+	schoolExternalToolProvisioningEnabled?: boolean;
 }

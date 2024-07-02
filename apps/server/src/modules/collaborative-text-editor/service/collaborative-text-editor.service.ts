@@ -22,6 +22,7 @@ export class CollaborativeTextEditorService {
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
 		const sessionExpiryDate = this.buildSessionExpiryDate();
+		const durationThreshold = Number(this.configService.get('ETHERPAD__COOKIE_RELEASE_THRESHOLD'));
 		const { parentId } = params;
 
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
@@ -31,16 +32,16 @@ export class CollaborativeTextEditorService {
 			groupId,
 			authorId,
 			parentId,
-			sessionExpiryDate
+			sessionExpiryDate,
+			durationThreshold
 		);
-		const authorsSessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
 		const url = this.buildPath(padId);
-		const uniqueSessionIds = this.removeDuplicateSessions([...authorsSessionIds, sessionId]);
 
 		return {
-			sessions: uniqueSessionIds,
-			url,
+			sessionId,
+			url: url.toString(),
+			path: url.pathname,
 			sessionExpiryDate,
 		};
 	}
@@ -51,22 +52,25 @@ export class CollaborativeTextEditorService {
 		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
 	}
 
-	private removeDuplicateSessions(sessions: string[]): string[] {
-		const uniqueSessions = [...new Set(sessions)];
+	async deleteSessionsByUser(userId: string): Promise<void> {
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId);
+		const sessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
-		return uniqueSessions;
+		const promises = sessionIds.map((sessionId) => this.collaborativeTextEditorAdapter.deleteSession(sessionId));
+
+		await Promise.all(promises);
 	}
 
 	private buildSessionExpiryDate(): Date {
-		const cookieExpiresMilliseconds = Number(this.configService.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
+		const cookieExpiresMilliseconds = Number(this.configService.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 		const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds);
 
 		return sessionCookieExpiryDate;
 	}
 
-	private buildPath(editorId: string): string {
+	private buildPath(editorId: string): URL {
 		const basePath = this.configService.get<string>('ETHERPAD__PAD_URI');
-		const url = `${basePath}/${editorId}`;
+		const url = new URL(`${basePath}/${editorId}`);
 
 		return url;
 	}
