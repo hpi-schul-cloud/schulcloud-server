@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
@@ -9,13 +10,13 @@ import { ExternalToolParameterValidationService } from './external-tool-paramete
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolService } from './external-tool.service';
 
-describe('ExternalToolValidationService', () => {
+describe(ExternalToolValidationService.name, () => {
 	let module: TestingModule;
 	let service: ExternalToolValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<ExternalToolParameterValidationService>;
-	let toolFeatures: IToolFeatures;
+	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
@@ -31,10 +32,8 @@ describe('ExternalToolValidationService', () => {
 					useValue: createMock<ExternalToolParameterValidationService>(),
 				},
 				{
-					provide: ToolFeatures,
-					useValue: {
-						maxExternalToolLogoSizeInBytes: 30000,
-					},
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -46,7 +45,7 @@ describe('ExternalToolValidationService', () => {
 		service = module.get(ExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(ExternalToolParameterValidationService);
-		toolFeatures = module.get(ToolFeatures);
+		configService = module.get(ConfigService);
 		logoService = module.get(ExternalToolLogoService);
 	});
 
@@ -189,7 +188,7 @@ describe('ExternalToolValidationService', () => {
 		describe('when external tool has a given base64 logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-				toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
+				configService.get.mockReturnValue(30000);
 
 				return { externalTool };
 			};
@@ -362,7 +361,7 @@ describe('ExternalToolValidationService', () => {
 		describe('when external tool has a given base64 logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-				toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
+				configService.get.mockReturnValue(30000);
 
 				return { externalTool };
 			};

@@ -1,10 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpException, Inject } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
@@ -23,17 +24,18 @@ const contentTypeDetector: Record<string, string> = {
 	'47494638': 'image/gif',
 };
 
+@Injectable()
 export class ExternalToolLogoService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	buildLogoUrl(externalTool: ExternalTool): string | undefined {
+	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
 		const { logo, id } = externalTool;
-		const backendUrl = this.toolFeatures.backEndUrl;
+		const backendUrl = this.configService.get<string>('CTL_TOOLS_BACKEND_URL');
 
 		if (logo && id) {
 			return `${backendUrl}/v3/tools/external-tools/${id}/logo`;
@@ -42,22 +44,22 @@ export class ExternalToolLogoService {
 		return undefined;
 	}
 
-	validateLogoSize(externalTool: Partial<ExternalTool>): void {
+	public validateLogoSize(externalTool: Partial<ExternalTool>): void {
 		if (!externalTool.logo) {
 			return;
 		}
 
 		const buffer: Buffer = Buffer.from(externalTool.logo, 'base64');
 
-		if (buffer.length > this.toolFeatures.maxExternalToolLogoSizeInBytes) {
+		if (buffer.length > this.configService.get('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES')) {
 			throw new ExternalToolLogoSizeExceededLoggableException(
 				externalTool.id,
-				this.toolFeatures.maxExternalToolLogoSizeInBytes
+				this.configService.get('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES')
 			);
 		}
 	}
 
-	async fetchLogo(externalTool: Partial<ExternalTool>): Promise<string | undefined> {
+	public async fetchLogo(externalTool: Partial<ExternalTool>): Promise<string | undefined> {
 		if (externalTool.logoUrl) {
 			const base64Logo: string = await this.fetchBase64Logo(externalTool.logoUrl);
 
@@ -93,7 +95,7 @@ export class ExternalToolLogoService {
 		}
 	}
 
-	async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {
+	public async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {
 		const tool: ExternalTool = await this.externalToolService.findById(toolId);
 
 		if (!tool.logo) {

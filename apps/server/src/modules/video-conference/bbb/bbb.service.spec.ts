@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConverterUtil } from '@shared/common';
 import { axiosResponseFactory } from '@shared/testing';
@@ -9,7 +10,8 @@ import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
+import { VideoConferenceConfig } from '../video-conference-config';
+import { BbbConfig } from './bbb-config';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -106,23 +108,20 @@ class BBBServiceTest extends BBBService {
 	}
 }
 
-describe('BBB Service', () => {
+describe(BBBService.name, () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
 	let converterUtil: DeepMocked<ConverterUtil>;
+	let configService: DeepMocked<ConfigService<BbbConfig & VideoConferenceConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BBBServiceTest,
 				{
-					provide: BbbSettings,
-					useValue: createMock<IBbbSettings>({
-						host: 'https://bbb.de',
-						salt: 'salt12345',
-						presentationUrl: '',
-					}),
+					provide: ConfigService,
+					useValue: createMock<ConfigService<BbbConfig, true>>(),
 				},
 				{
 					provide: HttpService,
@@ -137,10 +136,15 @@ describe('BBB Service', () => {
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
 		converterUtil = module.get(ConverterUtil);
+		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	beforeEach(() => {
+		configService.get.mockReturnValue('https://mocked');
 	});
 
 	describe('create', () => {
@@ -200,13 +204,10 @@ describe('BBB Service', () => {
 		});
 
 		it('should return a xml configuration with provided presentation url', () => {
-			// Arrange
 			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
 
-			// Act
 			const result = service.getBbbRequestConfig(presentationUrl);
 
-			// Assert
 			expect(result).toBe(
 				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
 			);
@@ -377,13 +378,10 @@ describe('BBB Service', () => {
 		});
 
 		it('toParams: should return params based on bbb configs', () => {
-			// Arrange
 			const createConfig: BBBCreateConfig = createBBBCreateConfig();
 
-			// Act
 			const params: URLSearchParams = service.superToParams(createConfig);
 
-			// Assert
 			expect(params.get('name')).toEqual(createConfig.name);
 			expect(params.get('meetingID')).toEqual(createConfig.meetingID);
 			expect(params.get('logoutURL')).toEqual(createConfig.logoutURL);
@@ -408,24 +406,19 @@ describe('BBB Service', () => {
 			const sha = crypto.createHash('sha1');
 			const expectedChecksum: string = sha.update(callName + queryString + service.getSalt()).digest('hex');
 
-			// Act
 			const checksum: string = service.superGenerateChecksum(callName, urlSearchParams);
 
-			// Assert
 			expect(checksum).toEqual(expectedChecksum);
 			expect(createHashMock).toBeCalledWith('sha1');
 		});
 
 		it('getUrl: should return composed url', () => {
-			// Arrange
 			const createConfig = createBBBCreateConfig();
 			const callName = 'create';
 			const params: URLSearchParams = service.superToParams(createConfig);
 
-			// Act
 			const url: string = service.superGetUrl(callName, params);
 
-			// Assert
 			expect(url.toString()).toContain(`${service.getBaseUrl()}/bigbluebutton/api/${callName}`);
 			expect(url.includes('checksum')).toBeTruthy();
 		});

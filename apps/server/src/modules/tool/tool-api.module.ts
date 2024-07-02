@@ -20,7 +20,6 @@ import { ExternalToolConfigurationUc, ExternalToolUc } from './external-tool/uc'
 import { ToolSchoolController } from './school-external-tool/controller';
 import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from './school-external-tool/mapper';
 import { SchoolExternalToolUc } from './school-external-tool/uc';
-import { ToolConfigModule } from './tool-config.module';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
@@ -33,7 +32,6 @@ import { ToolModule } from './tool.module';
 		AuthorizationModule,
 		LoggerModule,
 		LegacySchoolModule,
-		ToolConfigModule,
 		LearnroomModule,
 		BoardModule,
 		SchoolModule,

@@ -11,7 +11,6 @@ import {
 	schoolExternalToolConfigurationStatusFactory,
 	schoolExternalToolFactory,
 } from '../../school-external-tool/testing';
-import { ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { customParameterFactory, externalToolFactory } from '../testing';
 import { ContextExternalToolTemplateInfo } from '../uc';
@@ -28,12 +27,6 @@ describe('ExternalToolConfigurationService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ExternalToolConfigurationService,
-				{
-					provide: ToolFeatures,
-					useValue: {
-						contextConfigurationEnabled: false,
-					},
-				},
 				{
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),

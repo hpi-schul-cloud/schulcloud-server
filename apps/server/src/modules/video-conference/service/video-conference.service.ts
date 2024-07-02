@@ -3,7 +3,8 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
-import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
@@ -11,13 +12,14 @@ import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceConfig } from '../video-conference-config';
 
 @Injectable()
 export class VideoConferenceService {
 	constructor(
-		@Inject(VideoConferenceSettings) private readonly vcSettings: IVideoConferenceSettings,
+		private readonly configService: ConfigService<VideoConferenceConfig, true>,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
@@ -28,21 +30,25 @@ export class VideoConferenceService {
 	) {}
 
 	get hostUrl(): string {
-		return this.vcSettings.hostUrl;
+		return this.configService.get('HOST');
 	}
 
 	get isVideoConferenceFeatureEnabled(): boolean {
-		return this.vcSettings.enabled;
+		return this.configService.get('FEATURE_VIDEOCONFERENCE_ENABLED');
 	}
 
-	canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
+	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
 		if ((isGuest && state === VideoConferenceState.NOT_STARTED) || (isGuest && !waitingRoomEnabled)) {
 			return false;
 		}
 		return true;
 	}
 
-	async hasExpertRole(userId: EntityId, conferenceScope: VideoConferenceScope, scopeId: string): Promise<boolean> {
+	public async hasExpertRole(
+		userId: EntityId,
+		conferenceScope: VideoConferenceScope,
+		scopeId: string
+	): Promise<boolean> {
 		let isExpert = false;
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
@@ -136,7 +142,7 @@ export class VideoConferenceService {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
+	public async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
 		if (!this.isVideoConferenceFeatureEnabled) {
 			throw new ForbiddenException(
 				ErrorStatus.SCHOOL_FEATURE_DISABLED,
@@ -150,11 +156,11 @@ export class VideoConferenceService {
 		}
 	}
 
-	sanitizeString(text: string) {
+	public sanitizeString(text: string) {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 
-	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
+	public async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(scopeId);
@@ -181,7 +187,7 @@ export class VideoConferenceService {
 		}
 	}
 
-	async getUserRoleAndGuestStatusByUserIdForBbb(
+	public async getUserRoleAndGuestStatusByUserIdForBbb(
 		userId: string,
 		scopeId: EntityId,
 		scope: VideoConferenceScope
@@ -195,7 +201,7 @@ export class VideoConferenceService {
 		return { role, isGuest: isBbbGuest };
 	}
 
-	async findVideoConferenceByScopeIdAndScope(
+	public async findVideoConferenceByScopeIdAndScope(
 		scopeId: EntityId,
 		scope: VideoConferenceScope
 	): Promise<VideoConferenceDO> {
@@ -204,7 +210,7 @@ export class VideoConferenceService {
 		return videoConference;
 	}
 
-	async createOrUpdateVideoConferenceForScopeWithOptions(
+	public async createOrUpdateVideoConferenceForScopeWithOptions(
 		scopeId: EntityId,
 		scope: VideoConferenceScope,
 		options: VideoConferenceOptions

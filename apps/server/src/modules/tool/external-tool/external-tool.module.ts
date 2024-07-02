@@ -6,7 +6,6 @@ import { ExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
-import { ToolConfigModule } from '../tool-config.module';
 import { ExternalToolMetadataMapper } from './mapper';
 import {
 	DatasheetPdfService,
@@ -20,7 +19,7 @@ import {
 } from './service';
 
 @Module({
-	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
+	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,

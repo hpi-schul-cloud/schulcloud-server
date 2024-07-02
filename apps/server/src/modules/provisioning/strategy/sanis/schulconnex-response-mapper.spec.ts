@@ -11,19 +11,20 @@ import {
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 describe(SchulconnexResponseMapper.name, () => {
 	let module: TestingModule;
 	let mapper: SchulconnexResponseMapper;
 
-	let provisioningFeatures: IProvisioningFeatures;
+	const config: Partial<ProvisioningConfig> = {};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,14 +35,15 @@ describe(SchulconnexResponseMapper.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ProvisioningFeatures,
-					useValue: {},
+					provide: ConfigService<ProvisioningConfig, true>,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
+					},
 				},
 			],
 		}).compile();
 
 		mapper = module.get(SchulconnexResponseMapper);
-		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
 	describe('mapToExternalSchoolDto', () => {
@@ -143,9 +145,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type class is given', () => {
 			const setup = () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: true,
-				});
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 
@@ -274,9 +274,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is false', () => {
 			const setup = () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: false,
-				});
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = false;
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
@@ -296,9 +294,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is true', () => {
 			const setup = () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: true,
-				});
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;

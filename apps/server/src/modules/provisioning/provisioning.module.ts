@@ -11,7 +11,6 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
 import { UserLicenseModule } from '../user-license';
-import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
 import {
 	IservProvisioningStrategy,
@@ -30,7 +29,6 @@ import {
 
 @Module({
 	imports: [
-		ProvisioningConfigModule,
 		AccountModule,
 		LegacySchoolModule,
 		UserModule,
