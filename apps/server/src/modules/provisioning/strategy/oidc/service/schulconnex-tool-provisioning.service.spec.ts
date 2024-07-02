@@ -147,14 +147,15 @@ describe(SchulconnexToolProvisioningService.name, () => {
 
 				await service.provisionSchoolExternalTools(userId, schoolId, systemId);
 
-				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith({
-					props: {
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith<[SchoolExternalTool]>(
+					new SchoolExternalTool({
 						id: expect.any(String),
 						toolId: externalTool.id,
+						isDeactivated: false,
 						schoolId,
 						parameters: [],
-					},
-				});
+					})
+				);
 			});
 		});
 

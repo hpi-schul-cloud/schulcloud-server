@@ -1,10 +1,9 @@
-import { Embedded, Entity, ManyToOne } from '@mikro-orm/core';
+import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntryEntity } from '../../common/entity';
 import { ExternalToolEntity } from '../../external-tool/entity';
-import { SchoolExternalToolConfigurationStatusEntity } from './school-external-tool-configuration-status.entity';
 
 export interface SchoolExternalToolEntityProps {
 	id?: EntityId;
@@ -15,7 +14,7 @@ export interface SchoolExternalToolEntityProps {
 
 	schoolParameters?: CustomParameterEntryEntity[];
 
-	status?: SchoolExternalToolConfigurationStatusEntity;
+	isDeactivated: boolean;
 }
 
 @Entity({ tableName: 'school-external-tools' })
@@ -29,8 +28,8 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CustomParameterEntryEntity, { array: true })
 	schoolParameters: CustomParameterEntryEntity[];
 
-	@Embedded(() => SchoolExternalToolConfigurationStatusEntity, { object: true, nullable: true })
-	status?: SchoolExternalToolConfigurationStatusEntity;
+	@Property()
+	isDeactivated: boolean;
 
 	constructor(props: SchoolExternalToolEntityProps) {
 		super();
@@ -40,6 +39,6 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 		this.tool = props.tool;
 		this.school = props.school;
 		this.schoolParameters = props.schoolParameters ?? [];
-		this.status = props.status;
+		this.isDeactivated = props.isDeactivated;
 	}
 }

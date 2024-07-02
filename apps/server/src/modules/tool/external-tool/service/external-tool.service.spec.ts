@@ -10,6 +10,7 @@ import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } fro
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '../testing';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
@@ -375,16 +376,13 @@ describe(ExternalToolService.name, () => {
 		const setup = () => {
 			createTools();
 
-			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
-				id: 'schoolTool1',
-				toolId: 'tool1',
-				schoolId: 'school1',
-				parameters: [],
-			});
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 
 			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool]);
 
-			return { schoolExternalTool };
+			return {
+				schoolExternalTool,
+			};
 		};
 
 		describe('when tool id is set', () => {

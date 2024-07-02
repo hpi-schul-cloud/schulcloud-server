@@ -2,4 +2,3 @@ export { schoolExternalToolEntityFactory } from './school-external-tool-entity.f
 export { schoolExternalToolFactory } from './school-external-tool.factory';
 export { schoolExternalToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
 export { schoolExternalToolConfigurationStatusResponseFactory } from './school-external-tool-configuration-status-response.factory';
-export { schoolExternalToolConfigurationStatusEntityFactory } from './school-external-tool-configuration-status-entity.factory';

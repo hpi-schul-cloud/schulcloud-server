@@ -61,7 +61,7 @@ export class ExternalToolDatasheetMapper {
 			return 'Das Tool ist instanzweit deaktiviert';
 		}
 
-		if (schoolExternalTool?.status?.isDeactivated) {
+		if (schoolExternalTool?.isDeactivated) {
 			return 'Das Tool ist deaktiviert';
 		}
 

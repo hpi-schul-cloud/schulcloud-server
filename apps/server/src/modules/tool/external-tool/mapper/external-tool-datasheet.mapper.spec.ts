@@ -37,7 +37,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
 			});
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-				status: { isDeactivated: true },
+				isDeactivated: true,
 			});
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.withOptionalProperties()
@@ -68,7 +68,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const school: School = schoolFactory.build();
 			const externalTool = externalToolFactory.build();
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-				status: { isDeactivated: true },
+				isDeactivated: true,
 			});
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'dBildungscloud',

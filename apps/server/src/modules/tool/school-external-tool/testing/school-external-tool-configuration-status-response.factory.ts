@@ -5,6 +5,6 @@ export const schoolExternalToolConfigurationStatusResponseFactory =
 	Factory.define<SchoolExternalToolConfigurationStatusResponse>(() => {
 		return {
 			isOutdatedOnScopeSchool: false,
-			isDeactivated: false,
+			isGloballyDeactivated: false,
 		};
 	});

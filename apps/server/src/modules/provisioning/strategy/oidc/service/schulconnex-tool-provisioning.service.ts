@@ -72,6 +72,7 @@ export class SchulconnexToolProvisioningService {
 			id: new ObjectId().toHexString(),
 			toolId: externalTool.id,
 			schoolId,
+			isDeactivated: false,
 			parameters: [],
 		});
 

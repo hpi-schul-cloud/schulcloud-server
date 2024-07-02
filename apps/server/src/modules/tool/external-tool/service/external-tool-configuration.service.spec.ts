@@ -129,12 +129,12 @@ describe('ExternalToolConfigurationService', () => {
 				availableSchoolExternalTools.forEach((tool): void => {
 					if (tool.id === 'deactivatedToolId') {
 						tool.status = schoolExternalToolConfigurationStatusFactory.build({
-							isDeactivated: true,
+							isGloballyDeactivated: true,
 							isOutdatedOnScopeSchool: false,
 						});
 					}
 					tool.status = schoolExternalToolConfigurationStatusFactory.build({
-						isDeactivated: false,
+						isGloballyDeactivated: false,
 						isOutdatedOnScopeSchool: false,
 					});
 				});
@@ -175,9 +175,7 @@ describe('ExternalToolConfigurationService', () => {
 				);
 
 				expect(
-					result.every(
-						(toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.schoolExternalTool.status?.isDeactivated
-					)
+					result.every((toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.schoolExternalTool.isDeactivated)
 				).toBe(true);
 			});
 		});

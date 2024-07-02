@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
+import { CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
-import { ExternalTool } from '../../external-tool/domain';
+import { type ExternalTool } from '../../external-tool/domain';
 import { externalToolFactory } from '../../external-tool/testing';
-import { SchoolExternalTool } from '../domain';
-import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolFactory } from '../testing';
+import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../domain';
+import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
-import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalToolService } from './school-external-tool.service';
 
 describe(SchoolExternalToolService.name, () => {
@@ -17,7 +17,7 @@ describe(SchoolExternalToolService.name, () => {
 
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
+	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -32,8 +32,8 @@ describe(SchoolExternalToolService.name, () => {
 					useValue: createMock<ExternalToolService>(),
 				},
 				{
-					provide: SchoolExternalToolValidationService,
-					useValue: createMock<SchoolExternalToolValidationService>(),
+					provide: CommonToolValidationService,
+					useValue: createMock<CommonToolValidationService>(),
 				},
 			],
 		}).compile();
@@ -41,293 +41,178 @@ describe(SchoolExternalToolService.name, () => {
 		service = module.get(SchoolExternalToolService);
 		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
 		externalToolService = module.get(ExternalToolService);
-		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
+		commonToolValidationService = module.get(CommonToolValidationService);
 	});
 
 	describe('findSchoolExternalTools', () => {
 		describe('when called with query', () => {
-			describe('findSchoolExternalTools', () => {
-				describe('when called with query', () => {
-					const setup = () => {
-						const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-						const schoolExternalToolQuery: SchoolExternalToolQuery = {
-							schoolId: schoolExternalTool.schoolId,
-							toolId: schoolExternalTool.toolId,
-							isDeactivated: !!schoolExternalTool.status?.isDeactivated,
-						};
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					name: undefined,
+					status: undefined,
+				});
 
-						schoolExternalToolRepo.find.mockResolvedValueOnce([schoolExternalTool]);
+				const schoolExternalToolQuery: SchoolExternalToolQuery = {
+					schoolId: schoolExternalTool.schoolId,
+					toolId: schoolExternalTool.toolId,
+					isDeactivated: schoolExternalTool.isDeactivated,
+				};
 
-						return {
-							schoolExternalTool,
-							schoolExternalToolId: schoolExternalTool.id,
-							schoolExternalToolQuery,
-						};
-					};
+				schoolExternalToolRepo.find.mockResolvedValueOnce([schoolExternalTool]);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 
-					it('should call repo with query', async () => {
-						const { schoolExternalTool, schoolExternalToolQuery } = setup();
+				return {
+					externalTool,
+					schoolExternalTool,
+					schoolExternalToolQuery,
+				};
+			};
 
-						await service.findSchoolExternalTools(schoolExternalToolQuery);
+			it('should call repo with query', async () => {
+				const { schoolExternalTool, schoolExternalToolQuery } = setup();
 
-						expect(schoolExternalToolRepo.find).toHaveBeenCalledWith<[Required<SchoolExternalToolQuery>]>({
-							schoolId: schoolExternalTool.schoolId,
-							toolId: schoolExternalTool.toolId,
-							isDeactivated: !!schoolExternalTool.status?.isDeactivated,
-						});
-					});
+				await service.findSchoolExternalTools(schoolExternalToolQuery);
 
-					it('should return schoolExternalTool array', async () => {
-						const { schoolExternalToolQuery } = setup();
-
-						const result: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalToolQuery);
-
-						expect(Array.isArray(result)).toBe(true);
-					});
+				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith<[Required<SchoolExternalToolQuery>]>({
+					schoolId: schoolExternalTool.schoolId,
+					toolId: schoolExternalTool.toolId,
+					isDeactivated: schoolExternalTool.isDeactivated,
 				});
 			});
 
-			describe('enrichDataFromExternalTool', () => {
-				describe('when schoolExternalTool is given', () => {
-					const setup = () => {
-						const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-						const externalTool: ExternalTool = externalToolFactory.buildWithId();
+			it('should return schoolExternalTool array with enriched data', async () => {
+				const { schoolExternalToolQuery, schoolExternalTool, externalTool } = setup();
 
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findById.mockResolvedValue(externalTool);
+				const result: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalToolQuery);
 
-						return {
-							schoolExternalTool,
-						};
-					};
+				expect(result).toEqual([
+					new SchoolExternalTool({
+						...schoolExternalTool.getProps(),
+						name: externalTool.name,
+						status: new SchoolExternalToolConfigurationStatus({
+							isGloballyDeactivated: externalTool.isDeactivated,
+							isOutdatedOnScopeSchool: true,
+						}),
+					}),
+				]);
+			});
+		});
+	});
 
-					it('should call the externalToolService', async () => {
-						const { schoolExternalTool } = setup();
+	describe('deleteSchoolExternalToolById', () => {
+		describe('when schoolExternalToolId is given', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-						await service.findSchoolExternalTools(schoolExternalTool);
+				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+				externalToolService.findById.mockResolvedValue(externalTool);
 
-						expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
-					});
+				return {
+					schoolExternalToolId: schoolExternalTool.id,
+				};
+			};
+
+			it('should call the schoolExternalToolRepo', () => {
+				const { schoolExternalToolId } = setup();
+
+				service.deleteSchoolExternalToolById(schoolExternalToolId);
+
+				expect(schoolExternalToolRepo.deleteById).toHaveBeenCalledWith(schoolExternalToolId);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		describe('when schoolExternalToolId is given', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					name: undefined,
+					status: undefined,
 				});
 
-				describe('when determine status', () => {
-					describe('when validation goes through', () => {
-						const setup = () => {
-							const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-							const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				schoolExternalToolRepo.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 
-							schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-							externalToolService.findById.mockResolvedValue(externalTool);
-							schoolExternalToolValidationService.validate.mockResolvedValue();
+				return {
+					schoolExternalTool,
+					externalTool,
+				};
+			};
 
-							return {
-								schoolExternalTool,
-							};
-						};
+			it('should call schoolExternalToolRepo.findById', async () => {
+				const { schoolExternalTool } = setup();
 
-						it('should return latest tool status', async () => {
-							const { schoolExternalTool } = setup();
+				await service.findById(schoolExternalTool.id);
 
-							const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(
-								schoolExternalTool
-							);
-
-							expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-							expect(schoolExternalToolDOs[0].status).toEqual(
-								schoolExternalToolConfigurationStatusFactory.build({
-									isOutdatedOnScopeSchool: false,
-								})
-							);
-						});
-
-						it('should return non deactivated tool status', async () => {
-							const { schoolExternalTool } = setup();
-
-							const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(
-								schoolExternalTool
-							);
-
-							expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-							expect(schoolExternalToolDOs[0].status).toEqual(
-								schoolExternalToolConfigurationStatusFactory.build({
-									isDeactivated: false,
-								})
-							);
-						});
-					});
-
-					describe('when validation throws error', () => {
-						const setup = () => {
-							const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-							const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
-							schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-							externalToolService.findById.mockResolvedValue(externalTool);
-							schoolExternalToolValidationService.validate.mockRejectedValue(ApiValidationError);
-
-							return {
-								schoolExternalTool,
-							};
-						};
-
-						it('should return outdated tool status', async () => {
-							const { schoolExternalTool } = setup();
-
-							const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(
-								schoolExternalTool
-							);
-
-							expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(schoolExternalTool);
-							expect(schoolExternalToolDOs[0].status).toEqual(
-								schoolExternalToolConfigurationStatusFactory.build({
-									isOutdatedOnScopeSchool: true,
-								})
-							);
-						});
-					});
-
-					describe('when schoolExternalTool is deactivated', () => {
-						const setup = () => {
-							const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-								status: schoolExternalToolConfigurationStatusFactory.build({ isDeactivated: true }),
-							});
-							const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
-							schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-							externalToolService.findById.mockResolvedValue(externalTool);
-							schoolExternalToolValidationService.validate.mockRejectedValue(Promise.resolve());
-
-							return {
-								schoolExternalTool,
-							};
-						};
-
-						it('should return deactivated tool status true', async () => {
-							const { schoolExternalTool } = setup();
-
-							const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(
-								schoolExternalTool
-							);
-
-							expect(schoolExternalToolDOs[0].status).toEqual(
-								schoolExternalToolConfigurationStatusFactory.build({
-									isDeactivated: true,
-									isOutdatedOnScopeSchool: true,
-								})
-							);
-						});
-					});
-
-					describe('when externalTool is deactivated', () => {
-						const setup = () => {
-							const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-							const externalTool: ExternalTool = externalToolFactory.buildWithId({ isDeactivated: true });
-
-							schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-							externalToolService.findById.mockResolvedValue(externalTool);
-							schoolExternalToolValidationService.validate.mockRejectedValue(Promise.resolve());
-
-							return {
-								schoolExternalTool,
-							};
-						};
-
-						it('should return deactivated tool status true', async () => {
-							const { schoolExternalTool } = setup();
-
-							const schoolExternalToolDOs: SchoolExternalTool[] = await service.findSchoolExternalTools(
-								schoolExternalTool
-							);
-
-							expect(schoolExternalToolDOs[0].status).toEqual(
-								schoolExternalToolConfigurationStatusFactory.build({
-									isDeactivated: true,
-									isOutdatedOnScopeSchool: true,
-								})
-							);
-						});
-					});
-				});
+				expect(schoolExternalToolRepo.findById).toHaveBeenCalledWith(schoolExternalTool.id);
 			});
 
-			describe('deleteSchoolExternalToolById', () => {
-				describe('when schoolExternalToolId is given', () => {
-					const setup = () => {
-						const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-						const externalTool: ExternalTool = externalToolFactory.buildWithId();
+			it('should return the schoolExternalTool with enriched data', async () => {
+				const { schoolExternalTool, externalTool } = setup();
 
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findById.mockResolvedValue(externalTool);
+				const result = await service.findById(schoolExternalTool.id);
 
-						return {
-							schoolExternalToolId: schoolExternalTool.id,
-						};
-					};
+				expect(result).toEqual(
+					new SchoolExternalTool({
+						...schoolExternalTool.getProps(),
+						name: externalTool.name,
+						status: new SchoolExternalToolConfigurationStatus({
+							isGloballyDeactivated: externalTool.isDeactivated,
+							isOutdatedOnScopeSchool: true,
+						}),
+					})
+				);
+			});
+		});
+	});
 
-					it('should call the schoolExternalToolRepo', () => {
-						const { schoolExternalToolId } = setup();
-
-						service.deleteSchoolExternalToolById(schoolExternalToolId);
-
-						expect(schoolExternalToolRepo.deleteById).toHaveBeenCalledWith(schoolExternalToolId);
-					});
+	describe('saveSchoolExternalTool', () => {
+		describe('when schoolExternalTool is given', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					name: undefined,
+					status: undefined,
 				});
+
+				schoolExternalToolRepo.save.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+
+				return {
+					schoolExternalTool,
+					externalTool,
+				};
+			};
+
+			it('should call schoolExternalToolRepo.save', async () => {
+				const { schoolExternalTool } = setup();
+
+				await service.saveSchoolExternalTool(schoolExternalTool);
+
+				expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
 			});
 
-			describe('findById', () => {
-				describe('when schoolExternalToolId is given', () => {
-					const setup = () => {
-						const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-						const externalTool: ExternalTool = externalToolFactory.buildWithId();
+			it('should return the schoolExternalTool with enriched data', async () => {
+				const { schoolExternalTool, externalTool } = setup();
 
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findById.mockResolvedValue(externalTool);
+				const result = await service.saveSchoolExternalTool(schoolExternalTool);
 
-						return {
-							schoolExternalToolId: schoolExternalTool.id,
-						};
-					};
-
-					it('should call schoolExternalToolRepo.findById', async () => {
-						const { schoolExternalToolId } = setup();
-
-						await service.findById(schoolExternalToolId);
-
-						expect(schoolExternalToolRepo.findById).toHaveBeenCalledWith(schoolExternalToolId);
-					});
-				});
-			});
-
-			describe('saveSchoolExternalTool', () => {
-				describe('when schoolExternalTool is given', () => {
-					const setup = () => {
-						const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-						const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findById.mockResolvedValue(externalTool);
-
-						return {
-							schoolExternalTool,
-						};
-					};
-
-					it('should call schoolExternalToolRepo.save', async () => {
-						const { schoolExternalTool } = setup();
-
-						await service.saveSchoolExternalTool(schoolExternalTool);
-
-						expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
-					});
-
-					it('should enrich data from externalTool', async () => {
-						const { schoolExternalTool } = setup();
-
-						await service.saveSchoolExternalTool(schoolExternalTool);
-
-						expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
-					});
-				});
+				expect(result).toEqual(
+					new SchoolExternalTool({
+						...schoolExternalTool.getProps(),
+						name: externalTool.name,
+						status: new SchoolExternalToolConfigurationStatus({
+							isGloballyDeactivated: externalTool.isDeactivated,
+							isOutdatedOnScopeSchool: true,
+						}),
+					})
+				);
 			});
 		});
 	});

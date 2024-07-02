@@ -72,7 +72,7 @@ export class ToolConfigurationStatusService {
 	}
 
 	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool): boolean {
-		return !!(externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated));
+		return externalTool.isDeactivated || schoolExternalTool.isDeactivated;
 	}
 
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {

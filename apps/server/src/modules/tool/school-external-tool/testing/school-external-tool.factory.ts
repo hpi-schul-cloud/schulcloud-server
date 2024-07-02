@@ -26,6 +26,7 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 			}),
 		],
 		toolId: 'toolId',
+		isDeactivated: false,
 		status: schoolExternalToolConfigurationStatusFactory.build(),
 	};
 });

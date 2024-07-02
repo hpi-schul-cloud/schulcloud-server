@@ -443,7 +443,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
-					status: { isDeactivated: true },
+					isDeactivated: true,
 				});
 				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id)

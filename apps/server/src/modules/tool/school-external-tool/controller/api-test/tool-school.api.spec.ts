@@ -130,8 +130,9 @@ describe('ToolSchoolController (API)', () => {
 			const response = await loggedInClient.post().send(postParams);
 
 			expect(response.statusCode).toEqual(HttpStatus.CREATED);
-			expect(response.body).toEqual({
+			expect(response.body).toEqual<SchoolExternalToolResponse>({
 				id: expect.any(String),
+				isDeactivated: postParams.isDeactivated,
 				name: externalToolEntity.name,
 				schoolId: postParams.schoolId,
 				toolId: postParams.toolId,
@@ -231,6 +232,7 @@ describe('ToolSchoolController (API)', () => {
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				parameters: [],
+				isDeactivated: true,
 			});
 
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -284,16 +286,18 @@ describe('ToolSchoolController (API)', () => {
 
 			expect(response.statusCode).toEqual(HttpStatus.OK);
 			expect(response.body).toEqual(
-				expect.objectContaining(<SchoolExternalToolSearchListResponse>{
+				expect.objectContaining<SchoolExternalToolSearchListResponse>({
 					data: [
 						{
 							id: schoolExternalToolEntity.id,
 							name: externalToolEntity.name,
 							schoolId: school.id,
 							toolId: externalToolEntity.id,
-							status: schoolExternalToolConfigurationStatusFactory.build({
+							isDeactivated: false,
+							status: {
 								isOutdatedOnScopeSchool: true,
-							}),
+								isGloballyDeactivated: true,
+							},
 							parameters: [
 								{
 									name: schoolExternalToolEntity.schoolParameters[0].name,
@@ -322,6 +326,7 @@ describe('ToolSchoolController (API)', () => {
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				parameters: [],
+				isDeactivated: true,
 			});
 
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -331,12 +336,14 @@ describe('ToolSchoolController (API)', () => {
 
 			const schoolExternalToolResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({
 				id: schoolExternalToolEntity.id,
-				name: '',
+				name: externalToolEntity.name,
 				schoolId: school.id,
 				toolId: externalToolEntity.id,
-				status: schoolExternalToolConfigurationStatusFactory.build({
-					isOutdatedOnScopeSchool: false,
-				}),
+				isDeactivated: false,
+				status: {
+					isOutdatedOnScopeSchool: true,
+					isGloballyDeactivated: true,
+				},
 				parameters: [
 					{
 						name: schoolExternalToolEntity.schoolParameters[0].name,
@@ -459,9 +466,11 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParamsUpdate.schoolId,
 				toolId: postParamsUpdate.toolId,
-				status: schoolExternalToolConfigurationStatusFactory.build({
+				isDeactivated: false,
+				status: {
 					isOutdatedOnScopeSchool: false,
-				}),
+					isGloballyDeactivated: false,
+				},
 				parameters: [
 					{
 						name: updatedParamEntry.name,

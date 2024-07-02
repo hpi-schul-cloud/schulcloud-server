@@ -51,6 +51,7 @@ describe('SchoolExternalToolScope', () => {
 		describe('when isDeactivated parameter is undefined', () => {
 			it('should return scope without added status to query', () => {
 				scope.byIsDeactivated(undefined);
+
 				expect(scope.query).toEqual({});
 			});
 		});
@@ -58,14 +59,16 @@ describe('SchoolExternalToolScope', () => {
 		describe('when isDeactivated parameter is false', () => {
 			it('should return scope with added status to query', () => {
 				scope.byIsDeactivated(false);
-				expect(scope.query).toEqual({ $or: [{ status: { isDeactivated: false } }, { status: undefined }] });
+
+				expect(scope.query).toEqual({ isDeactivated: false });
 			});
 		});
 
 		describe('when isDeactivated parameter is true', () => {
 			it('should return scope with added status to query', () => {
 				scope.byIsDeactivated(true);
-				expect(scope.query).toEqual({ status: { isDeactivated: true } });
+
+				expect(scope.query).toEqual({ isDeactivated: true });
 			});
 		});
 	});
