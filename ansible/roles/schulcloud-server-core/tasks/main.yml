@@ -16,6 +16,12 @@
       namespace: "{{ NAMESPACE }}"
       template: api-files-svc.yml.j2
 
+  - name: Edu Sharing Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-svc.yml.j2
+
   - name: FwuLearningContentsService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -118,6 +124,19 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-files-ingress.yml.j2
+      apply: yes
+
+  - name: Edu Sharing Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-deployment.yml.j2
+
+  - name: Edu Sharing Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-ingress.yml.j2
       apply: yes
 
   - name: FwuLearningContentsDeployment

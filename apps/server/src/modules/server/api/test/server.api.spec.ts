@@ -99,6 +99,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_NEW_LAYOUT_ENABLED',
 				'BOARD_COLLABORATION_URI',
 				'FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED',
+				'EDU_SHARING__API_URL',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

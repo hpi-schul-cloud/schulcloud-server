@@ -214,6 +214,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: boolean;
+  
+  @ApiProperty()
+	EDU_SHARING__API_URL: string;
 
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -285,5 +288,6 @@ export class ConfigResponse {
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_NEW_LAYOUT_ENABLED = config.FEATURE_NEW_LAYOUT_ENABLED;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED;
+    this.EDU_SHARING__API_URL = config.EDU_SHARING__API_URL;
 	}
 }
