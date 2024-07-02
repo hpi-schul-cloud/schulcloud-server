@@ -3,13 +3,14 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { DB_PASSWORD, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { initialisePerformanceObserver } from '@shared/common/measure-utils';
+import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
+import { Logger, LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { TLDRAW_DB_URL, config } from './config';
+import { config, TldrawConfig, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawFilesConsole } from './job';
 import { TldrawRepo, YMongodb } from './repo';
@@ -24,6 +25,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
+		CoreModule,
 		ConsoleModule,
 		ConsoleWriterModule,
 		RabbitMQWrapperModule,
@@ -42,4 +44,11 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	],
 	providers: [TldrawRepo, YMongodb, TldrawFilesConsole, TldrawFilesStorageAdapterService, TldrawDeleteFilesUc],
 })
-export class TldrawConsoleModule {}
+export class TldrawConsoleModule {
+	constructor(private readonly logger: Logger, private readonly configService: ConfigService<TldrawConfig, true>) {
+		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
+			this.logger.setContext('PerformanceObserver');
+			initialisePerformanceObserver(this.logger);
+		}
+	}
+}

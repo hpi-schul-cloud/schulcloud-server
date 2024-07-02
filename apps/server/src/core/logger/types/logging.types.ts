@@ -1,3 +1,6 @@
+/**
+ * Information inside this file should be placed in shared, type are copied to it.
+ */
 export type LogMessage = {
 	message: string;
 	data?: LogMessageData;
