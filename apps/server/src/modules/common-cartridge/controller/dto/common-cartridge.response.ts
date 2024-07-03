@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CourseFileIdsResponse {
-	constructor(courseFileIds: string[]) {
-		this.courseFileIds = courseFileIds;
+	constructor(fileIds: string[]) {
+		this.fileIds = fileIds;
 	}
 
 	@ApiProperty({
 		type: [String],
-		description: 'Array of course file ids',
+		description: 'Array of file ids',
 	})
-	public readonly courseFileIds!: string[];
+	public readonly fileIds!: string[];
 }

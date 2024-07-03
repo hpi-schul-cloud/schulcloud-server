@@ -8,8 +8,8 @@ import { CourseFileIdsResponse, ExportCourseParams } from './dto';
 export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
-	@Post('export/:courseId')
+	@Post('export/:parentId')
 	public async exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseFileIdsResponse> {
-		return this.commonCartridgeUC.exportCourse(exportCourseParams.courseId);
+		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
 	}
 }
