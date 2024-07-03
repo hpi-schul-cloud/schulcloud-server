@@ -113,12 +113,6 @@
       namespace: "{{ NAMESPACE }}"
       template: api-files-deployment.yml.j2
 
-  - name: FileStorageDeployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-files-deployment.yml.j2
-
   - name: File Storage Ingress
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
