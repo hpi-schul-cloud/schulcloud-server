@@ -1700,7 +1700,7 @@
 		},
 		"FEATURE_NEW_LAYOUT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the new layout feature"
 		}
 	},
