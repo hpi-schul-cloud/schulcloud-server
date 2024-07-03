@@ -22,6 +22,8 @@ appPromise
 			)
 			.exec();
 
+		info(`LDAP Schools ended their Maintenance mode: ${resultLdapSchools.modifiedCount} schools updated`);
+
 		const resultMigratingSchools = await schoolModel
 			.updateMany(
 				{
@@ -33,7 +35,6 @@ appPromise
 			)
 			.exec();
 
-		info(`LDAP Schools ended their Maintenance mode: ${resultLdapSchools.modifiedCount} schools updated`);
 		info(`Migrating Schools changed year: ${resultMigratingSchools.modifiedCount} schools updated`);
 
 		return process.exit(0);
