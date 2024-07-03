@@ -73,6 +73,7 @@ describe(ColumnUc.name, () => {
 		describe('when deleting a column', () => {
 			it('should call the service to find the column', async () => {
 				const { user, column } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
 
 				await uc.deleteColumn(user.id, column.id);
 

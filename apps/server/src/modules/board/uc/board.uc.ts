@@ -65,22 +65,24 @@ export class BoardUc {
 		return board.context;
 	}
 
-	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
+	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.boardNodeService.delete(board);
+		return board;
 	}
 
-	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<void> {
+	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.boardNodeService.updateTitle(board, title);
+		return board;
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
@@ -101,7 +103,7 @@ export class BoardUc {
 		columnId: EntityId,
 		targetBoardId: EntityId,
 		targetPosition: number
-	): Promise<void> {
+	): Promise<Column> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
@@ -111,6 +113,7 @@ export class BoardUc {
 		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
+		return column;
 	}
 
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {
@@ -137,10 +140,11 @@ export class BoardUc {
 		return copyStatus;
 	}
 
-	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<void> {
+	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
+		return board;
 	}
 }

@@ -143,6 +143,7 @@ describe(CardUc.name, () => {
 		describe('when deleting a card', () => {
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.deleteCard(user.id, card.id);
 
