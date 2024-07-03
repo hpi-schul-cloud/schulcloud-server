@@ -12,6 +12,9 @@ export class ContextExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
 	name: string;
 
+	@ApiProperty()
+	baseUrl: string;
+
 	@ApiPropertyOptional()
 	logoUrl?: string;
 
@@ -22,6 +25,7 @@ export class ContextExternalToolConfigurationTemplateResponse {
 		this.externalToolId = configuration.externalToolId;
 		this.schoolExternalToolId = configuration.schoolExternalToolId;
 		this.name = configuration.name;
+		this.baseUrl = configuration.baseUrl;
 		this.logoUrl = configuration.logoUrl;
 		this.parameters = configuration.parameters;
 	}

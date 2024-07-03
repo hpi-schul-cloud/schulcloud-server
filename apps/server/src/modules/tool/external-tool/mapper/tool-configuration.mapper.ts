@@ -17,6 +17,7 @@ export class ToolConfigurationMapper {
 		const mapped = new SchoolExternalToolConfigurationTemplateResponse({
 			externalToolId: externalTool.id ?? '',
 			name: externalTool.name,
+			baseUrl: externalTool.config.baseUrl,
 			logoUrl: externalTool.logoUrl,
 			parameters: externalTool.parameters
 				? ExternalToolResponseMapper.mapCustomParameterToResponse(externalTool.parameters)
@@ -48,6 +49,7 @@ export class ToolConfigurationMapper {
 			externalToolId: externalTool.id ?? '',
 			schoolExternalToolId: schoolExternalTool.id ?? '',
 			name: externalTool.name,
+			baseUrl: externalTool.config.baseUrl,
 			logoUrl: externalTool.logoUrl,
 			parameters: externalTool.parameters
 				? ExternalToolResponseMapper.mapCustomParameterToResponse(externalTool.parameters)
