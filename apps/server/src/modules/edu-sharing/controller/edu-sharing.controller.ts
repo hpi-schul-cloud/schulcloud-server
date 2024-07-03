@@ -14,11 +14,11 @@ import { EduSharingUC } from '../uc';
 import { TicketParams } from './dto';
 
 @ApiTags('edu-sharing')
-@Authenticate('jwt')
 @Controller('edu-sharing')
 export class EduSharingController {
 	constructor(private readonly eduSharingUC: EduSharingUC) {}
 
+	@Authenticate('jwt')
 	@ApiOperation({
 		summary: 'Fetches the edu-sharing ticket for a given user name.',
 	})
@@ -35,6 +35,7 @@ export class EduSharingController {
 		return ticket;
 	}
 
+	@Authenticate('jwt')
 	@ApiOperation({
 		summary:
 			'Gets detailed information about a ticket. Will throw an exception if the given ticket is not valid anymore.',
