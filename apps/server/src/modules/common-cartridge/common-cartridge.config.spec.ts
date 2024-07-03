@@ -7,6 +7,7 @@ describe('commonCartridgeConfig', () => {
 
 			expect(result).toStrictEqual<CommonCartridgeConfig>({
 				NEST_LOG_LEVEL: 'error',
+				INCOMING_REQUEST_TIMEOUT: 600000,
 			});
 		});
 	});
