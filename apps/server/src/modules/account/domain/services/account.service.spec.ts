@@ -579,6 +579,16 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('updateLastLogin', () => {
+		it('should call updateLastLogin in accountServiceDb', async () => {
+			const someId = new ObjectId().toHexString();
+
+			await accountService.updateLastLogin(someId, new Date());
+
+			expect(accountServiceDb.updateLastLogin).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('updateLastTriedFailedLogin', () => {
 		describe('When calling updateLastTriedFailedLogin in accountService', () => {
 			it('should call updateLastTriedFailedLogin in accountServiceDb', async () => {
