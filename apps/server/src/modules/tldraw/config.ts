@@ -17,6 +17,7 @@ export interface TldrawConfig {
 	API_HOST: number;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
 	TLDRAW_FINALIZE_DELAY: number;
+	PERFORMANCE_MEASURE_ENABLED: boolean;
 }
 
 export const TLDRAW_DB_URL: string = Configuration.get('TLDRAW_DB_URL') as string;
@@ -24,7 +25,7 @@ export const TLDRAW_SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as nu
 
 const tldrawConfig = {
 	TLDRAW_DB_URL,
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
+	NEST_LOG_LEVEL: Configuration.get('TLDRAW__LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	TLDRAW_DB_COMPRESS_THRESHOLD: Configuration.get('TLDRAW__DB_COMPRESS_THRESHOLD') as number,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
@@ -39,6 +40,7 @@ const tldrawConfig = {
 	API_HOST: Configuration.get('API_HOST') as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
 	TLDRAW_FINALIZE_DELAY: Configuration.get('TLDRAW__FINALIZE_DELAY') as number,
+	PERFORMANCE_MEASURE_ENABLED: Configuration.get('TLDRAW__PERFORMANCE_MEASURE_ENABLED') as boolean,
 };
 
 export const config = () => tldrawConfig;
