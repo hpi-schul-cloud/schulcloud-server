@@ -16,12 +16,25 @@ appPromise
 				{
 					ldapSchoolIdentifier: { $exists: true },
 					inMaintenanceSince: { $exists: true },
+					$or: [{ inUserMigration: { $exists: false } }, { inUserMigration: false }],
 				},
 				{ $unset: { inMaintenanceSince: '' }, currentYear: nextSchoolYearId._id }
 			)
 			.exec();
 
+		const resultMigratingSchools = await schoolModel
+			.updateMany(
+				{
+					ldapSchoolIdentifier: { $exists: true },
+					inMaintenanceSince: { $exists: true },
+					inUserMigration: true,
+				},
+				{ currentYear: nextSchoolYearId._id }
+			)
+			.exec();
+
 		info(`LDAP Schools ended their Maintenance mode: ${resultLdapSchools.modifiedCount} schools updated`);
+		info(`Migrating Schools changed year: ${resultMigratingSchools.modifiedCount} schools updated`);
 
 		return process.exit(0);
 	})
