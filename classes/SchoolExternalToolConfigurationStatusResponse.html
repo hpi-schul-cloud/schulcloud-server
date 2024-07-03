@@ -141,7 +141,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#isDeactivated" >isDeactivated</a>
+                                <a href="#isGloballyDeactivated" >isGloballyDeactivated</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -218,11 +218,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isDeactivated"></a>
+                    <a name="isGloballyDeactivated"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>isDeactivated</b></span>
-                        <a href="#isDeactivated"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isGloballyDeactivated</b></span>
+                        <a href="#isGloballyDeactivated"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -237,7 +237,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: Boolean, description: &#x27;Is the tool deactivated, because of school administrator?&#x27;})<br />
+                            @ApiProperty({type: Boolean, description: &#x27;Is the tool deactivated, because of instance administrator?&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -310,13 +310,13 @@ export class SchoolExternalToolConfigurationStatusResponse {
 
 	@ApiProperty({
 		type: Boolean,
-		description: &#x27;Is the tool deactivated, because of school administrator?&#x27;,
+		description: &#x27;Is the tool deactivated, because of instance administrator?&#x27;,
 	})
-	isDeactivated: boolean;
+	isGloballyDeactivated: boolean;
 
 	constructor(props: SchoolExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool &#x3D; props.isOutdatedOnScopeSchool;
-		this.isDeactivated &#x3D; props.isDeactivated;
+		this.isGloballyDeactivated &#x3D; props.isGloballyDeactivated;
 	}
 }
 </code></pre>

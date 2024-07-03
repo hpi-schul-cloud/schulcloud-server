@@ -79,7 +79,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -89,9 +89,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >SchoolExternalToolRequestMapper</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >Migration20240627134214</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,10 +119,17 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts</code>
+            <code>apps/server/src/migrations/mikro-orm/Migration20240627134214.ts</code>
         </p>
 
 
+
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>Migration</code>
+            </p>
 
 
 
@@ -136,11 +147,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mapRequestToCustomParameterEntryDO" >mapRequestToCustomParameterEntryDO</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#down" >down</a>
                             </li>
                             <li>
-                                <a href="#mapSchoolExternalToolRequest" >mapSchoolExternalToolRequest</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#up" >up</a>
                             </li>
                         </ul>
                     </td>
@@ -155,6 +167,7 @@
 </section>
 
 
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -164,26 +177,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapRequestToCustomParameterEntryDO"></a>
+                    <a name="down"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>mapRequestToCustomParameterEntryDO</b></span>
-                        <a href="#mapRequestToCustomParameterEntryDO"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Async</span>
+                        <span ><b>down</b></span>
+                        <a href="#down"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapRequestToCustomParameterEntryDO(customParameterParams: CustomParameterEntryParam[])</code>
+                    <code>down()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/migrations/mikro-orm/Migration20240627134214.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -191,40 +204,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>customParameterParams</td>
-                                            <td>
-                                                        <code>CustomParameterEntryParam[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>CustomParameterEntry[]</code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -233,24 +216,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapSchoolExternalToolRequest"></a>
+                    <a name="up"></a>
                     <span class="name">
-                        <span ><b>mapSchoolExternalToolRequest</b></span>
-                        <a href="#mapSchoolExternalToolRequest"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Async</span>
+                        <span ><b>up</b></span>
+                        <a href="#up"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapSchoolExternalToolRequest(request: <a href="../classes/SchoolExternalToolPostParams.html" target="_self">SchoolExternalToolPostParams</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>up()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="4"
+                                    class="link-to-prism">apps/server/src/migrations/mikro-orm/Migration20240627134214.ts:4</a></div>
                         </td>
                     </tr>
 
@@ -258,94 +243,65 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>request</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolExternalToolPostParams.html" target="_self" >SchoolExternalToolPostParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolDto" target="_self" >SchoolExternalToolDto</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
-import {
-	CustomParameterEntryParam,
-	SchoolExternalToolConfigurationStatus,
-	SchoolExternalToolPostParams,
-} from &#x27;../controller/dto&#x27;;
-import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Migration } from &#x27;@mikro-orm/migrations-mongodb&#x27;;
 
-@Injectable()
-export class SchoolExternalToolRequestMapper {
-	mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalToolDto {
-		return {
-			id: new ObjectId().toHexString(),
-			toolId: request.toolId,
-			schoolId: request.schoolId,
-			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
-			status: new SchoolExternalToolConfigurationStatus({
-				isOutdatedOnScopeSchool: false,
-				isDeactivated: request.isDeactivated,
-			}),
-		};
+export class Migration20240627134214 extends Migration {
+	async up(): Promise&lt;void&gt; {
+		await this.driver.aggregate(&#x27;school-external-tools&#x27;, [
+			{ $set: { isDeactivated: { $ifNull: [&#x27;$status.isDeactivated&#x27;, false] } } },
+			{ $unset: &#x27;status&#x27; },
+			{ $out: &#x27;school-external-tools&#x27; },
+		]);
+
+		console.info(&#x60;&#x27;status.isDeactivated&#x27; has moved to &#x27;isDeactivated&#x27; for all school-external-tools&#x60;);
 	}
 
-	private mapRequestToCustomParameterEntryDO(
-		customParameterParams: CustomParameterEntryParam[]
-	): CustomParameterEntry[] {
-		return customParameterParams.map((customParameterParam: CustomParameterEntryParam) &#x3D;&gt; {
-			return {
-				name: customParameterParam.name,
-				value: customParameterParam.value || undefined,
-			};
-		});
+	async down(): Promise&lt;void&gt; {
+		await this.driver.nativeUpdate(
+			&#x27;school-external-tools&#x27;,
+			{ isDeactivated: true },
+			{
+				$set: {
+					status: {
+						isOutdatedOnScopeSchool: false,
+						isDeactivated: true,
+					},
+				},
+			}
+		);
+
+		await this.driver.nativeUpdate(
+			&#x27;school-external-tools&#x27;,
+			{},
+			{
+				$unset: { isDeactivated: &#x27;&#x27; },
+			}
+		);
+
+		console.info(&#x60;All school-external-tools were reverted to using &#x27;status&#x27;&#x60;);
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -380,8 +336,8 @@ export class SchoolExternalToolRequestMapper {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolRequestMapper.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Migration20240627134214.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

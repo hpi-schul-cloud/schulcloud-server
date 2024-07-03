@@ -248,8 +248,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="126"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:126</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -341,8 +341,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -433,8 +433,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -525,8 +525,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -618,8 +618,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -712,8 +712,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -804,14 +804,13 @@ import {
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ExternalToolSearchListResponse } from &#x27;../../external-tool/controller/dto&#x27;;
-import { SchoolExternalTool, SchoolExternalToolMetadata } from &#x27;../domain&#x27;;
+import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from &#x27;../domain&#x27;;
 import {
 	SchoolExternalToolMetadataMapper,
 	SchoolExternalToolRequestMapper,
 	SchoolExternalToolResponseMapper,
 } from &#x27;../mapper&#x27;;
 import { SchoolExternalToolUc } from &#x27;../uc&#x27;;
-import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
 import {
 	SchoolExternalToolIdParams,
 	SchoolExternalToolMetadataResponse,
@@ -825,12 +824,7 @@ import {
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;tools/school-external-tools&#x27;)
 export class ToolSchoolController {
-	constructor(
-		private readonly schoolExternalToolUc: SchoolExternalToolUc,
-		private readonly responseMapper: SchoolExternalToolResponseMapper,
-		private readonly requestMapper: SchoolExternalToolRequestMapper,
-		private readonly logger: LegacyLogger
-	) {}
+	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc, private readonly logger: LegacyLogger) {}
 
 	@Get()
 	@ApiFoundResponse({ description: &#x27;SchoolExternalTools has been found.&#x27;, type: ExternalToolSearchListResponse })
@@ -844,7 +838,8 @@ export class ToolSchoolController {
 		const found: SchoolExternalTool[] &#x3D; await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
 		});
-		const response: SchoolExternalToolSearchListResponse &#x3D; this.responseMapper.mapToSearchListResponse(found);
+		const response: SchoolExternalToolSearchListResponse &#x3D;
+			SchoolExternalToolResponseMapper.mapToSearchListResponse(found);
 		return response;
 	}
 
@@ -860,7 +855,8 @@ export class ToolSchoolController {
 			currentUser.userId,
 			params.schoolExternalToolId
 		);
-		const mapped: SchoolExternalToolResponse &#x3D; this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
+		const mapped: SchoolExternalToolResponse &#x3D;
+			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
 		return mapped;
 	}
 
@@ -875,14 +871,16 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise&lt;SchoolExternalToolResponse&gt; {
-		const schoolExternalToolDto: SchoolExternalToolDto &#x3D; this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolProps &#x3D;
+			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 		const updated: SchoolExternalTool &#x3D; await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
 			schoolExternalToolDto
 		);
 
-		const mapped: SchoolExternalToolResponse &#x3D; this.responseMapper.mapToSchoolExternalToolResponse(updated);
+		const mapped: SchoolExternalToolResponse &#x3D;
+			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(updated);
 		this.logger.debug(&#x60;SchoolExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}&#x60;);
 		return mapped;
 	}
@@ -916,7 +914,8 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise&lt;SchoolExternalToolResponse&gt; {
-		const schoolExternalToolDto: SchoolExternalToolDto &#x3D; this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolProps &#x3D;
+			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 
 		const createdSchoolExternalToolDO: SchoolExternalTool &#x3D; await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
@@ -924,7 +923,7 @@ export class ToolSchoolController {
 		);
 
 		const response: SchoolExternalToolResponse &#x3D;
-			this.responseMapper.mapToSchoolExternalToolResponse(createdSchoolExternalToolDO);
+			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(createdSchoolExternalToolDO);
 
 		this.logger.debug(&#x60;SchoolExternalTool with id ${response.id} was created by user with id ${currentUser.userId}&#x60;);
 

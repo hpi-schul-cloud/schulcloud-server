@@ -652,7 +652,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Scope } from &#x27;@shared/repo/scope&#x27;;
 
@@ -672,10 +672,8 @@ export class SchoolExternalToolScope extends Scope&lt;SchoolExternalToolEntity&g
 	}
 
 	byIsDeactivated(isDeactivated?: boolean): this {
-		if (isDeactivated) {
-			this.addQuery({ status: { isDeactivated } });
-		} else if (isDeactivated &#x3D;&#x3D;&#x3D; false) {
-			this.addQuery({ $or: [{ status: { isDeactivated } }, { status: undefined }] });
+		if (isDeactivated !&#x3D;&#x3D; undefined) {
+			this.addQuery({ isDeactivated });
 		}
 		return this;
 	}

@@ -1126,9 +1126,6 @@
                             <a href="#schoolEntityFactory" title="apps/server/src/shared/testing/factory/school-entity.factory.ts" ><b>schoolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-entity.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#schoolExternalToolConfigurationStatusEntityFactory" title="apps/server/src/modules/tool/school-external-tool/testing/school-external-tool-configuration-status-entity.factory.ts" ><b>schoolExternalToolConfigurationStatusEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-configuration-status-entity.factory.ts)</a>
-                        </li>
-                        <li>
                             <a href="#schoolExternalToolConfigurationStatusFactory" title="apps/server/src/modules/tool/school-external-tool/testing/school-external-tool-configuration-status.factory.ts" ><b>schoolExternalToolConfigurationStatusFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-configuration-status.factory.ts)</a>
                         </li>
                         <li>
@@ -20786,34 +20783,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/tool/school-external-tool/testing/school-external-tool-configuration-status-entity.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="schoolExternalToolConfigurationStatusEntityFactory"></a>
-                    <span class="name">
-                        <span ><b>schoolExternalToolConfigurationStatusEntityFactory</b></span>
-                        <a href="#schoolExternalToolConfigurationStatusEntityFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatusEntity&gt;(() &#x3D;&gt; {
-		return {
-			isOutdatedOnScopeSchool: false,
-			isDeactivated: false,
-		};
-	})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/modules/tool/school-external-tool/testing/school-external-tool-configuration-status.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -20833,7 +20802,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	() &#x3D;&gt; {
 		return {
 			isOutdatedOnScopeSchool: false,
-			isDeactivated: false,
+			isGloballyDeactivated: false,
 		};
 	}
 )</code>
@@ -20862,7 +20831,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatusResponse&gt;(() &#x3D;&gt; {
 		return {
 			isOutdatedOnScopeSchool: false,
-			isDeactivated: false,
+			isGloballyDeactivated: false,
 		};
 	})</code>
                     </td>
@@ -20895,7 +20864,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		tool: externalToolEntityFactory.buildWithId(),
 		school: schoolEntityFactory.buildWithId(),
 		schoolParameters: [{ name: &#x27;schoolMockParameter&#x27;, value: &#x27;mockValue&#x27; }],
-		status: schoolExternalToolConfigurationStatusEntityFactory.build(),
+		isDeactivated: false,
 	};
 })</code>
                     </td>
@@ -20932,6 +20901,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			}),
 		],
 		toolId: &#x27;toolId&#x27;,
+		isDeactivated: false,
 		status: schoolExternalToolConfigurationStatusFactory.build(),
 	};
 })</code>

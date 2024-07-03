@@ -305,7 +305,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolDto: <a href="../undefineds/SchoolExternalToolDto.html" target="_self">SchoolExternalToolDto</a>)</code>
+                    <code>createSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolDto: <a href="../interfaces/SchoolExternalToolProps.html" target="_self">SchoolExternalToolProps</a>)</code>
                 </td>
             </tr>
 
@@ -348,7 +348,7 @@
                                         <tr>
                                                 <td>schoolExternalToolDto</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolDto" target="_self" >SchoolExternalToolDto</a></code>
+                                                            <code><a href="../interfaces/SchoolExternalToolProps.html" target="_self" >SchoolExternalToolProps</a></code>
                                             </td>
 
                                             <td>
@@ -816,7 +816,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolExternalToolDto: <a href="../undefineds/SchoolExternalToolDto.html" target="_self">SchoolExternalToolDto</a>)</code>
+                    <code>updateSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolExternalToolDto: <a href="../interfaces/SchoolExternalToolProps.html" target="_self">SchoolExternalToolProps</a>)</code>
                 </td>
             </tr>
 
@@ -871,7 +871,7 @@
                                         <tr>
                                                 <td>schoolExternalToolDto</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolDto" target="_self" >SchoolExternalToolDto</a></code>
+                                                            <code><a href="../interfaces/SchoolExternalToolProps.html" target="_self" >SchoolExternalToolProps</a></code>
                                             </td>
 
                                             <td>
@@ -908,9 +908,9 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { School, SchoolService } from &#x27;@src/modules/school&#x27;;
 import { CommonToolMetadataService } from &#x27;../../common/service/common-tool-metadata.service&#x27;;
 import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
-import { SchoolExternalTool, SchoolExternalToolMetadata } from &#x27;../domain&#x27;;
+import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from &#x27;../domain&#x27;;
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from &#x27;../service&#x27;;
-import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from &#x27;./dto/school-external-tool.types&#x27;;
+import { SchoolExternalToolQueryInput } from &#x27;./dto/school-external-tool.types&#x27;;
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -940,7 +940,7 @@ export class SchoolExternalToolUc {
 
 	async createSchoolExternalTool(
 		userId: EntityId,
-		schoolExternalToolDto: SchoolExternalToolDto
+		schoolExternalToolDto: SchoolExternalToolProps
 	): Promise&lt;SchoolExternalTool&gt; {
 		const schoolExternalTool &#x3D; new SchoolExternalTool({ ...schoolExternalToolDto });
 
@@ -998,7 +998,7 @@ export class SchoolExternalToolUc {
 	async updateSchoolExternalTool(
 		userId: EntityId,
 		schoolExternalToolId: string,
-		schoolExternalToolDto: SchoolExternalToolDto
+		schoolExternalToolDto: SchoolExternalToolProps
 	): Promise&lt;SchoolExternalTool&gt; {
 		const schoolExternalTool &#x3D; new SchoolExternalTool({ ...schoolExternalToolDto });
 
