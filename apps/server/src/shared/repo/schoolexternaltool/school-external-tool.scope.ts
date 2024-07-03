@@ -1,4 +1,4 @@
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import type { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 
@@ -18,10 +18,8 @@ export class SchoolExternalToolScope extends Scope<SchoolExternalToolEntity> {
 	}
 
 	byIsDeactivated(isDeactivated?: boolean): this {
-		if (isDeactivated) {
-			this.addQuery({ status: { isDeactivated } });
-		} else if (isDeactivated === false) {
-			this.addQuery({ $or: [{ status: { isDeactivated } }, { status: undefined }] });
+		if (isDeactivated !== undefined) {
+			this.addQuery({ isDeactivated });
 		}
 		return this;
 	}

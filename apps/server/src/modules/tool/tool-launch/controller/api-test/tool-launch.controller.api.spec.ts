@@ -25,10 +25,7 @@ import {
 	externalToolEntityFactory,
 } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import {
-	schoolExternalToolConfigurationStatusEntityFactory,
-	schoolExternalToolEntityFactory,
-} from '../../../school-external-tool/testing';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { LaunchRequestMethod } from '../../types';
 import { ContextExternalToolBodyParams, ContextExternalToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
@@ -242,9 +239,7 @@ describe('ToolLaunchController (API)', () => {
 					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 						tool: externalToolEntity,
 						school,
-						status: schoolExternalToolConfigurationStatusEntityFactory.build({
-							isDeactivated: true,
-						}),
+						isDeactivated: true,
 					});
 					const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 						schoolTool: schoolExternalToolEntity,

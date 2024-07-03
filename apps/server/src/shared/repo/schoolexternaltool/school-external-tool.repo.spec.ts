@@ -6,11 +6,7 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import {
-	schoolExternalToolConfigurationStatusEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolExternalToolFactory,
-} from '@modules/tool/school-external-tool/testing';
+import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { type SchoolEntity } from '@shared/domain/entity';
@@ -55,15 +51,13 @@ describe(SchoolExternalToolRepo.name, () => {
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
-			status: schoolExternalToolConfigurationStatusEntityFactory.build({ isDeactivated: false }),
+			isDeactivated: false,
 		});
-		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
-			status: undefined,
-		});
+		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
 		const schoolExternalTool3: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
-			status: schoolExternalToolConfigurationStatusEntityFactory.build({ isDeactivated: true }),
+			isDeactivated: true,
 		});
 
 		return { externalToolEntity, school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 };

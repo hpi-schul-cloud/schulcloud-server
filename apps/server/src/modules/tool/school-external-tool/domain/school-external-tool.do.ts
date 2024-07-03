@@ -1,6 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
-import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
+import { SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
 
 export interface SchoolExternalToolProps extends AuthorizableObject {
 	id: string;
@@ -12,6 +12,8 @@ export interface SchoolExternalToolProps extends AuthorizableObject {
 	schoolId: string;
 
 	parameters: CustomParameterEntry[];
+
+	isDeactivated: boolean;
 
 	status?: SchoolExternalToolConfigurationStatus;
 }
@@ -37,11 +39,15 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 		return this.props.parameters;
 	}
 
-	get status(): SchoolExternalToolConfigurationStatus | undefined {
-		return this.props.status;
+	get isDeactivated(): boolean {
+		return this.props.isDeactivated;
 	}
 
-	set status(value: SchoolExternalToolConfigurationStatus | undefined) {
+	get status(): SchoolExternalToolConfigurationStatus {
+		return this.props.status ?? { isOutdatedOnScopeSchool: false, isGloballyDeactivated: false };
+	}
+
+	set status(value: SchoolExternalToolConfigurationStatus) {
 		this.props.status = value;
 	}
 }
