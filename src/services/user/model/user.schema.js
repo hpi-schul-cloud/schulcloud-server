@@ -30,10 +30,10 @@ const userSchema = new Schema(
 			required: true,
 		},
 
-		firstName: { type: String, required: true },
+		firstName: { type: String, required: true, default: '' },
 		firstNameSearchValues: { type: Schema.Types.Array },
 		middleName: { type: String },
-		lastName: { type: String, required: true },
+		lastName: { type: String, required: true, default: '' },
 		lastNameSearchValues: { type: Schema.Types.Array },
 		namePrefix: { type: String },
 		nameSuffix: { type: String },
