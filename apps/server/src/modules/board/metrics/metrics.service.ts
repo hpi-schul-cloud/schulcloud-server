@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { UserService } from '@src/modules/user';
-import { Gauge, Summary, register } from 'prom-client';
+import { Counter, Gauge, Summary, register } from 'prom-client';
 
 type ClientId = string;
 type Role = 'owner' | 'editor' | 'viewer';
@@ -18,6 +18,8 @@ export class MetricsService {
 	private numberOfViewersOnServerCounter: Gauge<string>;
 
 	private executionTimesSummary: Map<string, Summary<string>> = new Map();
+
+	private actionCounters: Map<string, Counter<string>> = new Map();
 
 	constructor(private readonly userService: UserService) {
 		this.numberOfBoardroomsOnServerCounter = new Gauge({
@@ -96,5 +98,24 @@ export class MetricsService {
 			register.registerMetric(summary);
 		}
 		summary.observe(value);
+	}
+
+	public incrementActionCount(actionName: string): void {
+		let counter = this.actionCounters.get(actionName);
+
+		if (!counter) {
+			counter = new Counter({
+				name: `sc_boards_count_${actionName}`,
+				help: 'Number of calls for a specific action per minute',
+				// async collect() {
+				// 	// Invoked when the registry collects its metrics' values.
+				// 	const currentValue = await somethingAsync();
+				// 	this.set(currentValue);
+				// },
+			});
+			this.actionCounters.set(actionName, counter);
+			register.registerMetric(counter);
+		}
+		counter.inc();
 	}
 }
