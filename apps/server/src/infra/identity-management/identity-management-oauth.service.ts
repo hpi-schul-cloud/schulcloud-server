@@ -1,4 +1,4 @@
-import { OauthConfigDto } from '@modules/system/service/dto';
+import { OauthConfig } from '@modules/system/domain';
 
 export abstract class IdentityManagementOauthService {
 	/**
@@ -6,7 +6,7 @@ export abstract class IdentityManagementOauthService {
 	 * @returns the oauth config of the IDM.
 	 * @throws an error if the IDM oauth config is not available.
 	 */
-	abstract getOauthConfig(): Promise<OauthConfigDto>;
+	abstract getOauthConfig(): Promise<OauthConfig>;
 
 	/**
 	 * Checks if the IDM oauth config is available.

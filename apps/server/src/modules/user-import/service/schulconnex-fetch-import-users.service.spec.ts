@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { SchulconnexResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
+import type { System } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
@@ -10,6 +12,7 @@ import {
 	schoolEntityFactory,
 	setupEntities,
 	systemEntityFactory,
+	systemFactory,
 	userDoFactory,
 } from '@shared/testing';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
@@ -26,6 +29,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				SchulconnexFetchImportUsersService,
 				{
@@ -73,12 +77,13 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		describe('when fetching the data', () => {
 			const setup = () => {
 				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
-				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build();
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [system],
+					systems: [systemEntity],
 					externalId: 'externalSchoolId',
 				});
-				const importUser: ImportUser = createImportUser(externalUserData, school, system);
+				const importUser: ImportUser = createImportUser(externalUserData, school, systemEntity);
 
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([externalUserData]);
 
@@ -111,9 +116,8 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 
 		describe('when the school has no external id', () => {
 			const setup = () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build();
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [system],
 					externalId: undefined,
 				});
 

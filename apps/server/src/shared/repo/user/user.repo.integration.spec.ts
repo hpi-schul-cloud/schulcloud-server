@@ -1,8 +1,9 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { type SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { UserParentsEntityProps } from '@shared/domain/entity/user-parents.entity';
 import { SortOrder } from '@shared/domain/interface';
 import {

@@ -1,9 +1,11 @@
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
-import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { ImportUser, SchoolEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { System } from '../../system';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexImportUserMapper } from '../mapper';
 
@@ -11,10 +13,11 @@ import { SchulconnexImportUserMapper } from '../mapper';
 export class SchulconnexFetchImportUsersService {
 	constructor(
 		private readonly schulconnexRestClient: SchulconnexRestClient,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly em: EntityManager
 	) {}
 
-	public async getData(school: SchoolEntity, system: SystemEntity): Promise<ImportUser[]> {
+	public async getData(school: SchoolEntity, system: System): Promise<ImportUser[]> {
 		const externalSchoolId: string | undefined = school.externalId;
 		if (!externalSchoolId) {
 			throw new UserImportSchoolExternalIdMissingLoggableException(school.id);
@@ -28,7 +31,8 @@ export class SchulconnexFetchImportUsersService {
 		const mappedImportUsers: ImportUser[] = SchulconnexImportUserMapper.mapDataToUserImportEntities(
 			response,
 			system,
-			school
+			school,
+			this.em
 		);
 
 		return mappedImportUsers;

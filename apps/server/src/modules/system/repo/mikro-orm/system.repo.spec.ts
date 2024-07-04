@@ -2,12 +2,12 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
-import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
-import { SystemEntityMapper } from './mapper/system-entity.mapper';
+import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
+import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '../../entity';
+import { SystemEntityMapper } from './mapper';
 import { SystemMikroOrmRepo } from './system.repo';
 
 describe(SystemMikroOrmRepo.name, () => {
@@ -31,6 +31,72 @@ describe(SystemMikroOrmRepo.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	describe('find', () => {
+		describe('when no filter is provided', () => {
+			const setup = async () => {
+				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
+				const oauthSystem = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
+
+				await em.persistAndFlush([ldapSystem, oauthSystem]);
+				em.clear();
+
+				return {
+					ldapSystem,
+					oauthSystem,
+				};
+			};
+
+			it('should return all systems', async () => {
+				const { ldapSystem, oauthSystem } = await setup();
+
+				const result = await repo.find({});
+
+				expect(result).toEqual([SystemEntityMapper.mapToDo(ldapSystem), SystemEntityMapper.mapToDo(oauthSystem)]);
+			});
+		});
+
+		describe('when no system matches the filter', () => {
+			const setup = async () => {
+				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
+
+				await em.persistAndFlush([ldapSystem]);
+				em.clear();
+			};
+
+			it('should return an empty array', async () => {
+				await setup();
+
+				const result = await repo.find({ types: [SystemType.OAUTH] });
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when a system matches the filter', () => {
+			const setup = async () => {
+				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
+				const oauthSystem1 = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
+				const oauthSystem2 = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
+
+				await em.persistAndFlush([ldapSystem, oauthSystem1, oauthSystem2]);
+				em.clear();
+
+				return {
+					oauthSystem1,
+					oauthSystem2,
+				};
+			};
+
+			it('should return the systems', async () => {
+				const { oauthSystem1, oauthSystem2 } = await setup();
+
+				const result = await repo.find({ types: [SystemType.OAUTH] });
+
+				expect(result).toEqual([SystemEntityMapper.mapToDo(oauthSystem1), SystemEntityMapper.mapToDo(oauthSystem2)]);
+			});
+		});
 	});
 
 	describe('getSystemById', () => {

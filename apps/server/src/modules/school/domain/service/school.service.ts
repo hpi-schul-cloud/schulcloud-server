@@ -98,6 +98,13 @@ export class SchoolService {
 		return updatedSchool;
 	}
 
+	// TODO test
+	public async save(school: School): Promise<School> {
+		const updatedSchool: School = await this.schoolRepo.save(school);
+
+		return updatedSchool;
+	}
+
 	public async removeSystemFromSchool(school: School, systemId: EntityId): Promise<void> {
 		if (!school.hasSystem(systemId)) {
 			throw new SchoolHasNoSystemLoggableException(school.id, systemId);

@@ -1,12 +1,12 @@
-import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
+import { OauthConfigEntity } from '@modules/system/entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { OauthConfigEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { AuthCodeFailureLoggableException } from '../loggable';
 import { HydraSsoService, OAuthService } from '../service';
+import { HydraRedirectDto } from '../service/dto';
 
 @Injectable()
 export class HydraOauthUc {

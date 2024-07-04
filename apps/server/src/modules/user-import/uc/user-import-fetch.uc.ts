@@ -1,8 +1,9 @@
 import { AuthorizationService } from '@modules/authorization';
 import { Inject, Injectable } from '@nestjs/common';
-import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { System } from '../../system';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
@@ -22,7 +23,7 @@ export class UserImportFetchUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
 		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
 
-		const system: SystemEntity = await this.userImportService.getMigrationSystem();
+		const system: System = await this.userImportService.getMigrationSystem();
 		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(user.school, system);
 
 		const filteredFetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(

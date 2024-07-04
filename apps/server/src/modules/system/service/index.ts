@@ -1,4 +1,2 @@
-export { LegacySystemService } from './legacy-system.service';
-export { SystemDto, OauthConfigDto, OidcConfigDto } from './dto';
+// TODO remove index files to prevent cycles
 export { SystemService } from './system.service';
-export { SystemOidcService } from './system-oidc.service';

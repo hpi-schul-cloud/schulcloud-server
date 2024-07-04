@@ -14,7 +14,6 @@ describe('KeycloakIdentityManagementService', () => {
 	let kcIdmOauthService: KeycloakIdentityManagementOauthService;
 	let kcAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let configServiceMock: DeepMocked<ConfigService>;
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 
 	const clientId = 'TheClientId';
@@ -46,7 +45,6 @@ describe('KeycloakIdentityManagementService', () => {
 		kcIdmOauthService = module.get(KeycloakIdentityManagementOauthService);
 		kcAdminServiceMock = module.get(KeycloakAdministrationService);
 		httpServiceMock = module.get(HttpService);
-		configServiceMock = module.get(ConfigService);
 	});
 
 	afterEach(() => {
@@ -57,7 +55,6 @@ describe('KeycloakIdentityManagementService', () => {
 	const setupOauthConfigurationReturn = () => {
 		oAuthEncryptionService.encrypt.mockImplementation((value: string) => `${value}_enc`);
 		oAuthEncryptionService.decrypt.mockImplementation((value: string) => value.substring(0, -4));
-		configServiceMock.get.mockReturnValue('testdomain');
 		kcAdminServiceMock.callKcAdminClient.mockResolvedValue({} as KeycloakAdminClient);
 		kcAdminServiceMock.getClientId.mockReturnValueOnce(clientId);
 		kcAdminServiceMock.getClientSecret.mockResolvedValueOnce(clientSecret);
@@ -128,7 +125,6 @@ describe('KeycloakIdentityManagementService', () => {
 		describe('when localhost is set as SC DOMAIN', () => {
 			const setup = () => {
 				setupOauthConfigurationReturn();
-				configServiceMock.get.mockReturnValue('localhost');
 			};
 
 			it('should return the keycloak OAuth redirect URL for local development', async () => {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { OauthConfigResponse } from '@modules/system/controller/dto/oauth-config.response';
+import { OauthConfigResponse } from './oauth-config.response';
 
 export class PublicSystemResponse {
 	@ApiProperty({

@@ -3,17 +3,17 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { AuthorizationParams } from '@modules/oauth/controller/dto/authorization.params';
 import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
+import { OauthConfigEntity } from '@modules/system/entity';
 import { HttpService } from '@nestjs/axios';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { OauthConfigEntity } from '@shared/domain/entity';
 import { LtiToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 import QueryString from 'qs';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()
 export class HydraSsoService {

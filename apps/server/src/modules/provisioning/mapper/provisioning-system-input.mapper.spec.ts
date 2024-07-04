@@ -1,17 +1,12 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { systemFactory } from '@shared/testing';
 import { ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from './provisioning-system-input.mapper';
 
 describe('SchoolUcMapper', () => {
 	describe('mapToInternal', () => {
 		it('should map provisioningStrategy', () => {
-			const dto: SystemDto = new SystemDto({
-				id: 'systemId',
-				type: '',
-				provisioningStrategy: SystemProvisioningStrategy.SANIS,
-				provisioningUrl: 'provisioningUrl',
-			});
+			const dto = systemFactory.build();
 
 			const result: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(dto);
 
@@ -23,7 +18,7 @@ describe('SchoolUcMapper', () => {
 		});
 
 		it('should map provisioningStrategy, when input undefined', () => {
-			const dto: SystemDto = new SystemDto({ type: '' });
+			const dto = systemFactory.build();
 
 			const result: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(dto);
 

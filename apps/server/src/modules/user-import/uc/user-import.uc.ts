@@ -8,11 +8,12 @@ import { BadRequestException, ForbiddenException, Inject, Injectable } from '@ne
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
-import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { System, SystemService } from '../../system';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
@@ -43,7 +44,7 @@ export class UserImportUc {
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemRepo: LegacySystemRepo,
+		private readonly systemService: SystemService,
 		private readonly userRepo: UserRepo,
 		private readonly userService: UserService,
 		private readonly logger: Logger,
@@ -268,7 +269,7 @@ export class UserImportUc {
 		school.inMaintenanceSince = new Date();
 
 		if (useCentralLdap) {
-			const migrationSystem: SystemEntity = await this.userImportService.getMigrationSystem();
+			const migrationSystem: System = await this.userImportService.getMigrationSystem();
 
 			if (school.systems && !school.systems.includes(migrationSystem.id)) {
 				school.systems.push(migrationSystem.id);
@@ -407,9 +408,9 @@ export class UserImportUc {
 			for (const systemId of school.systems) {
 				// very unusual to have more than 1 system
 				// eslint-disable-next-line no-await-in-loop
-				const system: SystemEntity = await this.systemRepo.findById(systemId);
+				const system: System | null = await this.systemService.findById(systemId);
 
-				if (system.ldapConfig) {
+				if (system?.ldapConfig) {
 					throw new LdapAlreadyPersistedException();
 				}
 			}
