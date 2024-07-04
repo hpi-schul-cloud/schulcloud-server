@@ -1,27 +1,37 @@
-import { OauthAdapterService, OauthModule } from '@modules/oauth';
+import { OauthAdapterService } from '@modules/oauth/service';
 import { HttpModule, HttpService } from '@nestjs/axios';
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
-@Global()
-/**
- * @Global is used here to make sure that the module is only instantiated once, with the configuration and can be used in every module.
- * Otherwise, you need to import the module with configuration in every module where you want to use it.
- */
 @Module({})
 export class SchulconnexClientModule {
-	static register(options: SchulconnexRestClientOptions): DynamicModule {
+	static registerAsync(): DynamicModule {
 		return {
-			imports: [HttpModule, OauthModule, LoggerModule],
+			imports: [HttpModule, LoggerModule],
 			module: SchulconnexClientModule,
 			providers: [
+				OauthAdapterService,
 				{
 					provide: SchulconnexRestClient,
-					useFactory: (httpService: HttpService, oauthAdapterService: OauthAdapterService, logger: Logger) =>
-						new SchulconnexRestClient(options, httpService, oauthAdapterService, logger),
-					inject: [HttpService, OauthAdapterService, Logger],
+					useFactory: (
+						httpService: HttpService,
+						oauthAdapterService: OauthAdapterService,
+						logger: Logger,
+						configService: ConfigService
+					) => {
+						const options: SchulconnexRestClientOptions = {
+							apiUrl: configService.get<string>('SCHULCONNEX_CLIENT__API_URL'),
+							tokenEndpoint: configService.get<string>('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT'),
+							clientId: configService.get<string>('SCHULCONNEX_CLIENT__CLIENT_ID'),
+							clientSecret: configService.get<string>('SCHULCONNEX_CLIENT__CLIENT_SECRET'),
+							personenInfoTimeoutInMs: configService.get<number>('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'),
+						};
+						return new SchulconnexRestClient(options, httpService, oauthAdapterService, logger);
+					},
+					inject: [HttpService, OauthAdapterService, Logger, ConfigService],
 				},
 			],
 			exports: [SchulconnexRestClient],

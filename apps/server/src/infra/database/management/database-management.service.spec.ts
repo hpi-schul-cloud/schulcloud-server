@@ -1,7 +1,8 @@
-import { MikroORM } from '@mikro-orm/core';
-import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { ObjectId } from 'mongodb';
+import { MikroORM } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { createCollections } from '@shared/testing';
 import { DatabaseManagementService } from './database-management.service';
 
 const randomChars = () => new ObjectId().toHexString();
@@ -17,6 +18,9 @@ describe('DatabaseManagementService', () => {
 
 		service = module.get(DatabaseManagementService);
 		orm = module.get(MikroORM);
+
+		const em = module.get(EntityManager);
+		await createCollections(em);
 	});
 
 	afterAll(async () => {

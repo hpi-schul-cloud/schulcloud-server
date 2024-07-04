@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '../../../../external-tool/testing';
 import { CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from '../../../domain';
 import { ParameterArrayUnknownKeyValidator } from './parameter-array-unknown-key-validator';
 
@@ -25,7 +25,11 @@ describe(ParameterArrayUnknownKeyValidator.name, () => {
 			it('should return an empty array', () => {
 				const { entries, declarations } = setup();
 
-				const result: ValidationError[] = new ParameterArrayUnknownKeyValidator().validate(entries, declarations);
+				const result: ValidationError[] = new ParameterArrayUnknownKeyValidator().validate(
+					entries,
+					declarations,
+					undefined
+				);
 
 				expect(result).toHaveLength(0);
 			});
@@ -51,7 +55,11 @@ describe(ParameterArrayUnknownKeyValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entries, declarations } = setup();
 
-				const result: ValidationError[] = new ParameterArrayUnknownKeyValidator().validate(entries, declarations);
+				const result: ValidationError[] = new ParameterArrayUnknownKeyValidator().validate(
+					entries,
+					declarations,
+					undefined
+				);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterUnknownLoggableException);
 			});

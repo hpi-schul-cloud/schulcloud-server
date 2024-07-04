@@ -1,4 +1,4 @@
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 
@@ -18,6 +18,12 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 				},
 			],
 		});
+
+		return this;
+	}
+
+	byStatusPending(): this {
+		this.addQuery({ status: [StatusModel.PENDING] });
 
 		return this;
 	}

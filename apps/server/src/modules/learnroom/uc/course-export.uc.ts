@@ -16,7 +16,14 @@ export class CourseExportUc {
 		private readonly authorizationService: AuthorizationReferenceService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
+	public async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[],
+		tasks: string[],
+		columnBoards: string[]
+	): Promise<Buffer> {
 		this.checkFeatureEnabled();
 		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
 		await this.authorizationService.checkPermissionByReferences(
@@ -26,7 +33,7 @@ export class CourseExportUc {
 			context
 		);
 
-		return this.courseExportService.exportCourse(courseId, userId, version);
+		return this.courseExportService.exportCourse(courseId, userId, version, topics, tasks, columnBoards);
 	}
 
 	private checkFeatureEnabled(): void {

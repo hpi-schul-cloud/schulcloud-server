@@ -55,7 +55,7 @@ describe(UserImportFetchUc.name, () => {
 		Object.assign<IUserImportFeatures, IUserImportFeatures>(userImportFeatures, {
 			userMigrationEnabled: true,
 			userMigrationSystemId: new ObjectId().toHexString(),
-			instance: 'n21',
+			useWithUserLoginMigration: true,
 		});
 	});
 
@@ -97,9 +97,7 @@ describe(UserImportFetchUc.name, () => {
 
 				await uc.populateImportUsers(user.id);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
-					Permission.SCHOOL_IMPORT_USERS_MIGRATE,
-				]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_MIGRATE]);
 			});
 
 			it('should filter migrated users', async () => {
@@ -119,6 +117,14 @@ describe(UserImportFetchUc.name, () => {
 				await uc.populateImportUsers(user.id);
 
 				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser]);
+			});
+
+			it('should delete all existing imported users of the school', async () => {
+				const { user } = setup();
+
+				await uc.populateImportUsers(user.id);
+
+				expect(userImportService.deleteImportUsersBySchool).toHaveBeenCalledWith(user.school);
 			});
 
 			it('should save the import users', async () => {

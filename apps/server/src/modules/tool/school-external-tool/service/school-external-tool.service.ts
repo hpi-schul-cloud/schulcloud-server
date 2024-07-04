@@ -1,32 +1,34 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { SchoolExternalToolRepo } from '@shared/repo';
+import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
-import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
-import { SchoolExternalTool } from '../domain';
+import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
-import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
 @Injectable()
 export class SchoolExternalToolService {
 	constructor(
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
-	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
+	public async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
+		let schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
+
+		schoolExternalTool = await this.enrichWithDataFromExternalTool(schoolExternalTool);
+
 		return schoolExternalTool;
 	}
 
-	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
+	public async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
 		let schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
 			toolId: query.toolId,
+			isDeactivated: query.isDeactivated,
 		});
 
 		schoolExternalTools = await this.enrichWithDataFromExternalTools(schoolExternalTools);
@@ -36,69 +38,56 @@ export class SchoolExternalToolService {
 
 	private async enrichWithDataFromExternalTools(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
 		const enrichedTools: SchoolExternalTool[] = await Promise.all(
-			tools.map(async (tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichDataFromExternalTool(tool))
+			tools.map(
+				async (tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichWithDataFromExternalTool(tool)
+			)
 		);
 
 		return enrichedTools;
 	}
 
-	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
+	private async enrichWithDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
-		const status: SchoolExternalToolConfigurationStatus = await this.determineSchoolToolStatus(tool, externalTool);
+		const status: SchoolExternalToolConfigurationStatus = this.determineSchoolToolStatus(tool, externalTool);
+
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
-			...tool,
-			status,
+			...tool.getProps(),
 			name: externalTool.name,
+			status,
 		});
 
 		return schoolExternalTool;
 	}
 
-	private async determineSchoolToolStatus(
+	private determineSchoolToolStatus(
 		tool: SchoolExternalTool,
 		externalTool: ExternalTool
-	): Promise<SchoolExternalToolConfigurationStatus> {
+	): SchoolExternalToolConfigurationStatus {
+		let isOutdatedOnScopeSchool = false;
+
+		const errors: ValidationError[] = this.commonToolValidationService.validateParameters(externalTool, tool);
+
+		if (errors.length) {
+			isOutdatedOnScopeSchool = true;
+		}
+
 		const status: SchoolExternalToolConfigurationStatus = new SchoolExternalToolConfigurationStatus({
-			isOutdatedOnScopeSchool: true,
-			isDeactivated: this.isToolDeactivated(externalTool, tool),
+			isOutdatedOnScopeSchool,
+			isGloballyDeactivated: externalTool.isDeactivated,
 		});
-
-		if (this.toolFeatures.toolStatusWithoutVersions) {
-			try {
-				await this.schoolExternalToolValidationService.validate(tool);
-
-				status.isOutdatedOnScopeSchool = false;
-
-				return status;
-			} catch (err) {
-				return status;
-			}
-		}
-
-		if (externalTool.version <= tool.toolVersion) {
-			status.isOutdatedOnScopeSchool = false;
-
-			return status;
-		}
 
 		return status;
 	}
 
-	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<void> {
-		await this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
+	public deleteSchoolExternalToolById(schoolExternalToolId: EntityId): void {
+		this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
 	}
 
-	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
+	public async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		let createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.save(schoolExternalTool);
-		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
+
+		createdSchoolExternalTool = await this.enrichWithDataFromExternalTool(createdSchoolExternalTool);
+
 		return createdSchoolExternalTool;
-	}
-
-	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
-		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
-			return true;
-		}
-
-		return false;
 	}
 }

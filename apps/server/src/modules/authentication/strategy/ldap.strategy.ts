@@ -1,4 +1,4 @@
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
@@ -30,21 +30,18 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
 		const system: SystemEntity = await this.systemRepo.findById(systemId);
-
 		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
 			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
 		}
 
-		const account: AccountDto = await this.loadAccount(username, system.id, school);
-
+		const account: Account = await this.loadAccount(username, system.id, school);
 		const userId: string = this.checkValue(account.userId);
 
 		this.authenticationService.checkBrutForce(account);
 
 		const user: User = await this.userRepo.findById(userId);
-
 		const ldapDn: string = this.checkValue(user.ldapDn);
 
 		await this.checkCredentials(account, system, ldapDn, password);
@@ -74,7 +71,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	}
 
 	private async checkCredentials(
-		account: AccountDto,
+		account: Account,
 		system: SystemEntity,
 		ldapDn: string,
 		password: string
@@ -89,10 +86,10 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<AccountDto> {
+	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<Account> {
 		const externalSchoolId = this.checkValue(school.externalId);
 
-		let account: AccountDto;
+		let account: Account;
 
 		// TODO having to check for two values in order to find an account is not optimal and should be changed.
 		// The way the name field of Accounts is used for LDAP should be reconsidered, since

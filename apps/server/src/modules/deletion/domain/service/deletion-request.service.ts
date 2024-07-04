@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { ConfigService } from '@nestjs/config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
+import { DeletionConfig } from '../interface';
 
 @Injectable()
 export class DeletionRequestService {
-	constructor(private readonly deletionRequestRepo: DeletionRequestRepo) {}
+	constructor(
+		private readonly deletionRequestRepo: DeletionRequestRepo,
+		private readonly configService: ConfigService<DeletionConfig, true>
+	) {}
 
 	async createDeletionRequest(
 		targetRefId: EntityId,
@@ -37,9 +42,16 @@ export class DeletionRequestService {
 	}
 
 	async findAllItemsToExecute(limit?: number): Promise<DeletionRequest[]> {
-		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(limit);
+		const threshold = this.configService.get<number>('ADMIN_API__MODIFICATION_THRESHOLD_MS');
+		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(threshold, limit);
 
 		return itemsToDelete;
+	}
+
+	async countPendingDeletionRequests(): Promise<number> {
+		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.countPendingDeletionRequests();
+
+		return numberItemsWithStatusPending;
 	}
 
 	async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {

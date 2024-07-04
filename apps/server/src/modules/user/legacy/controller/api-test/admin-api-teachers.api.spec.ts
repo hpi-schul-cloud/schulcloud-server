@@ -1,16 +1,17 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
-	accountFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolEntityFactory,
 	schoolYearFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
@@ -24,9 +25,9 @@ describe('Users Admin Teachers Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
-	let adminAccount: Account;
-	let teacherAccount1: Account;
-	let teacherAccount2: Account;
+	let adminAccount: AccountEntity;
+	let teacherAccount1: AccountEntity;
+	let teacherAccount2: AccountEntity;
 
 	let adminUser: User;
 	let teacherUser1: User;
@@ -61,7 +62,7 @@ describe('Users Admin Teachers Controller (API)', () => {
 			consent: {},
 		});
 
-		const mapUserToAccount = (user: User): Account =>
+		const mapUserToAccount = (user: User): AccountEntity =>
 			accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,

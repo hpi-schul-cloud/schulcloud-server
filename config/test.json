@@ -84,11 +84,20 @@
 		"CLIENT_ID": "schulcloud",
 		"CLIENT_SECRET": "secret"
 	},
-	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" },
+	"ADMIN_API": {
+		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
+		"MODIFICATION_THRESHOLD_MS": 60000,
+		"DELETION_DELAY_MILLISECONDS": 10000
+	},
 	"EXIT_ON_ERROR": false,
 	"TEACHER_STUDENT_VISIBILITY": {
 		"IS_CONFIGURABLE": false,
 		"IS_ENABLED_BY_DEFAULT": true,
 		"IS_VISIBLE": true
+	},
+	"ETHERPAD": {
+		"URI": "http://localhost:9001/api/1/",
+		"PAD_URI": "http://localhost:9001/p",
+		"API_KEY": "381d67e6347d235ac9446"
 	}
 }

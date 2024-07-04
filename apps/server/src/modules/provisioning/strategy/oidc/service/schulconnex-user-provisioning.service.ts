@@ -1,10 +1,12 @@
-import { AccountSaveDto, AccountService } from '@modules/account';
-import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { AccountSave, AccountService } from '@modules/account';
+import { EmailAlreadyExistsLoggable } from '@modules/provisioning/loggable';
+import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
 
@@ -13,7 +15,8 @@ export class SchulconnexUserProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
 	) {}
 
 	public async provisionExternalUser(
@@ -21,56 +24,102 @@ export class SchulconnexUserProvisioningService {
 		systemId: EntityId,
 		schoolId?: string
 	): Promise<UserDO> {
-		let roleRefs: RoleReference[] | undefined;
-		if (externalUser.roles) {
-			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
-			roleRefs = roles.map((role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name }));
-		}
+		const foundUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
 
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
-		let user: UserDO;
+		const isEmailUnique: boolean = await this.checkUniqueEmail(externalUser.email, foundUser?.externalId);
+
+		const roleRefs: RoleReference[] | undefined = await this.createRoleReferences(externalUser.roles);
+
 		let createNewAccount = false;
-		if (existingUser) {
-			user = existingUser;
-			user.firstName = externalUser.firstName ?? existingUser.firstName;
-			user.lastName = externalUser.lastName ?? existingUser.lastName;
-			user.email = externalUser.email ?? existingUser.email;
-			user.roles = roleRefs ?? existingUser.roles;
-			user.schoolId = schoolId ?? existingUser.schoolId;
-			user.birthday = externalUser.birthday ?? existingUser.birthday;
+		let user: UserDO;
+		if (foundUser) {
+			user = this.updateUser(externalUser, foundUser, isEmailUnique, roleRefs, schoolId);
 		} else {
-			createNewAccount = true;
-
 			if (!schoolId) {
 				throw new UnprocessableEntityException(
 					`Unable to create new external user ${externalUser.externalId} without a school`
 				);
 			}
 
-			user = new UserDO({
-				externalId: externalUser.externalId,
-				firstName: externalUser.firstName ?? '',
-				lastName: externalUser.lastName ?? '',
-				email: externalUser.email ?? '',
-				roles: roleRefs ?? [],
-				schoolId,
-				birthday: externalUser.birthday,
-			});
+			createNewAccount = true;
+			user = this.createUser(externalUser, isEmailUnique, schoolId, roleRefs);
 		}
 
 		const savedUser: UserDO = await this.userService.save(user);
 
 		if (createNewAccount) {
-			await this.accountService.saveWithValidation(
-				new AccountSaveDto({
-					userId: savedUser.id,
-					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
-					systemId,
-					activated: true,
-				})
-			);
+			await this.accountService.saveWithValidation({
+				userId: savedUser.id,
+				username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
+				systemId,
+				activated: true,
+			} as AccountSave);
 		}
 
 		return savedUser;
+	}
+
+	private async checkUniqueEmail(email?: string, externalId?: string): Promise<boolean> {
+		if (email) {
+			const isEmailUnique: boolean = await this.userService.isEmailUniqueForExternal(email, externalId);
+
+			if (!isEmailUnique) {
+				this.logger.warning(new EmailAlreadyExistsLoggable(email, externalId));
+			}
+
+			return isEmailUnique;
+		}
+
+		return true;
+	}
+
+	private async createRoleReferences(roles?: RoleName[]): Promise<RoleReference[] | undefined> {
+		if (roles) {
+			const foundRoles: RoleDto[] = await this.roleService.findByNames(roles);
+			const roleRefs = foundRoles.map(
+				(role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name })
+			);
+
+			return roleRefs;
+		}
+
+		return undefined;
+	}
+
+	private updateUser(
+		externalUser: ExternalUserDto,
+		foundUser: UserDO,
+		isEmailUnique: boolean,
+		roleRefs?: RoleReference[],
+		schoolId?: string
+	): UserDO {
+		const user: UserDO = foundUser;
+		user.firstName = externalUser.firstName ?? foundUser.firstName;
+		user.lastName = externalUser.lastName ?? foundUser.lastName;
+		user.email = isEmailUnique ? externalUser.email ?? foundUser.email : foundUser.email;
+		user.roles = roleRefs ?? foundUser.roles;
+		user.schoolId = schoolId ?? foundUser.schoolId;
+		user.birthday = externalUser.birthday ?? foundUser.birthday;
+
+		return user;
+	}
+
+	private createUser(
+		externalUser: ExternalUserDto,
+		isEmailUnique: boolean,
+		schoolId: string,
+		roleRefs?: RoleReference[]
+	): UserDO {
+		const user: UserDO = new UserDO({
+			externalId: externalUser.externalId,
+			firstName: externalUser.firstName ?? '',
+			lastName: externalUser.lastName ?? '',
+			email: isEmailUnique ? externalUser.email ?? '' : '',
+			roles: roleRefs ?? [],
+			schoolId,
+			birthday: externalUser.birthday,
+		});
+
+		return user;
 	}
 }

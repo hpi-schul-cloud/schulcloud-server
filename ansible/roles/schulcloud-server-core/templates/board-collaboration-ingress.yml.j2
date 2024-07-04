@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: board-collaboration-ingress
+  namespace: {{ NAMESPACE }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
+    nginx.org/client-max-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
+    # The following properties added with BC-3606.
+    # The header size of the request is too big. For e.g. state and the permanent growing jwt.
+    # Nginx throws away the Location header, resulting in the 502 Bad Gateway.
+    nginx.ingress.kubernetes.io/client-header-buffer-size: 100k
+    nginx.ingress.kubernetes.io/http2-max-header-size: 96k
+    nginx.ingress.kubernetes.io/large-client-header-buffers: 4 100k
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 96k
+    nginx.org/websocket-services: "board-collaboration-svc"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: BOARD_COLLABORATION_AFFINITY
+    nginx.ingress.kubernetes.io/session-cookie-secure: "true"
+    nginx.ingress.kubernetes.io/session-cookie-domain: {{ DOMAIN }}
+    nginx.ingress.kubernetes.io/session-cookie-samesite: strict
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
+    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+{% if CLUSTER_ISSUER is defined %}
+    cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
+{% endif %}
+
+spec:
+  ingressClassName: {{ INGRESS_CLASS }}
+{% if CLUSTER_ISSUER is defined or (TLS_ENABLED is defined and TLS_ENABLED|bool) %}
+  tls:
+  - hosts:
+      - {{ DOMAIN }}
+{% if CLUSTER_ISSUER is defined %}
+    secretName: {{ DOMAIN }}-tls
+{% endif %}
+{% endif %}
+  rules:
+  - host: {{ DOMAIN }}
+    http:
+      paths:
+      - path: /board-collaboration
+        backend:
+          service:
+            name: board-collaboration-svc
+            port:
+              number: 4450
+        pathType: Prefix

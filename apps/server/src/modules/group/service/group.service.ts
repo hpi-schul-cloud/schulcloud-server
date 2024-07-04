@@ -1,16 +1,16 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import { Course } from '@modules/learnroom/domain';
-import { CourseService } from '@modules/learnroom/service/course.service';
 import { Injectable } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { type UserDO } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupTypes } from '../domain';
+import { Group, GroupDeletedEvent, GroupFilter } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
-	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseService) {}
+	constructor(private readonly groupRepo: GroupRepo, private readonly eventBus: EventBus) {}
 
 	public async findById(id: EntityId): Promise<Group> {
 		const group: Group | null = await this.groupRepo.findGroupById(id);
@@ -34,30 +34,16 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
-	public async findGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes);
+	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findGroups(filter, options);
 
 		return groups;
 	}
 
-	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
+	public async findAvailableGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findAvailableGroups(filter, options);
 
-		return group;
-	}
-
-	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
-		schoolId: EntityId,
-		systemId: EntityId,
-		groupType: GroupTypes
-	): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType(
-			schoolId,
-			systemId,
-			groupType
-		);
-
-		return group;
+		return groups;
 	}
 
 	public async save(group: Group): Promise<Group> {
@@ -69,17 +55,6 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	public async delete(group: Group): Promise<void> {
 		await this.groupRepo.delete(group);
 
-		await this.removeCourseSyncReference(group);
-	}
-
-	private async removeCourseSyncReference(group: Group) {
-		const courses: Course[] = await this.courseService.findBySyncedGroup(group);
-
-		courses.forEach((course: Course): void => {
-			course.studentIds = [];
-			course.syncedWithGroup = undefined;
-		});
-
-		await this.courseService.saveAll(courses);
+		await this.eventBus.publish(new GroupDeletedEvent(group));
 	}
 }

@@ -316,7 +316,7 @@ describe('School Controller (API)', () => {
 
 		describe('when some schools have LDAP login systems', () => {
 			const setup = async () => {
-				const ldapLoginSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const ldapLoginSystem = systemEntityFactory.withLdapConfig().build();
 				const schoolWithLdapLoginSystem = schoolEntityFactory.build({ systems: [ldapLoginSystem] });
 				const schoolWithoutLdapLoginSystem = schoolEntityFactory.build();
 				await em.persistAndFlush([schoolWithLdapLoginSystem, schoolWithoutLdapLoginSystem]);
@@ -426,23 +426,27 @@ describe('School Controller (API)', () => {
 
 		describe('when user is in requested school', () => {
 			const setup = async () => {
-				const systems = systemEntityFactory.buildList(3);
+				const systemWithLdapConfig = systemEntityFactory.withLdapConfig().build();
+				const systemWithOauthConfig = systemEntityFactory.withOauthConfig().build();
+				const systemWithoutProvider = systemEntityFactory.build();
+
+				const systems = [systemWithLdapConfig, systemWithOauthConfig, systemWithoutProvider];
+
 				const school = schoolEntityFactory.build({ systems });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([school, adminAccount, adminUser]);
 				em.clear();
 
-				const expectedResponse = {
-					id: school.id,
-					systems: systems.map((system) => {
-						return {
-							id: system.id,
-							type: system.type,
-							alias: system.alias,
-						};
-					}),
-				};
+				const expectedResponse = systems.map((system) => {
+					return {
+						id: system.id,
+						type: system.type,
+						alias: system.alias,
+						ldapConfig: system.ldapConfig ? { provider: system.ldapConfig.provider } : undefined,
+						oauthConfig: system.oauthConfig ? { provider: system.oauthConfig.provider } : undefined,
+					};
+				});
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 

@@ -2,16 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { ColumnNode } from '@shared/domain/entity';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-} from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing/entity';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
 
@@ -48,10 +42,10 @@ describe(`column update title (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
 			await em.persistAndFlush([teacherAccount, teacherUser, columnNode, columnBoardNode]);
 			em.clear();
@@ -77,7 +71,7 @@ describe(`column update title (api)`, () => {
 
 			await loggedInClient.patch(`${columnNode.id}/title`, { title: newTitle });
 
-			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
@@ -89,7 +83,7 @@ describe(`column update title (api)`, () => {
 			const sanitizedTitle = 'foo bar';
 
 			await loggedInClient.patch(`${columnNode.id}/title`, { title: unsanitizedTitle });
-			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
 		});
@@ -104,11 +98,11 @@ describe(`column update title (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			const title = 'old title';
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode, title });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build({ title });
 
 			await em.persistAndFlush([studentAccount, studentUser, columnNode, columnBoardNode]);
 			em.clear();
@@ -127,7 +121,7 @@ describe(`column update title (api)`, () => {
 
 			expect(response.statusCode).toEqual(403);
 
-			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnNode.id);
 			expect(result.title).toEqual(title);
 		});
 	});

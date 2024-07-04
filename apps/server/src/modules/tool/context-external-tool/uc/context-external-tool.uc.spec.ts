@@ -13,17 +13,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { contextExternalToolFactory, schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool } from '../domain';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import { ContextExternalTool, ContextExternalToolProps } from '../domain';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
+import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 
-describe('ContextExternalToolUc', () => {
+describe(ContextExternalToolUc.name, () => {
 	let module: TestingModule;
 	let uc: ContextExternalToolUc;
 
@@ -80,14 +81,14 @@ describe('ContextExternalToolUc', () => {
 	describe('createContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
-				const userId: EntityId = 'userId';
+				const user: User = userFactory.buildWithId();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -101,54 +102,55 @@ describe('ContextExternalToolUc', () => {
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					contextExternalTool,
-					userId,
+					user,
 					schoolId,
 				};
 			};
 
 			it('should call contextExternalToolService', async () => {
-				const { contextExternalTool, userId, schoolId } = setup();
+				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should call contextExternalToolService to ensure permissions', async () => {
-				const { contextExternalTool, userId, schoolId } = setup();
+				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-					userId,
+					user,
 					contextExternalTool,
 					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
 
 			it('should check for context restrictions', async () => {
-				const { contextExternalTool, userId, schoolId } = setup();
+				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should call contextExternalToolValidationService', async () => {
-				const { contextExternalTool, userId, schoolId } = setup();
+				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should return the saved object', async () => {
-				const { contextExternalTool, userId, schoolId } = setup();
+				const { contextExternalTool, user, schoolId } = setup();
 
-				const result = await uc.createContextExternalTool(userId, schoolId, contextExternalTool);
+				const result = await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(result).toEqual(contextExternalTool);
 			});
@@ -159,11 +161,11 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = new ObjectId().toHexString();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -206,7 +208,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
@@ -251,7 +253,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
@@ -295,7 +297,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
@@ -338,14 +340,14 @@ describe('ContextExternalToolUc', () => {
 	describe('updateContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
-				const userId: EntityId = 'userId';
+				const user: User = userFactory.buildWithId();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -360,49 +362,73 @@ describe('ContextExternalToolUc', () => {
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
 				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
-					userId,
+					contextExternalToolId: contextExternalTool.id,
+					user,
 					schoolId,
 				};
 			};
 
 			it('should call contextExternalToolService', async () => {
-				const { contextExternalTool, userId, schoolId, contextExternalToolId } = setup();
+				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				await uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
-				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 
 			it('should call contextExternalToolService to ensure permissions', async () => {
-				const { contextExternalTool, userId, schoolId, contextExternalToolId } = setup();
+				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				await uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-					userId,
-					contextExternalTool,
+					user,
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					}),
 					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
 
 			it('should call contextExternalToolValidationService', async () => {
-				const { contextExternalTool, userId, schoolId, contextExternalToolId } = setup();
+				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				await uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
-				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 
 			it('should return the saved object', async () => {
-				const { contextExternalTool, userId, schoolId, contextExternalToolId } = setup();
+				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				const result = await uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				const result = await uc.updateContextExternalTool(
+					user.id,
+					schoolId,
+					contextExternalToolId,
+					contextExternalTool.getProps()
+				);
 
-				expect(result).toEqual(contextExternalTool);
+				expect(result).toEqual(
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 
@@ -411,7 +437,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
@@ -431,7 +457,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 				};
 			};
@@ -463,7 +489,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
@@ -487,7 +513,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 					schoolId,
 					error,
@@ -497,7 +523,8 @@ describe('ContextExternalToolUc', () => {
 			it('should return forbidden and not save', async () => {
 				const { contextExternalTool, userId, error, schoolId, contextExternalToolId } = setup();
 
-				const func = () => uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				const func = () =>
+					uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
 				await expect(func).rejects.toThrow(error);
 				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
@@ -509,7 +536,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
 				});
 
@@ -533,7 +560,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 					schoolId,
 					error,
@@ -543,7 +570,8 @@ describe('ContextExternalToolUc', () => {
 			it('should return UnprocessableEntity and not save', async () => {
 				const { contextExternalTool, userId, error, schoolId, contextExternalToolId } = setup();
 
-				const func = () => uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				const func = () =>
+					uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
 				await expect(func).rejects.toThrow(error);
 				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
@@ -554,35 +582,36 @@ describe('ContextExternalToolUc', () => {
 	describe('deleteContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
-				const userId: EntityId = 'userId';
+				const user: User = userFactory.buildWithId();
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
 				contextExternalToolService.findByIdOrFail.mockResolvedValue(contextExternalTool);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
-					userId,
+					contextExternalToolId: contextExternalTool.id,
+					user,
 				};
 			};
 
 			it('should call contextExternalToolService', async () => {
-				const { contextExternalTool, contextExternalToolId, userId } = setup();
+				const { contextExternalTool, contextExternalToolId, user } = setup();
 
-				await uc.deleteContextExternalTool(userId, contextExternalToolId);
+				await uc.deleteContextExternalTool(user.id, contextExternalToolId);
 
 				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should call contextExternalToolService to ensure permissions', async () => {
-				const { contextExternalTool, contextExternalToolId, userId } = setup();
+				const { contextExternalTool, contextExternalToolId, user } = setup();
 
-				await uc.deleteContextExternalTool(userId, contextExternalToolId);
+				await uc.deleteContextExternalTool(user.id, contextExternalToolId);
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-					userId,
+					user,
 					contextExternalTool,
 					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
 				);
@@ -607,7 +636,7 @@ describe('ContextExternalToolUc', () => {
 				});
 
 				contextExternalToolService.findAllByContext.mockResolvedValue([contextExternalTool]);
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasPermission.mockReturnValue(true);
 
 				return {
@@ -704,7 +733,7 @@ describe('ContextExternalToolUc', () => {
 	describe('getContextExternalTool', () => {
 		describe('when right permission, context  and id is given', () => {
 			const setup = () => {
-				const userId: EntityId = 'userId';
+				const user: User = userFactory.buildWithId();
 				const contextId: EntityId = 'contextId';
 				const contextType: ToolContextType = ToolContextType.COURSE;
 
@@ -718,31 +747,32 @@ describe('ContextExternalToolUc', () => {
 
 				contextExternalToolService.findByIdOrFail.mockResolvedValue(contextExternalTool);
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValue(Promise.resolve());
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					contextExternalTool,
-					userId,
+					user,
 					contextId,
 					contextType,
 				};
 			};
 
 			it('should call contextExternalToolService to ensure permission  ', async () => {
-				const { contextExternalTool, userId } = setup();
+				const { contextExternalTool, user } = setup();
 
-				await uc.getContextExternalTool(userId, contextExternalTool.id as string);
+				await uc.getContextExternalTool(user.id, contextExternalTool.id);
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-					userId,
+					user,
 					contextExternalTool,
 					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
 
 			it('should call contextExternalToolService to get contextExternalTool  ', async () => {
-				const { contextExternalTool, userId } = setup();
+				const { contextExternalTool, user } = setup();
 
-				await uc.getContextExternalTool(userId, contextExternalTool.id as string);
+				await uc.getContextExternalTool(user.id, contextExternalTool.id);
 
 				expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalTool.id);
 			});
@@ -782,7 +812,7 @@ describe('ContextExternalToolUc', () => {
 			it('should throw forbiddenLoggableException', async () => {
 				const { contextExternalTool, userId } = setup();
 
-				const func = () => uc.getContextExternalTool(userId, contextExternalTool.id as string);
+				const func = () => uc.getContextExternalTool(userId, contextExternalTool.id);
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenLoggableException(userId, 'contextExternalTool', {

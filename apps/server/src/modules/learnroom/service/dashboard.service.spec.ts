@@ -1,20 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement } from '@shared/domain/entity';
-import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
-import { EventBus } from '@nestjs/cqrs';
+import { MikroORM } from '@mikro-orm/core';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { DashboardEntity, GridElement } from '@shared/domain/entity';
+import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
+import { setupEntities, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
@@ -41,7 +42,7 @@ describe(DashboardService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		const orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				DashboardService,
@@ -66,6 +67,10 @@ describe(DashboardService.name, () => {
 					useValue: {
 						publish: jest.fn(),
 					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
 				},
 			],
 		}).compile();

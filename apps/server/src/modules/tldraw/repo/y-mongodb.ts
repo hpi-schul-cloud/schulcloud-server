@@ -1,7 +1,7 @@
 import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
+import { DomainErrorHandler } from '@src/core';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
@@ -12,7 +12,7 @@ import { WsSharedDocDo } from '../domain';
 import { TldrawDrawing } from '../entities';
 import { MongoTransactionErrorLoggable } from '../loggable';
 import { YTransaction } from '../types';
-import { KeyFactory } from './key.factory';
+import { KeyFactory, Version } from './key.factory';
 import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
@@ -26,10 +26,8 @@ export class YMongodb {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly repo: TldrawRepo,
-		private readonly logger: Logger
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {
-		this.logger.setContext(YMongodb.name);
-
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
 		this._transact = <T extends Promise<YTransaction>>(docName: string, fn: () => T): T => {
@@ -43,11 +41,11 @@ export class YMongodb {
 			nextTr = (async () => {
 				await currTr;
 
-				let res: YTransaction | null;
+				let res: YTransaction | null = null;
 				try {
 					res = await fn();
 				} catch (err) {
-					this.logger.warning(new MongoTransactionErrorLoggable(err));
+					this.domainErrorHandler.exec(new MongoTransactionErrorLoggable(err));
 				}
 
 				// once the last transaction for a given docName resolves, remove it from the queue
@@ -68,7 +66,15 @@ export class YMongodb {
 		await this.repo.ensureIndexes();
 	}
 
+	public async getAllDocumentNames(): Promise<string[]> {
+		const docs = await this.repo.readAsCursor({ version: Version.V1_SV });
+		const docNames = docs.map((doc) => doc.docName);
+
+		return docNames;
+	}
+
 	public getDocument(docName: string): Promise<WsSharedDocDo> {
+		// return value can be null, need to be defined
 		return this._transact(docName, async (): Promise<WsSharedDocDo> => {
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
@@ -82,10 +88,14 @@ export class YMongodb {
 	}
 
 	public storeUpdateTransactional(docName: string, update: Uint8Array): Promise<number> {
+		// return value can be null, need to be defined
 		return this._transact(docName, () => this.storeUpdate(docName, update));
 	}
 
+	// return value is not void, need to be changed
 	public compressDocumentTransactional(docName: string): Promise<void> {
+		performance.mark('compressDocumentTransactional');
+
 		return this._transact(docName, async () => {
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
@@ -96,10 +106,16 @@ export class YMongodb {
 			const stateAsUpdate = encodeStateAsUpdate(ydoc);
 			const sv = encodeStateVector(ydoc);
 			const clock = await this.storeUpdate(docName, stateAsUpdate);
+
 			await this.writeStateVector(docName, sv, clock);
 			await this.clearUpdatesRange(docName, 0, clock);
 
 			ydoc.destroy();
+
+			performance.measure('tldraw:YMongodb:compressDocumentTransactional', {
+				start: 'compressDocumentTransactional',
+				detail: { doc_name: docName, clock },
+			});
 		});
 	}
 
@@ -134,20 +150,24 @@ export class YMongodb {
 		return this.repo.readAsCursor(query, opts);
 	}
 
-	private mergeDocsTogether(doc: TldrawDrawing, docs: TldrawDrawing[], docIndex: number): Buffer[] {
-		const parts = [Buffer.from(doc.value.buffer)];
-		let currentPartId: number | undefined = doc.part;
-		for (let i = docIndex + 1; i < docs.length; i += 1) {
-			const part = docs[i];
+	private mergeDocsTogether(
+		tldrawDrawingEntity: TldrawDrawing,
+		tldrawDrawingEntities: TldrawDrawing[],
+		docIndex: number
+	): Buffer[] {
+		const parts = [Buffer.from(tldrawDrawingEntity.value.buffer)];
+		let currentPartId: number | undefined = tldrawDrawingEntity.part;
+		for (let i = docIndex + 1; i < tldrawDrawingEntities.length; i += 1) {
+			const entity = tldrawDrawingEntities[i];
 
-			if (!this.isSameClock(part, doc)) {
+			if (!this.isSameClock(entity, tldrawDrawingEntity)) {
 				break;
 			}
 
-			this.checkIfPartIsNextPartAfterCurrent(part, currentPartId);
+			this.checkIfPartIsNextPartAfterCurrent(entity, currentPartId);
 
-			parts.push(Buffer.from(part.value.buffer));
-			currentPartId = part.part;
+			parts.push(Buffer.from(entity.value.buffer));
+			currentPartId = entity.part;
 		}
 
 		return parts;
@@ -156,20 +176,20 @@ export class YMongodb {
 	/**
 	 * Convert the mongo document array to an array of values (as buffers)
 	 */
-	private convertMongoUpdates(docs: TldrawDrawing[]): Buffer[] {
-		if (!Array.isArray(docs) || !docs.length) return [];
+	private convertMongoUpdates(tldrawDrawingEntities: TldrawDrawing[]): Buffer[] {
+		if (!Array.isArray(tldrawDrawingEntities) || !tldrawDrawingEntities.length) return [];
 
 		const updates: Buffer[] = [];
-		for (let i = 0; i < docs.length; i += 1) {
-			const doc = docs[i];
+		for (let i = 0; i < tldrawDrawingEntities.length; i += 1) {
+			const tldrawDrawingEntity = tldrawDrawingEntities[i];
 
-			if (!doc.part) {
-				updates.push(Buffer.from(doc.value.buffer));
+			if (!tldrawDrawingEntity.part) {
+				updates.push(Buffer.from(tldrawDrawingEntity.value.buffer));
 			}
 
-			if (doc.part === 1) {
+			if (tldrawDrawingEntity.part === 1) {
 				// merge the docs together that got split because of mongodb size limits
-				const parts = this.mergeDocsTogether(doc, docs, i);
+				const parts = this.mergeDocsTogether(tldrawDrawingEntity, tldrawDrawingEntities, i);
 				updates.push(Buffer.concat(parts));
 			}
 		}
@@ -180,10 +200,19 @@ export class YMongodb {
 	 * Get all document updates for a specific document.
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
-		const uniqueKey = KeyFactory.createForUpdate(docName);
-		const docs = await this.getMongoBulkData(uniqueKey, opts);
+		performance.mark('getMongoUpdates');
 
-		return this.convertMongoUpdates(docs);
+		const uniqueKey = KeyFactory.createForUpdate(docName);
+		const tldrawDrawingEntities = await this.getMongoBulkData(uniqueKey, opts);
+
+		const buffer = this.convertMongoUpdates(tldrawDrawingEntities);
+
+		performance.measure('tldraw:YMongodb:getMongoUpdates', {
+			start: 'getMongoUpdates',
+			detail: { doc_name: docName, loaded_tldraw_entities_total: tldrawDrawingEntities.length },
+		});
+
+		return buffer;
 	}
 
 	private async writeStateVector(docName: string, sv: Uint8Array, clock: number): Promise<void> {
@@ -238,20 +267,23 @@ export class YMongodb {
 		return clock + 1;
 	}
 
-	private isSameClock(doc1: TldrawDrawing, doc2: TldrawDrawing): boolean {
-		return doc1.clock === doc2.clock;
+	private isSameClock(tldrawDrawingEntity1: TldrawDrawing, tldrawDrawingEntity2: TldrawDrawing): boolean {
+		return tldrawDrawingEntity1.clock === tldrawDrawingEntity2.clock;
 	}
 
-	private checkIfPartIsNextPartAfterCurrent(part: TldrawDrawing, currentPartId: number | undefined): void {
-		if (part.part === undefined || currentPartId !== part.part - 1) {
+	private checkIfPartIsNextPartAfterCurrent(
+		tldrawDrawingEntity: TldrawDrawing,
+		currentPartId: number | undefined
+	): void {
+		if (tldrawDrawingEntity.part === undefined || currentPartId !== tldrawDrawingEntity.part - 1) {
 			throw new Error('Could not merge updates together because a part is missing');
 		}
 	}
 
-	private extractClock(updates: TldrawDrawing[]): number {
-		if (updates.length === 0 || updates[0].clock == null) {
+	private extractClock(tldrawDrawingEntities: TldrawDrawing[]): number {
+		if (tldrawDrawingEntities.length === 0 || tldrawDrawingEntities[0].clock == null) {
 			return -1;
 		}
-		return updates[0].clock;
+		return tldrawDrawingEntities[0].clock;
 	}
 }

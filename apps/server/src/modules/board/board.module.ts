@@ -1,30 +1,39 @@
-import { ConsoleWriterModule } from '@infra/console';
+import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
+import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ContentElementFactory } from '@shared/domain/domainobject';
+import { CqrsModule } from '@nestjs/cqrs';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
+import { BoardNodeFactory } from './domain';
+import { BoardNodeRepo } from './repo';
 import {
-	BoardDoAuthorizableService,
-	BoardDoService,
-	CardService,
+	BoardCommonToolService,
+	BoardNodeAuthorizableService,
+	BoardNodeService,
 	ColumnBoardService,
-	ColumnService,
-	ContentElementService,
-	SubmissionItemService,
+	MediaBoardService,
+	UserDeletedEventHandlerService,
 } from './service';
-import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
-import { ColumnBoardCopyService } from './service/column-board-copy.service';
+import {
+	BoardNodeCopyService,
+	ColumnBoardCopyService,
+	ColumnBoardLinkService,
+	ColumnBoardReferenceService,
+	ColumnBoardTitleService,
+	ContentElementUpdateService,
+	BoardNodeDeleteHooksService,
+	BoardContextService,
+} from './service/internal';
 
 @Module({
 	imports: [
-		ConsoleWriterModule,
+		CopyHelperModule,
 		FilesStorageClientModule,
 		LoggerModule,
 		UserModule,
@@ -32,36 +41,36 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		HttpModule,
 		ToolConfigModule,
 		TldrawClientModule,
+		CqrsModule,
+		CollaborativeTextEditorModule,
 	],
 	providers: [
-		BoardDoAuthorizableService,
-		BoardDoRepo,
-		BoardDoService,
+		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
+		BoardContextService,
+		BoardNodeAuthorizableService,
 		BoardNodeRepo,
-		CardService,
+		BoardNodeService,
+		BoardNodeFactory,
+		BoardNodeCopyService,
+		BoardCommonToolService,
+		BoardNodeDeleteHooksService,
 		ColumnBoardService,
-		ColumnService,
-		ContentElementService,
-		ContentElementFactory,
+		ContentElementUpdateService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
-		RecursiveDeleteVisitor,
-		SubmissionItemService,
-		BoardDoCopyService,
 		ColumnBoardCopyService,
-		SchoolSpecificFileCopyServiceFactory,
+		ColumnBoardLinkService,
+		ColumnBoardReferenceService,
+		ColumnBoardTitleService,
+		UserDeletedEventHandlerService,
+		// TODO replace by import of MediaBoardModule (fix dependency cycle)
+		MediaBoardService,
 	],
 	exports: [
-		BoardDoAuthorizableService,
-		CardService,
+		BoardNodeAuthorizableService,
+		BoardNodeFactory,
+		BoardNodeService,
+		BoardCommonToolService,
 		ColumnBoardService,
-		ColumnService,
-		ContentElementService,
-		SubmissionItemService,
-		ColumnBoardCopyService,
-		/**
-		 * @deprecated - exported only deprecated learnraum module
-		 */
-		BoardNodeRepo,
 	],
 })
 export class BoardModule {}

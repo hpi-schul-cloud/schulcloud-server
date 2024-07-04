@@ -4,11 +4,13 @@ import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
 import {
-	BoardDoRule,
+	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	ExternalToolRule,
 	GroupRule,
+	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
@@ -33,7 +35,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		RuleManager,
 		AuthorizationHelper,
 		// rules
-		BoardDoRule,
+		BoardNodeRule,
 		ContextExternalToolRule,
 		CourseGroupRule,
 		CourseRule,
@@ -49,6 +51,8 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		LegacySchoolRule,
 		SystemRule,
 		SchoolSystemOptionsRule,
+		ExternalToolRule,
+		InstanceRule,
 	],
 	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
 })

@@ -2,7 +2,7 @@
  * Rules are currently placed in authorization module to avoid dependency cycles.
  * In future they must be moved to the feature modules and register it in registration service.
  */
-export * from './board-do.rule';
+export * from './board-node.rule';
 export * from './context-external-tool.rule';
 export * from './course-group.rule';
 export * from './course.rule';
@@ -18,3 +18,5 @@ export * from './user.rule';
 export * from './group.rule';
 export { SystemRule } from './system.rule';
 export { SchoolSystemOptionsRule } from './school-system-options.rule';
+export { InstanceRule } from './instance.rule';
+export { ExternalToolRule } from './external-tool.rule';

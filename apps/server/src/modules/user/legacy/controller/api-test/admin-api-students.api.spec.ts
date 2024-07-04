@@ -1,24 +1,25 @@
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
-	accountFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolEntityFactory,
 	schoolYearFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
 import { classEntityFactory } from '../../../../class/entity/testing';
+import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
 
 describe('Users Admin Students Controller (API)', () => {
 	const basePath = '/users/admin/students';
@@ -26,9 +27,9 @@ describe('Users Admin Students Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
-	let adminAccount: Account;
-	let studentAccount1: Account;
-	let studentAccount2: Account;
+	let adminAccount: AccountEntity;
+	let studentAccount1: AccountEntity;
+	let studentAccount2: AccountEntity;
 
 	let adminUser: User;
 	let studentUser1: User;
@@ -97,7 +98,7 @@ describe('Users Admin Students Controller (API)', () => {
 			gradeLevel: 12,
 		});
 
-		const mapUserToAccount = (user: User): Account =>
+		const mapUserToAccount = (user: User): AccountEntity =>
 			accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,

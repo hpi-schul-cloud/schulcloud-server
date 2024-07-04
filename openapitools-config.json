@@ -1,0 +1,9 @@
+{
+	"apiPackage": "api",
+	"enumNameSuffix": "",
+	"enumPropertyNaming": "UPPERCASE",
+	"modelPackage": "models",
+	"supportsES6": true,
+	"withInterfaces": true,
+	"withSeparateModelsAndApi": true
+}

@@ -1,7 +1,6 @@
-export * from './account.entity';
 export * from './all-entities';
 export * from './base.entity';
-export * from './boardnode';
+export * from './column-board-node.entity';
 export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './dashboard.entity';
@@ -24,5 +23,5 @@ export * from './team.entity';
 export * from './user-login-migration.entity';
 export * from './user.entity';
 export * from './video-conference.entity';
-export * from './external-source.entity';
+export * from './external-source.embeddable';
 export * from './consent';

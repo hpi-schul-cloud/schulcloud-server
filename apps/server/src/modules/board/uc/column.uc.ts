@@ -1,63 +1,72 @@
-import { Action, AuthorizationService } from '@modules/authorization';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Card, ContentElementType } from '@shared/domain/domainobject';
+import { Action } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { BoardDoAuthorizableService, CardService, ColumnService } from '../service';
-import { BaseUc } from './base.uc';
+import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
+import { BoardNodePermissionService, BoardNodeService } from '../service';
 
 @Injectable()
-export class ColumnUc extends BaseUc {
+export class ColumnUc {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly cardService: CardService,
-		private readonly columnService: ColumnService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodeFactory: BoardNodeFactory,
+
 		private readonly logger: LegacyLogger
 	) {
-		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<void> {
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
-		const column = await this.columnService.findById(columnId);
-		await this.checkPermission(userId, column, Action.write);
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		const { rootId } = column;
+		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
-		await this.columnService.delete(column);
+		await this.boardNodeService.delete(column);
+
+		return rootId;
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
-		const column = await this.columnService.findById(columnId);
-		await this.checkPermission(userId, column, Action.write);
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
-		await this.columnService.updateTitle(column, title);
+		await this.boardNodeService.updateTitle(column, title);
+		return column;
 	}
 
-	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
+	async createCard(
+		userId: EntityId,
+		columnId: EntityId,
+		requiredEmptyElements: ContentElementType[] = []
+	): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
-		const column = await this.columnService.findById(columnId);
-		await this.checkPermission(userId, column, Action.write);
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
-		const card = await this.cardService.create(column, requiredEmptyElements);
+		const elements = requiredEmptyElements.map((type) => this.boardNodeFactory.buildContentElement(type));
+		const card = this.boardNodeFactory.buildCard(elements);
+
+		await this.boardNodeService.addToParent(column, card);
 
 		return card;
 	}
 
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<Card> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
-		const card = await this.cardService.findById(cardId);
-		const targetColumn = await this.columnService.findById(targetColumnId);
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const targetColumn = await this.boardNodeService.findByClassAndId(Column, targetColumnId);
 
-		await this.checkPermission(userId, card, Action.write);
-		await this.checkPermission(userId, targetColumn, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, targetColumn, Action.write);
 
-		await this.cardService.move(card, targetColumn, targetPosition);
+		await this.boardNodeService.move(card, targetColumn, targetPosition);
+		return card;
 	}
 }

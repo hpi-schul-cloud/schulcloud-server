@@ -6,14 +6,18 @@ import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { BoardApiModule } from '@modules/board/board-api.module';
+import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
+import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
+import { MeApiModule } from '@modules/me/me-api.module';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider';
@@ -28,8 +32,8 @@ import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
+import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
-import { MeApiModule } from '@modules/me/me-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -37,7 +41,8 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
+import { UserLicenseModule } from '@modules/user-license';
+import { AuthorizationReferenceApiModule } from '@modules/authorization/authorization-reference.api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -45,6 +50,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AuthorizationReferenceApiModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
@@ -54,13 +60,7 @@ const serverModules = [
 	NewsModule,
 	UserApiModule,
 	UsersAdminApiModule,
-	SchulconnexClientModule.register({
-		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
-		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
-		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
-		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
-		personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
-	}),
+	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
 	UserImportConfigModule,
 	LearnroomApiModule,
@@ -76,6 +76,7 @@ const serverModules = [
 		adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+		rocketchatClientTimeoutInMs: Configuration.get('ROCKET_CHAT_CLIENT_TIMEOUT_MS') as number,
 	}),
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
@@ -90,6 +91,10 @@ const serverModules = [
 	SchoolApiModule,
 	LegacySchoolApiModule,
 	MeApiModule,
+	MediaBoardApiModule,
+	CollaborativeTextEditorApiModule,
+	AlertModule,
+	UserLicenseModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

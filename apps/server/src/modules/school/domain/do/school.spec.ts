@@ -406,4 +406,48 @@ describe('School', () => {
 			});
 		});
 	});
+
+	describe('removeSystem', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const otherSystemId = new ObjectId().toHexString();
+			const school = schoolFactory.build({ systemIds: [systemId, otherSystemId] });
+
+			return { school, systemId, otherSystemId };
+		};
+
+		it('should remove the given systemId from the systemIds array', () => {
+			const { school, systemId, otherSystemId } = setup();
+
+			school.removeSystem(systemId);
+
+			expect(school.getProps().systemIds).not.toContain(systemId);
+			expect(school.getProps().systemIds).toContain(otherSystemId);
+		});
+	});
+
+	describe('hasSystem', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const school = schoolFactory.build({ systemIds: [systemId] });
+
+			return { school, systemId };
+		};
+
+		it('should return true if the systemId is in the systemIds array', () => {
+			const { school, systemId } = setup();
+
+			const result = school.hasSystem(systemId);
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false if the systemId is not in the systemIds array', () => {
+			const { school } = setup();
+
+			const result = school.hasSystem('123');
+
+			expect(result).toBe(false);
+		});
+	});
 });

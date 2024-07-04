@@ -1,12 +1,19 @@
-import { EntityData } from '@mikro-orm/core';
 import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
 import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
 import { ToolConfigType } from '@modules/tool/common/enum';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
+import {
+	BasicToolConfig,
+	ExternalTool,
+	ExternalToolMedium,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '@modules/tool/external-tool/domain';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
+	ExternalToolEntityProps,
+	ExternalToolMediumEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@modules/tool/external-tool/entity';
@@ -34,6 +41,7 @@ export class ExternalToolRepoMapper {
 		return new ExternalTool({
 			id: entity.id,
 			name: entity.name,
+			description: entity.description,
 			url: entity.url,
 			logoUrl: entity.logoUrl,
 			logo: entity.logoBase64,
@@ -42,8 +50,21 @@ export class ExternalToolRepoMapper {
 			isHidden: entity.isHidden,
 			isDeactivated: entity.isDeactivated,
 			openNewTab: entity.openNewTab,
-			version: entity.version,
 			restrictToContexts: entity.restrictToContexts,
+			medium: this.mapExternalToolMediumEntityToDO(entity.medium),
+			createdAt: entity.createdAt,
+		});
+	}
+
+	private static mapExternalToolMediumEntityToDO(entity?: ExternalToolMediumEntity): ExternalToolMedium | undefined {
+		if (!entity) {
+			return undefined;
+		}
+
+		return new ExternalToolMedium({
+			mediumId: entity.mediumId,
+			publisher: entity.publisher,
+			mediaSourceId: entity.mediaSourceId,
 		});
 	}
 
@@ -75,7 +96,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
+	static mapDOToEntityProperties(entityDO: ExternalTool): ExternalToolEntityProps {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
@@ -93,7 +114,9 @@ export class ExternalToolRepoMapper {
 		}
 
 		return {
+			id: entityDO.id,
 			name: entityDO.name,
+			description: entityDO.description,
 			url: entityDO.url,
 			logoUrl: entityDO.logoUrl,
 			logoBase64: entityDO.logo,
@@ -102,9 +125,21 @@ export class ExternalToolRepoMapper {
 			isHidden: entityDO.isHidden,
 			isDeactivated: entityDO.isDeactivated,
 			openNewTab: entityDO.openNewTab,
-			version: entityDO.version,
 			restrictToContexts: entityDO.restrictToContexts,
+			medium: this.mapExternalToolMediumDOToEntity(entityDO.medium),
 		};
+	}
+
+	private static mapExternalToolMediumDOToEntity(medium?: ExternalToolMedium): ExternalToolMediumEntity | undefined {
+		if (!medium) {
+			return undefined;
+		}
+
+		return new ExternalToolMediumEntity({
+			mediumId: medium.mediumId,
+			publisher: medium.publisher,
+			mediaSourceId: medium.mediaSourceId,
+		});
 	}
 
 	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfig): BasicToolConfigEntity {

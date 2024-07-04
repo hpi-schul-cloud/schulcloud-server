@@ -31,10 +31,10 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(limit?: number): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(threshold: number, limit?: number): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
-		const fifteenMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(fifteenMinutesAgo);
+		const modificationThreshold = new Date(Date.now() - threshold);
+		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(modificationThreshold);
 		const order = { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
@@ -45,6 +45,14 @@ export class DeletionRequestRepo {
 		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
 
 		return mapped;
+	}
+
+	async countPendingDeletionRequests(): Promise<number> {
+		const scope = new DeletionRequestScope().byStatusPending();
+
+		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+
+		return numberItemsWithStatusPending;
 	}
 
 	async update(deletionRequest: DeletionRequest): Promise<void> {

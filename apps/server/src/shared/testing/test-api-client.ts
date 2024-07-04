@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
-import { Account } from '@shared/domain/entity';
 import supertest, { Response } from 'supertest';
-import { defaultTestPassword } from './factory/account.factory';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { defaultTestPassword } from '@src/modules/account/testing/account.factory';
 
 interface AuthenticationResponse {
 	accessToken: string;
@@ -27,17 +27,23 @@ export class TestApiClient {
 
 	private readonly baseRoute: string;
 
-	private readonly formattedJwt: string;
+	private readonly authHeader: string;
 
-	constructor(app: INestApplication, baseRoute: string, jwt?: string) {
+	private readonly kindOfAuth: string;
+
+	constructor(app: INestApplication, baseRoute: string, authValue?: string, useAsApiKey = false) {
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
-		this.formattedJwt = `${testReqestConst.prefix} ${jwt || ''}`;
+		this.authHeader = useAsApiKey ? `${authValue || ''}` : `${testReqestConst.prefix} ${authValue || ''}`;
+		this.kindOfAuth = useAsApiKey ? 'X-API-KEY' : 'authorization';
 	}
 
 	public get(subPath?: string): supertest.Test {
 		const path = this.getPath(subPath);
-		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set('authorization', this.formattedJwt);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.get(path)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
@@ -46,36 +52,38 @@ export class TestApiClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.delete(path)
-			.set('authorization', this.formattedJwt);
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
 
-	public put(subPath?: string, data = {}): supertest.Test {
+	public put<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.put(path)
-			.set('authorization', this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
 	}
 
-	public patch(subPath?: string, data = {}): supertest.Test {
+	public patch<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.patch(path)
-			.set('authorization', this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
 	}
 
-	public post(subPath?: string, data = {}): supertest.Test {
+	public post<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)
-			.set('authorization', this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json)
 			.send(data);
 
 		return testRequestInstance;
@@ -90,13 +98,13 @@ export class TestApiClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)
-			.set('authorization', this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.attach(fieldName, data, fileName);
 
 		return testRequestInstance;
 	}
 
-	public async login(account: Account): Promise<this> {
+	public async login(account: AccountEntity): Promise<this> {
 		const path = testReqestConst.loginPath;
 		const params: { username: string; password: string } = {
 			username: account.username,
@@ -109,7 +117,7 @@ export class TestApiClient {
 
 		const jwtFromResponse = this.getJwtFromResponse(response);
 
-		return new (this.constructor as new (app: INestApplication, baseRoute: string, jwt?: string) => this)(
+		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue?: string) => this)(
 			this.app,
 			this.baseRoute,
 			jwtFromResponse

@@ -1,8 +1,8 @@
-import { BoardModule } from '@modules/board/board.module';
+import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { PseudonymModule } from '@modules/pseudonym';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
@@ -12,6 +12,7 @@ import { Lti11EncryptionService, ToolLaunchService } from './service';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
@@ -39,6 +40,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		AutoContextNameStrategy,
 		AutoSchoolIdStrategy,
 		AutoSchoolNumberStrategy,
+		AutoMediumIdStrategy,
 	],
 	exports: [ToolLaunchService],
 })

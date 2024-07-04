@@ -3,10 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
-import { federalStateFactory, legacySchoolDoFactory, setupEntities } from '@shared/testing';
+import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory, setupEntities } from '@shared/testing';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
+import { SchoolYearService } from './school-year.service';
 
 describe('LegacySchoolService', () => {
 	let module: TestingModule;
@@ -15,6 +16,7 @@ describe('LegacySchoolService', () => {
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let schoolValidationService: DeepMocked<SchoolValidationService>;
 	let federalStateService: DeepMocked<FederalStateService>;
+	let schoolYearService: DeepMocked<SchoolYearService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -32,6 +34,10 @@ describe('LegacySchoolService', () => {
 					provide: FederalStateService,
 					useValue: createMock<FederalStateService>(),
 				},
+				{
+					provide: SchoolYearService,
+					useValue: createMock<SchoolYearService>(),
+				},
 			],
 		}).compile();
 
@@ -39,6 +45,7 @@ describe('LegacySchoolService', () => {
 		schoolService = module.get(LegacySchoolService);
 		schoolValidationService = module.get(SchoolValidationService);
 		federalStateService = module.get(FederalStateService);
+		schoolYearService = module.get(SchoolYearService);
 
 		await setupEntities();
 	});
@@ -357,7 +364,9 @@ describe('LegacySchoolService', () => {
 			const name = 'Hogwarts';
 			const federalStateName = 'maybescottland?';
 			const federalState = federalStateFactory.build({ name: federalStateName });
+			const year = schoolYearFactory.build();
 			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 
 			const school = await schoolService.createSchool({ name, federalStateName });
 			expect(school.name).toEqual(name);
@@ -368,7 +377,9 @@ describe('LegacySchoolService', () => {
 			const name = 'Hogwarts';
 			const federalStateName = 'maybescottland?';
 			const federalState = federalStateFactory.build({ name: federalStateName });
+			const year = schoolYearFactory.build();
 			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 
 			const school = await schoolService.createSchool({ name, federalStateName });
 			expect(schoolRepo.save).toHaveBeenCalledWith(school);

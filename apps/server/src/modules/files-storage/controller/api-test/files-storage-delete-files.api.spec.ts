@@ -7,16 +7,14 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
 	mapUserToCurrentUser,
-	roleFactory,
 	schoolEntityFactory,
-	userFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -126,12 +124,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -139,18 +134,18 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.delete(`/123/users/${validId}`);
+				const response = await api.delete(`/school/123/users/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['schoolId must be a mongodb id'],
-						field: ['schoolId'],
+						errors: ['storageLocationId must be a mongodb id'],
+						field: ['storageLocationId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.delete(`/${validId}/users/123`);
+				const response = await api.delete(`/school/${validId}/users/123`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
@@ -161,7 +156,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.delete(`/${validId}/cookies/${validId}`);
+				const response = await api.delete(`/school/${validId}/cookies/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
@@ -178,12 +173,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -193,17 +185,17 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				const response = await api.delete(`/${validId}/schools/${validId}`);
+				const response = await api.delete(`/school/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(200);
 			});
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				const { result } = await api.delete(`/${validId}/schools/${validId}`);
+				const { result } = await api.delete(`/school/${validId}/schools/${validId}`);
 
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
@@ -213,6 +205,8 @@ describe(`${baseRouteName} (api)`, () => {
 					name: expect.any(String),
 					url: expect.any(String),
 					parentId: expect.any(String),
+					createdAt: expect.any(String),
+					updatedAt: expect.any(String),
 					parentType: 'schools',
 					mimeType: 'text/plain',
 					deletedSince: expect.any(String),
@@ -225,17 +219,17 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return elements of requested scope', async () => {
 				const otherParentId = new ObjectId().toHexString();
 				const uploadResponse = await Promise.all([
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test3.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other3.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
 				]);
 
 				const fileRecords = uploadResponse.map(({ result }) => result);
 
-				const { result } = await api.delete(`/${validId}/schools/${validId}`);
+				const { result } = await api.delete(`/school/${validId}/schools/${validId}`);
 
 				const resultData: FileRecordResponse[] = result.data;
 				const ids: EntityId[] = resultData.map((o) => o.id);
@@ -251,12 +245,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 			});
 
@@ -278,17 +269,17 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
 
-				const { result } = await api.postUploadFile(`/file/upload/${school.id}/schools/${school.id}`, 'test1.txt');
+				const { result } = await api.postUploadFile(
+					`/file/upload/school/${school.id}/schools/${school.id}`,
+					'test1.txt'
+				);
 
 				fileRecordId = result.id;
 			});
@@ -308,6 +299,8 @@ describe(`${baseRouteName} (api)`, () => {
 					name: expect.any(String),
 					url: expect.any(String),
 					parentId: expect.any(String),
+					createdAt: expect.any(String),
+					updatedAt: expect.any(String),
 					parentType: 'schools',
 					mimeType: 'text/plain',
 					deletedSince: expect.any(String),
@@ -319,7 +312,6 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should return elements of requested scope', async () => {
 				const otherFileRecords = fileRecordFactory.buildList(3, {
-					schoolId: new ObjectId().toHexString(),
 					parentType: FileRecordParentType.School,
 				});
 

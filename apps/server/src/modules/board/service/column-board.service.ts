@@ -1,93 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
-	BoardExternalReference,
-	BoardExternalReferenceType,
-	ColumnBoard,
-	ContentElementFactory,
-} from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardDoRepo } from '../repo';
-import { BoardDoService } from './board-do.service';
+import { CopyStatus } from '@modules/copy-helper';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
+import { BoardNodeRepo } from '../repo';
+import { BoardNodeService } from './board-node.service';
+import { ColumnBoardCopyService } from './internal/column-board-copy.service';
+import { ColumnBoardLinkService } from './internal/column-board-link.service';
 
 @Injectable()
 export class ColumnBoardService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
-		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly clumnBoardLinkService: ColumnBoardLinkService
 	) {}
 
-	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
-
-		return board;
-	}
-
-	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const ids = this.boardDoRepo.findIdsByExternalReference(reference);
-
-		return ids;
-	}
-
-	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
-		const rootboardDo = this.boardDoService.getRootBoardDo(boardDo);
-
-		return rootboardDo;
-	}
-
-	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
-		const titleMap = this.boardDoRepo.getTitlesByIds(boardIds);
-		return titleMap;
-	}
-
-	async create(context: BoardExternalReference, title = ''): Promise<ColumnBoard> {
-		const columnBoard = new ColumnBoard({
-			id: new ObjectId().toHexString(),
-			title,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			context,
-			isVisible: false,
-		});
-
-		await this.boardDoRepo.save(columnBoard);
+	async findById(id: EntityId, depth?: number): Promise<ColumnBoard> {
+		const columnBoard = this.boardNodeService.findByClassAndId(ColumnBoard, id, depth);
 
 		return columnBoard;
 	}
 
-	async delete(board: ColumnBoard): Promise<void> {
-		await this.boardDoService.deleteWithDescendants(board);
+	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<ColumnBoard[]> {
+		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference, depth);
+
+		const boards = boardNodes.filter((bn) => isColumnBoard(bn));
+
+		return boards as ColumnBoard[];
 	}
 
+	async updateVisibility(columbBoard: ColumnBoard, visibility: boolean): Promise<void> {
+		await this.boardNodeService.updateVisibility(columbBoard, visibility);
+	}
+
+	// called from feathers
+	// TODO remove when not needed anymore
 	async deleteByCourseId(courseId: EntityId): Promise<void> {
-		const columnBoardsId = await this.findIdsByExternalReference({
+		const boardNodes = await this.findByExternalReference({
 			type: BoardExternalReferenceType.Course,
 			id: courseId,
 		});
 
-		const deletePromises = columnBoardsId.map((columnBoardId) => this.deleteColumnBoardById(columnBoardId));
-
-		await Promise.all(deletePromises);
+		await this.boardNodeRepo.delete(boardNodes);
 	}
 
-	private async deleteColumnBoardById(id: EntityId): Promise<void> {
-		const columnBoardToDeletion = await this.boardDoRepo.findByClassAndId(ColumnBoard, id);
+	async copyColumnBoard(props: {
+		originalColumnBoardId: EntityId;
+		destinationExternalReference: BoardExternalReference;
+		userId: EntityId;
+		copyTitle?: string;
+	}): Promise<CopyStatus> {
+		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(props);
 
-		if (columnBoardToDeletion) {
-			await this.boardDoService.deleteWithDescendants(columnBoardToDeletion);
-		}
+		return copyStatus;
 	}
 
-	async updateTitle(board: ColumnBoard, title: string): Promise<void> {
-		board.title = title;
-		await this.boardDoRepo.save(board);
-	}
+	async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
+		const board = await this.clumnBoardLinkService.swapLinkedIds(boardId, idMap);
 
-	async updateBoardVisibility(board: ColumnBoard, isVisible: boolean): Promise<void> {
-		board.isVisible = isVisible;
-		await this.boardDoRepo.save(board);
+		return board;
 	}
 }

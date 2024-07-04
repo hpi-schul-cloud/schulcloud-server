@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: tldraw-delete-files-cronjob
+    cronjob: tldraw-delete-files
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: tldraw-delete-files
+    app.kubernetes.io/component: tldraw
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+  name: tldraw-delete-files-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "{{ TLDRAW_FILE_DELETION_CRONJOB_SCHEDULE|default("@midnight", true) }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: tldraw-delete-files-cronjob
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+            - secretRef:
+                name: api-files-secret
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:tldraw-console -- files deletion-job 24']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/part-of
+                      operator: In
+                      values:
+                      - schulcloud-verbund
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+{% endif %}
+        metadata:
+          labels:
+            app: tldraw-delete-files-cronjob
+            cronjob: tldraw-delete-files
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: tldraw-delete-files
+            app.kubernetes.io/component: tldraw
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}

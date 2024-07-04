@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,7 +20,7 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserMigrationIsNotEnabled } from '../loggable';
+import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { UserImportService } from './user-import.service';
 
 describe(UserImportService.name, () => {
@@ -31,11 +32,12 @@ describe(UserImportService.name, () => {
 	let legacySystemRepo: DeepMocked<LegacySystemRepo>;
 	let userService: DeepMocked<UserService>;
 	let logger: DeepMocked<Logger>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	const features: IUserImportFeatures = {
 		userMigrationSystemId: new ObjectId().toHexString(),
 		userMigrationEnabled: true,
-		instance: 'n21',
+		useWithUserLoginMigration: true,
 	};
 
 	beforeAll(async () => {
@@ -65,6 +67,10 @@ describe(UserImportService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
+				},
 			],
 		}).compile();
 
@@ -74,6 +80,7 @@ describe(UserImportService.name, () => {
 		legacySystemRepo = module.get(LegacySystemRepo);
 		userService = module.get(UserService);
 		logger = module.get(Logger);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {
@@ -271,7 +278,7 @@ describe(UserImportService.name, () => {
 				});
 			});
 
-			describe('when existing users have the same names', () => {
+			describe('when existing users in svs have the same names', () => {
 				const setup = () => {
 					const school: SchoolEntity = schoolEntityFactory.buildWithId();
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
@@ -299,6 +306,105 @@ describe(UserImportService.name, () => {
 
 					expect(result).toEqual([importUser1]);
 				});
+			});
+
+			describe('when import users have the same name ', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+					const importUser2: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+
+					return {
+						user1,
+						importUser1,
+						importUser2,
+					};
+				};
+
+				it('should return the users without a match', async () => {
+					const { importUser1, importUser2 } = setup();
+
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
+
+					result.forEach((importUser) => expect(importUser.matchedBy).toBeUndefined());
+				});
+			});
+		});
+
+		describe('deleteImportUsersBySchool', () => {
+			describe('when deleting all import users of school', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+
+					return {
+						school,
+					};
+				};
+
+				it('should call deleteImportUsersBySchool', async () => {
+					const { school } = setup();
+
+					await service.deleteImportUsersBySchool(school);
+
+					expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(school);
+				});
+			});
+		});
+	});
+
+	describe('resetMigrationForUsersSchool', () => {
+		describe('when resetting the migration for a school', () => {
+			const setup = () => {
+				const currentUser: User = userFactory.build();
+				const school: LegacySchoolDo = legacySchoolDoFactory.build();
+
+				return {
+					currentUser,
+					school,
+				};
+			};
+
+			it('should delete import users for school', async () => {
+				const { currentUser, school } = setup();
+
+				await service.resetMigrationForUsersSchool(currentUser, school);
+
+				expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(currentUser.school);
+			});
+
+			it('should save school with reset migration flags', async () => {
+				const { currentUser, school } = setup();
+
+				await service.resetMigrationForUsersSchool(currentUser, school);
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					{
+						...school,
+						inUserMigration: undefined,
+						inMaintenanceSince: undefined,
+					},
+					true
+				);
+			});
+
+			it('should log canceled migration', async () => {
+				const { currentUser, school } = setup();
+
+				await service.resetMigrationForUsersSchool(currentUser, school);
+
+				expect(logger.notice).toHaveBeenCalledWith(new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo)));
 			});
 		});
 	});

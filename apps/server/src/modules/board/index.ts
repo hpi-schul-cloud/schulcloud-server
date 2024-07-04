@@ -1,7 +1,38 @@
-export * from './service/board-do-authorizable.service';
-export * from './service/card.service';
-export * from './service/column-board.service';
-export * from './service/column.service';
-export * from './service/content-element.service';
-export * from './service/column-board-copy.service';
 export { BoardConfig } from './board.config';
+export { BoardModule } from './board.module';
+export { AnyElementContentBody, LinkContentBody, RichTextContentBody } from './controller/dto';
+export {
+	AnyBoardNode,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardLayout,
+	BoardNode,
+	BoardNodeAuthorizable,
+	BoardNodeFactory,
+	// @modules/authorization/domain/rules/board-node.rule.ts
+	BoardRoles,
+	Card,
+	Column,
+	ColumnBoard,
+	ContentElementType,
+	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
+	MediaBoard,
+	SubmissionItem,
+	UserWithBoardRoles,
+	isCard,
+	isColumn,
+	isDrawingElement,
+	isLinkElement,
+	isRichTextElement,
+	isSubmissionItem,
+	isSubmissionItemContent,
+} from './domain';
+
+export {
+	BoardCommonToolService,
+	BoardNodeAuthorizableService,
+	BoardNodeService,
+	ColumnBoardService,
+	MediaAvailableLineService,
+	MediaBoardService,
+} from './service';

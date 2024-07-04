@@ -1,20 +1,19 @@
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { initialisePerformanceObserver } from '@shared/common/measure-utils';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { HttpModule } from '@nestjs/axios';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { Logger, LoggerModule } from '@src/core/logger';
+import { config, TldrawConfig, TLDRAW_DB_URL } from './config';
+import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';
 import { MetricsService } from './metrics';
+import { TldrawRedisFactory, TldrawRedisService } from './redis';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from './service';
-import { TldrawWs } from './controller';
-import { config, TLDRAW_DB_URL } from './config';
-import { TldrawRedisFactory } from './redis';
+import { TldrawWsService } from './service';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -23,8 +22,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
-		FilesStorageClientModule,
 		HttpModule,
 		LoggerModule,
 		CoreModule,
@@ -46,7 +43,14 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		YMongodb,
 		MetricsService,
 		TldrawRedisFactory,
-		TldrawFilesStorageAdapterService,
+		TldrawRedisService,
 	],
 })
-export class TldrawWsModule {}
+export class TldrawWsModule {
+	constructor(private readonly logger: Logger, private readonly configService: ConfigService<TldrawConfig, true>) {
+		if (this.configService.get('PERFORMANCE_MEASURE_ENABLED') === true) {
+			this.logger.setContext('PerformanceObserver');
+			initialisePerformanceObserver(this.logger);
+		}
+	}
+}

@@ -54,6 +54,8 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-files-secret
         readinessProbe:
           httpGet:
             path: /serverversion

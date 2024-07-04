@@ -1,10 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { Account, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { accountFactory, roleFactory, schoolEntityFactory, schoolYearFactory, userFactory } from '@shared/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { roleFactory, schoolEntityFactory, schoolYearFactory, userFactory } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
@@ -15,9 +17,9 @@ describe('users admin repo', () => {
 
 	let em: EntityManager;
 
-	let adminAccount: Account;
-	let studentAccount1: Account;
-	let studentAccount2: Account;
+	let adminAccount: AccountEntity;
+	let studentAccount1: AccountEntity;
+	let studentAccount2: AccountEntity;
 
 	let adminUser: User;
 	let studentUser1: User;
@@ -88,7 +90,7 @@ describe('users admin repo', () => {
 			gradeLevel: 12,
 		});
 
-		const mapUserToAccount = (user: User): Account =>
+		const mapUserToAccount = (user: User): AccountEntity =>
 			accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,
@@ -167,7 +169,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
 			expect(data.length).toBe(2);
@@ -194,7 +196,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
 			expect(data.length).toBe(2);
@@ -219,7 +221,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
 			expect(data.length).toBe(2);
@@ -264,7 +266,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(0);
 			expect(data.length).toBe(0);
@@ -289,7 +291,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(data.length).toBe(0);
 			expect(userListResponse[0].total).toBe(2);

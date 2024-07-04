@@ -1,7 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { StorageLocation } from '@modules/files-storage/entity';
 import { EntityId } from '@shared/domain/types';
-
-export const FilesStorageExchange = Configuration.get('FILES_STORAGE__EXCHANGE') as string;
 
 export enum FilesStorageEvents {
 	'COPY_FILES_OF_PARENT' = 'copy-files-of-parent',
@@ -26,7 +24,9 @@ export enum FileRecordParentType {
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
+	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
+	'ExternalTool' = 'externaltools',
 }
 
 export interface CopyFilesOfParentParams {
@@ -36,7 +36,8 @@ export interface CopyFilesOfParentParams {
 }
 
 export interface FileRecordParams {
-	schoolId: EntityId;
+	storageLocationId: EntityId;
+	storageLocation: StorageLocation;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }
@@ -57,4 +58,6 @@ export interface FileDO {
 	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
 }

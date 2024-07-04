@@ -5,10 +5,11 @@ import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
-import { SanisResponse } from './response';
+import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 import { schulconnexResponseFactory } from './testing';
+import { schulconnexLizenzInfoResponseFactory } from './testing/schulconnex-lizenz-info-response-factory';
 
 describe(SchulconnexRestClient.name, () => {
 	let client: SchulconnexRestClient;
@@ -40,8 +41,8 @@ describe(SchulconnexRestClient.name, () => {
 			const setup = () => {
 				const badOptions: SchulconnexRestClientOptions = {
 					apiUrl: '',
-					clientId: '',
-					clientSecret: '',
+					clientId: undefined,
+					clientSecret: undefined,
 					tokenEndpoint: '',
 				};
 				return {
@@ -57,6 +58,16 @@ describe(SchulconnexRestClient.name, () => {
 
 				expect(logger.debug).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
 			});
+
+			it('should reject promise if configuration is missing', async () => {
+				const { badOptions } = setup();
+
+				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
+
+				await expect(badOptionsClient.getPersonenInfo({})).rejects.toThrow(
+					'Missing configuration for SchulconnexRestClient'
+				);
+			});
 		});
 	});
 
@@ -64,7 +75,7 @@ describe(SchulconnexRestClient.name, () => {
 		describe('when requesting person-info', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const response: SanisResponse = schulconnexResponseFactory.build();
+				const response: SchulconnexResponse = schulconnexResponseFactory.build();
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -79,7 +90,7 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPersonInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl}/person-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/person-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
@@ -90,7 +101,7 @@ describe(SchulconnexRestClient.name, () => {
 			it('should return the response', async () => {
 				const { accessToken, response } = setup();
 
-				const result: SanisResponse = await client.getPersonInfo(accessToken);
+				const result: SchulconnexResponse = await client.getPersonInfo(accessToken);
 
 				expect(result).toEqual(response);
 			});
@@ -100,7 +111,7 @@ describe(SchulconnexRestClient.name, () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
 				const customUrl = 'https://override.url/person-info';
-				const response: SanisResponse = schulconnexResponseFactory.build();
+				const response: SchulconnexResponse = schulconnexResponseFactory.build();
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -128,7 +139,7 @@ describe(SchulconnexRestClient.name, () => {
 					accessToken: 'access_token',
 					refreshToken: 'refresh_token',
 				});
-				const response: SanisResponse[] = schulconnexResponseFactory.buildList(2);
+				const response: SchulconnexResponse[] = schulconnexResponseFactory.buildList(2);
 
 				const optionsWithTimeout: SchulconnexRestClientOptions = {
 					...options,
@@ -162,7 +173,9 @@ describe(SchulconnexRestClient.name, () => {
 				});
 
 				expect(httpService.get).toHaveBeenCalledWith(
-					`${optionsWithTimeout.apiUrl}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
+					`${
+						optionsWithTimeout.apiUrl ?? ''
+					}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
 					{
 						headers: {
 							Authorization: `Bearer ${tokens.accessToken}`,
@@ -176,9 +189,68 @@ describe(SchulconnexRestClient.name, () => {
 			it('should return the response', async () => {
 				const { response } = setup();
 
-				const result: SanisResponse[] = await client.getPersonenInfo({ 'organisation.id': '1234' });
+				const result: SchulconnexResponse[] = await client.getPersonenInfo({ 'organisation.id': '1234' });
 
 				expect(result).toEqual(response);
+			});
+		});
+	});
+
+	describe('getLizenzInfo', () => {
+		describe('when requesting lizenz-info', () => {
+			const setup = () => {
+				const accessToken = 'accessToken';
+				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1);
+
+				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
+
+				return {
+					accessToken,
+				};
+			};
+
+			it('should make a request to a SchulConneX-API', async () => {
+				const { accessToken } = setup();
+
+				await client.getLizenzInfo(accessToken);
+
+				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/lizenz-info`, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Accept-Encoding': 'gzip',
+					},
+				});
+			});
+
+			it('should return the response', async () => {
+				const { accessToken } = setup();
+
+				const result: SchulconnexLizenzInfoResponse[] = await client.getLizenzInfo(accessToken);
+
+				expect(result).toBeDefined();
+			});
+		});
+
+		describe('when overriding the url', () => {
+			const setup = () => {
+				const accessToken = 'accessToken';
+				const customUrl = 'https://override.url/lizenz-info';
+				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1);
+
+				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
+
+				return {
+					accessToken,
+					customUrl,
+				};
+			};
+
+			it('should make a request to a SchulConneX-API', async () => {
+				const { accessToken, customUrl } = setup();
+
+				await client.getLizenzInfo(accessToken, { overrideUrl: customUrl });
+
+				expect(httpService.get).toHaveBeenCalledWith(customUrl, expect.anything());
 			});
 		});
 	});

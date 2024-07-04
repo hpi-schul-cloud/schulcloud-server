@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { AuthorizationService } from '@modules/authorization';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeImportService } from '../service';
 import { CourseImportUc } from './course-import.uc';

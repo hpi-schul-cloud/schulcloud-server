@@ -1,7 +1,7 @@
 import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
 import { JSDOM } from 'jsdom';
-import { DEFAULT_FILE_PARSER_OPTIONS } from '../common-cartridge-import.types';
+import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../common-cartridge-import.types';
 import { CommonCartridgeOrganizationVisitor } from './common-cartridge-organization-visitor';
 
 describe('CommonCartridgeOrganizationVisitor', () => {
@@ -28,6 +28,7 @@ describe('CommonCartridgeOrganizationVisitor', () => {
 				const sut = new CommonCartridgeOrganizationVisitor(document, {
 					maxSearchDepth: 1,
 					pathSeparator: DEFAULT_FILE_PARSER_OPTIONS.pathSeparator,
+					inputFormat: DEFAULT_FILE_PARSER_OPTIONS.inputFormat,
 				});
 
 				return { sut };
@@ -38,7 +39,20 @@ describe('CommonCartridgeOrganizationVisitor', () => {
 
 				const result = sut.findAllOrganizations();
 
-				expect(result).toHaveLength(14);
+				expect(result).toHaveLength(117);
+				result.forEach((organization) => {
+					expect(organization).toEqual<CommonCartridgeOrganizationProps>({
+						identifier: expect.any(String),
+						identifierRef: expect.any(String),
+						title: expect.any(String),
+						path: expect.any(String),
+						pathDepth: expect.any(Number),
+						isResource: expect.any(Boolean),
+						isInlined: expect.any(Boolean),
+						resourcePath: expect.any(String),
+						resourceType: expect.any(String),
+					});
+				});
 			});
 		});
 

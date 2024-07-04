@@ -2,8 +2,8 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
-import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemsResponse } from './dto/response';
+import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
+import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolUc } from './school.uc';
@@ -50,7 +50,7 @@ export class SchoolController {
 	}
 
 	@ApiOperation({ summary: 'Get systems from school' })
-	@ApiResponse({ status: 200, type: SchoolResponse })
+	@ApiResponse({ status: 200, type: SchoolSystemResponse, isArray: true })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -59,7 +59,7 @@ export class SchoolController {
 	public async getSchoolSystems(
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
-	): Promise<SchoolSystemsResponse> {
+	): Promise<SchoolSystemResponse[]> {
 		const { schoolId } = urlParams;
 		const res = await this.schoolUc.getSchoolSystems(schoolId, user.userId);
 
@@ -81,5 +81,14 @@ export class SchoolController {
 		const res = await this.schoolUc.updateSchool(user.userId, urlParams.schoolId, body);
 
 		return res;
+	}
+
+	@Patch('/:schoolId/system/:systemId/remove')
+	@Authenticate('jwt')
+	public async removeSystemFromSchool(
+		@Param() urlParams: SchoolRemoveSystemUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<void> {
+		await this.schoolUc.removeSystemFromSchool(urlParams.schoolId, urlParams.systemId, user.userId);
 	}
 }

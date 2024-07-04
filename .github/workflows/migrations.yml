@@ -1,4 +1,8 @@
-name: Migrations updated
+name: Reminder to update seed data after migration
+# If this workflow fails, it is a hint that you forgot to update the seed data after a migration.
+# It is only a hint, because it only checks if you updated the migration collection in the seed data. 
+# It is not a check that you updated the whole seed data correctly.
+# See the documentation for advice: https://documentation.dbildungscloud.dev/docs/schulcloud-server/Migrations#committing-a-migration
 
 on:
   push:
@@ -7,7 +11,7 @@ on:
     branches: [ main ]
 
 env:
-  MONGODB_VERSION: 4.4
+  MONGODB_VERSION: 5.0
   NODE_VERSION: '18'
 jobs:
   migration:

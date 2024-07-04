@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
@@ -17,7 +18,7 @@ import {
 	ExternalToolService,
 	ExternalToolValidationService,
 } from '../service';
-import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate } from './dto';
 
 @Injectable()
 export class ExternalToolUc {
@@ -32,10 +33,48 @@ export class ExternalToolUc {
 		private readonly datasheetPdfService: DatasheetPdfService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+	public async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const externalTool = new ExternalTool({ ...externalToolCreate });
+		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate);
+
+		return tool;
+	}
+
+	public async importExternalTools(
+		userId: EntityId,
+		externalTools: ExternalToolCreate[]
+	): Promise<ExternalToolImportResult[]> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const results: ExternalToolImportResult[] = [];
+
+		for (const externalTool of externalTools) {
+			const result: ExternalToolImportResult = new ExternalToolImportResult({
+				toolName: externalTool.name,
+				mediumId: externalTool.medium?.mediumId,
+				mediumSourceId: externalTool.medium?.mediaSourceId,
+			});
+
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool);
+
+				result.toolId = savedTool.id;
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					result.error = error.message;
+				}
+			}
+
+			results.push(result);
+		}
+
+		return results;
+	}
+
+	private async validateAndSaveExternalTool(externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+		const externalTool: ExternalTool = new ExternalTool({ ...externalToolCreate, id: new ObjectId().toHexString() });
 		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
 
 		await this.toolValidationService.validateCreate(externalTool);
@@ -45,28 +84,32 @@ export class ExternalToolUc {
 		return tool;
 	}
 
-	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
+	public async updateExternalTool(
+		userId: EntityId,
+		toolId: string,
+		externalTool: ExternalToolUpdate
+	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
 
-		await this.toolValidationService.validateUpdate(toolId, externalTool);
-
 		const loaded: ExternalTool = await this.externalToolService.findById(toolId);
+
 		const configToUpdate: ExternalToolConfig = { ...loaded.config, ...externalTool.config };
 		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
 			...externalTool,
 			config: configToUpdate,
-			version: loaded.version,
 		});
 
-		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		await this.toolValidationService.validateUpdate(toolId, toUpdate);
+
+		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate);
 
 		return saved;
 	}
 
-	async findExternalTool(
+	public async findExternalTool(
 		userId: EntityId,
 		query: ExternalToolSearchQuery,
 		options: IFindOptions<ExternalTool>
@@ -77,21 +120,21 @@ export class ExternalToolUc {
 		return tools;
 	}
 
-	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
+	public async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const tool: ExternalTool = await this.externalToolService.findById(toolId);
 		return tool;
 	}
 
-	async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
+	public async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;
 	}
 
-	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
 		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 

@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { StorageLocation } from '@modules/files-storage/entity';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { FileRecordParentType } from '@infra/rabbitmq';
-import { EventBus } from '@nestjs/cqrs';
-import {
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
-	DataDeletedEvent,
-} from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
@@ -23,9 +25,10 @@ describe('FilesStorageClientAdapterService', () => {
 	let service: FilesStorageClientAdapterService;
 	let client: DeepMocked<FilesStorageProducer>;
 	let eventBus: DeepMocked<EventBus>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		const orm = await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -44,12 +47,17 @@ describe('FilesStorageClientAdapterService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageClientAdapterService);
 		client = module.get(FilesStorageProducer);
 		eventBus = module.get(EventBus);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterAll(async () => {
@@ -67,8 +75,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
@@ -91,8 +99,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
@@ -272,7 +280,7 @@ describe('FilesStorageClientAdapterService', () => {
 		};
 
 		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in classService', async () => {
+			it('should call deleteUserData', async () => {
 				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
@@ -290,6 +298,19 @@ describe('FilesStorageClientAdapterService', () => {
 				await service.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+
+		describe('when an error occurred', () => {
+			it('should log this error', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+				eventBus.publish.mockRejectedValueOnce(new Error());
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(logger.error).toHaveBeenCalled();
 			});
 		});
 	});

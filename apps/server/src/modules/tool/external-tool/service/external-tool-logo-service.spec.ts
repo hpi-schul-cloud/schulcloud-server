@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory, externalToolFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of, throwError } from 'rxjs';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -15,6 +15,7 @@ import {
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 } from '../loggable';
+import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
 
@@ -71,18 +72,16 @@ describe('ExternalToolLogoService', () => {
 		describe('when externalTool has no logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const logoUrlTemplate = '/v3/tools/external-tools/{id}/logo';
 
 				return {
 					externalTool,
-					logoUrlTemplate,
 				};
 			};
 
 			it('should return undefined', () => {
-				const { externalTool, logoUrlTemplate } = setup();
+				const { externalTool } = setup();
 
-				const logoUrl = service.buildLogoUrl(logoUrlTemplate, externalTool);
+				const logoUrl = service.buildLogoUrl(externalTool);
 
 				expect(logoUrl).toBeUndefined();
 			});
@@ -91,23 +90,21 @@ describe('ExternalToolLogoService', () => {
 		describe('when externalTool has a logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
-				const logoUrlTemplate = '/v3/tools/external-tools/{id}/logo';
 
 				const baseUrl = toolFeatures.backEndUrl;
-				const id = externalTool.id as string;
+				const { id } = externalTool;
 				const expected = `${baseUrl}/v3/tools/external-tools/${id}/logo`;
 
 				return {
 					externalTool,
-					logoUrlTemplate,
 					expected,
 				};
 			};
 
 			it('should return an internal logoUrl', () => {
-				const { externalTool, logoUrlTemplate, expected } = setup();
+				const { externalTool, expected } = setup();
 
-				const logoUrl = service.buildLogoUrl(logoUrlTemplate, externalTool);
+				const logoUrl = service.buildLogoUrl(externalTool);
 
 				expect(logoUrl).toEqual(expected);
 			});
@@ -332,7 +329,7 @@ describe('ExternalToolLogoService', () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 					base64logo: externalTool.logo as string,
 				};
 			};
@@ -358,7 +355,7 @@ describe('ExternalToolLogoService', () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 				};
 			};
 
@@ -378,7 +375,7 @@ describe('ExternalToolLogoService', () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 				};
 			};
 

@@ -1,7 +1,10 @@
-import { BoardDoAuthorizableService } from '@modules/board';
-
+// TODO fix modules circular dependency
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { BoardNodeAuthorizableService } from '@modules/board/service';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
+import { ExternalToolAuthorizableService } from '@modules/tool/external-tool/service';
 import { LessonService } from '@modules/lesson';
-import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
@@ -16,10 +19,11 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
+import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
-	| BoardDoAuthorizableService
+	| BoardNodeAuthorizableService
 	| ContextExternalToolAuthorizableService
 	| CourseGroupRepo
 	| CourseRepo
@@ -29,7 +33,9 @@ type RepoType =
 	| SubmissionRepo
 	| TaskRepo
 	| TeamsRepo
-	| UserRepo;
+	| UserRepo
+	| ExternalToolAuthorizableService
+	| InstanceService;
 
 interface RepoLoader {
 	repo: RepoType;
@@ -50,8 +56,10 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
-		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
+		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
+		private readonly instanceService: InstanceService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -66,6 +74,8 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
 			repo: this.contextExternalToolAuthorizableService,
 		});
+		this.repos.set(AuthorizableReferenceType.ExternalTool, { repo: this.externalToolAuthorizableService });
+		this.repos.set(AuthorizableReferenceType.Instance, { repo: this.instanceService });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {

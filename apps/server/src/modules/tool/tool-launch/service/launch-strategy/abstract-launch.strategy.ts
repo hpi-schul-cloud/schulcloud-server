@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { URLSearchParams } from 'url';
 import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
@@ -12,6 +12,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, To
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoParameterStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
@@ -27,13 +28,15 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
-		autoContextNameStrategy: AutoContextNameStrategy
+		autoContextNameStrategy: AutoContextNameStrategy,
+		autoMediumIdStrategy: AutoMediumIdStrategy
 	) {
 		this.autoParameterStrategyMap = new Map<CustomParameterType, AutoParameterStrategy>([
 			[CustomParameterType.AUTO_SCHOOLID, autoSchoolIdStrategy],
 			[CustomParameterType.AUTO_SCHOOLNUMBER, autoSchoolNumberStrategy],
 			[CustomParameterType.AUTO_CONTEXTID, autoContextIdStrategy],
 			[CustomParameterType.AUTO_CONTEXTNAME, autoContextNameStrategy],
+			[CustomParameterType.AUTO_MEDIUMID, autoMediumIdStrategy],
 		]);
 	}
 
@@ -157,7 +160,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		customParameterDOs: CustomParameter[],
 		scopes: { scope: CustomParameterScope; params: CustomParameterEntry[] }[],
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<void> {
 		await Promise.all(
 			scopes.map(async ({ scope, params }): Promise<void> => {
@@ -183,7 +186,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		parametersToInclude: CustomParameter[],
 		params: CustomParameterEntry[],
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<void> {
 		const missingParameters: CustomParameter[] = [];
 
@@ -219,7 +222,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		customParameter: CustomParameter,
 		matchingParameterEntry: CustomParameterEntry | undefined,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {
 		if (
 			customParameter.type === CustomParameterType.BOOLEAN ||

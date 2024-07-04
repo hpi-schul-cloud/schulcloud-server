@@ -11,7 +11,6 @@ export class ContextExternalToolResponseMapper {
 			contextType: contextExternalTool.contextRef.type,
 			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
 			displayName: contextExternalTool.displayName,
-			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
 		});
 
@@ -46,6 +45,7 @@ export class ContextExternalToolResponseMapper {
 	static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
 		const response = new ToolReferenceResponse({
 			contextToolId: toolReference.contextToolId,
+			description: toolReference.description,
 			displayName: toolReference.displayName,
 			logoUrl: toolReference.logoUrl,
 			openInNewTab: toolReference.openInNewTab,

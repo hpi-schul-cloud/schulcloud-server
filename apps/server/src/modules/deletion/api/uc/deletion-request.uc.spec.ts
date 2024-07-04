@@ -1,18 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { createConfigModuleOptions } from '@src/config';
 import { LegacyLogger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
 import { UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionRequestService, DeletionLogService } from '../../domain/service';
-import { deletionRequestFactory, deletionLogFactory } from '../../domain/testing';
+import { DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { deletionLogFactory, deletionRequestFactory, deletionTestConfig } from '../../domain/testing';
 import { DomainName, OperationType, StatusModel } from '../../domain/types';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps } from '../controller/dto';
-import { DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from '../controller/dto/builder';
+import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
 
 describe(DeletionRequestUc.name, () => {
@@ -23,7 +26,10 @@ describe(DeletionRequestUc.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
+			imports: [ConfigModule.forRoot(createConfigModuleOptions(deletionTestConfig))],
 			providers: [
 				DeletionRequestUc,
 				{
@@ -44,6 +50,10 @@ describe(DeletionRequestUc.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
@@ -51,7 +61,6 @@ describe(DeletionRequestUc.name, () => {
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
 		eventBus = module.get(EventBus);
-		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -136,16 +145,23 @@ describe(DeletionRequestUc.name, () => {
 	});
 
 	describe('executeDeletionRequests', () => {
-		describe('when executing deletionRequests', () => {
+		describe('when deletionRequests to execute exists', () => {
 			const setup = () => {
-				const deletionRequest = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 
-				return {
-					deletionRequest,
-				};
+				return { deletionRequest };
 			};
+			it('should call deletionRequestService.countPendingDeletionRequests', async () => {
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+
+				await uc.executeDeletionRequests();
+
+				expect(deletionRequestService.countPendingDeletionRequests).toHaveBeenCalled();
+			});
 
 			it('should call deletionRequestService.findAllItemsToExecute', async () => {
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+
 				await uc.executeDeletionRequests();
 
 				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
@@ -153,7 +169,7 @@ describe(DeletionRequestUc.name, () => {
 
 			it('should call deletionRequestService.markDeletionRequestAsPending to update status of deletionRequests', async () => {
 				const { deletionRequest } = setup();
-
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 
 				await uc.executeDeletionRequests();
@@ -163,7 +179,7 @@ describe(DeletionRequestUc.name, () => {
 
 			it('should call eventBus.publish', async () => {
 				const { deletionRequest } = setup();
-
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 
 				await uc.executeDeletionRequests();
@@ -178,6 +194,7 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 				eventBus.publish.mockRejectedValueOnce(new Error());
 

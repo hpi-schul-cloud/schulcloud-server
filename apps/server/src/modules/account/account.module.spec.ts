@@ -2,9 +2,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { AccountModule } from './account.module';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
-import { AccountService } from './services/account.service';
-import { AccountValidationService } from './services/account.validation.service';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { AccountService } from './domain/services/account.service';
 
 describe('AccountModule', () => {
 	let module: TestingModule;
@@ -30,11 +29,6 @@ describe('AccountModule', () => {
 	it('should have the account service defined', () => {
 		const accountService = module.get(AccountService);
 		expect(accountService).toBeDefined();
-	});
-
-	it('should have the account validation service defined', () => {
-		const accountValidationService = module.get(AccountValidationService);
-		expect(accountValidationService).toBeDefined();
 	});
 
 	describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is enabled', () => {
@@ -64,8 +58,8 @@ describe('AccountModule', () => {
 		});
 
 		it('should use AccountIdmToDtoMapperIdm', () => {
-			const mapper = moduleFeatureEnabled.get(AccountIdmToDtoMapper);
-			expect(mapper).toBeInstanceOf(AccountIdmToDtoMapperIdm);
+			const mapper = moduleFeatureEnabled.get(AccountIdmToDoMapper);
+			expect(mapper).toBeInstanceOf(AccountIdmToDoMapperIdm);
 		});
 	});
 
@@ -96,8 +90,8 @@ describe('AccountModule', () => {
 		});
 
 		it('should use AccountIdmToDtoMapperDb', () => {
-			const mapper = moduleFeatureDisabled.get(AccountIdmToDtoMapper);
-			expect(mapper).toBeInstanceOf(AccountIdmToDtoMapperDb);
+			const mapper = moduleFeatureDisabled.get(AccountIdmToDoMapper);
+			expect(mapper).toBeInstanceOf(AccountIdmToDoMapperDb);
 		});
 	});
 });

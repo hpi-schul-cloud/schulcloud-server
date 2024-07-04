@@ -1,19 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ColumnBoardCopyService } from '@modules/board';
+import { ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
-import { BoardNodeRepo } from '@modules/board/repo';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
-	columnBoardFactory,
 	columnBoardNodeFactory,
 	courseFactory,
 	lessonBoardElementFactory,
@@ -24,6 +22,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { columnBoardFactory } from '@src/modules/board/testing';
+import { ColumnBoardNodeRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 
 describe('board copy service', () => {
@@ -31,7 +31,7 @@ describe('board copy service', () => {
 	let copyService: BoardCopyService;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
-	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
 
@@ -53,8 +53,8 @@ describe('board copy service', () => {
 					useValue: createMock<LessonCopyService>(),
 				},
 				{
-					provide: ColumnBoardCopyService,
-					useValue: createMock<ColumnBoardCopyService>(),
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
 				},
 				{
 					provide: CopyHelperService,
@@ -69,8 +69,8 @@ describe('board copy service', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: BoardNodeRepo,
-					useValue: createMock<BoardNodeRepo>(),
+					provide: ColumnBoardNodeRepo,
+					useValue: createMock<ColumnBoardNodeRepo>(),
 				},
 			],
 		}).compile();
@@ -79,7 +79,7 @@ describe('board copy service', () => {
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		columnBoardCopyService = module.get(ColumnBoardCopyService);
+		columnBoardService = module.get(ColumnBoardService);
 		boardRepo = module.get(LegacyBoardRepo);
 		boardRepo.save = jest.fn();
 	});
@@ -254,7 +254,7 @@ describe('board copy service', () => {
 				const user = userFactory.buildWithId();
 				const copyOfColumnBoard = columnBoardFactory.build();
 
-				columnBoardCopyService.copyColumnBoard.mockResolvedValue({
+				columnBoardService.copyColumnBoard.mockResolvedValue({
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: copyOfColumnBoard,
@@ -278,7 +278,7 @@ describe('board copy service', () => {
 				};
 
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(columnBoardCopyService.copyColumnBoard).toHaveBeenCalledWith(expected);
+				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(expected);
 			});
 
 			it('should add columnBoard copy to board copy', async () => {
@@ -322,13 +322,13 @@ describe('board copy service', () => {
 				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
 				const originalColumnBoard = columnBoardFactory.build();
-				const columnBoardTarget = columnBoardNodeFactory.buildWithId({
-					id: originalColumnBoard.id,
+				const columnBoardTarget = columnBoardNodeFactory.build({
 					title: originalColumnBoard.title,
 				});
+				columnBoardTarget.id = originalColumnBoard.id;
 				const columnBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoardTarget });
 				const columnBoardCopy = columnBoardFactory.build();
-				columnBoardCopyService.copyColumnBoard.mockResolvedValue({
+				columnBoardService.copyColumnBoard.mockResolvedValue({
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: columnBoardCopy,
@@ -367,14 +367,14 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user, columnBoardCopy } = setup();
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
-				expect(columnBoardCopyService.swapLinkedIds).toHaveBeenCalledWith(columnBoardCopy.id, expect.anything());
+				expect(columnBoardService.swapLinkedIds).toHaveBeenCalledWith(columnBoardCopy.id, expect.anything());
 			});
 
 			it('should pass task for swapping ids', async () => {
 				const { destinationCourse, originalBoard, user, originalTask, taskCopy } = setup();
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
-				const map = columnBoardCopyService.swapLinkedIds.mock.calls[0][1];
+				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalTask.id)).toEqual(taskCopy.id);
 			});
 
@@ -382,7 +382,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user, originalLesson, lessonCopy } = setup();
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
-				const map = columnBoardCopyService.swapLinkedIds.mock.calls[0][1];
+				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalLesson.id)).toEqual(lessonCopy.id);
 			});
 
@@ -390,7 +390,7 @@ describe('board copy service', () => {
 				const { originalCourse, destinationCourse, originalBoard, user } = setup();
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
-				const map = columnBoardCopyService.swapLinkedIds.mock.calls[0][1];
+				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalCourse.id)).toEqual(destinationCourse.id);
 			});
 		});

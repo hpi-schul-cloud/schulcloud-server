@@ -7,6 +7,7 @@ import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
 import { RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
@@ -17,9 +18,9 @@ import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
+	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,
@@ -40,6 +41,10 @@ describe('FilesStorageUC', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),

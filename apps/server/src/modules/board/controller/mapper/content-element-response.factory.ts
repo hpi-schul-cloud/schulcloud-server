@@ -1,13 +1,14 @@
 import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { AnyBoardDo, FileElement, RichTextElement } from '@shared/domain/domainobject';
+import { AnyBoardNode, FileElement, RichTextElement } from '../../domain';
 import {
 	AnyContentElementResponse,
 	FileElementResponse,
+	RichTextElementResponse,
 	isFileElementResponse,
 	isRichTextElementResponse,
-	RichTextElementResponse,
 } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
+import { CollaborativeTextEditorElementResponseMapper } from './collaborative-text-editor-element-response.mapper';
 import { DrawingElementResponseMapper } from './drawing-element-response.mapper';
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
@@ -23,9 +24,10 @@ export class ContentElementResponseFactory {
 		DrawingElementResponseMapper.getInstance(),
 		SubmissionContainerElementResponseMapper.getInstance(),
 		ExternalToolElementResponseMapper.getInstance(),
+		CollaborativeTextEditorElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {
+	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
 		const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 
 		if (!elementMapper) {

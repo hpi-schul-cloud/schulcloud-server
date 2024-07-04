@@ -20,10 +20,12 @@ spec:
         spec:
           containers:
           - name: api-tsp-sync-school-cronjob
-            image: schulcloud/infra-tools:latest
+            image: quay.io/schulcloudverbund/infra-tools:latest
             envFrom:
             - secretRef:
                 name: api-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh','-c']
             args: ['curl -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-school" | python3 -m json.tool']
           restartPolicy: OnFailure

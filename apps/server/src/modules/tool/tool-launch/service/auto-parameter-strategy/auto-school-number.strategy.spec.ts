@@ -2,9 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { contextExternalToolFactory, legacySchoolDoFactory, schoolExternalToolFactory } from '@shared/testing';
+import { legacySchoolDoFactory } from '@shared/testing';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { AutoSchoolNumberStrategy } from './auto-school-number.strategy';
 
 describe(AutoSchoolNumberStrategy.name, () => {
@@ -48,7 +50,7 @@ describe(AutoSchoolNumberStrategy.name, () => {
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					schoolToolRef: {
-						schoolToolId: schoolExternalTool.id as string,
+						schoolToolId: schoolExternalTool.id,
 						schoolId: school.id,
 					},
 				});
@@ -82,7 +84,7 @@ describe(AutoSchoolNumberStrategy.name, () => {
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					schoolToolRef: {
-						schoolToolId: schoolExternalTool.id as string,
+						schoolToolId: schoolExternalTool.id,
 						schoolId: school.id,
 					},
 				});

@@ -1,4 +1,5 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { UserLicenseModule } from '@modules/user-license';
+import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
@@ -6,7 +7,7 @@ import { SchoolExternalToolModule } from '../school-external-tool';
 import { ToolConfigModule } from '../tool-config.module';
 import { ContextExternalToolAuthorizableService, ContextExternalToolService, ToolReferenceService } from './service';
 import { ContextExternalToolValidationService } from './service/context-external-tool-validation.service';
-import { ToolVersionService } from './service/tool-version-service';
+import { ToolConfigurationStatusService } from './service/tool-configuration-status.service';
 
 @Module({
 	imports: [
@@ -15,20 +16,21 @@ import { ToolVersionService } from './service/tool-version-service';
 		SchoolExternalToolModule,
 		LoggerModule,
 		ToolConfigModule,
+		UserLicenseModule,
 	],
 	providers: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,
 		ContextExternalToolAuthorizableService,
 		ToolReferenceService,
-		ToolVersionService,
+		ToolConfigurationStatusService,
 	],
 	exports: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,
 		ContextExternalToolAuthorizableService,
 		ToolReferenceService,
-		ToolVersionService,
+		ToolConfigurationStatusService,
 	],
 })
 export class ContextExternalToolModule {}

@@ -1,39 +1,40 @@
-import { AccountService } from '@modules/account';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { Account, AccountService } from '@modules/account';
 // invalid import
-import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionErrorLoggableException,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReport,
+	DomainOperationReportBuilder,
+	OperationReportHelper,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from '@modules/deletion';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { RegistrationPinService } from '@modules/registration-pin';
-import { User } from '@shared/domain/entity';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
-import {
-	UserDeletedEvent,
-	DeletionService,
-	DataDeletedEvent,
-	DomainDeletionReport,
-	DataDeletionDomainOperationLoggable,
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
-	DeletionErrorLoggableException,
-	DomainOperationReport,
-	StatusModel,
-	OperationReportHelper,
-} from '@modules/deletion';
-import { UserQuery } from './user-query.type';
-import { UserDto } from '../uc/dto/user.dto';
-import { UserMapper } from '../mapper/user.mapper';
+import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
+import { UserMapper } from '../mapper/user.mapper';
+import { UserDto } from '../uc/dto/user.dto';
+import { UserQuery } from './user-query.type';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -45,12 +46,15 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
 		private readonly registrationPinService: RegistrationPinService,
+		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(UserService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
@@ -82,7 +86,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
 		const user: UserDO = await this.findById(userId);
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+		const account: Account = await this.accountService.findByUserIdOrFail(userId);
 
 		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
 
@@ -186,6 +190,8 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
 
+		const calendarEventsDeleted = await this.removeCalendarEvents(userId);
+
 		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
 
 		if (numberOfDeletedUsers === 0) {
@@ -195,7 +201,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.USER,
 			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-			[registrationPinDeleted]
+			[registrationPinDeleted, calendarEventsDeleted]
 		);
 
 		this.logger.info(
@@ -224,6 +230,22 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return users;
 	}
 
+	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
+		const foundUsers = await this.findMultipleByExternalIds(externalIds);
+
+		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
+
+		return verifiedUsers;
+	}
+
+	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {
+		return this.userRepo.findByExternalIds(externalIds);
+	}
+
+	public async updateLastSyncedAt(userIds: string[]): Promise<void> {
+		await this.userRepo.updateAllUserByLastSyncedAt(userIds);
+	}
+
 	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
 		const userToDeletion = await this.userRepo.findByIdOrNull(userId);
 		const parentEmails = await this.getParentEmailsFromUser(userId);
@@ -244,5 +266,35 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		}
 
 		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
+	}
+
+	public async findUnsynchronizedUserIds(unsyncedForMinutes: number): Promise<string[]> {
+		const unsyncedForMiliseconds = unsyncedForMinutes * 60000;
+		const differenceBetweenCurrentDateAndUnsyncedTime = new Date().getTime() - unsyncedForMiliseconds;
+		const dateOfLastSyncToBeLookedFrom = new Date(differenceBetweenCurrentDateAndUnsyncedTime);
+		return this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
+	}
+
+	public async removeCalendarEvents(userId: EntityId): Promise<DomainDeletionReport> {
+		let extractedOperationReport: DomainOperationReport[] = [];
+		const results = await this.calendarService.deleteUserData(userId);
+
+		extractedOperationReport = OperationReportHelper.extractOperationReports([results]);
+
+		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
+	}
+
+	public async isEmailUniqueForExternal(email: string, externalId?: string): Promise<boolean> {
+		const foundUsers: UserDO[] = await this.findByEmail(email);
+		if (!externalId && foundUsers.length) {
+			return false;
+		}
+
+		const unmatchedUsers: UserDO[] = foundUsers.filter((user: UserDO) => user.externalId !== externalId);
+		if (unmatchedUsers.length) {
+			return false;
+		}
+
+		return true;
 	}
 }

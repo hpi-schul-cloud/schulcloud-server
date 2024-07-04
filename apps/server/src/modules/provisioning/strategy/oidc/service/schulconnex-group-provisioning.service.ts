@@ -1,16 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { ExternalSource, LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
@@ -176,9 +175,10 @@ export class SchulconnexGroupProvisioningService {
 			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
 
-		const existingGroupsOfUser: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(user);
+		const filter: GroupFilter = { userId: user.id };
+		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups(filter);
 
-		const groupsFromSystem: Group[] = existingGroupsOfUser.filter(
+		const groupsFromSystem: Group[] = existingGroupsOfUser.data.filter(
 			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId
 		);
 

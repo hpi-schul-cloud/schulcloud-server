@@ -1,25 +1,30 @@
-import { AccountModule } from '@modules/account/account.module';
+import { AccountModule } from '@modules/account';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system/system.module';
-import { UserModule } from '@modules/user/user.module';
-import { HttpModule } from '@nestjs/axios';
+import { ExternalToolModule } from '@modules/tool';
+import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
+import { UserLicenseModule } from '../user-license';
 import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
 import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	SanisProvisioningStrategy,
-	SanisResponseMapper,
+	SchulconnexResponseMapper,
 } from './strategy';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
 
@@ -31,18 +36,23 @@ import {
 		UserModule,
 		RoleModule,
 		SystemModule,
-		HttpModule,
 		LoggerModule,
 		GroupModule,
 		LearnroomModule,
+		SchulconnexClientModule.registerAsync(),
+		UserLicenseModule,
+		ExternalToolModule,
+		SchoolExternalToolModule,
 	],
 	providers: [
 		ProvisioningService,
-		SanisResponseMapper,
+		SchulconnexResponseMapper,
 		SchulconnexSchoolProvisioningService,
 		SchulconnexUserProvisioningService,
 		SchulconnexGroupProvisioningService,
 		SchulconnexCourseSyncService,
+		SchulconnexLicenseProvisioningService,
+		SchulconnexToolProvisioningService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,

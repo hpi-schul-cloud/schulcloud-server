@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
 import { DeletionRequestRepo } from '../../repo';
-import { deletionRequestFactory } from '../testing';
+import { deletionRequestFactory, deletionTestConfig } from '../testing';
 import { DomainName, StatusModel } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
 
@@ -14,6 +16,7 @@ describe(DeletionRequestService.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
+			imports: [ConfigModule.forRoot(createConfigModuleOptions(deletionTestConfig))],
 			providers: [
 				DeletionRequestService,
 				{
@@ -103,6 +106,8 @@ describe(DeletionRequestService.name, () => {
 		describe('when finding all deletionRequests for execution', () => {
 			const setup = () => {
 				const dateInPast = new Date();
+				const threshold = 1000;
+				const limit = undefined;
 				dateInPast.setDate(dateInPast.getDate() - 1);
 				const deletionRequest1 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 				const deletionRequest2 = deletionRequestFactory.build({ deleteAfter: dateInPast });
@@ -110,13 +115,15 @@ describe(DeletionRequestService.name, () => {
 				deletionRequestRepo.findAllItemsToExecution.mockResolvedValue([deletionRequest1, deletionRequest2]);
 
 				const deletionRequests = [deletionRequest1, deletionRequest2];
-				return { deletionRequests };
+				return { deletionRequests, limit, threshold };
 			};
 
-			it('should call deletionRequestRepo.findAllItemsByDeletionDate', async () => {
+			it('should call deletionRequestRepo.findAllItemsByDeletionDate with required parameter', async () => {
+				const { limit, threshold } = setup();
+
 				await service.findAllItemsToExecute();
 
-				expect(deletionRequestRepo.findAllItemsToExecution).toBeCalled();
+				expect(deletionRequestRepo.findAllItemsToExecution).toBeCalledWith(threshold, limit);
 			});
 
 			it('should return array of two deletionRequests to execute', async () => {
@@ -129,6 +136,33 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
+	describe('countPendingDeletionRequests', () => {
+		describe('when counting all deletionRequests with status pending', () => {
+			const setup = () => {
+				const deletionRequestWithStatusPending = deletionRequestFactory.buildListWithId(5, {
+					status: StatusModel.PENDING,
+				});
+
+				deletionRequestRepo.countPendingDeletionRequests.mockResolvedValue(deletionRequestWithStatusPending.length);
+
+				const numberDeletionRequestsWithStatusPending = deletionRequestWithStatusPending.length;
+				return { numberDeletionRequestsWithStatusPending };
+			};
+
+			it('should call deletionRequestRepo.countPendingDeletionRequests', async () => {
+				await service.countPendingDeletionRequests();
+
+				expect(deletionRequestRepo.countPendingDeletionRequests).toBeCalled();
+			});
+
+			it('should return number of deletionRequests with status pending', async () => {
+				const { numberDeletionRequestsWithStatusPending } = setup();
+				const result = await service.countPendingDeletionRequests();
+
+				expect(result).toEqual(numberDeletionRequestsWithStatusPending);
+			});
+		});
+	});
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = () => {

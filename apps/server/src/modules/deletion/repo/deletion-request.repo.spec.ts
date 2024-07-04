@@ -104,8 +104,16 @@ describe(DeletionRequestRepo.name, () => {
 
 	describe('findAllItemsToExecution', () => {
 		describe('when there is no deletionRequest for execution', () => {
+			const setup = () => {
+				const threshold = 1000;
+
+				return {
+					threshold,
+				};
+			};
 			it('should return empty array', async () => {
-				const result = await repo.findAllItemsToExecution();
+				const { threshold } = setup();
+				const result = await repo.findAllItemsToExecution(threshold);
 
 				expect(result).toEqual([]);
 			});
@@ -113,6 +121,7 @@ describe(DeletionRequestRepo.name, () => {
 
 		describe('when there are deletionRequests for execution', () => {
 			const setup = async () => {
+				const threshold = 1000;
 				const dateInFuture = new Date();
 				dateInFuture.setDate(dateInFuture.getDate() + 30);
 				const deletionRequestEntity1: DeletionRequestEntity = deletionRequestEntityFactory.build({
@@ -180,13 +189,13 @@ describe(DeletionRequestRepo.name, () => {
 					},
 				];
 
-				return { deletionRequestEntity1, deletionRequestEntity5, expectedArray };
+				return { deletionRequestEntity1, deletionRequestEntity5, expectedArray, threshold };
 			};
 
 			it('should find deletionRequests with deleteAfter smaller then today and status with value registered or failed', async () => {
-				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray } = await setup();
+				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray, threshold } = await setup();
 
-				const results = await repo.findAllItemsToExecution();
+				const results = await repo.findAllItemsToExecution(threshold);
 
 				expect(results.length).toEqual(3);
 
@@ -208,10 +217,10 @@ describe(DeletionRequestRepo.name, () => {
 				expect(result5.id).toEqual(deletionRequestEntity5.id);
 			});
 
-			it('should find deletionRequests to execute with limit = 1', async () => {
-				const { expectedArray } = await setup();
+			it('should find deletionRequests to execute with limit = 2', async () => {
+				const { expectedArray, threshold } = await setup();
 
-				const results = await repo.findAllItemsToExecution(2);
+				const results = await repo.findAllItemsToExecution(threshold, 2);
 
 				expect(results.length).toEqual(2);
 
@@ -219,6 +228,47 @@ describe(DeletionRequestRepo.name, () => {
 				expect(results).toEqual(
 					expect.arrayContaining([expect.objectContaining(expectedArray[0]), expect.objectContaining(expectedArray[1])])
 				);
+			});
+		});
+	});
+
+	describe('countPendingDeletionRequests', () => {
+		describe('when there is no deletionRequest with status pending', () => {
+			it('should return zero', async () => {
+				const result = await repo.countPendingDeletionRequests();
+
+				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when there are deletionRequests with status pending', () => {
+			const setup = async () => {
+				const deletionRequestWithStatusPending: DeletionRequestEntity[] = deletionRequestEntityFactory.buildListWithId(
+					5,
+					{
+						status: StatusModel.PENDING,
+					}
+				);
+
+				const deletionRequestWithStatusRegistered: DeletionRequestEntity[] =
+					deletionRequestEntityFactory.buildListWithId(2, {
+						status: StatusModel.REGISTERED,
+					});
+
+				const expectedNumberDeletionRequestWithStatusPending = deletionRequestWithStatusPending.length;
+
+				await em.persistAndFlush([...deletionRequestWithStatusPending, ...deletionRequestWithStatusRegistered]);
+				em.clear();
+
+				return { expectedNumberDeletionRequestWithStatusPending };
+			};
+
+			it('should count deletionRequests with status pending and return proper number', async () => {
+				const { expectedNumberDeletionRequestWithStatusPending } = await setup();
+
+				const result = await repo.countPendingDeletionRequests();
+
+				expect(result).toEqual(expectedNumberDeletionRequestWithStatusPending);
 			});
 		});
 	});
