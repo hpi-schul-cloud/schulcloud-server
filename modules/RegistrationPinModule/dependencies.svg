@@ -26,69 +26,69 @@
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_RegistrationPinModule_exports</title>
-<polygon fill="none" stroke="black" points="252,-208 252,-260 416,-260 416,-208 252,-208"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_RegistrationPinModule_imports</title>
-<polygon fill="none" stroke="black" points="442,-78 442,-130 558,-130 558,-78 442,-78"/>
+<polygon fill="none" stroke="black" points="166,-208 166,-260 330,-260 330,-208 166,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_RegistrationPinModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 434,-130 434,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="140,-78 140,-130 558,-130 558,-78 140,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_RegistrationPinModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 132,-130 132,-78 16,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="549.98,-122 546.98,-126 525.98,-126 522.98,-122 450.02,-122 450.02,-86 549.98,-86 549.98,-122"/>
-<text text-anchor="middle" x="500" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
+<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- RegistrationPinModule -->
 <g id="node2" class="node">
 <title>RegistrationPinModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="407.16,-187 404.16,-191 383.16,-191 380.16,-187 260.84,-187 260.84,-151 407.16,-151 407.16,-187"/>
-<text text-anchor="middle" x="334" y="-164.8" font-family="Times,serif" font-size="14.00">RegistrationPinModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="321.16,-187 318.16,-191 297.16,-191 294.16,-187 174.84,-187 174.84,-151 321.16,-151 321.16,-187"/>
+<text text-anchor="middle" x="248" y="-164.8" font-family="Times,serif" font-size="14.00">RegistrationPinModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;RegistrationPinModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;RegistrationPinModule</title>
-<path fill="none" stroke="black" d="M500,-122.11C500,-141.34 500,-169 500,-169 500,-169 417.29,-169 417.29,-169"/>
-<polygon fill="black" stroke="black" points="417.29,-165.5 407.29,-169 417.29,-172.5 417.29,-165.5"/>
+<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 164.71,-169 164.71,-169"/>
+<polygon fill="black" stroke="black" points="164.71,-172.5 174.71,-169 164.71,-165.5 164.71,-172.5"/>
 </g>
 <!-- RegistrationPinService  -->
 <g id="node3" class="node">
 <title>RegistrationPinService </title>
-<polygon fill="#fb8072" stroke="black" points="408.08,-252 259.92,-252 259.92,-216 408.08,-216 408.08,-252"/>
-<text text-anchor="middle" x="334" y="-229.8" font-family="Times,serif" font-size="14.00">RegistrationPinService </text>
+<polygon fill="#fb8072" stroke="black" points="322.08,-252 173.92,-252 173.92,-216 322.08,-216 322.08,-252"/>
+<text text-anchor="middle" x="248" y="-229.8" font-family="Times,serif" font-size="14.00">RegistrationPinService </text>
 </g>
 <!-- RegistrationPinModule&#45;&gt;RegistrationPinService  -->
 <g id="edge2" class="edge">
 <title>RegistrationPinModule&#45;&gt;RegistrationPinService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M334,-187.11C334,-187.11 334,-205.99 334,-205.99"/>
-<polygon fill="black" stroke="black" points="330.5,-205.99 334,-215.99 337.5,-205.99 330.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M248,-187.11C248,-187.11 248,-205.99 248,-205.99"/>
+<polygon fill="black" stroke="black" points="244.5,-205.99 248,-215.99 251.5,-205.99 244.5,-205.99"/>
 </g>
 <!-- RegistrationPinRepo -->
 <g id="node4" class="node">
 <title>RegistrationPinRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="334" cy="-104" rx="91.51" ry="18"/>
-<text text-anchor="middle" x="334" y="-99.8" font-family="Times,serif" font-size="14.00">RegistrationPinRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="458" cy="-104" rx="91.51" ry="18"/>
+<text text-anchor="middle" x="458" y="-99.8" font-family="Times,serif" font-size="14.00">RegistrationPinRepo</text>
 </g>
 <!-- RegistrationPinRepo&#45;&gt;RegistrationPinModule -->
 <g id="edge3" class="edge">
 <title>RegistrationPinRepo&#45;&gt;RegistrationPinModule</title>
-<path fill="none" stroke="black" d="M334,-122.11C334,-122.11 334,-140.99 334,-140.99"/>
-<polygon fill="black" stroke="black" points="330.5,-140.99 334,-150.99 337.5,-140.99 330.5,-140.99"/>
+<path fill="none" stroke="black" d="M458,-122.11C458,-141.34 458,-169 458,-169 458,-169 331.45,-169 331.45,-169"/>
+<polygon fill="black" stroke="black" points="331.45,-165.5 321.45,-169 331.45,-172.5 331.45,-165.5"/>
 </g>
 <!-- RegistrationPinService -->
 <g id="node5" class="node">
 <title>RegistrationPinService</title>
-<ellipse fill="#fdb462" stroke="black" cx="124" cy="-104" rx="100.15" ry="18"/>
-<text text-anchor="middle" x="124" y="-99.8" font-family="Times,serif" font-size="14.00">RegistrationPinService</text>
+<ellipse fill="#fdb462" stroke="black" cx="248" cy="-104" rx="100.15" ry="18"/>
+<text text-anchor="middle" x="248" y="-99.8" font-family="Times,serif" font-size="14.00">RegistrationPinService</text>
 </g>
 <!-- RegistrationPinService&#45;&gt;RegistrationPinModule -->
 <g id="edge4" class="edge">
 <title>RegistrationPinService&#45;&gt;RegistrationPinModule</title>
-<path fill="none" stroke="black" d="M124,-122.11C124,-141.34 124,-169 124,-169 124,-169 250.55,-169 250.55,-169"/>
-<polygon fill="black" stroke="black" points="250.55,-172.5 260.55,-169 250.55,-165.5 250.55,-172.5"/>
+<path fill="none" stroke="black" d="M248,-122.11C248,-122.11 248,-140.99 248,-140.99"/>
+<polygon fill="black" stroke="black" points="244.5,-140.99 248,-150.99 251.5,-140.99 244.5,-140.99"/>
 </g>
 </g>
 </svg>
