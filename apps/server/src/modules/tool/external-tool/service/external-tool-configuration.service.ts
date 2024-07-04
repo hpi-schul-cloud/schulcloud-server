@@ -38,7 +38,7 @@ export class ExternalToolConfigurationService {
 		const availableTools: ContextExternalToolTemplateInfo[] = unusedTools
 			.filter((toolRef): toolRef is ContextExternalToolTemplateInfo => !toolRef.externalTool.isHidden)
 			.filter((toolRef) => !toolRef.externalTool.isDeactivated)
-			.filter((toolRef) => !toolRef.schoolExternalTool.status?.isDeactivated);
+			.filter((toolRef) => !toolRef.schoolExternalTool.isDeactivated);
 
 		return availableTools;
 	}
