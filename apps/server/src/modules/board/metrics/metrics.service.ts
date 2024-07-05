@@ -98,6 +98,7 @@ export class MetricsService {
 			this.executionTimesSummary.set(actionName, summary);
 			register.registerMetric(summary);
 		}
+		console.log(actionName, `executionTime: ${value.toFixed(3)} ms`);
 		summary.observe(value);
 	}
 
@@ -118,6 +119,6 @@ export class MetricsService {
 			register.registerMetric(counter);
 		}
 		counter.inc();
-		console.log(actionName, 'increased');
+		console.log(actionName, `count increased`);
 	}
 }
