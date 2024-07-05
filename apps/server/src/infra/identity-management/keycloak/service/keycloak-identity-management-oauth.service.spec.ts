@@ -106,7 +106,7 @@ describe('KeycloakIdentityManagementService', () => {
 
 				const ret = await kcIdmOauthService.getOauthConfig();
 
-				expect(ret.redirectUri).toBe('https://testdomain/api/v3/sso/oauth/');
+				expect(ret.redirectUri).toBe('');
 			});
 
 			it('should return the keycloak OAuth configuration from well-known', async () => {
@@ -132,7 +132,7 @@ describe('KeycloakIdentityManagementService', () => {
 
 				const ret = await kcIdmOauthService.getOauthConfig();
 
-				expect(ret.redirectUri).toBe('http://localhost:3030/api/v3/sso/oauth/');
+				expect(ret.redirectUri).toBe('');
 			});
 		});
 

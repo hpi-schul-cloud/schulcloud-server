@@ -8,6 +8,9 @@ import { AuthCodeFailureLoggableException } from '../loggable';
 import { HydraSsoService, OAuthService } from '../service';
 import { HydraRedirectDto } from '../service/dto';
 
+/**
+ * @deprecated To be removed in N21-2071
+ */
 @Injectable()
 export class HydraOauthUc {
 	constructor(

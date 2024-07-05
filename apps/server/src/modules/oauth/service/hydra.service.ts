@@ -15,6 +15,9 @@ import { nanoid } from 'nanoid';
 import QueryString from 'qs';
 import { firstValueFrom, Observable } from 'rxjs';
 
+/**
+ * @deprecated To be removed in N21-2071
+ */
 @Injectable()
 export class HydraSsoService {
 	constructor(
