@@ -4,12 +4,12 @@ import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionServi
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
+import { OauthConfigEntity } from '@modules/system/entity';
 import { SystemService } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthConfigEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
