@@ -556,6 +556,13 @@ describe('ToolSchoolController (API)', () => {
 					}
 				);
 
+				const mediaBoardExternalToolEntitys: ContextExternalToolEntity[] =
+					contextExternalToolEntityFactory.buildListWithId(2, {
+						schoolTool: schoolExternalToolEntity,
+						contextType: ContextExternalToolType.MEDIA_BOARD,
+						contextId: new ObjectId().toHexString(),
+					});
+
 				const board = columnBoardEntityFactory.build();
 				const externalToolElements = externalToolElementEntityFactory.withParent(board).buildList(2, {
 					contextExternalToolId: boardExternalToolEntitys[0].id,
@@ -571,6 +578,7 @@ describe('ToolSchoolController (API)', () => {
 					schoolExternalToolEntity,
 					...courseExternalToolEntitys,
 					...boardExternalToolEntitys,
+					...mediaBoardExternalToolEntitys,
 					board,
 					...externalToolElements,
 				]);
@@ -591,6 +599,7 @@ describe('ToolSchoolController (API)', () => {
 					contextExternalToolCountPerContext: {
 						course: 1,
 						boardElement: 1,
+						mediaBoard: 1,
 					},
 				});
 			});
