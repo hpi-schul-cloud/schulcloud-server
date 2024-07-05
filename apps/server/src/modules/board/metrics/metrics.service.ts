@@ -117,6 +117,6 @@ export class MetricsService {
 			register.registerMetric(counter);
 		}
 		counter.inc();
-		// console.log(actionName, counter);
+		console.log(actionName, 'increased');
 	}
 }
