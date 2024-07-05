@@ -6,7 +6,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
-import { legacySchoolDoFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { SystemDeletedEvent, SystemQuery, SystemType } from '../domain';
 import { SystemService } from '../service';
 
@@ -177,18 +177,11 @@ describe('SystemUc', () => {
 		});
 	});
 
-	// TODO move to event handler
 	describe('delete', () => {
 		describe('when the system exists and the user can delete it', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const system = systemFactory.build();
-				const otherSystemId = new ObjectId().toHexString();
-				const school = legacySchoolDoFactory.build({
-					systems: [system.id, otherSystemId],
-					ldapLastSync: new Date().toString(),
-					externalId: 'test',
-				});
 
 				systemService.findById.mockResolvedValueOnce(system);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -196,8 +189,6 @@ describe('SystemUc', () => {
 				return {
 					user,
 					system,
-					school,
-					otherSystemId,
 				};
 			};
 
@@ -222,35 +213,6 @@ describe('SystemUc', () => {
 			});
 
 			it('should remove the system from the school', async () => {
-				const { user, system, school, otherSystemId } = setup();
-
-				await systemUc.delete(user.id, user.school.id, system.id);
-
-				// expect(schoolService.save).toHaveBeenCalledWith(
-				// 	expect.objectContaining<Partial<LegacySchoolDo>>({
-				// 		systems: [otherSystemId],
-				// 		ldapLastSync: undefined,
-				// 		externalId: school.externalId,
-				// 	})
-				// );
-			});
-		});
-
-		describe('when the system is the last ldap system at the school', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const system = systemFactory.build({ type: SystemType.LDAP });
-
-				systemService.findById.mockResolvedValueOnce(system);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-
-				return {
-					user,
-					system,
-				};
-			};
-
-			it('should remove the external id of the school', async () => {
 				const { user, system } = setup();
 
 				await systemUc.delete(user.id, user.school.id, system.id);

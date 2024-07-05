@@ -4,7 +4,6 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { School } from '../do';
 import { SchoolService } from '../service';
 
-// TODO test
 @Injectable()
 @EventsHandler(SystemDeletedEvent)
 export class SystemDeletedHandler implements IEventHandler<SystemDeletedEvent> {

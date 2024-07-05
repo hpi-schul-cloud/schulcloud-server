@@ -1,4 +1,4 @@
-import { OauthConfig } from '@modules/system/domain';
+import type { OauthConfig } from '@modules/system';
 
 export abstract class IdentityManagementOauthService {
 	/**
