@@ -62,7 +62,9 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		if (this.metricsService) {
 			this.metricsService.setExecutionTime(methodName, executionTimeMs);
 			this.metricsService.incrementActionCount(methodName);
+			this.metricsService.incrementActionGauge(methodName);
 			this.metricsService.incrementActionCount('all');
+			this.metricsService.incrementActionGauge('all');
 		}
 	}
 

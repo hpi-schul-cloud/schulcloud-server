@@ -21,6 +21,8 @@ export class MetricsService {
 
 	private actionCounters: Map<string, Counter<string>> = new Map();
 
+	private actionGauges: Map<string, Gauge<string>> = new Map();
+
 	constructor(private readonly userService: UserService) {
 		this.numberOfBoardroomsOnServerCounter = new Gauge({
 			name: 'sc_boards_rooms',
@@ -116,6 +118,26 @@ export class MetricsService {
 				// },
 			});
 			this.actionCounters.set(actionName, counter);
+			register.registerMetric(counter);
+		}
+		counter.inc();
+		console.log(actionName, `count increased`);
+	}
+
+	public incrementActionGauge(actionName: string): void {
+		let counter = this.actionGauges.get(actionName);
+
+		if (!counter) {
+			counter = new Gauge({
+				name: `sc_boards_count2_${actionName}`,
+				help: 'Number of calls for a specific action per minute',
+				// async collect() {
+				// 	// Invoked when the registry collects its metrics' values.
+				// 	const currentValue = await somethingAsync();
+				// 	this.set(currentValue);
+				// },
+			});
+			this.actionGauges.set(actionName, counter);
 			register.registerMetric(counter);
 		}
 		counter.inc();
