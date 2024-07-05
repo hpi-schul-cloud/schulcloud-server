@@ -6,24 +6,31 @@ import { ProvisioningSystemInputMapper } from './provisioning-system-input.mappe
 describe('SchoolUcMapper', () => {
 	describe('mapToInternal', () => {
 		it('should map provisioningStrategy', () => {
-			const dto = systemFactory.build();
+			const provisioningStrategy = SystemProvisioningStrategy.SANIS;
+			const system = systemFactory.build({
+				provisioningStrategy,
+				provisioningUrl: 'https://prov.url',
+			});
 
-			const result: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(dto);
+			const result: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(system);
 
 			expect(result).toEqual<ProvisioningSystemDto>({
-				systemId: 'systemId',
-				provisioningStrategy: SystemProvisioningStrategy.SANIS,
-				provisioningUrl: 'provisioningUrl',
+				systemId: system.id,
+				provisioningStrategy,
+				provisioningUrl: system.provisioningUrl,
 			});
 		});
 
 		it('should map provisioningStrategy, when input undefined', () => {
-			const dto = systemFactory.build();
+			const system = systemFactory.build({
+				provisioningStrategy: undefined,
+				provisioningUrl: undefined,
+			});
 
-			const result: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(dto);
+			const result: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(system);
 
 			expect(result).toEqual<ProvisioningSystemDto>({
-				systemId: '',
+				systemId: system.id,
 				provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
 				provisioningUrl: undefined,
 			});
