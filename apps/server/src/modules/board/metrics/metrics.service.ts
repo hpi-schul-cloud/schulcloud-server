@@ -92,7 +92,7 @@ export class MetricsService {
 				help: 'Average execution time of a specific action in milliseconds',
 				maxAgeSeconds: 600,
 				ageBuckets: 5,
-				percentiles: [0.01, 0.1, 0.9, 0.99],
+				percentiles: [0.01, 0.1, 0.5, 0.9, 0.99],
 				pruneAgedBuckets: true,
 			});
 			this.executionTimesSummary.set(actionName, summary);
