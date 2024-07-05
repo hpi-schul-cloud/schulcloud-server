@@ -52,7 +52,6 @@ export class SystemEntityMapper {
 			rootPath: ldapConfig.rootPath,
 			searchUser: ldapConfig.searchUser,
 			searchUserPassword: ldapConfig.searchUserPassword,
-			providerOptions: ldapConfig.providerOptions,
 		});
 
 		return mapped;

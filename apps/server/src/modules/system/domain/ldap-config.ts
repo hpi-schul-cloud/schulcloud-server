@@ -1,32 +1,5 @@
 import { EntityId } from '@shared/domain/types';
 
-type ProviderOptions = {
-	schoolName?: string;
-	userPathAdditions?: string;
-	classPathAdditions?: string;
-	roleType?: string;
-	userAttributeNameMapping?: {
-		givenName?: string;
-		sn?: string;
-		dn?: string;
-		uuid?: string;
-		uid?: string;
-		mail?: string;
-		role?: string;
-	};
-	roleAttributeNameMapping?: {
-		roleStudent?: string;
-		roleTeacher?: string;
-		roleAdmin?: string;
-		roleNoSc?: string;
-	};
-	classAttributeNameMapping?: {
-		description?: string;
-		dn?: string;
-		uniqueMember?: string;
-	};
-};
-
 export class LdapConfig {
 	active: boolean;
 
@@ -50,8 +23,6 @@ export class LdapConfig {
 
 	searchUserPassword?: string;
 
-	providerOptions?: ProviderOptions;
-
 	constructor(props: LdapConfig) {
 		this.active = props.active;
 		this.url = props.url;
@@ -64,6 +35,5 @@ export class LdapConfig {
 		this.rootPath = props.rootPath;
 		this.searchUser = props.searchUser;
 		this.searchUserPassword = props.searchUserPassword;
-		this.providerOptions = props.providerOptions;
 	}
 }
