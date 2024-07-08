@@ -80,6 +80,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
+			console.log('Keycloak Error', err);
 			return undefined;
 		}
 	}
