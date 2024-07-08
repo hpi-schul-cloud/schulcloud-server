@@ -27,7 +27,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		}
 		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
-		// console.log('response', response);
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
