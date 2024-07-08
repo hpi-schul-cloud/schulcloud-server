@@ -33,10 +33,12 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
+		const clientId = this.kcAdminService.getClientId();
+		const clientSecret = await this.kcAdminService.getClientSecret();
 		console.log('FOO_BAR');
 		this._oauthConfigCache = new OauthConfigDto({
-			clientId: this.kcAdminService.getClientId(),
-			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
+			clientId,
+			clientSecret: this.oAuthEncryptionService.encrypt(clientSecret),
 			provider: 'oauth',
 			redirectUri,
 			responseType: 'code',
@@ -86,7 +88,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
-			console.log('Error', err);
+			console.log('ERROR: ', err);
 			return undefined;
 		}
 	}
