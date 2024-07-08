@@ -22,12 +22,10 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	}
 
 	async getOauthConfig(): Promise<OauthConfigDto> {
-		console.log('getOauthConfig', this._oauthConfigCache);
 		if (this._oauthConfigCache) {
 			return this._oauthConfigCache;
 		}
 		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
-		console.log('wellKnownUrl', wellKnownUrl);
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
 		// console.log('response', response);
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
@@ -35,7 +33,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		const clientId = this.kcAdminService.getClientId();
 		const clientSecret = await this.kcAdminService.getClientSecret();
-		console.log('FOO_BAR');
 		this._oauthConfigCache = new OauthConfigDto({
 			clientId,
 			clientSecret: this.oAuthEncryptionService.encrypt(clientSecret),
@@ -50,7 +47,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			logoutEndpoint: response.end_session_endpoint as string,
 			jwksEndpoint: response.jwks_uri as string,
 		});
-		console.log('OAUTH_CONFIG_CACHE: ', this._oauthConfigCache);
 		return this._oauthConfigCache;
 	}
 
@@ -68,7 +64,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	async resourceOwnerPasswordGrant(username: string, password: string): Promise<string | undefined> {
 		try {
 			const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
-			console.log('TOKEN_ENDPOINT: ', tokenEndpoint);
 			const data = {
 				username,
 				password,
@@ -88,7 +83,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
-			console.log('ERROR: ', err);
 			return undefined;
 		}
 	}
