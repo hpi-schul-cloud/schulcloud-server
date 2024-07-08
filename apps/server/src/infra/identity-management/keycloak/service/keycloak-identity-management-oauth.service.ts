@@ -29,10 +29,11 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
 		console.log('wellKnownUrl', wellKnownUrl);
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
-		console.log('response', response);
+		// console.log('response', response);
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
+		console.log('FOO_BAR');
 		this._oauthConfigCache = new OauthConfigDto({
 			clientId: this.kcAdminService.getClientId(),
 			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
@@ -47,7 +48,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			logoutEndpoint: response.end_session_endpoint as string,
 			jwksEndpoint: response.jwks_uri as string,
 		});
-		console.log('this._oauthConfigCache', this._oauthConfigCache);
+		console.log('OAUTH_CONFIG_CACHE: ', this._oauthConfigCache);
 		return this._oauthConfigCache;
 	}
 
