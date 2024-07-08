@@ -34,6 +34,7 @@ export class AdminApiUserUc {
 			username: props.email,
 			userId: user.id,
 			password: initialPassword,
+			activated: true,
 		} as AccountSave);
 		return {
 			userId: user.id,

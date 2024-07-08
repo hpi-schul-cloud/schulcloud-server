@@ -104,7 +104,7 @@ export class SchoolExternalToolRepo {
 			toolId: entity.tool.id,
 			schoolId: entity.school.id,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.schoolParameters),
-			status: entity.status,
+			isDeactivated: entity.isDeactivated,
 		});
 	}
 
@@ -114,7 +114,7 @@ export class SchoolExternalToolRepo {
 			school: this.em.getReference(SchoolEntity, entityDO.schoolId),
 			tool: this.em.getReference(ExternalToolEntity, entityDO.toolId),
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
-			status: entityDO.status,
+			isDeactivated: entityDO.isDeactivated,
 		};
 	}
 }

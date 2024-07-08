@@ -1577,6 +1577,17 @@
 					"type": "string",
 					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
 					"examples": ["image/gif,image/jpeg,video/webm"]
+				},
+				"PERFORMANCE_MEASURE_ENABLED": {
+					"type": "boolean",
+					"description": "Activate the performance measure for observed areas.",
+					"default": true
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Define log level for tldraw.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			},
 			"default": {
@@ -1689,7 +1700,7 @@
 		},
 		"FEATURE_NEW_LAYOUT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the new layout feature"
 		}
 	},
