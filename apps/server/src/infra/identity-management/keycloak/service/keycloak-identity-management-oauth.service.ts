@@ -63,15 +63,16 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	}
 
 	async resourceOwnerPasswordGrant(username: string, password: string): Promise<string | undefined> {
-		const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
-		const data = {
-			username,
-			password,
-			grant_type: 'password',
-			client_id: clientId,
-			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
-		};
 		try {
+			const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
+			console.log('TOKEN_ENDPOINT: ', tokenEndpoint);
+			const data = {
+				username,
+				password,
+				grant_type: 'password',
+				client_id: clientId,
+				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
+			};
 			const response = await lastValueFrom(
 				this.httpService.request<{ access_token: string }>({
 					method: 'post',
@@ -84,7 +85,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
-			console.log('Keycloak Error', err);
+			console.log('Error', err);
 			return undefined;
 		}
 	}
