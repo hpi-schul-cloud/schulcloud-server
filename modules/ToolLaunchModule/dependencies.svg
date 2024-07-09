@@ -28,13 +28,13 @@
 <title>cluster_ToolLaunchModule_imports</title>
 <polygon fill="none" stroke="black" points="2351,-78 2351,-130 3557,-130 3557,-78 2351,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ToolLaunchModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 2343,-130 2343,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_ToolLaunchModule_exports</title>
 <polygon fill="none" stroke="black" points="2043,-208 2043,-260 2189,-260 2189,-208 2043,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_ToolLaunchModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 2343,-130 2343,-78 16,-78"/>
 </g>
 <!-- BoardModule -->
 <g id="node1" class="node">
