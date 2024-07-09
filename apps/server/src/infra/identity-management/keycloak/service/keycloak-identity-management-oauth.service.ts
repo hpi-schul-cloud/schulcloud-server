@@ -75,6 +75,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 				client_id: clientId,
 				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
 			};
+			console.log('Data for token endpoint', data);
 			const response = await lastValueFrom(
 				this.httpService.request<{ access_token: string }>({
 					method: 'post',
@@ -85,8 +86,10 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 					data: qs.stringify(data),
 				})
 			);
+			console.log('Response from token endpoint', response);
 			return response.data.access_token;
 		} catch (err) {
+			console.log('Error fetching token', err);
 			return undefined;
 		}
 	}
