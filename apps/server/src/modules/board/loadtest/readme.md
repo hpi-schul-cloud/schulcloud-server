@@ -51,16 +51,23 @@ This will:
 2. create a fresh JWT-webtoken
 3. create a fresh board (in one of the courses) the user has access to
 4. name the board by a combination of datetime and the scenario name.
-5. start the execution of the scenario against this newly created board
-6. generate a html report in the end
+5. output a link to the generated board (in order open and see the test live)
+6. start the execution of the scenario against this newly created board
+7. generate a html report in the end
+
+You can also provide the target as the first and the name of the scenario as the second parameter - to avoid the need to select those:
+
+```bash
+bash runScenario.sh https://bc-6854-basic-load-tests.nbc.dbildungscloud.dev 3users
+```
 
 ## Open Todos:
 
 - [x] split code into functions
 - [x] suppress curl output
-- [ ] add proper error handling of failed requests
+- [x] add proper error handling of failed requests
 - [x] cleanup scenarios
-- x ] write documentation for linux => runScenario.sh
+- [x] write documentation for linux => runScenario.sh
 - [x] write documentation for windows => direct command
+- [x] replace selects with parameters from script call
 - [ ] properly handle credentials - env-vars?
-- [ ] replace selects with parameters from script call

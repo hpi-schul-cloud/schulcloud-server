@@ -87,13 +87,20 @@ function create_board() {
     board_id=$(echo $response | sed -n 's/.*"id":"\([^"]*\)".*/\1/p' )
 }
 
-#select_target
-target=https://bc-6854-basic-load-tests.nbc.dbildungscloud.dev
+if [ -z "$1" ]; then
+    select_target
+else
+    target=$1
+fi
 echo "target: $target"
 
 
-echo $1
-select_scenario
+if [ -z "$2" ]; then
+    select_scenario
+    echo "scenario_name: $scenario_name"
+else
+    scenario_name=$2
+fi
 echo "scenario_name: $scenario_name"
 
 get_token
