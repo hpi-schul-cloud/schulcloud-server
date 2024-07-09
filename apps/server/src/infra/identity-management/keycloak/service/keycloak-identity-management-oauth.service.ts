@@ -38,7 +38,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		console.log('Fetching client secret', clientSecret);
 		this._oauthConfigCache = new OauthConfigDto({
 			clientId,
-			clientSecret: this.oAuthEncryptionService.encrypt(clientSecret),
+			clientSecret,
 			provider: 'oauth',
 			redirectUri,
 			responseType: 'code',
@@ -73,7 +73,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 				password,
 				grant_type: 'password',
 				client_id: clientId,
-				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
+				client_secret: clientSecret,
 			};
 			console.log('Data for token endpoint', data);
 			const response = await lastValueFrom(
