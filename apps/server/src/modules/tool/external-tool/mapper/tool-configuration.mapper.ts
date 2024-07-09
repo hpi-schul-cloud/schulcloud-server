@@ -15,7 +15,7 @@ export class ToolConfigurationMapper {
 		externalTool: ExternalTool
 	): SchoolExternalToolConfigurationTemplateResponse {
 		const mapped = new SchoolExternalToolConfigurationTemplateResponse({
-			externalToolId: externalTool.id ?? '',
+			externalToolId: externalTool.id,
 			name: externalTool.name,
 			baseUrl: externalTool.config.baseUrl,
 			logoUrl: externalTool.logoUrl,
