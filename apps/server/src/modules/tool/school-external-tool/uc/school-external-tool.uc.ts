@@ -6,9 +6,9 @@ import { EntityId } from '@shared/domain/types';
 import { School, SchoolService } from '@src/modules/school';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
+import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -38,7 +38,7 @@ export class SchoolExternalToolUc {
 
 	async createSchoolExternalTool(
 		userId: EntityId,
-		schoolExternalToolDto: SchoolExternalToolDto
+		schoolExternalToolDto: SchoolExternalToolProps
 	): Promise<SchoolExternalTool> {
 		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 
@@ -96,7 +96,7 @@ export class SchoolExternalToolUc {
 	async updateSchoolExternalTool(
 		userId: EntityId,
 		schoolExternalToolId: string,
-		schoolExternalToolDto: SchoolExternalToolDto
+		schoolExternalToolDto: SchoolExternalToolProps
 	): Promise<SchoolExternalTool> {
 		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 
