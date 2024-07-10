@@ -46,9 +46,7 @@ export class KeycloakAdministrationService {
 
 	public async getClientSecret(): Promise<string> {
 		const kc = await this.callKcAdminClient();
-		console.log('Searching for client id', this.kcSettings.clientId);
 		const clientInternalId = (await kc.clients.find({ clientId: this.kcSettings.clientId }))[0]?.id;
-		console.log('Found client id', clientInternalId);
 		if (clientInternalId) {
 			const clientSecret = await kc.clients.getClientSecret({ id: clientInternalId });
 			return clientSecret.value ?? '';

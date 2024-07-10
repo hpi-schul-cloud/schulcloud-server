@@ -23,19 +23,15 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 
 	async getOauthConfig(): Promise<OauthConfigDto> {
 		if (this._oauthConfigCache) {
-			console.log('Returning cached oauth config');
 			return this._oauthConfigCache;
 		}
 		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
-		console.log('Fetching oauth config from', wellKnownUrl);
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		const clientId = this.kcAdminService.getClientId();
-		console.log('Fetching client id', clientId);
 		const clientSecret = await this.kcAdminService.getClientSecret();
-		console.log('Fetching client secret', clientSecret);
 		this._oauthConfigCache = new OauthConfigDto({
 			clientId,
 			clientSecret: this.oAuthEncryptionService.encrypt(clientSecret),
@@ -50,7 +46,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			logoutEndpoint: response.end_session_endpoint as string,
 			jwksEndpoint: response.jwks_uri as string,
 		});
-		console.log('Returning fetched oauth config', this._oauthConfigCache);
 		return this._oauthConfigCache;
 	}
 
@@ -75,7 +70,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 				client_id: clientId,
 				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
 			};
-			console.log('Data for token endpoint', data);
 			const response = await lastValueFrom(
 				this.httpService.request<{ access_token: string }>({
 					method: 'post',
@@ -86,10 +80,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 					data: qs.stringify(data),
 				})
 			);
-			console.log('Response from token endpoint', response);
 			return response.data.access_token;
 		} catch (err) {
-			console.log('Error fetching token', err);
 			return undefined;
 		}
 	}
