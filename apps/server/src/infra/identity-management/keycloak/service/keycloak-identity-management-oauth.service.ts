@@ -3,10 +3,22 @@ import { OauthConfigDto } from '@modules/system/service/dto';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ErrorLogMessage, Loggable, Logger, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+
+class IDMLoginError implements Loggable {
+	constructor(private readonly error: Error) {}
+
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			error: this.error,
+			type: 'IDM_LOGIN_ERROR',
+		};
+	}
+}
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
@@ -16,7 +28,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		private readonly kcAdminService: KeycloakAdministrationService,
 		private readonly configService: ConfigService,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
+		private readonly logger: Logger
 	) {
 		super();
 	}
@@ -82,6 +95,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
+			this.logger.warning(new IDMLoginError(err as Error));
+
 			return undefined;
 		}
 	}
