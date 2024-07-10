@@ -25,7 +25,7 @@
 		"__v": 0,
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "demo",
 		"permissions": {
@@ -53,7 +53,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "demo",
 		"permissions": {
@@ -89,7 +89,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "demo",
 		"features": [
@@ -131,7 +131,7 @@
 		"__v": 0,
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "expert",
         "features" : [
@@ -167,7 +167,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T15:16:28.827Z"
@@ -216,7 +216,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T21:11:14.312Z"
@@ -258,7 +258,7 @@
 		"fileStorageType": "awsS3",
 		"timezone": "America/Belem",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T21:38:05.110Z"
@@ -303,7 +303,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"createdAt": {
 			"$date": "2020-12-08T16:58:36.527Z"
@@ -370,7 +370,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "demo",
 		"features": [
@@ -412,7 +412,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "demo",
 		"features": [
@@ -454,7 +454,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e79"
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
 		},
 		"purpose": "demo",
 		"features": [
