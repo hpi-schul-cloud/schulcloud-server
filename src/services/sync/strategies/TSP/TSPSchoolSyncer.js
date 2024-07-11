@@ -341,7 +341,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				// school change detected
 				return switchSchool(this.app, oldUser, this.createTeacher.bind(this, tspTeacher, school, systemId));
 			}
-			return this.updateTeacher(oldUser, tspTeacher);
+			if (oldUser.email === tspTeacher.email) {
+				await this.app.service('nest-account-service').deleteByUserId({ userId: oldUser._id.toString() });
+			}
+			return this.updateTeacher(oldUser, tspTeacher, systemId);
 		}
 		return this.createTeacher(tspTeacher, school, systemId);
 	}
@@ -377,7 +380,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @returns {User|null} the patched user or null (on error)
 	 * @async
 	 */
-	async updateTeacher(user, tspTeacher) {
+	async updateTeacher(user, tspTeacher, systemId) {
 		try {
 			const updateObject = this.prepareTeacherUpdateObject(user, tspTeacher);
 
@@ -392,6 +395,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			}
 
 			const teacher = await this.app.service('users').patch(user._id, updateObject);
+			await this.app.service('nest-account-service').save({
+				userId: user._id.toString(),
+				username: user.email,
+				systemId,
+				activated: true,
+			});
 
 			this.stats.users.teachers.updated += 1;
 
@@ -402,7 +411,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `teacher "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" with tsp id ${tspTeacher.lehrerUid} and user id ${user._id} could not be updated.`,
+				message: `teacher "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" with tsp id ${tspTeacher.lehrerUid} and user id ${user._id} could not be updated. weil ${err.message}`,
 			});
 
 			return null;
@@ -451,7 +460,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht erstellt werden.`,
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht erstellt werden. weil ${err.message}`,
 			});
 
 			return null;
@@ -484,7 +493,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				// school change detected
 				return switchSchool(this.app, oldUser, this.createStudent.bind(this, tspStudent, school, systemId));
 			}
-			return this.updateStudent(oldUser, tspStudent);
+			if (oldUser.email === tspStudent.email) {
+				await this.app.service('nest-account-service').deleteByUserId({ userId: oldUser._id.toString() });
+			}
+			return this.updateStudent(oldUser, tspStudent, systemId);
 		}
 		return this.createStudent(tspStudent, school, systemId);
 	}
@@ -516,7 +528,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @returns {User|null} the patched user or null (on error)
 	 * @async
 	 */
-	async updateStudent(user, tspStudent) {
+	async updateStudent(user, tspStudent, systemId) {
 		try {
 			const updateObject = this.prepareStudentUpdateObject(user, tspStudent);
 
@@ -531,6 +543,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			}
 
 			const student = await this.app.service('users').patch(user._id, updateObject);
+			await this.app.service('nest-account-service').save({
+				userId: user._id.toString(),
+				username: user.email,
+				systemId,
+				activated: true,
+			});
 
 			this.stats.users.students.updated += 1;
 
