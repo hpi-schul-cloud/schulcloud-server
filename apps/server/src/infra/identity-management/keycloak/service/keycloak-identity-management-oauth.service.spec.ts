@@ -5,9 +5,9 @@ import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
+import { Logger } from '@src/core/logger';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
-import { Logger } from '@src/core/logger';
 
 describe('KeycloakIdentityManagementService', () => {
 	let module: TestingModule;
