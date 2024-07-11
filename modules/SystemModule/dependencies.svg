@@ -24,10 +24,6 @@
 <title>cluster_SystemModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="64,-70 64,-268 432,-268 432,-70 64,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SystemModule_exports</title>
-<polygon fill="none" stroke="black" points="199,-208 199,-260 317,-260 317,-208 199,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_SystemModule_providers</title>
 <polygon fill="none" stroke="black" points="272,-78 272,-130 424,-130 424,-78 272,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_SystemModule_imports</title>
 <polygon fill="none" stroke="black" points="72,-78 72,-130 264,-130 264,-78 72,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SystemModule_exports</title>
+<polygon fill="none" stroke="black" points="199,-208 199,-260 317,-260 317,-208 199,-208"/>
 </g>
 <!-- IdentityManagementModule -->
 <g id="node1" class="node">
