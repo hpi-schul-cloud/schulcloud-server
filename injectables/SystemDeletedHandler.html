@@ -91,7 +91,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >SystemOidcService</li>
+  <li class="breadcrumb-item" >SystemDeletedHandler</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/system/service/system-oidc.service.ts</code>
+            <code>apps/server/src/modules/school/domain/event-handler/system-deleted.handler.ts</code>
         </p>
 
 
@@ -136,12 +136,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findAll" >findAll</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findById" >findById</a>
+                                <a href="#handle" >handle</a>
                             </li>
                         </ul>
                     </td>
@@ -161,12 +158,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/system/service/system-oidc.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/school/domain/event-handler/system-deleted.handler.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -184,10 +181,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>systemRepo</td>
+                                                        <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySystemRepo.html" target="_self" >LegacySystemRepo</a></code>
+                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -213,65 +210,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findAll"></a>
+                    <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findAll</b></span>
-                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAll()</code>
+                    <code>handle(event: <a href="../classes/SystemDeletedEvent.html" target="_self">SystemDeletedEvent</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/system/service/system-oidc.service.ts:22</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt; | []&gt;</code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findById"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findById</b></span>
-                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/system/service/system-oidc.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/event-handler/system-deleted.handler.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -292,9 +251,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>id</td>
+                                                <td>event</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../classes/SystemDeletedEvent.html" target="_self" >SystemDeletedEvent</a></code>
                                             </td>
 
                                             <td>
@@ -307,7 +266,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/OidcConfigDto.html" target="_self" >Promise&lt;OidcConfigDto&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -323,30 +282,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
-import { SystemEntity } from &#x27;@shared/domain/entity&#x27;;
-import { EntityId, SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
-import { LegacySystemRepo } from &#x27;@shared/repo&#x27;;
-import { SystemOidcMapper } from &#x27;../mapper&#x27;;
-import { OidcConfigDto } from &#x27;./dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemDeletedEvent, SystemType } from &#x27;@modules/system/domain&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { School } from &#x27;../do&#x27;;
+import { SchoolService } from &#x27;../service&#x27;;
 
 @Injectable()
-export class SystemOidcService {
-	constructor(private readonly systemRepo: LegacySystemRepo) {}
+@EventsHandler(SystemDeletedEvent)
+export class SystemDeletedHandler implements IEventHandler&lt;SystemDeletedEvent&gt; {
+	constructor(private readonly schoolService: SchoolService) {}
 
-	async findById(id: EntityId): Promise&lt;OidcConfigDto&gt; {
-		const system &#x3D; await this.systemRepo.findById(id);
-		const mappedEntity &#x3D; SystemOidcMapper.mapFromEntityToDto(system);
-		if (!mappedEntity) {
-			throw new EntityNotFoundError(SystemEntity.name, { id });
+	public async handle(event: SystemDeletedEvent): Promise&lt;void&gt; {
+		const school: School &#x3D; await this.schoolService.getSchoolById(event.schoolId);
+
+		school.removeSystem(event.system.id);
+		school.ldapLastSync &#x3D; undefined;
+
+		if (event.system.type &#x3D;&#x3D;&#x3D; SystemType.LDAP &amp;&amp; school.systems.length &#x3D;&#x3D;&#x3D; 0) {
+			school.externalId &#x3D; undefined;
 		}
-		return mappedEntity;
-	}
 
-	async findAll(): Promise&lt;[] | OidcConfigDto[]&gt; {
-		const system &#x3D; await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
-		return SystemOidcMapper.mapFromEntitiesToDtos(system);
+		await this.schoolService.save(school);
 	}
 }
 </code></pre>
@@ -392,7 +349,7 @@ export class SystemOidcService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'SystemOidcService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SystemDeletedHandler.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

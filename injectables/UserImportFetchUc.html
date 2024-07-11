@@ -167,7 +167,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -268,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -338,8 +338,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -392,8 +392,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { System } from &#x27;@modules/system&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { ImportUser, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { ImportUser, User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { IUserImportFeatures, UserImportFeatures } from &#x27;../config&#x27;;
@@ -415,7 +416,7 @@ export class UserImportFetchUc {
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(currentUserId);
 		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
 
-		const system: SystemEntity &#x3D; await this.userImportService.getMigrationSystem();
+		const system: System &#x3D; await this.userImportService.getMigrationSystem();
 		const fetchedData: ImportUser[] &#x3D; await this.schulconnexFetchImportUsersService.getData(user.school, system);
 
 		const filteredFetchedData: ImportUser[] &#x3D; await this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(

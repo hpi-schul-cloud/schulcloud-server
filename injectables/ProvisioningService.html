@@ -188,12 +188,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, sanisStrategy: <a href="../injectables/SanisProvisioningStrategy.html" target="_self">SanisProvisioningStrategy</a>, iservStrategy: <a href="../injectables/IservProvisioningStrategy.html" target="_self">IservProvisioningStrategy</a>, oidcMockStrategy: <a href="../injectables/OidcMockProvisioningStrategy.html" target="_self">OidcMockProvisioningStrategy</a>)</code>
+<code>constructor(systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, sanisStrategy: <a href="../injectables/SanisProvisioningStrategy.html" target="_self">SanisProvisioningStrategy</a>, iservStrategy: <a href="../injectables/IservProvisioningStrategy.html" target="_self">IservProvisioningStrategy</a>, oidcMockStrategy: <a href="../injectables/OidcMockProvisioningStrategy.html" target="_self">OidcMockProvisioningStrategy</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -214,7 +214,7 @@
                                                         <td>systemService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySystemService.html" target="_self" >LegacySystemService</a></code>
+                                                                        <code><a href="../injectables/SystemService.html" target="_self" >SystemService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -295,8 +295,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -364,8 +364,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -457,8 +457,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -526,8 +526,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -595,8 +595,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -675,7 +675,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/provisioning/service/provisioning.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -688,8 +688,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySystemService } from &#x27;@modules/system&#x27;;
-import { SystemDto } from &#x27;@modules/system/service/dto/system.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { System, SystemService } from &#x27;@modules/system&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from &#x27;../dto&#x27;;
@@ -709,7 +708,7 @@ export class ProvisioningService {
 	&gt;();
 
 	constructor(
-		private readonly systemService: LegacySystemService,
+		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
 		private readonly oidcMockStrategy: OidcMockProvisioningStrategy
@@ -738,8 +737,10 @@ export class ProvisioningService {
 	}
 
 	private async determineInput(systemId: string): Promise&lt;ProvisioningSystemDto&gt; {
-		const systemDto: SystemDto &#x3D; await this.systemService.findById(systemId);
+		const systemDto: System &#x3D; await this.systemService.findByIdOrFail(systemId);
+
 		const inputDto: ProvisioningSystemDto &#x3D; ProvisioningSystemInputMapper.mapToInternal(systemDto);
+
 		return inputDto;
 	}
 

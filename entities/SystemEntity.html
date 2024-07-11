@@ -113,7 +113,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/system.entity.ts</code>
+            <code>apps/server/src/modules/system/entity/system.entity.ts</code>
         </p>
 
 
@@ -228,7 +228,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="200" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:200</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="200" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:200</a></div>
                         </td>
                     </tr>
 
@@ -265,7 +265,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="203" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:203</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="203" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:203</a></div>
                         </td>
                     </tr>
 
@@ -302,7 +302,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="216" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:216</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="216" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:216</a></div>
                         </td>
                     </tr>
 
@@ -339,7 +339,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="206" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:206</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="206" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -376,7 +376,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="213" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:213</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="213" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -414,7 +414,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="210" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:210</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="210" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:210</a></div>
                         </td>
                     </tr>
 
@@ -451,7 +451,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="219" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:219</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="219" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:219</a></div>
                         </td>
                     </tr>
 
@@ -486,7 +486,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="222" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:222</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="222" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -522,7 +522,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="194" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:194</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="194" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:194</a></div>
                         </td>
                     </tr>
 
@@ -559,7 +559,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="197" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:197</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="197" class="link-to-prism">apps/server/src/modules/system/entity/system.entity.ts:197</a></div>
                         </td>
                     </tr>
 
@@ -573,9 +573,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from &#x27;@mikro-orm/core&#x27;;
 import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x27;;
+import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
-import { EntityId } from &#x27;../types&#x27;;
-import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
 export interface SystemEntityProps {
 	type: string;

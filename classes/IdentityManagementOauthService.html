@@ -205,7 +205,7 @@
 </div>
 
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;OauthConfigDto&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/OauthConfig.html" target="_self" >Promise&lt;OauthConfig&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -364,7 +364,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfigDto } from &#x27;@modules/system/service/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { OauthConfig } from &#x27;@modules/system&#x27;;
 
 export abstract class IdentityManagementOauthService {
 	/**
@@ -372,7 +372,7 @@ export abstract class IdentityManagementOauthService {
 	 * @returns the oauth config of the IDM.
 	 * @throws an error if the IDM oauth config is not available.
 	 */
-	abstract getOauthConfig(): Promise&lt;OauthConfigDto&gt;;
+	abstract getOauthConfig(): Promise&lt;OauthConfig&gt;;
 
 	/**
 	 * Checks if the IDM oauth config is available.

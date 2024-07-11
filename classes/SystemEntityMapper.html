@@ -151,6 +151,11 @@
                                 <a href="#mapOauthConfigEntityToDomainObject" >mapOauthConfigEntityToDomainObject</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapOidcConfigEntityToDomainObject" >mapOidcConfigEntityToDomainObject</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Static</span>
                                 <a href="#mapToDo" >mapToDo</a>
                             </li>
@@ -196,8 +201,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/mapper/system-entity.mapper.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/mapper/system-entity.mapper.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -266,8 +271,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/mapper/system-entity.mapper.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/mapper/system-entity.mapper.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -304,6 +309,76 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/OauthConfig.html" target="_self" >OauthConfig</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapOidcConfigEntityToDomainObject"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Static</span>
+                        <span ><b>mapOidcConfigEntityToDomainObject</b></span>
+                        <a href="#mapOidcConfigEntityToDomainObject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapOidcConfigEntityToDomainObject(oidcConfig: <a href="../classes/OidcConfigEntity.html" target="_self">OidcConfigEntity</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/mapper/system-entity.mapper.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>oidcConfig</td>
+                                            <td>
+                                                            <code><a href="../classes/OidcConfigEntity.html" target="_self" >OidcConfigEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/OidcConfig.html" target="_self" >OidcConfig</a></code>
 
                         </div>
                             <div class="io-description">
@@ -392,12 +467,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from &#x27;@shared/domain/entity&#x27;;
-import { LdapConfig, OauthConfig, System, SystemFactory } from &#x27;../../../domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LdapConfig, OauthConfig, OidcConfig, System } from &#x27;../../../domain&#x27;;
+import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity } from &#x27;../../../entity&#x27;;
 
 export class SystemEntityMapper {
 	public static mapToDo(entity: SystemEntity): System {
-		const system &#x3D; SystemFactory.build({
+		const system &#x3D; new System({
 			id: entity.id,
 			url: entity.url,
 			type: entity.type,
@@ -407,6 +482,7 @@ export class SystemEntityMapper {
 			alias: entity.alias,
 			oauthConfig: entity.oauthConfig ? this.mapOauthConfigEntityToDomainObject(entity.oauthConfig) : undefined,
 			ldapConfig: entity.ldapConfig ? this.mapLdapConfigEntityToDomainObject(entity.ldapConfig) : undefined,
+			oidcConfig: entity.oidcConfig ? this.mapOidcConfigEntityToDomainObject(entity.oidcConfig) : undefined,
 		});
 
 		return system;
@@ -437,6 +513,29 @@ export class SystemEntityMapper {
 			active: !!ldapConfig.active,
 			url: ldapConfig.url,
 			provider: ldapConfig.provider,
+			federalState: ldapConfig.federalState,
+			lastSyncAttempt: ldapConfig.lastSyncAttempt,
+			lastSuccessfulFullSync: ldapConfig.lastSuccessfulFullSync,
+			lastSuccessfulPartialSync: ldapConfig.lastSuccessfulPartialSync,
+			lastModifyTimestamp: ldapConfig.lastModifyTimestamp,
+			rootPath: ldapConfig.rootPath,
+			searchUser: ldapConfig.searchUser,
+			searchUserPassword: ldapConfig.searchUserPassword,
+		});
+
+		return mapped;
+	}
+
+	private static mapOidcConfigEntityToDomainObject(oidcConfig: OidcConfigEntity): OidcConfig {
+		const mapped: OidcConfig &#x3D; new OidcConfig({
+			clientId: oidcConfig.clientId,
+			clientSecret: oidcConfig?.clientSecret,
+			idpHint: oidcConfig.idpHint,
+			authorizationUrl: oidcConfig.authorizationUrl,
+			tokenUrl: oidcConfig.tokenUrl,
+			userinfoUrl: oidcConfig.userinfoUrl,
+			logoutUrl: oidcConfig.logoutUrl,
+			defaultScopes: oidcConfig.defaultScopes,
 		});
 
 		return mapped;

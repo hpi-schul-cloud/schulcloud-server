@@ -208,7 +208,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(oauthConfigResponse: literal type)</code>
+<code>constructor(oauthConfigResponse: <a href="../classes/OauthConfigResponse.html" target="_self">OauthConfigResponse</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -234,7 +234,7 @@
                                                         <td>oauthConfigResponse</td>
                                                   
                                                         <td>
-                                                                    <code>literal type</code>
+                                                                        <code><a href="../classes/OauthConfigResponse.html" target="_self" >OauthConfigResponse</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -789,20 +789,7 @@ export class OauthConfigResponse {
 	})
 	jwksEndpoint: string;
 
-	constructor(oauthConfigResponse: {
-		redirectUri: string;
-		idpHint?: string;
-		tokenEndpoint: string;
-		responseType: string;
-		clientId: string;
-		provider: string;
-		jwksEndpoint: string;
-		authEndpoint: string;
-		scope: string;
-		logoutEndpoint?: string;
-		grantType: string;
-		issuer: string;
-	}) {
+	constructor(oauthConfigResponse: OauthConfigResponse) {
 		this.clientId &#x3D; oauthConfigResponse.clientId;
 		this.idpHint &#x3D; oauthConfigResponse.idpHint;
 		this.redirectUri &#x3D; oauthConfigResponse.redirectUri;

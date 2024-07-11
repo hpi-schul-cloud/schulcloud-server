@@ -1348,6 +1348,15 @@
                             <a href="#systemFactory" title="apps/server/src/shared/testing/factory/domainobject/system/system.factory.ts" ><b>systemFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../system.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#systemLdapConfigFactory" title="apps/server/src/shared/testing/factory/domainobject/system/system.factory.ts" ><b>systemLdapConfigFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../system.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#systemOauthConfigFactory" title="apps/server/src/shared/testing/factory/domainobject/system/system.factory.ts" ><b>systemOauthConfigFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../system.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#systemOidcConfigFactory" title="apps/server/src/shared/testing/factory/domainobject/system/system.factory.ts" ><b>systemOidcConfigFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../system.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#systemsCollectionName" title="apps/server/src/modules/management/uc/database-management.uc.ts" ><b>systemsCollectionName</b>&nbsp;&nbsp;&nbsp;(apps/.../database-management.uc.ts)</a>
                         </li>
                         <li>
@@ -20935,6 +20944,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x60;school #${sequence}&#x60;,
 		federalState: federalStateFactory.build(),
 		features: new Set&lt;SchoolFeature&gt;(),
+		systemIds: [],
 	};
 })</code>
                     </td>
@@ -22818,12 +22828,107 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>DomainObjectFactory.define&lt;System, SystemProps&gt;(System, () &#x3D;&gt; {
+                        <i>Default value : </i><code>SystemFactory.define(System, () &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
-		type: &#x27;oauth2&#x27;,
+		type: SystemType.OAUTH,
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="systemLdapConfigFactory"></a>
+                    <span class="name">
+                        <span ><b>systemLdapConfigFactory</b></span>
+                        <a href="#systemLdapConfigFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;LdapConfig&gt;(
+	() &#x3D;&gt;
+		new LdapConfig({
+			active: true,
+			url: &#x27;ldaps://test.ldap/&#x27;,
+		})
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="systemOauthConfigFactory"></a>
+                    <span class="name">
+                        <span ><b>systemOauthConfigFactory</b></span>
+                        <a href="#systemOauthConfigFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;OauthConfig&gt;(
+	() &#x3D;&gt;
+		new OauthConfig({
+			clientId: &#x27;12345&#x27;,
+			clientSecret: &#x27;mocksecret&#x27;,
+			idpHint: &#x27;mock-oauth-idpHint&#x27;,
+			tokenEndpoint: &#x27;https://mock.de/mock/auth/public/mockToken&#x27;,
+			grantType: &#x27;authorization_code&#x27;,
+			redirectUri: &#x27;https://mockhost:3030/api/v3/sso/oauth/&#x27;,
+			scope: &#x27;openid uuid&#x27;,
+			responseType: &#x27;code&#x27;,
+			authEndpoint: &#x27;https://mock.de/auth&#x27;,
+			provider: &#x27;mock_type&#x27;,
+			logoutEndpoint: &#x27;https://mock.de/logout&#x27;,
+			issuer: &#x27;mock_issuer&#x27;,
+			jwksEndpoint: &#x27;https://mock.de/jwks&#x27;,
+		})
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="systemOidcConfigFactory"></a>
+                    <span class="name">
+                        <span ><b>systemOidcConfigFactory</b></span>
+                        <a href="#systemOidcConfigFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;OidcConfig&gt;(
+	() &#x3D;&gt;
+		new OidcConfig({
+			clientId: &#x27;mock-client-id&#x27;,
+			clientSecret: &#x27;mock-client-secret&#x27;,
+			idpHint: &#x27;mock-oidc-idpHint&#x27;,
+			defaultScopes: &#x27;openid email userinfo&#x27;,
+			authorizationUrl: &#x27;https://mock.tld/auth&#x27;,
+			tokenUrl: &#x27;https://mock.tld/token&#x27;,
+			userinfoUrl: &#x27;https://mock.tld/userinfo&#x27;,
+			logoutUrl: &#x27;https://mock.tld/logout&#x27;,
+		})
+)</code>
                     </td>
                 </tr>
 

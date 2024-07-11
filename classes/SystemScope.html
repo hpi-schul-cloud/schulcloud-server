@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/system/system-scope.ts</code>
+            <code>apps/server/src/modules/system/repo/mikro-orm/scope/system.scope.ts</code>
         </p>
 
 
@@ -170,13 +170,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#withLdapConfig" >withLdapConfig</a>
+                                <a href="#byIds" >byIds</a>
                             </li>
                             <li>
-                                <a href="#withOauthConfig" >withOauthConfig</a>
-                            </li>
-                            <li>
-                                <a href="#withOidcConfig" >withOidcConfig</a>
+                                <a href="#byTypes" >byTypes</a>
                             </li>
                             <li>
                                 <a href="#addQuery" >addQuery</a>
@@ -320,24 +317,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="withLdapConfig"></a>
+                    <a name="byIds"></a>
                     <span class="name">
-                        <span ><b>withLdapConfig</b></span>
-                        <a href="#withLdapConfig"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>byIds</b></span>
+                        <a href="#byIds"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withLdapConfig()</code>
+<code>byIds(ids?: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/shared/repo/system/system-scope.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/scope/system.scope.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -345,10 +342,33 @@
             <tr>
                 <td class="col-md-4">
 
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SystemScope.html" target="_self" >SystemScope</a></code>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ids</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                            </td>
 
-                        </div>
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -357,53 +377,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="withOauthConfig"></a>
+                    <a name="byTypes"></a>
                     <span class="name">
-                        <span ><b>withOauthConfig</b></span>
-                        <a href="#withOauthConfig"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>byTypes</b></span>
+                        <a href="#byTypes"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withOauthConfig()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/shared/repo/system/system-scope.ts:10</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SystemScope.html" target="_self" >SystemScope</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="withOidcConfig"></a>
-                    <span class="name">
-                        <span ><b>withOidcConfig</b></span>
-                        <a href="#withOidcConfig"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>withOidcConfig()</code>
+<code>byTypes(types?: <a href="../classes/System.html" target="_self">SystemType[]</a>)</code>
                 </td>
             </tr>
 
@@ -411,7 +394,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/shared/repo/system/system-scope.ts:15</a></div>
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/scope/system.scope.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -419,10 +402,33 @@
             <tr>
                 <td class="col-md-4">
 
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SystemScope.html" target="_self" >SystemScope</a></code>
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>types</td>
+                                            <td>
+                                                            <code><a href="../classes/System.html" target="_self" >SystemType[]</a></code>
+                                            </td>
 
-                        </div>
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -562,13 +568,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Scope.html" target="_self" >Scope&lt;T&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -583,22 +582,25 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemEntity } from &#x27;@shared/domain/entity&#x27;;
-import { Scope } from &#x27;../scope&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types/entity-id&#x27;;
+import { Scope } from &#x27;@shared/repo/scope&#x27;;
+import { SystemType } from &#x27;../../../domain&#x27;;
+import { SystemEntity } from &#x27;../../../entity&#x27;;
 
 export class SystemScope extends Scope&lt;SystemEntity&gt; {
-	withLdapConfig(): SystemScope {
-		this.addQuery({ ldapConfig: { $ne: null } });
+	byIds(ids?: EntityId[]): this {
+		if (ids) {
+			this.addQuery({ id: { $in: ids } });
+		}
+
 		return this;
 	}
 
-	withOauthConfig(): SystemScope {
-		this.addQuery({ oauthConfig: { $ne: null } });
-		return this;
-	}
+	byTypes(types?: SystemType[]): this {
+		if (types) {
+			this.addQuery({ type: { $in: types } });
+		}
 
-	withOidcConfig(): SystemScope {
-		this.addQuery({ oidcConfig: { $ne: null } });
 		return this;
 	}
 }

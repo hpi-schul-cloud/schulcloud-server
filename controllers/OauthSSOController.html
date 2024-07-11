@@ -88,7 +88,9 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >OauthSSOController</li>
+  <li class="breadcrumb-item" 
+        class="breadcrumb-item deprecated-name"
+    >OauthSSOController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,6 +124,13 @@
                 <code>sso</code>
             </p>
 
+            <p class="comment">
+                <h3 class="deprecated">Deprecated</h3>
+            </p>
+            <p class="comment">
+                <p>To be removed in N21-2071</p>
+
+            </p>
 
 
 
@@ -200,8 +209,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -290,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -375,6 +384,9 @@ import { HydraOauthUc } from &#x27;../uc&#x27;;
 import { AuthorizationParams } from &#x27;./dto&#x27;;
 import { StatelessAuthorizationParams } from &#x27;./dto/stateless-authorization.params&#x27;;
 
+/**
+ * @deprecated To be removed in N21-2071
+ */
 @ApiTags(&#x27;SSO&#x27;)
 @Controller(&#x27;sso&#x27;)
 export class OauthSSOController {

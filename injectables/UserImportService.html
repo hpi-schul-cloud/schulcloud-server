@@ -182,12 +182,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userImportRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userImportFeatures: <a href="../interfaces/IUserImportFeatures.html" target="_self">IUserImportFeatures</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
+<code>constructor(userImportRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userImportFeatures: <a href="../interfaces/IUserImportFeatures.html" target="_self">IUserImportFeatures</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -217,10 +217,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>systemRepo</td>
+                                                        <td>systemService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySystemRepo.html" target="_self" >LegacySystemRepo</a></code>
+                                                                        <code><a href="../injectables/SystemService.html" target="_self" >SystemService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -312,8 +312,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -382,8 +382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -452,8 +452,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -462,7 +462,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;SystemEntity&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;System&gt;</a></code>
 
                         </div>
                 </td>
@@ -492,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -644,8 +644,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/user-import/service/user-import.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -698,12 +698,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { System, SystemService } from &#x27;@modules/system&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { ImportUser, MatchCreator, SchoolEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { SchoolFeature } from &#x27;@shared/domain/types&#x27;;
-import { ImportUserRepo, LegacySystemRepo } from &#x27;@shared/repo&#x27;;
+import { ImportUserRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { IUserImportFeatures, UserImportFeatures } from &#x27;../config&#x27;;
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from &#x27;../loggable&#x27;;
@@ -712,7 +713,7 @@ import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from &#x27;.
 export class UserImportService {
 	constructor(
 		private readonly userImportRepo: ImportUserRepo,
-		private readonly systemRepo: LegacySystemRepo,
+		private readonly systemService: SystemService,
 		private readonly userService: UserService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly logger: Logger,
@@ -723,10 +724,10 @@ export class UserImportService {
 		await this.userImportRepo.saveImportUsers(importUsers);
 	}
 
-	public async getMigrationSystem(): Promise&lt;SystemEntity&gt; {
+	public async getMigrationSystem(): Promise&lt;System&gt; {
 		const systemId: string &#x3D; this.userImportFeatures.userMigrationSystemId;
 
-		const system: SystemEntity &#x3D; await this.systemRepo.findById(systemId);
+		const system: System &#x3D; await this.systemService.findByIdOrFail(systemId);
 
 		return system;
 	}

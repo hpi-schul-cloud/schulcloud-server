@@ -446,7 +446,7 @@ No sensible data should be returned!</p>
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from &#x27;@nestjs/swagger&#x27;;
-import { SystemDto } from &#x27;../service&#x27;;
+import { System } from &#x27;../domain&#x27;;
 import { SystemUc } from &#x27;../uc/system.uc&#x27;;
 import { PublicSystemListResponse, PublicSystemResponse, SystemFilterParams, SystemIdParams } from &#x27;./dto&#x27;;
 import { SystemResponseMapper } from &#x27;./mapper/system-response.mapper&#x27;;
@@ -464,9 +464,9 @@ export class SystemController {
 	@ApiOperation({ summary: &#x27;Finds all publicly available systems.&#x27; })
 	@ApiResponse({ status: 200, type: PublicSystemListResponse, description: &#x27;Returns a list of systems.&#x27; })
 	async find(@Query() filterParams: SystemFilterParams): Promise&lt;PublicSystemListResponse&gt; {
-		const systemDtos: SystemDto[] &#x3D; await this.systemUc.findByFilter(filterParams.type, filterParams.onlyOauth);
+		const systems: System[] &#x3D; await this.systemUc.find(filterParams.types);
 
-		const mapped: PublicSystemListResponse &#x3D; SystemResponseMapper.mapFromDtoToListResponse(systemDtos);
+		const mapped: PublicSystemListResponse &#x3D; SystemResponseMapper.mapFromDtoToListResponse(systems);
 
 		return mapped;
 	}
@@ -479,9 +479,9 @@ export class SystemController {
 	@ApiOperation({ summary: &#x27;Finds a publicly available system.&#x27; })
 	@ApiResponse({ status: 200, type: PublicSystemResponse, description: &#x27;Returns a system.&#x27; })
 	async getSystem(@Param() params: SystemIdParams): Promise&lt;PublicSystemResponse&gt; {
-		const systemDto: SystemDto &#x3D; await this.systemUc.findById(params.systemId);
+		const system: System &#x3D; await this.systemUc.findById(params.systemId);
 
-		const mapped: PublicSystemResponse &#x3D; SystemResponseMapper.mapFromDtoToResponse(systemDto);
+		const mapped: PublicSystemResponse &#x3D; SystemResponseMapper.mapFromDtoToResponse(system);
 
 		return mapped;
 	}

@@ -655,10 +655,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from &#x27;@mikro-orm/core&#x27;;
+import { SystemEntity } from &#x27;@modules/system/entity/system.entity&#x27;;
 import { EntityWithSchool, RoleName } from &#x27;../interface&#x27;;
 import { BaseEntityReference, BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { SchoolEntity } from &#x27;./school.entity&#x27;;
-import { SystemEntity } from &#x27;./system.entity&#x27;;
 import type { User } from &#x27;./user.entity&#x27;;
 
 export type IImportUserRoleName &#x3D; RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;

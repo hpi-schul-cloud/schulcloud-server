@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SchulconnexImportUserMapper</li>
+  <li class="breadcrumb-item" >SystemDeletedEvent</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/user-import/mapper/schulconnex-import-user.mapper.ts</code>
+            <code>apps/server/src/modules/system/domain/event/system-deleted.event.ts</code>
         </p>
 
 
@@ -131,18 +131,19 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <h6><b>Properties</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapDataToUserImportEntities" >mapDataToUserImportEntities</a>
+                                <a href="#schoolId" >schoolId</a>
+                            </li>
+                            <li>
+                                <a href="#system" >system</a>
                             </li>
                         </ul>
                     </td>
@@ -152,123 +153,120 @@
 
 
 
+
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(props: <a href="../classes/SystemDeletedEvent.html" target="_self">SystemDeletedEvent</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/system/domain/event/system-deleted.event.ts:7</a></div>
+                            </td>
+                        </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>props</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/SystemDeletedEvent.html" target="_self" >SystemDeletedEvent</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
-            <section data-compodoc="block-methods">
+            <section data-compodoc="block-properties">
     
-    <h3 id="methods">
-        Methods
+    <h3 id="inputs">
+        Properties
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapDataToUserImportEntities"></a>
+                    <a name="schoolId"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapDataToUserImportEntities</b></span>
-                        <a href="#mapDataToUserImportEntities"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>schoolId</b></span>
+                        <a href="#schoolId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapDataToUserImportEntities(response: <a href="../classes/SchulconnexResponse.html" target="_self">SchulconnexResponse[]</a>, system: <a href="../classes/System.html" target="_self">System</a>, school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, em: EntityManager)</code>
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
 
-
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/user-import/mapper/schulconnex-import-user.mapper.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/system/domain/event/system-deleted.event.ts:5</a></div>
                         </td>
                     </tr>
 
 
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
             <tr>
                 <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>response</td>
-                                            <td>
-                                                            <code><a href="../classes/SchulconnexResponse.html" target="_self" >SchulconnexResponse[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>system</td>
-                                            <td>
-                                                            <code><a href="../classes/System.html" target="_self" >System</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>em</td>
-                                            <td>
-                                                        <code>EntityManager</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >ImportUser[]</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
+                    <a name="system"></a>
+                    <span class="name">
+                        <span ><b>system</b></span>
+                        <a href="#system"><span class="icon ion-ios-link"></span></a>
+                    </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/System.html" target="_self" >System</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/system/domain/event/system-deleted.event.ts:7</a></div>
+                        </td>
+                    </tr>
+
+
         </tbody>
     </table>
 </section>
+
+
 
 
 
@@ -278,43 +276,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulconnexGroupType, SchulconnexGruppenResponse, SchulconnexResponse } from &#x27;@infra/schulconnex-client&#x27;;
-import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { SchulconnexResponseMapper } from &#x27;@modules/provisioning&#x27;;
-import { System } from &#x27;@modules/system&#x27;;
-import { SystemEntity } from &#x27;@modules/system/entity&#x27;;
-import { ImportUser, SchoolEntity } from &#x27;@shared/domain/entity&#x27;;
-import { RoleName } from &#x27;@shared/domain/interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { System } from &#x27;../system.do&#x27;;
 
-export class SchulconnexImportUserMapper {
-	public static mapDataToUserImportEntities(
-		response: SchulconnexResponse[],
-		system: System,
-		school: SchoolEntity,
-		em: EntityManager
-	): ImportUser[] {
-		const importUsers: ImportUser[] &#x3D; response.map((externalUser: SchulconnexResponse): ImportUser &#x3D;&gt; {
-			const role: RoleName &#x3D; SchulconnexResponseMapper.mapSanisRoleToRoleName(externalUser);
-			const groups: SchulconnexGruppenResponse[] | undefined &#x3D; externalUser.personenkontexte[0]?.gruppen?.filter(
-				(group) &#x3D;&gt; group.gruppe.typ &#x3D;&#x3D;&#x3D; SchulconnexGroupType.CLASS
-			);
+export class SystemDeletedEvent {
+	schoolId: EntityId;
 
-			const importUser: ImportUser &#x3D; new ImportUser({
-				system: em.getReference(SystemEntity, system.id),
-				school,
-				ldapDn: &#x60;uid&#x3D;${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid},&#x60;,
-				externalId: externalUser.pid,
-				firstName: externalUser.person.name.vorname,
-				lastName: externalUser.person.name.familienname,
-				roleNames: ImportUser.isImportUserRole(role) ? [role] : [],
-				email: &#x60;${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid}@schul-cloud.org&#x60;,
-				classNames: groups ? SchulconnexResponseMapper.mapToGroupNameList(groups) : [],
-			});
+	system: System;
 
-			return importUser;
-		});
-
-		return importUsers;
+	constructor(props: SystemDeletedEvent) {
+		this.schoolId &#x3D; props.schoolId;
+		this.system &#x3D; props.system;
 	}
 }
 </code></pre>
@@ -355,7 +327,7 @@ export class SchulconnexImportUserMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchulconnexImportUserMapper.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SystemDeletedEvent.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

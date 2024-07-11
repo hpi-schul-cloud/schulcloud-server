@@ -226,7 +226,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToKeycloakIdentityProvider(oidcConfig: <a href="../classes/OidcConfigDto.html" target="_self">OidcConfigDto</a>, flowAlias: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>mapToKeycloakIdentityProvider(oidcConfig: <a href="../classes/OidcConfig.html" target="_self">OidcConfig</a>, flowAlias: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -257,7 +257,7 @@
                                         <tr>
                                                 <td>oidcConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OidcConfigDto.html" target="_self" >OidcConfigDto</a></code>
+                                                            <code><a href="../classes/OidcConfig.html" target="_self" >OidcConfig</a></code>
                                             </td>
 
                                             <td>
@@ -304,13 +304,13 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DefaultEncryptionService, EncryptionService } from &#x27;@infra/encryption&#x27;;
 import IdentityProviderRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation&#x27;;
-import { OidcConfigDto } from &#x27;@modules/system/service&#x27;;
+import type { OidcConfig } from &#x27;@modules/system&#x27;;
 import { Inject } from &#x27;@nestjs/common&#x27;;
 
 export class OidcIdentityProviderMapper {
 	constructor(@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService) {}
 
-	public mapToKeycloakIdentityProvider(oidcConfig: OidcConfigDto, flowAlias: string): IdentityProviderRepresentation {
+	public mapToKeycloakIdentityProvider(oidcConfig: OidcConfig, flowAlias: string): IdentityProviderRepresentation {
 		return {
 			providerId: &#x27;oidc&#x27;,
 			alias: oidcConfig.idpHint,

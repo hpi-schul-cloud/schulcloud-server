@@ -144,6 +144,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#find" >find</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findAllForLdapLogin" >findAllForLdapLogin</a>
                             </li>
                             <li>
@@ -222,6 +227,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="find"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>find</b></span>
+                        <a href="#find"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>find(filter: <a href="../interfaces/SystemQuery.html" target="_self">SystemQuery</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SystemQuery.html" target="_self" >SystemQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;System[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findAllForLdapLogin"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -241,8 +316,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -281,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -351,8 +426,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/mikro-orm/system.repo.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -932,12 +1007,12 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData, EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { SystemEntity } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId, SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
 import { BaseDomainObjectRepo } from &#x27;@shared/repo/base-domain-object.repo&#x27;;
-import { System, SystemRepo } from &#x27;../../domain&#x27;;
-import { SystemEntityMapper } from &#x27;./mapper/system-entity.mapper&#x27;;
-import { SystemScope } from &#x27;./scope/system.scope&#x27;;
+import { System, SystemQuery, SystemRepo } from &#x27;../../domain&#x27;;
+import { SystemEntity } from &#x27;../../entity&#x27;;
+import { SystemEntityMapper } from &#x27;./mapper&#x27;;
+import { SystemScope } from &#x27;./scope&#x27;;
 
 @Injectable()
 export class SystemMikroOrmRepo extends BaseDomainObjectRepo&lt;System, SystemEntity&gt; implements SystemRepo {
@@ -947,6 +1022,16 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo&lt;System, SystemEn
 
 	protected mapDOToEntityProperties(): EntityData&lt;SystemEntity&gt; {
 		throw new NotImplementedException(&#x27;Method &#x60;mapDOToEntityProperties&#x60; not implemented.&#x27;);
+	}
+
+	public async find(filter: SystemQuery): Promise&lt;System[]&gt; {
+		const scope: SystemScope &#x3D; new SystemScope().byTypes(filter.types).allowEmptyQuery(true);
+
+		const entities: SystemEntity[] &#x3D; await this.em.find(SystemEntity, scope.query);
+
+		const domainObjects: System[] &#x3D; entities.map((entity: SystemEntity) &#x3D;&gt; SystemEntityMapper.mapToDo(entity));
+
+		return domainObjects;
 	}
 
 	public async getSystemById(id: EntityId): Promise&lt;System | null&gt; {
@@ -973,7 +1058,6 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo&lt;System, SystemEn
 	}
 
 	public async findAllForLdapLogin(): Promise&lt;System[]&gt; {
-		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
 		const entities: SystemEntity[] &#x3D; await this.em.find(SystemEntity, {
 			type: SystemTypeEnum.LDAP,
 			ldapConfig: { active: true },

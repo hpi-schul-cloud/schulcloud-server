@@ -178,7 +178,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToInternal(dto: <a href="../classes/SystemDto.html" target="_self">SystemDto</a>)</code>
+                    <code>mapToInternal(dto: <a href="../classes/System.html" target="_self">System</a>)</code>
                 </td>
             </tr>
 
@@ -209,7 +209,7 @@
                                         <tr>
                                                 <td>dto</td>
                                             <td>
-                                                            <code><a href="../classes/SystemDto.html" target="_self" >SystemDto</a></code>
+                                                            <code><a href="../classes/System.html" target="_self" >System</a></code>
                                             </td>
 
                                             <td>
@@ -222,7 +222,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ProvisioningSystemDto.html" target="_self" >ProvisioningSystemDto</a></code>
 
                         </div>
                             <div class="io-description">
@@ -242,16 +242,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
-import { SystemDto } from &#x27;@modules/system/service/dto/system.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { System } from &#x27;@modules/system&#x27;;
+import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { ProvisioningSystemDto } from &#x27;../dto&#x27;;
 
 export class ProvisioningSystemInputMapper {
-	static mapToInternal(dto: SystemDto) {
+	static mapToInternal(dto: System): ProvisioningSystemDto {
 		return new ProvisioningSystemDto({
-			systemId: dto.id || &#x27;&#x27;,
+			systemId: dto.id,
 			provisioningStrategy: dto.provisioningStrategy || SystemProvisioningStrategy.UNDEFINED,
-			provisioningUrl: dto.provisioningUrl || undefined,
+			provisioningUrl: dto.provisioningUrl,
 		});
 	}
 }

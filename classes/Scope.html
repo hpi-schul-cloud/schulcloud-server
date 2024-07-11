@@ -465,13 +465,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Scope.html" target="_self" >Scope&lt;T&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -514,7 +507,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilterQuery } from &#x27;@mikro-orm/core&#x27;;
-import { EmptyResultQuery } from &#x27;./query/empty-result.query&#x27;;
+import { EmptyResultQuery } from &#x27;./query&#x27;;
 
 type EmptyResultQueryType &#x3D; typeof EmptyResultQuery;
 
@@ -547,8 +540,9 @@ export class Scope&lt;T&gt; {
 		this._queries.push(query);
 	}
 
-	allowEmptyQuery(isEmptyQueryAllowed: boolean): Scope&lt;T&gt; {
+	allowEmptyQuery(isEmptyQueryAllowed: boolean): this {
 		this._allowEmptyQuery &#x3D; isEmptyQueryAllowed;
+
 		return this;
 	}
 }

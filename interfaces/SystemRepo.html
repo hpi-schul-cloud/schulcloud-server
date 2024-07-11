@@ -147,6 +147,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="#find" 
+>
+                                        find
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#findAllForLdapLogin" 
 >
                                         findAllForLdapLogin
@@ -196,8 +202,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -247,6 +253,73 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="find"></a>
+                    <span class="name">
+                        <span ><b>find</b></span>
+                        <a href="#find"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>find(filter: <a href="../interfaces/SystemQuery.html" target="_self">SystemQuery</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:6</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SystemQuery.html" target="_self" >SystemQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;System[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findAllForLdapLogin"></a>
                     <span class="name">
                         <span ><b>findAllForLdapLogin</b></span>
@@ -263,8 +336,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:9</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -300,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -367,8 +440,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/modules/system/domain/interface/system.repo.interface.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -422,8 +495,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types/entity-id&#x27;;
 import { System } from &#x27;../system.do&#x27;;
+import { SystemQuery } from &#x27;./system-query&#x27;;
 
 export interface SystemRepo {
+	find(filter: SystemQuery): Promise&lt;System[]&gt;;
+
 	getSystemsByIds(systemIds: EntityId[]): Promise&lt;System[]&gt;;
 
 	getSystemById(systemId: EntityId): Promise&lt;System | null&gt;;

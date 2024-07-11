@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/system.entity.ts</code>
+            <code>apps/server/src/modules/system/entity/system.entity.ts</code>
         </p>
 
 
@@ -557,9 +557,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from &#x27;@mikro-orm/core&#x27;;
 import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x27;;
+import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
-import { EntityId } from &#x27;../types&#x27;;
-import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
 export interface SystemEntityProps {
 	type: string;

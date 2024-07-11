@@ -186,15 +186,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromDtoToListResponse(systems: SystemDto[])</code>
+                    <code>mapFromDtoToListResponse(systems: <a href="../classes/System.html" target="_self">System[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:8</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="5"
+                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -217,7 +217,7 @@
                                         <tr>
                                                 <td>systems</td>
                                             <td>
-                                                        <code>SystemDto[]</code>
+                                                            <code><a href="../classes/System.html" target="_self" >System[]</a></code>
                                             </td>
 
                                             <td>
@@ -255,15 +255,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromDtoToResponse(system: <a href="../classes/SystemDto.html" target="_self">SystemDto</a>)</code>
+                    <code>mapFromDtoToResponse(system: <a href="../classes/System.html" target="_self">System</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -286,7 +286,7 @@
                                         <tr>
                                                 <td>system</td>
                                             <td>
-                                                            <code><a href="../classes/SystemDto.html" target="_self" >SystemDto</a></code>
+                                                            <code><a href="../classes/System.html" target="_self" >System</a></code>
                                             </td>
 
                                             <td>
@@ -324,15 +324,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromOauthConfigDtoToResponse(oauthConfigDto: <a href="../classes/OauthConfigDto.html" target="_self">OauthConfigDto</a>)</code>
+                    <code>mapFromOauthConfigDtoToResponse(oauthConfig: <a href="../classes/OauthConfig.html" target="_self">OauthConfig</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -353,9 +353,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>oauthConfigDto</td>
+                                                <td>oauthConfig</td>
                                             <td>
-                                                            <code><a href="../classes/OauthConfigDto.html" target="_self" >OauthConfigDto</a></code>
+                                                            <code><a href="../classes/OauthConfig.html" target="_self" >OauthConfig</a></code>
                                             </td>
 
                                             <td>
@@ -388,16 +388,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfigResponse } from &#x27;@modules/system/controller/dto/oauth-config.response&#x27;;
-import { OauthConfigDto } from &#x27;@modules/system/service/dto/oauth-config.dto&#x27;;
-import { SystemDto } from &#x27;@modules/system/service/dto/system.dto&#x27;;
-import { PublicSystemListResponse } from &#x27;../dto/public-system-list.response&#x27;;
-import { PublicSystemResponse } from &#x27;../dto/public-system-response&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfig, System } from &#x27;../../domain&#x27;;
+import { OauthConfigResponse, PublicSystemListResponse, PublicSystemResponse } from &#x27;../dto&#x27;;
 
 export class SystemResponseMapper {
-	static mapFromDtoToListResponse(systems: SystemDto[]): PublicSystemListResponse {
+	static mapFromDtoToListResponse(systems: System[]): PublicSystemListResponse {
 		const systemResponses: PublicSystemResponse[] &#x3D; systems.map(
-			(system: SystemDto): PublicSystemResponse &#x3D;&gt; this.mapFromDtoToResponse(system)
+			(system: System): PublicSystemResponse &#x3D;&gt; this.mapFromDtoToResponse(system)
 		);
 
 		const systemListResponse: PublicSystemListResponse &#x3D; new PublicSystemListResponse(systemResponses);
@@ -405,9 +402,9 @@ export class SystemResponseMapper {
 		return systemListResponse;
 	}
 
-	static mapFromDtoToResponse(system: SystemDto): PublicSystemResponse {
+	static mapFromDtoToResponse(system: System): PublicSystemResponse {
 		const systemResponse: PublicSystemResponse &#x3D; new PublicSystemResponse({
-			id: system.id || &#x27;&#x27;,
+			id: system.id,
 			type: system.type,
 			alias: system.alias,
 			displayName: system.displayName,
@@ -419,21 +416,21 @@ export class SystemResponseMapper {
 		return systemResponse;
 	}
 
-	static mapFromOauthConfigDtoToResponse(oauthConfigDto: OauthConfigDto): OauthConfigResponse {
+	static mapFromOauthConfigDtoToResponse(oauthConfig: OauthConfig): OauthConfigResponse {
 		const oauthConfigResponse: OauthConfigResponse &#x3D; new OauthConfigResponse({
-			clientId: oauthConfigDto.clientId,
+			clientId: oauthConfig.clientId,
 			// clientSecret will not be mapped for security reasons,
-			idpHint: oauthConfigDto.idpHint,
-			redirectUri: oauthConfigDto.redirectUri,
-			grantType: oauthConfigDto.grantType,
-			tokenEndpoint: oauthConfigDto.tokenEndpoint,
-			authEndpoint: oauthConfigDto.authEndpoint,
-			responseType: oauthConfigDto.responseType,
-			scope: oauthConfigDto.scope,
-			provider: oauthConfigDto.provider,
-			logoutEndpoint: oauthConfigDto.logoutEndpoint,
-			issuer: oauthConfigDto.issuer,
-			jwksEndpoint: oauthConfigDto.jwksEndpoint,
+			idpHint: oauthConfig.idpHint,
+			redirectUri: oauthConfig.redirectUri,
+			grantType: oauthConfig.grantType,
+			tokenEndpoint: oauthConfig.tokenEndpoint,
+			authEndpoint: oauthConfig.authEndpoint,
+			responseType: oauthConfig.responseType,
+			scope: oauthConfig.scope,
+			provider: oauthConfig.provider,
+			logoutEndpoint: oauthConfig.logoutEndpoint,
+			issuer: oauthConfig.issuer,
+			jwksEndpoint: oauthConfig.jwksEndpoint,
 		});
 
 		return oauthConfigResponse;
