@@ -2,12 +2,18 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
-import { cleanupCollections, systemEntityFactory } from '@shared/testing';
-import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
-import { SystemEntityMapper } from './mapper/system-entity.mapper';
+import {
+	cleanupCollections,
+	systemEntityFactory,
+	systemLdapConfigFactory,
+	systemOauthConfigFactory,
+	systemOidcConfigFactory,
+} from '@shared/testing';
+import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
+import { SystemEntity } from '../../entity';
+import { SystemEntityMapper } from './mapper';
 import { SystemMikroOrmRepo } from './system.repo';
 
 describe(SystemMikroOrmRepo.name, () => {
@@ -33,29 +39,79 @@ describe(SystemMikroOrmRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
+	describe('find', () => {
+		describe('when no filter is provided', () => {
+			const setup = async () => {
+				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
+				const oauthSystem = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
+
+				await em.persistAndFlush([ldapSystem, oauthSystem]);
+				em.clear();
+
+				return {
+					ldapSystem,
+					oauthSystem,
+				};
+			};
+
+			it('should return all systems', async () => {
+				const { ldapSystem, oauthSystem } = await setup();
+
+				const result = await repo.find({});
+
+				expect(result).toEqual([SystemEntityMapper.mapToDo(ldapSystem), SystemEntityMapper.mapToDo(oauthSystem)]);
+			});
+		});
+
+		describe('when no system matches the filter', () => {
+			const setup = async () => {
+				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
+
+				await em.persistAndFlush([ldapSystem]);
+				em.clear();
+			};
+
+			it('should return an empty array', async () => {
+				await setup();
+
+				const result = await repo.find({ types: [SystemType.OAUTH] });
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when a system matches the filter', () => {
+			const setup = async () => {
+				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
+				const oauthSystem1 = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
+				const oauthSystem2 = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
+
+				await em.persistAndFlush([ldapSystem, oauthSystem1, oauthSystem2]);
+				em.clear();
+
+				return {
+					oauthSystem1,
+					oauthSystem2,
+				};
+			};
+
+			it('should return the systems', async () => {
+				const { oauthSystem1, oauthSystem2 } = await setup();
+
+				const result = await repo.find({ types: [SystemType.OAUTH] });
+
+				expect(result).toEqual([SystemEntityMapper.mapToDo(oauthSystem1), SystemEntityMapper.mapToDo(oauthSystem2)]);
+			});
+		});
+	});
+
 	describe('getSystemById', () => {
 		describe('when the system exists', () => {
 			const setup = async () => {
-				const oauthConfig = new OauthConfigEntity({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					idpHint: 'mock-oauth-idpHint',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
-				});
-				const ldapConfig = new LdapConfigEntity({
-					url: 'ldaps:mock.de:389',
-					active: true,
-					provider: 'mock_provider',
-				});
+				const oauthConfig = systemOauthConfigFactory.build();
+				const ldapConfig = systemLdapConfigFactory.build();
+				const oidcConfig = systemOidcConfigFactory.build();
+
 				const system: SystemEntity = systemEntityFactory.buildWithId({
 					type: 'oauth',
 					url: 'https://mock.de',
@@ -65,6 +121,7 @@ describe(SystemMikroOrmRepo.name, () => {
 					provisioningUrl: 'https://provisioningurl.de',
 					oauthConfig,
 					ldapConfig,
+					oidcConfig,
 				});
 
 				await em.persistAndFlush([system]);
@@ -74,11 +131,12 @@ describe(SystemMikroOrmRepo.name, () => {
 					system,
 					oauthConfig,
 					ldapConfig,
+					oidcConfig,
 				};
 			};
 
 			it('should return the system', async () => {
-				const { system, oauthConfig, ldapConfig } = await setup();
+				const { system, oauthConfig, ldapConfig, oidcConfig } = await setup();
 
 				const result = await repo.getSystemById(system.id);
 
@@ -109,6 +167,16 @@ describe(SystemMikroOrmRepo.name, () => {
 						url: ldapConfig.url,
 						provider: ldapConfig.provider,
 						active: !!ldapConfig.active,
+					},
+					oidcConfig: {
+						clientId: oidcConfig.clientId,
+						clientSecret: oidcConfig.clientSecret,
+						idpHint: oidcConfig.idpHint,
+						authorizationUrl: oidcConfig.authorizationUrl,
+						tokenUrl: oidcConfig.tokenUrl,
+						logoutUrl: oidcConfig.logoutUrl,
+						userinfoUrl: oidcConfig.userinfoUrl,
+						defaultScopes: oidcConfig.defaultScopes,
 					},
 				});
 			});

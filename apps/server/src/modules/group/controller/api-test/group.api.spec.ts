@@ -4,14 +4,7 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course as CourseEntity,
-	Role,
-	SchoolEntity,
-	SchoolYearEntity,
-	SystemEntity,
-	User,
-} from '@shared/domain/entity';
+import { Course as CourseEntity, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
 	courseFactory as courseEntityFactory,
@@ -62,7 +55,7 @@ describe('Group (API)', () => {
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const system = systemEntityFactory.buildWithId();
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,

@@ -2,14 +2,13 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
-import { LegacySystemService } from '@modules/system';
-import { SystemDto } from '@modules/system/service';
+import { System, SystemService } from '@modules/system';
+import { OauthConfigEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthConfigEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -31,7 +30,7 @@ export class OAuthService {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
-		private readonly systemService: LegacySystemService,
+		private readonly systemService: SystemService,
 		private readonly migrationCheckService: MigrationCheckService,
 		private readonly schoolService: LegacySchoolService
 	) {
@@ -39,9 +38,9 @@ export class OAuthService {
 	}
 
 	async authenticateUser(systemId: string, redirectUri: string, code: string): Promise<OAuthTokenDto> {
-		const system: SystemDto = await this.systemService.findById(systemId);
+		const system: System | null = await this.systemService.findById(systemId);
 
-		if (!system.oauthConfig) {
+		if (!system || !system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(systemId);
 		}
 		const { oauthConfig } = system;

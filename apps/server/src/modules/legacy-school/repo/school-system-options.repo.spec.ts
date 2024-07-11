@@ -1,7 +1,8 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	schoolEntityFactory,

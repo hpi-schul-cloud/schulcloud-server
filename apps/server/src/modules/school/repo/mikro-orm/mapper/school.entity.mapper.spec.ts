@@ -1,4 +1,4 @@
-import { SystemEntity } from '@shared/domain/entity';
+import { SystemEntity } from '@modules/system/entity';
 import { schoolEntityFactory, setupEntities } from '@shared/testing';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';

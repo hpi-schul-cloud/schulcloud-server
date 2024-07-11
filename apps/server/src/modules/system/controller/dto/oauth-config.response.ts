@@ -85,20 +85,7 @@ export class OauthConfigResponse {
 	})
 	jwksEndpoint: string;
 
-	constructor(oauthConfigResponse: {
-		redirectUri: string;
-		idpHint?: string;
-		tokenEndpoint: string;
-		responseType: string;
-		clientId: string;
-		provider: string;
-		jwksEndpoint: string;
-		authEndpoint: string;
-		scope: string;
-		logoutEndpoint?: string;
-		grantType: string;
-		issuer: string;
-	}) {
+	constructor(oauthConfigResponse: OauthConfigResponse) {
 		this.clientId = oauthConfigResponse.clientId;
 		this.idpHint = oauthConfigResponse.idpHint;
 		this.redirectUri = oauthConfigResponse.redirectUri;
