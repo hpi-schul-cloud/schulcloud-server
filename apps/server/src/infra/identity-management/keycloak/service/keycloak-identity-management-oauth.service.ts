@@ -2,23 +2,12 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig } from '@modules/system/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, Logger, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
-
-class IDMLoginError implements Loggable {
-	constructor(private readonly error: Error) {}
-
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		return {
-			message: 'Error while trying to login via IDM',
-			stack: this.error.stack,
-			type: 'IDM_LOGIN_ERROR',
-		};
-	}
-}
+import { IDMLoginError } from '../errors/idm-login-error.loggable';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
