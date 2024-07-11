@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { System, SystemService } from '@modules/system';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { LegacySystemService } from '../../system/service/legacy-system.service';
+import { systemFactory } from '@shared/testing';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -18,7 +18,7 @@ describe('ProvisioningService', () => {
 	let module: TestingModule;
 	let service: ProvisioningService;
 
-	let systemService: DeepMocked<LegacySystemService>;
+	let systemService: DeepMocked<SystemService>;
 	let provisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
 
 	beforeAll(async () => {
@@ -26,8 +26,8 @@ describe('ProvisioningService', () => {
 			providers: [
 				ProvisioningService,
 				{
-					provide: LegacySystemService,
-					useValue: createMock<LegacySystemService>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: SanisProvisioningStrategy,
@@ -57,7 +57,7 @@ describe('ProvisioningService', () => {
 		}).compile();
 
 		service = module.get(ProvisioningService);
-		systemService = module.get(LegacySystemService);
+		systemService = module.get(SystemService);
 		provisioningStrategy = module.get(SanisProvisioningStrategy);
 	});
 
@@ -70,16 +70,13 @@ describe('ProvisioningService', () => {
 	});
 
 	const setupSystemData = () => {
-		const systemId = 'sanisSystemId';
-		const system: SystemDto = new SystemDto({
-			id: systemId,
-			type: 'sanis',
-			provisioningUrl: 'sanisUrl',
+		const system: System = systemFactory.withOauthConfig().build({
+			provisioningUrl: 'https://api.moin.schule/',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
 		const provisioningSystemDto: ProvisioningSystemDto = new ProvisioningSystemDto({
-			systemId,
-			provisioningUrl: 'sanisUrl',
+			systemId: system.id,
+			provisioningUrl: 'https://api.moin.schule/',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
 		const oauthDataDto: OauthDataDto = new OauthDataDto({
@@ -93,7 +90,6 @@ describe('ProvisioningService', () => {
 		});
 
 		return {
-			systemId,
 			system,
 			provisioningSystemDto,
 			oauthDataDto,
@@ -103,17 +99,16 @@ describe('ProvisioningService', () => {
 
 	describe('getData is called', () => {
 		const setup = () => {
-			const { systemId, system, provisioningSystemDto, oauthDataDto } = setupSystemData();
+			const { system, provisioningSystemDto, oauthDataDto } = setupSystemData();
 			const accessToken = 'accessToken';
 			const idToken = 'idToken';
 
-			systemService.findById.mockResolvedValue(system);
+			systemService.findByIdOrFail.mockResolvedValue(system);
 			provisioningStrategy.getData.mockResolvedValue(oauthDataDto);
 
 			return {
 				accessToken,
 				idToken,
-				systemId,
 				system,
 				provisioningSystemDto,
 				oauthDataDto,
@@ -122,9 +117,9 @@ describe('ProvisioningService', () => {
 
 		describe('when the provisioning strategy is found', () => {
 			it('should call strategy.getData', async () => {
-				const { accessToken, idToken, systemId, provisioningSystemDto } = setup();
+				const { accessToken, idToken, system, provisioningSystemDto } = setup();
 
-				await service.getData(systemId, idToken, accessToken);
+				await service.getData(system.id, idToken, accessToken);
 
 				expect(provisioningStrategy.getData).toHaveBeenCalledWith(
 					new OauthDataStrategyInputDto({
@@ -136,9 +131,9 @@ describe('ProvisioningService', () => {
 			});
 
 			it('should return the oauth data', async () => {
-				const { accessToken, idToken, systemId, oauthDataDto } = setup();
+				const { accessToken, idToken, system, oauthDataDto } = setup();
 
-				const result: OauthDataDto = await service.getData(systemId, idToken, accessToken);
+				const result: OauthDataDto = await service.getData(system.id, idToken, accessToken);
 
 				expect(result).toEqual(oauthDataDto);
 			});
@@ -147,12 +142,11 @@ describe('ProvisioningService', () => {
 		describe('when no provisioning strategy is found', () => {
 			it('should throw an InternalServerErrorException', async () => {
 				const { accessToken, idToken } = setup();
-				const systemWithoutStrategy: SystemDto = new SystemDto({
-					type: '',
+				const systemWithoutStrategy: System = systemFactory.withOauthConfig().build({
 					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
 				});
 
-				systemService.findById.mockResolvedValue(systemWithoutStrategy);
+				systemService.findByIdOrFail.mockResolvedValue(systemWithoutStrategy);
 
 				const promise: Promise<OauthDataDto> = service.getData('systemId', idToken, accessToken);
 

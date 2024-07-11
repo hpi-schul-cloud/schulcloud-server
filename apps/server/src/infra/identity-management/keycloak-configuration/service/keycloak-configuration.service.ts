@@ -5,8 +5,8 @@ import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-clien
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
 import { ServerConfig } from '@modules/server/server.config';
-import { OidcConfigDto } from '@modules/system/service';
-import { SystemOidcService } from '@modules/system/service/system-oidc.service';
+import { OidcConfig, SystemType } from '@modules/system/domain';
+import { SystemService } from '@modules/system/service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
@@ -28,7 +28,7 @@ export class KeycloakConfigurationService {
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
-		private readonly systemOidcService: SystemOidcService
+		private readonly systemService: SystemService
 	) {}
 
 	public async configureBrokerFlows(): Promise<void> {
@@ -129,7 +129,10 @@ export class KeycloakConfigurationService {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.systemOidcService.findAll();
+		const oidcSystems = await this.systemService.find({ types: [SystemType.OIDC] });
+		const newConfigs = oidcSystems
+			.map((entity) => entity.oidcConfig)
+			.filter((entity): entity is OidcConfig => entity !== undefined);
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -188,10 +191,10 @@ export class KeycloakConfigurationService {
 	 * @param oldConfigs
 	 * @returns
 	 */
-	private selectConfigureAction(newConfigs: OidcConfigDto[], oldConfigs: IdentityProviderRepresentation[]) {
+	private selectConfigureAction(newConfigs: OidcConfig[], oldConfigs: IdentityProviderRepresentation[]) {
 		const result = [] as (
-			| { action: ConfigureAction.CREATE; config: OidcConfigDto }
-			| { action: ConfigureAction.UPDATE; config: OidcConfigDto }
+			| { action: ConfigureAction.CREATE; config: OidcConfig }
+			| { action: ConfigureAction.UPDATE; config: OidcConfig }
 			| { action: ConfigureAction.DELETE; alias: string }
 		)[];
 		// updating or creating configs
@@ -211,7 +214,7 @@ export class KeycloakConfigurationService {
 		return result;
 	}
 
-	private async createIdentityProvider(oidcConfig: OidcConfigDto): Promise<void> {
+	private async createIdentityProvider(oidcConfig: OidcConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (oidcConfig && oidcConfig?.idpHint) {
 			await kc.identityProviders.create(
@@ -221,7 +224,7 @@ export class KeycloakConfigurationService {
 		}
 	}
 
-	private async updateIdentityProvider(oidcConfig: OidcConfigDto): Promise<void> {
+	private async updateIdentityProvider(oidcConfig: OidcConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (oidcConfig && oidcConfig?.idpHint) {
 			await kc.identityProviders.update(

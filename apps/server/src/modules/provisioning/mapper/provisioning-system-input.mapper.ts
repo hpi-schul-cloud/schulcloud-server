@@ -1,13 +1,13 @@
+import { System } from '@modules/system';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { ProvisioningSystemDto } from '../dto';
 
 export class ProvisioningSystemInputMapper {
-	static mapToInternal(dto: SystemDto) {
+	static mapToInternal(dto: System): ProvisioningSystemDto {
 		return new ProvisioningSystemDto({
-			systemId: dto.id || '',
+			systemId: dto.id,
 			provisioningStrategy: dto.provisioningStrategy || SystemProvisioningStrategy.UNDEFINED,
-			provisioningUrl: dto.provisioningUrl || undefined,
+			provisioningUrl: dto.provisioningUrl,
 		});
 	}
 }

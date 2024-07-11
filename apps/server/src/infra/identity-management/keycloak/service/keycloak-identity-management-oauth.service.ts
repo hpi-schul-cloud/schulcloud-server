@@ -1,8 +1,7 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { OauthConfigDto } from '@modules/system/service/dto';
+import { OauthConfig } from '@modules/system/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ErrorLogMessage, Loggable, Logger, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
@@ -22,11 +21,10 @@ class IDMLoginError implements Loggable {
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
-	private _oauthConfigCache: OauthConfigDto | undefined;
+	private _oauthConfigCache: OauthConfig | undefined;
 
 	constructor(
 		private readonly kcAdminService: KeycloakAdministrationService,
-		private readonly configService: ConfigService,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: Logger
@@ -34,22 +32,17 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		super();
 	}
 
-	async getOauthConfig(): Promise<OauthConfigDto> {
+	async getOauthConfig(): Promise<OauthConfig> {
 		if (this._oauthConfigCache) {
 			return this._oauthConfigCache;
 		}
 		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
-		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
-		const redirectUri =
-			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
-		const clientId = this.kcAdminService.getClientId();
-		const clientSecret = await this.kcAdminService.getClientSecret();
-		this._oauthConfigCache = new OauthConfigDto({
-			clientId,
-			clientSecret: this.oAuthEncryptionService.encrypt(clientSecret),
+		this._oauthConfigCache = new OauthConfig({
+			clientId: this.kcAdminService.getClientId(),
+			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
 			provider: 'oauth',
-			redirectUri,
+			redirectUri: '',
 			responseType: 'code',
 			grantType: 'authorization_code',
 			scope: 'openid profile email',
