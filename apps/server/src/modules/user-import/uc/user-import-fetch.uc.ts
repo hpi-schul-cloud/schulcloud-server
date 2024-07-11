@@ -1,9 +1,9 @@
 import { AuthorizationService } from '@modules/authorization';
+import { System } from '@modules/system';
 import { Inject, Injectable } from '@nestjs/common';
 import { ImportUser, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { System } from '../../system';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';

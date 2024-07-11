@@ -1,11 +1,11 @@
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { System } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { ImportUser, SchoolEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { System } from '../../system';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexImportUserMapper } from '../mapper';
 

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SystemDeletedEvent } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { systemFactory } from '@shared/testing';
-import { SystemDeletedEvent } from '../../../system';
 import { schoolFactory } from '../../testing';
 import { School } from '../do';
 import { SchoolService } from '../service';
