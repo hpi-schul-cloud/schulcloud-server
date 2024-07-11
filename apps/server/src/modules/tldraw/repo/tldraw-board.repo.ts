@@ -37,4 +37,10 @@ export class TldrawBoardRepo {
 			await this.compressDocument(docName);
 		}
 	}
+
+	public async getAllDocumentNames(): Promise<string[]> {
+		const docNames = await this.mdb.getAllDocumentNames();
+
+		return docNames;
+	}
 }
