@@ -13,6 +13,7 @@ import { FilesStorageClientModule } from '../files-storage-client';
 import { config, TldrawConfig, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawFilesConsole } from './job';
+import { TldrawTestConsole } from './job/tldraw-test.console';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawFilesStorageAdapterService } from './service';
 import { TldrawDeleteFilesUc } from './uc';
@@ -46,6 +47,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		TldrawRepo,
 		YMongodb,
 		TldrawFilesConsole,
+		TldrawTestConsole,
 		TldrawFilesStorageAdapterService,
 		TldrawDeleteFilesUc,
 		TldrawBoardRepo,
