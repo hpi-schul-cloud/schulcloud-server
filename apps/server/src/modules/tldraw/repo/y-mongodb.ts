@@ -76,12 +76,19 @@ export class YMongodb {
 	public getDocument(docName: string): Promise<WsSharedDocDo> {
 		// return value can be null, need to be defined
 		return this._transact(docName, async (): Promise<WsSharedDocDo> => {
+			performance.mark('getDocument');
+
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
 
 			const gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
 			const ydoc = new WsSharedDocDo(docName, gcEnabled);
 			applyUpdate(ydoc, mergedUpdates);
+
+			performance.measure('tldraw:YMongodb:getDocument', {
+				start: 'getDocument',
+				detail: { doc_name: docName },
+			});
 
 			return ydoc;
 		});
