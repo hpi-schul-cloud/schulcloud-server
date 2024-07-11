@@ -13,7 +13,8 @@ class IDMLoginError implements Loggable {
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			error: this.error,
+			message: 'Error while trying to login via IDM',
+			stack: this.error.stack,
 			type: 'IDM_LOGIN_ERROR',
 		};
 	}
