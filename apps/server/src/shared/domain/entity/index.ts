@@ -17,7 +17,6 @@ export * from './school.entity';
 export * from './schoolyear.entity';
 export * from './storageprovider.entity';
 export * from './submission.entity';
-export * from './system.entity';
 export * from './task.entity';
 export * from './team.entity';
 export * from './user-login-migration.entity';

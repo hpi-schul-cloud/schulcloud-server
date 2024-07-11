@@ -1,5 +1,5 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EmptyResultQuery } from './query/empty-result.query';
+import { EmptyResultQuery } from './query';
 
 type EmptyResultQueryType = typeof EmptyResultQuery;
 
@@ -32,8 +32,9 @@ export class Scope<T> {
 		this._queries.push(query);
 	}
 
-	allowEmptyQuery(isEmptyQueryAllowed: boolean): Scope<T> {
+	allowEmptyQuery(isEmptyQueryAllowed: boolean): this {
 		this._allowEmptyQuery = isEmptyQueryAllowed;
+
 		return this;
 	}
 }

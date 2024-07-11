@@ -8,6 +8,9 @@ import { HydraOauthUc } from '../uc';
 import { AuthorizationParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 
+/**
+ * @deprecated To be removed in N21-2071
+ */
 @ApiTags('SSO')
 @Controller('sso')
 export class OauthSSOController {

@@ -1,10 +1,11 @@
 import { LegacySchoolService } from '@modules/legacy-school';
+import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
+import { ImportUserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
@@ -13,7 +14,7 @@ import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../log
 export class UserImportService {
 	constructor(
 		private readonly userImportRepo: ImportUserRepo,
-		private readonly systemRepo: LegacySystemRepo,
+		private readonly systemService: SystemService,
 		private readonly userService: UserService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly logger: Logger,
@@ -24,10 +25,10 @@ export class UserImportService {
 		await this.userImportRepo.saveImportUsers(importUsers);
 	}
 
-	public async getMigrationSystem(): Promise<SystemEntity> {
+	public async getMigrationSystem(): Promise<System> {
 		const systemId: string = this.userImportFeatures.userMigrationSystemId;
 
-		const system: SystemEntity = await this.systemRepo.findById(systemId);
+		const system: System = await this.systemService.findByIdOrFail(systemId);
 
 		return system;
 	}

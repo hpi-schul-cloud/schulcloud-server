@@ -1,8 +1,8 @@
 import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { EntityId } from '../types';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { EntityId } from '@shared/domain/types';
 
 export interface SystemEntityProps {
 	type: string;

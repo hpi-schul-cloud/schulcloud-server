@@ -1,12 +1,10 @@
-import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
-import { LegacySystemService } from '@modules/system';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySystemRepo } from '@shared/repo';
 import { systemEntityFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
@@ -17,14 +15,13 @@ import { KeycloakConfigurationService } from './keycloak-configuration.service';
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
 	let keycloak: KeycloakAdminClient;
-	let systemRepo: LegacySystemRepo;
+	let em: EntityManager;
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let keycloakConfigurationService: KeycloakConfigurationService;
 	let isKeycloakAvailable = false;
 
 	const testRealm = `test-realm-${v1().toString()}`;
 	const flowAlias = 'Direct Broker Flow';
-	const systemServiceMock = createMock<LegacySystemService>();
 	const systems = systemEntityFactory.withOidcConfig().buildList(1);
 
 	beforeAll(async () => {
@@ -38,15 +35,14 @@ describe('KeycloakConfigurationService Integration', () => {
 					validationOptions: { infer: true },
 				}),
 			],
-			providers: [LegacySystemRepo],
 		}).compile();
-		systemRepo = module.get(LegacySystemRepo);
+		em = module.get(EntityManager);
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
 		keycloakConfigurationService = module.get(KeycloakConfigurationService);
 		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
 		if (isKeycloakAvailable) {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
-			await systemRepo.save(systems);
+			await em.persistAndFlush(systems);
 		}
 	});
 
@@ -137,7 +133,6 @@ describe('KeycloakConfigurationService Integration', () => {
 				'should sync identity providers to keycloak',
 				async () => {
 					if (!isKeycloakAvailable) return;
-					systemServiceMock.findByType.mockResolvedValueOnce(systems);
 					await keycloakConfigurationService.configureBrokerFlows();
 
 					await keycloakConfigurationService.configureIdentityProviders();
