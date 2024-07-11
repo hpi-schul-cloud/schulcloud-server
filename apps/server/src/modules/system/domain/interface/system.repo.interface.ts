@@ -1,7 +1,10 @@
 import { EntityId } from '@shared/domain/types/entity-id';
 import { System } from '../system.do';
+import { SystemQuery } from './system-query';
 
 export interface SystemRepo {
+	find(filter: SystemQuery): Promise<System[]>;
+
 	getSystemsByIds(systemIds: EntityId[]): Promise<System[]>;
 
 	getSystemById(systemId: EntityId): Promise<System | null>;

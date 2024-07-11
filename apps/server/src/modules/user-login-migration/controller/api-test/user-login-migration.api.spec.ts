@@ -4,10 +4,11 @@ import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/respons
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
+import { type SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ImportUser, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {

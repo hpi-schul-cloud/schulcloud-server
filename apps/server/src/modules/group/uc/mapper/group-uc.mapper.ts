@@ -1,5 +1,5 @@
 import { Class } from '@modules/class/domain';
-import { SystemDto } from '@modules/system';
+import { System } from '@modules/system';
 import { UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
@@ -13,7 +13,7 @@ export class GroupUcMapper {
 		group: Group,
 		resolvedUsers: ResolvedGroupUser[],
 		synchronizedCourses: Course[],
-		system?: SystemDto
+		system?: System
 	): ClassInfoDto {
 		const mapped: ClassInfoDto = new ClassInfoDto({
 			id: group.id,

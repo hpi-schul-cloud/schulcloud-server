@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
+import { System } from '@modules/system';
+import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { importUserFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
+import { importUserFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
@@ -74,13 +76,14 @@ describe(UserImportFetchUc.name, () => {
 					undefined,
 					userImportFeatures.userMigrationSystemId
 				);
+				const systemDo: System = systemFactory.build({ id: system.id });
 				const user: User = userFactory.buildWithId();
 				const importUser: ImportUser = importUserFactory.build({
 					system,
 				});
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				userImportService.getMigrationSystem.mockResolvedValueOnce(system);
+				userImportService.getMigrationSystem.mockResolvedValueOnce(systemDo);
 				schulconnexFetchImportUsersService.getData.mockResolvedValueOnce([importUser]);
 				schulconnexFetchImportUsersService.filterAlreadyMigratedUser.mockResolvedValueOnce([importUser]);
 				userImportService.matchUsers.mockResolvedValueOnce([importUser]);

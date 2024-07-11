@@ -1,14 +1,13 @@
 import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import { federalStateFactory } from '../../testing';
-import { School } from '../do';
+import { federalStateFactory, schoolFactory } from '../../testing';
 import { FileStorageType } from '../type';
 import { SchoolFactory } from './school.factory';
 
 describe('SchoolFactory', () => {
 	describe('buildFromPartialBody', () => {
 		const buildSchool = () => {
-			const school = new School({
+			const school = schoolFactory.build({
 				id: 'school-id',
 				name: 'school-name',
 				officialSchoolNumber: 'school-number',

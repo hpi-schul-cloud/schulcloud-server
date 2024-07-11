@@ -1,8 +1,9 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { type SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { Course as CourseEntity, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Course as CourseEntity, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {

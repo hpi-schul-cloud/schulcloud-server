@@ -17,6 +17,7 @@ import {
 	groupFactory,
 	roleDtoFactory,
 	roleFactory,
+	schoolEntityFactory,
 	setupEntities,
 	UserAndAccountTestFactory,
 	userDoFactory,
@@ -327,7 +328,10 @@ describe('GroupUc', () => {
 				const school: School = schoolFactory.build();
 				const otherSchool: School = schoolFactory.build();
 				const roles: Role = roleFactory.build({ permissions: [Permission.GROUP_FULL_ADMIN, Permission.GROUP_VIEW] });
-				const user: User = userFactory.buildWithId({ roles: [roles], school });
+				const user: User = userFactory.buildWithId({
+					roles: [roles],
+					school: schoolEntityFactory.buildWithId(undefined, school.id),
+				});
 
 				const groupInSchool: Group = groupFactory.build({ organizationId: school.id });
 				const availableGroupInSchool: Group = groupFactory.build({ organizationId: school.id });
@@ -493,7 +497,10 @@ describe('GroupUc', () => {
 			const setup = () => {
 				const school: School = schoolFactory.build();
 				const roles: Role = roleFactory.build({ permissions: [Permission.GROUP_VIEW] });
-				const user: User = userFactory.buildWithId({ roles: [roles], school });
+				const user: User = userFactory.buildWithId({
+					roles: [roles],
+					school: schoolEntityFactory.buildWithId(undefined, school.id),
+				});
 
 				const teachersGroup: Group = groupFactory.build({
 					organizationId: school.id,
