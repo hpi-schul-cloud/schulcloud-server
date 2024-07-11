@@ -1,16 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { LegacySystemService, SystemDto } from '@modules/system';
+import { System, SystemService } from '@modules/system';
+import { SystemType } from '@modules/system/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { EntityId, SchoolFeature, SystemTypeEnum } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import {
-	UserLoginMigrationAlreadyClosedLoggableException,
-	UserLoginMigrationGracePeriodExpiredLoggableException,
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
 
 @Injectable()
@@ -19,7 +20,7 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemService: LegacySystemService
+		private readonly systemService: SystemService
 	) {}
 
 	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
@@ -111,18 +112,18 @@ export class UserLoginMigrationService {
 	}
 
 	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
-		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
-		const moinSchuleSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
+		const oauthSystems: System[] = await this.systemService.find({ types: [SystemType.OAUTH] });
+		const moinSchuleSystem: System | undefined = oauthSystems.find((system: System) => system.alias === 'SANIS');
 
 		if (!moinSchuleSystem) {
 			throw new MoinSchuleSystemNotFoundLoggableException();
-		} else if (school.systems?.includes(moinSchuleSystem.id as string)) {
+		} else if (school.systems?.includes(moinSchuleSystem.id)) {
 			throw new IdenticalUserLoginMigrationSystemLoggableException(school.id, moinSchuleSystem.id);
 		}
 
 		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			schoolId: school.id as string,
-			targetSystemId: moinSchuleSystem.id as string,
+			targetSystemId: moinSchuleSystem.id,
 			sourceSystemId: school.systems?.[0],
 			startedAt: new Date(),
 		});

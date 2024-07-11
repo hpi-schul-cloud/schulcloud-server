@@ -1,20 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Account } from '@modules/account';
+import { System, SystemService } from '@modules/system';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { SystemEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
-
-import {
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	systemEntityFactory,
-	userFactory,
-} from '@shared/testing';
+import { LegacySchoolRepo, UserRepo } from '@shared/repo';
+import { legacySchoolDoFactory, schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { accountDoFactory, defaultTestPassword, defaultTestPasswordHash } from '@src/modules/account/testing';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
@@ -31,7 +25,7 @@ describe('LdapStrategy', () => {
 	let schoolRepoMock: DeepMocked<LegacySchoolRepo>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let ldapServiceMock: DeepMocked<LdapService>;
-	let systemRepo: DeepMocked<LegacySystemRepo>;
+	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -57,8 +51,8 @@ describe('LdapStrategy', () => {
 					useValue: createMock<LegacySchoolRepo>(),
 				},
 				{
-					provide: LegacySystemRepo,
-					useValue: createMock<LegacySystemRepo>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: Logger,
@@ -72,7 +66,7 @@ describe('LdapStrategy', () => {
 		schoolRepoMock = module.get(LegacySchoolRepo);
 		userRepoMock = module.get(UserRepo);
 		ldapServiceMock = module.get(LdapService);
-		systemRepo = module.get(LegacySystemRepo);
+		systemService = module.get(SystemService);
 	});
 
 	afterAll(async () => {
@@ -88,7 +82,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).build();
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: undefined });
 
@@ -110,7 +104,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -135,7 +129,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).build();
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
@@ -157,7 +151,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -182,7 +176,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).build();
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
@@ -204,7 +198,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -229,7 +223,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).build();
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
@@ -251,7 +245,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -276,7 +270,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).build();
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
@@ -298,7 +292,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -328,7 +322,7 @@ describe('LdapStrategy', () => {
 				const error = new Error('error');
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).build();
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
@@ -350,7 +344,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -383,7 +377,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
+				const system: System = systemFactory.withLdapConfig().build();
 
 				const user: User = userFactory
 					.withRoleByName(RoleName.STUDENT)
@@ -410,7 +404,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
@@ -446,7 +440,7 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
+				const system: System = systemFactory.withLdapConfig().build();
 
 				const user: User = userFactory
 					.withRoleByName(RoleName.STUDENT)
@@ -473,7 +467,7 @@ describe('LdapStrategy', () => {
 					},
 				};
 
-				systemRepo.findById.mockResolvedValue(system);
+				systemService.findByIdOrFail.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockRejectedValueOnce(new UnauthorizedException());
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);

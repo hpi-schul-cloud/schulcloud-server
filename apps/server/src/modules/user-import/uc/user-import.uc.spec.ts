@@ -3,6 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { System, SystemService } from '@modules/system';
+import { SystemEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -11,21 +13,22 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, UserRepo } from '@shared/repo';
 import {
 	federalStateFactory,
 	importUserFactory,
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
+	systemEntityFactory,
+	systemFactory,
 	userDoFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
-import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
@@ -44,7 +47,7 @@ describe('[ImportUserModule]', () => {
 		let accountService: DeepMocked<AccountService>;
 		let importUserRepo: DeepMocked<ImportUserRepo>;
 		let schoolService: DeepMocked<LegacySchoolService>;
-		let systemRepo: DeepMocked<LegacySystemRepo>;
+		let systemService: DeepMocked<SystemService>;
 		let userRepo: DeepMocked<UserRepo>;
 		let userService: DeepMocked<UserService>;
 		let authorizationService: DeepMocked<AuthorizationService>;
@@ -74,8 +77,8 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<LegacySchoolService>(),
 					},
 					{
-						provide: LegacySystemRepo,
-						useValue: createMock<LegacySystemRepo>(),
+						provide: SystemService,
+						useValue: createMock<SystemService>(),
 					},
 					{
 						provide: UserRepo,
@@ -116,7 +119,7 @@ describe('[ImportUserModule]', () => {
 			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
 			schoolService = module.get(LegacySchoolService);
-			systemRepo = module.get(LegacySystemRepo);
+			systemService = module.get(SystemService);
 			userRepo = module.get(UserRepo);
 			userService = module.get(UserService);
 			authorizationService = module.get(AuthorizationService);
@@ -795,6 +798,7 @@ describe('[ImportUserModule]', () => {
 
 		describe('[startSchoolInUserMigration]', () => {
 			let system: SystemEntity;
+			let systemDo: System;
 			let school: SchoolEntity;
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
@@ -807,6 +811,7 @@ describe('[ImportUserModule]', () => {
 
 			beforeEach(() => {
 				system = systemEntityFactory.buildWithId({ ldapConfig: {} });
+				systemDo = systemFactory.build({ id: system.id, ldapConfig: {} });
 				school = schoolEntityFactory.buildWithId();
 				school.officialSchoolNumber = 'foo';
 				currentUser = userFactory.buildWithId({ school });
@@ -814,7 +819,7 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy = authorizationService.checkAllPermissions.mockReturnValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
-				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
+				systemRepoSpy = systemService.findById.mockReturnValueOnce(Promise.resolve(systemDo));
 				userImportFeatures.userMigrationSystemId = system.id;
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
 			});
@@ -846,7 +851,7 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: LegacySchoolDo) =>
 					Promise.resolve(schoolDo)
 				);
-				userImportService.getMigrationSystem.mockResolvedValueOnce(system);
+				userImportService.getMigrationSystem.mockResolvedValueOnce(systemDo);
 
 				await uc.startSchoolInUserMigration(currentUser.id);
 
