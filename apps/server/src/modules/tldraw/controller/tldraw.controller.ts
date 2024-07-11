@@ -7,7 +7,7 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
-	UseGuards
+	UseGuards,
 } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,26 +31,10 @@ export class TldrawController {
 		await this.tldrawService.deleteByDocName(urlParams.docName);
 	}
 
-	@ApiOperation({ summary: 'Delete every element of tldraw drawing by its docName.' })
-	@ApiResponse({ status: 204 })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
 	@Get(':docName')
 	async getDocStats(@Param() urlParams: TldrawDeleteParams) {
-		return this.tldrawService.documentStatistics(urlParams.docName);
-	}
-
-	@ApiOperation({ summary: 'Delete every element of tldraw drawing by its docName.' })
-	@ApiResponse({ status: 204 })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
-	@Get('v2/:docName')
-	async getDocStats2(@Param() urlParams: TldrawDeleteParams) {
 		const stats = await this.tldrawService.documentStatistics(urlParams.docName);
-		return stats;
+
+		return { msg: stats };
 	}
 }
