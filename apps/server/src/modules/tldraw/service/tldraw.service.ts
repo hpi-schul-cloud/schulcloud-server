@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { TldrawBoardRepo, TldrawRepo } from '../repo';
 import Y from 'yjs';
+import { TldrawBoardRepo, TldrawRepo } from '../repo';
 
 @Injectable()
 export class TldrawService {
-	constructor(private readonly tldrawRepo: TldrawRepo, private readonly tldrawBoardRepo: TldrawBoardRepo) {
-	}
+	constructor(private readonly tldrawRepo: TldrawRepo, private readonly tldrawBoardRepo: TldrawBoardRepo) {}
 
 	async deleteByDocName(docName: string): Promise<void> {
 		const drawings = await this.tldrawRepo.findByDocName(docName);
@@ -30,9 +29,8 @@ export class TldrawService {
 				}
 			});
 
-			console.log(
-				`Found pendingStructs in doc ${docName}; size of missing: ${missingSize}; size of update: ${updateLength}; number of pending structs: ${decodedUpdate.structs.length}; number of clients in pending structs: ${clients.length}; number of clients in doc ${doc.store.clients.size}`
-			);
+			return `Found pendingStructs in doc ${docName}; size of missing: ${missingSize}; size of update: ${updateLength}; number of pending structs: ${decodedUpdate.structs.length}; number of clients in pending structs: ${clients.length}; number of clients in doc ${doc.store.clients.size}`;
 		}
+		return '';
 	}
 }
