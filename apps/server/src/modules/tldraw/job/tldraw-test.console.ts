@@ -55,7 +55,7 @@ export class TldrawTestConsole {
 				});
 
 				console.log(
-					`Found pendingStructs in doc ${docName}; size of missing: ${missingSize}; size of update: ${updateLength}; number of pending structs: ${decodedUpdate.structs.length}; number of clients in pending structs: ${clients.length}`
+					`Found pendingStructs in doc ${docName}; size of missing: ${missingSize}; size of update: ${updateLength}; number of pending structs: ${decodedUpdate.structs.length}; number of clients in pending structs: ${clients.length}; number of clients in doc ${doc.store.clients.size}`
 				);
 			}
 		});
