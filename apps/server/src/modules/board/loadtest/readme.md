@@ -55,19 +55,16 @@ This will:
 6. start the execution of the scenario against this newly created board
 7. generate a html report in the end
 
-You can also provide the target as the first and the name of the scenario as the second parameter - to avoid the need to select those:
+You can also provide the target as the first and the name of the scenario as the second parameter - to avoid the need to select those. Here is an example:
 
 ```bash
 bash runScenario.sh https://bc-6854-basic-load-tests.nbc.dbildungscloud.dev 3users
 ```
 
-## Open Todos:
+## password
 
-- [x] split code into functions
-- [x] suppress curl output
-- [x] add proper error handling of failed requests
-- [x] cleanup scenarios
-- [x] write documentation for linux => runScenario.sh
-- [x] write documentation for windows => direct command
-- [x] replace selects with parameters from script call
-- [ ] properly handle credentials - env-vars?
+By typeing `export CARL_CORD_PASSWORD=realpassword` the script will not ask you anymore for the password to create a token.
+
+## Todos
+
+- [ ] enable optional parameter course_id
