@@ -273,19 +273,24 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	async save(accountSave: AccountSave): Promise<Account> {
+		console.log('Saving account to db', accountSave);
 		const ret = await this.accountDb.save(accountSave);
+		console.log('Saved account to db', ret);
+
 		const newAccount = new AccountSave({
 			...accountSave,
 			id: accountSave.id,
 			idmReferenceId: ret.id,
 			password: accountSave.password,
 		});
+		console.log('Saving account to idm', newAccount);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new SavingAccountLoggable(ret.id));
 			const account = await this.accountIdm.save(newAccount);
 			this.logger.debug(new SavedAccountLoggable(ret.id));
 			return account;
 		});
+		console.log('Saved account to idm', idmAccount);
 
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			if (idmAccount === null || (accountSave.username && idmAccount.username !== accountSave.username)) {
