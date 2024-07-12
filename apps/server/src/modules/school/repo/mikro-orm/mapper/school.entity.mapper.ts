@@ -1,6 +1,7 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { FederalStateEntity, SchoolYearEntity, SystemEntity } from '@shared/domain/entity';
+import { SystemEntity } from '@modules/system/entity';
+import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { School } from '../../../domain';
@@ -39,6 +40,7 @@ export class SchoolEntityMapper {
 			federalState,
 			features,
 			county,
+			ldapLastSync: entity.ldapLastSync,
 		});
 
 		return school;

@@ -3,12 +3,13 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
+import { SystemEntity } from '@modules/system/entity';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {

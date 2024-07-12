@@ -1,9 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
-import { OidcConfigDto } from '@modules/system/service';
+import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
+import { OidcConfig } from '@modules/system/domain';
+import { Test, TestingModule } from '@nestjs/testing';
 import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
 describe('OidcIdentityProviderMapper', () => {
@@ -32,8 +31,7 @@ describe('OidcIdentityProviderMapper', () => {
 
 	describe('mapToKeycloakIdentityProvider', () => {
 		const brokerFlowAlias = 'flow';
-		const internalRepresentation: OidcConfigDto = {
-			parentSystemId: new ObjectId(0).toString(),
+		const internalRepresentation: OidcConfig = {
 			clientId: 'clientId',
 			clientSecret: 'clientSecret',
 			idpHint: 'alias',
