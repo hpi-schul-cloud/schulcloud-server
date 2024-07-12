@@ -1,8 +1,8 @@
 export const KeycloakSettings = Symbol('KeycloakSettings');
 
 export interface IKeycloakSettings {
-	internalBaseUrl: string; // http://erwinidm-svc:8089
-	externalBaseUrl: string; // https://idm-...
+	internalBaseUrl: string;
+	externalBaseUrl: string;
 	realmName: string;
 	clientId: string;
 	credentials: {
