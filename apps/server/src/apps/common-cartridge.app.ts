@@ -18,6 +18,11 @@ import { install as sourceMapInstall } from 'source-map-support';
 async function bootstrap() {
 	sourceMapInstall();
 
+	console.log('#########################################');
+	console.log(`RABBITMQ_URI: ${RabbitMqURI}`);
+	console.log(`MONGO_URI: ${DB_URL}`);
+	console.log('#########################################');
+
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(CommonCartridgeApiModule, nestExpressAdapter);
@@ -34,11 +39,6 @@ async function bootstrap() {
 
 	const basePath = '/api/v3';
 	const port = 3350;
-
-	console.log('#########################################');
-	console.log(`RABBITMQ_URI: ${RabbitMqURI}`);
-	console.log(`MONGO_URI: ${DB_URL}`);
-	console.log('#########################################');
 
 	rootExpress.use(basePath, nestExpress);
 	rootExpress.listen(port, () => {
