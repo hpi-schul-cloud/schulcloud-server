@@ -1,11 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConverterUtil } from '@shared/common/utils';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
+import xml2json from '@hendt/xml2json/lib';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -14,8 +14,7 @@ import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse
 export class BBBService {
 	constructor(
 		@Inject(BbbSettings) private readonly bbbSettings: IBbbSettings,
-		private readonly httpService: HttpService,
-		private readonly converterUtil: ConverterUtil
+		private readonly httpService: HttpService
 	) {}
 
 	protected get baseUrl(): string {
@@ -30,13 +29,26 @@ export class BBBService {
 		return this.bbbSettings.presentationUrl;
 	}
 
+	/** Note no guard, or type check. Should be private. */
+	public xml2object<T>(xml: string): T {
+		const json = xml2json(xml) as T;
+
+		return json;
+	}
+
+	private checkIfResponseSucces(
+		bbbResp: BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse> | BBBResponse<BBBMeetingInfoResponse>
+	): void {
+		if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
+			throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
+		}
+	}
+
 	/**
 	 * Creates a new BBB Meeting. The create call is idempotent: you can call it multiple times with the same parameters without side effects.
-	 * @param {BBBCreateConfig} config
-	 * @returns {Promise<BBBResponse<BBBCreateResponse>>}
 	 * @throws {InternalServerErrorException}
 	 */
-	create(config: BBBCreateConfig): Promise<BBBResponse<BBBCreateResponse>> {
+	public create(config: BBBCreateConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		const url: string = this.getUrl('create', this.toParams(config));
 		const conf = { headers: { 'Content-Type': 'application/xml' } };
 		const data = this.getBbbRequestConfig(this.presentationUrl);
@@ -44,13 +56,10 @@ export class BBBService {
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>>(
-					resp.data
-				);
-				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
-				}
-				return bbbResp as BBBResponse<BBBCreateResponse>;
+				const bbbResp = this.xml2object<BBBResponse<BBBCreateResponse>>(resp.data);
+				this.checkIfResponseSucces(bbbResp);
+
+				return bbbResp;
 			})
 			.catch((error) => {
 				throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(error, 'BBBService:create'));
@@ -58,7 +67,7 @@ export class BBBService {
 	}
 
 	// it should be a private method
-	getBbbRequestConfig(presentationUrl: string): string {
+	private getBbbRequestConfig(presentationUrl: string): string {
 		if (presentationUrl === '') return '';
 		return `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
 	}
@@ -69,7 +78,7 @@ export class BBBService {
 	 * @returns {Promise<string>} The join url
 	 * @throws {InternalServerErrorException}
 	 */
-	async join(config: BBBJoinConfig): Promise<string> {
+	public async join(config: BBBJoinConfig): Promise<string> {
 		await this.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: config.meetingID }));
 
 		return this.getUrl('join', this.toParams(config));
@@ -81,16 +90,15 @@ export class BBBService {
 	 * @returns {BBBResponse<BBBBaseResponse>}
 	 * @throws {InternalServerErrorException}
 	 */
-	end(config: BBBBaseMeetingConfig): Promise<BBBResponse<BBBBaseResponse>> {
+	public end(config: BBBBaseMeetingConfig): Promise<BBBResponse<BBBBaseResponse>> {
 		const url: string = this.getUrl('end', this.toParams(config));
 		const observable: Observable<AxiosResponse<string>> = this.httpService.get(url);
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBBaseResponse>>(resp.data);
-				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
-				}
+				const bbbResp = this.xml2object<BBBResponse<BBBBaseResponse>>(resp.data);
+				this.checkIfResponseSucces(bbbResp);
+
 				return bbbResp;
 			})
 			.catch((error) => {
@@ -100,23 +108,18 @@ export class BBBService {
 
 	/**
 	 * Returns information about a BBB Meeting.
-	 * @param {BBBBaseMeetingConfig} config
-	 * @returns {Promise<string>}
 	 * @throws {InternalServerErrorException}
 	 */
-	getMeetingInfo(config: BBBBaseMeetingConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
+	public getMeetingInfo(config: BBBBaseMeetingConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		const url: string = this.getUrl('getMeetingInfo', this.toParams(config));
 		const observable: Observable<AxiosResponse<string>> = this.httpService.get(url);
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = this.converterUtil.xml2object<
-					BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>
-				>(resp.data);
-				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
-				}
-				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;
+				const bbbResp = this.xml2object<BBBResponse<BBBMeetingInfoResponse>>(resp.data);
+				this.checkIfResponseSucces(bbbResp);
+
+				return bbbResp;
 			})
 			.catch((error) => {
 				throw new InternalServerErrorException(
@@ -126,26 +129,22 @@ export class BBBService {
 			});
 	}
 
-	// should be private
 	/**
 	 * Returns a SHA1 encoded checksum for the input parameters.
-	 * @param {string} callName
-	 * @param {URLSearchParams} queryParams
-	 * @returns {string}
+	 * should be private
 	 */
 	protected generateChecksum(callName: string, queryParams: URLSearchParams): string {
 		const queryString: string = queryParams.toString();
 		const sha = crypto.createHash('sha1');
 		sha.update(callName + queryString + this.salt);
 		const checksum: string = sha.digest('hex');
+
 		return checksum;
 	}
 
-	// should be private
 	/**
 	 * Extracts fields from a javascript object and builds a URLSearchParams object from it.
-	 * @param {object} object
-	 * @returns {URLSearchParams}
+	 * should be private
 	 */
 	protected toParams(object: BBBCreateConfig | BBBBaseMeetingConfig): URLSearchParams {
 		const params: URLSearchParams = new URLSearchParams();
@@ -154,15 +153,13 @@ export class BBBService {
 				params.append(key, String(object[key]));
 			}
 		});
+
 		return params;
 	}
 
-	// should be private
 	/**
 	 * Builds the url for BBB.
-	 * @param callName Name of the BBB api function.
-	 * @param queryParams Parameters for the endpoint.
-	 * @returns {string} A callable url.
+	 * should be private
 	 */
 	protected getUrl(callName: string, queryParams: URLSearchParams): string {
 		const checksum: string = this.generateChecksum(callName, queryParams);

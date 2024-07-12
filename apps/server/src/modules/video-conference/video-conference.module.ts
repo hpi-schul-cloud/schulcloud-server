@@ -5,7 +5,6 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ConverterUtil } from '@shared/common';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { LoggerModule } from '@src/core/logger';
@@ -42,7 +41,6 @@ import VideoConferenceConfiguration from './video-conference-config';
 		VideoConferenceRepo,
 		// TODO: N21-1010 clean up video conferences - remove repos
 		TeamsRepo,
-		ConverterUtil,
 		VideoConferenceService,
 		// TODO: N21-885 remove VideoConferenceDeprecatedUc from providers
 		VideoConferenceDeprecatedUc,

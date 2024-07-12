@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConverterUtil } from '@shared/common';
 import { axiosResponseFactory } from '@shared/testing';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
@@ -110,7 +109,6 @@ describe('BBB Service', () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
-	let converterUtil: DeepMocked<ConverterUtil>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -128,19 +126,18 @@ describe('BBB Service', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: ConverterUtil,
-					useValue: createMock<ConverterUtil>(),
-				},
 			],
 		}).compile();
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
-		converterUtil = module.get(ConverterUtil);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('create', () => {
@@ -152,20 +149,20 @@ describe('BBB Service', () => {
 
 				const param = createBBBCreateConfig();
 
-				httpService.post.mockReturnValue(of(bbbCreateResponse));
-				converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
+				httpService.post.mockReturnValueOnce(of(bbbCreateResponse));
+				const spy = jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbCreateResponse.data);
 
-				return { param, bbbCreateResponse };
+				return { param, bbbCreateResponse, spy };
 			};
 
 			it('should return a response with returncode success', async () => {
-				const { bbbCreateResponse, param } = setup();
+				const { bbbCreateResponse, param, spy } = setup();
 
 				const result = await service.create(param);
 
 				expect(result).toBeDefined();
 				expect(httpService.post).toHaveBeenCalledTimes(1);
-				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
+				expect(spy).toHaveBeenCalledWith(bbbCreateResponse.data);
 			});
 		});
 
@@ -178,8 +175,8 @@ describe('BBB Service', () => {
 
 				const param = createBBBCreateConfig();
 
-				httpService.post.mockReturnValue(of(bbbCreateResponse));
-				converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
+				httpService.post.mockReturnValueOnce(of(bbbCreateResponse));
+				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbCreateResponse.data);
 
 				const error = new InternalServerErrorException(
 					`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
@@ -198,19 +195,6 @@ describe('BBB Service', () => {
 				await expect(service.create(param)).rejects.toThrowError(expectedError);
 			});
 		});
-
-		it('should return a xml configuration with provided presentation url', () => {
-			// Arrange
-			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
-
-			// Act
-			const result = service.getBbbRequestConfig(presentationUrl);
-
-			// Assert
-			expect(result).toBe(
-				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
-			);
-		});
 	});
 
 	describe('end', () => {
@@ -221,20 +205,20 @@ describe('BBB Service', () => {
 				);
 				const bbbBaseMeetingConfig: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
-				httpService.get.mockReturnValue(of(bbbBaseResponse));
-				converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
+				httpService.get.mockReturnValueOnce(of(bbbBaseResponse));
+				const spy = jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbBaseResponse.data);
 
-				return { bbbBaseResponse, bbbBaseMeetingConfig };
+				return { bbbBaseResponse, bbbBaseMeetingConfig, spy };
 			};
 
 			it('should return a response with returncode success', async () => {
-				const { bbbBaseResponse, bbbBaseMeetingConfig } = setup();
+				const { bbbBaseResponse, bbbBaseMeetingConfig, spy } = setup();
 
 				const result = await service.end(bbbBaseMeetingConfig);
 
 				expect(result).toBeDefined();
 				expect(httpService.get).toBeCalled();
-				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbBaseResponse.data);
+				expect(spy).toHaveBeenCalledWith(bbbBaseResponse.data);
 			});
 		});
 
@@ -246,8 +230,8 @@ describe('BBB Service', () => {
 				bbbBaseResponse.data.response.returncode = BBBStatus.ERROR;
 				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
-				httpService.get.mockReturnValue(of(bbbBaseResponse));
-				converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
+				httpService.get.mockReturnValueOnce(of(bbbBaseResponse));
+				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbBaseResponse.data);
 
 				const error = new InternalServerErrorException(
 					`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
@@ -276,19 +260,19 @@ describe('BBB Service', () => {
 				);
 				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
-				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+				httpService.get.mockReturnValueOnce(of(bbbMeetingInfoResponse));
+				const spy = jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbMeetingInfoResponse.data);
 
-				return { bbbMeetingInfoResponse, param };
+				return { bbbMeetingInfoResponse, param, spy };
 			};
 
 			it('should return a response with returncode success', async () => {
-				const { bbbMeetingInfoResponse, param } = setup();
+				const { bbbMeetingInfoResponse, param, spy } = setup();
 				const result = await service.getMeetingInfo(param);
 
 				expect(result).toBeDefined();
 				expect(httpService.get).toBeCalled();
-				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
+				expect(spy).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
 			});
 		});
 
@@ -300,8 +284,8 @@ describe('BBB Service', () => {
 				bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
 				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
-				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+				httpService.get.mockReturnValueOnce(of(bbbMeetingInfoResponse));
+				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbMeetingInfoResponse.data);
 
 				const error = new InternalServerErrorException(
 					`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
@@ -330,20 +314,20 @@ describe('BBB Service', () => {
 				);
 				const param: BBBJoinConfig = createBBBJoinConfig();
 
-				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+				httpService.get.mockReturnValueOnce(of(bbbMeetingInfoResponse));
+				const spy = jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbMeetingInfoResponse.data);
 
-				return { param, bbbMeetingInfoResponse };
+				return { param, bbbMeetingInfoResponse, spy };
 			};
 
 			it('should create a join link to a bbb meeting', async () => {
-				const { param, bbbMeetingInfoResponse } = setup();
+				const { param, bbbMeetingInfoResponse, spy } = setup();
 
 				const url = await service.join(param);
 
 				expect(url).toBeDefined();
 				expect(httpService.get).toBeCalled();
-				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
+				expect(spy).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
 			});
 		});
 
@@ -355,8 +339,8 @@ describe('BBB Service', () => {
 				bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
 				const param: BBBJoinConfig = createBBBJoinConfig();
 
-				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+				httpService.get.mockReturnValueOnce(of(bbbMeetingInfoResponse));
+				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbMeetingInfoResponse.data);
 
 				const error = new InternalServerErrorException(
 					`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
@@ -377,13 +361,10 @@ describe('BBB Service', () => {
 		});
 
 		it('toParams: should return params based on bbb configs', () => {
-			// Arrange
-			const createConfig: BBBCreateConfig = createBBBCreateConfig();
+			const createConfig = createBBBCreateConfig();
 
-			// Act
-			const params: URLSearchParams = service.superToParams(createConfig);
+			const params = service.superToParams(createConfig);
 
-			// Assert
 			expect(params.get('name')).toEqual(createConfig.name);
 			expect(params.get('meetingID')).toEqual(createConfig.meetingID);
 			expect(params.get('logoutURL')).toEqual(createConfig.logoutURL);
@@ -394,38 +375,41 @@ describe('BBB Service', () => {
 			expect(params.get('allowModsToUnmuteUsers')).toEqual(String(createConfig.allowModsToUnmuteUsers));
 		});
 
-		it('generateChecksum: should generate a checksum for queryParams', () => {
-			// Arrange
+		const setup = () => {
 			const hashMock: Hash = {
 				update: jest.fn().mockReturnThis(),
-				digest: jest.fn().mockReturnValue('encrypt 123'),
+				digest: jest.fn().mockReturnValueOnce('encrypt 123').mockReturnValueOnce('encrypt 123'),
 			} as unknown as Hash;
 			const createHashMock = jest.spyOn(crypto, 'createHash').mockImplementation((): Hash => hashMock);
-			const createConfig: BBBCreateConfig = createBBBCreateConfig();
+			const createConfig = createBBBCreateConfig();
 			const callName = 'create';
-			const urlSearchParams: URLSearchParams = service.superToParams(createConfig);
-			const queryString: string = urlSearchParams.toString();
+
+			return {
+				callName,
+				createConfig,
+				createHashMock,
+			};
+		};
+
+		it('generateChecksum: should generate a checksum for queryParams', () => {
+			const { callName, createConfig, createHashMock } = setup();
+			const urlSearchParams = service.superToParams(createConfig);
+			const queryString = urlSearchParams.toString();
 			const sha = crypto.createHash('sha1');
-			const expectedChecksum: string = sha.update(callName + queryString + service.getSalt()).digest('hex');
+			const expectedChecksum = sha.update(callName + queryString + service.getSalt()).digest('hex');
 
-			// Act
-			const checksum: string = service.superGenerateChecksum(callName, urlSearchParams);
+			const checksum = service.superGenerateChecksum(callName, urlSearchParams);
 
-			// Assert
 			expect(checksum).toEqual(expectedChecksum);
 			expect(createHashMock).toBeCalledWith('sha1');
 		});
 
 		it('getUrl: should return composed url', () => {
-			// Arrange
-			const createConfig = createBBBCreateConfig();
-			const callName = 'create';
-			const params: URLSearchParams = service.superToParams(createConfig);
+			const { callName, createConfig } = setup();
+			const params = service.superToParams(createConfig);
 
-			// Act
-			const url: string = service.superGetUrl(callName, params);
+			const url = service.superGetUrl(callName, params);
 
-			// Assert
 			expect(url.toString()).toContain(`${service.getBaseUrl()}/bigbluebutton/api/${callName}`);
 			expect(url.includes('checksum')).toBeTruthy();
 		});
