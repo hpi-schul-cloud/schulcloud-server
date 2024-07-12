@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Request } from 'express';
 import { JwtFromRequestFunction } from 'passport-jwt';
-import { JwtExtractor } from './jwt-extractor';
+import { JwtExtractor } from './jwt';
 
 describe('JwtExtractor', () => {
 	let request: DeepMocked<Request>;

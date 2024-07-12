@@ -9,9 +9,9 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
+import { extractJwtFromHeader, JwtExtractor } from '@shared/common';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { ICurrentUser, isICurrentUser } from '../interface/user';
-import { JwtExtractor } from '../helper/jwt-extractor';
 
 const STRATEGIES = ['jwt'] as const;
 type Strategies = typeof STRATEGIES;
@@ -56,9 +56,8 @@ export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, 
  * @requires Authenticated
  */
 export const JWT = createParamDecorator<never, never, string>((_, ctx: ExecutionContext) => {
-	const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), JwtExtractor.fromCookie('jwt')]);
 	const req: Request = ctx.switchToHttp().getRequest();
-	const jwt = getJWT(req) || req.headers.authorization;
+	const jwt = extractJwtFromHeader(req) || req.headers.authorization;
 
 	if (!jwt) {
 		throw new UnauthorizedException('Authentication is required.');
