@@ -1,13 +1,12 @@
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { FileRecord } from '@src/modules/files-storage/entity';
-import { FilesStorageService } from '@src/modules/files-storage/service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(private readonly filesService: FilesStorageService) {}
+	constructor(private readonly filesService: FilesStorageClientAdapterService) {}
 
-	public async findCourseFileRecords(courseId: string): Promise<FileRecord[]> {
-		const [courseFiles] = await this.filesService.getFileRecordsOfParent(courseId);
+	public async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
+		const courseFiles = await this.filesService.listFilesOfParent(courseId);
 
 		return courseFiles;
 	}
