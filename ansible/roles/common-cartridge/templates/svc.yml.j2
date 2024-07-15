@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: common-cartridge-svc
+  namespace: { { NAMESPACE } }
+  labels:
+    app: common-cartridge
+spec:
+  type: ClusterIP
+  selector:
+    app: common-cartridge
+  ports:
+    - name: common-cartridge
+      protocol: TCP
+      port: 80
+      targetPort: 3350
