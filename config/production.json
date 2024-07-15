@@ -6,5 +6,6 @@
 	"public": "./public/",
 	"services": {
 		"hydra": "HYDRA_URI"
-	}
+	},
+	"NEST_LOG_LEVEL": "debug"
 }
