@@ -6,11 +6,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, LegacyBoard, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	boardFactory,
 	courseFactory,
 	schoolEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
@@ -197,6 +197,7 @@ describe('ToolConfigurationController (API)', () => {
 							externalToolId: externalTool.id,
 							schoolExternalToolId: schoolExternalTool.id,
 							name: externalTool.name,
+							baseUrl: externalTool.config.baseUrl,
 							logoUrl: externalTool.logoUrl,
 							parameters: [
 								{
@@ -217,6 +218,7 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							externalToolId: externalToolWithoutContextRestriction.id,
 							name: externalToolWithoutContextRestriction.name,
+							baseUrl: externalToolWithoutContextRestriction.config.baseUrl,
 							parameters: [],
 							schoolExternalToolId: schoolExternalTool2.id,
 						},
@@ -234,6 +236,7 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							externalToolId: externalToolWithoutContextRestriction.id,
 							name: externalToolWithoutContextRestriction.name,
+							baseUrl: externalToolWithoutContextRestriction.config.baseUrl,
 							parameters: [],
 							schoolExternalToolId: schoolExternalTool2.id,
 						},
@@ -353,6 +356,7 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							externalToolId: externalTool.id,
 							name: externalTool.name,
+							baseUrl: externalTool.config.baseUrl,
 							logoUrl: externalTool.logoUrl,
 							parameters: [
 								{
@@ -480,6 +484,7 @@ describe('ToolConfigurationController (API)', () => {
 				expect(response.body).toEqual<SchoolExternalToolConfigurationTemplateResponse>({
 					externalToolId: externalTool.id,
 					name: externalTool.name,
+					baseUrl: externalTool.config.baseUrl,
 					logoUrl: externalTool.logoUrl,
 					parameters: [
 						{
@@ -635,6 +640,7 @@ describe('ToolConfigurationController (API)', () => {
 					externalToolId: externalTool.id,
 					schoolExternalToolId: schoolExternalTool.id,
 					name: externalTool.name,
+					baseUrl: externalTool.config.baseUrl,
 					logoUrl: externalTool.logoUrl,
 					parameters: [
 						{

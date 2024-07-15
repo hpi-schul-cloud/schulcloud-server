@@ -1,12 +1,12 @@
 import { AuthorizationModule } from '@modules/authorization';
-import { LegacySchoolModule } from '@modules/legacy-school';
-import { SystemController } from '@modules/system/controller/system.controller';
-import { SystemUc } from '@modules/system/uc/system.uc';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
+import { SystemController } from './controller';
 import { SystemModule } from './system.module';
+import { SystemUc } from './uc/system.uc';
 
 @Module({
-	imports: [SystemModule, AuthorizationModule, LegacySchoolModule],
+	imports: [CqrsModule, SystemModule, AuthorizationModule],
 	providers: [SystemUc],
 	controllers: [SystemController],
 })

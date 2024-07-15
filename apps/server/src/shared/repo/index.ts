@@ -21,7 +21,6 @@ export * from './school';
 export * from './schoolexternaltool';
 export * from './scope';
 export * from './submission';
-export * from './system';
 export * from './task';
 export * from './teams';
 export * from './user';
