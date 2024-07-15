@@ -2,10 +2,12 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig } from '@modules/system/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { IDMLoginError } from '../errors/idm-login-error.loggable';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
@@ -14,7 +16,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	constructor(
 		private readonly kcAdminService: KeycloakAdministrationService,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
+		private readonly logger: Logger
 	) {
 		super();
 	}
@@ -54,15 +57,15 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	}
 
 	async resourceOwnerPasswordGrant(username: string, password: string): Promise<string | undefined> {
-		const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
-		const data = {
-			username,
-			password,
-			grant_type: 'password',
-			client_id: clientId,
-			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
-		};
 		try {
+			const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
+			const data = {
+				username,
+				password,
+				grant_type: 'password',
+				client_id: clientId,
+				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
+			};
 			const response = await lastValueFrom(
 				this.httpService.request<{ access_token: string }>({
 					method: 'post',
@@ -75,6 +78,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
+			this.logger.warning(new IDMLoginError(err as Error));
+
 			return undefined;
 		}
 	}
