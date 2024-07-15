@@ -24,13 +24,13 @@
 <title>cluster_CacheWrapperModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="168,-70 168,-268 328,-268 328,-70 168,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_CacheWrapperModule_providers</title>
-<polygon fill="none" stroke="black" points="176,-78 176,-130 320,-130 320,-78 176,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_CacheWrapperModule_exports</title>
 <polygon fill="none" stroke="black" points="192,-208 192,-260 304,-260 304,-208 192,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_CacheWrapperModule_providers</title>
+<polygon fill="none" stroke="black" points="176,-78 176,-130 320,-130 320,-78 176,-78"/>
 </g>
 <!-- CacheService  -->
 <g id="node1" class="node">

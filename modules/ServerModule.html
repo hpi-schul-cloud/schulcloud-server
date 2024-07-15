@@ -317,6 +317,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestj
 import { AccountApiModule } from &#x27;@modules/account/account-api.module&#x27;;
 import { AlertModule } from &#x27;@modules/alert/alert.module&#x27;;
 import { AuthenticationApiModule } from &#x27;@modules/authentication/authentication-api.module&#x27;;
+import { AuthorizationReferenceApiModule } from &#x27;@modules/authorization/authorization-reference.api.module&#x27;;
 import { BoardApiModule } from &#x27;@modules/board/board-api.module&#x27;;
 import { MediaBoardApiModule } from &#x27;@modules/board/media-board-api.module&#x27;;
 import { CollaborativeStorageModule } from &#x27;@modules/collaborative-storage&#x27;;
@@ -339,7 +340,8 @@ import { SystemApiModule } from &#x27;@modules/system/system-api.module&#x27;;
 import { TaskApiModule } from &#x27;@modules/task/task-api.module&#x27;;
 import { TeamsApiModule } from &#x27;@modules/teams/teams-api.module&#x27;;
 import { ToolApiModule } from &#x27;@modules/tool/tool-api.module&#x27;;
-import { ImportUserModule, UserImportConfigModule } from &#x27;@modules/user-import&#x27;;
+import { ImportUserModule } from &#x27;@modules/user-import&#x27;;
+import { UserLicenseModule } from &#x27;@modules/user-license&#x27;;
 import { UserLoginMigrationApiModule } from &#x27;@modules/user-login-migration/user-login-migration-api.module&#x27;;
 import { UsersAdminApiModule } from &#x27;@modules/user/legacy/users-admin-api.module&#x27;;
 import { UserApiModule } from &#x27;@modules/user/user-api.module&#x27;;
@@ -350,8 +352,6 @@ import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { UserLicenseModule } from &#x27;@modules/user-license&#x27;;
-import { AuthorizationReferenceApiModule } from &#x27;@modules/authorization/authorization-reference.api.module&#x27;;
 import { ServerConfigController, ServerController, ServerUc } from &#x27;./api&#x27;;
 import { SERVER_CONFIG_TOKEN, serverConfig } from &#x27;./server.config&#x27;;
 
@@ -371,7 +371,6 @@ const serverModules &#x3D; [
 	UsersAdminApiModule,
 	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
-	UserImportConfigModule,
 	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,

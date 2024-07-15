@@ -178,8 +178,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -248,8 +248,9 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &
 import { CopyFileDto } from &#x27;@modules/files-storage-client/dto&#x27;;
 import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool&#x27;;
 import { ContextExternalTool } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;@modules/tool/tool-config&#x27;;
-import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { ToolConfig } from &#x27;@modules/tool/tool-config&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import {
 	AnyBoardNode,
@@ -279,7 +280,7 @@ export interface CopyContext {
 @Injectable()
 export class BoardNodeCopyService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly configService: ConfigService&lt;ToolConfig, true&gt;,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
@@ -531,7 +532,7 @@ export class BoardNodeCopyService {
 		});
 
 		let status: CopyStatusEnum;
-		if (this.toolFeatures.ctlToolsCopyEnabled &amp;&amp; original.contextExternalToolId) {
+		if (this.configService.get(&#x27;FEATURE_CTL_TOOLS_COPY_ENABLED&#x27;) &amp;&amp; original.contextExternalToolId) {
 			const linkedTool &#x3D; await this.contextExternalToolService.findById(original.contextExternalToolId);
 
 			if (linkedTool) {

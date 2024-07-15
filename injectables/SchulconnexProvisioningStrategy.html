@@ -182,12 +182,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, schulconnexLicenseProvisioningService: <a href="../injectables/SchulconnexLicenseProvisioningService.html" target="_self">SchulconnexLicenseProvisioningService</a>, schulconnexToolProvisioningService: <a href="../injectables/SchulconnexToolProvisioningService.html" target="_self">SchulconnexToolProvisioningService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
+<code>constructor(schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, schulconnexLicenseProvisioningService: <a href="../injectables/SchulconnexLicenseProvisioningService.html" target="_self">SchulconnexLicenseProvisioningService</a>, schulconnexToolProvisioningService: <a href="../injectables/SchulconnexToolProvisioningService.html" target="_self">SchulconnexToolProvisioningService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/schulconnex.strategy.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/schulconnex.strategy.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -204,18 +204,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>provisioningFeatures</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/IProvisioningFeatures.html" target="_self" >IProvisioningFeatures</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>schulconnexSchoolProvisioningService</td>
                                                   
@@ -355,7 +343,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:34</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:32</a></code>
 </div>
                         </td>
                     </tr>
@@ -425,8 +413,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/schulconnex.strategy.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/schulconnex.strategy.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -507,8 +495,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/schulconnex.strategy.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/schulconnex.strategy.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -681,10 +669,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Group, GroupService } from &#x27;@modules/group&#x27;;
-import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { LegacySchoolDo, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from &#x27;../../dto&#x27;;
 import { ProvisioningConfig } from &#x27;../../provisioning.config&#x27;;
 import { ProvisioningStrategy } from &#x27;../base.strategy&#x27;;
@@ -700,7 +687,6 @@ import {
 @Injectable()
 export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrategy {
 	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
 		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
@@ -728,7 +714,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			school?.id
 		);
 
-		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
+		if (this.configService.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;)) {
 			await this.provisionGroups(data, school);
 		}
 
@@ -769,7 +755,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 						data.system.systemId
 					);
 
-					if (this.provisioningFeatures.schulconnexCourseSyncEnabled &amp;&amp; provisionedGroup) {
+					if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;) &amp;&amp; provisionedGroup) {
 						await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(
 							provisionedGroup,
 							existingGroup ?? undefined
@@ -790,7 +776,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 				data.system.systemId
 			);
 
-		if (this.provisioningFeatures.schulconnexCourseSyncEnabled) {
+		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;)) {
 			const courseSyncPromises: Promise&lt;unknown&gt;[] &#x3D; removedFromGroups.map(
 				async (removedFromGroup: Group): Promise&lt;void&gt; &#x3D;&gt; {
 					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);

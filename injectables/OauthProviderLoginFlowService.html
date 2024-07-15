@@ -162,7 +162,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(ltiToolService: <a href="../injectables/LtiToolService.html" target="_self">LtiToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
+<code>constructor(ltiToolService: <a href="../injectables/LtiToolService.html" target="_self">LtiToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, configService: <a href="../interfaces/ToolConfig.html" target="_self">ConfigService&lt;ToolConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -209,10 +209,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>toolFeatures</td>
+                                                        <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                                        <code><a href="../interfaces/ToolConfig.html" target="_self" >ConfigService&lt;ToolConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -382,10 +382,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LtiToolService } from &#x27;@modules/lti-tool/service&#x27;;
 import { ExternalTool } from &#x27;@modules/tool/external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;@modules/tool/external-tool/service&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;@modules/tool/tool-config&#x27;;
-import { Inject } from &#x27;@nestjs/common&#x27;;
+import { ToolConfig } from &#x27;@modules/tool/tool-config&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 
 @Injectable()
@@ -393,11 +393,11 @@ export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolService: LtiToolService,
 		private readonly externalToolService: ExternalToolService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly configService: ConfigService&lt;ToolConfig, true&gt;
 	) {}
 
 	public async findToolByClientId(clientId: string): Promise&lt;ExternalTool | LtiToolDO&gt; {
-		if (this.toolFeatures.ctlToolsTabEnabled) {
+		if (this.configService.get(&#x27;FEATURE_CTL_TOOLS_TAB_ENABLED&#x27;)) {
 			const externalTool: ExternalTool | null &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
 				clientId
 			);

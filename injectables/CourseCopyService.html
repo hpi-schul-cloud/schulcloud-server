@@ -171,12 +171,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, legacyBoardRepo: <a href="../injectables/LegacyBoardRepo.html" target="_self">LegacyBoardRepo</a>, roomsService: <a href="../injectables/RoomsService.html" target="_self">RoomsService</a>, boardCopyService: <a href="../injectables/BoardCopyService.html" target="_self">BoardCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>)</code>
+<code>constructor(configService: <a href="../interfaces/ToolConfig.html" target="_self">ConfigService&lt;ToolConfig | &gt;</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, legacyBoardRepo: <a href="../injectables/LegacyBoardRepo.html" target="_self">LegacyBoardRepo</a>, roomsService: <a href="../injectables/RoomsService.html" target="_self">RoomsService</a>, boardCopyService: <a href="../injectables/BoardCopyService.html" target="_self">BoardCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -194,10 +194,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>toolFeatures</td>
+                                                        <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                                        <code><a href="../interfaces/ToolConfig.html" target="_self" >ConfigService&lt;ToolConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -325,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -394,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -463,8 +463,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -557,8 +557,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course-copy.service.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -614,11 +614,12 @@
 import { ToolContextType } from &#x27;@modules/tool/common/enum&#x27;;
 import { ContextExternalTool, ContextRef } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
 import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool/service&#x27;;
-import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { ToolConfig } from &#x27;@modules/tool/tool-config&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Course, User } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { LegacyBoardRepo, CourseRepo, UserRepo } from &#x27;@shared/repo&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;@modules/tool/tool-config&#x27;;
+import { CourseRepo, LegacyBoardRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { BoardCopyService } from &#x27;./board-copy.service&#x27;;
 import { RoomsService } from &#x27;./rooms.service&#x27;;
 
@@ -631,7 +632,7 @@ type CourseCopyParams &#x3D; {
 @Injectable()
 export class CourseCopyService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly configService: ConfigService&lt;ToolConfig, true&gt;,
 		private readonly courseRepo: CourseRepo,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: RoomsService,
@@ -664,7 +665,7 @@ export class CourseCopyService {
 
 		// copy course and board
 		const courseCopy &#x3D; await this.copyCourseEntity({ user, originalCourse, copyName });
-		if (this.toolFeatures.ctlToolsCopyEnabled) {
+		if (this.configService.get(&#x27;FEATURE_CTL_TOOLS_COPY_ENABLED&#x27;)) {
 			const contextRef: ContextRef &#x3D; { id: courseId, type: ToolContextType.COURSE };
 			const contextExternalToolsInContext: ContextExternalTool[] &#x3D;
 				await this.contextExternalToolService.findAllByContext(contextRef);
@@ -732,7 +733,7 @@ export class CourseCopyService {
 			boardStatus,
 		];
 
-		if (this.toolFeatures.ctlToolsCopyEnabled) {
+		if (this.configService.get(&#x27;FEATURE_CTL_TOOLS_COPY_ENABLED&#x27;)) {
 			elements.push({
 				type: CopyElementType.EXTERNAL_TOOL,
 				status: CopyStatusEnum.SUCCESS,

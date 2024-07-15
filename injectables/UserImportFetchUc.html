@@ -162,12 +162,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userImportFeatures: <a href="../interfaces/IUserImportFeatures.html" target="_self">IUserImportFeatures</a>, schulconnexFetchImportUsersService: <a href="../injectables/SchulconnexFetchImportUsersService.html" target="_self">SchulconnexFetchImportUsersService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userImportService: <a href="../injectables/UserImportService.html" target="_self">UserImportService</a>)</code>
+<code>constructor(configService: <a href="../classes/User.html" target="_self">ConfigService&lt;UserImportConfig | &gt;</a>, schulconnexFetchImportUsersService: <a href="../injectables/SchulconnexFetchImportUsersService.html" target="_self">SchulconnexFetchImportUsersService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userImportService: <a href="../injectables/UserImportService.html" target="_self">UserImportService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -185,10 +185,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>userImportFeatures</td>
+                                                        <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IUserImportFeatures.html" target="_self" >IUserImportFeatures</a></code>
+                                                                        <code><a href="../classes/User.html" target="_self" >ConfigService&lt;UserImportConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -268,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -338,8 +338,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -393,18 +393,19 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { System } from &#x27;@modules/system&#x27;;
-import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ImportUser, User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { IUserImportFeatures, UserImportFeatures } from &#x27;../config&#x27;;
 import { UserMigrationIsNotEnabledLoggableException } from &#x27;../loggable&#x27;;
 import { SchulconnexFetchImportUsersService, UserImportService } from &#x27;../service&#x27;;
+import { UserImportConfig } from &#x27;../user-import-config&#x27;;
 
 @Injectable()
 export class UserImportFetchUc {
 	constructor(
-		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
+		private readonly configService: ConfigService&lt;UserImportConfig, true&gt;,
 		private readonly schulconnexFetchImportUsersService: SchulconnexFetchImportUsersService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly userImportService: UserImportService
@@ -421,7 +422,7 @@ export class UserImportFetchUc {
 
 		const filteredFetchedData: ImportUser[] &#x3D; await this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
 			fetchedData,
-			this.userImportFeatures.userMigrationSystemId
+			this.configService.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;)
 		);
 
 		const matchedImportUsers: ImportUser[] &#x3D; await this.userImportService.matchUsers(filteredFetchedData);
@@ -432,7 +433,10 @@ export class UserImportFetchUc {
 	}
 
 	private checkMigrationEnabled(userId: EntityId): void {
-		if (!this.userImportFeatures.userMigrationEnabled || !this.userImportFeatures.userMigrationSystemId) {
+		if (
+			!this.configService.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) ||
+			!this.configService.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;)
+		) {
 			throw new UserMigrationIsNotEnabledLoggableException(userId);
 		}
 	}

@@ -24,13 +24,13 @@
 <title>cluster_ConsoleWriterModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="135,-70 135,-268 361,-268 361,-70 135,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ConsoleWriterModule_providers</title>
-<polygon fill="none" stroke="black" points="143,-78 143,-130 353,-130 353,-78 143,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_ConsoleWriterModule_exports</title>
 <polygon fill="none" stroke="black" points="168,-208 168,-260 328,-260 328,-208 168,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_ConsoleWriterModule_providers</title>
+<polygon fill="none" stroke="black" points="143,-78 143,-130 353,-130 353,-78 143,-78"/>
 </g>
 <!-- ConsoleWriterService  -->
 <g id="node1" class="node">

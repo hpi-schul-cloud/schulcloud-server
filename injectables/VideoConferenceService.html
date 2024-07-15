@@ -136,9 +136,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#canGuestJoin" >canGuestJoin</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#createOrUpdateVideoConferenceForScopeWithOptions" >createOrUpdateVideoConferenceForScopeWithOptions</a>
                             </li>
@@ -151,18 +153,22 @@
                                 <a href="#existsOnlyExpertRole" >existsOnlyExpertRole</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findVideoConferenceByScopeIdAndScope" >findVideoConferenceByScopeIdAndScope</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getScopeInfo" >getScopeInfo</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getUserRoleAndGuestStatusByUserIdForBbb" >getUserRoleAndGuestStatusByUserIdForBbb</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#hasExpertRole" >hasExpertRole</a>
                             </li>
@@ -184,6 +190,7 @@
                                 <a href="#loadScopeRessources" >loadScopeRessources</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#sanitizeString" >sanitizeString</a>
                             </li>
                             <li>
@@ -192,6 +199,7 @@
                                 <a href="#saveVideoConference" >saveVideoConference</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#throwOnFeaturesDisabled" >throwOnFeaturesDisabled</a>
                             </li>
@@ -230,12 +238,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(vcSettings: <a href="../interfaces/IVideoConferenceSettings.html" target="_self">IVideoConferenceSettings</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>)</code>
+<code>constructor(configService: <a href="../interfaces/VideoConferenceConfig.html" target="_self">ConfigService&lt;VideoConferenceConfig | &gt;</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -253,10 +261,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>vcSettings</td>
+                                                        <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IVideoConferenceSettings.html" target="_self" >IVideoConferenceSettings</a></code>
+                                                                        <code><a href="../interfaces/VideoConferenceConfig.html" target="_self" >ConfigService&lt;VideoConferenceConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -368,6 +376,7 @@
                 <td class="col-md-4">
                     <a name="canGuestJoin"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>canGuestJoin</b></span>
                         <a href="#canGuestJoin"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -375,15 +384,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>canGuestJoin(isGuest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, state: <a href="../undefineds/VideoConferenceState.html" target="_self">VideoConferenceState</a>, waitingRoomEnabled: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>canGuestJoin(isGuest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, state: <a href="../undefineds/VideoConferenceState.html" target="_self">VideoConferenceState</a>, waitingRoomEnabled: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -459,6 +469,7 @@
                 <td class="col-md-4">
                     <a name="createOrUpdateVideoConferenceForScopeWithOptions"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>createOrUpdateVideoConferenceForScopeWithOptions</b></span>
                         <a href="#createOrUpdateVideoConferenceForScopeWithOptions"><span class="icon ion-ios-link"></span></a>
@@ -475,8 +486,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -568,8 +579,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="120"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:120</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:126</a></div>
                         </td>
                     </tr>
 
@@ -661,8 +672,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -714,6 +725,7 @@
                 <td class="col-md-4">
                     <a name="findVideoConferenceByScopeIdAndScope"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findVideoConferenceByScopeIdAndScope</b></span>
                         <a href="#findVideoConferenceByScopeIdAndScope"><span class="icon ion-ios-link"></span></a>
@@ -730,8 +742,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="198"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:198</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:204</a></div>
                         </td>
                     </tr>
 
@@ -795,6 +807,7 @@
                 <td class="col-md-4">
                     <a name="getScopeInfo"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getScopeInfo</b></span>
                         <a href="#getScopeInfo"><span class="icon ion-ios-link"></span></a>
@@ -811,8 +824,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="157"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:157</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="163"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:163</a></div>
                         </td>
                     </tr>
 
@@ -888,6 +901,7 @@
                 <td class="col-md-4">
                     <a name="getUserRoleAndGuestStatusByUserIdForBbb"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getUserRoleAndGuestStatusByUserIdForBbb</b></span>
                         <a href="#getUserRoleAndGuestStatusByUserIdForBbb"><span class="icon ion-ios-link"></span></a>
@@ -904,8 +918,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:190</a></div>
                         </td>
                     </tr>
 
@@ -981,6 +995,7 @@
                 <td class="col-md-4">
                     <a name="hasExpertRole"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>hasExpertRole</b></span>
                         <a href="#hasExpertRole"><span class="icon ion-ios-link"></span></a>
@@ -997,8 +1012,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -1090,8 +1105,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -1171,8 +1186,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -1252,8 +1267,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -1311,8 +1326,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -1376,6 +1391,7 @@
                 <td class="col-md-4">
                     <a name="sanitizeString"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>sanitizeString</b></span>
                         <a href="#sanitizeString"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1383,15 +1399,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>sanitizeString(text: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sanitizeString(text: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="153"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:153</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="159"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:159</a></div>
                         </td>
                     </tr>
 
@@ -1460,8 +1477,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="232"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:232</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="238"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:238</a></div>
                         </td>
                     </tr>
 
@@ -1513,6 +1530,7 @@
                 <td class="col-md-4">
                     <a name="throwOnFeaturesDisabled"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>throwOnFeaturesDisabled</b></span>
                         <a href="#throwOnFeaturesDisabled"><span class="icon ion-ios-link"></span></a>
@@ -1529,8 +1547,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:145</a></div>
                         </td>
                     </tr>
 
@@ -1598,7 +1616,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:30</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:32</a></div>
                                 </td>
                             </tr>
 
@@ -1620,7 +1638,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:34</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/video-conference/service/video-conference.service.ts:36</a></div>
                                 </td>
                             </tr>
 
@@ -1636,7 +1654,8 @@ import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules
 import { CourseService } from &#x27;@modules/learnroom&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
-import { BadRequestException, ForbiddenException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { BadRequestException, ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course, TeamEntity, TeamUserEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission, RoleName, VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
@@ -1644,13 +1663,14 @@ import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { TeamsRepo, VideoConferenceRepo } from &#x27;@shared/repo&#x27;;
 import { BBBRole } from &#x27;../bbb&#x27;;
 import { ErrorStatus } from &#x27;../error&#x27;;
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from &#x27;../interface&#x27;;
+import { VideoConferenceOptions } from &#x27;../interface&#x27;;
 import { ScopeInfo, VideoConferenceState } from &#x27;../uc/dto&#x27;;
+import { VideoConferenceConfig } from &#x27;../video-conference-config&#x27;;
 
 @Injectable()
 export class VideoConferenceService {
 	constructor(
-		@Inject(VideoConferenceSettings) private readonly vcSettings: IVideoConferenceSettings,
+		private readonly configService: ConfigService&lt;VideoConferenceConfig, true&gt;,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
@@ -1661,21 +1681,25 @@ export class VideoConferenceService {
 	) {}
 
 	get hostUrl(): string {
-		return this.vcSettings.hostUrl;
+		return this.configService.get(&#x27;HOST&#x27;);
 	}
 
 	get isVideoConferenceFeatureEnabled(): boolean {
-		return this.vcSettings.enabled;
+		return this.configService.get(&#x27;FEATURE_VIDEOCONFERENCE_ENABLED&#x27;);
 	}
 
-	canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
+	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
 		if ((isGuest &amp;&amp; state &#x3D;&#x3D;&#x3D; VideoConferenceState.NOT_STARTED) || (isGuest &amp;&amp; !waitingRoomEnabled)) {
 			return false;
 		}
 		return true;
 	}
 
-	async hasExpertRole(userId: EntityId, conferenceScope: VideoConferenceScope, scopeId: string): Promise&lt;boolean&gt; {
+	public async hasExpertRole(
+		userId: EntityId,
+		conferenceScope: VideoConferenceScope,
+		scopeId: string
+	): Promise&lt;boolean&gt; {
 		let isExpert &#x3D; false;
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
@@ -1769,7 +1793,7 @@ export class VideoConferenceService {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	async throwOnFeaturesDisabled(schoolId: EntityId): Promise&lt;void&gt; {
+	public async throwOnFeaturesDisabled(schoolId: EntityId): Promise&lt;void&gt; {
 		if (!this.isVideoConferenceFeatureEnabled) {
 			throw new ForbiddenException(
 				ErrorStatus.SCHOOL_FEATURE_DISABLED,
@@ -1783,11 +1807,11 @@ export class VideoConferenceService {
 		}
 	}
 
-	sanitizeString(text: string) {
+	public sanitizeString(text: string) {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-&#x3D;_&#x60;´ ]/g, &#x27;&#x27;);
 	}
 
-	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise&lt;ScopeInfo&gt; {
+	public async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise&lt;ScopeInfo&gt; {
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course &#x3D; await this.courseService.findById(scopeId);
@@ -1814,7 +1838,7 @@ export class VideoConferenceService {
 		}
 	}
 
-	async getUserRoleAndGuestStatusByUserIdForBbb(
+	public async getUserRoleAndGuestStatusByUserIdForBbb(
 		userId: string,
 		scopeId: EntityId,
 		scope: VideoConferenceScope
@@ -1828,7 +1852,7 @@ export class VideoConferenceService {
 		return { role, isGuest: isBbbGuest };
 	}
 
-	async findVideoConferenceByScopeIdAndScope(
+	public async findVideoConferenceByScopeIdAndScope(
 		scopeId: EntityId,
 		scope: VideoConferenceScope
 	): Promise&lt;VideoConferenceDO&gt; {
@@ -1837,7 +1861,7 @@ export class VideoConferenceService {
 		return videoConference;
 	}
 
-	async createOrUpdateVideoConferenceForScopeWithOptions(
+	public async createOrUpdateVideoConferenceForScopeWithOptions(
 		scopeId: EntityId,
 		scope: VideoConferenceScope,
 		options: VideoConferenceOptions

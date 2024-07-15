@@ -98,7 +98,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  IBbbSettings</li>
+  BbbConfig</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/bbb/bbb-settings.interface.ts</code>
+            <code>apps/server/src/modules/video-conference/bbb/bbb-config.ts</code>
         </p>
 
 
@@ -141,21 +141,21 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#host" 
+                                        <a href="#VIDEOCONFERENCE_DEFAULT_PRESENTATION" 
 >
-                                            host
+                                            VIDEOCONFERENCE_DEFAULT_PRESENTATION
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#presentationUrl" 
+                                        <a href="#VIDEOCONFERENCE_HOST" 
 >
-                                            presentationUrl
+                                            VIDEOCONFERENCE_HOST
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#salt" 
+                                        <a href="#VIDEOCONFERENCE_SALT" 
 >
-                                            salt
+                                            VIDEOCONFERENCE_SALT
                                         </a>
                                 </li>
                             </ul>
@@ -173,9 +173,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="host"></a>
-                                        <span class="name "><b>host</b>
-                                            <a href="#host">
+                                        <a name="VIDEOCONFERENCE_DEFAULT_PRESENTATION"></a>
+                                        <span class="name "><b>VIDEOCONFERENCE_DEFAULT_PRESENTATION</b>
+                                            <a href="#VIDEOCONFERENCE_DEFAULT_PRESENTATION">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -183,7 +183,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>host:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>VIDEOCONFERENCE_DEFAULT_PRESENTATION:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -206,9 +206,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="presentationUrl"></a>
-                                        <span class="name "><b>presentationUrl</b>
-                                            <a href="#presentationUrl">
+                                        <a name="VIDEOCONFERENCE_HOST"></a>
+                                        <span class="name "><b>VIDEOCONFERENCE_HOST</b>
+                                            <a href="#VIDEOCONFERENCE_HOST">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -216,7 +216,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>presentationUrl:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>VIDEOCONFERENCE_HOST:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -239,9 +239,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="salt"></a>
-                                        <span class="name "><b>salt</b>
-                                            <a href="#salt">
+                                        <a name="VIDEOCONFERENCE_SALT"></a>
+                                        <span class="name "><b>VIDEOCONFERENCE_SALT</b>
+                                            <a href="#VIDEOCONFERENCE_SALT">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -249,7 +249,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>salt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>VIDEOCONFERENCE_SALT:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -273,12 +273,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export const BbbSettings &#x3D; Symbol(&#x27;BbbSettings&#x27;);
-
-export interface IBbbSettings {
-	host: string;
-	salt: string;
-	presentationUrl: string;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface BbbConfig {
+	VIDEOCONFERENCE_HOST: string;
+	VIDEOCONFERENCE_SALT: string;
+	VIDEOCONFERENCE_DEFAULT_PRESENTATION: string;
 }
 </code></pre>
     </div>
@@ -317,7 +315,7 @@ export interface IBbbSettings {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'IBbbSettings.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'BbbConfig.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

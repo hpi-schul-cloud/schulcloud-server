@@ -79,7 +79,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content injectable">
                    <div class="content-data">
 
 
@@ -89,12 +89,8 @@
 
 
 
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item">Injectables</li>
   <li class="breadcrumb-item" >ExternalToolLogoService</li>
 </ol>
 
@@ -126,7 +122,6 @@
 
 
 
-
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
@@ -141,6 +136,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#buildLogoUrl" >buildLogoUrl</a>
                             </li>
                             <li>
@@ -153,14 +149,17 @@
                                 <a href="#fetchBase64Logo" >fetchBase64Logo</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#fetchLogo" >fetchLogo</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getExternalToolBinaryLogo" >getExternalToolBinaryLogo</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#validateLogoSize" >validateLogoSize</a>
                             </li>
                         </ul>
@@ -181,12 +180,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, httpService: HttpService, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>)</code>
+<code>constructor(configService: <a href="../interfaces/ToolConfig.html" target="_self">ConfigService&lt;ToolConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, httpService: HttpService, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -204,10 +203,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>toolFeatures</td>
+                                                        <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                                        <code><a href="../interfaces/ToolConfig.html" target="_self" >ConfigService&lt;ToolConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -260,7 +259,6 @@
         </table>
 </section>
 
-
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -272,6 +270,7 @@
                 <td class="col-md-4">
                     <a name="buildLogoUrl"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>buildLogoUrl</b></span>
                         <a href="#buildLogoUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -279,15 +278,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildLogoUrl(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildLogoUrl(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -355,8 +355,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -425,8 +425,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -478,6 +478,7 @@
                 <td class="col-md-4">
                     <a name="fetchLogo"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>fetchLogo</b></span>
                         <a href="#fetchLogo"><span class="icon ion-ios-link"></span></a>
@@ -494,8 +495,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -547,6 +548,7 @@
                 <td class="col-md-4">
                     <a name="getExternalToolBinaryLogo"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getExternalToolBinaryLogo</b></span>
                         <a href="#getExternalToolBinaryLogo"><span class="icon ion-ios-link"></span></a>
@@ -563,8 +565,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -616,6 +618,7 @@
                 <td class="col-md-4">
                     <a name="validateLogoSize"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>validateLogoSize</b></span>
                         <a href="#validateLogoSize"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -623,15 +626,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>validateLogoSize(externalTool: <a href="../classes/ExternalTool.html" target="_self">Partial&lt;ExternalTool&gt;</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateLogoSize(externalTool: <a href="../classes/ExternalTool.html" target="_self">Partial&lt;ExternalTool&gt;</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -679,21 +683,18 @@
     </table>
 </section>
 
-
-
-
-
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { HttpException, Inject } from &#x27;@nestjs/common&#x27;;
+import { HttpException, Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AxiosResponse } from &#x27;axios&#x27;;
 import { lastValueFrom } from &#x27;rxjs&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
+import { ToolConfig } from &#x27;../../tool-config&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
 import { ExternalToolLogo } from &#x27;../domain/external-tool-logo&#x27;;
 import {
@@ -712,17 +713,18 @@ const contentTypeDetector: Record&lt;string, string&gt; &#x3D; {
 	&#x27;47494638&#x27;: &#x27;image/gif&#x27;,
 };
 
+@Injectable()
 export class ExternalToolLogoService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly configService: ConfigService&lt;ToolConfig, true&gt;,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	buildLogoUrl(externalTool: ExternalTool): string | undefined {
+	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
 		const { logo, id } &#x3D; externalTool;
-		const backendUrl &#x3D; this.toolFeatures.backEndUrl;
+		const backendUrl &#x3D; this.configService.get&lt;string&gt;(&#x27;CTL_TOOLS_BACKEND_URL&#x27;);
 
 		if (logo &amp;&amp; id) {
 			return &#x60;${backendUrl}/v3/tools/external-tools/${id}/logo&#x60;;
@@ -731,22 +733,22 @@ export class ExternalToolLogoService {
 		return undefined;
 	}
 
-	validateLogoSize(externalTool: Partial&lt;ExternalTool&gt;): void {
+	public validateLogoSize(externalTool: Partial&lt;ExternalTool&gt;): void {
 		if (!externalTool.logo) {
 			return;
 		}
 
 		const buffer: Buffer &#x3D; Buffer.from(externalTool.logo, &#x27;base64&#x27;);
 
-		if (buffer.length &gt; this.toolFeatures.maxExternalToolLogoSizeInBytes) {
+		if (buffer.length &gt; this.configService.get(&#x27;CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES&#x27;)) {
 			throw new ExternalToolLogoSizeExceededLoggableException(
 				externalTool.id,
-				this.toolFeatures.maxExternalToolLogoSizeInBytes
+				this.configService.get(&#x27;CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES&#x27;)
 			);
 		}
 	}
 
-	async fetchLogo(externalTool: Partial&lt;ExternalTool&gt;): Promise&lt;string | undefined&gt; {
+	public async fetchLogo(externalTool: Partial&lt;ExternalTool&gt;): Promise&lt;string | undefined&gt; {
 		if (externalTool.logoUrl) {
 			const base64Logo: string &#x3D; await this.fetchBase64Logo(externalTool.logoUrl);
 
@@ -782,7 +784,7 @@ export class ExternalToolLogoService {
 		}
 	}
 
-	async getExternalToolBinaryLogo(toolId: EntityId): Promise&lt;ExternalToolLogo&gt; {
+	public async getExternalToolBinaryLogo(toolId: EntityId): Promise&lt;ExternalToolLogo&gt; {
 		const tool: ExternalTool &#x3D; await this.externalToolService.findById(toolId);
 
 		if (!tool.logo) {
@@ -814,7 +816,12 @@ export class ExternalToolLogoService {
 }
 </code></pre>
     </div>
+
 </div>
+
+
+
+
 
 
 
@@ -849,7 +856,7 @@ export class ExternalToolLogoService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
             var COMPODOC_CURRENT_PAGE_URL = 'ExternalToolLogoService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
