@@ -16,16 +16,16 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import type { ToolConfig } from '@modules/tool/tool-config';
 import type { UserConfig } from '@modules/user';
-import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { UserImportConfig } from '../user-import/user-import-config';
+import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -48,24 +48,26 @@ export interface ServerConfig
 		XApiKeyConfig,
 		LearnroomConfig,
 		AuthenticationConfig,
-		IToolFeatures,
+		ToolConfig,
 		TldrawClientConfig,
 		UserLoginMigrationConfig,
 		LessonConfig,
-		IVideoConferenceSettings,
 		BoardConfig,
 		MediaBoardConfig,
 		SharingConfig,
-		IUserImportFeatures,
+		UserImportConfig,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		UserImportConfig,
+		VideoConferenceConfig,
+		BbbConfig,
 		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
+	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
@@ -254,9 +256,6 @@ const config: ServerConfig = {
 	) as number,
 	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
-	...ToolConfiguration.toolFeatures,
-	...VideoConferenceConfiguration.videoConference,
-	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
@@ -266,6 +265,25 @@ const config: ServerConfig = {
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get('FEATURE_NEW_LAYOUT_ENABLED') as boolean,
+	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
+	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
+	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
+		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
+	) as number,
+	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
+	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
+	HOST: Configuration.get('HOST') as string,
+	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
+	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
+	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,
+	VIDEOCONFERENCE_DEFAULT_PRESENTATION: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
+	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
+	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
+	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
+		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
+	) as boolean,
+	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

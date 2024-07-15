@@ -40,7 +40,8 @@
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
-		"URI": "http://localhost:8080",
+		"INTERNAL_URI": "http://localhost:8080",
+		"EXTERNAL_URI": "http://localhost:8080",
 		"TENANT": "dBildungscloud",
 		"CLIENTID": "dbc",
 		"ADMIN_CLIENTID": "admin-cli",

@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
+import { ConfigService } from '@nestjs/config';
 import { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImportUser, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { importUserFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
+import { UserImportConfig } from '../user-import-config';
 import { UserImportFetchUc } from './user-import-fetch.uc';
 
 describe(UserImportFetchUc.name, () => {
@@ -19,7 +20,13 @@ describe(UserImportFetchUc.name, () => {
 	let schulconnexFetchImportUsersService: DeepMocked<SchulconnexFetchImportUsersService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let userImportService: DeepMocked<UserImportService>;
-	let userImportFeatures: IUserImportFeatures;
+
+	const config: UserImportConfig = {
+		FEATURE_USER_MIGRATION_ENABLED: true,
+		FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
+		FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: true,
+		IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 0,
+	};
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -28,8 +35,10 @@ describe(UserImportFetchUc.name, () => {
 			providers: [
 				UserImportFetchUc,
 				{
-					provide: UserImportFeatures,
-					useValue: {},
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof UserImportConfig) => config[key]),
+					},
 				},
 				{
 					provide: SchulconnexFetchImportUsersService,
@@ -50,15 +59,12 @@ describe(UserImportFetchUc.name, () => {
 		schulconnexFetchImportUsersService = module.get(SchulconnexFetchImportUsersService);
 		authorizationService = module.get(AuthorizationService);
 		userImportService = module.get(UserImportService);
-		userImportFeatures = module.get(UserImportFeatures);
 	});
 
 	beforeEach(() => {
-		Object.assign<IUserImportFeatures, IUserImportFeatures>(userImportFeatures, {
-			userMigrationEnabled: true,
-			userMigrationSystemId: new ObjectId().toHexString(),
-			useWithUserLoginMigration: true,
-		});
+		config.FEATURE_USER_MIGRATION_ENABLED = true;
+		config.FEATURE_USER_MIGRATION_SYSTEM_ID = new ObjectId().toHexString();
+		config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 	});
 
 	afterAll(async () => {
@@ -74,7 +80,7 @@ describe(UserImportFetchUc.name, () => {
 			const setup = () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId(
 					undefined,
-					userImportFeatures.userMigrationSystemId
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID
 				);
 				const systemDo: System = systemFactory.build({ id: system.id });
 				const user: User = userFactory.buildWithId();
@@ -142,7 +148,7 @@ describe(UserImportFetchUc.name, () => {
 
 	describe('when the migration feature is not enabled', () => {
 		const setup = () => {
-			userImportFeatures.userMigrationEnabled = false;
+			config.FEATURE_USER_MIGRATION_ENABLED = false;
 
 			const user: User = userFactory.buildWithId();
 
@@ -160,7 +166,7 @@ describe(UserImportFetchUc.name, () => {
 
 	describe('when the target system id is not defined', () => {
 		const setup = () => {
-			userImportFeatures.userMigrationSystemId = '';
+			config.FEATURE_USER_MIGRATION_SYSTEM_ID = '';
 
 			const user: User = userFactory.buildWithId();
 
