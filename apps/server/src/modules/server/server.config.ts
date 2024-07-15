@@ -118,6 +118,7 @@ export interface ServerConfig
 	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
+	EDU_SHARING__API_URL: string;
 }
 
 const config: ServerConfig = {
@@ -266,6 +267,7 @@ const config: ServerConfig = {
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get('FEATURE_NEW_LAYOUT_ENABLED') as boolean,
+	EDU_SHARING__API_URL: Configuration.get('EDU_SHARING__API_URL') as string,
 };
 
 export const serverConfig = () => config;
