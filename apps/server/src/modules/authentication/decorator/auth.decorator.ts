@@ -8,8 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
-import { ExtractJwt } from 'passport-jwt';
-import { extractJwtFromHeader, JwtExtractor } from '@shared/common';
+import { extractJwtFromHeader } from '@shared/common';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { ICurrentUser, isICurrentUser } from '../interface/user';
 

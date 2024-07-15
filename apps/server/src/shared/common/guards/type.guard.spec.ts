@@ -212,4 +212,125 @@ describe('TypeGuard', () => {
 			});
 		});
 	});
+
+	describe('isNull', () => {
+		describe('when passing type of value is null', () => {
+			it('should be return true', () => {
+				expect(TypeGuard.isNull(null)).toBe(true);
+			});
+		});
+
+		describe('when passing type of value is NOT null', () => {
+			it('should be return false', () => {
+				expect(TypeGuard.isNull(undefined)).toBe(false);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isNull('string')).toBe(false);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isNull('')).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isNull({})).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isNull(1)).toBe(false);
+			});
+		});
+	});
+
+	describe('isUndefined', () => {
+		describe('when passing type of value is undefined', () => {
+			it('should be return true', () => {
+				expect(TypeGuard.isUndefined(undefined)).toBe(true);
+			});
+		});
+
+		describe('when passing type of value is NOT undefined', () => {
+			it('should be return false', () => {
+				expect(TypeGuard.isUndefined(null)).toBe(false);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isUndefined('string')).toBe(false);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isUndefined('')).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isUndefined({})).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isUndefined(1)).toBe(false);
+			});
+		});
+	});
+
+	describe('checkNotNullOrUndefined', () => {
+		describe('when value is null', () => {
+			const setup = () => {
+				const value = null;
+
+				return { value };
+			};
+
+			it('should throw error if it is passed', () => {
+				const value: string | null = null;
+				expect(() => TypeGuard.checkNotNullOrUndefined(value, new Error('Test'))).toThrow('Test');
+			});
+
+			it('should throw default error if not error passed', () => {
+				const { value } = setup();
+
+				expect(() => TypeGuard.checkNotNullOrUndefined(value)).toThrow('Type is null.');
+			});
+		});
+
+		describe('when value is undefined', () => {
+			const setup = () => {
+				const value = undefined;
+
+				return { value };
+			};
+
+			it('should throw error if it is passed', () => {
+				const { value } = setup();
+
+				expect(() => TypeGuard.checkNotNullOrUndefined(value, new Error('Test'))).toThrow('Test');
+			});
+
+			it('should throw default error if not error passed', () => {
+				const { value } = setup();
+
+				expect(() => TypeGuard.checkNotNullOrUndefined(value)).toThrow('Type is undefined.');
+			});
+		});
+
+		describe('when value is defined', () => {
+			const setup = () => {
+				const value = '';
+
+				return { value };
+			};
+
+			it('should return value if error is passed', () => {
+				const { value } = setup();
+
+				expect(TypeGuard.checkNotNullOrUndefined(value, new Error('Test'))).toBe('');
+			});
+
+			it('should return value', () => {
+				const { value } = setup();
+
+				expect(TypeGuard.checkNotNullOrUndefined(value)).toBe('');
+			});
+		});
+	});
 });
