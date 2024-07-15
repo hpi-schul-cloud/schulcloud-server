@@ -193,8 +193,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	public async isUniqueEmail(email: string): Promise<boolean> {
-		const [, count] = await this.identityManager.findAccountsByUsername(email);
-		const isUniqueEmail = count === 0;
+		const [accounts] = await this.identityManager.findAccountsByUsername(email, { exact: true });
+		const isUniqueEmail = accounts.length === 0;
 
 		return isUniqueEmail;
 	}
