@@ -2229,8 +2229,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	public async isUniqueEmail(email: string): Promise&lt;boolean&gt; {
-		const [, count] &#x3D; await this.identityManager.findAccountsByUsername(email);
-		const isUniqueEmail &#x3D; count &#x3D;&#x3D;&#x3D; 0;
+		const [accounts] &#x3D; await this.identityManager.findAccountsByUsername(email, { exact: true });
+		const isUniqueEmail &#x3D; accounts.length &#x3D;&#x3D;&#x3D; 0;
 
 		return isUniqueEmail;
 	}

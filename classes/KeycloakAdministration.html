@@ -178,7 +178,8 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>(Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean)
 		? ({
-				baseUrl: Configuration.get(&#x27;IDENTITY_MANAGEMENT__URI&#x27;) as string,
+				internalBaseUrl: Configuration.get(&#x27;IDENTITY_MANAGEMENT__INTERNAL_URI&#x27;) as string,
+				externalBaseUrl: Configuration.get(&#x27;IDENTITY_MANAGEMENT__EXTERNAL_URI&#x27;) as string,
 				realmName: Configuration.get(&#x27;IDENTITY_MANAGEMENT__TENANT&#x27;) as string,
 				clientId: Configuration.get(&#x27;IDENTITY_MANAGEMENT__CLIENTID&#x27;) as string,
 				credentials: {
@@ -218,7 +219,8 @@ import { IKeycloakSettings } from &#x27;./interface/keycloak-settings.interface&
 export default class KeycloakAdministration {
 	static keycloakSettings &#x3D; (Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean)
 		? ({
-				baseUrl: Configuration.get(&#x27;IDENTITY_MANAGEMENT__URI&#x27;) as string,
+				internalBaseUrl: Configuration.get(&#x27;IDENTITY_MANAGEMENT__INTERNAL_URI&#x27;) as string,
+				externalBaseUrl: Configuration.get(&#x27;IDENTITY_MANAGEMENT__EXTERNAL_URI&#x27;) as string,
 				realmName: Configuration.get(&#x27;IDENTITY_MANAGEMENT__TENANT&#x27;) as string,
 				clientId: Configuration.get(&#x27;IDENTITY_MANAGEMENT__CLIENTID&#x27;) as string,
 				credentials: {

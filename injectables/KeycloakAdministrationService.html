@@ -716,7 +716,7 @@ export class KeycloakAdministrationService {
 		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
 	) {
 		this.kcAdminClient.setConfig({
-			baseUrl: kcSettings.baseUrl,
+			baseUrl: kcSettings.internalBaseUrl,
 			realmName: kcSettings.realmName,
 		});
 	}
@@ -736,7 +736,7 @@ export class KeycloakAdministrationService {
 	}
 
 	public getWellKnownUrl(): string {
-		return &#x60;${this.kcSettings.baseUrl}/realms/${this.kcSettings.realmName}/.well-known/openid-configuration&#x60;;
+		return &#x60;${this.kcSettings.externalBaseUrl}/realms/${this.kcSettings.realmName}/.well-known/openid-configuration&#x60;;
 	}
 
 	public getAdminUser(): string {

@@ -189,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(kcAdminService: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, httpService: HttpService, oAuthEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>)</code>
+<code>constructor(kcAdminService: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, httpService: HttpService, oAuthEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/infra/identity-management/keycloak/service/keycloak-identity-management-oauth.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/infra/identity-management/keycloak/service/keycloak-identity-management-oauth.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -247,6 +247,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -289,7 +301,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentityManagementOauthService.html#source" target="_self" >IdentityManagementOauthService:22</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentityManagementOauthService.html#source" target="_self" >IdentityManagementOauthService:25</a></code>
 </div>
                         </td>
                     </tr>
@@ -334,7 +346,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentityManagementOauthService.html#source" target="_self" >IdentityManagementOauthService:49</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentityManagementOauthService.html#source" target="_self" >IdentityManagementOauthService:52</a></code>
 </div>
                         </td>
                     </tr>
@@ -371,8 +383,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/infra/identity-management/keycloak/service/keycloak-identity-management-oauth.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/infra/identity-management/keycloak/service/keycloak-identity-management-oauth.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -416,7 +428,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentityManagementOauthService.html#source" target="_self" >IdentityManagementOauthService:56</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentityManagementOauthService.html#source" target="_self" >IdentityManagementOauthService:59</a></code>
 </div>
                         </td>
                     </tr>
@@ -501,7 +513,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/infra/identity-management/keycloak/service/keycloak-identity-management-oauth.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/infra/identity-management/keycloak/service/keycloak-identity-management-oauth.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -518,10 +530,12 @@
 import { OauthConfig } from &#x27;@modules/system/domain&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import qs from &#x27;qs&#x27;;
 import { lastValueFrom } from &#x27;rxjs&#x27;;
 import { IdentityManagementOauthService } from &#x27;../../identity-management-oauth.service&#x27;;
 import { KeycloakAdministrationService } from &#x27;../../keycloak-administration/service/keycloak-administration.service&#x27;;
+import { IDMLoginError } from &#x27;../errors/idm-login-error.loggable&#x27;;
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
@@ -530,7 +544,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	constructor(
 		private readonly kcAdminService: KeycloakAdministrationService,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
+		private readonly logger: Logger
 	) {
 		super();
 	}
@@ -570,15 +585,15 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	}
 
 	async resourceOwnerPasswordGrant(username: string, password: string): Promise&lt;string | undefined&gt; {
-		const { clientId, clientSecret, tokenEndpoint } &#x3D; await this.getOauthConfig();
-		const data &#x3D; {
-			username,
-			password,
-			grant_type: &#x27;password&#x27;,
-			client_id: clientId,
-			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
-		};
 		try {
+			const { clientId, clientSecret, tokenEndpoint } &#x3D; await this.getOauthConfig();
+			const data &#x3D; {
+				username,
+				password,
+				grant_type: &#x27;password&#x27;,
+				client_id: clientId,
+				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
+			};
 			const response &#x3D; await lastValueFrom(
 				this.httpService.request&lt;{ access_token: string }&gt;({
 					method: &#x27;post&#x27;,
@@ -591,6 +606,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
+			this.logger.warning(new IDMLoginError(err as Error));
+
 			return undefined;
 		}
 	}

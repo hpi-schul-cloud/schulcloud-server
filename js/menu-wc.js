@@ -5459,6 +5459,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/IdmCallbackLoggableException.html" data-type="entity-link" >IdmCallbackLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/IDMLoginError.html" data-type="entity-link" >IDMLoginError</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/IdParams.html" data-type="entity-link" >IdParams</a>
                             </li>
                             <li class="link">
