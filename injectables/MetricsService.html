@@ -136,6 +136,14 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#actionCounters" >actionCounters</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#actionGauges" >actionGauges</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#executionTimesSummary" >executionTimesSummary</a>
                             </li>
                             <li>
@@ -169,6 +177,14 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#countByRole" >countByRole</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#incrementActionCount" >incrementActionCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#incrementActionGauge" >incrementActionGauge</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -218,7 +234,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -283,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -334,6 +350,144 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="incrementActionCount"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>incrementActionCount</b></span>
+                        <a href="#incrementActionCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>incrementActionCount(actionName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:107</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>actionName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="incrementActionGauge"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>incrementActionGauge</b></span>
+                        <a href="#incrementActionGauge"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>incrementActionGauge(actionName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:127</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>actionName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapRole"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -352,8 +506,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -421,8 +575,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -502,8 +656,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -572,8 +726,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -653,8 +807,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -722,8 +876,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -745,6 +899,70 @@
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="actionCounters"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>actionCounters</b></span>
+                        <a href="#actionCounters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Map&lt;string | Counter&lt;string&gt;&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="actionGauges"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>actionGauges</b></span>
+                        <a href="#actionGauges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Map&lt;string | Gauge&lt;string&gt;&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/board/metrics/metrics.service.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -900,7 +1118,7 @@
 import { UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
-import { Gauge, Summary, register } from &#x27;prom-client&#x27;;
+import { Gauge, Summary, register, Counter } from &#x27;prom-client&#x27;;
 
 type ClientId &#x3D; string;
 type Role &#x3D; &#x27;owner&#x27; | &#x27;editor&#x27; | &#x27;viewer&#x27;;
@@ -916,6 +1134,10 @@ export class MetricsService {
 	private numberOfViewersOnServerCounter: Gauge&lt;string&gt;;
 
 	private executionTimesSummary: Map&lt;string, Summary&lt;string&gt;&gt; &#x3D; new Map();
+
+	private actionCounters: Map&lt;string, Counter&lt;string&gt;&gt; &#x3D; new Map();
+
+	private actionGauges: Map&lt;string, Gauge&lt;string&gt;&gt; &#x3D; new Map();
 
 	constructor(private readonly userService: UserService) {
 		this.numberOfBoardroomsOnServerCounter &#x3D; new Gauge({
@@ -986,14 +1208,56 @@ export class MetricsService {
 			summary &#x3D; new Summary({
 				name: &#x60;sc_boards_execution_time_${actionName}&#x60;,
 				help: &#x27;Average execution time of a specific action in milliseconds&#x27;,
-				maxAgeSeconds: 60,
+				maxAgeSeconds: 600,
 				ageBuckets: 5,
-				percentiles: [0.01, 0.1, 0.9, 0.99],
+				percentiles: [0.01, 0.1, 0.5, 0.9, 0.99],
+				pruneAgedBuckets: true,
 			});
 			this.executionTimesSummary.set(actionName, summary);
 			register.registerMetric(summary);
 		}
+		console.log(actionName, &#x60;executionTime: ${value.toFixed(3)} ms&#x60;);
 		summary.observe(value);
+	}
+
+	public incrementActionCount(actionName: string): void {
+		let counter &#x3D; this.actionCounters.get(actionName);
+
+		if (!counter) {
+			counter &#x3D; new Counter({
+				name: &#x60;sc_boards_count_${actionName}&#x60;,
+				help: &#x27;Number of calls for a specific action per minute&#x27;,
+				// async collect() {
+				// 	// Invoked when the registry collects its metrics&#x27; values.
+				// 	const currentValue &#x3D; await somethingAsync();
+				// 	this.set(currentValue);
+				// },
+			});
+			this.actionCounters.set(actionName, counter);
+			register.registerMetric(counter);
+		}
+		counter.inc();
+		console.log(actionName, &#x60;count increased&#x60;);
+	}
+
+	public incrementActionGauge(actionName: string): void {
+		let counter &#x3D; this.actionGauges.get(actionName);
+
+		if (!counter) {
+			counter &#x3D; new Gauge({
+				name: &#x60;sc_boards_count2_${actionName}&#x60;,
+				help: &#x27;Number of calls for a specific action per minute&#x27;,
+				// async collect() {
+				// 	// Invoked when the registry collects its metrics&#x27; values.
+				// 	const currentValue &#x3D; await somethingAsync();
+				// 	this.set(currentValue);
+				// },
+			});
+			this.actionGauges.set(actionName, counter);
+			register.registerMetric(counter);
+		}
+		counter.inc();
+		console.log(actionName, &#x60;count increased&#x60;);
 	}
 }
 </code></pre>
