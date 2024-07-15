@@ -18,7 +18,6 @@ import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './externa
 import { ExternalToolConfigurationService } from './external-tool/service';
 import { ExternalToolConfigurationUc, ExternalToolUc } from './external-tool/uc';
 import { ToolSchoolController } from './school-external-tool/controller';
-import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from './school-external-tool/mapper';
 import { SchoolExternalToolUc } from './school-external-tool/uc';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
@@ -53,8 +52,6 @@ import { ToolModule } from './tool.module';
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 		SchoolExternalToolUc,
-		SchoolExternalToolResponseMapper,
-		SchoolExternalToolRequestMapper,
 		ContextExternalToolUc,
 		ToolLaunchUc,
 		ToolReferenceUc,

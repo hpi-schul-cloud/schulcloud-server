@@ -14,7 +14,7 @@ import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { School, SchoolService } from '@modules/school/domain';
 import { schoolFactory } from '@modules/school/testing';
-import { LegacySystemService, SystemDto } from '@modules/system';
+import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -27,6 +27,7 @@ import {
 	roleDtoFactory,
 	schoolYearFactory,
 	setupEntities,
+	systemFactory,
 	UserAndAccountTestFactory,
 	userDoFactory,
 	userFactory,
@@ -46,7 +47,7 @@ describe('ClassGroupUc', () => {
 	let userService: DeepMocked<UserService>;
 	let roleService: DeepMocked<RoleService>;
 	let classService: DeepMocked<ClassService>;
-	let systemService: DeepMocked<LegacySystemService>;
+	let systemService: DeepMocked<SystemService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -74,8 +75,8 @@ describe('ClassGroupUc', () => {
 					useValue: createMock<ClassService>(),
 				},
 				{
-					provide: LegacySystemService,
-					useValue: createMock<LegacySystemService>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: SchoolService,
@@ -105,7 +106,7 @@ describe('ClassGroupUc', () => {
 		userService = module.get(UserService);
 		roleService = module.get(RoleService);
 		classService = module.get(ClassService);
-		systemService = module.get(LegacySystemService);
+		systemService = module.get(SystemService);
 		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
@@ -196,10 +197,8 @@ describe('ClassGroupUc', () => {
 					year: undefined,
 				});
 
-				const system: SystemDto = new SystemDto({
-					id: new ObjectId().toHexString(),
+				const system: System = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
-					type: 'oauth2',
 				});
 				const group: Group = groupFactory.build({
 					name: 'B',
@@ -611,10 +610,8 @@ describe('ClassGroupUc', () => {
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: SystemDto = new SystemDto({
-					id: new ObjectId().toHexString(),
+				const system: System = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
-					type: 'oauth2',
 				});
 				const group: Group = groupFactory.build({
 					name: 'B',
@@ -902,10 +899,8 @@ describe('ClassGroupUc', () => {
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: SystemDto = new SystemDto({
-					id: new ObjectId().toHexString(),
+				const system: System = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
-					type: 'oauth2',
 				});
 				const group: Group = groupFactory.build({
 					name: 'B',

@@ -10,12 +10,12 @@ export class SchoolExternalToolConfigurationStatusResponse {
 
 	@ApiProperty({
 		type: Boolean,
-		description: 'Is the tool deactivated, because of school administrator?',
+		description: 'Is the tool deactivated, because of instance administrator?',
 	})
-	isDeactivated: boolean;
+	isGloballyDeactivated: boolean;
 
 	constructor(props: SchoolExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
-		this.isDeactivated = props.isDeactivated;
+		this.isGloballyDeactivated = props.isGloballyDeactivated;
 	}
 }

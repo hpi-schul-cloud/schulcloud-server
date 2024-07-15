@@ -15,14 +15,13 @@ import {
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
+import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import {
 	SchoolExternalToolMetadataMapper,
 	SchoolExternalToolRequestMapper,
 	SchoolExternalToolResponseMapper,
 } from '../mapper';
 import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import {
 	SchoolExternalToolIdParams,
 	SchoolExternalToolMetadataResponse,
@@ -36,12 +35,7 @@ import {
 @Authenticate('jwt')
 @Controller('tools/school-external-tools')
 export class ToolSchoolController {
-	constructor(
-		private readonly schoolExternalToolUc: SchoolExternalToolUc,
-		private readonly responseMapper: SchoolExternalToolResponseMapper,
-		private readonly requestMapper: SchoolExternalToolRequestMapper,
-		private readonly logger: LegacyLogger
-	) {}
+	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc, private readonly logger: LegacyLogger) {}
 
 	@Get()
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
@@ -55,7 +49,8 @@ export class ToolSchoolController {
 		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
 		});
-		const response: SchoolExternalToolSearchListResponse = this.responseMapper.mapToSearchListResponse(found);
+		const response: SchoolExternalToolSearchListResponse =
+			SchoolExternalToolResponseMapper.mapToSearchListResponse(found);
 		return response;
 	}
 
@@ -71,7 +66,8 @@ export class ToolSchoolController {
 			currentUser.userId,
 			params.schoolExternalToolId
 		);
-		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
+		const mapped: SchoolExternalToolResponse =
+			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
 		return mapped;
 	}
 
@@ -86,14 +82,16 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolProps =
+			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 		const updated: SchoolExternalTool = await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
 			schoolExternalToolDto
 		);
 
-		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(updated);
+		const mapped: SchoolExternalToolResponse =
+			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(updated);
 		this.logger.debug(`SchoolExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 		return mapped;
 	}
@@ -127,7 +125,8 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolProps =
+			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 
 		const createdSchoolExternalToolDO: SchoolExternalTool = await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
@@ -135,7 +134,7 @@ export class ToolSchoolController {
 		);
 
 		const response: SchoolExternalToolResponse =
-			this.responseMapper.mapToSchoolExternalToolResponse(createdSchoolExternalToolDO);
+			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(createdSchoolExternalToolDO);
 
 		this.logger.debug(`SchoolExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
 

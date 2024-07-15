@@ -125,4 +125,104 @@ describe('schoolyear repo', () => {
 			});
 		});
 	});
+
+	describe('findCurrentOrNextYear', () => {
+		describe('when current date is within a schoolyear', () => {
+			const setup = async () => {
+				jest
+					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
+					.setSystemTime(new Date('2021-01-01'));
+
+				const previousYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2019-09-01'),
+					endDate: new Date('2020-07-31'),
+				});
+
+				const currentYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2020-09-01'),
+					endDate: new Date('2021-07-31'),
+				});
+
+				const nextYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2021-09-01'),
+					endDate: new Date('2022-07-31'),
+				});
+
+				await em.persistAndFlush([previousYear, currentYear, nextYear]);
+				em.clear();
+
+				return { previousYear, currentYear, nextYear };
+			};
+
+			it('should return the current schoolyear', async () => {
+				const { currentYear } = await setup();
+
+				const result = await repo.findCurrentOrNextYear();
+
+				expect(result).toEqual(currentYear);
+			});
+		});
+
+		describe('when current date is during a summerbreak', () => {
+			const setup = async () => {
+				jest
+					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
+					.setSystemTime(new Date('2020-08-31'));
+
+				const previousYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2019-09-01'),
+					endDate: new Date('2020-07-31'),
+				});
+
+				const nextYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2020-09-01'),
+					endDate: new Date('2021-07-31'),
+				});
+
+				await em.persistAndFlush([previousYear, nextYear]);
+				em.clear();
+
+				return { previousYear, nextYear };
+			};
+
+			it('should return the upcoming schoolyear', async () => {
+				const { nextYear } = await setup();
+
+				const result = await repo.findCurrentOrNextYear();
+
+				expect(result).toEqual(nextYear);
+			});
+		});
+
+		describe('when current date is later than any year', () => {
+			const setup = async () => {
+				jest
+					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
+					.setSystemTime(new Date('2030-08-31'));
+
+				const previousYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2019-09-01'),
+					endDate: new Date('2020-07-31'),
+				});
+
+				const nextYear: SchoolYearEntity = schoolYearFactory.build({
+					startDate: new Date('2020-09-01'),
+					endDate: new Date('2021-07-31'),
+				});
+
+				await em.persistAndFlush([previousYear, nextYear]);
+				em.clear();
+
+				return { previousYear, nextYear };
+			};
+
+			it('should throw', async () => {
+				await setup();
+
+				const func = () => repo.findCurrentOrNextYear();
+
+				await expect(func).rejects.toThrow();
+			});
+		});
+	});
 });

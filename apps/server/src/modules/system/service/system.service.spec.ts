@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { systemFactory } from '@shared/testing';
-import { SYSTEM_REPO, SystemRepo } from '../domain';
+import { SYSTEM_REPO, SystemQuery, SystemRepo, SystemType } from '../domain';
 import { SystemService } from './system.service';
 
 describe(SystemService.name, () => {
@@ -32,6 +33,36 @@ describe(SystemService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('find', () => {
+		describe('when searching systems with filter', () => {
+			const setup = () => {
+				const systems = systemFactory.buildList(1, { type: SystemType.OAUTH });
+
+				systemRepo.find.mockResolvedValueOnce(systems);
+
+				return {
+					systems,
+				};
+			};
+
+			it('should call the repo', async () => {
+				setup();
+
+				await service.find({ types: [SystemType.OAUTH] });
+
+				expect(systemRepo.find).toHaveBeenCalledWith<[SystemQuery]>({ types: [SystemType.OAUTH] });
+			});
+
+			it('should return the systems', async () => {
+				const { systems } = setup();
+
+				const result = await service.find({ types: [SystemType.OAUTH] });
+
+				expect(result).toEqual(systems);
+			});
+		});
 	});
 
 	describe('findById', () => {
@@ -66,6 +97,40 @@ describe(SystemService.name, () => {
 				const result = await service.findById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findByIdOrFail', () => {
+		describe('when the system exists', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+
+				systemRepo.getSystemById.mockResolvedValueOnce(system);
+
+				return {
+					system,
+				};
+			};
+
+			it('should return the system', async () => {
+				const { system } = setup();
+
+				const result = await service.findByIdOrFail(system.id);
+
+				expect(result).toEqual(system);
+			});
+		});
+
+		describe('when the system does not exist', () => {
+			const setup = () => {
+				systemRepo.getSystemById.mockResolvedValueOnce(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				await expect(service.findByIdOrFail(new ObjectId().toHexString())).rejects.toThrow(NotFoundLoggableException);
 			});
 		});
 	});
@@ -118,6 +183,36 @@ describe(SystemService.name, () => {
 				const { systemIds, error } = setup();
 
 				await expect(service.getSystems(systemIds)).rejects.toThrow(error);
+			});
+		});
+	});
+
+	describe('findAllForLdapLogin', () => {
+		describe('when searching for login ldap systems', () => {
+			const setup = () => {
+				const systems = systemFactory.buildList(1, { type: SystemType.LDAP });
+
+				systemRepo.findAllForLdapLogin.mockResolvedValueOnce(systems);
+
+				return {
+					systems,
+				};
+			};
+
+			it('should call the repo', async () => {
+				setup();
+
+				await service.findAllForLdapLogin();
+
+				expect(systemRepo.findAllForLdapLogin).toHaveBeenCalledWith();
+			});
+
+			it('should return the systems', async () => {
+				const { systems } = setup();
+
+				const result = await service.findAllForLdapLogin();
+
+				expect(result).toEqual(systems);
 			});
 		});
 	});

@@ -1,11 +1,11 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { SystemEntity } from '@shared/domain/entity';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { System, SystemRepo } from '../../domain';
-import { SystemEntityMapper } from './mapper/system-entity.mapper';
-import { SystemScope } from './scope/system.scope';
+import { System, SystemQuery, SystemRepo } from '../../domain';
+import { SystemEntity } from '../../entity';
+import { SystemEntityMapper } from './mapper';
+import { SystemScope } from './scope';
 
 @Injectable()
 export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntity> implements SystemRepo {
@@ -15,6 +15,16 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 
 	protected mapDOToEntityProperties(): EntityData<SystemEntity> {
 		throw new NotImplementedException('Method `mapDOToEntityProperties` not implemented.');
+	}
+
+	public async find(filter: SystemQuery): Promise<System[]> {
+		const scope: SystemScope = new SystemScope().byTypes(filter.types).allowEmptyQuery(true);
+
+		const entities: SystemEntity[] = await this.em.find(SystemEntity, scope.query);
+
+		const domainObjects: System[] = entities.map((entity: SystemEntity) => SystemEntityMapper.mapToDo(entity));
+
+		return domainObjects;
 	}
 
 	public async getSystemById(id: EntityId): Promise<System | null> {
@@ -41,7 +51,6 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 	}
 
 	public async findAllForLdapLogin(): Promise<System[]> {
-		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
 		const entities: SystemEntity[] = await this.em.find(SystemEntity, {
 			type: SystemTypeEnum.LDAP,
 			ldapConfig: { active: true },

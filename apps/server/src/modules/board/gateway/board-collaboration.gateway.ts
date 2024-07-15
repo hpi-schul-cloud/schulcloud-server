@@ -10,6 +10,7 @@ import {
 	WsException,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { EntityId } from '@shared/domain/types';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
@@ -18,29 +19,27 @@ import {
 } from '../controller/mapper';
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
-import { BoardNodeAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
-import {
-	CreateCardMessageParams,
-	DeleteColumnMessageParams,
-	MoveCardMessageParams,
-	UpdateColumnTitleMessageParams,
-} from './dto';
-import BoardCollaborationConfiguration from './dto/board-collaboration-config';
+import { CreateCardMessageParams } from './dto/create-card.message.param';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { DeleteCardMessageParams } from './dto/delete-card.message.param';
 import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
+import { DeleteColumnMessageParams } from './dto/delete-column.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { FetchCardsMessageParams } from './dto/fetch-cards.message.param';
+import { MoveCardMessageParams } from './dto/move-card.message.param';
 import { MoveColumnMessageParams } from './dto/move-column.message.param';
 import { MoveContentElementMessageParams } from './dto/move-content-element.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
+import { UpdateColumnTitleMessageParams } from './dto/update-column-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
+import BoardCollaborationConfiguration from './dto/board-collaboration-config';
+import { AnyBoardNode } from '../domain';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -56,8 +55,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
-		private readonly metricsService: MetricsService,
-		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
+		private readonly metricsService: MetricsService
 	) {}
 
 	trackExecutionTime(methodName: string, executionTimeMs: number) {
@@ -88,12 +86,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('delete-board-request')
 	@UseRequestContext()
 	async deleteBoard(socket: Socket, data: DeleteBoardMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'delete-board' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.boardUc.deleteBoard(userId, data.boardId);
-
-			await emitter.emitToClientAndRoom(data);
+			const board = await this.boardUc.deleteBoard(userId, data.boardId);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -104,12 +101,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-title' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-title' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
-
-			await emitter.emitToClientAndRoom(data);
+			const board = await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -120,12 +116,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-title' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-title' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
-
-			await emitter.emitToClientAndRoom(data);
+			const card = await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -135,12 +130,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('update-card-height-request')
 	@UseRequestContext()
 	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-height' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-height' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
-
-			await emitter.emitToClientAndRoom(data);
+			const card = await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -150,12 +144,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('delete-card-request')
 	@UseRequestContext()
 	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'delete-card' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.cardUc.deleteCard(userId, data.cardId);
-
-			await emitter.emitToClientAndRoom(data);
+			const rootId = await this.cardUc.deleteCard(userId, data.cardId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -166,7 +159,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async createCard(socket: Socket, data: CreateCardMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'create-card' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const card = await this.columnUc.createCard(userId, data.columnId, data.requiredEmptyElements);
@@ -177,7 +170,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				newCard,
 			};
 
-			await emitter.emitToClientAndRoom(responsePayload);
+			emitter.emitToClientAndRoom(responsePayload, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -187,7 +180,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
 	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'create-column' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const column = await this.boardUc.createColumn(userId, data.boardId);
@@ -197,7 +190,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				...data,
 				newColumn,
 			};
-			await emitter.emitToClientAndRoom(responsePayload);
+			emitter.emitToClientAndRoom(responsePayload, column);
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
@@ -212,13 +205,13 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'fetch-board' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const board = await this.boardUc.findBoard(userId, data.boardId);
-
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
-			await emitter.emitToClient(responsePayload);
+			await emitter.joinRoom(board);
+			emitter.emitSuccess(responsePayload);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -228,12 +221,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('move-card-request')
 	@UseRequestContext()
 	async moveCard(socket: Socket, data: MoveCardMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'move-card' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-
-			await emitter.emitToClientAndRoom(data);
+			const card = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			emitter.emitToClientAndRoom(data, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -243,12 +235,16 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('move-column-request')
 	@UseRequestContext()
 	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.targetBoardId, action: 'move-column' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
-
-			await emitter.emitToClientAndRoom(data);
+			const column = await this.boardUc.moveColumn(
+				userId,
+				data.columnMove.columnId,
+				data.targetBoardId,
+				data.columnMove.addedIndex
+			);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -259,12 +255,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'update-column-title' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-column-title' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
-
-			await emitter.emitToClientAndRoom(data);
+			const column = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
+			emitter.emitToClientAndRoom(data, column);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -274,12 +269,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('update-board-visibility-request')
 	@UseRequestContext()
 	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-visibility' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-visibility' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
-
-			await emitter.emitToClientAndRoom(data);
+			const board = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -289,12 +283,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('delete-column-request')
 	@UseRequestContext()
 	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'delete-column' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.columnUc.deleteColumn(userId, data.columnId);
-
-			await emitter.emitToClientAndRoom(data);
+			const rootId = await this.columnUc.deleteColumn(userId, data.columnId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -305,13 +298,13 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			await emitter.emitToClient({ cards: cardResponses, isOwnAction: false });
+			emitter.emitSuccess({ cards: cardResponses });
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -321,7 +314,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('create-element-request')
 	@UseRequestContext()
 	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'create-element' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-element' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const element = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
@@ -330,7 +323,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				...data,
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
-			await emitter.emitToClientAndRoom(responsePayload);
+			emitter.emitToClientAndRoom(responsePayload, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -341,12 +334,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'update-element' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-element' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
-
-			await emitter.emitToClientAndRoom(data);
+			const element = await this.elementUc.updateElement(userId, data.elementId, data.data.content);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -356,12 +348,12 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('delete-element-request')
 	@UseRequestContext()
 	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'delete-element' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-element' });
 		const { userId } = this.getCurrentUser(socket);
 
 		try {
-			await this.elementUc.deleteElement(userId, data.elementId);
-			await emitter.emitToClientAndRoom(data);
+			const rootId = await this.elementUc.deleteElement(userId, data.elementId);
+			emitter.emitToClientAndRoom(data, rootId);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -371,28 +363,33 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@SubscribeMessage('move-element-request')
 	@UseRequestContext()
 	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'move-element' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-element' });
 		const { userId } = this.getCurrentUser(socket);
 
 		try {
-			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
-			await emitter.emitToClientAndRoom(data);
+			const element = await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
 		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
-	private async buildBoardSocketEmitter({ socket, id, action }: { socket: Socket; id: string; action: string }) {
-		const rootId = await this.getRootIdForId(id);
-		const room = `board_${rootId}`;
+	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {
+		const getRoomName = (boardNode: AnyBoardNode | EntityId) => {
+			const rootId = typeof boardNode === 'string' ? boardNode : boardNode.rootId;
+			return `board_${rootId}`;
+		};
 		return {
-			async emitToClient(data: object) {
+			async joinRoom(boardNode: AnyBoardNode) {
+				const room = getRoomName(boardNode);
 				await socket.join(room);
+			},
+			emitSuccess(data: object) {
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
-			async emitToClientAndRoom(data: object) {
-				await socket.join(room);
+			emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId) {
+				const room = getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
@@ -400,12 +397,5 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				socket.emit(`${action}-failure`, data);
 			},
 		};
-	}
-
-	private async getRootIdForId(id: string) {
-		const authorizable = await this.authorizableService.findById(id);
-		const rootId = authorizable.rootNode.id;
-
-		return rootId;
 	}
 }

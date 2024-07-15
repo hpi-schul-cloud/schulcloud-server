@@ -57,6 +57,30 @@ describe('SchoolYearService', () => {
 		});
 	});
 
+	describe('getCurrentOrNextSchoolYear', () => {
+		const setup = () => {
+			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+				startDate: new Date('2021-09-01'),
+				endDate: new Date('2022-12-31'),
+			});
+			schoolYearRepo.findCurrentOrNextYear.mockResolvedValue(schoolYear);
+
+			return {
+				schoolYear,
+			};
+		};
+
+		describe('when called', () => {
+			it('should return the current school year', async () => {
+				const { schoolYear } = setup();
+
+				const currentSchoolYear: SchoolYearEntity = await service.getCurrentOrNextSchoolYear();
+
+				expect(currentSchoolYear).toEqual(schoolYear);
+			});
+		});
+	});
+
 	describe('findById', () => {
 		const setup = () => {
 			const schoolYear: SchoolYearEntity = schoolYearFactory.build({

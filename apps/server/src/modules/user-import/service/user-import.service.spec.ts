@@ -2,21 +2,22 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
+import { ImportUserRepo } from '@shared/repo';
 import {
 	cleanupCollections,
 	importUserFactory,
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
-	systemEntityFactory,
+	systemFactory,
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -30,7 +31,7 @@ describe(UserImportService.name, () => {
 	let em: EntityManager;
 
 	let importUserRepo: DeepMocked<ImportUserRepo>;
-	let legacySystemRepo: DeepMocked<LegacySystemRepo>;
+	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let logger: DeepMocked<Logger>;
 	let schoolService: DeepMocked<LegacySchoolService>;
@@ -60,8 +61,8 @@ describe(UserImportService.name, () => {
 					useValue: createMock<ImportUserRepo>(),
 				},
 				{
-					provide: LegacySystemRepo,
-					useValue: createMock<LegacySystemRepo>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: UserService,
@@ -81,7 +82,7 @@ describe(UserImportService.name, () => {
 		service = module.get(UserImportService);
 		em = module.get(EntityManager);
 		importUserRepo = module.get(ImportUserRepo);
-		legacySystemRepo = module.get(LegacySystemRepo);
+		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		logger = module.get(Logger);
 		schoolService = module.get(LegacySchoolService);
@@ -119,12 +120,9 @@ describe(UserImportService.name, () => {
 	describe('getMigrationSystem', () => {
 		describe('when fetching the migration system', () => {
 			const setup = () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId(
-					undefined,
-					config.FEATURE_USER_MIGRATION_SYSTEM_ID
-				);
+				const system: System = systemFactory.build();
 
-				legacySystemRepo.findById.mockResolvedValueOnce(system);
+				systemService.findByIdOrFail.mockResolvedValueOnce(system);
 
 				return {
 					system,
@@ -134,7 +132,7 @@ describe(UserImportService.name, () => {
 			it('should return the system', async () => {
 				const { system } = setup();
 
-				const result: SystemEntity = await service.getMigrationSystem();
+				const result: System = await service.getMigrationSystem();
 
 				expect(result).toEqual(system);
 			});
