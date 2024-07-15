@@ -21,12 +21,18 @@ To execute a scenario you can run artillery from the shell / commandline...:
 Using the `--variables` parameter it is possible to define several variables and there values that can be used in the scenerio-yaml-file:
 
 - **target**: defines the base url for all requests (REST and WebSocket)
-  e.g. https://main.dbc.dbildungscloud.dev
+  e.g. `https://main.dbc.dbildungscloud.dev`
 - **token**: a valid JWT for the targeted system
 - **board_id**: id of an existing board the tests should be executed on
 
-```powershell
+```bash
 npx artillery run --variables "{'target': 'https://main.dbc.dbildungscloud.dev', 'token': 'eJ....', 'board_id': '668d0e03bf3689d12e1e86fb' }" './scenarios/3users.yml' --output artilleryreport.json
+```
+
+On Windows Powershell, the variables value needs to be wrapped in singlequotes, and inside the json you need to use backslash-escaped doublequotes:
+
+```powershell
+npx artillery run --variables '{\"target\": \"https://main.dbc.dbildungscloud.dev\", \"token\": \"eJ....\", \"board_id\": \"668d0e03bf3689d12e1e86fb\" }' './scenarios/3users.yml' --output artilleryreport.json
 ```
 
 ## visualizing the recorded results
