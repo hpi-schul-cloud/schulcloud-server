@@ -50,7 +50,8 @@ describe('KeycloakConfigurationService Unit', () => {
 
 	const getSettings = (): IKeycloakSettings => {
 		return {
-			baseUrl: 'http://localhost:8080',
+			internalBaseUrl: 'http://localhost:8080',
+			externalBaseUrl: 'http://localhost:8080',
 			realmName: 'master',
 			clientId: 'dBildungscloud',
 			credentials: {

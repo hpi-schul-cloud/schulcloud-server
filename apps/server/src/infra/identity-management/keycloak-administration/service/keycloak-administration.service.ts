@@ -13,7 +13,7 @@ export class KeycloakAdministrationService {
 		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
 	) {
 		this.kcAdminClient.setConfig({
-			baseUrl: kcSettings.baseUrl,
+			baseUrl: kcSettings.internalBaseUrl,
 			realmName: kcSettings.realmName,
 		});
 	}
@@ -33,7 +33,7 @@ export class KeycloakAdministrationService {
 	}
 
 	public getWellKnownUrl(): string {
-		return `${this.kcSettings.baseUrl}/realms/${this.kcSettings.realmName}/.well-known/openid-configuration`;
+		return `${this.kcSettings.externalBaseUrl}/realms/${this.kcSettings.realmName}/.well-known/openid-configuration`;
 	}
 
 	public getAdminUser(): string {
