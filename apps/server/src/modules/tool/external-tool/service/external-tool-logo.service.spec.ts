@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of, throwError } from 'rxjs';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
@@ -19,13 +20,13 @@ import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
 
-describe('ExternalToolLogoService', () => {
+describe(ExternalToolLogoService.name, () => {
 	let module: TestingModule;
 	let service: ExternalToolLogoService;
 
 	let httpService: DeepMocked<HttpService>;
 	let logger: DeepMocked<Logger>;
-	let toolFeatures: IToolFeatures;
+	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 
 	beforeAll(async () => {
@@ -41,10 +42,8 @@ describe('ExternalToolLogoService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ToolFeatures,
-					useValue: {
-						maxExternalToolLogoSizeInBytes: 30000,
-					},
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: ExternalToolService,
@@ -56,7 +55,7 @@ describe('ExternalToolLogoService', () => {
 		service = module.get(ExternalToolLogoService);
 		httpService = module.get(HttpService);
 		logger = module.get(Logger);
-		toolFeatures = module.get(ToolFeatures);
+		configService = module.get(ConfigService);
 		externalToolService = module.get(ExternalToolService);
 	});
 
@@ -91,7 +90,8 @@ describe('ExternalToolLogoService', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
 
-				const baseUrl = toolFeatures.backEndUrl;
+				const baseUrl = 'https://backend.com';
+				configService.get.mockReturnValue(baseUrl);
 				const { id } = externalTool;
 				const expected = `${baseUrl}/v3/tools/external-tools/${id}/logo`;
 
@@ -116,7 +116,7 @@ describe('ExternalToolLogoService', () => {
 			describe('when size is exceeded', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					toolFeatures.maxExternalToolLogoSizeInBytes = 1;
+					configService.get.mockReturnValue(1);
 
 					return { externalTool };
 				};
@@ -133,7 +133,7 @@ describe('ExternalToolLogoService', () => {
 			describe('when size is not exceeded', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
+					configService.get.mockReturnValue(30000);
 
 					return { externalTool };
 				};

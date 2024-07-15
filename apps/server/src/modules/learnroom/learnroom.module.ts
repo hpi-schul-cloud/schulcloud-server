@@ -3,7 +3,6 @@ import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
-import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import {
@@ -44,7 +43,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LessonModule,
 		LoggerModule,
 		TaskModule,
-		ToolConfigModule,
 		CqrsModule,
 	],
 	providers: [

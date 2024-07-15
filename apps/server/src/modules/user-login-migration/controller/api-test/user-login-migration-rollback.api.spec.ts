@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { ServerTestModule } from '@modules/server';
+import { SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import {
 	cleanupCollections,
@@ -13,6 +13,7 @@ import {
 	UserAndAccountTestFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { Response } from 'supertest';
 
 describe('UserLoginMigrationRollbackController (API)', () => {

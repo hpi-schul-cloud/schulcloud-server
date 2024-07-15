@@ -4,19 +4,18 @@ import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionServi
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
-import { OauthConfigDto } from '@modules/system/service';
-import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { OauthConfigEntity } from '@modules/system/entity';
+import { SystemService } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
-import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { LegacySystemService } from '@src/modules/system';
+import { System } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
@@ -49,12 +48,12 @@ describe('OAuthService', () => {
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let systemService: DeepMocked<LegacySystemService>;
+	let systemService: DeepMocked<SystemService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
-	let testSystem: SystemEntity;
+	let testSystem: System;
 	let testOauthConfig: OauthConfigEntity;
 
 	const hostUri = 'https://mock.de';
@@ -86,8 +85,8 @@ describe('OAuthService', () => {
 					useValue: createMock<ProvisioningService>(),
 				},
 				{
-					provide: LegacySystemService,
-					useValue: createMock<LegacySystemService>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: OauthAdapterService,
@@ -104,7 +103,7 @@ describe('OAuthService', () => {
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		systemService = module.get(LegacySystemService);
+		systemService = module.get(SystemService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
 		schoolService = module.get(LegacySchoolService);
@@ -129,7 +128,7 @@ describe('OAuthService', () => {
 			}
 		});
 
-		testSystem = systemEntityFactory.withOauthConfig().buildWithId();
+		testSystem = systemFactory.withOauthConfig().build();
 		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});
 
@@ -200,24 +199,12 @@ describe('OAuthService', () => {
 		const setup = () => {
 			const authCode = '43534543jnj543342jn2';
 
-			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				clientId: '12345',
-				clientSecret: 'mocksecret',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-				grantType: 'authorization_code',
-				scope: 'openid uuid',
-				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
-				provider: 'mock_provider',
-				logoutEndpoint: 'mock_logoutEndpoint',
-				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
-				redirectUri: 'mock_codeRedirectUri',
+			const system: System = systemFactory.withOauthConfig().build({
+				displayName: 'External System',
 			});
-			const system: SystemDto = new SystemDto({
-				id: 'systemId',
-				type: 'oauth',
-				oauthConfig,
+
+			const ldapSystem: System = systemFactory.withLdapConfig().build({
+				displayName: 'External System',
 			});
 
 			const oauthToken: OAuthTokenDto = {
@@ -230,7 +217,7 @@ describe('OAuthService', () => {
 				authCode,
 				system,
 				oauthToken,
-				oauthConfig,
+				ldapSystem,
 			};
 		};
 
@@ -242,7 +229,7 @@ describe('OAuthService', () => {
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
 				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 
-				const result: OAuthTokenDto = await service.authenticateUser(system.id!, 'redirectUri', authCode);
+				const result: OAuthTokenDto = await service.authenticateUser(system.id, 'redirectUri', authCode);
 
 				expect(result).toEqual<OAuthTokenDto>({
 					accessToken: oauthToken.accessToken,
@@ -254,10 +241,9 @@ describe('OAuthService', () => {
 
 		describe('when system does not have oauth config', () => {
 			it('the authentication should fail', async () => {
-				const { authCode, system } = setup();
-				system.oauthConfig = undefined;
+				const { authCode, ldapSystem } = setup();
 
-				systemService.findById.mockResolvedValueOnce(system);
+				systemService.findById.mockResolvedValueOnce(ldapSystem);
 
 				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 

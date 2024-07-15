@@ -1,17 +1,18 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
+import { SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	cleanupCollections,
+	schoolEntityFactory,
 	schoolSystemOptionsEntityFactory,
 	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { schoolEntityFactory } from '@shared/testing/factory/school-entity.factory';
 import { SchoolSystemOptionsEntity } from '../../entity';
 import { ProvisioningOptionsInterface } from '../../interface';
 import { SchulConneXProvisioningOptionsResponse } from '../dto';

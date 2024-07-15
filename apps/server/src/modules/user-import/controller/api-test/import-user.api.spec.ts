@@ -1,5 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.module';
+import { SystemEntity } from '@modules/system/entity';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -19,7 +21,7 @@ import {
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
@@ -34,14 +36,12 @@ import {
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
-import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
-	let userImportFeatures: IUserImportFeatures;
 
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
@@ -66,9 +66,10 @@ describe('ImportUser Controller (API)', () => {
 	};
 
 	const setConfig = (systemId?: string) => {
-		userImportFeatures.userMigrationEnabled = true;
-		userImportFeatures.userMigrationSystemId = systemId || new ObjectId().toString();
-		userImportFeatures.useWithUserLoginMigration = false;
+		const config: ServerConfig = serverConfig();
+		config.FEATURE_USER_MIGRATION_ENABLED = true;
+		config.FEATURE_USER_MIGRATION_SYSTEM_ID = systemId || new ObjectId().toString();
+		config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
 	};
 
 	beforeAll(async () => {
@@ -82,7 +83,6 @@ describe('ImportUser Controller (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
-		userImportFeatures = app.get(UserImportFeatures);
 	});
 
 	afterAll(async () => {
@@ -115,8 +115,11 @@ describe('ImportUser Controller (API)', () => {
 						Permission.IMPORT_USER_VIEW,
 					]));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationEnabled = false;
-					userImportFeatures.userMigrationSystemId = '';
+
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_ENABLED = false;
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = '';
+					config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
 				});
 
 				afterEach(() => {
@@ -172,7 +175,8 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ account, system } = await authenticatedUser());
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system._id.toString();
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 				});
 
 				it('GET /user/import is UNAUTHORIZED', async () => {
@@ -224,8 +228,9 @@ describe('ImportUser Controller (API)', () => {
 						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system._id.toString();
-					userImportFeatures.userMigrationEnabled = false;
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_ENABLED = false;
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 				});
 
 				it('GET user/import is authorized, despite feature not enabled', async () => {
@@ -243,7 +248,8 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ school, system, account } = await authenticatedUser([Permission.IMPORT_USER_VIEW]));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system._id.toString();
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 				});
 
 				it('GET /user/import responds with importusers', async () => {
@@ -1081,7 +1087,8 @@ describe('ImportUser Controller (API)', () => {
 					it('should set in user migration mode', async () => {
 						({ account, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]));
 						testApiClient = await testApiClient.login(account);
-						userImportFeatures.userMigrationSystemId = system._id.toString();
+						const config: ServerConfig = serverConfig();
+						config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 
 						await testApiClient.post('startUserMigration').expect(HttpStatus.CREATED);
 					});

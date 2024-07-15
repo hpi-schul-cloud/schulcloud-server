@@ -434,12 +434,25 @@
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
-			"required": ["URI", "TENANT", "CLIENTID", "ADMIN_CLIENTID", "ADMIN_USER", "ADMIN_PASSWORD"],
+			"required": [
+				"INTERNAL_URI",
+				"EXTERNAL_URI",
+				"TENANT",
+				"CLIENTID",
+				"ADMIN_CLIENTID",
+				"ADMIN_USER",
+				"ADMIN_PASSWORD"
+			],
 			"properties": {
-				"URI": {
+				"INTERNAL_URI": {
 					"type": "string",
 					"default": null,
-					"description": "The ErWIn IDM base URI."
+					"description": "The ErWIn IDM base URI for Kubernetes cluster internal use."
+				},
+				"EXTERNAL_URI": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM base URI for Kubernetes cluster external use."
 				},
 				"TENANT": {
 					"type": "string",

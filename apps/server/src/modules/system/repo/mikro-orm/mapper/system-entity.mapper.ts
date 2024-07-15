@@ -1,9 +1,9 @@
-import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
-import { LdapConfig, OauthConfig, System, SystemFactory } from '../../../domain';
+import { LdapConfig, OauthConfig, OidcConfig, System } from '../../../domain';
+import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity } from '../../../entity';
 
 export class SystemEntityMapper {
 	public static mapToDo(entity: SystemEntity): System {
-		const system = SystemFactory.build({
+		const system = new System({
 			id: entity.id,
 			url: entity.url,
 			type: entity.type,
@@ -13,6 +13,7 @@ export class SystemEntityMapper {
 			alias: entity.alias,
 			oauthConfig: entity.oauthConfig ? this.mapOauthConfigEntityToDomainObject(entity.oauthConfig) : undefined,
 			ldapConfig: entity.ldapConfig ? this.mapLdapConfigEntityToDomainObject(entity.ldapConfig) : undefined,
+			oidcConfig: entity.oidcConfig ? this.mapOidcConfigEntityToDomainObject(entity.oidcConfig) : undefined,
 		});
 
 		return system;
@@ -43,6 +44,29 @@ export class SystemEntityMapper {
 			active: !!ldapConfig.active,
 			url: ldapConfig.url,
 			provider: ldapConfig.provider,
+			federalState: ldapConfig.federalState,
+			lastSyncAttempt: ldapConfig.lastSyncAttempt,
+			lastSuccessfulFullSync: ldapConfig.lastSuccessfulFullSync,
+			lastSuccessfulPartialSync: ldapConfig.lastSuccessfulPartialSync,
+			lastModifyTimestamp: ldapConfig.lastModifyTimestamp,
+			rootPath: ldapConfig.rootPath,
+			searchUser: ldapConfig.searchUser,
+			searchUserPassword: ldapConfig.searchUserPassword,
+		});
+
+		return mapped;
+	}
+
+	private static mapOidcConfigEntityToDomainObject(oidcConfig: OidcConfigEntity): OidcConfig {
+		const mapped: OidcConfig = new OidcConfig({
+			clientId: oidcConfig.clientId,
+			clientSecret: oidcConfig?.clientSecret,
+			idpHint: oidcConfig.idpHint,
+			authorizationUrl: oidcConfig.authorizationUrl,
+			tokenUrl: oidcConfig.tokenUrl,
+			userinfoUrl: oidcConfig.userinfoUrl,
+			logoutUrl: oidcConfig.logoutUrl,
+			defaultScopes: oidcConfig.defaultScopes,
 		});
 
 		return mapped;

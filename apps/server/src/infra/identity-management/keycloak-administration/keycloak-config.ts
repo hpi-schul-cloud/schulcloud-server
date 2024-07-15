@@ -4,7 +4,8 @@ import { IKeycloakSettings } from './interface/keycloak-settings.interface';
 export default class KeycloakAdministration {
 	static keycloakSettings = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
 		? ({
-				baseUrl: Configuration.get('IDENTITY_MANAGEMENT__URI') as string,
+				internalBaseUrl: Configuration.get('IDENTITY_MANAGEMENT__INTERNAL_URI') as string,
+				externalBaseUrl: Configuration.get('IDENTITY_MANAGEMENT__EXTERNAL_URI') as string,
 				realmName: Configuration.get('IDENTITY_MANAGEMENT__TENANT') as string,
 				clientId: Configuration.get('IDENTITY_MANAGEMENT__CLIENTID') as string,
 				credentials: {
