@@ -1,22 +1,23 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { UserImportConfig } from '../user-import-config';
 
 @Injectable()
 export class UserImportService {
 	constructor(
+		private readonly configService: ConfigService<UserImportConfig, true>,
 		private readonly userImportRepo: ImportUserRepo,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
-		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly logger: Logger,
 		private readonly schoolService: LegacySchoolService
 	) {}
@@ -26,7 +27,7 @@ export class UserImportService {
 	}
 
 	public async getMigrationSystem(): Promise<System> {
-		const systemId: string = this.userImportFeatures.userMigrationSystemId;
+		const systemId: string = this.configService.get('FEATURE_USER_MIGRATION_SYSTEM_ID');
 
 		const system: System = await this.systemService.findByIdOrFail(systemId);
 
@@ -34,7 +35,7 @@ export class UserImportService {
 	}
 
 	public checkFeatureEnabled(school: LegacySchoolDo): void {
-		const enabled = this.userImportFeatures.userMigrationEnabled;
+		const enabled = this.configService.get<boolean>('FEATURE_USER_MIGRATION_ENABLED');
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 
 		if (!enabled && !isLdapPilotSchool) {

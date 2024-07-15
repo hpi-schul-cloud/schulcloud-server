@@ -3,8 +3,9 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
-import { Inject, Injectable } from '@nestjs/common';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import {
 	AnyBoardNode,
@@ -34,7 +35,7 @@ export interface CopyContext {
 @Injectable()
 export class BoardNodeCopyService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
@@ -286,7 +287,7 @@ export class BoardNodeCopyService {
 		});
 
 		let status: CopyStatusEnum;
-		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
+		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') && original.contextExternalToolId) {
 			const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
 
 			if (linkedTool) {
