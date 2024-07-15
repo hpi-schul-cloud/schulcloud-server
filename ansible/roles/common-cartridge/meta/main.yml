@@ -1,5 +1,5 @@
 galaxy_info:
-  role_name: common_cartridge
+  role_name: common-cartridge
   author: Schul-Cloud Verbund
   description: Role for installing common cartridge import export micro service
   company: Schul-Cloud Verbund
