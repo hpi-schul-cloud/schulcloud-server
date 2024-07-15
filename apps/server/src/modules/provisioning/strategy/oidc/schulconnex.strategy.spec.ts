@@ -14,7 +14,6 @@ import {
 	legacySchoolDoFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -50,7 +49,6 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: TestSchulconnexStrategy;
 
-	let provisioningFeatures: IProvisioningFeatures;
 	let schulconnexSchoolProvisioningService: DeepMocked<SchulconnexSchoolProvisioningService>;
 	let schulconnexUserProvisioningService: DeepMocked<SchulconnexUserProvisioningService>;
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
@@ -60,14 +58,12 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 	let schulconnexToolProvisioningService: DeepMocked<SchulconnexToolProvisioningService>;
 
+	const config: Partial<ProvisioningConfig> = {};
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TestSchulconnexStrategy,
-				{
-					provide: ProvisioningFeatures,
-					useValue: {},
-				},
 				{
 					provide: SchulconnexSchoolProvisioningService,
 					useValue: createMock<SchulconnexSchoolProvisioningService>(),
@@ -97,14 +93,15 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					useValue: createMock<SchulconnexToolProvisioningService>(),
 				},
 				{
-					provide: ConfigService<ProvisioningConfig, true>,
-					useValue: createMock<ConfigService<ProvisioningConfig, true>>(),
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
+					},
 				},
 			],
 		}).compile();
 
 		strategy = module.get(TestSchulconnexStrategy);
-		provisioningFeatures = module.get(ProvisioningFeatures);
 		schulconnexSchoolProvisioningService = module.get(SchulconnexSchoolProvisioningService);
 		schulconnexUserProvisioningService = module.get(SchulconnexUserProvisioningService);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
@@ -116,10 +113,9 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	});
 
 	beforeEach(() => {
-		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-			schulconnexGroupProvisioningEnabled: false,
-			schulconnexCourseSyncEnabled: false,
-		});
+		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = false;
+		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -127,7 +123,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('apply is called', () => {
@@ -246,7 +242,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -306,7 +302,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when group data is provided, but the feature is disabled', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = false;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -350,7 +346,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when group data is not provided', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -391,8 +387,8 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when an existing group gets provisioned', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -441,8 +437,8 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when a new group is provisioned', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -486,8 +482,8 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when a user was removed from a group', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
