@@ -275,61 +275,32 @@ describe('TypeGuard', () => {
 
 	describe('checkNotNullOrUndefined', () => {
 		describe('when value is null', () => {
-			const setup = () => {
-				const value = null;
-
-				return { value };
-			};
-
 			it('should throw error if it is passed', () => {
-				const value: string | null = null;
-				expect(() => TypeGuard.checkNotNullOrUndefined(value, new Error('Test'))).toThrow('Test');
+				expect(() => TypeGuard.checkNotNullOrUndefined(null, new Error('Test'))).toThrow('Test');
 			});
 
 			it('should throw default error if not error passed', () => {
-				const { value } = setup();
-
-				expect(() => TypeGuard.checkNotNullOrUndefined(value)).toThrow('Type is null.');
+				expect(() => TypeGuard.checkNotNullOrUndefined(null)).toThrow('Type is null.');
 			});
 		});
 
 		describe('when value is undefined', () => {
-			const setup = () => {
-				const value = undefined;
-
-				return { value };
-			};
-
 			it('should throw error if it is passed', () => {
-				const { value } = setup();
-
-				expect(() => TypeGuard.checkNotNullOrUndefined(value, new Error('Test'))).toThrow('Test');
+				expect(() => TypeGuard.checkNotNullOrUndefined(undefined, new Error('Test'))).toThrow('Test');
 			});
 
 			it('should throw default error if not error passed', () => {
-				const { value } = setup();
-
-				expect(() => TypeGuard.checkNotNullOrUndefined(value)).toThrow('Type is undefined.');
+				expect(() => TypeGuard.checkNotNullOrUndefined(undefined)).toThrow('Type is undefined.');
 			});
 		});
 
 		describe('when value is defined', () => {
-			const setup = () => {
-				const value = '';
-
-				return { value };
-			};
-
 			it('should return value if error is passed', () => {
-				const { value } = setup();
-
-				expect(TypeGuard.checkNotNullOrUndefined(value, new Error('Test'))).toBe('');
+				expect(TypeGuard.checkNotNullOrUndefined('', new Error('Test'))).toBe('');
 			});
 
 			it('should return value', () => {
-				const { value } = setup();
-
-				expect(TypeGuard.checkNotNullOrUndefined(value)).toBe('');
+				expect(TypeGuard.checkNotNullOrUndefined('')).toBe('');
 			});
 		});
 	});
