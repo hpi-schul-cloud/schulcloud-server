@@ -1,0 +1,24 @@
+#jinja2: trim_blocks: "True", lstrip_blocks: "True"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ NAMESPACE }}-common-ingress
+  namespace: {{ NAMESPACE }}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABLED|default("false") }}"
+{% if CLUSTER_ISSUER is defined %}
+    cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
+{% endif %}
+spec:
+  ingressClassName: {{ INGRESS_CLASS }}
+  rules:
+  - host: {{ DOMAIN }}
+    http:
+      paths:
+      - path: /temp/
+        pathType: Prefix
+        backend:
+          service:
+            name: common-cartridge-svc
+            port:
+              number: 80

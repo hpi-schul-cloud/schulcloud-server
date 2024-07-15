@@ -8,20 +8,13 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from '@src/apps/helpers/prometheus-metrics';
-import { DB_URL } from '@src/config';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { RabbitMqURI } from '@src/infra/rabbitmq';
 import { CommonCartridgeApiModule } from '@src/modules/common-cartridge/common-cartridge-api.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 async function bootstrap() {
 	sourceMapInstall();
-
-	console.log('#########################################');
-	console.log(`RABBITMQ_URI: ${RabbitMqURI}`);
-	console.log(`MONGO_URI: ${DB_URL}`);
-	console.log('#########################################');
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);

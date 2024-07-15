@@ -1,0 +1,37 @@
+
+- name: Configmap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: configmap.yml.j2
+  when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+
+- name: 1Password
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: onepassword.yml.j2
+  when: 
+      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+
+- name: Deployment
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: deployment.yml.j2
+  when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+
+- name: Service
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: svc.yml.j2
+  when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+
+- name: Ingress
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: ingress.yml.j2
+  when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
