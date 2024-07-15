@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: common-cartridge-svc
-  namespace: { { NAMESPACE } }
+  namespace: {{ NAMESPACE }}
   labels:
     app: common-cartridge
 spec:
