@@ -9,6 +9,7 @@ import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -30,9 +31,9 @@ import {
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
 import { UserImportService } from '../service';
+import { UserImportConfig } from '../user-import-config';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -56,7 +57,12 @@ describe('[ImportUserModule]', () => {
 		let userMigrationService: DeepMocked<UserMigrationService>;
 		let logger: DeepMocked<Logger>;
 
-		let userImportFeatures: IUserImportFeatures;
+		const config: UserImportConfig = {
+			FEATURE_USER_MIGRATION_ENABLED: true,
+			FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
+			FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: false,
+			IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 80000,
+		};
 
 		beforeAll(async () => {
 			await setupEntities();
@@ -64,6 +70,12 @@ describe('[ImportUserModule]', () => {
 			module = await Test.createTestingModule({
 				providers: [
 					UserImportUc,
+					{
+						provide: ConfigService,
+						useValue: {
+							get: jest.fn().mockImplementation((key: keyof UserImportConfig) => config[key]),
+						},
+					},
 					{
 						provide: AccountService,
 						useValue: createMock<AccountService>(),
@@ -101,10 +113,6 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<UserLoginMigrationService>(),
 					},
 					{
-						provide: UserImportFeatures,
-						useValue: {},
-					},
-					{
 						provide: UserMigrationService,
 						useValue: createMock<UserMigrationService>(),
 					},
@@ -124,18 +132,15 @@ describe('[ImportUserModule]', () => {
 			userService = module.get(UserService);
 			authorizationService = module.get(AuthorizationService);
 			userImportService = module.get(UserImportService);
-			userImportFeatures = module.get(UserImportFeatures);
 			userLoginMigrationService = module.get(UserLoginMigrationService);
 			userMigrationService = module.get(UserMigrationService);
 			logger = module.get(Logger);
 		});
 
 		beforeEach(() => {
-			Object.assign<IUserImportFeatures, IUserImportFeatures>(userImportFeatures, {
-				userMigrationEnabled: true,
-				userMigrationSystemId: new ObjectId().toHexString(),
-				useWithUserLoginMigration: false,
-			});
+			config.FEATURE_USER_MIGRATION_ENABLED = true;
+			config.FEATURE_USER_MIGRATION_SYSTEM_ID = new ObjectId().toHexString();
+			config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
 		});
 
 		afterAll(async () => {
@@ -658,7 +663,7 @@ describe('[ImportUserModule]', () => {
 						userService.findByExternalId.mockResolvedValueOnce(null);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 
 						return {
 							user,
@@ -726,7 +731,7 @@ describe('[ImportUserModule]', () => {
 							userDoFactory.buildWithId({ id: user.id, externalId: user.externalId })
 						);
 						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 
 						return {
 							user,
@@ -820,7 +825,7 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				systemRepoSpy = systemService.findById.mockReturnValueOnce(Promise.resolve(systemDo));
-				userImportFeatures.userMigrationSystemId = system.id;
+				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
 			});
 
@@ -932,7 +937,7 @@ describe('[ImportUserModule]', () => {
 							targetSystemId,
 						});
 
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
@@ -982,7 +987,7 @@ describe('[ImportUserModule]', () => {
 							closedAt: new Date(),
 						});
 
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
@@ -1012,7 +1017,7 @@ describe('[ImportUserModule]', () => {
 							systems: [targetSystemId],
 						});
 
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
@@ -1045,7 +1050,7 @@ describe('[ImportUserModule]', () => {
 							targetSystemId,
 						});
 
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
@@ -1142,7 +1147,7 @@ describe('[ImportUserModule]', () => {
 
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						userImportFeatures.useWithUserLoginMigration = true;
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 
 						return {
 							user,
@@ -1171,7 +1176,7 @@ describe('[ImportUserModule]', () => {
 
 					userRepo.findById.mockResolvedValueOnce(user);
 					schoolService.getSchoolById.mockResolvedValueOnce(school);
-					userImportFeatures.useWithUserLoginMigration = true;
+					config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 
 					return {
 						user,

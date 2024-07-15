@@ -3,7 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/entity';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -35,8 +36,8 @@ describe(BoardNodeCopyService.name, () => {
 			providers: [
 				BoardNodeCopyService,
 				{
-					provide: ToolFeatures,
-					useValue: createMock<IToolFeatures>(),
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: ContextExternalToolService,

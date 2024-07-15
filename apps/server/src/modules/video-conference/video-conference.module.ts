@@ -9,12 +9,10 @@ import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { LoggerModule } from '@src/core/logger';
 import { LearnroomModule } from '../learnroom';
-import { BBBService, BbbSettings } from './bbb';
+import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
-import { VideoConferenceSettings } from './interface';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
-import VideoConferenceConfiguration from './video-conference-config';
 
 @Module({
 	imports: [
@@ -29,14 +27,6 @@ import VideoConferenceConfiguration from './video-conference-config';
 		UserModule,
 	],
 	providers: [
-		{
-			provide: VideoConferenceSettings,
-			useValue: VideoConferenceConfiguration.videoConference,
-		},
-		{
-			provide: BbbSettings,
-			useValue: VideoConferenceConfiguration.bbb,
-		},
 		BBBService,
 		VideoConferenceRepo,
 		// TODO: N21-1010 clean up video conferences - remove repos

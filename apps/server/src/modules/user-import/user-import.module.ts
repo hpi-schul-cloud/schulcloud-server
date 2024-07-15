@@ -13,7 +13,6 @@ import { LoggerModule } from '@src/core/logger';
 import { ImportUserController } from './controller/import-user.controller';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
 import { UserImportFetchUc, UserImportUc } from './uc';
-import { UserImportConfigModule } from './user-import-config.module';
 
 @Module({
 	imports: [
@@ -21,7 +20,6 @@ import { UserImportConfigModule } from './user-import-config.module';
 		AccountModule,
 		LegacySchoolModule,
 		AuthorizationModule,
-		UserImportConfigModule,
 		HttpModule,
 		UserModule,
 		OauthModule,

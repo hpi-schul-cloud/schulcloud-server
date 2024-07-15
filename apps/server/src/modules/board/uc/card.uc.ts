@@ -3,7 +3,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 
-import { AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
+import { AnyBoardNode, AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 
 @Injectable()
@@ -29,19 +29,14 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const context: AuthorizationContext = { action: Action.read, requiredPermissions: [] };
-		const promises = cards.map((card) =>
-			this.boardNodeAuthorizableService.getBoardAuthorizable(card).then((boardNodeAuthorizable) => {
-				return { boardNodeAuthorizable, boardNode: card };
-			})
-		);
-		const result = await Promise.all(promises);
+		const boardAuthorizables = await this.boardNodeAuthorizableService.getBoardAuthorizables(cards);
 
-		const allowedCards = result.reduce((allowedNodes: Card[], { boardNodeAuthorizable, boardNode }) => {
+		const allowedCards = boardAuthorizables.reduce((allowedNodes: AnyBoardNode[], boardNodeAuthorizable) => {
 			if (this.authorizationService.hasPermission(user, boardNodeAuthorizable, context)) {
-				allowedNodes.push(boardNode);
+				allowedNodes.push(boardNodeAuthorizable.boardNode);
 			}
 			return allowedNodes;
-		}, []);
+		}, []) as Card[];
 
 		return allowedCards;
 	}

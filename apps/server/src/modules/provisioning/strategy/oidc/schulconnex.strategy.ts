@@ -1,8 +1,7 @@
 import { Group, GroupService } from '@modules/group';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
@@ -18,7 +17,6 @@ import {
 @Injectable()
 export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrategy {
 	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
 		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
@@ -46,7 +44,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			school?.id
 		);
 
-		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
+		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
 			await this.provisionGroups(data, school);
 		}
 
@@ -87,7 +85,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 						data.system.systemId
 					);
 
-					if (this.provisioningFeatures.schulconnexCourseSyncEnabled && provisionedGroup) {
+					if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
 						await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(
 							provisionedGroup,
 							existingGroup ?? undefined
@@ -108,7 +106,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 				data.system.systemId
 			);
 
-		if (this.provisioningFeatures.schulconnexCourseSyncEnabled) {
+		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
 			const courseSyncPromises: Promise<unknown>[] = removedFromGroups.map(
 				async (removedFromGroup: Group): Promise<void> => {
 					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);

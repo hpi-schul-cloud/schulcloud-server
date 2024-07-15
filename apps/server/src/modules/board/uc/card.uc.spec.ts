@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -73,14 +72,26 @@ describe(CardUc.name, () => {
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
-				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+				boardNodeAuthorizableService.getBoardAuthorizables.mockResolvedValue([
 					new BoardNodeAuthorizable({
 						users: [],
-						id: new ObjectId().toHexString(),
+						id: cards[0].id,
 						boardNode: cards[0],
 						rootNode: columnBoardFactory.build(),
-					})
-				);
+					}),
+					new BoardNodeAuthorizable({
+						users: [],
+						id: cards[1].id,
+						boardNode: cards[1],
+						rootNode: columnBoardFactory.build(),
+					}),
+					new BoardNodeAuthorizable({
+						users: [],
+						id: cards[2].id,
+						boardNode: cards[2],
+						rootNode: columnBoardFactory.build(),
+					}),
+				]);
 				authorizationService.hasPermission.mockReturnValue(true);
 
 				return { user, cards, cardIds };
@@ -109,7 +120,7 @@ describe(CardUc.name, () => {
 
 				await uc.findCards(user.id, cardIds);
 
-				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledTimes(3);
+				expect(boardNodeAuthorizableService.getBoardAuthorizables).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service to check the user permission', async () => {

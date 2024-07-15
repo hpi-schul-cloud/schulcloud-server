@@ -76,6 +76,12 @@ export class BoardNodeService {
 		return boardNode;
 	}
 
+	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+		const boardNode = this.boardNodeRepo.findByIds(ids, depth);
+
+		return boardNode;
+	}
+
 	async findByClassAndId<S, T extends AnyBoardNode>(
 		Constructor: { new (props: S): T },
 		id: EntityId,

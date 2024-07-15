@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { ErrorUtils } from '@src/core/error/utils';
@@ -8,7 +9,8 @@ import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
+import { VideoConferenceConfig } from '../video-conference-config';
+import { BbbConfig } from './bbb-config';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -105,22 +107,19 @@ class BBBServiceTest extends BBBService {
 	}
 }
 
-describe('BBB Service', () => {
+describe(BBBService.name, () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
+	let configService: DeepMocked<ConfigService<BbbConfig & VideoConferenceConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BBBServiceTest,
 				{
-					provide: BbbSettings,
-					useValue: createMock<IBbbSettings>({
-						host: 'https://bbb.de',
-						salt: 'salt12345',
-						presentationUrl: '',
-					}),
+					provide: ConfigService,
+					useValue: createMock<ConfigService<BbbConfig, true>>(),
 				},
 				{
 					provide: HttpService,
@@ -130,10 +129,15 @@ describe('BBB Service', () => {
 		}).compile();
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
+		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	beforeEach(() => {
+		configService.get.mockReturnValue('https://mocked');
 	});
 
 	afterEach(() => {
