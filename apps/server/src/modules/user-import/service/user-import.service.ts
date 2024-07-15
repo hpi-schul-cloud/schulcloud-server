@@ -27,7 +27,7 @@ export class UserImportService {
 	}
 
 	public async getMigrationSystem(): Promise<System> {
-		const systemId: string = this.userImportFeatures.userMigrationSystemId;
+		const systemId: string = this.configService.get('FEATURE_USER_MIGRATION_SYSTEM_ID');
 
 		const system: System = await this.systemService.findByIdOrFail(systemId);
 

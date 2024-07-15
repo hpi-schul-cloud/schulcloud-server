@@ -21,7 +21,7 @@ export class BBBService {
 	) {}
 
 	protected get baseUrl(): string {
-		return this.configService.get('HOST');
+		return this.configService.get('VIDEOCONFERENCE_HOST');
 	}
 
 	protected get salt(): string {
