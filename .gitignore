@@ -85,3 +85,5 @@ build
 /coverage
 /.nyc_output
 /.idea/
+/apps/server/src/modules/board/loadtest/**/*.html
+/apps/server/src/modules/board/loadtest/artilleryreport.json

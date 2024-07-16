@@ -1,0 +1,57 @@
+config:
+  target: '{{ target }}'
+  engines:
+    socketio:
+      transport: ['websocket', 'polling']
+      path: '/board-collaboration'
+    socketio-v3:
+      path: '/board-collaboration'
+      timeout: 1000000
+      extraHeaders:
+        Cookie: 'jwt={{ token }}'
+
+  phases:
+    - duration: 1
+      arrivalRate: 3
+
+scenarios:
+  - name: create card
+    engine: socketio-v3
+    socketio-v3:
+      extraHeaders:
+        Cookie: 'jwt={{ token }}'
+    flow:
+      - log: '{{ target }}'
+      - think: 1
+
+      - emit:
+          channel: 'create-column-request'
+          data:
+            boardId: '{{ board_id }}'
+        response:
+          on: 'create-column-success'
+          capture:
+            - json: $.newColumn.id
+              as: columnId
+
+      - think: 1
+
+      - emit:
+          channel: 'create-card-request'
+          data:
+            columnId: '{{ columnId}}'
+        response:
+          on: 'create-card-success'
+          capture:
+            - json: $.newCard.id
+              as: cardId
+
+      - think: 1
+
+      - emit:
+          channel: 'update-card-title-request'
+          data:
+            cardId: '{{ cardId }}'
+            newTitle: 'One {{ cardId}}'
+
+      - think: 2
