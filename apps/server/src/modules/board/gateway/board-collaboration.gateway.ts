@@ -61,6 +61,10 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	trackExecutionTime(methodName: string, executionTimeMs: number) {
 		if (this.metricsService) {
 			this.metricsService.setExecutionTime(methodName, executionTimeMs);
+			this.metricsService.incrementActionCount(methodName);
+			this.metricsService.incrementActionGauge(methodName);
+			this.metricsService.incrementActionCount('all');
+			this.metricsService.incrementActionGauge('all');
 		}
 	}
 
@@ -128,6 +132,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('update-card-height-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-height' });
@@ -142,6 +147,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-card' });
@@ -178,6 +184,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('create-column-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-column' });
@@ -219,6 +226,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async moveCard(socket: Socket, data: MoveCardMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
@@ -233,6 +241,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move-column-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-column' });
@@ -267,6 +276,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-visibility' });
@@ -281,6 +291,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-column-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-column' });
@@ -312,6 +323,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('create-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-element' });
@@ -346,6 +358,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-element' });
@@ -361,6 +374,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-element' });
