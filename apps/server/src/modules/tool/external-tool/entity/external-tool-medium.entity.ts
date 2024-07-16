@@ -8,8 +8,12 @@ export class ExternalToolMediumEntity {
 	@Property({ nullable: true })
 	publisher?: string;
 
+	@Property({ nullable: true })
+	mediaSourceId?: string;
+
 	constructor(props: ExternalToolMediumEntity) {
 		this.mediumId = props.mediumId;
 		this.publisher = props.publisher;
+		this.mediaSourceId = props.mediaSourceId;
 	}
 }

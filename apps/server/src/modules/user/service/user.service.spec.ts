@@ -1,35 +1,35 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService, Account } from '@modules/account';
+import { Account, AccountService } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
-import { RoleService } from '@modules/role';
-import { NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { EntityId } from '@shared/domain/types';
-import { Role, User } from '@shared/domain/entity';
-import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
-import { RegistrationPinService } from '@modules/registration-pin';
 import {
+	DataDeletedEvent,
+	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
-	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { RegistrationPinService } from '@modules/registration-pin';
+import { RoleService } from '@modules/role';
+import { NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Role, User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { CalendarService } from '@src/infra/calendar';
-import { UserService } from './user.service';
-import { UserQuery } from './user-query.type';
 import { UserDto } from '../uc/dto/user.dto';
+import { UserQuery } from './user-query.type';
+import { UserService } from './user.service';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -45,6 +45,8 @@ describe('UserService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
@@ -90,6 +92,10 @@ describe('UserService', () => {
 					provide: CalendarService,
 					useValue: createMock<CalendarService>(),
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -102,8 +108,6 @@ describe('UserService', () => {
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 		calendarService = module.get(CalendarService);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -939,6 +943,121 @@ describe('UserService', () => {
 				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
 
 				expect(result).toEqual([]);
+			});
+		});
+	});
+
+	describe('isEmailUniqueForExternal', () => {
+		describe('when email does not exist', () => {
+			const setup = () => {
+				const email = 'email';
+
+				userDORepo.findByEmail.mockResolvedValue([]);
+
+				return {
+					email,
+				};
+			};
+
+			it('should return true', async () => {
+				const { email } = setup();
+
+				const result: boolean = await service.isEmailUniqueForExternal(email, undefined);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when an existing user is found', () => {
+			describe('when existing user is the external user', () => {
+				const setup = () => {
+					const email = 'email';
+					const externalId = 'externalId';
+					const existingUser: UserDO = userDoFactory.build({ email, externalId });
+
+					userDORepo.findByEmail.mockResolvedValue([existingUser]);
+
+					return {
+						email,
+						externalId,
+					};
+				};
+
+				it('should return true', async () => {
+					const { email, externalId } = setup();
+
+					const result: boolean = await service.isEmailUniqueForExternal(email, externalId);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when existing user is not the external user', () => {
+				const setup = () => {
+					const email = 'email';
+					const externalId = 'externalId';
+					const otherUserWithSameEmail: UserDO = userDoFactory.build({ email });
+
+					userDORepo.findByEmail.mockResolvedValue([otherUserWithSameEmail]);
+
+					return {
+						email,
+						externalId,
+					};
+				};
+
+				it('should return false', async () => {
+					const { email, externalId } = setup();
+
+					const result: boolean = await service.isEmailUniqueForExternal(email, externalId);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when existing user is not the external user and external user is not already provisioned.', () => {
+				const setup = () => {
+					const email = 'email';
+					const otherUserWithSameEmail: UserDO = userDoFactory.build({ email });
+
+					userDORepo.findByEmail.mockResolvedValue([otherUserWithSameEmail]);
+
+					return {
+						email,
+					};
+				};
+
+				it('should return false', async () => {
+					const { email } = setup();
+
+					const result: boolean = await service.isEmailUniqueForExternal(email, undefined);
+
+					expect(result).toBe(false);
+				});
+			});
+		});
+
+		describe('when multiple users are found', () => {
+			const setup = () => {
+				const email = 'email';
+				const externalId = 'externalId';
+				const existingUser: UserDO = userDoFactory.build({ email, externalId });
+				const otherUserWithSameEmail: UserDO = userDoFactory.build({ email });
+
+				userDORepo.findByEmail.mockResolvedValue([existingUser, otherUserWithSameEmail]);
+
+				return {
+					email,
+					externalId,
+				};
+			};
+
+			it('should return false', async () => {
+				const { email, externalId } = setup();
+
+				const result: boolean = await service.isEmailUniqueForExternal(email, externalId);
+
+				expect(result).toBe(false);
 			});
 		});
 	});

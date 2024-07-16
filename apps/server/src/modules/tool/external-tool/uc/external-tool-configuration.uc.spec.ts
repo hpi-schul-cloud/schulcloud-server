@@ -7,23 +7,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
+import { customParameterFactory, externalToolFactory } from '../testing';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 
 describe('ExternalToolConfigurationUc', () => {
@@ -169,10 +165,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
-					'/v3/tools/external-tools/{id}/logo',
-					externalToolsPage.data[1]
-				);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(externalToolsPage.data[1]);
 			});
 
 			it('should call filterForAvailableTools with ids of used tools', async () => {
@@ -324,7 +317,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', usedTool);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(usedTool);
 			});
 
 			it('should filter for restricted contexts', async () => {
@@ -444,7 +437,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const school: School = schoolFactory.build();
 
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(
 					{
 						toolId: externalTool.id,
 						schoolId: school.id,
@@ -489,10 +482,7 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has insufficient permission to read an external tool', () => {
 			const setup = () => {
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
-					undefined,
-					schoolExternalToolId
-				);
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(undefined, schoolExternalToolId);
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.checkPermission.mockImplementation(() => {
@@ -520,7 +510,7 @@ describe('ExternalToolConfigurationUc', () => {
 				});
 
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(
 					{
 						toolId: externalTool.id,
 						schoolId: 'schoolId',
@@ -552,7 +542,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 				});
 
@@ -637,7 +627,7 @@ describe('ExternalToolConfigurationUc', () => {
 					isHidden: true,
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 				});
 
@@ -714,7 +704,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				const result = await uc.getToolContextTypes(userId);
 
-				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD]);
 			});
 		});
 

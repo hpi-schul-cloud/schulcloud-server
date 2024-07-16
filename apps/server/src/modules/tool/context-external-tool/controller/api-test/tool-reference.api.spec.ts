@@ -6,22 +6,19 @@ import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
-	contextExternalToolConfigurationStatusResponseFactory,
 	courseFactory,
-	customParameterFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
-import { externalToolEntityFactory } from '../../../external-tool/testing';
+import { customParameterFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
-import { contextExternalToolEntityFactory } from '../../testing';
+import { contextExternalToolConfigurationStatusResponseFactory, contextExternalToolEntityFactory } from '../../testing';
 import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
 
 describe('ToolReferenceController (API)', () => {
@@ -133,14 +130,12 @@ describe('ToolReferenceController (API)', () => {
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
-					toolVersion: externalToolEntity.version,
 				});
 				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 					displayName: 'This is a test tool',
-					toolVersion: schoolExternalToolEntity.toolVersion,
 				});
 
 				await em.persistAndFlush([
@@ -174,6 +169,7 @@ describe('ToolReferenceController (API)', () => {
 					data: [
 						{
 							contextToolId: contextExternalToolEntity.id,
+							description: externalToolEntity.description,
 							displayName: contextExternalToolEntity.displayName as string,
 							status: contextExternalToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
@@ -267,14 +263,12 @@ describe('ToolReferenceController (API)', () => {
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
-					toolVersion: externalToolEntity.version,
 				});
 				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 					displayName: 'This is a test tool',
-					toolVersion: schoolExternalToolEntity.toolVersion,
 				});
 
 				await em.persistAndFlush([
@@ -306,6 +300,7 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
+					description: externalToolEntity.description,
 					displayName: contextExternalToolEntity.displayName as string,
 					status: contextExternalToolConfigurationStatusResponseFactory.build({
 						isOutdatedOnScopeSchool: false,

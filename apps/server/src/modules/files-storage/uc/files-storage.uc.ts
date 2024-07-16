@@ -1,9 +1,11 @@
 import { EntityManager, RequestContext } from '@mikro-orm/core';
-import { AuthorizationContext } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
+import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
@@ -22,14 +24,13 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { GetFileResponse } from '../interface';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../mapper';
-import { FilesStorageService } from '../service/files-storage.service';
-import { PreviewService } from '../service/preview.service';
-import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
+import { FilesStorageService, PreviewService } from '../service';
 
 @Injectable()
 export class FilesStorageUC {
@@ -40,7 +41,8 @@ export class FilesStorageUC {
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService,
 		// maybe better to pass the request context from controller and avoid em at this place
-		private readonly em: EntityManager
+		private readonly em: EntityManager,
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -50,8 +52,9 @@ export class FilesStorageUC {
 		parentType: FileRecordParentType,
 		parentId: EntityId,
 		context: AuthorizationContext
-	) {
-		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+	): Promise<void> {
+		const allowedType: AuthorizableReferenceType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+
 		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 
@@ -67,9 +70,35 @@ export class FilesStorageUC {
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
+		await this.checkStorageLocation(userId, params.storageLocation, params.storageLocationId);
+
 		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
 		return fileRecord;
+	}
+
+	private async checkStorageLocation(
+		userId: EntityId,
+		storageLocation: StorageLocation,
+		storageLocationId: EntityId
+	): Promise<void> {
+		if (storageLocation === StorageLocation.INSTANCE) {
+			await this.authorizationReferenceService.checkPermissionByReferences(
+				userId,
+				AuthorizableReferenceType.Instance,
+				storageLocationId,
+				AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
+			);
+		}
+
+		if (storageLocation === StorageLocation.SCHOOL) {
+			await this.authorizationReferenceService.checkPermissionByReferences(
+				userId,
+				AuthorizableReferenceType.School,
+				storageLocationId,
+				AuthorizationContextBuilder.write([])
+			);
+		}
 	}
 
 	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
@@ -105,6 +134,8 @@ export class FilesStorageUC {
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
+		await this.checkStorageLocation(userId, params.storageLocation, params.storageLocationId);
+
 		const response = await this.getResponse(params);
 
 		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
@@ -129,7 +160,7 @@ export class FilesStorageUC {
 
 			/* istanbul ignore next */
 			response.data.on('error', (error) => {
-				throw error;
+				this.domainErrorHandler.exec(error);
 			});
 
 			return response;

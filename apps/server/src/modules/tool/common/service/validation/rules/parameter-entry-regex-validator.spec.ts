@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '../../../../external-tool/testing';
 import { CustomParameter, CustomParameterEntry, ToolParameterValueRegexLoggableException } from '../../../domain';
 import { ParameterEntryRegexValidator } from './parameter-entry-regex-validator';
 
@@ -25,7 +25,7 @@ describe(ParameterEntryRegexValidator.name, () => {
 			it('should return an empty array', () => {
 				const { entry, declaration } = setup();
 
-				const result: ValidationError[] = new ParameterEntryRegexValidator().validate(entry, declaration);
+				const result: ValidationError[] = new ParameterEntryRegexValidator().validate(entry, declaration, undefined);
 
 				expect(result).toHaveLength(0);
 			});
@@ -51,7 +51,7 @@ describe(ParameterEntryRegexValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entry, declaration } = setup();
 
-				const result: ValidationError[] = new ParameterEntryRegexValidator().validate(entry, declaration);
+				const result: ValidationError[] = new ParameterEntryRegexValidator().validate(entry, declaration, undefined);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterValueRegexLoggableException);
 			});

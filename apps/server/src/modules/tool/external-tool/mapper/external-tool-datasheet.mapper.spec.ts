@@ -3,26 +3,26 @@ import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { UserDO } from '@shared/domain/domainobject';
-import {
-	customParameterFactory,
-	externalToolDatasheetTemplateDataFactory,
-	externalToolFactory,
-	externalToolParameterDatasheetTemplateDataFactory,
-	schoolExternalToolFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { userDoFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
 } from '../domain';
+import {
+	customParameterFactory,
+	externalToolDatasheetTemplateDataFactory,
+	externalToolFactory,
+	externalToolParameterDatasheetTemplateDataFactory,
+} from '../testing';
 import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
 
 describe(ExternalToolDatasheetMapper.name, () => {
 	beforeEach(() => {
-		Configuration.set('SC_THEME', 'default');
+		Configuration.set('SC_TITLE', 'dBildungscloud');
 	});
 
 	afterEach(() => {
@@ -37,7 +37,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
 			});
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-				status: { isDeactivated: true },
+				isDeactivated: true,
 			});
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.withOptionalProperties()
@@ -68,7 +68,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const school: School = schoolFactory.build();
 			const externalTool = externalToolFactory.build();
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-				status: { isDeactivated: true },
+				isDeactivated: true,
 			});
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'dBildungscloud',
@@ -132,141 +132,6 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			return { user, externalTool, schoolExternalTool, expectDatasheet };
 		};
 		it('should map lti11 parameters', () => {
-			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
-
-			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
-					externalTool,
-					user.firstName,
-					user.lastName,
-					schoolExternalTool
-				);
-
-			expect(mappedData).toEqual(expectDatasheet);
-		});
-	});
-
-	describe('when instance is unknown', () => {
-		const setup = () => {
-			Configuration.set('SC_THEME', 'mockInstance');
-			const user: UserDO = userDoFactory.build();
-			const externalTool = externalToolFactory.build();
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
-				instance: 'unbekannt',
-			});
-
-			return { user, externalTool, schoolExternalTool, expectDatasheet };
-		};
-		it('should map correct instance', () => {
-			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
-
-			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
-					externalTool,
-					user.firstName,
-					user.lastName,
-					schoolExternalTool
-				);
-
-			expect(mappedData).toEqual(expectDatasheet);
-		});
-	});
-
-	describe('when instance is brb', () => {
-		const setup = () => {
-			Configuration.set('SC_THEME', 'brb');
-			const user: UserDO = userDoFactory.build();
-			const externalTool = externalToolFactory.build();
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
-				instance: 'Schul-Cloud Brandenburg',
-			});
-
-			return { user, externalTool, schoolExternalTool, expectDatasheet };
-		};
-		it('should map correct instance', () => {
-			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
-
-			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
-					externalTool,
-					user.firstName,
-					user.lastName,
-					schoolExternalTool
-				);
-
-			expect(mappedData).toEqual(expectDatasheet);
-		});
-	});
-
-	describe('when instance is thr', () => {
-		const setup = () => {
-			Configuration.set('SC_THEME', 'thr');
-			const user: UserDO = userDoFactory.build();
-			const externalTool = externalToolFactory.build();
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
-				instance: 'Thüringer Schulcloud',
-			});
-
-			return { user, externalTool, schoolExternalTool, expectDatasheet };
-		};
-		it('should map correct instance', () => {
-			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
-
-			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
-					externalTool,
-					user.firstName,
-					user.lastName,
-					schoolExternalTool
-				);
-
-			expect(mappedData).toEqual(expectDatasheet);
-		});
-	});
-
-	describe('when instance is dbc', () => {
-		const setup = () => {
-			Configuration.set('SC_THEME', 'default');
-			const user: UserDO = userDoFactory.build();
-			const externalTool = externalToolFactory.build();
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
-				instance: 'dBildungscloud',
-			});
-
-			return { user, externalTool, schoolExternalTool, expectDatasheet };
-		};
-		it('should map correct instance', () => {
-			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
-
-			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
-					externalTool,
-					user.firstName,
-					user.lastName,
-					schoolExternalTool
-				);
-
-			expect(mappedData).toEqual(expectDatasheet);
-		});
-	});
-
-	describe('when instance is nbc', () => {
-		const setup = () => {
-			Configuration.set('SC_THEME', 'n21');
-			const user: UserDO = userDoFactory.build();
-			const externalTool = externalToolFactory.build();
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
-				instance: 'Niedersächsische Bildungscloud',
-			});
-
-			return { user, externalTool, schoolExternalTool, expectDatasheet };
-		};
-		it('should map correct instance', () => {
 			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =

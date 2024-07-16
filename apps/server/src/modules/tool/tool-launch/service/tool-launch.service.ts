@@ -2,13 +2,13 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolConfigurationStatusService } from '../../context-external-tool/service/tool-configuration-status.service';
+import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service';
+import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ToolStatusOutdatedLoggableException } from '../error';
+import { ToolStatusNotLaunchableLoggableException } from '../error';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import {
@@ -28,7 +28,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly toolVersionService: ToolConfigurationStatusService
+		private readonly toolConfigurationStatusService: ToolConfigurationStatusService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -36,7 +36,7 @@ export class ToolLaunchService {
 		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
-	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
+	public generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
 		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
 		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
 
@@ -49,12 +49,15 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<ToolLaunchData> {
+	public async getLaunchData(
+		userId: EntityId,
+		contextExternalTool: ContextExternalToolLaunchable
+	): Promise<ToolLaunchData> {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		await this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
@@ -71,7 +74,7 @@ export class ToolLaunchService {
 		return launchData;
 	}
 
-	private async loadToolHierarchy(
+	public async loadToolHierarchy(
 		schoolExternalToolId: string
 	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
@@ -84,25 +87,36 @@ export class ToolLaunchService {
 		};
 	}
 
-	private isToolStatusLaunchableOrThrow(
+	private async isToolStatusLaunchableOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
-	): void {
-		const status: ContextExternalToolConfigurationStatus = this.toolVersionService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+		contextExternalTool: ContextExternalToolLaunchable
+	): Promise<void> {
+		const status: ContextExternalToolConfigurationStatus =
+			await this.toolConfigurationStatusService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool,
+				userId
+			);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
-			throw new ToolStatusOutdatedLoggableException(
+		if (
+			status.isOutdatedOnScopeSchool ||
+			status.isOutdatedOnScopeContext ||
+			status.isDeactivated ||
+			status.isNotLicensed ||
+			status.isIncompleteOnScopeContext
+		) {
+			throw new ToolStatusNotLaunchableLoggableException(
 				userId,
 				contextExternalTool.id ?? '',
 				status.isOutdatedOnScopeSchool,
 				status.isOutdatedOnScopeContext,
-				status.isDeactivated
+				status.isIncompleteOnScopeContext,
+				status.isIncompleteOperationalOnScopeContext,
+				status.isDeactivated,
+				status.isNotLicensed
 			);
 		}
 	}

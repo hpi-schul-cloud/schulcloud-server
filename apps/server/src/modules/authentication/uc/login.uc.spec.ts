@@ -63,6 +63,14 @@ describe('LoginUc', () => {
 				});
 			});
 
+			it('should call updateLastLogin', async () => {
+				const { userInfo } = setup();
+
+				await loginUc.getLoginData(userInfo);
+
+				expect(authenticationService.updateLastLogin).toHaveBeenCalledWith(userInfo.accountId);
+			});
+
 			it('should return a loginDto', async () => {
 				const { userInfo, loginDto } = setup();
 

@@ -1,6 +1,6 @@
+import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { ServerTestModule } from '@modules/server';
 import request from 'supertest';
 import { enableOpenApiDocs } from './swagger';
 
@@ -33,8 +33,8 @@ describe('swagger setup', () => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.body.info).toEqual({
 				contact: {},
-				description: 'This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.',
-				title: 'HPI Schul-Cloud Server API',
+				description: 'This is v3 of Schulcloud-Verbund-Software Server. Checkout /docs for v1.',
+				title: 'Schulcloud-Verbund-Software Server API',
 				// care about api changes when version changes
 				version: '3.0',
 			});

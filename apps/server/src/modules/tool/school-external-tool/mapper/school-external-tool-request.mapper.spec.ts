@@ -1,11 +1,8 @@
-import { schoolToolConfigurationStatusFactory } from '@shared/testing';
-import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
+import { SchoolExternalToolProps } from '../domain';
+import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 
 describe('SchoolExternalToolRequestMapper', () => {
-	const mapper: SchoolExternalToolRequestMapper = new SchoolExternalToolRequestMapper();
-
 	describe('mapSchoolExternalToolRequest', () => {
 		describe('when SchoolExternalToolPostParams is given', () => {
 			const setup = () => {
@@ -15,7 +12,6 @@ describe('SchoolExternalToolRequestMapper', () => {
 				};
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
-					version: 1,
 					schoolId: 'schoolId',
 					parameters: [param],
 					isDeactivated: true,
@@ -30,14 +26,15 @@ describe('SchoolExternalToolRequestMapper', () => {
 			it('should return an schoolExternalTool', () => {
 				const { param, params } = setup();
 
-				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
+				const schoolExternalToolDto: SchoolExternalToolProps =
+					SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(params);
 
-				expect(schoolExternalToolDto).toEqual<SchoolExternalToolDto>({
+				expect(schoolExternalToolDto).toEqual<SchoolExternalToolProps>({
+					id: expect.any(String),
 					toolId: params.toolId,
 					parameters: [{ name: param.name, value: param.value }],
 					schoolId: params.schoolId,
-					toolVersion: params.version,
-					status: schoolToolConfigurationStatusFactory.build({ isDeactivated: true }),
+					isDeactivated: true,
 				});
 			});
 		});
@@ -46,7 +43,6 @@ describe('SchoolExternalToolRequestMapper', () => {
 			const setup = () => {
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
-					version: 1,
 					schoolId: 'schoolId',
 					parameters: undefined,
 					isDeactivated: false,
@@ -60,14 +56,15 @@ describe('SchoolExternalToolRequestMapper', () => {
 			it('should return an schoolExternalTool without parameter', () => {
 				const { params } = setup();
 
-				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
+				const schoolExternalToolDto: SchoolExternalToolProps =
+					SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(params);
 
-				expect(schoolExternalToolDto).toEqual<SchoolExternalToolDto>({
+				expect(schoolExternalToolDto).toEqual<SchoolExternalToolProps>({
+					id: expect.any(String),
 					toolId: params.toolId,
 					parameters: [],
 					schoolId: params.schoolId,
-					toolVersion: params.version,
-					status: schoolToolConfigurationStatusFactory.build(),
+					isDeactivated: false,
 				});
 			});
 		});

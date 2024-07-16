@@ -3,14 +3,18 @@ import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { OauthModule } from '@modules/oauth';
 import { ProvisioningModule } from '@modules/provisioning';
+import { ImportUserModule } from '@modules/user-import';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { UserLoginMigrationRollbackController } from './controller/user-login-migration-rollback.controller';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
 import {
+	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
+	UserLoginMigrationRollbackUc,
 	UserLoginMigrationUc,
 } from './uc';
 import { UserLoginMigrationModule } from './user-login-migration.module';
@@ -24,6 +28,7 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 		AuthorizationModule,
 		LoggerModule,
 		LegacySchoolModule,
+		ImportUserModule,
 	],
 	providers: [
 		UserLoginMigrationUc,
@@ -31,7 +36,9 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 		RestartUserLoginMigrationUc,
 		ToggleUserLoginMigrationUc,
 		CloseUserLoginMigrationUc,
+		UserLoginMigrationRollbackUc,
+		CloseMigrationWizardUc,
 	],
-	controllers: [UserLoginMigrationController],
+	controllers: [UserLoginMigrationController, UserLoginMigrationRollbackController],
 })
 export class UserLoginMigrationApiModule {}

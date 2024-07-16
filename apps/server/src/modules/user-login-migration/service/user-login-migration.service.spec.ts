@@ -2,16 +2,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { LegacySystemService } from '@modules/system';
-import { SystemDto } from '@modules/system/service';
+import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { legacySchoolDoFactory, systemFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
+	IdenticalUserLoginMigrationSystemLoggableException,
+	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
@@ -23,7 +23,7 @@ describe(UserLoginMigrationService.name, () => {
 
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
-	let systemService: DeepMocked<LegacySystemService>;
+	let systemService: DeepMocked<SystemService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	const mockedDate: Date = new Date('2023-05-02');
@@ -47,8 +47,8 @@ describe(UserLoginMigrationService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: LegacySystemService,
-					useValue: createMock<LegacySystemService>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: UserLoginMigrationRepo,
@@ -60,7 +60,7 @@ describe(UserLoginMigrationService.name, () => {
 		service = module.get(UserLoginMigrationService);
 		userService = module.get(UserService);
 		schoolService = module.get(LegacySchoolService);
-		systemService = module.get(LegacySystemService);
+		systemService = module.get(SystemService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 	});
 
@@ -164,9 +164,8 @@ describe(UserLoginMigrationService.name, () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
+				const system: System = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					type: 'oauth2',
 					alias: 'SANIS',
 				});
 
@@ -179,7 +178,7 @@ describe(UserLoginMigrationService.name, () => {
 				});
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
+				systemService.find.mockResolvedValue([system]);
 				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
 
 				return {
@@ -217,9 +216,8 @@ describe(UserLoginMigrationService.name, () => {
 			const setup = () => {
 				const sourceSystemId: EntityId = new ObjectId().toHexString();
 				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
+				const system: System = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					type: 'oauth2',
 					alias: 'SANIS',
 				});
 
@@ -227,7 +225,7 @@ describe(UserLoginMigrationService.name, () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
+				systemService.find.mockResolvedValue([system]);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 
 				return {
@@ -260,14 +258,13 @@ describe(UserLoginMigrationService.name, () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
+				const system: System = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					type: 'oauth2',
 					alias: 'SANIS',
 				});
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
+				systemService.find.mockResolvedValue([system]);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 
 				return {
@@ -297,14 +294,13 @@ describe(UserLoginMigrationService.name, () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined }, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
+				const system: System = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					type: 'oauth2',
 					alias: 'SANIS',
 				});
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
+				systemService.find.mockResolvedValue([system]);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 
 				return {
@@ -331,7 +327,7 @@ describe(UserLoginMigrationService.name, () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([]);
+				systemService.find.mockResolvedValue([]);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 
 				return {
@@ -339,12 +335,44 @@ describe(UserLoginMigrationService.name, () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw a MoinSchuleSystemNotFoundLoggableException', async () => {
 				const { schoolId } = setup();
 
 				const func = async () => service.startMigration(schoolId);
 
-				await expect(func).rejects.toThrow(new InternalServerErrorException('Cannot find SANIS system'));
+				await expect(func).rejects.toThrow(new MoinSchuleSystemNotFoundLoggableException());
+			});
+		});
+
+		describe('when creating a new migration but the SANIS system and schools login system are the same', () => {
+			const setup = () => {
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+				const system: System = systemFactory.withOauthConfig().build({
+					id: targetSystemId,
+					alias: 'SANIS',
+				});
+
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [targetSystemId] }, schoolId);
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.find.mockResolvedValue([system]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+					targetSystemId,
+				};
+			};
+
+			it('should throw an IdenticalUserLoginMigrationSystemLoggableException', async () => {
+				const { schoolId, targetSystemId } = setup();
+
+				const func = async () => service.startMigration(schoolId);
+
+				await expect(func).rejects.toThrow(
+					new IdenticalUserLoginMigrationSystemLoggableException(schoolId, targetSystemId)
+				);
 			});
 		});
 	});

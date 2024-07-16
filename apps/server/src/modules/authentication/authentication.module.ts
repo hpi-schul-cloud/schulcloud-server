@@ -7,17 +7,18 @@ import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { jwtConstants } from './constants';
+import { JwtValidationAdapter } from './helper/jwt-validation.adapter';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
-import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
+import { WsJwtStrategy } from './strategy/ws-jwt.strategy';
 import { XApiKeyStrategy } from './strategy/x-api-key.strategy';
 
 // values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
@@ -68,9 +69,9 @@ const jwtModuleOptions: JwtModuleOptions = {
 	],
 	providers: [
 		JwtStrategy,
+		WsJwtStrategy,
 		JwtValidationAdapter,
 		UserRepo,
-		LegacySystemRepo,
 		LegacySchoolRepo,
 		LocalStrategy,
 		AuthenticationService,

@@ -1,3 +1,4 @@
+import { ToolContextType } from '../../common/enum';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
@@ -8,20 +9,19 @@ import {
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
-import { ToolContextType } from '../../common/enum';
 
 export class ToolConfigurationMapper {
 	static mapToSchoolExternalToolConfigurationTemplateResponse(
 		externalTool: ExternalTool
 	): SchoolExternalToolConfigurationTemplateResponse {
 		const mapped = new SchoolExternalToolConfigurationTemplateResponse({
-			externalToolId: externalTool.id ?? '',
+			externalToolId: externalTool.id,
 			name: externalTool.name,
+			baseUrl: externalTool.config.baseUrl,
 			logoUrl: externalTool.logoUrl,
 			parameters: externalTool.parameters
 				? ExternalToolResponseMapper.mapCustomParameterToResponse(externalTool.parameters)
 				: [],
-			version: externalTool.version,
 		});
 
 		return mapped;
@@ -49,11 +49,11 @@ export class ToolConfigurationMapper {
 			externalToolId: externalTool.id ?? '',
 			schoolExternalToolId: schoolExternalTool.id ?? '',
 			name: externalTool.name,
+			baseUrl: externalTool.config.baseUrl,
 			logoUrl: externalTool.logoUrl,
 			parameters: externalTool.parameters
 				? ExternalToolResponseMapper.mapCustomParameterToResponse(externalTool.parameters)
 				: [],
-			version: externalTool.version,
 		});
 
 		return mapped;

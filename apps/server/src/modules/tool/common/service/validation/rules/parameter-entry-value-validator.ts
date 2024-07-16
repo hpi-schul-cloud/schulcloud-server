@@ -1,11 +1,24 @@
 import { ValidationError } from '@shared/common';
-import { CustomParameter, CustomParameterEntry, ToolParameterValueMissingLoggableException } from '../../../domain';
+import { EntityId } from '@shared/domain/types';
+import {
+	CustomParameter,
+	CustomParameterEntry,
+	ToolParameterMandatoryValueMissingLoggableException,
+	ToolParameterOptionalValueMissingLoggableException,
+} from '../../../domain';
 import { ParameterEntryValidator } from './parameter-entry-validator';
 
 export class ParameterEntryValueValidator implements ParameterEntryValidator {
-	public validate(entry: CustomParameterEntry, declaration: CustomParameter): ValidationError[] {
+	public validate(
+		entry: CustomParameterEntry,
+		declaration: CustomParameter,
+		toolId: EntityId | undefined
+	): ValidationError[] {
 		if (entry.value === undefined || entry.value === '') {
-			return [new ToolParameterValueMissingLoggableException(declaration)];
+			if (declaration.isOptional) {
+				return [new ToolParameterOptionalValueMissingLoggableException(toolId, declaration)];
+			}
+			return [new ToolParameterMandatoryValueMissingLoggableException(toolId, declaration)];
 		}
 
 		return [];

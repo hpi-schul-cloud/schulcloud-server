@@ -8,14 +8,12 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	mapUserToCurrentUser,
-	roleFactory,
 	schoolEntityFactory,
-	userFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -160,16 +158,13 @@ describe('File Controller (API) - preview', () => {
 		jest.resetAllMocks();
 		await cleanupCollections(em);
 		const school = schoolEntityFactory.build();
-		const roles = roleFactory.buildList(1, {
-			permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-		});
-		const user = userFactory.build({ school, roles });
+		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-		await em.persistAndFlush([user, school]);
+		await em.persistAndFlush([user, school, account]);
 		em.clear();
 		schoolId = school.id;
 		currentUser = mapUserToCurrentUser(user);
-		uploadPath = `/file/upload/${schoolId}/schools/${schoolId}`;
+		uploadPath = `/file/upload/school/${schoolId}/schools/${schoolId}`;
 
 		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 		antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
@@ -274,7 +269,7 @@ describe('File Controller (API) - preview', () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const previewFile = TestHelper.createFile('bytes 0-3/4');
+						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { uploadedFile, previewFile };
@@ -313,7 +308,7 @@ describe('File Controller (API) - preview', () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const previewFile = TestHelper.createFile('bytes 0-3/4');
+						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { uploadedFile };
@@ -396,7 +391,7 @@ describe('File Controller (API) - preview', () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const previewFile = TestHelper.createFile('bytes 0-3/4');
+						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { uploadedFile };
@@ -441,7 +436,7 @@ describe('File Controller (API) - preview', () => {
 					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 					const error = new NotFoundException();
-					const previewFile = TestHelper.createFile('bytes 0-3/4');
+					const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 					s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 					return { uploadedFile };

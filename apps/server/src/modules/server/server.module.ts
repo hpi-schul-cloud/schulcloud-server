@@ -6,10 +6,13 @@ import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { AuthorizationReferenceApiModule } from '@modules/authorization/authorization-reference.api.module';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
+import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
@@ -28,7 +31,8 @@ import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
-import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
+import { ImportUserModule } from '@modules/user-import';
+import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
@@ -46,6 +50,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AuthorizationReferenceApiModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
@@ -55,15 +60,8 @@ const serverModules = [
 	NewsModule,
 	UserApiModule,
 	UsersAdminApiModule,
-	SchulconnexClientModule.register({
-		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
-		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
-		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
-		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
-		personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
-	}),
+	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
-	UserImportConfigModule,
 	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
@@ -93,6 +91,9 @@ const serverModules = [
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	CollaborativeTextEditorApiModule,
+	AlertModule,
+	UserLicenseModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

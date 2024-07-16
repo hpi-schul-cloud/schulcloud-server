@@ -2,27 +2,30 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
+import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
+import type { MediaBoardConfig } from '@modules/board/media-board.config';
+import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
+import { DeletionConfig } from '@modules/deletion';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
+import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
+import type { ToolConfig } from '@modules/tool/tool-config';
 import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
+import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
+import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { DeletionConfig } from '@modules/deletion';
-import type { MediaBoardConfig } from '@modules/board/media-board.config';
-import { ProvisioningConfig } from '@modules/provisioning';
-import { SynchronizationConfig } from '@modules/idp-console';
-import { SchulcloudTheme } from './types/schulcloud-theme.enum';
+import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -45,21 +48,26 @@ export interface ServerConfig
 		XApiKeyConfig,
 		LearnroomConfig,
 		AuthenticationConfig,
-		IToolFeatures,
+		ToolConfig,
 		TldrawClientConfig,
 		UserLoginMigrationConfig,
 		LessonConfig,
-		IVideoConferenceSettings,
 		BoardConfig,
 		MediaBoardConfig,
 		SharingConfig,
-		IUserImportFeatures,
+		UserImportConfig,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
 		DeletionConfig,
-		ProvisioningConfig {
+		CollaborativeTextEditorConfig,
+		ProvisioningConfig,
+		UserImportConfig,
+		VideoConferenceConfig,
+		BbbConfig,
+		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
+	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
@@ -75,7 +83,10 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
+	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_LOGIN_LINK_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
@@ -94,6 +105,7 @@ export interface ServerConfig
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
+	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
@@ -102,6 +114,12 @@ export interface ServerConfig
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
+	BOARD_COLLABORATION_URI: string;
+	FEATURE_NEW_LAYOUT_ENABLED: boolean;
+	SCHULCONNEX_CLIENT__API_URL: string | undefined;
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
+	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 }
 
 const config: ServerConfig = {
@@ -121,13 +139,18 @@ const config: ServerConfig = {
 	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
+		'FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED'
+	) as boolean,
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: Configuration.get(
 		'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED'
 	) as boolean,
 	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
+	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get('FEATURE_BOARD_LAYOUT_ENABLED') as boolean,
 	FEATURE_LOGIN_LINK_ENABLED: Configuration.get('FEATURE_LOGIN_LINK_ENABLED') as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
@@ -171,6 +194,10 @@ const config: ServerConfig = {
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
+	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: Configuration.get(
+		'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
+	) as number,
+	ADMIN_API__DELETION_DELAY_MILLISECONDS: Configuration.get('ADMIN_API__DELETION_DELAY_MILLISECONDS') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),
@@ -202,22 +229,61 @@ const config: ServerConfig = {
 		: undefined,
 	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
-	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
-		? (Configuration.get('ETHERPAD__PAD_URI') as string)
-		: undefined,
+	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
+	ETHERPAD__COOKIE_EXPIRES_SECONDS: Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS') as number,
+	ETHERPAD__COOKIE_RELEASE_THRESHOLD: Configuration.get('ETHERPAD__COOKIE_RELEASE_THRESHOLD') as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
+	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
+		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
+	) as number,
+	SCHULCONNEX_CLIENT__API_URL: Configuration.has('SCHULCONNEX_CLIENT__API_URL')
+		? (Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: Configuration.has('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT')
+		? (Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_ID')
+		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_SECRET')
+		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string)
+		: undefined,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
 	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
-	...ToolConfiguration.toolFeatures,
-	...VideoConferenceConfiguration.videoConference,
-	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
+	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
+		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
+	) as boolean,
+	ALERT_CACHE_INTERVAL_MIN: Configuration.get('ALERT_CACHE_INTERVAL_MIN') as number,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
+	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
+	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
+	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get('FEATURE_NEW_LAYOUT_ENABLED') as boolean,
+	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
+	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
+	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
+		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
+	) as number,
+	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
+	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
+	HOST: Configuration.get('HOST') as string,
+	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
+	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
+	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,
+	VIDEOCONFERENCE_DEFAULT_PRESENTATION: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
+	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
+	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
+	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
+		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
+	) as boolean,
+	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

@@ -1,30 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { userDoFactory } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Authorization } from 'oauth-1.0a';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalTool } from '../../../external-tool/domain';
+import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoMediumIdStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
@@ -168,7 +166,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
 						new PropertyData({
 							name: 'resource_link_id',
-							value: contextExternalTool.id as string,
+							value: contextExternalTool.id,
 							location: PropertyLocation.BODY,
 						}),
 						new PropertyData({
@@ -565,7 +563,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -573,17 +571,34 @@ describe('Lti11ToolLaunchStrategy', () => {
 					externalTool,
 				};
 
+				const user: UserDO = userDoFactory.buildWithId({
+					roles: [
+						{
+							id: 'roleId1',
+							name: RoleName.TEACHER,
+						},
+					],
+				});
+
+				userService.findById.mockResolvedValue(user);
+
 				return {
 					data,
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
+			it('should use a random id', async () => {
 				const { data } = setup();
 
-				const func = async () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+				const result = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
-				await expect(func).rejects.toThrow(new InternalServerErrorException());
+				expect(result).toContainEqual(
+					new PropertyData({
+						name: 'resource_link_id',
+						value: expect.any(String),
+						location: PropertyLocation.BODY,
+					})
+				);
 			});
 		});
 	});

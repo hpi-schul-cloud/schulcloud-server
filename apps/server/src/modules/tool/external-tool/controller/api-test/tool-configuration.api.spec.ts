@@ -3,20 +3,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoard, Course, SchoolEntity, User } from '@shared/domain/entity';
+import { Course, LegacyBoard, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	accountFactory,
 	boardFactory,
 	courseFactory,
-	customParameterFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { Response } from 'supertest';
-import { AccountEntity } from '@modules/account/entity/account.entity';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -28,7 +27,7 @@ import { contextExternalToolEntityFactory } from '../../../context-external-tool
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolEntity } from '../../entity';
-import { externalToolEntityFactory } from '../../testing';
+import { customParameterFactory, externalToolEntityFactory } from '../../testing';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
@@ -198,6 +197,7 @@ describe('ToolConfigurationController (API)', () => {
 							externalToolId: externalTool.id,
 							schoolExternalToolId: schoolExternalTool.id,
 							name: externalTool.name,
+							baseUrl: externalTool.config.baseUrl,
 							logoUrl: externalTool.logoUrl,
 							parameters: [
 								{
@@ -214,14 +214,13 @@ describe('ToolConfigurationController (API)', () => {
 									location: CustomParameterLocationParams.BODY,
 								},
 							],
-							version: externalTool.version,
 						},
 						{
 							externalToolId: externalToolWithoutContextRestriction.id,
 							name: externalToolWithoutContextRestriction.name,
+							baseUrl: externalToolWithoutContextRestriction.config.baseUrl,
 							parameters: [],
 							schoolExternalToolId: schoolExternalTool2.id,
-							version: externalToolWithoutContextRestriction.version,
 						},
 					],
 				});
@@ -237,9 +236,9 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							externalToolId: externalToolWithoutContextRestriction.id,
 							name: externalToolWithoutContextRestriction.name,
+							baseUrl: externalToolWithoutContextRestriction.config.baseUrl,
 							parameters: [],
 							schoolExternalToolId: schoolExternalTool2.id,
-							version: externalToolWithoutContextRestriction.version,
 						},
 					],
 				});
@@ -357,6 +356,7 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							externalToolId: externalTool.id,
 							name: externalTool.name,
+							baseUrl: externalTool.config.baseUrl,
 							logoUrl: externalTool.logoUrl,
 							parameters: [
 								{
@@ -373,7 +373,6 @@ describe('ToolConfigurationController (API)', () => {
 									location: CustomParameterLocationParams.BODY,
 								},
 							],
-							version: externalTool.version,
 						},
 					],
 				});
@@ -485,8 +484,8 @@ describe('ToolConfigurationController (API)', () => {
 				expect(response.body).toEqual<SchoolExternalToolConfigurationTemplateResponse>({
 					externalToolId: externalTool.id,
 					name: externalTool.name,
+					baseUrl: externalTool.config.baseUrl,
 					logoUrl: externalTool.logoUrl,
-					version: externalTool.version,
 					parameters: [
 						{
 							name: schoolParameter.name,
@@ -641,8 +640,8 @@ describe('ToolConfigurationController (API)', () => {
 					externalToolId: externalTool.id,
 					schoolExternalToolId: schoolExternalTool.id,
 					name: externalTool.name,
+					baseUrl: externalTool.config.baseUrl,
 					logoUrl: externalTool.logoUrl,
-					version: externalTool.version,
 					parameters: [
 						{
 							name: contextParameter.name,
@@ -729,6 +728,7 @@ describe('ToolConfigurationController (API)', () => {
 				const contextTypeList: ToolContextTypesListResponse = new ToolContextTypesListResponse([
 					ToolContextType.COURSE,
 					ToolContextType.BOARD_ELEMENT,
+					ToolContextType.MEDIA_BOARD,
 				]);
 
 				return { loggedInClient, contextTypeList };

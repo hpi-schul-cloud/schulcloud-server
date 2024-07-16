@@ -8,7 +8,9 @@ export class ToolStatusResponseMapper {
 				isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,
 				isOutdatedOnScopeContext: status.isOutdatedOnScopeContext,
 				isIncompleteOnScopeContext: status.isIncompleteOnScopeContext,
+				isIncompleteOperationalOnScopeContext: status.isIncompleteOperationalOnScopeContext,
 				isDeactivated: status.isDeactivated,
+				isNotLicensed: status.isNotLicensed,
 			});
 
 		return configurationStatus;

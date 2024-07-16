@@ -17,10 +17,10 @@ export class ToolReferenceService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly toolVersionService: ToolConfigurationStatusService
+		private readonly toolConfigurationStatusService: ToolConfigurationStatusService
 	) {}
 
-	async getToolReference(contextExternalToolId: EntityId): Promise<ToolReference> {
+	async getToolReference(contextExternalToolId: EntityId, userId: EntityId): Promise<ToolReference> {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
@@ -29,21 +29,20 @@ export class ToolReferenceService {
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		const status: ContextExternalToolConfigurationStatus = this.toolVersionService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+		const status: ContextExternalToolConfigurationStatus =
+			await this.toolConfigurationStatusService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool,
+				userId
+			);
 
 		const toolReference: ToolReference = ToolReferenceMapper.mapToToolReference(
 			externalTool,
 			contextExternalTool,
 			status
 		);
-		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(
-			'/v3/tools/external-tools/{id}/logo',
-			externalTool
-		);
+		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(externalTool);
 
 		return toolReference;
 	}

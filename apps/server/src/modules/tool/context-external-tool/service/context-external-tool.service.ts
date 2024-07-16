@@ -1,15 +1,20 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { CustomParameter, CustomParameterEntry } from '../../common/domain';
+import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
-import { CommonToolService } from '../../common/service';
-import { CustomParameter, CustomParameterEntry } from '../../common/domain';
+import {
+	ContextExternalTool,
+	ContextExternalToolLaunchable,
+	ContextRef,
+	RestrictedContextMismatchLoggableException,
+} from '../domain';
+import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -66,7 +71,7 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	public async checkContextRestrictions(contextExternalTool: ContextExternalTool): Promise<void> {
+	public async checkContextRestrictions(contextExternalTool: ContextExternalToolLaunchable): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
@@ -74,7 +79,7 @@ export class ContextExternalToolService {
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
-			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
+			throw new RestrictedContextMismatchLoggableException(externalTool.name, contextExternalTool.contextRef.type);
 		}
 	}
 
@@ -82,30 +87,34 @@ export class ContextExternalToolService {
 		contextExternalTool: ContextExternalTool,
 		contextCopyId: EntityId
 	): Promise<ContextExternalTool> {
-		contextExternalTool.id = undefined;
-		contextExternalTool.contextRef.id = contextCopyId;
+		const copy = new ContextExternalTool({
+			...contextExternalTool.getProps(),
+			id: new ObjectId().toHexString(),
+		});
+
+		copy.contextRef.id = contextCopyId;
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-			contextExternalTool.schoolToolRef.schoolToolId
+			copy.schoolToolRef.schoolToolId
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		contextExternalTool.parameters.forEach((parameter: CustomParameterEntry): void => {
+		copy.parameters.forEach((parameter: CustomParameterEntry): void => {
 			const isUnusedParameter = !externalTool.parameters?.find(
 				(param: CustomParameter): boolean => param.name === parameter.name
 			);
 			if (isUnusedParameter) {
-				this.deleteUnusedParameter(contextExternalTool, parameter.name);
+				this.deleteUnusedParameter(copy, parameter.name);
 			}
 		});
 
 		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
 			if (parameter.isProtected) {
-				this.deleteProtectedValues(contextExternalTool, parameter.name);
+				this.deleteProtectedValues(copy, parameter.name);
 			}
 		});
 
-		const copiedTool = await this.contextExternalToolRepo.save(contextExternalTool);
+		const copiedTool: ContextExternalTool = await this.contextExternalToolRepo.save(copy);
 
 		return copiedTool;
 	}

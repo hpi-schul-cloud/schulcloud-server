@@ -7,8 +7,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
-import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
+import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { AuthenticationService } from './authentication.service';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 jest.mock('jsonwebtoken');
 
@@ -91,6 +92,23 @@ describe('AuthenticationService', () => {
 				);
 			});
 		});
+
+		describe('when account is deactivated', () => {
+			const setup = () =>
+				new Account({
+					id: 'mockAccountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'mockedUsername',
+					deactivatedAt: new Date(),
+				});
+			it('should throw USER_ACCOUNT_DEACTIVATED exception', async () => {
+				const deactivatedAccount = setup();
+				accountService.findByUsernameAndSystemId.mockResolvedValue(deactivatedAccount);
+				const func = authenticationService.loadAccount('username', 'mockSystemId');
+				await expect(func).rejects.toThrow(UserAccountDeactivatedLoggableException);
+			});
+		});
 	});
 
 	describe('generateJwt', () => {
@@ -158,6 +176,14 @@ describe('AuthenticationService', () => {
 					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
 				).not.toThrow();
 			});
+		});
+	});
+
+	describe('updateLastLogin', () => {
+		it('should call accountService to update last login', async () => {
+			await authenticationService.updateLastLogin('mockAccountId');
+
+			expect(accountService.updateLastLogin).toHaveBeenCalledWith('mockAccountId', expect.any(Date));
 		});
 	});
 

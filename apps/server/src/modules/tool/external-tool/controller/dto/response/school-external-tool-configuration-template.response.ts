@@ -9,20 +9,20 @@ export class SchoolExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
 	name: string;
 
+	@ApiProperty()
+	baseUrl: string;
+
 	@ApiPropertyOptional()
 	logoUrl?: string;
 
 	@ApiProperty({ type: [CustomParameterResponse] })
 	parameters: CustomParameterResponse[];
 
-	@ApiProperty()
-	version: number;
-
 	constructor(configuration: SchoolExternalToolConfigurationTemplateResponse) {
 		this.externalToolId = configuration.externalToolId;
 		this.name = configuration.name;
+		this.baseUrl = configuration.baseUrl;
 		this.logoUrl = configuration.logoUrl;
 		this.parameters = configuration.parameters;
-		this.version = configuration.version;
 	}
 }

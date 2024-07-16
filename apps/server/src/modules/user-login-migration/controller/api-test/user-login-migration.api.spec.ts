@@ -1,15 +1,19 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { SanisResponse, SanisRole } from '@infra/schulconnex-client';
+import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
+import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
+import { type SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	cleanupCollections,
+	importUserFactory,
 	JwtTestFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
@@ -44,6 +48,7 @@ describe('UserLoginMigrationController (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
+	let configService: ConfigService;
 
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
@@ -57,6 +62,7 @@ describe('UserLoginMigrationController (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, '/user-login-migrations');
+		configService = app.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -424,11 +430,10 @@ describe('UserLoginMigrationController (API)', () => {
 	});
 
 	describe('[GET] /user-login-migrations/migrate-to-oauth2', () => {
-		const mockPostOauthTokenEndpoint = (
+		const mockAxiosRequests = (
 			idToken: string,
 			targetSystem: SystemEntity,
 			targetUserId: string,
-			schoolExternalId: string,
 			officialSchoolNumber: string
 		) => {
 			axiosMock
@@ -439,7 +444,7 @@ describe('UserLoginMigrationController (API)', () => {
 					access_token: 'accessToken',
 				})
 				.onGet(targetSystem.provisioningUrl)
-				.replyOnce<SanisResponse>(200, {
+				.replyOnce<SchulconnexResponse>(200, {
 					pid: targetUserId,
 					person: {
 						name: {
@@ -450,7 +455,7 @@ describe('UserLoginMigrationController (API)', () => {
 					personenkontexte: [
 						{
 							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
-							rolle: SanisRole.LEHR,
+							rolle: SchulconnexRole.LEHR,
 							organisation: {
 								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
@@ -458,7 +463,9 @@ describe('UserLoginMigrationController (API)', () => {
 							},
 						},
 					],
-				});
+				})
+				.onGet(configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL'))
+				.replyOnce<SchulconnexLizenzInfoResponse[]>(200, []);
 		};
 
 		describe('when providing a code and being eligible to migrate', () => {
@@ -506,7 +513,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, officialSchoolNumber);
+				mockAxiosRequests(idToken, targetSystem, adminUser.id, officialSchoolNumber);
 
 				return {
 					query,
@@ -573,7 +580,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, 'kennung');
+				mockAxiosRequests(idToken, targetSystem, adminUser.id, 'kennung');
 
 				return {
 					query,
@@ -1335,6 +1342,66 @@ describe('UserLoginMigrationController (API)', () => {
 				const response: Response = await loggedInClient.post('/close');
 
 				expect(response.body).toEqual({});
+			});
+		});
+
+		describe('when the migration wizard is also running', () => {
+			const setup = async () => {
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+					inUserMigration: true,
+					inMaintenanceSince: new Date(2024, 1, 4),
+				});
+				const importUser = importUserFactory.build({ school });
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+				});
+
+				const migratedUser: User = userFactory.buildWithId({
+					lastLoginSystemChange: new Date(2023, 1, 5),
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([
+					sourceSystem,
+					targetSystem,
+					school,
+					adminAccount,
+					adminUser,
+					userLoginMigration,
+					migratedUser,
+					importUser,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+					adminUser,
+				};
+			};
+
+			it('should close migration wizard', async () => {
+				const { loggedInClient, adminUser } = await setup();
+
+				await loggedInClient.post('/close');
+
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const [entities, count] = await em.findAndCount(ImportUser, {});
+				expect(count).toEqual(0);
+
+				const school = await em.findOneOrFail(SchoolEntity, { id: adminUser.school.id });
+				expect(school.inUserMigration).toBe(undefined);
+				expect(school.inMaintenanceSince).toBe(undefined);
 			});
 		});
 	});

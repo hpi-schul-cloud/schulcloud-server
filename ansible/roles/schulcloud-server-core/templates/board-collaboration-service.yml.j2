@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: board-collaboration-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: board-collaboration
+spec:
+  type: ClusterIP
+  ports:
+    # port for WebSocket connection
+    - port: 4450
+      targetPort: 4450
+      protocol: TCP
+      name: websocket
+    - port: {{ PORT_METRICS_SERVER }}
+      targetPort: 9090 # TODO
+      protocol: TCP
+      name: api-metrics
+  selector:
+    app: board-collaboration

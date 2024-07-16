@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { TestXApiKeyClient } from '@shared/testing';
+import { TestApiClient } from '@shared/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
 import { DeletionRequestEntity } from '../../../repo/entity';
@@ -54,7 +54,7 @@ const isDeletionPlannedWithinAcceptableRange = (
 describe(`deletionRequest create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testXApiKeyClient: TestXApiKeyClient;
+	let testApiClient: TestApiClient;
 	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
@@ -74,7 +74,7 @@ describe(`deletionRequest create (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
+		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -114,7 +114,7 @@ describe(`deletionRequest create (api)`, () => {
 			it('should return status 202', async () => {
 				const { deletionRequestToCreate } = setup();
 
-				const response = await testXApiKeyClient.post('', deletionRequestToCreate);
+				const response = await testApiClient.post('', deletionRequestToCreate);
 
 				expect(response.status).toEqual(202);
 			});
@@ -122,7 +122,7 @@ describe(`deletionRequest create (api)`, () => {
 			it('should return the created deletionRequest', async () => {
 				const { deletionRequestToCreate } = setup();
 
-				const response = await testXApiKeyClient.post('', deletionRequestToCreate);
+				const response = await testApiClient.post('', deletionRequestToCreate);
 
 				const result = response.body as DeletionRequestResponse;
 				expect(result.requestId).toBeDefined();
@@ -135,7 +135,7 @@ describe(`deletionRequest create (api)`, () => {
 					async () => {
 						const { deletionRequestToCreate, defaultDeleteInMinutes, operationalTimeToleranceInSeconds } = setup();
 
-						const response = await testXApiKeyClient.post('', deletionRequestToCreate);
+						const response = await testApiClient.post('', deletionRequestToCreate);
 
 						const result = response.body as DeletionRequestResponse;
 						const createdDeletionRequestId = result.requestId;
@@ -158,7 +158,7 @@ describe(`deletionRequest create (api)`, () => {
 				it('should set the "deletion planned at" date to now, with some operational time tolerance', async () => {
 					const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = setup();
 
-					const response = await testXApiKeyClient.post('', deletionRequestToImmediateRemoval);
+					const response = await testApiClient.post('', deletionRequestToImmediateRemoval);
 
 					const result = response.body as DeletionRequestResponse;
 					const createdDeletionRequestId = result.requestId;

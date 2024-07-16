@@ -434,12 +434,25 @@
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
-			"required": ["URI", "TENANT", "CLIENTID", "ADMIN_CLIENTID", "ADMIN_USER", "ADMIN_PASSWORD"],
+			"required": [
+				"INTERNAL_URI",
+				"EXTERNAL_URI",
+				"TENANT",
+				"CLIENTID",
+				"ADMIN_CLIENTID",
+				"ADMIN_USER",
+				"ADMIN_PASSWORD"
+			],
 			"properties": {
-				"URI": {
+				"INTERNAL_URI": {
 					"type": "string",
 					"default": null,
-					"description": "The ErWIn IDM base URI."
+					"description": "The ErWIn IDM base URI for Kubernetes cluster internal use."
+				},
+				"EXTERNAL_URI": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM base URI for Kubernetes cluster external use."
 				},
 				"TENANT": {
 					"type": "string",
@@ -544,6 +557,11 @@
 			"type": "string",
 			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
+		},
+		"ALERT_CACHE_INTERVAL_MIN": {
+			"type": "number",
+			"default": 1,
+			"description": "Time between updating alerts (in minutes)"
 		},
 		"NEXBOARD_URL": {
 			"type": "string",
@@ -778,53 +796,40 @@
 			"default": true,
 			"description": "Etherpad feature enabled"
 		},
-		"ETHERPAD_API_KEY": {
-			"type": "string",
-			"description": "The etherpad api key for sending requests."
-		},
-		"ETHERPAD_API_PATH": {
-			"type": "string",
-			"default": "/api/1",
-			"description": "The etherpad api path."
-		},
-		"ETHERPAD_URI": {
-			"type": "string",
-			"default": "https://dbildungscloud.de/etherpad/api/1",
-			"description": "The etherpad api version uri."
-		},
-		"ETHERPAD_OLD_PAD_URI": {
-			"type": "string",
-			"default": "https://etherpad.dbildungscloud.de/p",
-			"description": "The etherpad api version uri."
-		},
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
 			"required": ["PAD_URI"],
 			"properties": {
+				"URI": {
+					"type": "string",
+					"description": "The etherpad api version uri."
+				},
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
-					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
+				},
+				"OLD_PAD_URI": {
+					"type": "string",
+					"description": "The etherpad api version uri."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "The etherpad api key for sending requests."
+				},
+				"COOKIE_EXPIRES_SECONDS": {
+					"type": "integer",
+					"default": 7200,
+					"description": "Number of seconds after an etherpad cookie expires."
+				},
+				"COOKIE_RELEASE_THRESHOLD": {
+					"type": "integer",
+					"default": 7200,
+					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
 			}
-		},
-		"ETHERPAD_OLD_PAD_DOMAIN": {
-			"type": "string",
-			"default": "etherpad.dbildungscloud.de",
-			"description": "The old etherpad domain."
-		},
-		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
-			"type": "integer",
-			"default": 28800,
-			"description": "Number of seconds after an etherpad cookie expires."
-		},
-		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
-			"type": "integer",
-			"default": 7200,
-			"description": "If Session Valid time is smaller than this, a new session is created on request."
 		},
 		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
@@ -1126,6 +1131,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enable collaborative text editor in column board."
+		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1160,6 +1170,16 @@
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
 		},
+		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board web socket feature."
+		},
+		"FEATURE_BOARD_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board layout feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1169,6 +1189,11 @@
 			"type": "string",
 			"default": "",
 			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
+		},
+		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
+			"type": "integer",
+			"description": "Timeout in milliseconds for saving all import user matches",
+			"default": 60000
 		},
 		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -1358,8 +1383,17 @@
 					"type": "number",
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
+				},
+				"MAX_CONCURRENT_DELETION_REQUESTS": {
+					"type": "number",
+					"default": 100,
+					"description": "max amount of deletion requests proccessed concurently"
+				},
+				"DELETION_DELAY_MILLISECONDS": {
+					"type": "number",
+					"default": 5000,
+					"description": "deley in milliseconds to give time modules to perform deletion proccess"
 				}
-
 			},
 			"default": {}
 		},
@@ -1556,6 +1590,17 @@
 					"type": "string",
 					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
 					"examples": ["image/gif,image/jpeg,video/webm"]
+				},
+				"PERFORMANCE_MEASURE_ENABLED": {
+					"type": "boolean",
+					"description": "Activate the performance measure for observed areas.",
+					"default": true
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Define log level for tldraw.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			},
 			"default": {
@@ -1639,6 +1684,37 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
+		},
+		"FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard to use the user login migration process"
+		},
+		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the provisioning of other groupusers"
+		},
+		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the storing and checking media license of users"
+		},
+		"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": {
+			"type": "string",
+			"default": "",
+			"description": "URL for fetching lizenz info from moin.schule schulconnex",
+			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
+		},
+		"BOARD_COLLABORATION_URI": {
+			"type": "string",
+			"default": "ws://localhost:4450",
+			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_NEW_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the new layout feature"
 		}
 	},
 	"required": []

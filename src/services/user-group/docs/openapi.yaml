@@ -1274,7 +1274,7 @@ paths:
       tags:
         - users
       security: []
-  '/courses/{scopeId}/userPermissions':
+  '/coursesUserPermissions/{scopeId}':
     get:
       parameters:
         - in: path
@@ -1322,7 +1322,7 @@ paths:
       tags:
         - courses
       security: []
-  '/courses/{scopeId}/userPermissions/{id}':
+  '/coursesUserPermissions/{scopeId}/{id}':
     get:
       parameters:
         - in: path

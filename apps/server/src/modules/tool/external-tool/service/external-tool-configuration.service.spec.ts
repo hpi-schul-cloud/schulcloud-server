@@ -2,19 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import {
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	schoolToolConfigurationStatusFactory,
-	setupEntities,
-} from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ToolFeatures } from '../../tool-config';
+import {
+	schoolExternalToolConfigurationStatusFactory,
+	schoolExternalToolFactory,
+} from '../../school-external-tool/testing';
 import { ExternalTool } from '../domain';
+import { customParameterFactory, externalToolFactory } from '../testing';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
 
@@ -29,12 +27,6 @@ describe('ExternalToolConfigurationService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ExternalToolConfigurationService,
-				{
-					provide: ToolFeatures,
-					useValue: {
-						contextConfigurationEnabled: false,
-					},
-				},
 				{
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
@@ -129,13 +121,13 @@ describe('ExternalToolConfigurationService', () => {
 
 				availableSchoolExternalTools.forEach((tool): void => {
 					if (tool.id === 'deactivatedToolId') {
-						tool.status = schoolToolConfigurationStatusFactory.build({
-							isDeactivated: true,
+						tool.status = schoolExternalToolConfigurationStatusFactory.build({
+							isGloballyDeactivated: true,
 							isOutdatedOnScopeSchool: false,
 						});
 					}
-					tool.status = schoolToolConfigurationStatusFactory.build({
-						isDeactivated: false,
+					tool.status = schoolExternalToolConfigurationStatusFactory.build({
+						isGloballyDeactivated: false,
 						isOutdatedOnScopeSchool: false,
 					});
 				});
@@ -176,9 +168,7 @@ describe('ExternalToolConfigurationService', () => {
 				);
 
 				expect(
-					result.every(
-						(toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.schoolExternalTool.status?.isDeactivated
-					)
+					result.every((toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.schoolExternalTool.isDeactivated)
 				).toBe(true);
 			});
 		});
@@ -296,7 +286,7 @@ describe('ExternalToolConfigurationService', () => {
 			it('should return ToolContextTypes', () => {
 				const types: ToolContextType[] = service.getToolContextTypes();
 
-				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD]);
 			});
 		});
 	});

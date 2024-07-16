@@ -2,10 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
+import { Logger } from '@src/core/logger';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
@@ -14,7 +14,6 @@ describe('KeycloakIdentityManagementService', () => {
 	let kcIdmOauthService: KeycloakIdentityManagementOauthService;
 	let kcAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let configServiceMock: DeepMocked<ConfigService>;
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 
 	const clientId = 'TheClientId';
@@ -33,8 +32,8 @@ describe('KeycloakIdentityManagementService', () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -46,7 +45,6 @@ describe('KeycloakIdentityManagementService', () => {
 		kcIdmOauthService = module.get(KeycloakIdentityManagementOauthService);
 		kcAdminServiceMock = module.get(KeycloakAdministrationService);
 		httpServiceMock = module.get(HttpService);
-		configServiceMock = module.get(ConfigService);
 	});
 
 	afterEach(() => {
@@ -57,7 +55,6 @@ describe('KeycloakIdentityManagementService', () => {
 	const setupOauthConfigurationReturn = () => {
 		oAuthEncryptionService.encrypt.mockImplementation((value: string) => `${value}_enc`);
 		oAuthEncryptionService.decrypt.mockImplementation((value: string) => value.substring(0, -4));
-		configServiceMock.get.mockReturnValue('testdomain');
 		kcAdminServiceMock.callKcAdminClient.mockResolvedValue({} as KeycloakAdminClient);
 		kcAdminServiceMock.getClientId.mockReturnValueOnce(clientId);
 		kcAdminServiceMock.getClientSecret.mockResolvedValueOnce(clientSecret);
@@ -109,7 +106,7 @@ describe('KeycloakIdentityManagementService', () => {
 
 				const ret = await kcIdmOauthService.getOauthConfig();
 
-				expect(ret.redirectUri).toBe('https://testdomain/api/v3/sso/oauth/');
+				expect(ret.redirectUri).toBe('');
 			});
 
 			it('should return the keycloak OAuth configuration from well-known', async () => {
@@ -128,7 +125,6 @@ describe('KeycloakIdentityManagementService', () => {
 		describe('when localhost is set as SC DOMAIN', () => {
 			const setup = () => {
 				setupOauthConfigurationReturn();
-				configServiceMock.get.mockReturnValue('localhost');
 			};
 
 			it('should return the keycloak OAuth redirect URL for local development', async () => {
@@ -136,7 +132,7 @@ describe('KeycloakIdentityManagementService', () => {
 
 				const ret = await kcIdmOauthService.getOauthConfig();
 
-				expect(ret.redirectUri).toBe('http://localhost:3030/api/v3/sso/oauth/');
+				expect(ret.redirectUri).toBe('');
 			});
 		});
 

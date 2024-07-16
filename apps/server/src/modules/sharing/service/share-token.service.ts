@@ -1,8 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/learnroom/service';
-import { ColumnBoardService } from '@modules/board/service';
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	ShareTokenContext,
 	ShareTokenDO,

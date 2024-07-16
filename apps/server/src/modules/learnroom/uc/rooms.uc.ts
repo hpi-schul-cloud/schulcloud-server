@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
 import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';

@@ -9,7 +9,10 @@ describe(ToolParameterUnknownLoggableException.name, () => {
 				value: 'value1',
 			});
 
-			const exception: ToolParameterUnknownLoggableException = new ToolParameterUnknownLoggableException(parameter);
+			const exception: ToolParameterUnknownLoggableException = new ToolParameterUnknownLoggableException(
+				'toolId',
+				parameter
+			);
 
 			return {
 				parameter,
@@ -27,6 +30,7 @@ describe(ToolParameterUnknownLoggableException.name, () => {
 				message: 'The parameter is not part of this tool.',
 				stack: exception.stack,
 				data: {
+					toolId: 'toolId',
 					parameterName: parameter.name,
 				},
 			});

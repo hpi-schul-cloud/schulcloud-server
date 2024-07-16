@@ -1,24 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
-import { ObjectId } from 'bson';
-import { Logger } from '@src/core/logger';
-import { UserService } from '@modules/user';
-import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
+import { SchulconnexResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import {
 	Synchronization,
+	synchronizationFactory,
 	SynchronizationService,
 	SynchronizationStatusModel,
-	synchronizationFactory,
 } from '@modules/synchronization';
-import { SynchronizationUc } from './synchronization.uc';
-import { synchronizationTestConfig } from './testing';
+import { UserService } from '@modules/user';
+import { ConfigModule } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { createConfigModuleOptions } from '@src/config';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 } from './loggable-exception';
+import { SynchronizationUc } from './synchronization.uc';
+import { synchronizationTestConfig } from './testing';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -256,7 +256,7 @@ describe(SynchronizationUc.name, () => {
 		describe('when users was found', () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
-				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
 
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([externalUserData]);
 

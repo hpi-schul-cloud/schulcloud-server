@@ -25,7 +25,10 @@
 				"value": "HelloWorld"
 			}
 		],
-		"toolVersion": 1
+		"status": {
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
+		}
 	},
 	{
 		"_id": {
@@ -48,222 +51,9 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 2
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5bb"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5b9"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 2
-	},
-	{
-		"_id": {
-			"$oid": "65685717ed7c14d921698602"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"tool": {
-			"$oid": "644a4593d0a8301e6cf25d86"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5bc"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701357811370"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701357811370"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5b1"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [
-			{
-				"name": "search",
-				"value": "xxx"
-			}
-		],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5bd"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701357825423"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701357825423"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5c2"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5be"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5c3"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [
-			{
-				"name": "schoolParan",
-				"value": "test"
-			}
-		],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e6be"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e6c3"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [
-			{
-				"name": "schoolParan",
-				"value": "test"
-			}
-		],
-		"toolVersion": 1,
 		"status": {
-			"isDeactivated": false,
-			"isOutdatedOnScopeSchool": false
-		}
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e7be"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e7c3"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [
-			{
-				"name": "schoolParan",
-				"value": "test"
-			}
-		],
-		"toolVersion": 1,
-		"status": {
-			"isDeactivated": true,
-			"isOutdatedOnScopeSchool": false
-		}
-	},
-	{
-		"_id": {
-			"$oid": "659bf73f49e52dedff83a8f2"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358140061"
-			}
-		},
-		"tool": {
-			"$oid": "659bf6f049e52dedff83a8f1"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 1,
-		"status": {
-			"isDeactivated": false,
-			"isOutdatedOnScopeSchool": false
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
 		}
 	},
 	{
@@ -287,7 +77,6 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 3,
 		"status": {
 			"isOutdatedOnScopeSchool": false,
 			"isDeactivated": false
@@ -314,7 +103,6 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 2,
 		"status": {
 			"isOutdatedOnScopeSchool": false,
 			"isDeactivated": false
@@ -341,7 +129,6 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 1,
 		"status": {
 			"isOutdatedOnScopeSchool": false,
 			"isDeactivated": false
@@ -368,7 +155,6 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 1,
 		"status": {
 			"isOutdatedOnScopeSchool": false,
 			"isDeactivated": false

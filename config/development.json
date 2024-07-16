@@ -40,7 +40,8 @@
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
-		"URI": "http://localhost:8080",
+		"INTERNAL_URI": "http://localhost:8080",
+		"EXTERNAL_URI": "http://localhost:8080",
 		"TENANT": "dBildungscloud",
 		"CLIENTID": "dbc",
 		"ADMIN_CLIENTID": "admin-cli",
@@ -80,11 +81,20 @@
 	"FEATURE_COLUMN_BOARD_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": true,
+	"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": true,
+	"FEATURE_BOARD_LAYOUT_ENABLED": true,
 	"SCHULCONNEX_CLIENT": {
 		"API_URL": "http://localhost:8888/v1/",
-		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
-		"CLIENT_ID": "schulcloud",
-		"CLIENT_SECRET": "secret"
+		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token"
+	},
+	"ETHERPAD": {
+		"PAD_URI": "http://localhost:9001/p",
+		"URI": "http://localhost:9001/api/1.2.14"
+	},
+	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo",
+	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
+	"ADMIN_API": {
+		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
 	}
 }

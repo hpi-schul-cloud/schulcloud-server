@@ -1,25 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
+import { ImportUserRepo } from '@shared/repo';
 import {
 	cleanupCollections,
 	importUserFactory,
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
-	systemEntityFactory,
+	systemFactory,
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserMigrationIsNotEnabled } from '../loggable';
+import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
 
 describe(UserImportService.name, () => {
@@ -28,14 +31,16 @@ describe(UserImportService.name, () => {
 	let em: EntityManager;
 
 	let importUserRepo: DeepMocked<ImportUserRepo>;
-	let legacySystemRepo: DeepMocked<LegacySystemRepo>;
+	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let logger: DeepMocked<Logger>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
-	const features: IUserImportFeatures = {
-		userMigrationSystemId: new ObjectId().toHexString(),
-		userMigrationEnabled: true,
-		instance: 'n21',
+	const config: UserImportConfig = {
+		FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
+		FEATURE_USER_MIGRATION_ENABLED: true,
+		FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: true,
+		IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 8000,
 	};
 
 	beforeAll(async () => {
@@ -46,24 +51,30 @@ describe(UserImportService.name, () => {
 			providers: [
 				UserImportService,
 				{
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof UserImportConfig) => config[key]),
+					},
+				},
+				{
 					provide: ImportUserRepo,
 					useValue: createMock<ImportUserRepo>(),
 				},
 				{
-					provide: LegacySystemRepo,
-					useValue: createMock<LegacySystemRepo>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: UserImportFeatures,
-					useValue: features,
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 			],
 		}).compile();
@@ -71,9 +82,10 @@ describe(UserImportService.name, () => {
 		service = module.get(UserImportService);
 		em = module.get(EntityManager);
 		importUserRepo = module.get(ImportUserRepo);
-		legacySystemRepo = module.get(LegacySystemRepo);
+		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		logger = module.get(Logger);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {
@@ -108,9 +120,9 @@ describe(UserImportService.name, () => {
 	describe('getMigrationSystem', () => {
 		describe('when fetching the migration system', () => {
 			const setup = () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId(undefined, features.userMigrationSystemId);
+				const system: System = systemFactory.build();
 
-				legacySystemRepo.findById.mockResolvedValueOnce(system);
+				systemService.findByIdOrFail.mockResolvedValueOnce(system);
 
 				return {
 					system,
@@ -120,7 +132,7 @@ describe(UserImportService.name, () => {
 			it('should return the system', async () => {
 				const { system } = setup();
 
-				const result: SystemEntity = await service.getMigrationSystem();
+				const result: System = await service.getMigrationSystem();
 
 				expect(result).toEqual(system);
 			});
@@ -130,7 +142,7 @@ describe(UserImportService.name, () => {
 	describe('checkFeatureEnabled', () => {
 		describe('when the global feature is enabled', () => {
 			const setup = () => {
-				features.userMigrationEnabled = true;
+				config.FEATURE_USER_MIGRATION_ENABLED = true;
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined });
 
@@ -148,7 +160,7 @@ describe(UserImportService.name, () => {
 
 		describe('when the school feature is enabled', () => {
 			const setup = () => {
-				features.userMigrationEnabled = false;
+				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeature.LDAP_UNIVENTION_MIGRATION],
@@ -166,9 +178,9 @@ describe(UserImportService.name, () => {
 			});
 		});
 
-		describe('when the features are disabled', () => {
+		describe('when the config are disabled', () => {
 			const setup = () => {
-				features.userMigrationEnabled = false;
+				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [],
@@ -353,6 +365,51 @@ describe(UserImportService.name, () => {
 
 					expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(school);
 				});
+			});
+		});
+	});
+
+	describe('resetMigrationForUsersSchool', () => {
+		describe('when resetting the migration for a school', () => {
+			const setup = () => {
+				const currentUser: User = userFactory.build();
+				const school: LegacySchoolDo = legacySchoolDoFactory.build();
+
+				return {
+					currentUser,
+					school,
+				};
+			};
+
+			it('should delete import users for school', async () => {
+				const { currentUser, school } = setup();
+
+				await service.resetMigrationForUsersSchool(currentUser, school);
+
+				expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(currentUser.school);
+			});
+
+			it('should save school with reset migration flags', async () => {
+				const { currentUser, school } = setup();
+
+				await service.resetMigrationForUsersSchool(currentUser, school);
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					{
+						...school,
+						inUserMigration: undefined,
+						inMaintenanceSince: undefined,
+					},
+					true
+				);
+			});
+
+			it('should log canceled migration', async () => {
+				const { currentUser, school } = setup();
+
+				await service.resetMigrationForUsersSchool(currentUser, school);
+
+				expect(logger.notice).toHaveBeenCalledWith(new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo)));
 			});
 		});
 	});

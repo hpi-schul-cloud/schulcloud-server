@@ -1,46 +1,38 @@
-import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
-import { ToolVersion } from '../../common/interface';
-import { SchoolExternalToolRefDO } from '../../school-external-tool/domain';
+import { SchoolExternalToolRef } from '../../school-external-tool/domain';
 import { ContextRef } from './context-ref';
 
-export interface ContextExternalToolProps {
+export interface ContextExternalToolLaunchable {
 	id?: string;
 
-	schoolToolRef: SchoolExternalToolRefDO;
+	schoolToolRef: SchoolExternalToolRef;
 
 	contextRef: ContextRef;
 
-	displayName?: string;
-
 	parameters: CustomParameterEntry[];
-
-	toolVersion: number;
 }
 
-export class ContextExternalTool extends BaseDO implements ToolVersion {
-	schoolToolRef: SchoolExternalToolRefDO;
-
-	contextRef: ContextRef;
+export interface ContextExternalToolProps extends AuthorizableObject, ContextExternalToolLaunchable {
+	id: string;
 
 	displayName?: string;
-
-	parameters: CustomParameterEntry[];
-
-	toolVersion: number;
-
-	constructor(props: ContextExternalToolProps) {
-		super(props.id);
-		this.schoolToolRef = props.schoolToolRef;
-		this.contextRef = props.contextRef;
-		this.displayName = props.displayName;
-		this.parameters = props.parameters;
-		this.toolVersion = props.toolVersion;
-	}
-
-	getVersion(): number {
-		return this.toolVersion;
-	}
 }
 
-export type ContextExternalToolWithId = ContextExternalTool & { id: string };
+export class ContextExternalTool extends DomainObject<ContextExternalToolProps> {
+	get schoolToolRef(): SchoolExternalToolRef {
+		return this.props.schoolToolRef;
+	}
+
+	get contextRef(): ContextRef {
+		return this.props.contextRef;
+	}
+
+	get displayName(): string | undefined {
+		return this.props.displayName;
+	}
+
+	get parameters(): CustomParameterEntry[] {
+		return this.props.parameters;
+	}
+}

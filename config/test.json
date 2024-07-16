@@ -33,7 +33,8 @@
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
-		"URI": "http://localhost:8080",
+		"INTERNAL_URI": "http://localhost:8080",
+		"EXTERNAL_URI": "http://localhost:8080",
 		"TENANT": "master",
 		"CLIENTID": "dbc",
 		"ADMIN_CLIENTID": "admin-cli",
@@ -86,12 +87,18 @@
 	},
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
-		"MODIFICATION_THRESHOLD_MS": 60000
+		"MODIFICATION_THRESHOLD_MS": 60000,
+		"DELETION_DELAY_MILLISECONDS": 10000
 	},
 	"EXIT_ON_ERROR": false,
 	"TEACHER_STUDENT_VISIBILITY": {
 		"IS_CONFIGURABLE": false,
 		"IS_ENABLED_BY_DEFAULT": true,
 		"IS_VISIBLE": true
+	},
+	"ETHERPAD": {
+		"URI": "http://localhost:9001/api/1/",
+		"PAD_URI": "http://localhost:9001/p",
+		"API_KEY": "381d67e6347d235ac9446"
 	}
 }

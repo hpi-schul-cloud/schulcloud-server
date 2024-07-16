@@ -1,8 +1,9 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardLayout } from '@src/modules/board';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
-import { RoomBoardDTO, RoomBoardElementTypes } from '../types';
+import { ColumnBoardMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
 describe('room board response mapper', () => {
@@ -157,11 +158,12 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map column board targets on board to response', () => {
-			const columnBoardMetaData = {
+			const columnBoardMetaData: ColumnBoardMetaData = {
 				id: new ObjectId().toHexString(),
 				columnBoardId: new ObjectId().toHexString(),
 				title: 'column board #1',
 				published: true,
+				layout: BoardLayout.COLUMNS,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};

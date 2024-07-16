@@ -67,7 +67,9 @@
 		],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
 	},
 	{
 		"_id": {
@@ -107,7 +109,36 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 2
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "667e4fe648ea6a22a5474359"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"name": "CY Test Tool Course Restriction",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [
+			"course"
+		]
 	},
 	{
 		"_id": {
@@ -131,8 +162,63 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"version": 1,
+		"isDeactivated": false,
 		"restrictToContexts": [
 			"board-element"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "667e50f6162707ce02b9ac02"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"name": "CY Test Tool Media-Board Restriction",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [
+			"media-board"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "667e52a4162707ce02b9ac04"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1682589075592"
+			}
+		},
+		"name": "CY Test Tool All Restrictions",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [
+			"course","board-element","media-board"
 		]
 	},
 	{
@@ -166,7 +252,9 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 2
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
 	},
 	{
 		"_id": {
@@ -199,50 +287,9 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 2
-	},
-	{
-		"_id": {
-			"$oid": "647de247cf6a427b9d39e5c3"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358084733"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358362888"
-			}
-		},
-		"name": "CY Test Tool School and Context Scope",
-		"config_type": "basic",
-		"config_baseUrl": "https://google.com",
-		"parameters": [
-			{
-				"name": "schoolParam",
-				"displayName": "cypress test school",
-				"description": "",
-				"scope": "school",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "contextparammm",
-				"displayName": "cypress test context",
-				"description": "",
-				"scope": "context",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			}
-		],
-		"isHidden": false,
-		"openNewTab": false,
-		"version": 2
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
 	},
 	{
 		"_id": {
@@ -261,120 +308,12 @@
 		"name": "CY Test Tool deactivated External Tool",
 		"config_type": "basic",
 		"config_baseUrl": "https://google.com",
-		"parameters": [
-			{
-				"name": "schoolParam",
-				"displayName": "cypress test school",
-				"description": "",
-				"scope": "school",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "contextparammm",
-				"displayName": "cypress test context",
-				"description": "",
-				"scope": "context",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			}
-		],
+		"parameters": [],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 2,
-		"isDeactivated": true
-	},
-	{
-		"_id": {
-			"$oid": "647de247cf6a427b9d39e7c3"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358084733"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358362888"
-			}
-		},
-		"name": "CY Test Tool deactivated School External Tool",
-		"config_type": "basic",
-		"config_baseUrl": "https://google.com",
-		"parameters": [
-			{
-				"name": "schoolParam",
-				"displayName": "cypress test school",
-				"description": "",
-				"scope": "school",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "contextparammm",
-				"displayName": "cypress test context",
-				"description": "",
-				"scope": "context",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			}
-		],
-		"isHidden": false,
-		"openNewTab": false,
-		"version": 2,
-		"isDeactivated": false
-	},
-	{
-		"_id": {
-			"$oid": "647de247cf6a427b9d39e8c3"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1701358084733"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1701358362888"
-			}
-		},
-		"name": "CY Test Tool active External Tool",
-		"config_type": "basic",
-		"config_baseUrl": "https://google.com",
-		"parameters": [
-			{
-				"name": "schoolParam",
-				"displayName": "cypress test school",
-				"description": "",
-				"scope": "school",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "contextparammm",
-				"displayName": "cypress test context",
-				"description": "",
-				"scope": "context",
-				"location": "path",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			}
-		],
-		"isHidden": false,
-		"openNewTab": false,
-		"version": 2,
-		"isDeactivated": false
+		"version": 1,
+		"isDeactivated": true,
+		"restrictToContexts": []
 	},
 	{
 		"_id": {
@@ -418,7 +357,215 @@
 		"isHidden": false,
 		"openNewTab": false,
 		"version": 1,
-		"isDeactivated": false
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "65fc0fcda519d4a3b71193e0"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool Optional Protected Parameter",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [
+			{
+				"name": "search",
+				"displayName": "Suchparameter",
+				"description": "Danch wird gesucht",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			},
+			{
+				"name": "protected",
+				"displayName": "geschützter Parameter",
+				"description": "Dieser parameter wird nicht mitkopiert",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": true,
+				"isProtected": true
+			}
+		],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "666829b6ea0c14353cec2056"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool Hidden",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [],
+		"isHidden": true,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "6667ec1c243527c9139bd799"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool 1",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "66682949ea0c14353cec2054"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool 2",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "6667ec58243527c9139bd79b"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool Optional Parameters",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [
+			{
+				"name": "schoolParam",
+				"displayName": "school parameter",
+				"description": "",
+				"scope": "school",
+				"location": "path",
+				"type": "string",
+				"isOptional": true,
+				"isProtected": false
+			},
+			{
+				"name": "contextParam",
+				"displayName": "context parameter",
+				"description": "",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": true,
+				"isProtected": false
+			}
+		],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "6667ec85243527c9139bd79d"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool Required Parameters",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [
+			{
+				"name": "schoolParam",
+				"displayName": "school parameter",
+				"description": "",
+				"scope": "school",
+				"location": "path",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			},
+			{
+				"name": "contextParam",
+				"displayName": "context parameter",
+				"description": "",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			}
+		],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
 	},
 	{
 		"_id": {
@@ -444,7 +591,9 @@
 			}
 		},
 		"url": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"version": 1
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": []
 	},
 	{
 		"_id": {

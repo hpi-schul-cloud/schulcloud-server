@@ -1,6 +1,7 @@
-import bcrypt from 'bcryptjs';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import bcrypt from 'bcryptjs';
+import { AccountSave } from './account-save';
 
 export interface AccountProps extends AuthorizableObject {
 	id: EntityId;
@@ -12,10 +13,12 @@ export interface AccountProps extends AuthorizableObject {
 	password?: string;
 	token?: string;
 	credentialHash?: string;
+	lastLogin?: Date;
 	lasttriedFailedLogin?: Date;
 	expiresAt?: Date;
 	activated?: boolean;
 	idmReferenceId?: string;
+	deactivatedAt?: Date;
 }
 
 export class Account extends DomainObject<AccountProps> {
@@ -71,6 +74,14 @@ export class Account extends DomainObject<AccountProps> {
 		return this.props.credentialHash;
 	}
 
+	public get lastLogin(): Date | undefined {
+		return this.props.lastLogin;
+	}
+
+	public set lastLogin(lastLogin: Date | undefined) {
+		this.props.lastLogin = lastLogin;
+	}
+
 	public get lasttriedFailedLogin(): Date | undefined {
 		return this.props.lasttriedFailedLogin;
 	}
@@ -95,23 +106,27 @@ export class Account extends DomainObject<AccountProps> {
 		return this.props.idmReferenceId;
 	}
 
+	public get deactivatedAt(): Date | undefined {
+		return this.props.deactivatedAt;
+	}
+
 	public async update(accountSave: AccountSave): Promise<void> {
-		this.props.userId = accountSave.userId;
-		this.props.systemId = accountSave.systemId;
-		this.props.username = accountSave.username;
-		this.props.activated = accountSave.activated;
-		this.props.expiresAt = accountSave.expiresAt;
-		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
+		this.props.userId = accountSave.userId ?? this.props.userId;
+		this.props.systemId = accountSave.systemId ?? this.props.systemId;
+		this.props.username = accountSave.username ?? this.props.username;
+		this.props.activated = accountSave.activated ?? this.props.activated;
+		this.props.expiresAt = accountSave.expiresAt ?? this.props.expiresAt;
+		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin ?? this.props.lasttriedFailedLogin;
+		this.props.credentialHash = accountSave.credentialHash ?? this.props.credentialHash;
+		this.props.token = accountSave.token ?? this.props.token;
+		this.props.deactivatedAt = accountSave.deactivatedAt ?? this.props.deactivatedAt;
+
 		if (accountSave.password) {
 			this.props.password = await this.encryptPassword(accountSave.password);
 		}
-		this.props.credentialHash = accountSave.credentialHash;
-		this.props.token = accountSave.token;
 	}
 
 	private encryptPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, 10);
 	}
 }
-
-export type AccountSave = Omit<Account, 'id'> & Partial<Pick<Account, 'id'>>;

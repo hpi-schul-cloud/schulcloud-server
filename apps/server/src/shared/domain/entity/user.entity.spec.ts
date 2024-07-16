@@ -1,8 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { Role } from '.';
+import { Role, SchoolEntity } from '.';
 import { LanguageType, Permission, RoleName } from '../interface';
 import { User } from './user.entity';
 
@@ -32,6 +33,8 @@ describe('User Entity', () => {
 				email: 'john.cale@velvet.underground',
 				school,
 				roles: [],
+				source: 'ldap',
+				sourceOptions: { tspUid: '123' },
 			});
 
 			expect(user).toBeInstanceOf(User);
@@ -43,7 +46,7 @@ describe('User Entity', () => {
 			const user = userFactory.build();
 			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
-			expect(() => user.resolvePermissions()).toThrowError();
+			expect(() => user.resolvePermissions()).toThrow(ReferenceNotPopulatedLoggableException);
 		});
 
 		it('should throw an error if the sub-roles are not populated', () => {
@@ -52,6 +55,13 @@ describe('User Entity', () => {
 			const user = userFactory.build({ roles: [role] });
 
 			expect(() => user.resolvePermissions()).toThrowError();
+		});
+
+		it('should throw an error if the school is not populated', () => {
+			const user = userFactory.build();
+			user.school = orm.em.getReference(SchoolEntity, new ObjectId().toHexString());
+
+			expect(() => user.resolvePermissions()).toThrow(ReferenceNotPopulatedLoggableException);
 		});
 
 		it('should return empty array if the user has no roles', () => {
@@ -122,52 +132,175 @@ describe('User Entity', () => {
 	});
 
 	describe('when user is a teacher', () => {
-		describe('when school permissions `STUDENT_LIST` is true', () => {
-			const setup = () => {
-				const role = roleFactory.build({ name: RoleName.TEACHER, permissions: [permissionA] });
-				const school = schoolEntityFactory.build({
-					permissions: { teacher: { [Permission.STUDENT_LIST]: true }, student: { [Permission.LERNSTORE_VIEW]: true } },
-				});
-				const user = userFactory.build({ roles: [role], school });
-
-				return { user };
+		describe('when TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is true', () => {
+			const setupConfig = () => {
+				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', true);
 			};
 
-			it('should return the permissions of the user and the school permissions', () => {
-				const { user } = setup();
+			describe('when school permissions STUDENT_LIST is true', () => {
+				const setup = () => {
+					setupConfig();
 
-				const result = user.resolvePermissions();
+					const role = roleFactory.build({ name: RoleName.TEACHER, permissions: [permissionA] });
+					const school = schoolEntityFactory.build({
+						permissions: { teacher: { [Permission.STUDENT_LIST]: true } },
+					});
+					const user = userFactory.build({ roles: [role], school });
 
-				expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
+					return { user };
+				};
+
+				it('should return the permissions of the user including STUDENT_LIST permission', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
+				});
+			});
+
+			describe('when school permissions STUDENT_LIST is false', () => {
+				const setup = () => {
+					setupConfig();
+
+					const role = roleFactory.build({
+						name: RoleName.TEACHER,
+						permissions: [permissionA, Permission.STUDENT_LIST],
+					});
+					const school = schoolEntityFactory.build({
+						permissions: {
+							teacher: { [Permission.STUDENT_LIST]: false },
+							student: { [Permission.LERNSTORE_VIEW]: true },
+						},
+					});
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the permissions of the user without STUDENT_LIST permission', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA].sort());
+				});
+			});
+
+			describe('when school permissions are not set', () => {
+				const setup = () => {
+					setupConfig();
+
+					const role = roleFactory.build({
+						name: RoleName.TEACHER,
+						permissions: [permissionA, Permission.STUDENT_LIST],
+					});
+					const school = schoolEntityFactory.build({ permissions: undefined });
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the permissions of the user without STUDENT_LIST permission', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA].sort());
+				});
 			});
 		});
-
-		describe('when school permissions `STUDENT_LIST` is false', () => {
-			const setup = () => {
-				const role = roleFactory.build({ name: RoleName.TEACHER, permissions: [permissionA, Permission.STUDENT_LIST] });
-				const school = schoolEntityFactory.build({
-					permissions: {
-						teacher: { [Permission.STUDENT_LIST]: false },
-						student: { [Permission.LERNSTORE_VIEW]: true },
-					},
-				});
-				const user = userFactory.build({ roles: [role], school });
-
-				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', false);
-				return { user };
+		describe('when TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is false', () => {
+			const setupConfig = () => {
+				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', false);
 			};
 
-			it('should return the permissions of the user and the school permissions', () => {
-				const { user } = setup();
+			describe('when TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT is true', () => {
+				const setup = () => {
+					setupConfig();
+					Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', true);
 
-				const result = user.resolvePermissions();
+					const role = roleFactory.build({ name: RoleName.TEACHER, permissions: [permissionA] });
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ roles: [role], school });
 
-				expect(result.sort()).toEqual([permissionA].sort());
+					return { user };
+				};
+
+				it('should return the permissions of the user including STUDENT_LIST permission', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
+				});
+			});
+
+			describe('when TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT is false', () => {
+				const setup = () => {
+					setupConfig();
+					Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', false);
+
+					const role = roleFactory.build({
+						name: RoleName.TEACHER,
+						permissions: [permissionA, Permission.STUDENT_LIST],
+					});
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the permissions of the user without STUDENT_LIST permission', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA].sort());
+				});
 			});
 		});
 	});
 
 	describe('when user is a student', () => {
+		describe('when LERNSTORE_VIEW permission is not set for school', () => {
+			describe('when user has LERNSTORE_VIEW permission from his role', () => {
+				const setup = () => {
+					const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [Permission.LERNSTORE_VIEW] });
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the unchanged permissions of the user', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([Permission.LERNSTORE_VIEW].sort());
+				});
+			});
+
+			describe('when user does not have LERNSTORE_VIEW permission from his role', () => {
+				const setup = () => {
+					const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the unchanged permissions of the user', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA].sort());
+				});
+			});
+		});
+
 		describe('when school permissions `LERNSTORE_VIEW` is true', () => {
 			const setup = () => {
 				const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });

@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
 import { NotImplementedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
@@ -13,7 +14,6 @@ import {
 	legacySchoolDoFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -23,11 +23,14 @@ import {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
+import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './service';
 
@@ -50,8 +53,12 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	let schulconnexUserProvisioningService: DeepMocked<SchulconnexUserProvisioningService>;
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
 	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
+	let schulconnexLicenseProvisioningService: DeepMocked<SchulconnexLicenseProvisioningService>;
 	let groupService: DeepMocked<GroupService>;
-	let provisioningFeatures: IProvisioningFeatures;
+	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
+	let schulconnexToolProvisioningService: DeepMocked<SchulconnexToolProvisioningService>;
+
+	const config: Partial<ProvisioningConfig> = {};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -74,12 +81,22 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					useValue: createMock<SchulconnexCourseSyncService>(),
 				},
 				{
+					provide: SchulconnexLicenseProvisioningService,
+					useValue: createMock<SchulconnexLicenseProvisioningService>(),
+				},
+				{
 					provide: GroupService,
 					useValue: createMock<GroupService>(),
 				},
 				{
-					provide: ProvisioningFeatures,
-					useValue: {},
+					provide: SchulconnexToolProvisioningService,
+					useValue: createMock<SchulconnexToolProvisioningService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
+					},
 				},
 			],
 		}).compile();
@@ -89,15 +106,16 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 		schulconnexUserProvisioningService = module.get(SchulconnexUserProvisioningService);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
 		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
+		schulconnexLicenseProvisioningService = module.get(SchulconnexLicenseProvisioningService);
 		groupService = module.get(GroupService);
-		provisioningFeatures = module.get(ProvisioningFeatures);
+		configService = module.get(ConfigService);
+		schulconnexToolProvisioningService = module.get(SchulconnexToolProvisioningService);
 	});
 
 	beforeEach(() => {
-		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-			schulconnexGroupProvisioningEnabled: false,
-			schulconnexCourseSyncEnabled: false,
-		});
+		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = false;
+		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -105,7 +123,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('apply is called', () => {
@@ -224,7 +242,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -284,7 +302,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when group data is provided, but the feature is disabled', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = false;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -328,7 +346,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when group data is not provided', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -369,8 +387,8 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when an existing group gets provisioned', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -419,8 +437,8 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when a new group is provisioned', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
@@ -464,8 +482,8 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 		describe('when a user was removed from a group', () => {
 			const setup = () => {
-				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -503,6 +521,98 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 				await strategy.apply(oauthData);
 
 				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(group, group);
+			});
+		});
+
+		describe('when provision user licenses', () => {
+			describe('when the feature is enabled', () => {
+				const setup = () => {
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: new ObjectId().toHexString(),
+							provisioningStrategy: SystemProvisioningStrategy.OIDC,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: 'externalUserId',
+						}),
+						externalLicenses: [],
+					});
+					const user: UserDO = userDoFactory.build({
+						id: new ObjectId().toHexString(),
+					});
+
+					schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValue(user);
+					configService.get.mockReturnValue(true);
+
+					return {
+						oauthData,
+						user,
+					};
+				};
+
+				it('should provision user licenses', async () => {
+					const { oauthData, user } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).toHaveBeenCalledWith(
+						user.id,
+						oauthData.externalLicenses
+					);
+				});
+
+				it('should provision school external tool', async () => {
+					const { oauthData, user } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexToolProvisioningService.provisionSchoolExternalTools).toHaveBeenCalledWith(
+						user.id,
+						user.schoolId,
+						oauthData.system.systemId
+					);
+				});
+			});
+
+			describe('when the feature is disabled', () => {
+				const setup = () => {
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: new ObjectId().toHexString(),
+							provisioningStrategy: SystemProvisioningStrategy.OIDC,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: 'externalUserId',
+						}),
+						externalLicenses: [],
+					});
+					const user: UserDO = userDoFactory.build({
+						id: new ObjectId().toHexString(),
+					});
+
+					schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValue(user);
+					configService.get.mockReturnValue(false);
+
+					return {
+						oauthData,
+					};
+				};
+
+				it('should not provision user licenses', async () => {
+					const { oauthData } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).not.toHaveBeenCalled();
+				});
+
+				it('should not provision school external tool', async () => {
+					const { oauthData } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexToolProvisioningService.provisionSchoolExternalTools).not.toHaveBeenCalled();
+				});
 			});
 		});
 	});

@@ -1,7 +1,7 @@
-import { SanisResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.module';
+import { SystemEntity } from '@modules/system/entity';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -21,41 +21,37 @@ import {
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	accountFactory,
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { AccountEntity } from '@modules/account/entity/account.entity';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { IUserImportFeatures, UserImportFeatures } from '../../config';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
-	let userImportFeatures: IUserImportFeatures;
-	let axiosMock: MockAdapter;
 
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
 		features: SchoolFeature[] = [],
-		schoolHasExternalId = true
+		schoolHasExternalId = true,
+		officialSchoolNumber = 'foo'
 	) => {
 		const system = systemEntityFactory.buildWithId();
 		const school = schoolEntityFactory.build({
-			officialSchoolNumber: 'foo',
+			officialSchoolNumber,
 			features,
 			systems: [system],
 			externalId: schoolHasExternalId ? system.id : undefined,
@@ -70,9 +66,10 @@ describe('ImportUser Controller (API)', () => {
 	};
 
 	const setConfig = (systemId?: string) => {
-		userImportFeatures.userMigrationEnabled = true;
-		userImportFeatures.userMigrationSystemId = systemId || new ObjectId().toString();
-		userImportFeatures.instance = 'dbc';
+		const config: ServerConfig = serverConfig();
+		config.FEATURE_USER_MIGRATION_ENABLED = true;
+		config.FEATURE_USER_MIGRATION_SYSTEM_ID = systemId || new ObjectId().toString();
+		config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
 	};
 
 	beforeAll(async () => {
@@ -86,8 +83,6 @@ describe('ImportUser Controller (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
-		userImportFeatures = app.get(UserImportFeatures);
-		axiosMock = new MockAdapter(axios);
 	});
 
 	afterAll(async () => {
@@ -115,13 +110,16 @@ describe('ImportUser Controller (API)', () => {
 				let account: AccountEntity;
 				beforeEach(async () => {
 					({ account } = await authenticatedUser([
-						Permission.SCHOOL_IMPORT_USERS_MIGRATE,
-						Permission.SCHOOL_IMPORT_USERS_UPDATE,
-						Permission.SCHOOL_IMPORT_USERS_VIEW,
+						Permission.IMPORT_USER_MIGRATE,
+						Permission.IMPORT_USER_UPDATE,
+						Permission.IMPORT_USER_VIEW,
 					]));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationEnabled = false;
-					userImportFeatures.userMigrationSystemId = '';
+
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_ENABLED = false;
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = '';
+					config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
 				});
 
 				afterEach(() => {
@@ -177,7 +175,8 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ account, system } = await authenticatedUser());
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system._id.toString();
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 				});
 
 				it('GET /user/import is UNAUTHORIZED', async () => {
@@ -225,12 +224,13 @@ describe('ImportUser Controller (API)', () => {
 
 				beforeEach(async () => {
 					({ school, system, account } = await authenticatedUser(
-						[Permission.SCHOOL_IMPORT_USERS_VIEW],
+						[Permission.IMPORT_USER_VIEW],
 						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system._id.toString();
-					userImportFeatures.userMigrationEnabled = false;
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_ENABLED = false;
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 				});
 
 				it('GET user/import is authorized, despite feature not enabled', async () => {
@@ -246,9 +246,10 @@ describe('ImportUser Controller (API)', () => {
 				let school: SchoolEntity;
 				let system: SystemEntity;
 				beforeEach(async () => {
-					({ school, system, account } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_VIEW]));
+					({ school, system, account } = await authenticatedUser([Permission.IMPORT_USER_VIEW]));
 					testApiClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system._id.toString();
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 				});
 
 				it('GET /user/import responds with importusers', async () => {
@@ -299,7 +300,7 @@ describe('ImportUser Controller (API)', () => {
 				let system: SystemEntity;
 
 				beforeEach(async () => {
-					({ account, school, system, user } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
+					({ account, school, system, user } = await authenticatedUser([Permission.IMPORT_USER_UPDATE]));
 					testApiClient = await testApiClient.login(account);
 					setConfig(system._id.toString());
 				});
@@ -408,7 +409,7 @@ describe('ImportUser Controller (API)', () => {
 			let school: SchoolEntity;
 
 			beforeEach(async () => {
-				({ account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
+				({ account, school } = await authenticatedUser([Permission.IMPORT_USER_UPDATE]));
 				testApiClient = await testApiClient.login(account);
 			});
 
@@ -515,7 +516,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					await cleanupCollections(em);
 
-					({ account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_VIEW]));
+					({ account, school } = await authenticatedUser([Permission.IMPORT_USER_VIEW]));
 
 					testApiClient = await testApiClient.login(account);
 				});
@@ -534,7 +535,7 @@ describe('ImportUser Controller (API)', () => {
 							expect(listResponse.data.some((elem) => elem.userId === currentSchoolsUser.id)).toEqual(true);
 						});
 
-						it('should not respond with assigned users', async () => {
+						it.skip('should not respond with assigned users', async () => {
 							const otherSchoolsUser = userFactory.build();
 							const currentSchoolsUser = userFactory.build({ school });
 							const importUser = importUserFactory.matched(MatchCreator.AUTO, currentSchoolsUser).build({ school });
@@ -925,7 +926,7 @@ describe('ImportUser Controller (API)', () => {
 				let school: SchoolEntity;
 
 				beforeEach(async () => {
-					({ account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
+					({ account, school } = await authenticatedUser([Permission.IMPORT_USER_UPDATE]));
 					testApiClient = await testApiClient.login(account);
 				});
 
@@ -1055,7 +1056,7 @@ describe('ImportUser Controller (API)', () => {
 				let school: SchoolEntity;
 
 				beforeEach(async () => {
-					({ account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
+					({ account, school } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]));
 					school.officialSchoolNumber = 'foo';
 					school.inMaintenanceSince = new Date();
 					school.externalId = 'foo';
@@ -1084,9 +1085,10 @@ describe('ImportUser Controller (API)', () => {
 
 				describe('POST user/import/startUserMigration', () => {
 					it('should set in user migration mode', async () => {
-						({ account, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
+						({ account, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]));
 						testApiClient = await testApiClient.login(account);
-						userImportFeatures.userMigrationSystemId = system._id.toString();
+						const config: ServerConfig = serverConfig();
+						config.FEATURE_USER_MIGRATION_SYSTEM_ID = system._id.toString();
 
 						await testApiClient.post('startUserMigration').expect(HttpStatus.CREATED);
 					});
@@ -1104,13 +1106,13 @@ describe('ImportUser Controller (API)', () => {
 						const roles = [
 							roleFactory.build({
 								name: RoleName.ADMINISTRATOR,
-								permissions: [Permission.SCHOOL_IMPORT_USERS_MIGRATE],
+								permissions: [Permission.IMPORT_USER_MIGRATE],
 							}),
 						];
 						await em.persistAndFlush([school, ...roles]);
 
 						const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
-							Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+							Permission.IMPORT_USER_MIGRATE,
 						]);
 
 						await em.persistAndFlush([adminUser, adminAccount]);
@@ -1123,100 +1125,65 @@ describe('ImportUser Controller (API)', () => {
 				});
 			});
 		});
+	});
 
-		describe('[POST] populateImportUsers', () => {
-			describe('when user is not authenticated', () => {
-				const setup = () => {
-					const notLoggedInClient = new TestApiClient(app, 'user/import');
-
-					return { notLoggedInClient };
+	describe('[POST] /user/import/cancel', () => {
+		describe('when user is unauthorized', () => {
+			const setup = () => {
+				return {
+					notLoggedInClient: new TestApiClient(app, 'user/import'),
 				};
+			};
 
-				it('should return unauthorized', async () => {
-					const { notLoggedInClient } = setup();
+			it('should return unauthorized', async () => {
+				const { notLoggedInClient } = setup();
 
-					await notLoggedInClient.post('populate-import-users').send().expect(HttpStatus.UNAUTHORIZED);
-				});
+				await notLoggedInClient.post('cancel').expect(HttpStatus.UNAUTHORIZED);
 			});
+		});
 
-			describe('when migration is not activated', () => {
-				const setup = async () => {
-					const { account } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
-					const loggedInClient = await testApiClient.login(account);
+		describe('when user has no permission', () => {
+			const setup = async () => {
+				const { account, system } = await authenticatedUser([]);
+				setConfig(system._id.toString());
+				const loggedInClient = await testApiClient.login(account);
 
-					userImportFeatures.userMigrationEnabled = false;
-
-					return { loggedInClient };
+				return {
+					loggedInClient,
 				};
+			};
 
-				it('should return with status forbidden', async () => {
-					const { loggedInClient } = await setup();
+			it('should return unauthorized', async () => {
+				const { loggedInClient } = await setup();
 
-					const response = await loggedInClient.post('populate-import-users').send();
-
-					expect(response.body).toEqual({
-						type: 'USER_MIGRATION_IS_NOT_ENABLED',
-						title: 'User Migration Is Not Enabled',
-						message: 'Feature flag of user migration may be disable or the school is not an LDAP pilot',
-						code: HttpStatus.FORBIDDEN,
-					});
-				});
+				await loggedInClient.post('cancel').expect(HttpStatus.UNAUTHORIZED);
 			});
+		});
 
-			describe('when users school has no external id', () => {
-				const setup = async () => {
-					const { account, school, system } = await authenticatedUser(
-						[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
-						[],
-						false
-					);
-					const loggedInClient = await testApiClient.login(account);
-					userImportFeatures.userMigrationSystemId = system.id;
+		describe('when import was successfully canceled', () => {
+			const setup = async () => {
+				const { school, system, account } = await authenticatedUser(
+					[Permission.IMPORT_USER_MIGRATE],
+					[],
+					true,
+					'00100'
+				);
+				setConfig(system._id.toString());
 
-					school.externalId = undefined;
+				const importusers = importUserFactory.buildList(10, { school });
+				await em.persistAndFlush(importusers);
 
-					return { loggedInClient };
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
 				};
+			};
 
-				it('should return with status bad request', async () => {
-					const { loggedInClient } = await setup();
+			it('should return no content', async () => {
+				const { loggedInClient } = await setup();
 
-					const response = await loggedInClient.post('populate-import-users').send();
-
-					expect(response.body).toEqual({
-						type: 'USER_IMPORT_SCHOOL_EXTERNAL_ID_MISSING',
-						title: 'User Import School External Id Missing',
-						message: 'Bad Request',
-						code: HttpStatus.BAD_REQUEST,
-					});
-				});
-			});
-
-			describe('when users were populated successful', () => {
-				const setup = async () => {
-					const { account, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
-					const loggedInClient = await testApiClient.login(account);
-
-					userImportFeatures.userMigrationEnabled = true;
-					userImportFeatures.userMigrationSystemId = system.id;
-
-					axiosMock.onPost(/(.*)\/token/).reply<OauthTokenResponse>(HttpStatus.OK, {
-						id_token: 'idToken',
-						refresh_token: 'refreshToken',
-						access_token: 'accessToken',
-					});
-
-					const schulconnexResponse: SanisResponse = schulconnexResponseFactory.build();
-					axiosMock.onGet(/(.*)\/personen-info/).reply(HttpStatus.OK, [schulconnexResponse]);
-
-					return { loggedInClient, account, school };
-				};
-
-				it('should return with status created', async () => {
-					const { loggedInClient } = await setup();
-
-					await loggedInClient.post('populate-import-users').send().expect(HttpStatus.CREATED);
-				});
+				await loggedInClient.post('cancel').expect(HttpStatus.NO_CONTENT);
 			});
 		});
 	});

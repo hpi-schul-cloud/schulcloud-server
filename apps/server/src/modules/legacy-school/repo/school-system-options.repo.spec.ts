@@ -1,7 +1,8 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	schoolEntityFactory,
@@ -45,6 +46,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 
@@ -72,6 +74,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningClassesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 			});
@@ -159,6 +162,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: false,
 						groupProvisioningOtherEnabled: false,
+						schoolExternalToolProvisioningEnabled: false,
 					},
 				});
 			});
@@ -188,6 +192,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningClassesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					}),
 				});
 
@@ -210,6 +215,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 							groupProvisioningOtherEnabled: true,
 							groupProvisioningClassesEnabled: true,
 							groupProvisioningCoursesEnabled: true,
+							schoolExternalToolProvisioningEnabled: true,
 						},
 					})
 				);
@@ -228,6 +234,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningClassesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 			});

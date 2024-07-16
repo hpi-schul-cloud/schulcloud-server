@@ -2,17 +2,14 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-} from '@shared/testing';
-import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
+	cardEntityFactory,
+	columnEntityFactory,
+	columnBoardEntityFactory,
+	drawingElementEntityFactory,
+} from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/elements';
 describe('drawing permission check (api)', () => {
@@ -43,15 +40,15 @@ describe('drawing permission check (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const drawingItemNode = drawingElementNodeFactory.buildWithId({ parent: cardNode });
+			const drawingItemNode = drawingElementEntityFactory.withParent(cardNode).build();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
 			em.clear();
@@ -80,15 +77,15 @@ describe('drawing permission check (api)', () => {
 			const course = courseFactory.build({ students: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, studentAccount, studentUser]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const drawingItemNode = drawingElementNodeFactory.buildWithId({ parent: cardNode });
+			const drawingItemNode = drawingElementEntityFactory.withParent(cardNode).build();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
 			em.clear();

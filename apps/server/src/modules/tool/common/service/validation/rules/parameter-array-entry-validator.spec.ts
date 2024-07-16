@@ -1,10 +1,10 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '../../../../external-tool/testing';
 import {
 	CustomParameter,
 	CustomParameterEntry,
+	ToolParameterMandatoryValueMissingLoggableException,
 	ToolParameterRequiredLoggableException,
-	ToolParameterValueMissingLoggableException,
 } from '../../../domain';
 import { ParameterArrayEntryValidator } from './parameter-array-entry-validator';
 
@@ -31,7 +31,7 @@ describe(ParameterArrayEntryValidator.name, () => {
 			it('should return an empty array', () => {
 				const { entries, declarations } = setup();
 
-				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations);
+				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations, undefined);
 
 				expect(result).toHaveLength(0);
 			});
@@ -54,7 +54,7 @@ describe(ParameterArrayEntryValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entries, declarations } = setup();
 
-				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations);
+				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations, undefined);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterRequiredLoggableException);
 			});
@@ -81,9 +81,9 @@ describe(ParameterArrayEntryValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entries, declarations } = setup();
 
-				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations);
+				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations, undefined);
 
-				expect(result[0]).toBeInstanceOf(ToolParameterValueMissingLoggableException);
+				expect(result[0]).toBeInstanceOf(ToolParameterMandatoryValueMissingLoggableException);
 			});
 		});
 	});

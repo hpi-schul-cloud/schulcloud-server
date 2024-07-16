@@ -1,18 +1,14 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import {
-	boardDoAuthorizableFactory,
-	mediaBoardFactory,
-	mediaLineFactory,
-	setupEntities,
-	userFactory as userEntityFactory,
-} from '@shared/testing';
+import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
+import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
+import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardUc } from './media-board.uc';
+import { BoardLayout, MediaBoardNodeFactory } from '../../domain';
 
 describe(MediaBoardUc.name, () => {
 	let module: TestingModule;
@@ -20,9 +16,10 @@ describe(MediaBoardUc.name, () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
-	let mediaLineService: DeepMocked<MediaLineService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
+	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
+	let mediaBoardNodeFactory: DeepMocked<MediaBoardNodeFactory>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -39,16 +36,20 @@ describe(MediaBoardUc.name, () => {
 					useValue: createMock<MediaBoardService>(),
 				},
 				{
-					provide: MediaLineService,
-					useValue: createMock<MediaLineService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodePermissionService,
+					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: MediaBoardNodeFactory,
+					useValue: createMock<MediaBoardNodeFactory>(),
 				},
 			],
 		}).compile();
@@ -56,9 +57,10 @@ describe(MediaBoardUc.name, () => {
 		uc = module.get(MediaBoardUc);
 		authorizationService = module.get(AuthorizationService);
 		mediaBoardService = module.get(MediaBoardService);
-		mediaLineService = module.get(MediaLineService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodeService = module.get(BoardNodeService);
+		boardNodePermissionService = module.get(BoardNodePermissionService);
 		configService = module.get(ConfigService);
+		mediaBoardNodeFactory = module.get(MediaBoardNodeFactory);
 	});
 
 	afterAll(async () => {
@@ -77,8 +79,8 @@ describe(MediaBoardUc.name, () => {
 
 				configService.get.mockReturnValueOnce(true);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([]);
-				mediaBoardService.create.mockResolvedValueOnce(mediaBoard);
+				mediaBoardService.findByExternalReference.mockResolvedValueOnce([]);
+				mediaBoardNodeFactory.buildMediaBoard.mockReturnValueOnce(mediaBoard);
 
 				return {
 					user,
@@ -114,8 +116,7 @@ describe(MediaBoardUc.name, () => {
 
 				configService.get.mockReturnValueOnce(true);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([mediaBoard.id]);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				mediaBoardService.findByExternalReference.mockResolvedValueOnce([mediaBoard]);
 
 				return {
 					user,
@@ -169,32 +170,25 @@ describe(MediaBoardUc.name, () => {
 				const user = userEntityFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-				mediaLineService.create.mockResolvedValueOnce(mediaLine);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+				mediaBoardNodeFactory.buildMediaLine.mockReturnValueOnce(mediaLine);
 
 				return {
 					user,
 					mediaBoard,
 					mediaLine,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaBoard, boardDoAuthorizable } = setup();
+				const { user, mediaBoard } = setup();
 
 				await uc.createLine(user.id, mediaBoard.id);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
 			});
 
 			it('should return a new media line', async () => {
@@ -223,6 +217,63 @@ describe(MediaBoardUc.name, () => {
 				const { user, mediaBoard } = setup();
 
 				await expect(uc.createLine(user.id, mediaBoard.id)).rejects.toThrow(FeatureDisabledLoggableException);
+			});
+		});
+	});
+
+	describe('setLayout', () => {
+		describe('when the user changes the layout of the media board', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build({
+					layout: BoardLayout.LIST,
+				});
+
+				configService.get.mockReturnValueOnce(true);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+
+				return {
+					user,
+					mediaBoard,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.setLayout(user.id, mediaBoard.id, BoardLayout.GRID);
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+			});
+
+			it('should change the layout', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.setLayout(user.id, mediaBoard.id, BoardLayout.GRID);
+
+				expect(mediaBoardService.updateLayout).toHaveBeenCalledWith(mediaBoard, BoardLayout.GRID);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaBoard,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaBoard } = setup();
+
+				await expect(uc.setLayout(user.id, mediaBoard.id, BoardLayout.GRID)).rejects.toThrow(
+					FeatureDisabledLoggableException
+				);
 			});
 		});
 	});

@@ -199,7 +199,9 @@
 			"GROUP_FULL_ADMIN",
 			"USER_CHANGE_OWN_NAME",
 			"ACCOUNT_VIEW",
-			"ACCOUNT_DELETE"
+			"ACCOUNT_DELETE",
+			"USER_LOGIN_MIGRATION_ROLLBACK",
+			"INSTANCE_VIEW"
 		],
 		"__v": 2
 	},
@@ -209,7 +211,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-10-18T05:59:16.621Z"
+			"$date": "2024-04-19T10:32:51.070Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"

@@ -1,17 +1,26 @@
 import {
+	AnyBoardNode,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	ColumnBoardService,
+	isCard,
+	isColumn,
+	isLinkElement,
+	isRichTextElement,
+} from '@modules/board';
+import {
 	CommonCartridgeFileBuilder,
-	CommonCartridgeOrganizationBuilder,
+	CommonCartridgeOrganizationNode,
 	CommonCartridgeVersion,
+	createIdentifier,
 } from '@modules/common-cartridge';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Column, Card, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ColumnBoardService } from '@src/modules/board';
-import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
-import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
 @Injectable()
@@ -21,7 +30,7 @@ export class CommonCartridgeExportService {
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly commonCartridgeMapper: CommonCartridgeMapper
+		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 
 	public async exportCourse(
@@ -29,16 +38,17 @@ export class CommonCartridgeExportService {
 		userId: EntityId,
 		version: CommonCartridgeVersion,
 		exportedTopics: string[],
-		exportedTasks: string[]
+		exportedTasks: string[],
+		exportedColumnBoards: string[]
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
-		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
+		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, course));
 
-		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
+		builder.addMetadata(this.mapper.mapCourseToMetadata(course));
 
 		await this.addLessons(builder, courseId, version, exportedTopics);
 		await this.addTasks(builder, courseId, userId, version, exportedTasks);
-		await this.addColumnBoards(builder, courseId);
+		await this.addColumnBoards(builder, courseId, exportedColumnBoards);
 
 		return builder.build();
 	}
@@ -56,14 +66,14 @@ export class CommonCartridgeExportService {
 				return;
 			}
 
-			const organizationBuilder = builder.addOrganization(this.commonCartridgeMapper.mapLessonToOrganization(lesson));
+			const lessonOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) => {
-				this.addComponentToOrganization(organizationBuilder, content);
+				this.addComponentToOrganization(content, lessonOrganization);
 			});
 
 			lesson.getLessonLinkedTasks().forEach((task) => {
-				organizationBuilder.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
+				lessonOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 			});
 		});
 	}
@@ -81,8 +91,8 @@ export class CommonCartridgeExportService {
 			return;
 		}
 
-		const organization = builder.addOrganization({
-			title: '',
+		const tasksOrganization = builder.createOrganization({
+			title: 'Aufgaben',
 			identifier: createIdentifier(),
 		});
 
@@ -91,72 +101,83 @@ export class CommonCartridgeExportService {
 				return;
 			}
 
-			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
+			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 		});
 	}
 
-	private async addColumnBoards(builder: CommonCartridgeFileBuilder, courseId: EntityId): Promise<void> {
-		const columnBoardIds = await this.columnBoardService.findIdsByExternalReference({
-			type: BoardExternalReferenceType.Course,
-			id: courseId,
-		});
+	private async addColumnBoards(
+		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
+		exportedColumnBoards: string[]
+	): Promise<void> {
+		const columnBoards = (
+			await this.columnBoardService.findByExternalReference({
+				type: BoardExternalReferenceType.Course,
+				id: courseId,
+			})
+		).filter((cb) => exportedColumnBoards.includes(cb.id));
 
-		for await (const columnBoardId of columnBoardIds) {
-			const columnBoard = await this.columnBoardService.findById(columnBoardId);
-
-			const organization = builder.addOrganization({
+		for (const columnBoard of columnBoards) {
+			const columnBoardOrganization = builder.createOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
 
 			columnBoard.children
-				.filter((child) => child instanceof Column)
-				.forEach((column) => this.addColumnToOrganization(column as Column, organization));
+				.filter((child) => isColumn(child))
+				.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
 		}
 	}
 
-	private addColumnToOrganization(column: Column, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
+	private addColumnToOrganization(column: Column, columnBoardOrganization: CommonCartridgeOrganizationNode): void {
 		const { id } = column;
-		const columnOrganization = organizationBuilder.addSubOrganization({
-			title: column.title,
+		const columnOrganization = columnBoardOrganization.createChild({
+			title: column.title || '',
 			identifier: createIdentifier(id),
 		});
 
 		column.children
-			.filter((child) => child instanceof Card)
+			.filter((child) => isCard(child))
 			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
 	}
 
-	private addCardToOrganization(card: Card, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
-		const { id } = card;
-		const cardOrganization = organizationBuilder.addSubOrganization({
-			title: card.title,
-			identifier: createIdentifier(id),
+	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
+		const cardOrganization = columnOrganization.createChild({
+			title: card.title || '',
+			identifier: createIdentifier(card.id),
 		});
 
-		card.children
-			.filter((child) => child instanceof RichTextElement)
-			.forEach((child) =>
-				cardOrganization.addResource(this.commonCartridgeMapper.mapRichTextElementToResource(child as RichTextElement))
-			);
+		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization));
+	}
+
+	private addCardElementToOrganization(element: AnyBoardNode, cardOrganization: CommonCartridgeOrganizationNode): void {
+		if (isRichTextElement(element)) {
+			const resource = this.mapper.mapRichTextElementToResource(element);
+
+			cardOrganization.addResource(resource);
+		}
+
+		if (isLinkElement(element)) {
+			const resource = this.mapper.mapLinkElementToResource(element);
+
+			cardOrganization.addResource(resource);
+		}
 	}
 
 	private addComponentToOrganization(
-		organizationBuilder: CommonCartridgeOrganizationBuilder,
-		component: ComponentProperties
+		component: ComponentProperties,
+		lessonOrganization: CommonCartridgeOrganizationNode
 	): void {
-		const resources = this.commonCartridgeMapper.mapContentToResources(component);
+		const resources = this.mapper.mapContentToResources(component);
 
 		if (Array.isArray(resources)) {
-			const subOrganizationBuilder = organizationBuilder.addSubOrganization(
-				this.commonCartridgeMapper.mapContentToOrganization(component)
-			);
+			const componentOrganization = lessonOrganization.createChild(this.mapper.mapContentToOrganization(component));
 
 			resources.forEach((resource) => {
-				subOrganizationBuilder.addResource(resource);
+				componentOrganization.addResource(resource);
 			});
 		} else {
-			organizationBuilder.addResource(resources);
+			lessonOrganization.addResource(resources);
 		}
 	}
 }

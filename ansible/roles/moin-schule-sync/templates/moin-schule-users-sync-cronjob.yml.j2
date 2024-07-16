@@ -14,6 +14,7 @@ metadata:
   name: moin-schule-users-sync-cronjob
 spec:
   schedule: "{{ MOIN_SCHULE_USERS_SYNC_CRONJOB_SCHEDULE|default("@hourly", true) }}"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
@@ -26,6 +27,8 @@ spec:
                 name: moin-schule-users-sync-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh','-c']
             args: ['npm run nest:start:idp-console -- sync users --systemType moin.schule --systemId $SYSTEM_ID']
             resources:
