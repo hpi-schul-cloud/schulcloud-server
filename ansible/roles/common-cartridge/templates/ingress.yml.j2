@@ -15,10 +15,10 @@ spec:
   - host: {{ DOMAIN }}
     http:
       paths:
-      - path: /temp/
+      - path: /api/v3/common-cartridge/
         pathType: Prefix
         backend:
           service:
             name: common-cartridge-svc
             port:
-              number: 80
+              number: 3350
