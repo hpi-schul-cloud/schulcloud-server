@@ -3667,13 +3667,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/VideoConferenceModule.html" data-type="entity-link" >VideoConferenceModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' : 'data-bs-target="#xs-controllers-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' }>
+                                            'data-bs-target="#controllers-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' : 'data-bs-target="#xs-controllers-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' :
-                                            'id="xs-controllers-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' :
+                                            'id="xs-controllers-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' }>
                                             <li class="link">
                                                 <a href="controllers/VideoConferenceDeprecatedController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceDeprecatedController</a>
                                             </li>
@@ -3681,18 +3681,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' : 'data-bs-target="#xs-injectables-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' }>
+                                        'data-bs-target="#injectables-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' : 'data-bs-target="#xs-injectables-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' :
-                                        'id="xs-injectables-links-module-VideoConferenceModule-65d9726fdf315f8befad422a8596bc3928c4bb22c63d4afa28b0ac727d12cc1276deb76eb120ca94a20cd48589575748dd7384e1c70add255fb2eb24edfc2db5"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' :
+                                        'id="xs-injectables-links-module-VideoConferenceModule-00f2e60ed66d8d6762c2234421b60a01f317d9af785ed39f2ded92411a8a70de8ca9b242db77ee8fb6fe84144591726ca87c95204710c602ca1c09e7ad76f999"' }>
                                         <li class="link">
                                             <a href="injectables/BBBService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BBBService</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/ConverterUtil.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ConverterUtil</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TeamsRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TeamsRepo</a>
@@ -5376,9 +5373,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/GroupValidPeriodEmbeddable.html" data-type="entity-link" >GroupValidPeriodEmbeddable</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/GuardAgainst.html" data-type="entity-link" >GuardAgainst</a>
                             </li>
                             <li class="link">
                                 <a href="classes/H5PContentFactory.html" data-type="entity-link" >H5PContentFactory</a>
@@ -7549,9 +7543,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/ContextExternalToolUc.html" data-type="entity-link" >ContextExternalToolUc</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/ConverterUtil.html" data-type="entity-link" >ConverterUtil</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CopyFilesService.html" data-type="entity-link" >CopyFilesService</a>

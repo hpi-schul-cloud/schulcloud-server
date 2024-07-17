@@ -136,9 +136,15 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkIfResponseSucces" >checkIfResponseSucces</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#end" >end</a>
                             </li>
                             <li>
@@ -146,9 +152,11 @@
                                 <a href="#generateChecksum" >generateChecksum</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#getBbbRequestConfig" >getBbbRequestConfig</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#getMeetingInfo" >getMeetingInfo</a>
                             </li>
                             <li>
@@ -156,12 +164,17 @@
                                 <a href="#getUrl" >getUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#join" >join</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
                                 <a href="#toParams" >toParams</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#xml2object" >xml2object</a>
                             </li>
                         </ul>
                     </td>
@@ -201,7 +214,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: ConfigService< | >, httpService: HttpService, converterUtil: <a href="../injectables/ConverterUtil.html" target="_self">ConverterUtil</a>)</code>
+<code>constructor(configService: ConfigService< | >, httpService: HttpService)</code>
                     </td>
                 </tr>
                         <tr>
@@ -247,18 +260,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>converterUtil</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ConverterUtil.html" target="_self" >ConverterUtil</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -277,16 +278,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="create"></a>
+                    <a name="checkIfResponseSucces"></a>
                     <span class="name">
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>checkIfResponseSucces</b></span>
+                        <a href="#checkIfResponseSucces"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>create(config: <a href="../classes/BBBCreateConfig.html" target="_self">BBBCreateConfig</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkIfResponseSucces(bbbResp: BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse> | BBBResponse<BBBMeetingInfoResponse>)</code>
                 </td>
             </tr>
 
@@ -295,6 +298,75 @@
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="41"
                                     class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>bbbResp</td>
+                                            <td>
+                                                        <code>BBBResponse&lt;BBBCreateResponse&gt; | BBBResponse&lt;BBBBaseResponse&gt; | BBBResponse&lt;BBBMeetingInfoResponse&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="create"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>create(config: <a href="../classes/BBBCreateConfig.html" target="_self">BBBCreateConfig</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -348,6 +420,7 @@
                 <td class="col-md-4">
                     <a name="end"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>end</b></span>
                         <a href="#end"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -355,15 +428,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>end(config: <a href="../classes/BBBBaseMeetingConfig.html" target="_self">BBBBaseMeetingConfig</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>end(config: <a href="../classes/BBBBaseMeetingConfig.html" target="_self">BBBBaseMeetingConfig</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -441,7 +515,8 @@
 
             <tr>
                 <td class="col-md-4">
-                        <div class="io-description"><p>Returns a SHA1 encoded checksum for the input parameters.</p>
+                        <div class="io-description"><p>Returns a SHA1 encoded checksum for the input parameters.
+should be private</p>
 </div>
 
                             <div class="io-description">
@@ -500,6 +575,7 @@
                 <td class="col-md-4">
                     <a name="getBbbRequestConfig"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>getBbbRequestConfig</b></span>
                         <a href="#getBbbRequestConfig"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -507,15 +583,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getBbbRequestConfig(presentationUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getBbbRequestConfig(presentationUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -567,6 +644,7 @@
                 <td class="col-md-4">
                     <a name="getMeetingInfo"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>getMeetingInfo</b></span>
                         <a href="#getMeetingInfo"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -574,15 +652,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getMeetingInfo(config: <a href="../classes/BBBBaseMeetingConfig.html" target="_self">BBBBaseMeetingConfig</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMeetingInfo(config: <a href="../classes/BBBBaseMeetingConfig.html" target="_self">BBBBaseMeetingConfig</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -652,15 +731,16 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:166</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                        <div class="io-description"><p>Builds the url for BBB.</p>
+                        <div class="io-description"><p>Builds the url for BBB.
+should be private</p>
 </div>
 
                             <div class="io-description">
@@ -672,7 +752,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -687,10 +766,6 @@
                                             </td>
 
 
-                                            <td>
-                                                    <p>Name of the BBB api function.</p>
-
-                                            </td>
                                         </tr>
                                         <tr>
                                                 <td>queryParams</td>
@@ -703,10 +778,6 @@
                                             </td>
 
 
-                                            <td>
-                                                    <p>Parameters for the endpoint.</p>
-
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -716,8 +787,7 @@
 
                         </div>
                             <div class="io-description">
-                                <p>A callable url.</p>
-
+                                
                             </div>
                 </td>
             </tr>
@@ -729,6 +799,7 @@
                 <td class="col-md-4">
                     <a name="join"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>join</b></span>
                         <a href="#join"><span class="icon ion-ios-link"></span></a>
@@ -745,8 +816,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -817,15 +888,16 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:151</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                        <div class="io-description"><p>Extracts fields from a javascript object and builds a URLSearchParams object from it.</p>
+                        <div class="io-description"><p>Extracts fields from a javascript object and builds a URLSearchParams object from it.
+should be private</p>
 </div>
 
                             <div class="io-description">
@@ -866,6 +938,85 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="xml2object"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>xml2object</b></span>
+                        <a href="#xml2object"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>xml2object(xml: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Note no guard, or type check. Should be private.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>xml</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>T</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
             <section data-compodoc="block-accessors">
@@ -888,7 +1039,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:23</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:22</a></div>
                                 </td>
                             </tr>
 
@@ -910,7 +1061,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:27</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:26</a></div>
                                 </td>
                             </tr>
 
@@ -932,7 +1083,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:31</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:30</a></div>
                                 </td>
                             </tr>
 
@@ -946,12 +1097,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { ConverterUtil } from &#x27;@shared/common/utils&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { AxiosResponse } from &#x27;axios&#x27;;
 import crypto from &#x27;crypto&#x27;;
 import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { URL, URLSearchParams } from &#x27;url&#x27;;
+import xml2json from &#x27;@hendt/xml2json/lib&#x27;;
 import { VideoConferenceConfig } from &#x27;../video-conference-config&#x27;;
 import { BbbConfig } from &#x27;./bbb-config&#x27;;
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from &#x27;./request&#x27;;
@@ -961,8 +1112,7 @@ import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse
 export class BBBService {
 	constructor(
 		private readonly configService: ConfigService&lt;BbbConfig &amp; VideoConferenceConfig, true&gt;,
-		private readonly httpService: HttpService,
-		private readonly converterUtil: ConverterUtil
+		private readonly httpService: HttpService
 	) {}
 
 	protected get baseUrl(): string {
@@ -977,13 +1127,26 @@ export class BBBService {
 		return this.configService.get(&#x27;VIDEOCONFERENCE_DEFAULT_PRESENTATION&#x27;);
 	}
 
+	/** Note no guard, or type check. Should be private. */
+	public xml2object&lt;T&gt;(xml: string): T {
+		const json &#x3D; xml2json(xml) as T;
+
+		return json;
+	}
+
+	private checkIfResponseSucces(
+		bbbResp: BBBResponse&lt;BBBCreateResponse&gt; | BBBResponse&lt;BBBBaseResponse&gt; | BBBResponse&lt;BBBMeetingInfoResponse&gt;
+	): void {
+		if (bbbResp.response.returncode !&#x3D;&#x3D; BBBStatus.SUCCESS) {
+			throw new InternalServerErrorException(&#x60;${bbbResp.response.messageKey}: ${bbbResp.response.message}&#x60;);
+		}
+	}
+
 	/**
 	 * Creates a new BBB Meeting. The create call is idempotent: you can call it multiple times with the same parameters without side effects.
-	 * @param {BBBCreateConfig} config
-	 * @returns {Promise&lt;BBBResponse&lt;BBBCreateResponse&gt;&gt;}
 	 * @throws {InternalServerErrorException}
 	 */
-	create(config: BBBCreateConfig): Promise&lt;BBBResponse&lt;BBBCreateResponse&gt;&gt; {
+	public create(config: BBBCreateConfig): Promise&lt;BBBResponse&lt;BBBCreateResponse&gt;&gt; {
 		const url: string &#x3D; this.getUrl(&#x27;create&#x27;, this.toParams(config));
 		const conf &#x3D; { headers: { &#x27;Content-Type&#x27;: &#x27;application/xml&#x27; } };
 		const data &#x3D; this.getBbbRequestConfig(this.presentationUrl);
@@ -991,13 +1154,10 @@ export class BBBService {
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse&lt;string&gt;) &#x3D;&gt; {
-				const bbbResp &#x3D; this.converterUtil.xml2object&lt;BBBResponse&lt;BBBCreateResponse&gt; | BBBResponse&lt;BBBBaseResponse&gt;&gt;(
-					resp.data
-				);
-				if (bbbResp.response.returncode !&#x3D;&#x3D; BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(&#x60;${bbbResp.response.messageKey}: ${bbbResp.response.message}&#x60;);
-				}
-				return bbbResp as BBBResponse&lt;BBBCreateResponse&gt;;
+				const bbbResp &#x3D; this.xml2object&lt;BBBResponse&lt;BBBCreateResponse&gt;&gt;(resp.data);
+				this.checkIfResponseSucces(bbbResp);
+
+				return bbbResp;
 			})
 			.catch((error) &#x3D;&gt; {
 				throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(error, &#x27;BBBService:create&#x27;));
@@ -1005,7 +1165,7 @@ export class BBBService {
 	}
 
 	// it should be a private method
-	getBbbRequestConfig(presentationUrl: string): string {
+	private getBbbRequestConfig(presentationUrl: string): string {
 		if (presentationUrl &#x3D;&#x3D;&#x3D; &#x27;&#x27;) return &#x27;&#x27;;
 		return &#x60;&lt;?xml version&#x3D;&#x27;1.0&#x27; encoding&#x3D;&#x27;UTF-8&#x27;?&gt;&lt;modules&gt;&lt;module name&#x3D;&#x27;presentation&#x27;&gt;&lt;document url&#x3D;&#x27;${presentationUrl}&#x27; /&gt;&lt;/module&gt;&lt;/modules&gt;&#x60;;
 	}
@@ -1016,7 +1176,7 @@ export class BBBService {
 	 * @returns {Promise&lt;string&gt;} The join url
 	 * @throws {InternalServerErrorException}
 	 */
-	async join(config: BBBJoinConfig): Promise&lt;string&gt; {
+	public async join(config: BBBJoinConfig): Promise&lt;string&gt; {
 		await this.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: config.meetingID }));
 
 		return this.getUrl(&#x27;join&#x27;, this.toParams(config));
@@ -1028,16 +1188,15 @@ export class BBBService {
 	 * @returns {BBBResponse&lt;BBBBaseResponse&gt;}
 	 * @throws {InternalServerErrorException}
 	 */
-	end(config: BBBBaseMeetingConfig): Promise&lt;BBBResponse&lt;BBBBaseResponse&gt;&gt; {
+	public end(config: BBBBaseMeetingConfig): Promise&lt;BBBResponse&lt;BBBBaseResponse&gt;&gt; {
 		const url: string &#x3D; this.getUrl(&#x27;end&#x27;, this.toParams(config));
 		const observable: Observable&lt;AxiosResponse&lt;string&gt;&gt; &#x3D; this.httpService.get(url);
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse&lt;string&gt;) &#x3D;&gt; {
-				const bbbResp &#x3D; this.converterUtil.xml2object&lt;BBBResponse&lt;BBBBaseResponse&gt;&gt;(resp.data);
-				if (bbbResp.response.returncode !&#x3D;&#x3D; BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(&#x60;${bbbResp.response.messageKey}: ${bbbResp.response.message}&#x60;);
-				}
+				const bbbResp &#x3D; this.xml2object&lt;BBBResponse&lt;BBBBaseResponse&gt;&gt;(resp.data);
+				this.checkIfResponseSucces(bbbResp);
+
 				return bbbResp;
 			})
 			.catch((error) &#x3D;&gt; {
@@ -1047,23 +1206,18 @@ export class BBBService {
 
 	/**
 	 * Returns information about a BBB Meeting.
-	 * @param {BBBBaseMeetingConfig} config
-	 * @returns {Promise&lt;string&gt;}
 	 * @throws {InternalServerErrorException}
 	 */
-	getMeetingInfo(config: BBBBaseMeetingConfig): Promise&lt;BBBResponse&lt;BBBMeetingInfoResponse&gt;&gt; {
+	public getMeetingInfo(config: BBBBaseMeetingConfig): Promise&lt;BBBResponse&lt;BBBMeetingInfoResponse&gt;&gt; {
 		const url: string &#x3D; this.getUrl(&#x27;getMeetingInfo&#x27;, this.toParams(config));
 		const observable: Observable&lt;AxiosResponse&lt;string&gt;&gt; &#x3D; this.httpService.get(url);
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse&lt;string&gt;) &#x3D;&gt; {
-				const bbbResp &#x3D; this.converterUtil.xml2object&lt;
-					BBBResponse&lt;BBBMeetingInfoResponse&gt; | BBBResponse&lt;BBBBaseResponse&gt;
-				&gt;(resp.data);
-				if (bbbResp.response.returncode !&#x3D;&#x3D; BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(&#x60;${bbbResp.response.messageKey}: ${bbbResp.response.message}&#x60;);
-				}
-				return bbbResp as BBBResponse&lt;BBBMeetingInfoResponse&gt;;
+				const bbbResp &#x3D; this.xml2object&lt;BBBResponse&lt;BBBMeetingInfoResponse&gt;&gt;(resp.data);
+				this.checkIfResponseSucces(bbbResp);
+
+				return bbbResp;
 			})
 			.catch((error) &#x3D;&gt; {
 				throw new InternalServerErrorException(
@@ -1073,26 +1227,22 @@ export class BBBService {
 			});
 	}
 
-	// should be private
 	/**
 	 * Returns a SHA1 encoded checksum for the input parameters.
-	 * @param {string} callName
-	 * @param {URLSearchParams} queryParams
-	 * @returns {string}
+	 * should be private
 	 */
 	protected generateChecksum(callName: string, queryParams: URLSearchParams): string {
 		const queryString: string &#x3D; queryParams.toString();
 		const sha &#x3D; crypto.createHash(&#x27;sha1&#x27;);
 		sha.update(callName + queryString + this.salt);
 		const checksum: string &#x3D; sha.digest(&#x27;hex&#x27;);
+
 		return checksum;
 	}
 
-	// should be private
 	/**
 	 * Extracts fields from a javascript object and builds a URLSearchParams object from it.
-	 * @param {object} object
-	 * @returns {URLSearchParams}
+	 * should be private
 	 */
 	protected toParams(object: BBBCreateConfig | BBBBaseMeetingConfig): URLSearchParams {
 		const params: URLSearchParams &#x3D; new URLSearchParams();
@@ -1101,15 +1251,13 @@ export class BBBService {
 				params.append(key, String(object[key]));
 			}
 		});
+
 		return params;
 	}
 
-	// should be private
 	/**
 	 * Builds the url for BBB.
-	 * @param callName Name of the BBB api function.
-	 * @param queryParams Parameters for the endpoint.
-	 * @returns {string} A callable url.
+	 * should be private
 	 */
 	protected getUrl(callName: string, queryParams: URLSearchParams): string {
 		const checksum: string &#x3D; this.generateChecksum(callName, queryParams);

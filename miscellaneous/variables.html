@@ -568,6 +568,9 @@
                             <a href="#externalToolPseudonymEntityFactory" title="apps/server/src/shared/testing/factory/external-tool-pseudonym.factory.ts" ><b>externalToolPseudonymEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-pseudonym.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#extractJwtFromHeader" title="apps/server/src/shared/common/utils/jwt.ts" ><b>extractJwtFromHeader</b>&nbsp;&nbsp;&nbsp;(apps/.../jwt.ts)</a>
+                        </li>
+                        <li>
                             <a href="#federalStateFactory" title="apps/server/src/modules/school/testing/federal-state.factory.ts" ><b>federalStateFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../federal-state.factory.ts)</a>
                         </li>
                         <li>
@@ -3116,9 +3119,8 @@ Do not edit the class manually.</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>createParamDecorator&lt;never, never, string&gt;((_, ctx: ExecutionContext) &#x3D;&gt; {
-	const getJWT &#x3D; ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), JwtExtractor.fromCookie(&#x27;jwt&#x27;)]);
 	const req: Request &#x3D; ctx.switchToHttp().getRequest();
-	const jwt &#x3D; getJWT(req) || req.headers.authorization;
+	const jwt &#x3D; extractJwtFromHeader(req) || req.headers.authorization;
 
 	if (!jwt) {
 		throw new UnauthorizedException(&#x27;Authentication is required.&#x27;);
@@ -12210,6 +12212,32 @@ it should ensure an empty result</p>
 		userId: new ObjectId(),
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/common/utils/jwt.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="extractJwtFromHeader"></a>
+                    <span class="name">
+                        <span ><b>extractJwtFromHeader</b></span>
+                        <a href="#extractJwtFromHeader"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ExtractJwt.fromExtractors([
+	ExtractJwt.fromAuthHeaderAsBearerToken(),
+	JwtExtractor.fromCookie(&#x27;jwt&#x27;),
+])</code>
                     </td>
                 </tr>
 

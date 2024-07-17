@@ -949,7 +949,7 @@ export class AuthenticationService {
 	async generateJwt(user: CreateJwtPayload): Promise&lt;LoginDto&gt; {
 		const jti &#x3D; randomUUID();
 
-		const result: LoginDto &#x3D; new LoginDto({
+		const result &#x3D; new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,

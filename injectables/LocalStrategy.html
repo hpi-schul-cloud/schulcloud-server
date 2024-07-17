@@ -523,7 +523,7 @@ import { Account } from &#x27;@modules/account&#x27;;
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { GuardAgainst } from &#x27;@shared/common/utils/guard-against&#x27;;
+import { TypeGuard } from &#x27;@shared/common&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import bcrypt from &#x27;bcryptjs&#x27;;
 import { Strategy } from &#x27;passport-local&#x27;;
@@ -548,13 +548,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 		if (this.configService.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;)) {
 			const jwt &#x3D; await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
-			GuardAgainst.nullOrUndefined(jwt, new UnauthorizedException());
+			TypeGuard.checkNotNullOrUndefined(jwt, new UnauthorizedException());
 		} else {
-			const accountPassword &#x3D; GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
+			const accountPassword &#x3D; TypeGuard.checkNotNullOrUndefined(account.password, new UnauthorizedException());
 			await this.checkCredentials(password, accountPassword, account);
 		}
 
-		const accountUserId &#x3D; GuardAgainst.nullOrUndefined(
+		const accountUserId &#x3D; TypeGuard.checkNotNullOrUndefined(
 			account.userId,
 			new Error(&#x60;login failing, because account ${account.id} has no userId&#x60;)
 		);
@@ -564,8 +564,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	}
 
 	private cleanupInput(username?: string, password?: string): { username: string; password: string } {
-		username &#x3D; GuardAgainst.nullOrUndefined(username, new UnauthorizedException());
-		password &#x3D; GuardAgainst.nullOrUndefined(password, new UnauthorizedException());
+		username &#x3D; TypeGuard.checkNotNullOrUndefined(username, new UnauthorizedException());
+		password &#x3D; TypeGuard.checkNotNullOrUndefined(password, new UnauthorizedException());
 		username &#x3D; this.authenticationService.normalizeUsername(username);
 		password &#x3D; this.authenticationService.normalizePassword(password);
 		return { username, password };

@@ -142,6 +142,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#checkNotNullOrUndefined" >checkNotNullOrUndefined</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#checkNumber" >checkNumber</a>
                             </li>
                             <li>
@@ -158,6 +162,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#isNull" >isNull</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#isNumber" >isNumber</a>
                             </li>
                             <li>
@@ -167,6 +175,10 @@
                             <li>
                                     <span class="modifier">Static</span>
                                 <a href="#isString" >isString</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#isUndefined" >isUndefined</a>
                             </li>
                         </ul>
                     </td>
@@ -187,6 +199,95 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkNotNullOrUndefined"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>checkNotNullOrUndefined</b></span>
+                        <a href="#checkNotNullOrUndefined"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkNotNullOrUndefined(value: T | null | undefined, toThrow?: Error)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/shared/common/guards/type.guard.ts:62</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+                                            <td>
+                                                        <code>T | null | undefined</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>toThrow</td>
+                                            <td>
+                                                        <code>Error</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>T</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -451,6 +552,64 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isNull"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>isNull</b></span>
+                        <a href="#isNull"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isNull(value)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/shared/common/guards/type.guard.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isNumber"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
@@ -642,6 +801,71 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isUndefined"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>isUndefined</b></span>
+                        <a href="#isUndefined"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isUndefined(value)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/shared/common/guards/type.guard.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>undefined</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -699,6 +923,30 @@
 		const isObject &#x3D; typeof value &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp; !Array.isArray(value) &amp;&amp; value !&#x3D;&#x3D; null;
 
 		return isObject;
+	}
+
+	static isNull(value: unknown): value is null {
+		const isNull &#x3D; value &#x3D;&#x3D;&#x3D; null;
+
+		return isNull;
+	}
+
+	static isUndefined(value: unknown): value is undefined {
+		const isUndefined &#x3D; value &#x3D;&#x3D;&#x3D; undefined;
+
+		return isUndefined;
+	}
+
+	static checkNotNullOrUndefined&lt;T&gt;(value: T | null | undefined, toThrow?: Error): T {
+		if (TypeGuard.isNull(value)) {
+			throw toThrow || new Error(&#x27;Type is null.&#x27;);
+		}
+
+		if (TypeGuard.isUndefined(value)) {
+			throw toThrow || new Error(&#x27;Type is undefined.&#x27;);
+		}
+
+		return value;
 	}
 }
 </code></pre>

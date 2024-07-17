@@ -233,8 +233,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt.strategy.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt.strategy.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -288,22 +288,19 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { ExtractJwt, Strategy } from &#x27;passport-jwt&#x27;;
+import { Strategy } from &#x27;passport-jwt&#x27;;
+import { extractJwtFromHeader } from &#x27;@shared/common&#x27;;
 import { jwtConstants } from &#x27;../constants&#x27;;
 import { ICurrentUser } from &#x27;../interface&#x27;;
 import { JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 import { CurrentUserMapper } from &#x27;../mapper&#x27;;
-import { JwtExtractor } from &#x27;../helper/jwt-extractor&#x27;;
 import { JwtValidationAdapter } from &#x27;../helper/jwt-validation.adapter&#x27;;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([
-				ExtractJwt.fromAuthHeaderAsBearerToken(),
-				JwtExtractor.fromCookie(&#x27;jwt&#x27;),
-			]),
+			jwtFromRequest: extractJwtFromHeader,
 			ignoreExpiration: false,
 			secretOrKey: jwtConstants.secret,
 			...jwtConstants.jwtOptions,
