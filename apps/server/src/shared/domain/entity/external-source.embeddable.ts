@@ -5,6 +5,8 @@ export interface ExternalSourceEntityProps {
 	externalId: string;
 
 	system: SystemEntity;
+
+	lastSyncedAt: Date;
 }
 
 @Embeddable()
@@ -15,8 +17,12 @@ export class ExternalSourceEmbeddable {
 	@ManyToOne(() => SystemEntity)
 	system: SystemEntity;
 
+	@Property()
+	lastSyncedAt: Date;
+
 	constructor(props: ExternalSourceEntityProps) {
 		this.externalId = props.externalId;
 		this.system = props.system;
+		this.lastSyncedAt = props.lastSyncedAt;
 	}
 }
