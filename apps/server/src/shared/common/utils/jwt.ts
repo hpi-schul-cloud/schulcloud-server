@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { JwtFromRequestFunction } from 'passport-jwt';
+import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
 import cookie from 'cookie';
 
 export class JwtExtractor {
@@ -7,12 +7,15 @@ export class JwtExtractor {
 		return (request: Request) => {
 			let token: string | null = null;
 			const cookies = cookie.parse(request.headers.cookie || '');
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (cookies && cookies[name]) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 				token = cookies[name];
 			}
 			return token;
 		};
 	}
 }
+
+export const extractJwtFromHeader = ExtractJwt.fromExtractors([
+	ExtractJwt.fromAuthHeaderAsBearerToken(),
+	JwtExtractor.fromCookie('jwt'),
+]);

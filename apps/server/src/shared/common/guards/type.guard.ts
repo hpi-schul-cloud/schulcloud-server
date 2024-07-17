@@ -46,4 +46,28 @@ export class TypeGuard {
 
 		return isObject;
 	}
+
+	static isNull(value: unknown): value is null {
+		const isNull = value === null;
+
+		return isNull;
+	}
+
+	static isUndefined(value: unknown): value is undefined {
+		const isUndefined = value === undefined;
+
+		return isUndefined;
+	}
+
+	static checkNotNullOrUndefined<T>(value: T | null | undefined, toThrow?: Error): T {
+		if (TypeGuard.isNull(value)) {
+			throw toThrow || new Error('Type is null.');
+		}
+
+		if (TypeGuard.isUndefined(value)) {
+			throw toThrow || new Error('Type is undefined.');
+		}
+
+		return value;
+	}
 }

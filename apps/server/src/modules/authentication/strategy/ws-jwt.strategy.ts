@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { JwtExtractor } from '@shared/common';
 import { jwtConstants } from '../constants';
 import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from '../mapper';
-import { JwtExtractor } from '../helper/jwt-extractor';
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 
 @Injectable()
