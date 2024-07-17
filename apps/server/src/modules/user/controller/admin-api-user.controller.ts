@@ -16,6 +16,7 @@ export class AdminApiUsersController {
 		summary: 'create a user together with an account',
 	})
 	async createUser(@Body() body: AdminApiUserCreateBodyParams): Promise<AdminApiUserCreateResponse> {
+		// Comment
 		const result = await this.uc.createUserAndAccount(body);
 		const mapped = new AdminApiUserCreateResponse(result);
 		return Promise.resolve(mapped);
