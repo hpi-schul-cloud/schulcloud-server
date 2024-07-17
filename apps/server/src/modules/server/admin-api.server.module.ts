@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
@@ -18,6 +19,7 @@ import { defaultMikroOrmOptions } from './server.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	CoreModule,
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
