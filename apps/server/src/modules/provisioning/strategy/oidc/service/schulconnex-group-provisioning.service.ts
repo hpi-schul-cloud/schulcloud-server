@@ -103,6 +103,7 @@ export class SchulconnexGroupProvisioningService {
 			externalSource: new ExternalSource({
 				externalId: externalGroup.externalId,
 				systemId,
+				lastSyncedAt: new Date(),
 			}),
 			type: externalGroup.type,
 			organizationId,

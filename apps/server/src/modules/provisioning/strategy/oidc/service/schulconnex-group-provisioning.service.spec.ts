@@ -444,6 +444,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: {
 							externalId: externalGroupDto.externalId,
 							systemId,
+							lastSyncedAt: expect.any(Date),
 						},
 						type: externalGroupDto.type,
 						organizationId: school.id,
@@ -479,6 +480,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					externalSource: {
 						externalId: externalGroupDto.externalId,
 						systemId,
+						lastSyncedAt: expect.any(Date),
 					},
 					type: externalGroupDto.type,
 					organizationId: school.id,
@@ -547,6 +549,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: {
 							externalId: externalGroupDto.externalId,
 							systemId,
+							lastSyncedAt: expect.any(Date),
 						},
 						type: externalGroupDto.type,
 						organizationId: undefined,
@@ -616,6 +619,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: {
 							externalId: externalGroupDto.externalId,
 							systemId,
+							lastSyncedAt: expect.any(Date),
 						},
 						type: externalGroupDto.type,
 						organizationId: undefined,
@@ -704,6 +708,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: 'externalId-1',
 							systemId,
+							lastSyncedAt: new Date(),
 						}),
 					});
 					const secondExistingGroup: Group = groupFactory.build({
@@ -711,6 +716,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: 'externalId-2',
 							systemId,
+							lastSyncedAt: new Date(),
 						}),
 					});
 					const existingGroups = [firstExistingGroup, secondExistingGroup];
@@ -778,6 +784,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: `externalId-1`,
 							systemId,
+							lastSyncedAt: new Date(),
 						}),
 					});
 
@@ -789,6 +796,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: `externalId-2`,
 							systemId,
+							lastSyncedAt: new Date(),
 						}),
 					});
 
