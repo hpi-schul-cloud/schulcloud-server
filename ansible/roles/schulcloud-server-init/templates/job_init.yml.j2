@@ -7,11 +7,6 @@ metadata:
 spec:
   template:
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        runAsNonRoot: true
       containers:
       - name: api-init
         image: quay.io/schulcloudverbund/infra-tools:latest
