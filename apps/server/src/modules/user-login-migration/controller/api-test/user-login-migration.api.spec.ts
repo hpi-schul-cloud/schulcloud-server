@@ -4,14 +4,16 @@ import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/respons
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
+import { type SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	cleanupCollections,
+	importUserFactory,
 	JwtTestFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
@@ -1340,6 +1342,66 @@ describe('UserLoginMigrationController (API)', () => {
 				const response: Response = await loggedInClient.post('/close');
 
 				expect(response.body).toEqual({});
+			});
+		});
+
+		describe('when the migration wizard is also running', () => {
+			const setup = async () => {
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+					inUserMigration: true,
+					inMaintenanceSince: new Date(2024, 1, 4),
+				});
+				const importUser = importUserFactory.build({ school });
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+				});
+
+				const migratedUser: User = userFactory.buildWithId({
+					lastLoginSystemChange: new Date(2023, 1, 5),
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([
+					sourceSystem,
+					targetSystem,
+					school,
+					adminAccount,
+					adminUser,
+					userLoginMigration,
+					migratedUser,
+					importUser,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+					adminUser,
+				};
+			};
+
+			it('should close migration wizard', async () => {
+				const { loggedInClient, adminUser } = await setup();
+
+				await loggedInClient.post('/close');
+
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const [entities, count] = await em.findAndCount(ImportUser, {});
+				expect(count).toEqual(0);
+
+				const school = await em.findOneOrFail(SchoolEntity, { id: adminUser.school.id });
+				expect(school.inUserMigration).toBe(undefined);
+				expect(school.inMaintenanceSince).toBe(undefined);
 			});
 		});
 	});

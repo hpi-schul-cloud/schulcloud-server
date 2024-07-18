@@ -3,7 +3,6 @@ import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
-import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import {
@@ -18,8 +17,8 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
+import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
-import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
 import { ColumnBoardNodeRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
@@ -44,7 +43,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LessonModule,
 		LoggerModule,
 		TaskModule,
-		ToolConfigModule,
 		CqrsModule,
 	],
 	providers: [
@@ -57,7 +55,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CommonCartridgeExportService,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
-		CommonCartridgeMapper,
+		CommonCartridgeExportMapper,
 		CommonCartridgeImportMapper,
 		CourseCopyService,
 		CourseGroupRepo,

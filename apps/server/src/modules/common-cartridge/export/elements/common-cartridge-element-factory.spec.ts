@@ -1,9 +1,9 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import {
 	createCommonCartridgeMetadataElementPropsV110,
 	createCommonCartridgeMetadataElementPropsV130,
 } from '../../testing/common-cartridge-element-props.factory';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { VersionNotSupportedLoggableException } from '../errors';
 import { CommonCartridgeElementFactory } from './common-cartridge-element-factory';
 import { CommonCartridgeMetadataElementPropsV110, CommonCartridgeMetadataElementV110 } from './v1.1.0';
 import { CommonCartridgeMetadataElementV130 } from './v1.3.0';
@@ -36,14 +36,14 @@ describe('CommonCartridgeElementFactory', () => {
 				CommonCartridgeVersion.V_1_4_0,
 			];
 
-			it('should throw InternalServerErrorException', () => {
+			it('should throw VersionNotSupportedLoggableException', () => {
 				notSupportedVersions.forEach((version) => {
 					expect(() =>
 						CommonCartridgeElementFactory.createElement({
 							version,
 							type: CommonCartridgeElementType.METADATA,
 						} as CommonCartridgeMetadataElementPropsV110)
-					).toThrow(InternalServerErrorException);
+					).toThrow(VersionNotSupportedLoggableException);
 				});
 			});
 		});

@@ -40,7 +40,8 @@
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
-		"URI": "http://localhost:8080",
+		"INTERNAL_URI": "http://localhost:8080",
+		"EXTERNAL_URI": "http://localhost:8080",
 		"TENANT": "dBildungscloud",
 		"CLIENTID": "dbc",
 		"ADMIN_CLIENTID": "admin-cli",
@@ -92,5 +93,8 @@
 		"URI": "http://localhost:9001/api/1.2.14"
 	},
 	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo",
-	"BOARD_COLLABORATION_URI": "ws://localhost:4450"
+	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
+	"ADMIN_API": {
+		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
+	}
 }

@@ -1,7 +1,7 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { createCommonCartridgeResourcesWrapperElementPropsV130 } from '../../../testing/common-cartridge-element-props.factory';
 import { createCommonCartridgeWeblinkResourcePropsV130 } from '../../../testing/common-cartridge-resource-props.factory';
-import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException, VersionNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResourceFactory } from '../../resources/common-cartridge-resource-factory';
 import { CommonCartridgeResourcesWrapperElementV130 } from './common-cartridge-resources-wrapper-element';
 
@@ -30,14 +30,14 @@ describe('CommonCartridgeResourcesWrapperElementV130', () => {
 
 			it('should throw error', () => {
 				expect(() => new CommonCartridgeResourcesWrapperElementV130(notSupportedProps)).toThrowError(
-					InternalServerErrorException
+					VersionNotSupportedLoggableException
 				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		describe('when using common cartridge version 1.3.0', () => {
+		describe('when creating resources wrapper xml object', () => {
 			const setup = () => {
 				const weblinkResourceProps = createCommonCartridgeWeblinkResourcePropsV130();
 				const props = createCommonCartridgeResourcesWrapperElementPropsV130([
@@ -51,7 +51,7 @@ describe('CommonCartridgeResourcesWrapperElementV130', () => {
 			it('should return correct manifest xml object', () => {
 				const { sut, weblinkResourceProps } = setup();
 
-				const result = sut.getManifestXmlObject();
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.RESOURCES_WRAPPER);
 
 				expect(result).toStrictEqual({
 					resources: [
@@ -72,6 +72,24 @@ describe('CommonCartridgeResourcesWrapperElementV130', () => {
 						},
 					],
 				});
+			});
+		});
+
+		describe('when using unsupported element type', () => {
+			const setup = () => {
+				const unknownElementType = 'unknown' as CommonCartridgeElementType;
+				const props = createCommonCartridgeResourcesWrapperElementPropsV130();
+				const sut = new CommonCartridgeResourcesWrapperElementV130(props);
+
+				return { sut, unknownElementType };
+			};
+
+			it('should throw error', () => {
+				const { sut, unknownElementType } = setup();
+
+				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrowError(
+					ElementTypeNotSupportedLoggableException
+				);
 			});
 		});
 	});

@@ -3,7 +3,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 
-import { AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
+import { AnyBoardNode, AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 
 @Injectable()
@@ -29,48 +29,47 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const context: AuthorizationContext = { action: Action.read, requiredPermissions: [] };
-		const promises = cards.map((card) =>
-			this.boardNodeAuthorizableService.getBoardAuthorizable(card).then((boardNodeAuthorizable) => {
-				return { boardNodeAuthorizable, boardNode: card };
-			})
-		);
-		const result = await Promise.all(promises);
+		const boardAuthorizables = await this.boardNodeAuthorizableService.getBoardAuthorizables(cards);
 
-		const allowedCards = result.reduce((allowedNodes: Card[], { boardNodeAuthorizable, boardNode }) => {
+		const allowedCards = boardAuthorizables.reduce((allowedNodes: AnyBoardNode[], boardNodeAuthorizable) => {
 			if (this.authorizationService.hasPermission(user, boardNodeAuthorizable, context)) {
-				allowedNodes.push(boardNode);
+				allowedNodes.push(boardNodeAuthorizable.boardNode);
 			}
 			return allowedNodes;
-		}, []);
+		}, []) as Card[];
 
 		return allowedCards;
 	}
 
-	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<void> {
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<Card> {
 		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.updateHeight(card, height);
+		return card;
 	}
 
-	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
+	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<Card> {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.updateTitle(card, title);
+		return card;
 	}
 
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const { rootId } = card;
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.delete(card);
+		return rootId;
 	}
 
 	// --- elements ---
@@ -98,7 +97,7 @@ export class CardUc {
 		elementId: EntityId,
 		targetCardId: EntityId,
 		targetPosition: number
-	): Promise<void> {
+	): Promise<AnyContentElement> {
 		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
 
 		const element = await this.boardNodeService.findContentElementById(elementId);
@@ -108,5 +107,7 @@ export class CardUc {
 		await this.boardNodePermissionService.checkPermission(userId, targetCard, Action.write);
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
+
+		return element;
 	}
 }

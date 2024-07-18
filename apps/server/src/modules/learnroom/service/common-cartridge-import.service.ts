@@ -2,19 +2,19 @@ import {
 	BoardExternalReferenceType,
 	BoardLayout,
 	BoardNodeFactory,
+	BoardNodeService,
 	Card,
-	ContentElementType,
 	Column,
 	ColumnBoard,
-} from '@modules/board/domain';
-import { BoardNodeService } from '@modules/board/service';
-import { Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
+	ContentElementType,
+} from '@modules/board';
 import {
 	CommonCartridgeFileParser,
-	CommonCartridgeOrganizationProps,
+	CommonCartridgeImportOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
-} from '@src/modules/common-cartridge';
+} from '@modules/common-cartridge';
+import { Injectable } from '@nestjs/common';
+import { Course, User } from '@shared/domain/entity';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
 
@@ -47,8 +47,8 @@ export class CommonCartridgeImportService {
 	private async createColumnBoard(
 		parser: CommonCartridgeFileParser,
 		course: Course,
-		boardProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		boardProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
 		const columnBoard = this.boardNodeFactory.buildColumnBoard({
 			context: {
@@ -66,8 +66,8 @@ export class CommonCartridgeImportService {
 	private async createColumns(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		boardProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		boardProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
 		const columnsWithResource = organizations.filter(
 			(organization) =>
@@ -91,7 +91,7 @@ export class CommonCartridgeImportService {
 	private async createColumnWithResource(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: CommonCartridgeOrganizationProps
+		columnProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
 		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
@@ -103,8 +103,8 @@ export class CommonCartridgeImportService {
 	private async createColumn(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		columnProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
 		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
@@ -131,7 +131,7 @@ export class CommonCartridgeImportService {
 	private async createCardWithElement(
 		parser: CommonCartridgeFileParser,
 		column: Column,
-		cardProps: CommonCartridgeOrganizationProps,
+		cardProps: CommonCartridgeImportOrganizationProps,
 		withTitle = true
 	): Promise<void> {
 		const card = this.boardNodeFactory.buildCard();
@@ -154,14 +154,14 @@ export class CommonCartridgeImportService {
 	private async createCard(
 		parser: CommonCartridgeFileParser,
 		column: Column,
-		cardProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		cardProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	) {
 		const card = this.boardNodeFactory.buildCard();
 		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, true);
 		card.title = title;
 		card.height = height;
-		await this.boardNodeService.addToParent(column, column);
+		await this.boardNodeService.addToParent(column, card);
 
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= 3 && organization.path.startsWith(cardProps.path)
@@ -175,7 +175,7 @@ export class CommonCartridgeImportService {
 	private async createCardElement(
 		parser: CommonCartridgeFileParser,
 		card: Card,
-		cardElementProps: CommonCartridgeOrganizationProps
+		cardElementProps: CommonCartridgeImportOrganizationProps
 	) {
 		if (cardElementProps.isResource) {
 			const resource = parser.getResource(cardElementProps);

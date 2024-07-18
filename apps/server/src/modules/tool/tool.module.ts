@@ -1,15 +1,13 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { ContextExternalToolModule } from './context-external-tool';
-import { SchoolExternalToolModule } from './school-external-tool';
-import { ExternalToolModule } from './external-tool';
 import { CommonToolModule } from './common';
-import { ToolLaunchModule } from './tool-launch';
 import { CommonToolService } from './common/service';
-import { ToolConfigModule } from './tool-config.module';
+import { ContextExternalToolModule } from './context-external-tool';
+import { ExternalToolModule } from './external-tool';
+import { SchoolExternalToolModule } from './school-external-tool';
+import { ToolLaunchModule } from './tool-launch';
 
 @Module({
 	imports: [
-		ToolConfigModule,
 		forwardRef(() => CommonToolModule),
 		ExternalToolModule,
 		SchoolExternalToolModule,

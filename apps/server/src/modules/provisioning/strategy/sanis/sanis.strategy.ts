@@ -5,14 +5,13 @@ import {
 } from '@infra/schulconnex-client/response';
 import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
 import { GroupService } from '@modules/group/service/group.service';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalLicenseDto,
@@ -36,7 +35,6 @@ import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 @Injectable()
 export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
 		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
@@ -44,12 +42,11 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly groupService: GroupService,
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
+		protected readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly responseMapper: SchulconnexResponseMapper,
-		private readonly schulconnexRestClient: SchulconnexRestClient,
-		protected readonly configService: ConfigService<ProvisioningConfig, true>
+		private readonly schulconnexRestClient: SchulconnexRestClient
 	) {
 		super(
-			provisioningFeatures,
 			schulconnexSchoolProvisioningService,
 			schulconnexUserProvisioningService,
 			schulconnexGroupProvisioningService,
@@ -92,7 +89,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
+		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
 			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);

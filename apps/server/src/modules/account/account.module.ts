@@ -1,17 +1,17 @@
 import { IdentityManagementModule } from '@infra/identity-management';
+import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacySystemRepo, UserRepo } from '@shared/repo';
 
 import { CqrsModule } from '@nestjs/cqrs';
+import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { AccountConfig } from './account-config';
-import { AccountRepo } from './repo/micro-orm/account.repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
-import { AccountValidationService } from './domain/services/account.validation.service';
+import { AccountRepo } from './repo/micro-orm/account.repo';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
@@ -21,21 +21,19 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 }
 
 @Module({
-	imports: [CqrsModule, IdentityManagementModule, LoggerModule],
+	imports: [CqrsModule, IdentityManagementModule, SystemModule, LoggerModule],
 	providers: [
 		UserRepo,
-		LegacySystemRepo,
 		AccountRepo,
 		AccountServiceDb,
 		AccountServiceIdm,
 		AccountService,
-		AccountValidationService,
 		{
 			provide: AccountIdmToDoMapper,
 			useFactory: accountIdmToDtoMapperFactory,
 			inject: [ConfigService],
 		},
 	],
-	exports: [AccountService, AccountValidationService],
+	exports: [AccountService],
 })
 export class AccountModule {}

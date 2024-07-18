@@ -16,7 +16,7 @@ export class CloseUserLoginMigrationUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async closeMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO | undefined> {
+	public async closeMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO | undefined> {
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
 		);

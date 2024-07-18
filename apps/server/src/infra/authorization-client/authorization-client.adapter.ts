@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { RawAxiosRequestConfig } from 'axios';
-import cookie from 'cookie';
 import { Request } from 'express';
-import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
+import { extractJwtFromHeader } from '@shared/common';
 import { AuthorizationApi, AuthorizationBodyParams } from './authorization-api-client';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
@@ -19,9 +18,9 @@ export class AuthorizationClientAdapter {
 	}
 
 	public async hasPermissionsByReference(params: AuthorizationBodyParams): Promise<boolean> {
-		const options = this.createOptionParams(params);
-
 		try {
+			const options = this.createOptionParams();
+
 			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(
 				params,
 				options
@@ -34,34 +33,20 @@ export class AuthorizationClientAdapter {
 		}
 	}
 
-	private createOptionParams(params: AuthorizationBodyParams): RawAxiosRequestConfig<any> {
-		const jwt = this.getJWT(params);
+	private createOptionParams(): RawAxiosRequestConfig<any> {
+		const jwt = this.getJwt();
 		const options: RawAxiosRequestConfig<any> = { headers: { authorization: `Bearer ${jwt}` } };
 
 		return options;
 	}
 
-	private getJWT(params: AuthorizationBodyParams): string {
-		const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), this.fromCookie('jwt')]);
-		const jwt = getJWT(this.request) || this.request.headers.authorization;
+	private getJwt(): string {
+		const jwt = extractJwtFromHeader(this.request) || this.request.headers.authorization;
 
 		if (!jwt) {
-			const error = new Error('Authentication is required.');
-			throw new AuthorizationErrorLoggableException(error, params);
+			throw new Error('Authentication is required.');
 		}
 
 		return jwt;
-	}
-
-	private fromCookie(name: string): JwtFromRequestFunction {
-		return (request: Request) => {
-			let token: string | null = null;
-			const cookies = cookie.parse(request.headers.cookie || '');
-			if (cookies && cookies[name]) {
-				token = cookies[name];
-			}
-
-			return token;
-		};
 	}
 }

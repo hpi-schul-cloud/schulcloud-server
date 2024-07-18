@@ -10,18 +10,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { cleanupCollections } from '@shared/testing';
-import { v1 } from 'uuid';
 import { Logger } from '@src/core/logger';
+import { KeycloakIdentityManagementService } from '@src/infra/identity-management/keycloak/service/keycloak-identity-management.service';
+import { v1 } from 'uuid';
 import { Account, AccountSave } from '..';
-import { AccountEntity } from '../entity/account.entity';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { accountFactory } from '../../testing';
+import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountValidationService } from './account.validation.service';
-import { accountFactory } from '../../testing';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -93,7 +93,10 @@ describe('AccountService Integration', () => {
 				AccountServiceDb,
 				AccountRepo,
 				UserRepo,
-				AccountValidationService,
+				{
+					provide: KeycloakIdentityManagementService,
+					useValue: createMock<KeycloakIdentityManagementService>(),
+				},
 				{
 					provide: AccountIdmToDoMapper,
 					useValue: new AccountIdmToDoMapperDb(),

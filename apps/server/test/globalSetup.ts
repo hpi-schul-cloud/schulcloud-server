@@ -3,7 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server-global';
 export = async function globalSetup() {
 	const instance = await MongoMemoryServer.create({
 		binary: {
-			version: '5.0.26',
+			version: '6.0.16',
 		},
 	});
 	const uri = instance.getUri();

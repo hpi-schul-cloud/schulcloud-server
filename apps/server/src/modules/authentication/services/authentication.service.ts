@@ -44,7 +44,7 @@ export class AuthenticationService {
 	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
 		const jti = randomUUID();
 
-		const result: LoginDto = new LoginDto({
+		const result = new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,
@@ -77,6 +77,10 @@ export class AuthenticationService {
 				throw new BruteForceError(timeToWait, `Brute Force Prevention! Time to wait: ${timeToWait} s`);
 			}
 		}
+	}
+
+	async updateLastLogin(accountId: string): Promise<void> {
+		await this.accountService.updateLastLogin(accountId, new Date());
 	}
 
 	async updateLastTriedFailedLogin(id: string): Promise<void> {

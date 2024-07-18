@@ -15,7 +15,8 @@ describe('KeycloakAdministrationService', () => {
 
 	const getSettings = (): IKeycloakSettings => {
 		return {
-			baseUrl: 'http://localhost:8080',
+			internalBaseUrl: 'http://localhost:8080',
+			externalBaseUrl: 'http://localhost:8080',
 			realmName: 'master',
 			clientId: 'client',
 			credentials: {
@@ -110,7 +111,7 @@ describe('KeycloakAdministrationService', () => {
 	describe('getWellKnownUrl', () => {
 		it('should return the well known URL', () => {
 			const wellKnownUrl = service.getWellKnownUrl();
-			expect(wellKnownUrl).toContain(settings.baseUrl);
+			expect(wellKnownUrl).toContain(settings.internalBaseUrl);
 			expect(wellKnownUrl).toContain(settings.realmName);
 		});
 	});

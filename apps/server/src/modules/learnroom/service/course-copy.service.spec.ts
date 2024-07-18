@@ -4,7 +4,8 @@ import { LessonCopyService } from '@modules/lesson/service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ToolFeatures } from '@modules/tool/tool-config';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
@@ -16,7 +17,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { IToolFeatures } from '@src/modules/tool/tool-config';
 import { contextExternalToolFactory } from '../../tool/context-external-tool/testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
@@ -33,7 +33,7 @@ describe('course copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let userRepo: DeepMocked<UserRepo>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let toolFeatures: IToolFeatures;
+	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 
 	afterAll(async () => {
 		await module.close();
@@ -81,10 +81,8 @@ describe('course copy service', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: ToolFeatures,
-					useValue: {
-						ctlToolsTabEnabled: false,
-					},
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 			],
 		}).compile();
@@ -98,7 +96,7 @@ describe('course copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		userRepo = module.get(UserRepo);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		toolFeatures = module.get(ToolFeatures);
+		configService = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -137,7 +135,7 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
-			toolFeatures.ctlToolsCopyEnabled = true;
+			configService.get.mockReturnValue(true);
 
 			return {
 				user,
@@ -384,7 +382,7 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
-			toolFeatures.ctlToolsCopyEnabled = false;
+			configService.get.mockReturnValue(false);
 
 			return {
 				user,

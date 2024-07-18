@@ -1,6 +1,7 @@
 import { SchulconnexResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,14 +11,12 @@ import { roleFactory, schoolEntityFactory, systemEntityFactory, TestApiClient, u
 import { accountFactory } from '@src/modules/account/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller Populate (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
-	let userImportFeatures: IUserImportFeatures;
 	let axiosMock: MockAdapter;
 
 	const authenticatedUser = async (
@@ -42,9 +41,10 @@ describe('ImportUser Controller Populate (API)', () => {
 	};
 
 	const setConfig = (systemId?: string) => {
-		userImportFeatures.userMigrationEnabled = true;
-		userImportFeatures.userMigrationSystemId = systemId || new ObjectId().toString();
-		userImportFeatures.useWithUserLoginMigration = false;
+		const config: ServerConfig = serverConfig();
+		config.FEATURE_USER_MIGRATION_ENABLED = true;
+		config.FEATURE_USER_MIGRATION_SYSTEM_ID = systemId || new ObjectId().toString();
+		config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
 	};
 
 	beforeAll(async () => {
@@ -58,7 +58,6 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
-		userImportFeatures = app.get(UserImportFeatures);
 		axiosMock = new MockAdapter(axios);
 	});
 
@@ -90,7 +89,8 @@ describe('ImportUser Controller Populate (API)', () => {
 				const { account } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
-				userImportFeatures.userMigrationEnabled = false;
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
 				return { loggedInClient };
 			};
@@ -113,7 +113,8 @@ describe('ImportUser Controller Populate (API)', () => {
 			const setup = async () => {
 				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE], [], false);
 				const loggedInClient = await testApiClient.login(account);
-				userImportFeatures.userMigrationSystemId = system.id;
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
 
 				school.externalId = undefined;
 
@@ -139,8 +140,9 @@ describe('ImportUser Controller Populate (API)', () => {
 				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
-				userImportFeatures.userMigrationEnabled = true;
-				userImportFeatures.userMigrationSystemId = system.id;
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_USER_MIGRATION_ENABLED = true;
+				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
 
 				axiosMock.onPost(/(.*)\/token/).reply<OauthTokenResponse>(HttpStatus.OK, {
 					id_token: 'idToken',

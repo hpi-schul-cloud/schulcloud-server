@@ -151,6 +151,36 @@
 		},
 		"__v": 0
 	},
+		{
+		"_id": {
+			"$oid": "668c0a7b46c42b79f6034ff0"
+		},
+		"userIds": [
+			{
+				"$oid": "5fa2cccab229544f2c696917"
+			}
+		],
+		"teacherIds": [
+			{
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			}
+		],
+		"schoolId": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"name": "b",
+		"gradeLevel": 9,
+		"year": {
+			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+		},
+		"createdAt": {
+			"$date": "2024-07-08T10:00:26.985Z"
+		},
+		"updatedAt": {
+			"$date": "2024-07-08T10:01:29.382Z"
+		},
+		"__v": 0
+	},
 	{
 		"_id": {
 			"$oid": "6492d9cae9e3355c0d1d1838"

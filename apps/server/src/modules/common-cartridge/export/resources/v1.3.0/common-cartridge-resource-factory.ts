@@ -1,6 +1,6 @@
 import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
+import { ResourceTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource } from '../../interfaces';
-import { createResourceTypeNotSupportedError } from '../../utils';
 import {
 	CommonCartridgeManifestResourcePropsV130,
 	CommonCartridgeManifestResourceV130,
@@ -31,7 +31,7 @@ export class CommonCartridgeResourceFactoryV130 {
 			case CommonCartridgeResourceType.WEB_LINK:
 				return new CommonCartridgeWebLinkResourceV130(props);
 			default:
-				throw createResourceTypeNotSupportedError(type);
+				throw new ResourceTypeNotSupportedLoggableException(type);
 		}
 	}
 }

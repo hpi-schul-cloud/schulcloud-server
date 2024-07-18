@@ -1,16 +1,18 @@
 import { AuthorizationService } from '@modules/authorization';
-import { Inject, Injectable } from '@nestjs/common';
-import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
+import { System } from '@modules/system';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ImportUser, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
+import { UserImportConfig } from '../user-import-config';
 
 @Injectable()
 export class UserImportFetchUc {
 	constructor(
-		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
+		private readonly configService: ConfigService<UserImportConfig, true>,
 		private readonly schulconnexFetchImportUsersService: SchulconnexFetchImportUsersService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly userImportService: UserImportService
@@ -22,12 +24,12 @@ export class UserImportFetchUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
 		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
 
-		const system: SystemEntity = await this.userImportService.getMigrationSystem();
+		const system: System = await this.userImportService.getMigrationSystem();
 		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(user.school, system);
 
 		const filteredFetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
 			fetchedData,
-			this.userImportFeatures.userMigrationSystemId
+			this.configService.get('FEATURE_USER_MIGRATION_SYSTEM_ID')
 		);
 
 		const matchedImportUsers: ImportUser[] = await this.userImportService.matchUsers(filteredFetchedData);
@@ -38,7 +40,10 @@ export class UserImportFetchUc {
 	}
 
 	private checkMigrationEnabled(userId: EntityId): void {
-		if (!this.userImportFeatures.userMigrationEnabled || !this.userImportFeatures.userMigrationSystemId) {
+		if (
+			!this.configService.get('FEATURE_USER_MIGRATION_ENABLED') ||
+			!this.configService.get('FEATURE_USER_MIGRATION_SYSTEM_ID')
+		) {
 			throw new UserMigrationIsNotEnabledLoggableException(userId);
 		}
 	}
