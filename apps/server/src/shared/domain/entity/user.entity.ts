@@ -51,7 +51,6 @@ interface UserInfo {
 export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property()
 	@Index()
-	// @Unique()
 	email: string;
 
 	@Property()
