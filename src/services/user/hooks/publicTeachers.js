@@ -26,7 +26,7 @@ const mapRoleFilterQuery = (hook) => {
 
 const filterForPublicTeacher = (hook) => {
 	// Limit accessible fields
-	hook.params.query.$select = ['_id', 'firstName', 'lastName'];
+	hook.params.query.$select = ['_id', 'firstName', 'lastName', 'schoolId'];
 
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
