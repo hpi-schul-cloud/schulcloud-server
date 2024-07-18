@@ -24,103 +24,103 @@
 <title>cluster_VideoConferenceApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1405,-195 1405,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_VideoConferenceApiModule_imports</title>
-<polygon fill="none" stroke="black" points="963,-78 963,-130 1397,-130 1397,-78 963,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_VideoConferenceApiModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 955,-130 955,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="458,-78 458,-130 1397,-130 1397,-78 458,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_VideoConferenceApiModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 450,-130 450,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1388.81,-122 1385.81,-126 1364.81,-126 1361.81,-122 1251.19,-122 1251.19,-86 1388.81,-86 1388.81,-122"/>
-<text text-anchor="middle" x="1320" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="441.81,-122 438.81,-126 417.81,-126 414.81,-122 304.19,-122 304.19,-86 441.81,-86 441.81,-122"/>
+<text text-anchor="middle" x="373" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- VideoConferenceApiModule -->
 <g id="node4" class="node">
 <title>VideoConferenceApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="920.78,-187 917.78,-191 896.78,-191 893.78,-187 741.22,-187 741.22,-151 920.78,-151 920.78,-187"/>
-<text text-anchor="middle" x="831" y="-164.8" font-family="Times,serif" font-size="14.00">VideoConferenceApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="661.78,-187 658.78,-191 637.78,-191 634.78,-187 482.22,-187 482.22,-151 661.78,-151 661.78,-187"/>
+<text text-anchor="middle" x="572" y="-164.8" font-family="Times,serif" font-size="14.00">VideoConferenceApiModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;VideoConferenceApiModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M1320,-122.29C1320,-144.21 1320,-178 1320,-178 1320,-178 930.69,-178 930.69,-178"/>
-<polygon fill="black" stroke="black" points="930.69,-174.5 920.69,-178 930.69,-181.5 930.69,-174.5"/>
+<path fill="none" stroke="black" d="M373,-122.03C373,-138.4 373,-160 373,-160 373,-160 472.11,-160 472.11,-160"/>
+<polygon fill="black" stroke="black" points="472.11,-163.5 482.11,-160 472.11,-156.5 472.11,-163.5"/>
 </g>
 <!-- UserModule -->
 <g id="node2" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1232.98,-122 1229.98,-126 1208.98,-126 1205.98,-122 1147.02,-122 1147.02,-86 1232.98,-86 1232.98,-122"/>
-<text text-anchor="middle" x="1190" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="285.98,-122 282.98,-126 261.98,-126 258.98,-122 200.02,-122 200.02,-86 285.98,-86 285.98,-122"/>
+<text text-anchor="middle" x="243" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;VideoConferenceApiModule -->
 <g id="edge2" class="edge">
 <title>UserModule&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M1190,-122.11C1190,-141.34 1190,-169 1190,-169 1190,-169 930.66,-169 930.66,-169"/>
-<polygon fill="black" stroke="black" points="930.66,-165.5 920.66,-169 930.66,-172.5 930.66,-165.5"/>
+<path fill="none" stroke="black" d="M243,-122.11C243,-141.34 243,-169 243,-169 243,-169 472.1,-169 472.1,-169"/>
+<polygon fill="black" stroke="black" points="472.1,-172.5 482.1,-169 472.1,-165.5 472.1,-172.5"/>
 </g>
 <!-- VideoConferenceModule -->
 <g id="node3" class="node">
 <title>VideoConferenceModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1129.28,-122 1126.28,-126 1105.28,-126 1102.28,-122 970.72,-122 970.72,-86 1129.28,-86 1129.28,-122"/>
-<text text-anchor="middle" x="1050" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="182.28,-122 179.28,-126 158.28,-126 155.28,-122 23.72,-122 23.72,-86 182.28,-86 182.28,-122"/>
+<text text-anchor="middle" x="103" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceModule</text>
 </g>
 <!-- VideoConferenceModule&#45;&gt;VideoConferenceApiModule -->
 <g id="edge3" class="edge">
 <title>VideoConferenceModule&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M1050,-122.03C1050,-138.4 1050,-160 1050,-160 1050,-160 930.71,-160 930.71,-160"/>
-<polygon fill="black" stroke="black" points="930.71,-156.5 920.71,-160 930.71,-163.5 930.71,-156.5"/>
+<path fill="none" stroke="black" d="M103,-122.29C103,-144.21 103,-178 103,-178 103,-178 472.13,-178 472.13,-178"/>
+<polygon fill="black" stroke="black" points="472.13,-181.5 482.13,-178 472.13,-174.5 472.13,-181.5"/>
 </g>
 <!-- VideoConferenceCreateUc -->
 <g id="node5" class="node">
 <title>VideoConferenceCreateUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="831" cy="-104" rx="115.69" ry="18"/>
-<text text-anchor="middle" x="831" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceCreateUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1273" cy="-104" rx="115.69" ry="18"/>
+<text text-anchor="middle" x="1273" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceCreateUc</text>
 </g>
 <!-- VideoConferenceCreateUc&#45;&gt;VideoConferenceApiModule -->
 <g id="edge4" class="edge">
 <title>VideoConferenceCreateUc&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M831,-122.11C831,-122.11 831,-140.99 831,-140.99"/>
-<polygon fill="black" stroke="black" points="827.5,-140.99 831,-150.99 834.5,-140.99 827.5,-140.99"/>
+<path fill="none" stroke="black" d="M1273,-122.29C1273,-144.21 1273,-178 1273,-178 1273,-178 671.85,-178 671.85,-178"/>
+<polygon fill="black" stroke="black" points="671.85,-174.5 661.85,-178 671.85,-181.5 671.85,-174.5"/>
 </g>
 <!-- VideoConferenceEndUc -->
 <g id="node6" class="node">
 <title>VideoConferenceEndUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="591" cy="-104" rx="105.9" ry="18"/>
-<text text-anchor="middle" x="591" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceEndUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1033" cy="-104" rx="105.9" ry="18"/>
+<text text-anchor="middle" x="1033" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceEndUc</text>
 </g>
 <!-- VideoConferenceEndUc&#45;&gt;VideoConferenceApiModule -->
 <g id="edge5" class="edge">
 <title>VideoConferenceEndUc&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M591,-122.03C591,-138.4 591,-160 591,-160 591,-160 731.29,-160 731.29,-160"/>
-<polygon fill="black" stroke="black" points="731.29,-163.5 741.29,-160 731.29,-156.5 731.29,-163.5"/>
+<path fill="none" stroke="black" d="M1033,-122.11C1033,-141.34 1033,-169 1033,-169 1033,-169 671.71,-169 671.71,-169"/>
+<polygon fill="black" stroke="black" points="671.71,-165.5 661.71,-169 671.71,-172.5 671.71,-165.5"/>
 </g>
 <!-- VideoConferenceInfoUc -->
 <g id="node7" class="node">
 <title>VideoConferenceInfoUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="361" cy="-104" rx="106.46" ry="18"/>
-<text text-anchor="middle" x="361" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceInfoUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="803" cy="-104" rx="106.46" ry="18"/>
+<text text-anchor="middle" x="803" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceInfoUc</text>
 </g>
 <!-- VideoConferenceInfoUc&#45;&gt;VideoConferenceApiModule -->
 <g id="edge6" class="edge">
 <title>VideoConferenceInfoUc&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M361,-122.11C361,-141.34 361,-169 361,-169 361,-169 731.21,-169 731.21,-169"/>
-<polygon fill="black" stroke="black" points="731.21,-172.5 741.21,-169 731.21,-165.5 731.21,-172.5"/>
+<path fill="none" stroke="black" d="M803,-122.03C803,-138.4 803,-160 803,-160 803,-160 671.64,-160 671.64,-160"/>
+<polygon fill="black" stroke="black" points="671.64,-156.5 661.64,-160 671.64,-163.5 671.64,-156.5"/>
 </g>
 <!-- VideoConferenceJoinUc -->
 <g id="node8" class="node">
 <title>VideoConferenceJoinUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="130" cy="-104" rx="106.48" ry="18"/>
-<text text-anchor="middle" x="130" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceJoinUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="572" cy="-104" rx="106.48" ry="18"/>
+<text text-anchor="middle" x="572" y="-99.8" font-family="Times,serif" font-size="14.00">VideoConferenceJoinUc</text>
 </g>
 <!-- VideoConferenceJoinUc&#45;&gt;VideoConferenceApiModule -->
 <g id="edge7" class="edge">
 <title>VideoConferenceJoinUc&#45;&gt;VideoConferenceApiModule</title>
-<path fill="none" stroke="black" d="M130,-122.29C130,-144.21 130,-178 130,-178 130,-178 731.15,-178 731.15,-178"/>
-<polygon fill="black" stroke="black" points="731.15,-181.5 741.15,-178 731.15,-174.5 731.15,-181.5"/>
+<path fill="none" stroke="black" d="M572,-122.11C572,-122.11 572,-140.99 572,-140.99"/>
+<polygon fill="black" stroke="black" points="568.5,-140.99 572,-150.99 575.5,-140.99 568.5,-140.99"/>
 </g>
 </g>
 </svg>
