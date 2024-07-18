@@ -213,11 +213,6 @@
                                 <a href="#handle" >handle</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#isEmailUniqueForExternal" >isEmailUniqueForExternal</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#me" >me</a>
                             </li>
@@ -1679,88 +1674,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isEmailUniqueForExternal"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>isEmailUniqueForExternal</b></span>
-                        <a href="#isEmailUniqueForExternal"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isEmailUniqueForExternal(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="287"
-                                    class="link-to-prism">apps/server/src/modules/user/service/user.service.ts:287</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>email</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>externalId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="me"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -2545,20 +2458,6 @@ export class UserService implements DeletionService, IEventHandler&lt;UserDelete
 		extractedOperationReport &#x3D; OperationReportHelper.extractOperationReports([results]);
 
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
-	}
-
-	public async isEmailUniqueForExternal(email: string, externalId?: string): Promise&lt;boolean&gt; {
-		const foundUsers: UserDO[] &#x3D; await this.findByEmail(email);
-		if (!externalId &amp;&amp; foundUsers.length) {
-			return false;
-		}
-
-		const unmatchedUsers: UserDO[] &#x3D; foundUsers.filter((user: UserDO) &#x3D;&gt; user.externalId !&#x3D;&#x3D; externalId);
-		if (unmatchedUsers.length) {
-			return false;
-		}
-
-		return true;
 	}
 }
 </code></pre>

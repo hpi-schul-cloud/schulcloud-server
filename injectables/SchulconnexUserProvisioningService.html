@@ -138,11 +138,6 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkUniqueEmail" >checkUniqueEmail</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#createRoleReferences" >createRoleReferences</a>
                             </li>
                             <li>
@@ -176,12 +171,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -234,18 +229,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>logger</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -260,88 +243,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkUniqueEmail"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>checkUniqueEmail</b></span>
-                        <a href="#checkUniqueEmail"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkUniqueEmail(email?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:62</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>email</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>externalId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -365,8 +266,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -427,15 +328,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createUser(externalUser: <a href="../classes/ExternalUserDto.html" target="_self">ExternalUserDto</a>, isEmailUnique: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, roleRefs?: <a href="../classes/RoleReference.html" target="_self">RoleReference[]</a>)</code>
+                    <code>createUser(externalUser: <a href="../classes/ExternalUserDto.html" target="_self">ExternalUserDto</a>, schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, roleRefs?: <a href="../classes/RoleReference.html" target="_self">RoleReference[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -459,18 +360,6 @@
                                                 <td>externalUser</td>
                                             <td>
                                                             <code><a href="../classes/ExternalUserDto.html" target="_self" >ExternalUserDto</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>isEmailUnique</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                             </td>
 
                                             <td>
@@ -540,8 +429,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -626,15 +515,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateUser(externalUser: <a href="../classes/ExternalUserDto.html" target="_self">ExternalUserDto</a>, foundUser: <a href="../classes/UserDO.html" target="_self">UserDO</a>, isEmailUnique: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, roleRefs?: <a href="../classes/RoleReference.html" target="_self">RoleReference[]</a>, schoolId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>updateUser(externalUser: <a href="../classes/ExternalUserDto.html" target="_self">ExternalUserDto</a>, foundUser: <a href="../classes/UserDO.html" target="_self">UserDO</a>, roleRefs?: <a href="../classes/RoleReference.html" target="_self">RoleReference[]</a>, schoolId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -670,18 +559,6 @@
                                                 <td>foundUser</td>
                                             <td>
                                                             <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>isEmailUnique</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                             </td>
 
                                             <td>
@@ -735,14 +612,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountSave, AccountService } from &#x27;@modules/account&#x27;;
-import { EmailAlreadyExistsLoggable } from &#x27;@modules/provisioning/loggable&#x27;;
 import { RoleDto, RoleService } from &#x27;@modules/role&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
 import CryptoJS from &#x27;crypto-js&#x27;;
 import { ExternalUserDto } from &#x27;../../../dto&#x27;;
 
@@ -751,8 +626,7 @@ export class SchulconnexUserProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
-		private readonly logger: Logger
+		private readonly accountService: AccountService
 	) {}
 
 	public async provisionExternalUser(
@@ -762,14 +636,12 @@ export class SchulconnexUserProvisioningService {
 	): Promise&lt;UserDO&gt; {
 		const foundUser: UserDO | null &#x3D; await this.userService.findByExternalId(externalUser.externalId, systemId);
 
-		const isEmailUnique: boolean &#x3D; await this.checkUniqueEmail(externalUser.email, foundUser?.externalId);
-
 		const roleRefs: RoleReference[] | undefined &#x3D; await this.createRoleReferences(externalUser.roles);
 
 		let createNewAccount &#x3D; false;
 		let user: UserDO;
 		if (foundUser) {
-			user &#x3D; this.updateUser(externalUser, foundUser, isEmailUnique, roleRefs, schoolId);
+			user &#x3D; this.updateUser(externalUser, foundUser, roleRefs, schoolId);
 		} else {
 			if (!schoolId) {
 				throw new UnprocessableEntityException(
@@ -778,7 +650,7 @@ export class SchulconnexUserProvisioningService {
 			}
 
 			createNewAccount &#x3D; true;
-			user &#x3D; this.createUser(externalUser, isEmailUnique, schoolId, roleRefs);
+			user &#x3D; this.createUser(externalUser, schoolId, roleRefs);
 		}
 
 		const savedUser: UserDO &#x3D; await this.userService.save(user);
@@ -793,20 +665,6 @@ export class SchulconnexUserProvisioningService {
 		}
 
 		return savedUser;
-	}
-
-	private async checkUniqueEmail(email?: string, externalId?: string): Promise&lt;boolean&gt; {
-		if (email) {
-			const isEmailUnique: boolean &#x3D; await this.userService.isEmailUniqueForExternal(email, externalId);
-
-			if (!isEmailUnique) {
-				this.logger.warning(new EmailAlreadyExistsLoggable(email, externalId));
-			}
-
-			return isEmailUnique;
-		}
-
-		return true;
 	}
 
 	private async createRoleReferences(roles?: RoleName[]): Promise&lt;RoleReference[] | undefined&gt; {
@@ -825,14 +683,13 @@ export class SchulconnexUserProvisioningService {
 	private updateUser(
 		externalUser: ExternalUserDto,
 		foundUser: UserDO,
-		isEmailUnique: boolean,
 		roleRefs?: RoleReference[],
 		schoolId?: string
 	): UserDO {
 		const user: UserDO &#x3D; foundUser;
 		user.firstName &#x3D; externalUser.firstName ?? foundUser.firstName;
 		user.lastName &#x3D; externalUser.lastName ?? foundUser.lastName;
-		user.email &#x3D; isEmailUnique ? externalUser.email ?? foundUser.email : foundUser.email;
+		user.email &#x3D; externalUser.email ?? foundUser.email;
 		user.roles &#x3D; roleRefs ?? foundUser.roles;
 		user.schoolId &#x3D; schoolId ?? foundUser.schoolId;
 		user.birthday &#x3D; externalUser.birthday ?? foundUser.birthday;
@@ -840,17 +697,12 @@ export class SchulconnexUserProvisioningService {
 		return user;
 	}
 
-	private createUser(
-		externalUser: ExternalUserDto,
-		isEmailUnique: boolean,
-		schoolId: string,
-		roleRefs?: RoleReference[]
-	): UserDO {
+	private createUser(externalUser: ExternalUserDto, schoolId: string, roleRefs?: RoleReference[]): UserDO {
 		const user: UserDO &#x3D; new UserDO({
 			externalId: externalUser.externalId,
 			firstName: externalUser.firstName ?? &#x27;&#x27;,
 			lastName: externalUser.lastName ?? &#x27;&#x27;,
-			email: isEmailUnique ? externalUser.email ?? &#x27;&#x27; : &#x27;&#x27;,
+			email: externalUser.email ?? &#x27;&#x27;,
 			roles: roleRefs ?? [],
 			schoolId,
 			birthday: externalUser.birthday,
