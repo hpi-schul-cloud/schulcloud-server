@@ -44,7 +44,7 @@ export class AuthenticationService {
 	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
 		const jti = randomUUID();
 
-		const result: LoginDto = new LoginDto({
+		const result = new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,
