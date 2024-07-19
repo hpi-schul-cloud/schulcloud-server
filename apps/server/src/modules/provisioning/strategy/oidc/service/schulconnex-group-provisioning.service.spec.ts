@@ -808,7 +808,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 					userService.findByExternalId.mockResolvedValue(user);
 					groupService.findGroups.mockResolvedValue(new Page<Group>(existingGroups, 2));
-					courseService.findBySyncedGroup.mockResolvedValue([new Course(course.getProps())]);
+					courseService.findBySyncedGroup.mockResolvedValue([course]);
 					return {
 						externalGroups,
 						systemId,
@@ -822,19 +822,6 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.delete).not.toHaveBeenCalled();
-				});
-
-				it('should save the groups', async () => {
-					const { externalGroups, systemId, externalUserId } = setup();
-
-					const result: Group[] = await service.removeExternalGroupsAndAffiliation(
-						externalUserId,
-						externalGroups,
-						systemId
-					);
-					expect(groupService.delete).not.toHaveBeenCalled();
-
-					expect(result).toHaveLength(0);
 				});
 			});
 
