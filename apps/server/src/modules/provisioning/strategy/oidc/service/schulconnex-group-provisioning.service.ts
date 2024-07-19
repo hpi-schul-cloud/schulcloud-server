@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { CourseDoService } from '@modules/learnroom';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -14,6 +15,7 @@ import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import { Course } from '../../../../learnroom/domain';
 
 @Injectable()
 export class SchulconnexGroupProvisioningService {
@@ -22,6 +24,7 @@ export class SchulconnexGroupProvisioningService {
 		private readonly schoolService: LegacySchoolService,
 		private readonly roleService: RoleService,
 		private readonly groupService: GroupService,
+		private readonly courseService: CourseDoService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly logger: Logger
 	) {}
@@ -197,7 +200,10 @@ export class SchulconnexGroupProvisioningService {
 				group.removeUser(user);
 
 				if (group.isEmpty()) {
-					await this.groupService.delete(group);
+					const courses: Course[] = await this.courseService.findBySyncedGroup(group);
+					if (!courses) {
+						await this.groupService.delete(group);
+					}
 					return null;
 				}
 

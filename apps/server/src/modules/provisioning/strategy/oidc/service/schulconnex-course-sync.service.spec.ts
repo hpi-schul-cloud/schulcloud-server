@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupUser } from '@modules/group';
+import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
-import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';

@@ -5,6 +5,7 @@ export {
 	CourseCopyService,
 	CourseGroupService,
 	CourseService,
+	CourseDoService,
 	DashboardService,
 	RoomsService,
 } from './service';
