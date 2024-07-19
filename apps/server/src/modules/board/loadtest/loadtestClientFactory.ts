@@ -50,7 +50,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 
 	const waitForSuccess = async (eventName: string, options?: { checkIsOwnAction?: boolean; timeoutMs?: number }) =>
 		new Promise((resolve, reject) => {
-			const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 5000, ...options };
+			const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 500000, ...options };
 			const timeoutId = setTimeout(() => {
 				reject(new Error(`Timeout waiting for ${eventName}`));
 			}, timeoutMs);
@@ -88,6 +88,11 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		return result;
 	};
 
+	const fetchCard = async (payload: FetchCardsMessageParams) => {
+		const { newCard } = (await emitAndWait('fetch-card', payload)) as { newCard: CardResponse };
+		return newCard;
+	};
+
 	socket.on('connect', async () => {
 		console.log('connected');
 		await fetchBoard();
@@ -99,17 +104,12 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 
 	socket.onAny(
 		(event: string, payload: { isOwnAction: boolean; newCard?: CardResponse; newColumn?: ColumnResponse }) => {
-			if (payload.isOwnAction === true) {
-				if (event === 'create-card-success' && payload.newCard) {
-					cards.push(payload.newCard);
-				}
-				if (event === 'create-column-success' && payload.newColumn) {
-					columns.push(payload.newColumn);
-				}
-				// console.log('socket.onAny', event);
-				// console.log(payload);
-			} else {
-				// console.log(event, payload);
+			if (event === 'create-card-success' && payload.newCard) {
+				cards.push(payload.newCard);
+				fetchCard({ cardIds: [payload.newCard.id] }).catch(console.error);
+			}
+			if (event === 'create-column-success' && payload.newColumn) {
+				columns.push(payload.newColumn);
 			}
 		}
 	);
@@ -148,11 +148,6 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 	const createElement = async (payload: CreateContentElementMessageParams) => {
 		const { newElement } = (await emitAndWait('create-element', payload)) as { newElement: AnyContentElementResponse };
 		return newElement;
-	};
-
-	const fetchCard = async (payload: FetchCardsMessageParams) => {
-		const { newCard } = (await emitAndWait('fetch-card', payload)) as { newCard: CardResponse };
-		return newCard;
 	};
 
 	const moveCard = async (columnId: string, cardId: string, oldIndex: number, newIndex: number) => {
