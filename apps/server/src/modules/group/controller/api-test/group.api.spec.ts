@@ -278,6 +278,7 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0],
 						},
 					],
+					type: GroupEntityTypes.COURSE,
 				});
 				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({
 					organization: school,
@@ -287,6 +288,7 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0],
 						},
 					],
+					type: GroupEntityTypes.COURSE,
 				});
 				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({
 					organization: otherSchool,
@@ -296,6 +298,7 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0],
 						},
 					],
+					type: GroupEntityTypes.COURSE,
 				});
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
@@ -459,12 +462,17 @@ describe('Group (API)', () => {
 				const teachersGroup: GroupEntity = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+					type: GroupEntityTypes.COURSE,
 				});
 				const availableTeachersGroup: GroupEntity = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+					type: GroupEntityTypes.COURSE,
 				});
-				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
+				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					type: GroupEntityTypes.COURSE,
+				});
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
 					school,
