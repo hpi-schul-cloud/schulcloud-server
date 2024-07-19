@@ -1212,7 +1212,11 @@ export class GroupRepo extends BaseDomainObjectRepo&lt;Group, GroupEntity&gt; {
 					as: &#x27;syncedCourses&#x27;,
 				},
 			},
-			{ $match: { syncedCourses: { $size: 0 } } },
+			{
+				$match: {
+					$or: [{ syncedCourses: { $size: 0 } }, { type: { $eq: GroupTypes.CLASS } }],
+				},
+			},
 			{ $sort: { name: 1 } }
 		);
 
