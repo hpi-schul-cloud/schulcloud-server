@@ -233,44 +233,6 @@
       template: admin-api-server-svc-monitor.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
-  - name: TlDraw server Secret (from 1Password)
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-server-onepassword.yml.j2
-    when:
-     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-     - WITH_TLDRAW is defined and WITH_TLDRAW|bool
-
-  - name: TlDraw server deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-deployment.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
-
-  - name: TlDraw server service
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-server-svc.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
-
-  - name: Tldraw ingress
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-ingress.yml.j2
-      apply: yes
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
-
-  - name: TldrawServiceMonitor
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-svc-monitor.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
-
   - name: common cartridge configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
