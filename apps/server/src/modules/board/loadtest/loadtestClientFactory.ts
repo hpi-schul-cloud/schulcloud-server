@@ -32,8 +32,9 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 	const cards: Array<CardResponse> = [];
 	const socket = io(baseUrl, {
 		path: '/board-collaboration',
+		withCredentials: true,
 		extraHeaders: {
-			cookie: ` 'USER_TIMEZONE=Europe/Berlin; jwt=${token}`,
+			cookie: ` USER_TIMEZONE=Europe/Berlin; jwt=${token}`,
 		},
 	});
 
@@ -99,14 +100,14 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 	});
 
 	socket.on('disconnect', () => {
-		console.log('disconnected');
+		process.stdout.write('.');
 	});
 
 	socket.onAny(
 		(event: string, payload: { isOwnAction: boolean; newCard?: CardResponse; newColumn?: ColumnResponse }) => {
 			if (event === 'create-card-success' && payload.newCard) {
 				cards.push(payload.newCard);
-				fetchCard({ cardIds: [payload.newCard.id] }).catch(console.error);
+				// fetchCard({ cardIds: [payload.newCard.id] }).catch(console.error);
 			}
 			if (event === 'create-column-success' && payload.newColumn) {
 				columns.push(payload.newColumn);
