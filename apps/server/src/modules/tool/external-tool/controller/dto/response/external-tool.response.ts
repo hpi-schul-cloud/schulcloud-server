@@ -21,6 +21,9 @@ export class ExternalToolResponse {
 	@ApiPropertyOptional({ type: String, description: 'URL of the logo of the external tool' })
 	logoUrl?: string;
 
+	@ApiPropertyOptional({ type: String, description: 'URL of the thumbnail of the external tool' })
+	thumbnailUrl?: string;
+
 	@ApiProperty({
 		description: 'Configuration of the external tool',
 		oneOf: [

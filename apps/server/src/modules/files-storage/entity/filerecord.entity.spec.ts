@@ -3,14 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
+import { FileRecordParentType, StorageLocation } from '../interface';
 import {
 	FileRecord,
-	FileRecordParentType,
 	FileRecordProperties,
 	FileRecordSecurityCheck,
 	PreviewStatus,
 	ScanStatus,
-	StorageLocation,
 } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {

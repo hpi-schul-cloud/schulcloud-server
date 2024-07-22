@@ -43,6 +43,7 @@ export class ExternalToolService {
 	}
 
 	public async updateExternalTool(toUpdate: ExternalTool): Promise<ExternalTool> {
+		// TODO use encryption for secret
 		await this.updateOauth2ToolConfig(toUpdate);
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
 

@@ -35,4 +35,17 @@ export class InstanceRepo extends BaseDomainObjectRepo<Instance, InstanceEntity>
 
 		return course;
 	}
+
+	public async getInstance(): Promise<Instance> {
+		const entities: InstanceEntity[] = await this.em.find(this.entityName, {});
+
+		if (entities.length !== 1) {
+			// TODO
+			throw new Error('Instance could not be identified');
+		}
+
+		const course: Instance = new Instance(this.mapEntityToDoProperties(entities[0]));
+
+		return course;
+	}
 }

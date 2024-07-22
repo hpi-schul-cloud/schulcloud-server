@@ -1,5 +1,5 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { FileParamBuilder } from './files-storage-param.builder';
 

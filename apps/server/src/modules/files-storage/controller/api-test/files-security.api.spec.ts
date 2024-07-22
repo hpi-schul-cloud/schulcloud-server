@@ -15,8 +15,9 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType, StorageLocation } from '../../entity';
+import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordParentType, StorageLocation } from '../../interface';
 import { FileRecordListResponse, ScanResultParams } from '../dto';
 
 const baseRouteName = '/file-security';

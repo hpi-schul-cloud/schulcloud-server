@@ -13,10 +13,11 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
+import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 

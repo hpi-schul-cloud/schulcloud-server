@@ -7,9 +7,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileRecord } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { getPaths, unmarkForDelete } from '../helper';
+import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
