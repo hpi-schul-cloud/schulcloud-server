@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/controller/dto/response/consent-session.response.ts</code>
+            <code>apps/server/src/modules/oauth-provider/api/dto/response/consent-session.response.ts</code>
         </p>
 
 
@@ -141,18 +141,14 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#challenge" >challenge</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#client_id" >client_id</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#client_name" >client_name</a>
                             </li>
                         </ul>
@@ -174,12 +170,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(clientId: string | undefined, clientName: string | undefined, challenge: string | undefined)</code>
+<code>constructor(props: <a href="../classes/ConsentSessionResponse.html" target="_self">ConsentSessionResponse</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/oauth-provider/controller/dto/response/consent-session.response.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="3" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/consent-session.response.ts:3</a></div>
                             </td>
                         </tr>
 
@@ -197,34 +193,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>clientId</td>
+                                                        <td>props</td>
                                                   
                                                         <td>
-                                                                    <code>string | undefined</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>clientName</td>
-                                                  
-                                                        <td>
-                                                                    <code>string | undefined</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>challenge</td>
-                                                  
-                                                        <td>
-                                                                    <code>string | undefined</code>
+                                                                        <code><a href="../classes/ConsentSessionResponse.html" target="_self" >ConsentSessionResponse</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -253,7 +225,6 @@
                     <a name="challenge"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>challenge</b></span>
                         <a href="#challenge"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -276,7 +247,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/oauth-provider/controller/dto/response/consent-session.response.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/consent-session.response.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -290,8 +261,6 @@
                     <a name="client_id"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>client_id</b></span>
                         <a href="#client_id"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -308,13 +277,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@ApiProperty({description: &#x27;The id of the client.&#x27;})<br />
+                            @ApiProperty({description: &#x27;The id of the client.&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth-provider/controller/dto/response/consent-session.response.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/consent-session.response.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -328,7 +297,6 @@
                     <a name="client_name"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>client_name</b></span>
                         <a href="#client_name"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -351,7 +319,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/oauth-provider/controller/dto/response/consent-session.response.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/consent-session.response.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -371,24 +339,22 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { IsOptional } from &#x27;class-validator&#x27;;
 
 export class ConsentSessionResponse {
-	constructor(clientId: string | undefined, clientName: string | undefined, challenge: string | undefined) {
-		this.client_id &#x3D; clientId;
-		this.client_name &#x3D; clientName;
-		this.challenge &#x3D; challenge;
+	constructor(props: ConsentSessionResponse) {
+		this.client_id &#x3D; props.client_id;
+		this.client_name &#x3D; props.client_name;
+		this.challenge &#x3D; props.challenge;
 	}
 
-	@IsOptional()
 	@ApiProperty({ description: &#x27;The id of the client.&#x27; })
-	client_id?: string;
+	client_id: string;
 
 	@ApiProperty({ description: &#x27;The name of the client.&#x27; })
-	client_name?: string;
+	client_name: string;
 
 	@ApiProperty({ description: &#x27;The id/challenge of the consent authorization request.&#x27; })
-	challenge?: string;
+	challenge: string;
 }
 </code></pre>
     </div>

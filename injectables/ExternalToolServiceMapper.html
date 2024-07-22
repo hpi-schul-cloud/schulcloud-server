@@ -225,7 +225,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ProviderOauthClient.html" target="_self" >ProviderOauthClient</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ProviderOauthClient.html" target="_self" >Partial&lt;ProviderOauthClient&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -241,13 +241,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ProviderOauthClient } from &#x27;@infra/oauth-provider/dto&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ProviderOauthClient } from &#x27;@src/modules/oauth-provider/domain&#x27;;
 import { Oauth2ToolConfig } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class ExternalToolServiceMapper {
-	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfig): ProviderOauthClient {
+	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfig): Partial&lt;ProviderOauthClient&gt; {
 		return {
 			client_name: name,
 			client_id: oauth2Config.clientId,

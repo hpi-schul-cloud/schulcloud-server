@@ -91,7 +91,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >OauthProviderUc</li>
+  <li class="breadcrumb-item" >OauthProviderSessionUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/uc/oauth-provider.uc.ts</code>
+            <code>apps/server/src/modules/oauth-provider/api/oauth-provider.session.uc.ts</code>
         </p>
 
 
@@ -136,9 +136,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#listConsentSessions" >listConsentSessions</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#revokeConsentSession" >revokeConsentSession</a>
                             </li>
                         </ul>
@@ -164,7 +168,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.uc.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.session.uc.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -213,6 +217,8 @@
                 <td class="col-md-4">
                     <a name="listConsentSessions"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>listConsentSessions</b></span>
                         <a href="#listConsentSessions"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -220,7 +226,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listConsentSessions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listConsentSessions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -228,7 +235,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.uc.ts:10</a></div>
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.session.uc.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -280,6 +287,8 @@
                 <td class="col-md-4">
                     <a name="revokeConsentSession"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>revokeConsentSession</b></span>
                         <a href="#revokeConsentSession"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -287,15 +296,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>revokeConsentSession(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>revokeConsentSession(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.uc.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.session.uc.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -359,23 +369,23 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthProviderService } from &#x27;@infra/oauth-provider&#x27;;
-import { ProviderConsentSessionResponse } from &#x27;@infra/oauth-provider/dto/&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ProviderConsentSessionResponse } from &#x27;../domain&#x27;;
+import { OauthProviderService } from &#x27;../domain/service/oauth-provider.service&#x27;;
 
 @Injectable()
-export class OauthProviderUc {
+export class OauthProviderSessionUc {
 	constructor(private readonly oauthProviderService: OauthProviderService) {}
 
-	listConsentSessions(userId: EntityId): Promise&lt;ProviderConsentSessionResponse[]&gt; {
-		const sessions: Promise&lt;ProviderConsentSessionResponse[]&gt; &#x3D; this.oauthProviderService.listConsentSessions(userId);
+	public async listConsentSessions(userId: EntityId): Promise&lt;ProviderConsentSessionResponse[]&gt; {
+		const sessions: ProviderConsentSessionResponse[] &#x3D; await this.oauthProviderService.listConsentSessions(userId);
+
 		return sessions;
 	}
 
-	revokeConsentSession(userId: EntityId, clientId: string): Promise&lt;void&gt; {
-		const promise: Promise&lt;void&gt; &#x3D; this.oauthProviderService.revokeConsentSession(userId, clientId);
-		return promise;
+	public async revokeConsentSession(userId: EntityId, clientId: string): Promise&lt;void&gt; {
+		await this.oauthProviderService.revokeConsentSession(userId, clientId);
 	}
 }
 </code></pre>
@@ -421,7 +431,7 @@ export class OauthProviderUc {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'OauthProviderUc.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'OauthProviderSessionUc.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

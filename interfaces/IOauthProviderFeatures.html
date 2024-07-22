@@ -98,7 +98,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  ProviderRedirectResponse</li>
+  IOauthProviderFeatures</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,17 +122,10 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/domain/interface/response/redirect.response.ts</code>
+            <code>apps/server/src/modules/oauth-provider/oauth-provider-config.ts</code>
         </p>
 
 
-            <p class="comment">
-                <h3>Description</h3>
-            </p>
-            <p class="comment">
-                <p>See <a href="https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2">https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2</a></p>
-
-            </p>
 
 
         <section data-compodoc="block-index">
@@ -148,9 +141,9 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#redirect_to" 
+                                        <a href="#hydraUri" 
 >
-                                            redirect_to
+                                            hydraUri
                                         </a>
                                 </li>
                             </ul>
@@ -168,9 +161,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="redirect_to"></a>
-                                        <span class="name "><b>redirect_to</b>
-                                            <a href="#redirect_to">
+                                        <a name="hydraUri"></a>
+                                        <span class="name "><b>hydraUri</b>
+                                            <a href="#hydraUri">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -178,7 +171,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>redirect_to:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>hydraUri:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -202,8 +195,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface ProviderRedirectResponse {
-	redirect_to: string;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+
+export const OauthProviderFeatures &#x3D; Symbol(&#x27;OauthProviderFeatures&#x27;);
+
+export interface IOauthProviderFeatures {
+	hydraUri: string;
+}
+
+export default class OauthProviderConfiguration {
+	static features: IOauthProviderFeatures &#x3D; {
+		hydraUri: Configuration.get(&#x27;HYDRA_URI&#x27;) as string,
+	};
 }
 </code></pre>
     </div>
@@ -242,7 +245,7 @@
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'ProviderRedirectResponse.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'IOauthProviderFeatures.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -576,7 +576,7 @@ export class GroupController {
 			sortingQuery.sortOrder
 		);
 
-		const response: ClassInfoSearchListResponse &#x3D; GroupResponseMapper.mapToClassInfosToListResponse(
+		const response: ClassInfoSearchListResponse &#x3D; GroupResponseMapper.mapToClassInfoSearchListResponse(
 			board,
 			pagination.skip,
 			pagination.limit

@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc.ts</code>
+            <code>apps/server/src/modules/oauth-provider/api/oauth-provider.logout-flow.uc.ts</code>
         </p>
 
 
@@ -136,6 +136,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#logoutFlow" >logoutFlow</a>
                             </li>
                         </ul>
@@ -161,7 +163,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.logout-flow.uc.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -210,6 +212,8 @@
                 <td class="col-md-4">
                     <a name="logoutFlow"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>logoutFlow</b></span>
                         <a href="#logoutFlow"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -217,7 +221,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>logoutFlow(challenge: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>logoutFlow(challenge: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -225,7 +230,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc.ts:9</a></div>
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.logout-flow.uc.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -278,15 +283,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { OauthProviderService } from &#x27;@infra/oauth-provider&#x27;;
-import { ProviderRedirectResponse } from &#x27;@infra/oauth-provider/dto&#x27;;
+import { ProviderRedirectResponse } from &#x27;../domain&#x27;;
+import { OauthProviderService } from &#x27;../domain/service/oauth-provider.service&#x27;;
 
 @Injectable()
 export class OauthProviderLogoutFlowUc {
 	constructor(private readonly oauthProviderService: OauthProviderService) {}
 
-	logoutFlow(challenge: string): Promise&lt;ProviderRedirectResponse&gt; {
-		const logoutResponse: Promise&lt;ProviderRedirectResponse&gt; &#x3D; this.oauthProviderService.acceptLogoutRequest(challenge);
+	public async logoutFlow(challenge: string): Promise&lt;ProviderRedirectResponse&gt; {
+		const logoutResponse: ProviderRedirectResponse &#x3D; await this.oauthProviderService.acceptLogoutRequest(challenge);
+
 		return logoutResponse;
 	}
 }

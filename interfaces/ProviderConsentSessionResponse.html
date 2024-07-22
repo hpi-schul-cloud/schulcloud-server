@@ -122,10 +122,17 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/infra/oauth-provider/dto/response/consent-session.response.ts</code>
+            <code>apps/server/src/modules/oauth-provider/domain/interface/response/consent-session.response.ts</code>
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>See <a href="https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2">https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2</a></p>
+
+            </p>
 
 
         <section data-compodoc="block-index">
@@ -147,42 +154,36 @@
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#grant_access_token_audience" 
 >
                                             grant_access_token_audience
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#grant_scope" 
 >
                                             grant_scope
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#handled_at" 
 >
                                             handled_at
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#remember" 
 >
                                             remember
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#remember_for" 
 >
                                             remember_for
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#session" 
 >
                                             session
@@ -259,11 +260,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -297,11 +293,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -335,11 +326,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -373,11 +359,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -411,11 +392,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -449,11 +425,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -467,20 +438,23 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ProviderConsentResponse } from &#x27;./consent.response&#x27;;
 
+/**
+ * @see https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2
+ */
 export interface ProviderConsentSessionResponse {
 	consent_request: ProviderConsentResponse;
 
-	grant_access_token_audience?: string[];
+	grant_access_token_audience: string[];
 
-	grant_scope?: string[];
+	grant_scope: string[];
 
-	handled_at?: string;
+	handled_at: string;
 
-	remember?: boolean;
+	remember: boolean;
 
-	remember_for?: number;
+	remember_for: number;
 
-	session?: {
+	session: {
 		access_token: string;
 
 		id_token: string;

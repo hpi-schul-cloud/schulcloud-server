@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/mapper/oauth-provider-request.mapper.ts</code>
+            <code>apps/server/src/modules/oauth-provider/api/mapper/oauth-provider-request.mapper.ts</code>
         </p>
 
 
@@ -186,7 +186,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/mapper/oauth-provider-request.mapper.ts:5</a></div>
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/mapper/oauth-provider-request.mapper.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -278,11 +278,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AcceptLoginRequestBody } from &#x27;@infra/oauth-provider/dto&#x27;;
-import { LoginRequestBody } from &#x27;@modules/oauth-provider/controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AcceptLoginRequestBody } from &#x27;../../domain&#x27;;
+import { LoginRequestBody } from &#x27;../dto&#x27;;
 
 export class OauthProviderRequestMapper {
-	static mapCreateAcceptLoginRequestBody(
+	public static mapCreateAcceptLoginRequestBody(
 		loginRequestBody: LoginRequestBody,
 		currentUserId: string,
 		pseudonym: string,

@@ -122,10 +122,17 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/infra/oauth-provider/dto/interface/oidc-context.interface.ts</code>
+            <code>apps/server/src/modules/oauth-provider/domain/interface/oidc-context.interface.ts</code>
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>See <a href="https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2">https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2</a></p>
+
+            </p>
 
 
         <section data-compodoc="block-index">
@@ -141,35 +148,30 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#acr_values" 
 >
                                             acr_values
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#display" 
 >
                                             display
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#id_token_hint_claims" 
 >
                                             id_token_hint_claims
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#login_hint" 
 >
                                             login_hint
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#ui_locales" 
 >
                                             ui_locales
@@ -213,11 +215,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -251,11 +248,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -289,11 +281,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -327,11 +314,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -365,11 +347,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -382,15 +359,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface ProviderOidcContext {
-	acr_values?: string[];
+	acr_values: string[];
 
-	display?: string;
+	display: string;
 
-	id_token_hint_claims?: object;
+	id_token_hint_claims: object;
 
-	login_hint?: string;
+	login_hint: string;
 
-	ui_locales?: string[];
+	ui_locales: string[];
 }
 </code></pre>
     </div>

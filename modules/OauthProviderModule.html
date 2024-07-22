@@ -373,16 +373,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthProviderServiceModule } from &#x27;@infra/oauth-provider&#x27;;
-import { LtiToolModule } from &#x27;@modules/lti-tool&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LtiToolModule } from &#x27;@modules/lti-tool&#x27;;
 import { PseudonymModule } from &#x27;@modules/pseudonym&#x27;;
 import { ToolModule } from &#x27;@modules/tool&#x27;;
 import { UserModule } from &#x27;@modules/user&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { IdTokenService } from &#x27;./service/id-token.service&#x27;;
-import { OauthProviderLoginFlowService } from &#x27;./service/oauth-provider.login-flow.service&#x27;;
+import { IdTokenService } from &#x27;./domain/service/id-token.service&#x27;;
+import { OauthProviderLoginFlowService } from &#x27;./domain/service/oauth-provider.login-flow.service&#x27;;
+import { OauthProviderServiceModule } from &#x27;./oauth-provider-service.module&#x27;;
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, PseudonymModule, LtiToolModule, ToolModule],

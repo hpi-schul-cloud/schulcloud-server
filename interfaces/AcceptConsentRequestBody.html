@@ -122,10 +122,17 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/infra/oauth-provider/dto/request/accept-consent-request.body.ts</code>
+            <code>apps/server/src/modules/oauth-provider/domain/interface/request/accept-consent-request.body.ts</code>
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>See <a href="https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2">https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2</a></p>
+
+            </p>
 
 
         <section data-compodoc="block-index">
@@ -426,8 +433,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdToken } from &#x27;@modules/oauth-provider/interface/id-token&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdToken } from &#x27;../id-token&#x27;;
 
+/**
+ * @see https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2
+ */
 export interface AcceptConsentRequestBody {
 	grant_access_token_audience?: string[];
 

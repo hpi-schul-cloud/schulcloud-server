@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >LoginResponse</li>
+  <li class="breadcrumb-item" >OauthClientCreateBody</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts</code>
+            <code>apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts</code>
         </p>
 
 
@@ -141,43 +141,66 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#challenge" >challenge</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#client" >client</a>
-                            </li>
-                            <li>
                                     <span class="modifier"></span>
                                 <a href="#client_id" >client_id</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#oidc_context" >oidc_context</a>
+                                    <span class="modifier"></span>
+                                <a href="#client_name" >client_name</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#request_url" >request_url</a>
+                                    <span class="modifier"></span>
+                                <a href="#client_secret" >client_secret</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#requested_access_token_audience" >requested_access_token_audience</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#frontchannel_logout_uri" >frontchannel_logout_uri</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#requested_scope" >requested_scope</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#grant_types" >grant_types</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#session_id" >session_id</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#redirect_uris" >redirect_uris</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#skip" >skip</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#response_types" >response_types</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#subject" >subject</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#scope" >scope</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#subject_type" >subject_type</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#token_endpoint_auth_method" >token_endpoint_auth_method</a>
                             </li>
                         </ul>
                     </td>
@@ -192,54 +215,6 @@
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(props: <a href="../classes/LoginResponse.html" target="_self">LoginResponse</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:5</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>props</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../classes/LoginResponse.html" target="_self" >LoginResponse</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
             <section data-compodoc="block-properties">
     
@@ -250,80 +225,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="challenge"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>challenge</b></span>
-                        <a href="#challenge"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;The id/challenge of the consent login request.&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:23</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="client"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>client</b></span>
-                        <a href="#client"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/OauthClientResponse.html" target="_self" >OauthClientResponse</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:26</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="client_id"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>client_id</b></span>
                         <a href="#client_id"><span class="icon ion-ios-link"></span></a>
@@ -341,13 +245,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;Id of the corresponding client.&#x27;})<br />
+                            @IsString()<br />@ApiProperty({description: &#x27;The Oauth2 client id.&#x27;, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -358,47 +262,12 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="oidc_context"></a>
+                    <a name="client_name"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>oidc_context</b></span>
-                        <a href="#oidc_context"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/OidcContextResponse.html" target="_self" >OidcContextResponse</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:29</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="request_url"></a>
-                    <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>request_url</b></span>
-                        <a href="#request_url"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>client_name</b></span>
+                        <a href="#client_name"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -413,13 +282,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The original oauth2.0 authorization url request by the client.&#x27;})<br />
+                            @IsString()<br />@ApiProperty({description: &#x27;The Oauth2 client name.&#x27;, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -430,11 +299,91 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="requested_access_token_audience"></a>
+                    <a name="client_secret"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>requested_access_token_audience</b></span>
-                        <a href="#requested_access_token_audience"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                        <span ><b>client_secret</b></span>
+                        <a href="#client_secret"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsString()<br />@ApiProperty({description: &#x27;The Oauth2 client secret.&#x27;, nullable: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="frontchannel_logout_uri"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>frontchannel_logout_uri</b></span>
+                        <a href="#frontchannel_logout_uri"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsString()<br />@IsOptional()<br />@ApiPropertyOptional({description: &#x27;Thr frontchannel logout uri.&#x27;, nullable: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="grant_types"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>grant_types</b></span>
+                        <a href="#grant_types"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -449,13 +398,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @IsArray()<br />@IsOptional()<br />@IsString({each: true})<br />@ApiPropertyOptional({description: &#x27;The grant types of the Oauth2 client.&#x27;, nullable: false, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -466,11 +415,15 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="requested_scope"></a>
+                    <a name="redirect_uris"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>requested_scope</b></span>
-                        <a href="#requested_scope"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>redirect_uris</b></span>
+                        <a href="#redirect_uris"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -485,13 +438,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The request scopes of the login request.&#x27;, required: false, nullable: false})<br />
+                            @IsArray()<br />@IsOptional()<br />@IsString({each: true})<br />@ApiPropertyOptional({description: &#x27;The allowed redirect urls of the Oauth2 client.&#x27;, nullable: false, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -502,11 +455,54 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="session_id"></a>
+                    <a name="response_types"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>session_id</b></span>
-                        <a href="#session_id"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>response_types</b></span>
+                        <a href="#response_types"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsArray()<br />@IsOptional()<br />@IsString({each: true})<br />@ApiPropertyOptional({description: &#x27;The response types of the Oauth2 client.&#x27;, nullable: false, default: undefined})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="scope"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>scope</b></span>
+                        <a href="#scope"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -521,13 +517,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The login session id. This parameter is used as sid for the oidc front-/backchannel logout.&#x27;})<br />
+                            @IsString()<br />@IsOptional()<br />@ApiPropertyOptional({description: &#x27;Scope is a string containing a space-separated list of scope values (as described in Section 3.3 of OAuth 2.0 [RFC6749]) that the client can use when requesting access tokens.&#x27;, nullable: false, default: &#x27;openid offline&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -538,17 +534,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="skip"></a>
+                    <a name="subject_type"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>skip</b></span>
-                        <a href="#skip"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                        <span ><b>subject_type</b></span>
+                        <a href="#subject_type"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#SubjectTypeEnum" target="_self" >SubjectTypeEnum</a></code>
 
                     </td>
                 </tr>
@@ -557,13 +554,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;Skip, if true, implies that the client has requested the same scopes from the same user previously.&#x27;})<br />
+                            @IsEnum(SubjectTypeEnum)<br />@ApiProperty({description: &#x27;SubjectType requested for responses to this Client. The subject_types_supported Discovery parameter contains a list of the supported subject_type values for this server. Valid types include pairwise and public.&#x27;, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:48</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -574,17 +571,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="subject"></a>
+                    <a name="token_endpoint_auth_method"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>subject</b></span>
-                        <a href="#subject"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                        <span ><b>token_endpoint_auth_method</b></span>
+                        <a href="#token_endpoint_auth_method"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#TokenAuthMethod" target="_self" >TokenAuthMethod</a></code>
 
                     </td>
                 </tr>
@@ -593,13 +591,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;User id of the end-user that is authenticated.&#x27;})<br />
+                            @IsEnum(TokenAuthMethod)<br />@ApiProperty({description: &#x27;Requested Client Authentication method for the Token Endpoint. The options are client_secret_post, client_secret_basic, private_key_jwt, and none.&#x27;, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/response/login.response.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/oauth-provider/api/dto/request/oauth-client-create.body.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -618,57 +616,82 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { OauthClientResponse } from &#x27;./oauth-client.response&#x27;;
-import { OidcContextResponse } from &#x27;./oidc-context.response&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { IsArray, IsEnum, IsOptional, IsString } from &#x27;class-validator&#x27;;
+import { SubjectTypeEnum, TokenAuthMethod } from &#x27;../../../domain/interface&#x27;;
 
-export class LoginResponse {
-	constructor(props: LoginResponse) {
-		this.client &#x3D; props.client;
-		this.client_id &#x3D; props.client_id;
-		this.challenge &#x3D; props.challenge;
-		this.oidc_context &#x3D; new OidcContextResponse(props.oidc_context);
-		this.request_url &#x3D; props.request_url;
-		this.skip &#x3D; props.skip;
-		this.requested_access_token_audience &#x3D; props.requested_access_token_audience;
-		this.requested_scope &#x3D; props.requested_scope;
-		this.subject &#x3D; props.subject;
-		this.session_id &#x3D; props.session_id;
-	}
+export class OauthClientCreateBody {
+	@IsString()
+	@ApiProperty({ description: &#x27;The Oauth2 client id.&#x27;, nullable: false })
+	client_id!: string;
 
-	@ApiProperty({ description: &#x27;Id of the corresponding client.&#x27; })
-	client_id: string;
+	@IsString()
+	@ApiProperty({ description: &#x27;The Oauth2 client name.&#x27;, nullable: false })
+	client_name!: string;
 
-	@ApiProperty({ description: &#x27;The id/challenge of the consent login request.&#x27; })
-	challenge: string;
+	@IsString()
+	@ApiProperty({ description: &#x27;The Oauth2 client secret.&#x27;, nullable: false })
+	client_secret!: string;
 
-	@ApiProperty()
-	client: OauthClientResponse;
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiPropertyOptional({ description: &#x27;The allowed redirect urls of the Oauth2 client.&#x27;, nullable: false, default: [] })
+	redirect_uris?: string[];
 
-	@ApiProperty()
-	oidc_context: OidcContextResponse;
-
-	@ApiProperty({ description: &#x27;The original oauth2.0 authorization url request by the client.&#x27; })
-	request_url: string;
-
-	@ApiProperty()
-	requested_access_token_audience: string[];
-
-	@ApiProperty({ description: &#x27;The request scopes of the login request.&#x27;, required: false, nullable: false })
-	requested_scope: string[];
-
+	@IsEnum(TokenAuthMethod)
 	@ApiProperty({
-		description: &#x27;The login session id. This parameter is used as sid for the oidc front-/backchannel logout.&#x27;,
+		description:
+			&#x27;Requested Client Authentication method for the Token Endpoint. The options are client_secret_post, client_secret_basic, private_key_jwt, and none.&#x27;,
+		nullable: false,
 	})
-	session_id: string;
+	token_endpoint_auth_method!: TokenAuthMethod;
 
+	@IsEnum(SubjectTypeEnum)
 	@ApiProperty({
-		description: &#x27;Skip, if true, implies that the client has requested the same scopes from the same user previously.&#x27;,
+		description:
+			&#x27;SubjectType requested for responses to this Client. The subject_types_supported Discovery parameter contains a list of the supported subject_type values for this server. Valid types include pairwise and public.&#x27;,
+		nullable: false,
 	})
-	skip: boolean;
+	subject_type!: SubjectTypeEnum;
 
-	@ApiProperty({ description: &#x27;User id of the end-user that is authenticated.&#x27; })
-	subject: string;
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description:
+			&#x27;Scope is a string containing a space-separated list of scope values (as described in Section 3.3 of OAuth 2.0 [RFC6749]) that the client can use when requesting access tokens.&#x27;,
+		nullable: false,
+		default: &#x27;openid offline&#x27;,
+	})
+	scope?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: &#x27;Thr frontchannel logout uri.&#x27;,
+		nullable: false,
+	})
+	frontchannel_logout_uri?: string;
+
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiPropertyOptional({
+		description: &#x27;The grant types of the Oauth2 client.&#x27;,
+		nullable: false,
+		default: [&#x27;authorization_code&#x27;, &#x27;refresh_token&#x27;],
+	})
+	grant_types?: string[];
+
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiPropertyOptional({
+		description: &#x27;The response types of the Oauth2 client.&#x27;,
+		nullable: false,
+		default: [&#x27;code&#x27;, &#x27;token&#x27;, &#x27;id_token&#x27;],
+	})
+	response_types?: string[];
 }
 </code></pre>
     </div>
@@ -708,7 +731,7 @@ export class LoginResponse {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'LoginResponse-1.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'OauthClientCreateBody.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

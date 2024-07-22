@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts</code>
+            <code>apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts</code>
         </p>
 
 
@@ -141,10 +141,12 @@
                                 <a href="#acceptLoginRequest" >acceptLoginRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getLoginRequest" >getLoginRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#patchLoginRequest" >patchLoginRequest</a>
                             </li>
@@ -180,7 +182,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -294,8 +296,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -371,6 +373,7 @@
                 <td class="col-md-4">
                     <a name="getLoginRequest"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getLoginRequest</b></span>
                         <a href="#getLoginRequest"><span class="icon ion-ios-link"></span></a>
@@ -388,7 +391,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:26</a></div>
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -440,6 +443,7 @@
                 <td class="col-md-4">
                     <a name="patchLoginRequest"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>patchLoginRequest</b></span>
                         <a href="#patchLoginRequest"><span class="icon ion-ios-link"></span></a>
@@ -456,8 +460,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +566,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -643,8 +647,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="92"
-                                    class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:92</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/oauth-provider/api/oauth-provider.login-flow.uc.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -696,11 +700,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthProviderService } from &#x27;@infra/oauth-provider&#x27;;
-import { AcceptLoginRequestBody, ProviderLoginResponse, ProviderRedirectResponse } from &#x27;@infra/oauth-provider/dto&#x27;;
-import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;@modules/oauth-provider/controller/dto&#x27;;
-import { OauthProviderRequestMapper } from &#x27;@modules/oauth-provider/mapper/oauth-provider-request.mapper&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { PseudonymService } from &#x27;@modules/pseudonym/service&#x27;;
 import { ExternalTool, Oauth2ToolConfig } from &#x27;@modules/tool/external-tool/domain&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
@@ -709,7 +709,11 @@ import { Pseudonym, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
-import { OauthProviderLoginFlowService } from &#x27;../service/oauth-provider.login-flow.service&#x27;;
+import { AcceptLoginRequestBody, ProviderLoginResponse, ProviderRedirectResponse } from &#x27;../domain&#x27;;
+import { OauthProviderLoginFlowService } from &#x27;../domain/service/oauth-provider.login-flow.service&#x27;;
+import { OauthProviderService } from &#x27;../domain/service/oauth-provider.service&#x27;;
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;./dto&#x27;;
+import { OauthProviderRequestMapper } from &#x27;./mapper&#x27;;
 
 @Injectable()
 export class OauthProviderLoginFlowUc {
@@ -721,23 +725,26 @@ export class OauthProviderLoginFlowUc {
 		private readonly userService: UserService
 	) {}
 
-	async getLoginRequest(challenge: string): Promise&lt;ProviderLoginResponse&gt; {
-		const loginResponse: Promise&lt;ProviderLoginResponse&gt; &#x3D; this.oauthProviderService.getLoginRequest(challenge);
+	public async getLoginRequest(challenge: string): Promise&lt;ProviderLoginResponse&gt; {
+		const loginResponse: ProviderLoginResponse &#x3D; await this.oauthProviderService.getLoginRequest(challenge);
+
 		return loginResponse;
 	}
 
-	async patchLoginRequest(
+	public async patchLoginRequest(
 		currentUserId: string,
 		challenge: string,
 		body: LoginRequestBody,
 		query: AcceptQuery
 	): Promise&lt;ProviderRedirectResponse&gt; {
 		let redirectResponse: ProviderRedirectResponse;
+
 		if (query.accept) {
 			redirectResponse &#x3D; await this.acceptLoginRequest(currentUserId, challenge, body);
 		} else {
 			redirectResponse &#x3D; await this.rejectLoginRequest(challenge, body);
 		}
+
 		return redirectResponse;
 	}
 
@@ -747,10 +754,6 @@ export class OauthProviderLoginFlowUc {
 		loginRequestBody: LoginRequestBody
 	): Promise&lt;ProviderRedirectResponse&gt; {
 		const loginResponse: ProviderLoginResponse &#x3D; await this.oauthProviderService.getLoginRequest(challenge);
-
-		if (!loginResponse.client.client_id) {
-			throw new InternalServerErrorException(&#x60;Cannot find oAuthClientId in login response for challenge: ${challenge}&#x60;);
-		}
 
 		const tool: ExternalTool | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(
 			loginResponse.client.client_id
@@ -807,6 +810,7 @@ export class OauthProviderLoginFlowUc {
 			challenge,
 			rejectRequestBody
 		);
+
 		return redirectResponse;
 	}
 }

@@ -1062,7 +1062,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateOauthClientOrThrow(loadedOauthClient: <a href="../interfaces/ProviderOauthClient.html" target="_self">ProviderOauthClient</a>, toUpdateOauthClient: <a href="../interfaces/ProviderOauthClient.html" target="_self">ProviderOauthClient</a>, toUpdate: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
+                    <code>updateOauthClientOrThrow(loadedOauthClient: <a href="../interfaces/ProviderOauthClient.html" target="_self">ProviderOauthClient</a>, toUpdateOauthClient: <a href="../interfaces/ProviderOauthClient.html" target="_self">Partial&lt;ProviderOauthClient&gt;</a>, toUpdate: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -1105,7 +1105,7 @@
                                         <tr>
                                                 <td>toUpdateOauthClient</td>
                                             <td>
-                                                            <code><a href="../interfaces/ProviderOauthClient.html" target="_self" >ProviderOauthClient</a></code>
+                                                            <code><a href="../interfaces/ProviderOauthClient.html" target="_self" >Partial&lt;ProviderOauthClient&gt;</a></code>
                                             </td>
 
                                             <td>
@@ -1147,8 +1147,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DefaultEncryptionService, EncryptionService } from &#x27;@infra/encryption&#x27;;
-import { OauthProviderService } from &#x27;@infra/oauth-provider&#x27;;
-import { ProviderOauthClient } from &#x27;@infra/oauth-provider/dto&#x27;;
+import { ProviderOauthClient } from &#x27;@modules/oauth-provider/domain&#x27;;
+import { OauthProviderService } from &#x27;@modules/oauth-provider/domain/service/oauth-provider.service&#x27;;
 import { Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject&#x27;;
 import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
@@ -1177,7 +1177,7 @@ export class ExternalToolService {
 		if (ExternalTool.isLti11Config(externalTool.config) &amp;&amp; externalTool.config.secret) {
 			externalTool.config.secret &#x3D; this.encryptionService.encrypt(externalTool.config.secret);
 		} else if (ExternalTool.isOauth2Config(externalTool.config)) {
-			const oauthClient: ProviderOauthClient &#x3D; this.mapper.mapDoToProviderOauthClient(
+			const oauthClient: Partial&lt;ProviderOauthClient&gt; &#x3D; this.mapper.mapDoToProviderOauthClient(
 				externalTool.name,
 				externalTool.config
 			);
@@ -1269,7 +1269,7 @@ export class ExternalToolService {
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
 		if (ExternalTool.isOauth2Config(toUpdate.config)) {
-			const toUpdateOauthClient: ProviderOauthClient &#x3D; this.mapper.mapDoToProviderOauthClient(
+			const toUpdateOauthClient: Partial&lt;ProviderOauthClient&gt; &#x3D; this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
 				toUpdate.config
 			);
@@ -1282,7 +1282,7 @@ export class ExternalToolService {
 
 	private async updateOauthClientOrThrow(
 		loadedOauthClient: ProviderOauthClient,
-		toUpdateOauthClient: ProviderOauthClient,
+		toUpdateOauthClient: Partial&lt;ProviderOauthClient&gt;,
 		toUpdate: ExternalTool
 	) {
 		if (loadedOauthClient &amp;&amp; loadedOauthClient.client_id) {
