@@ -6,13 +6,13 @@ import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
-	externalToolEntityFactory,
 	externalToolPseudonymEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
 import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
+import { externalToolEntityFactory } from '@src/modules/tool/external-tool/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {

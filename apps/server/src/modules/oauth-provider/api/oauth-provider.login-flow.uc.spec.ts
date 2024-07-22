@@ -9,8 +9,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
-import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
+import { ProviderLoginResponse, ProviderRedirectResponse } from '../domain';
+import { OauthProviderLoginFlowService } from '../domain/service/oauth-provider.login-flow.service';
+import { OauthProviderService } from '../domain/service/oauth-provider.service';
+import { providerLoginResponseFactory } from '../testing';
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from './dto';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 
 describe(OauthProviderLoginFlowUc.name, () => {
