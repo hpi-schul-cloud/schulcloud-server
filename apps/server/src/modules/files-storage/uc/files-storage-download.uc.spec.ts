@@ -1,13 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
+import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -19,9 +21,9 @@ import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
+	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,
@@ -42,6 +44,10 @@ describe('FilesStorageUC', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
@@ -69,6 +75,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
+				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
 				},
 			],
 		}).compile();

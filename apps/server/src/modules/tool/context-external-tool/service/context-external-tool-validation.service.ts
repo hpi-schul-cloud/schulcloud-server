@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
+import { ContextExternalToolNameAlreadyExistsLoggableException } from '@modules/tool/common/domain/error/context-external-tool-name-already-exists.loggable-exception';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -49,9 +50,7 @@ export class ContextExternalToolValidationService {
 		);
 
 		if (duplicate.length > 0) {
-			throw new ValidationError(
-				`tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.`
-			);
+			throw new ContextExternalToolNameAlreadyExistsLoggableException(duplicate[0].id, duplicate[0].displayName);
 		}
 	}
 }

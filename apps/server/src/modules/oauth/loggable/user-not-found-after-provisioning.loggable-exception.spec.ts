@@ -27,6 +27,7 @@ describe('UserNotFoundAfterProvisioningLoggableException', () => {
 			const message = exception.getLogMessage();
 
 			expect(message).toEqual({
+				type: 'USER_NOT_FOUND_AFTER_PROVISIONING',
 				message:
 					'Unable to find user after provisioning. The feature for OAuth2 provisioning might be disabled for this school.',
 				stack: expect.any(String),

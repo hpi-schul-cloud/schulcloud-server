@@ -15,15 +15,11 @@ const {
 
 const {
 	STATE,
-	KEYWORDS: { E_MAIL_ADDRESS },
 	sendMail,
-	getUser,
 	deleteEntry,
-	createEntry,
 	setEntryState,
 	createActivationLink,
 	Mail,
-	BadRequest,
 	Forbidden,
 	GeneralError,
 	customErrorMessages,
@@ -84,21 +80,6 @@ const mail = async (ref, type, user, entry) => {
  * this service can be used to create an job to change the email/username.
  */
 class EMailAddressActivationService {
-	/**
-	 * create job
-	 */
-	async create(data, params) {
-		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
-		const user = await getUser(this.app, params.account.userId);
-
-		// create new entry
-		const entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
-
-		// send email
-		await mail(this, 'activationLinkMail', user, entry);
-		return { success: true };
-	}
-
 	async update(id, data, params) {
 		const { entry, user } = data;
 		const account = await this.app.service('nest-account-service').findByUserId(user._id);

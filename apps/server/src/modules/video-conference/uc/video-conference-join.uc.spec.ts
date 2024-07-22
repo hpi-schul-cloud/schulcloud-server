@@ -7,7 +7,7 @@ import {} from '@shared/domain/entity';
 import { Permission, VideoConferenceScope } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BBBJoinConfig, BBBJoinResponse, BBBResponse, BBBRole } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
@@ -238,7 +238,7 @@ describe('VideoConferenceJoinUc', () => {
 						userService.findById.mockResolvedValue(user);
 						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
 							role: BBBRole.VIEWER,
-							isGuest: false,
+							isGuest: true,
 						});
 						videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
 						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
@@ -317,7 +317,7 @@ describe('VideoConferenceJoinUc', () => {
 				);
 			});
 
-			it('should call join with guest false', async () => {
+			it('should call join without guest property', async () => {
 				const { currentUserId, scope, user } = setup();
 
 				await uc.join(currentUserId, scope);
@@ -327,7 +327,6 @@ describe('VideoConferenceJoinUc', () => {
 					meetingID: scope.id,
 					role: BBBRole.MODERATOR,
 					userID: currentUserId,
-					guest: false,
 				});
 			});
 		});

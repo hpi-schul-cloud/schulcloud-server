@@ -5,19 +5,17 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	fileRecordFactory,
 	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
+	schoolEntityFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType } from '../../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordListResponse, ScanResultParams } from '../dto';
 
@@ -80,13 +78,10 @@ describe(`${baseRouteName} (api)`, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
-		const roles = roleFactory.buildList(1, {
-			permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-		});
-		const user = userFactory.build({ school, roles });
+		const school = schoolEntityFactory.build();
+		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-		await em.persistAndFlush([user]);
+		await em.persistAndFlush([user, account]);
 		em.clear();
 
 		currentUser = mapUserToCurrentUser(user);
@@ -96,7 +91,8 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid token', async () => {
 			const fileRecord = fileRecordFactory.build({
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
@@ -112,7 +108,8 @@ describe(`${baseRouteName} (api)`, () => {
 	describe(`with valid request data`, () => {
 		it('should return right type of data', async () => {
 			const fileRecord = fileRecordFactory.build({
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});

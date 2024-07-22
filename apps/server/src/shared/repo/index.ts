@@ -6,7 +6,7 @@
 
 export * from './base.do.repo';
 export * from './base.repo';
-export * from './board';
+export * from './legacy-board';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
@@ -21,7 +21,6 @@ export * from './school';
 export * from './schoolexternaltool';
 export * from './scope';
 export * from './submission';
-export * from './system';
 export * from './task';
 export * from './teams';
 export * from './user';

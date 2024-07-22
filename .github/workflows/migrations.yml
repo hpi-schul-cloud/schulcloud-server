@@ -1,4 +1,8 @@
-name: Migrations updated
+name: Reminder to update seed data after migration
+# If this workflow fails, it is a hint that you forgot to update the seed data after a migration.
+# It is only a hint, because it only checks if you updated the migration collection in the seed data.
+# It is not a check that you updated the whole seed data correctly.
+# See the documentation for advice: https://documentation.dbildungscloud.dev/docs/schulcloud-server/Migrations#committing-a-migration
 
 on:
   push:
@@ -6,6 +10,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  MONGODB_VERSION: 6.0
+  NODE_VERSION: '18'
 jobs:
   migration:
     runs-on: ubuntu-latest
@@ -14,21 +21,13 @@ jobs:
     timeout-minutes: 5
     steps:
     - uses: actions/checkout@v4
-    - name: check all migrations are up in database seed
-      run: test $(grep "\"down\"" ./backup/setup/migrations.json -c) -eq 0
     - name: mongodb setup
-      uses: supercharge/mongodb-github-action@1.8.0
+      uses: supercharge/mongodb-github-action@1.10.0
     - name: setup
       uses: actions/setup-node@v4
       with:
-        node-version: '16'
+        node-version: ${{ env.NODE_VERSION }}
     - run: npm ci
-    - run: npm run setup
-    - name: check migrations.json formatting
-      run: |
-        npm run migration-persist
-        git diff --exit-code backup/**
-    - name: check filesystem migrations have been added to database
-      run: npm run migration-list
-    - name: check migrations in database exist in filesystem
-      run: npm run migration-prune
+    - run: npm run setup:db:seed
+    - name: check no pending migrations (migration is in db)
+      run: test $(npm run migration:pending | grep -c "Migration") -eq 0

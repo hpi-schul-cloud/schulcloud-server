@@ -136,7 +136,7 @@ class RocketChatChannel {
 		try {
 			let channel = await channelModel.findOne({ teamId });
 			if (!channel) {
-				channel = await this.createChannel(teamId).then(() => channelModel.findOne({ teamId }));
+				channel = await this.createChannel(teamId);
 			}
 			// tis this even the right place to check this?
 			if (params && params.account && params.account.userId) {

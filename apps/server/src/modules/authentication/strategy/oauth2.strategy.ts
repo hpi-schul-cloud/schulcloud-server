@@ -1,14 +1,14 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountService, Account } from '@modules/account';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { SchoolInMigrationLoggableException } from '../loggable';
+import { AccountNotFoundLoggableException, SchoolInMigrationLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
@@ -27,9 +27,13 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			throw new SchoolInMigrationLoggableException();
 		}
 
-		const account: AccountDto | null = await this.accountService.findByUserId(user.id);
+		const account: Account | null = await this.accountService.findByUserId(user.id);
 		if (!account) {
-			throw new UnauthorizedException('no account found');
+			throw new AccountNotFoundLoggableException();
+		}
+
+		if (account.deactivatedAt !== undefined && account.deactivatedAt.getTime() <= Date.now()) {
+			throw new UserAccountDeactivatedLoggableException();
 		}
 
 		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
@@ -38,7 +42,6 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			systemId,
 			tokenDto.idToken
 		);
-
 		return currentUser;
 	}
 }

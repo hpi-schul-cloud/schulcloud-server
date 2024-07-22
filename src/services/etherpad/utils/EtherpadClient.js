@@ -12,20 +12,20 @@ const logger = require('../../../logger');
  */
 class EtherpadClient {
 	constructor() {
-		if (Configuration.has('ETHERPAD_URI')) {
-			this.uri = () => Configuration.get('ETHERPAD_URI');
+		if (Configuration.has('ETHERPAD__URI')) {
+			this.uri = () => Configuration.get('ETHERPAD__URI');
 			logger.info('Etherpad uri is set to=', this.uri());
 		} else {
 			this.uri = null;
 			logger.info('Etherpad uri is not defined');
 		}
-		if (Configuration.has('ETHERPAD_COOKIE__EXPIRES_SECONDS')) {
-			this.cookieExpiresSeconds = Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS');
+		if (Configuration.has('ETHERPAD__COOKIE_EXPIRES_SECONDS')) {
+			this.cookieExpiresSeconds = Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS');
 		} else {
 			this.cookieExpiresSeconds = 28800;
 		}
-		if (Configuration.has('ETHERPAD_COOKIE_RELEASE_THRESHOLD')) {
-			this.cookieReleaseThreshold = Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD');
+		if (Configuration.has('ETHERPAD__COOKIE_RELEASE_THRESHOLD')) {
+			this.cookieReleaseThreshold = Configuration.get('ETHERPAD__COOKIE_RELEASE_THRESHOLD');
 		} else {
 			this.cookieReleaseThreshold = 7200;
 		}
@@ -45,7 +45,7 @@ class EtherpadClient {
 			method = 'POST',
 			endpoint,
 			formDef = {
-				apikey: Configuration.get('ETHERPAD_API_KEY'),
+				apikey: Configuration.get('ETHERPAD__API_KEY'),
 			},
 			body,
 		},

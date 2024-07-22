@@ -12,6 +12,7 @@ import { Lti11EncryptionService, ToolLaunchService } from './service';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
@@ -39,6 +40,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		AutoContextNameStrategy,
 		AutoSchoolIdStrategy,
 		AutoSchoolNumberStrategy,
+		AutoMediumIdStrategy,
 	],
 	exports: [ToolLaunchService],
 })

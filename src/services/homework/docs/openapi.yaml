@@ -188,32 +188,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/homework'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of homework to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/homework'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - homework
-      security: []
   /submissions:
     get:
       parameters:

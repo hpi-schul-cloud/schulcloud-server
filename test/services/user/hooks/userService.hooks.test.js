@@ -153,16 +153,18 @@ describe('generateRegistrationLink', () => {
 
 	const expectedErrorMessage = 'Roles must be exactly of length one if generateRegistrationLink=true is set.';
 
-	const getAppMock = (registrationlinkMock) => ({
-		service: (service) => {
-			if (service === '/registrationlink') {
-				return {
-					create: async (data) => registrationlinkMock(data),
-				};
-			}
-			throw new Error('unknown service');
-		},
-	});
+	const getAppMock = (registrationlinkMock) => {
+		return {
+			service: (service) => {
+				if (service === '/registrationlink') {
+					return {
+						create: async (data) => registrationlinkMock(data),
+					};
+				}
+				throw new Error('unknown service');
+			},
+		};
+	};
 
 	it('throws an error if roles is not defined', async () => {
 		const context = {
@@ -439,7 +441,6 @@ describe('checkUniqueEmail', () => {
 
 	const currentTs = Date.now();
 	const currentEmail = `current.${currentTs}@account.de`;
-	const updatedEmail = `Current.${currentTs}@Account.DE`;
 	const changedEmail = `Changed.${currentTs}@Account.DE`;
 	const mockUser = {
 		firstName: 'Test',
@@ -450,13 +451,14 @@ describe('checkUniqueEmail', () => {
 	it('fails because of duplicate email', async () => {
 		const expectedErrorMessage = `Die E-Mail Adresse ist bereits in Verwendung!`;
 
-		await testObjects.createTestUser({ email: currentEmail });
+		const user = await testObjects.createTestUser();
+		await app.service('nest-account-service').save({ username: user.email, password: 'password', userId: user._id });
 
 		const context = {
 			app,
 			data: {
 				...mockUser,
-				email: updatedEmail,
+				email: user.email,
 			},
 		};
 

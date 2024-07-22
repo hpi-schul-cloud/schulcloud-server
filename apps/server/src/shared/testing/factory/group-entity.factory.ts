@@ -1,9 +1,9 @@
-import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEntity } from '@modules/group/entity';
-import { ExternalSourceEntity } from '@shared/domain/entity';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '@modules/group/entity';
+import { ExternalSourceEmbeddable } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 import { systemEntityFactory } from './systemEntityFactory';
 import { userFactory } from './user.factory';
 
@@ -21,12 +21,12 @@ export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityPro
 				role: roleFactory.buildWithId({ name: RoleName.TEACHER }),
 			},
 		],
-		validPeriod: new GroupValidPeriodEntity({
+		validPeriod: new GroupValidPeriodEmbeddable({
 			from: new Date(2023, 1),
 			until: new Date(2023, 6),
 		}),
-		organization: schoolFactory.buildWithId(),
-		externalSource: new ExternalSourceEntity({
+		organization: schoolEntityFactory.buildWithId(),
+		externalSource: new ExternalSourceEmbeddable({
 			externalId: `externalId-${sequence}`,
 			system: systemEntityFactory.buildWithId(),
 		}),

@@ -1,6 +1,6 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolFeature } from '@shared/domain/types';
 import { BaseFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
 import { School, SchoolProps } from '../domain';
 import { federalStateFactory } from './federal-state.factory';
 
@@ -12,5 +12,6 @@ export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ 
 		name: `school #${sequence}`,
 		federalState: federalStateFactory.build(),
 		features: new Set<SchoolFeature>(),
+		systemIds: [],
 	};
 });

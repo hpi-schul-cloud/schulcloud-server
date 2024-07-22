@@ -1,8 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { Account, AccountService } from '@modules/account';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
-import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
@@ -13,6 +11,8 @@ import { ICurrentUser, OauthCurrentUser } from '../interface';
 
 import { SchoolInMigrationLoggableException } from '../loggable';
 
+import { AccountNotFoundLoggableException } from '../loggable/account-not-found.loggable-exception';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {
@@ -56,7 +56,7 @@ describe('Oauth2Strategy', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
-				const account: AccountDto = new AccountDto({
+				const account: Account = new Account({
 					id: 'accountId',
 					createdAt: new Date(),
 					updatedAt: new Date(),
@@ -133,7 +133,7 @@ describe('Oauth2Strategy', () => {
 				accountService.findByUserId.mockResolvedValue(null);
 			};
 
-			it('should throw an UnauthorizedException', async () => {
+			it('should throw an AccountNotFoundLoggableException', async () => {
 				setup();
 
 				const func = async () =>
@@ -141,7 +141,40 @@ describe('Oauth2Strategy', () => {
 						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
 					});
 
-				await expect(func).rejects.toThrow(new UnauthorizedException('no account found'));
+				const loggableException = new AccountNotFoundLoggableException();
+				await expect(func).rejects.toThrow(loggableException);
+			});
+		});
+
+		describe('when account is deactivated', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				oauthService.authenticateUser.mockResolvedValue(
+					new OAuthTokenDto({
+						idToken: 'idToken',
+						accessToken: 'accessToken',
+						refreshToken: 'refreshToken',
+					})
+				);
+				oauthService.provisionUser.mockResolvedValue(user);
+				const account: Account = new Account({
+					id: 'accountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'username',
+					deactivatedAt: new Date(),
+				});
+				accountService.findByUserId.mockResolvedValue(account);
+			};
+
+			it('should throw an UserAccountDeactivated exception', async () => {
+				setup();
+				const func = async () =>
+					strategy.validate({
+						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
+					});
+
+				await expect(func).rejects.toThrow(new UserAccountDeactivatedLoggableException());
 			});
 		});
 	});

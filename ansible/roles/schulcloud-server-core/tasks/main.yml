@@ -37,26 +37,46 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: File Storage Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: Admin Api ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-ingress.yml.j2
+      apply: yes
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: Admin API server ConfigMap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-configmap.yml.j2
       apply: yes
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: Admin API server Secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-onepassword.yml.j2
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    when:
+      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: Admin API client secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: onepassword-admin-api-client.yml.j2
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    when:
+      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: remove old migration Job
     kubernetes.core.k8s:
@@ -86,12 +106,6 @@
       namespace: "{{ NAMESPACE }}"
       template: ingress.yml.j2
       apply: yes
-
-  - name: FileStorageDeployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-files-deployment.yml.j2
 
   - name: FileStorageDeployment
     kubernetes.core.k8s:
@@ -129,6 +143,13 @@
       namespace: "{{ NAMESPACE }}"
       template: api-delete-s3-files-cronjob.yml.j2
 
+  - name: Delete Tldraw Files CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-delete-files-cronjob.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
   - name: Data deletion trigger CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -136,11 +157,31 @@
       template: data-deletion-trigger-cronjob.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
-  - name: AMQPFileStorageDeployment
+  - name: Data deletion trigger CronJob ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: data-deletion-trigger-cronjob-configmap.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: amqp files storage Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
+
+  - name: amqp files storage configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-configmap.yml.j2
+
+  - name: amqp files storage Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
   - name: Preview Generator Deployment
     kubernetes.core.k8s:
@@ -171,7 +212,6 @@
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
-
   - name: admin api server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -185,6 +225,22 @@
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-svc.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: admin api server service monitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc-monitor.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: TlDraw server Secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-server-onepassword.yml.j2
+    when:
+     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+     - WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: TlDraw server deployment
     kubernetes.core.k8s:
@@ -214,3 +270,63 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc-monitor.yml.j2
     when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: common cartridge configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: common-cartridge-configmap.yml.j2
+      apply: yes
+    when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+  
+  - name: common cartridge Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: common-cartridge-onepassword.yml.j2
+    when: 
+      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+
+  - name: common cartridge deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: common-cartridge-deployment.yml.j2
+    when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+
+  - name: BoardCollaboration configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-configmap.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-deployment.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-service.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-ingress.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaborationServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: '{{ NAMESPACE }}'
+      template: board-collaboration-svc-monitor.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"

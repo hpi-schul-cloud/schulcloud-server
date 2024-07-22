@@ -1,14 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { HttpService } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
+import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { DomainErrorHandler } from '@src/core';
+import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -16,16 +18,17 @@ import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};
@@ -45,6 +48,10 @@ describe('FilesStorageUC', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
@@ -72,6 +79,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
+				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
 				},
 			],
 		}).compile();
@@ -171,6 +182,46 @@ describe('FilesStorageUC', () => {
 				const result = await filesStorageUC.getFileRecordsOfParent(userId, params);
 
 				expect(result).toEqual([[], 0]);
+			});
+		});
+	});
+
+	describe('getPublicConfig', () => {
+		describe('when service is aviable', () => {
+			const setup = () => {
+				const fileSize = 500;
+				filesStorageService.getMaxFileSize.mockReturnValueOnce(fileSize);
+
+				const expectedResult = {
+					MAX_FILE_SIZE: fileSize,
+				};
+
+				return { expectedResult };
+			};
+
+			it('should be create a config response dto', () => {
+				const { expectedResult } = setup();
+
+				const result = filesStorageUC.getPublicConfig();
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when service throw an error', () => {
+			const setup = () => {
+				const error = new Error('Service throw error');
+				filesStorageService.getMaxFileSize.mockImplementationOnce(() => {
+					throw error;
+				});
+
+				return { error };
+			};
+
+			it('should be create a config response dto', () => {
+				const { error } = setup();
+
+				expect(() => filesStorageUC.getPublicConfig()).toThrowError(error);
 			});
 		});
 	});

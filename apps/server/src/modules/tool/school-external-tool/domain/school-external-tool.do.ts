@@ -1,10 +1,9 @@
-import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
-import { ToolVersion } from '../../common/interface';
-import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
+import { SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
 
-export interface SchoolExternalToolProps {
-	id?: string;
+export interface SchoolExternalToolProps extends AuthorizableObject {
+	id: string;
 
 	name?: string;
 
@@ -14,35 +13,41 @@ export interface SchoolExternalToolProps {
 
 	parameters: CustomParameterEntry[];
 
-	toolVersion: number;
+	isDeactivated: boolean;
 
 	status?: SchoolExternalToolConfigurationStatus;
 }
 
-export class SchoolExternalTool extends BaseDO implements ToolVersion {
-	name?: string;
-
-	toolId: string;
-
-	schoolId: string;
-
-	parameters: CustomParameterEntry[];
-
-	toolVersion: number;
-
-	status?: SchoolExternalToolConfigurationStatus;
-
-	constructor(props: SchoolExternalToolProps) {
-		super(props.id);
-		this.name = props.name;
-		this.toolId = props.toolId;
-		this.schoolId = props.schoolId;
-		this.parameters = props.parameters;
-		this.toolVersion = props.toolVersion;
-		this.status = props.status;
+export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
+	get name(): string | undefined {
+		return this.props.name;
 	}
 
-	getVersion(): number {
-		return this.toolVersion;
+	set name(value: string | undefined) {
+		this.props.name = value;
+	}
+
+	get toolId(): string {
+		return this.props.toolId;
+	}
+
+	get schoolId(): string {
+		return this.props.schoolId;
+	}
+
+	get parameters(): CustomParameterEntry[] {
+		return this.props.parameters;
+	}
+
+	get isDeactivated(): boolean {
+		return this.props.isDeactivated;
+	}
+
+	get status(): SchoolExternalToolConfigurationStatus {
+		return this.props.status ?? { isOutdatedOnScopeSchool: false, isGloballyDeactivated: false };
+	}
+
+	set status(value: SchoolExternalToolConfigurationStatus) {
+		this.props.status = value;
 	}
 }

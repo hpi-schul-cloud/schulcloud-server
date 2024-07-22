@@ -1,10 +1,13 @@
 import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntryEntity } from '../../common/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 
-export interface ContextExternalToolProperties {
+export interface ContextExternalToolEntityProps {
+	id?: EntityId;
+
 	schoolTool: SchoolExternalToolEntity;
 
 	contextId: string;
@@ -14,8 +17,6 @@ export interface ContextExternalToolProperties {
 	displayName?: string;
 
 	parameters?: CustomParameterEntryEntity[];
-
-	toolVersion: number;
 }
 
 @Entity({ tableName: 'context-external-tools' })
@@ -35,16 +36,15 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CustomParameterEntryEntity, { array: true })
 	parameters: CustomParameterEntryEntity[];
 
-	@Property()
-	toolVersion: number;
-
-	constructor(props: ContextExternalToolProperties) {
+	constructor(props: ContextExternalToolEntityProps) {
 		super();
+		if (props.id) {
+			this.id = props.id;
+		}
 		this.schoolTool = props.schoolTool;
 		this.contextId = props.contextId;
 		this.contextType = props.contextType;
 		this.displayName = props.displayName;
 		this.parameters = props.parameters ?? [];
-		this.toolVersion = props.toolVersion;
 	}
 }

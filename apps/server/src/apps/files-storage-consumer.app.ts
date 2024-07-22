@@ -9,7 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestApp = await NestFactory.createMicroservice(FilesStorageAMQPModule);
+	const nestApp = await NestFactory.create(FilesStorageAMQPModule);
 	await nestApp.init();
 
 	console.log('#########################################');

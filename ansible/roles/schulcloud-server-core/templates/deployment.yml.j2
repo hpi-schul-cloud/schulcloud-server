@@ -57,9 +57,11 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-files-secret
         readinessProbe:
           httpGet:
-            path: /serverversion
+            path: /internal/health
             port: 3030
           timeoutSeconds: 4
           failureThreshold: 3
@@ -67,14 +69,14 @@ spec:
         # liveless if unsatisfactory reply
         livenessProbe:
           httpGet:
-            path: /serverversion
+            path: /internal/health
             port: 3030
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
-            path: /serverversion
+            path: /internal/health
             port: 3030
           timeoutSeconds: 4
           failureThreshold:  36

@@ -10,6 +10,7 @@ export class ToolReferenceMapper {
 	): ToolReference {
 		const toolReference = new ToolReference({
 			contextToolId: contextExternalTool.id ?? '',
+			description: externalTool.description,
 			logoUrl: externalTool.logoUrl,
 			displayName: contextExternalTool.displayName ?? externalTool.name,
 			status,

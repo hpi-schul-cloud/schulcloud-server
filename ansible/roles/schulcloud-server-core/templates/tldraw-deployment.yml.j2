@@ -60,6 +60,10 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: tldraw-server-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:tldraw:prod']
         resources:
           limits:

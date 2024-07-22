@@ -1,4 +1,4 @@
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '../../../external-tool/testing';
 import { CustomParameter } from '../custom-parameter.do';
 import { ToolParameterRequiredLoggableException } from './tool-parameter-required.loggable-exception';
 
@@ -7,7 +7,10 @@ describe(ToolParameterRequiredLoggableException.name, () => {
 		const setup = () => {
 			const parameter: CustomParameter = customParameterFactory.build();
 
-			const exception: ToolParameterRequiredLoggableException = new ToolParameterRequiredLoggableException(parameter);
+			const exception: ToolParameterRequiredLoggableException = new ToolParameterRequiredLoggableException(
+				'toolId',
+				parameter
+			);
 
 			return {
 				parameter,
@@ -26,6 +29,7 @@ describe(ToolParameterRequiredLoggableException.name, () => {
 				stack: exception.stack,
 				data: {
 					parameterName: parameter.name,
+					toolId: 'toolId',
 				},
 			});
 		});

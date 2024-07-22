@@ -38,8 +38,13 @@ const removeSystemFromSchool = async (context) => {
 	const patchquery = {
 		$pull: { systems: system._id },
 	};
+
 	if (system.type === 'ldap') {
-		patchquery.$unset = { ldapSchoolIdentifier: '', ldapLastSync: '' };
+		if (school.systems.length <= 1) {
+			patchquery.$unset = { ldapSchoolIdentifier: '', ldapLastSync: '' };
+		} else {
+			patchquery.$unset = { ldapLastSync: '' };
+		}
 	}
 
 	await context.app.service('schools').patch(school._id, patchquery);

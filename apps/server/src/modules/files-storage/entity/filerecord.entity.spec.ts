@@ -10,6 +10,7 @@ import {
 	FileRecordSecurityCheck,
 	PreviewStatus,
 	ScanStatus,
+	StorageLocation,
 } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
@@ -28,11 +29,12 @@ describe('FileRecord Entity', () => {
 				parentType: FileRecordParentType.Course,
 				parentId: new ObjectId().toHexString(),
 				creatorId: new ObjectId().toHexString(),
-				schoolId: new ObjectId().toHexString(),
+				storageLocationId: new ObjectId().toHexString(),
+				storageLocation: StorageLocation.SCHOOL,
 			};
 		});
 
-		it('should provide the target id as entity id', () => {
+		it('should provide target id', () => {
 			const parentId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
@@ -41,7 +43,7 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.parentId).toEqual(parentId);
 		});
 
-		it('should provide the creator id as entity id', () => {
+		it('should provide creator id', () => {
 			const creatorId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
@@ -50,22 +52,31 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.creatorId).toEqual(creatorId);
 		});
 
-		it('should provide the school id as entity id', () => {
-			const schoolId = new ObjectId().toHexString();
+		it('should provide storageLocationId', () => {
+			const storageLocationId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
-				schoolId,
+				storageLocationId,
 			});
-			expect(fileRecord.schoolId).toEqual(schoolId);
+			expect(fileRecord.storageLocationId).toEqual(storageLocationId);
 		});
 
-		it('should provide the isCopyFrom as entity id', () => {
+		it('should provide isCopyFrom', () => {
 			const isCopyFrom = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
 				isCopyFrom,
 			});
 			expect(fileRecord.isCopyFrom).toEqual(isCopyFrom);
+		});
+
+		it('should provide isUploading', () => {
+			const isUploading = true;
+			const fileRecord = new FileRecord({
+				...props,
+				isUploading,
+			});
+			expect(fileRecord.isUploading).toEqual(isUploading);
 		});
 	});
 
@@ -209,25 +220,6 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('getSchoolId is called', () => {
-		describe('WHEN schoolId exists', () => {
-			const setup = () => {
-				const schoolId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ schoolId });
-
-				return { fileRecord, schoolId };
-			};
-
-			it('should return the correct schoolId', () => {
-				const { fileRecord, schoolId } = setup();
-
-				const result = fileRecord.getSchoolId();
-
-				expect(result).toEqual(schoolId);
-			});
-		});
-	});
-
 	describe('getSecurityToken is called', () => {
 		describe('WHEN security token exists', () => {
 			const setup = () => {
@@ -251,18 +243,19 @@ describe('FileRecord Entity', () => {
 			const setup = () => {
 				const parentType = FileRecordParentType.School;
 				const parentId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ parentType, parentId, schoolId });
+				const storageLocationId = new ObjectId().toHexString();
+				const storageLocation = StorageLocation.INSTANCE;
+				const fileRecord = fileRecordFactory.build({ parentType, parentId, storageLocationId, storageLocation });
 
-				return { fileRecord, parentId, parentType, schoolId };
+				return { fileRecord, parentId, parentType, storageLocationId, storageLocation };
 			};
 
 			it('should return an object that include parentId and parentType', () => {
-				const { fileRecord, parentId, parentType, schoolId } = setup();
+				const { fileRecord, parentId, parentType, storageLocationId, storageLocation } = setup();
 
 				const result = fileRecord.getParentInfo();
 
-				expect(result).toEqual({ parentId, parentType, schoolId });
+				expect(result).toEqual({ parentId, parentType, storageLocationId, storageLocation });
 			});
 		});
 	});
@@ -462,9 +455,10 @@ describe('FileRecord Entity', () => {
 			const fileRecord = fileRecordFactory.buildWithId();
 			const userId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
+			const storageLocationId = new ObjectId().toHexString();
+			const storageLocation = StorageLocation.INSTANCE;
 			const parentType = FileRecordParentType.School;
-			const targetParentInfo = { parentId, schoolId, parentType };
+			const targetParentInfo = { parentId, parentType, storageLocationId, storageLocation };
 
 			return {
 				fileRecord,
@@ -519,7 +513,8 @@ describe('FileRecord Entity', () => {
 				expect(result.creatorId).toEqual(userId);
 				expect(result.parentType).toEqual(targetParentInfo.parentType);
 				expect(result.parentId).toEqual(targetParentInfo.parentId);
-				expect(result.schoolId).toEqual(targetParentInfo.schoolId);
+				expect(result.storageLocationId).toEqual(targetParentInfo.storageLocationId);
+				expect(result.storageLocation).toEqual(targetParentInfo.storageLocation);
 			});
 		});
 
@@ -847,6 +842,25 @@ describe('FileRecord Entity', () => {
 				const { fileRecord } = setup();
 
 				const result = fileRecord.removeCreatorId();
+
+				expect(result).toBe(undefined);
+			});
+		});
+	});
+
+	describe('markAsLoaded is called', () => {
+		describe('WHEN isUploading is true', () => {
+			const setup = () => {
+				const isUploading = true;
+				const fileRecord = fileRecordFactory.build({ isUploading });
+
+				return { fileRecord, isUploading };
+			};
+
+			it('should set it to undefined', () => {
+				const { fileRecord } = setup();
+				expect(fileRecord.isUploading).toBe(true);
+				const result = fileRecord.markAsUploaded();
 
 				expect(result).toBe(undefined);
 			});

@@ -1,409 +1,182 @@
 [
 	{
 		"_id": {
-			"$oid": "6287989eafaf6045788f578e"
+			"$oid": "65d5f62f2dfd4122af9607e9"
 		},
-		"state": "up",
-		"name": "add-nextcloud-permission-to-users",
-		"createdAt": {
-			"$date": "2022-05-20T13:32:06.402Z"
-		},
-		"__v": 0
+		"name": "Migration20240108145519",
+		"created_at": {
+			"$date": "2024-02-21T13:10:07.253Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "62b2d03a7e84883ed4042ffe"
+			"$oid": "65d5f62f2dfd4122af9607ea"
 		},
-		"state": "up",
-		"name": "setLtiToolsIsHiddenDefaultBehaviour",
-		"createdAt": {
-			"$date": "2022-06-22T08:01:25.296Z"
-		},
-		"__v": 0
+		"name": "Migration20240115103302",
+		"created_at": {
+			"$date": "2024-02-21T13:10:07.273Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "62ceaead46c704f3c0a9f921"
+			"$oid": "65d5fcc609ea95ffabb997fd"
 		},
-		"state": "up",
-		"name": "RefactorOauthConfig",
-		"createdAt": {
-			"$date": "2022-07-11T13:57:06.225Z"
-		},
-		"__v": 0
+		"name": "Migration20240221131029",
+		"created_at": {
+			"$date": "2024-02-21T13:38:14.058Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "62da74248a724b0a60157dd3"
+			"$oid": "661d0a8f95c6e7265aa4f180"
 		},
-		"state": "up",
-		"name": "allow_experts_join_meeting",
-		"createdAt": {
-			"$date": "2022-07-22T09:48:38.838Z"
-		},
-		"__v": 0
+		"name": "Migration20240304123509",
+		"created_at": {
+			"$date": "2024-04-15T11:07:59.291Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "62e25ac2b11660acd431c703"
+			"$oid": "661d0a8f95c6e7265aa4f181"
 		},
-		"state": "up",
-		"name": "conferencePermissionForTeacherAndStudent",
-		"createdAt": {
-			"$date": "2022-07-28T09:23:48.792Z"
-		},
-		"__v": 0
+		"name": "Migration20240315140224",
+		"created_at": {
+			"$date": "2024-04-15T11:07:59.301Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "632c5fafc744915f90d1c73b"
+			"$oid": "661d0a8f95c6e7265aa4f182"
 		},
-		"state": "up",
-		"name": "add_oauth_client_permissions",
-		"createdAt": {
-			"$date": "2022-09-22T13:01:17.867Z"
-		},
-		"__v": 0
+		"name": "Migration20240320122229",
+		"created_at": {
+			"$date": "2024-04-15T11:07:59.306Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b6f983c6759284e07dc8"
+			"$oid": "661d0a8f95c6e7265aa4f183"
 		},
-		"state": "up",
-		"name": "sanis-rebranding",
-		"createdAt": {
-			"$date": "2023-03-15T12:15:53.385Z"
-		},
-		"__v": 0
+		"name": "Migration20240326072506",
+		"created_at": {
+			"$date": "2024-04-15T11:07:59.312Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b99e207ae5149cca93a9"
+			"$oid": "66222c3267551d7ebd81c096"
 		},
-		"state": "up",
-		"name": "add-tool-admin-permission",
-		"createdAt": {
-			"$date": "2022-11-21T15:44:50.170Z"
-		},
-		"__v": 0
+		"name": "Migration20240415124640",
+		"created_at": {
+			"$date": "2024-04-19T08:32:50.668Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b99e207ae5149cca93aa"
+			"$oid": "6622341440e305c6e36dcd81"
 		},
-		"state": "up",
-		"name": "add-submitted-and-graded-keys-to-submission",
-		"createdAt": {
-			"$date": "2022-11-28T09:39:29.773Z"
-		},
-		"__v": 0
+		"name": "Migration20240419075957",
+		"created_at": {
+			"$date": "2024-04-19T09:06:28.592Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b99e207ae5149cca93ab"
+			"$oid": "66263de3e9af8b2c09707e51"
 		},
-		"state": "up",
-		"name": "add-school-tool-admin-permission",
-		"createdAt": {
-			"$date": "2023-01-04T14:41:52.212Z"
-		},
-		"__v": 0
+		"name": "Migration20240416104203",
+		"created_at": {
+			"$date": "2024-04-22T12:32:50.668Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b99e207ae5149cca93ac"
+			"$oid": "6630fa6f92c2ac9d942c1c1d"
 		},
-		"state": "up",
-		"name": "add-task-card-permission",
-		"createdAt": {
-			"$date": "2023-01-12T18:24:50.878Z"
-		},
-		"__v": 0
+		"name": "Migration20240430140106",
+		"created_at": {
+			"$date": "2024-04-30T14:04:31.141Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b99e207ae5149cca93ad"
+			"$oid": "6647630a9d32c0b7be4cc5a8"
 		},
-		"state": "up",
-		"name": "AddPermissionCreateToolEtherpadForStudent",
-		"createdAt": {
-			"$date": "2023-02-14T08:58:00.462Z"
-		},
-		"__v": 0
+		"name": "Migration20240517135008",
+		"created_at": {
+			"$date": "2024-05-17T14:00:42.414Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6411b99e207ae5149cca93ae"
+			"$oid": "6656f4835290f6d36be31830"
 		},
-		"state": "up",
-		"name": "EditHomeworkCreateAndEditPermissions",
-		"createdAt": {
-			"$date": "2023-03-01T10:40:42.101Z"
-		},
-		"__v": 0
+		"name": "Migration20240529091306",
+		"created_at": {
+			"$date": "2024-05-29T09:25:23.454Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "641484462942e36e9ce79c58"
+			"$oid": "66684c3db14698848e23c0c2"
 		},
-		"state": "up",
-		"name": "oauth-provisioning-school-feature",
-		"createdAt": {
-			"$date": "2023-03-17T08:48:14.877Z"
-		},
-		"__v": 0
+		"name": "Migration20240604131554",
+		"created_at": {
+			"$date": "2024-06-11T13:08:13.024Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6426df110243fda1e06675fe"
+			"$oid": "66684c3db14698848e23c0c3"
 		},
-		"state": "up",
-		"name": "RefactorSystemSubConfig",
-		"createdAt": {
-			"$date": "2023-03-15T14:04:48.654Z"
-		},
-		"__v": 0
+		"name": "Migration20240605065231",
+		"created_at": {
+			"$date": "2024-06-11T13:08:13.042Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "6426df110243fda1e0667600"
+			"$oid": "66684c3db14698848e23c0c4"
 		},
-		"state": "up",
-		"name": "change-ctl-paramter-location-from-token-to-body",
-		"createdAt": {
-			"$date": "2023-03-31T13:24:33.452Z"
-		},
-		"__v": 0
+		"name": "Migration20240606142059",
+		"created_at": {
+			"$date": "2024-06-11T13:08:13.069Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "642acfb9f493260e5422c6f6"
+			"$oid": "666993d9c1989bee3e0e5df2"
 		},
-		"state": "up",
-		"name": "remove-systems-permission-of-admins",
-		"createdAt": {
-			"$date": "2023-04-03T13:08:09.416Z"
-		},
-		"__v": 0
+		"name": "Migration20240612122202",
+		"created_at": {
+			"$date": "2024-06-12T12:26:01.665Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "642ad0122937ff80780808c6"
+			"$oid": "6655e94f06722f2a434c135f"
 		},
-		"state": "up",
-		"name": "add-system-view-permission-for-admins",
-		"createdAt": {
-			"$date": "2023-04-03T13:09:38.055Z"
-		},
-		"__v": 0
+		"name": "Migration20240528140356",
+		"created_at": {
+			"$date": "2024-05-28T14:25:19.577Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "642c1905ec49d9a2cce1939d"
+			"$oid": "6668485aadfd9c4d7be91ca3"
 		},
-		"state": "up",
-		"name": "remove-system-view-permission-from-user",
-		"createdAt": {
-			"$date": "2023-04-04T12:25:50.707Z"
-		},
-		"__v": 0
+		"name": "Migration20240611081033",
+		"created_at": {
+			"$date": "2024-06-11T12:51:38.379Z"
+		}
 	},
 	{
 		"_id": {
-			"$oid": "644a5cc76018bf037415806a"
+			"$oid": "667e611e207a39b02c306406"
 		},
-		"state": "up",
-		"name": "move-school-migration-attributes-to-entity",
-		"createdAt": {
-			"$date": "2023-04-27T11:30:15.605Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "6458ecb692a2c4444867d973"
-		},
-		"state": "up",
-		"name": "remove-leave-team-permission-from-user",
-		"createdAt": {
-			"$date": "2023-05-05T07:26:34.051Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "645cd5c0925829be40c28eb2"
-		},
-		"state": "up",
-		"name": "add-context-tool-admin-permission-to-teachers",
-		"createdAt": {
-			"$date": "2023-04-28T11:00:42.924Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "6475c08fb0c19a8a6ceed37c"
-		},
-		"state": "up",
-		"name": "add-context-tool-user-to-user",
-		"createdAt": {
-			"$date": "2023-05-16T11:09:04.602Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "649edddd0a10f0671489a4c3"
-		},
-		"state": "up",
-		"name": "add-user-login-migration-admin-permission-to-admin",
-		"createdAt": {
-			"$date": "2023-05-16T08:02:20.719Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "64cb7789b3f7ad8d586809c0"
-		},
-		"state": "up",
-		"name": "ctl_tools_add_lti_locale",
-		"createdAt": {
-			"$date": "2023-08-03T09:46:49.653Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "64f1e7ce5f01dac16032e59d"
-		},
-		"state": "up",
-		"name": "add-join-meeting-permission-to-admin",
-		"createdAt": {
-			"$date": "2023-09-01T13:28:44.835Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "64f5c9d76edbcaa5cc4431d2"
-		},
-		"state": "up",
-		"name": "add-join-meeting-permission-to-teacher",
-		"createdAt": {
-			"$date": "2023-09-01T12:31:41.993Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "64f5c9d76edbcaa5cc4431d3"
-		},
-		"state": "up",
-		"name": "add-start-meeting-permission-to-admin",
-		"createdAt": {
-			"$date": "2023-09-01T13:14:13.453Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "652686eb35521c3d90686845"
-		},
-		"state": "up",
-		"name": "remove-moin-schule-logout-endpoint",
-		"createdAt": {
-			"$date": "2023-10-11T10:40:18.782Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "652ea0196ddf74176cb57561"
-		},
-		"state": "up",
-		"name": "add-group-view-and-list-permission",
-		"createdAt": {
-			"$date": "2023-10-17T14:38:44.886Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "653a645338f94b0ea8e3173d"
-		},
-		"state": "up",
-		"name": "add-group-full-admin-permission",
-		"createdAt": {
-			"$date": "2023-10-26T13:06:27.322Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "654cc2326b83f786c4227b21"
-		},
-		"state": "up",
-		"name": "tool-and-user-login-migration-renamings",
-		"createdAt": {
-			"$date": "2023-11-09T11:27:46.062Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "656f15a29ac13a4b78e2e31f"
-		},
-		"state": "up",
-		"name": "system-permissions-update",
-		"createdAt": {
-			"$date": "2023-12-05T12:20:50.147Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "6576dbdb91b90e92b8ce9b9c"
-		},
-		"state": "up",
-		"name": "add-school-system-view-and-edit",
-		"createdAt": {
-			"$date": "2023-12-11T09:52:27.346Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "6585950b4903600babed0d79"
-		},
-		"state": "up",
-		"name": "school-default-props",
-		"createdAt": {
-			"$date": "2023-12-22T13:54:19.864Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "6585979f8eef141a0615da6f"
-		},
-		"state": "up",
-		"name": "add-protected-field-to-custom-paramters",
-		"createdAt": {
-			"$date": "2023-12-20T11:44:04.729Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "65969f4adbb61670101696fb"
-		},
-		"state": "up",
-		"name": "remove-undefined-parameters-from-external-tool",
-		"createdAt": {
-			"$date": "2024-01-04T12:06:34.725Z"
-		},
-		"__v": 0
+		"name": "Migration20240627134214",
+		"created_at": {
+			"$date": "2024-06-28T07:07:10.278Z"
+		}
 	}
 ]

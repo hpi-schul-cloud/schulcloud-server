@@ -1,8 +1,9 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { BoardLayout } from '@src/modules/board';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
-import { RoomBoardElementTypes } from '../types';
+import { ColumnBoardMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
 describe('room board response mapper', () => {
@@ -25,12 +26,13 @@ describe('room board response mapper', () => {
 
 	describe('mapToResponse', () => {
 		it('should map plain board into response', () => {
-			const board = {
+			const board: RoomBoardDTO = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [],
 				isArchived: false,
+				isSynchronized: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -49,15 +51,16 @@ describe('room board response mapper', () => {
 				isFinished: false,
 				isSubstitutionTeacher: false,
 			};
-			const board = {
+			const board: RoomBoardDTO = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
 				isArchived: false,
+				isSynchronized: false,
 			};
 
-			const result = mapper.mapToResponse(board);
+			const result: SingleColumnBoardResponse = mapper.mapToResponse(board);
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 		});
@@ -73,12 +76,13 @@ describe('room board response mapper', () => {
 				isFinished: false,
 				isSubstitutionTeacher: false,
 			};
-			const board = {
+			const board: RoomBoardDTO = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task: linkedTask, status } }],
 				isArchived: false,
+				isSynchronized: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -99,12 +103,13 @@ describe('room board response mapper', () => {
 				numberOfPlannedTasks: 5,
 				courseName: course.name,
 			};
-			const board = {
+			const board: RoomBoardDTO = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata }],
 				isArchived: false,
+				isSynchronized: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -134,7 +139,7 @@ describe('room board response mapper', () => {
 				isFinished: false,
 				isSubstitutionTeacher: false,
 			};
-			const board = {
+			const board: RoomBoardDTO = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
@@ -143,6 +148,7 @@ describe('room board response mapper', () => {
 					{ type: RoomBoardElementTypes.TASK, content: { task, status } },
 				],
 				isArchived: false,
+				isSynchronized: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -152,20 +158,22 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map column board targets on board to response', () => {
-			const columnBoardMetaData = {
+			const columnBoardMetaData: ColumnBoardMetaData = {
 				id: new ObjectId().toHexString(),
 				columnBoardId: new ObjectId().toHexString(),
 				title: 'column board #1',
 				published: true,
+				layout: BoardLayout.COLUMNS,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
-			const board = {
+			const board: RoomBoardDTO = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.COLUMN_BOARD, content: columnBoardMetaData }],
 				isArchived: false,
+				isSynchronized: false,
 			};
 
 			const result = mapper.mapToResponse(board);

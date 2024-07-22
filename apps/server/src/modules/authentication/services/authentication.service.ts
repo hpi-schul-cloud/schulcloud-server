@@ -1,17 +1,16 @@
-import { AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-// invalid import
-import { AccountDto } from '@modules/account/services/dto';
 // invalid import, can produce dependency cycles
 import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
-import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
+import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { LoginDto } from '../uc/dto';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 @Injectable()
 export class AuthenticationService {
@@ -22,8 +21,8 @@ export class AuthenticationService {
 		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
 
-	async loadAccount(username: string, systemId?: string): Promise<AccountDto> {
-		let account: AccountDto | undefined | null;
+	async loadAccount(username: string, systemId?: string): Promise<Account> {
+		let account: Account | undefined | null;
 
 		if (systemId) {
 			account = await this.accountService.findByUsernameAndSystemId(username, systemId);
@@ -35,6 +34,9 @@ export class AuthenticationService {
 		if (!account) {
 			throw new UnauthorizedLoggableException(username, systemId);
 		}
+		if (account.deactivatedAt !== undefined && account.deactivatedAt.getTime() <= Date.now()) {
+			throw new UserAccountDeactivatedLoggableException();
+		}
 
 		return account;
 	}
@@ -42,7 +44,7 @@ export class AuthenticationService {
 	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
 		const jti = randomUUID();
 
-		const result: LoginDto = new LoginDto({
+		const result = new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,
@@ -57,12 +59,16 @@ export class AuthenticationService {
 	async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
 
-		if (decodedJwt && decodedJwt.jti && decodedJwt.accountId && typeof decodedJwt.accountId === 'string') {
+		if (this.isValidJwt(decodedJwt)) {
 			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
 	}
 
-	checkBrutForce(account: AccountDto): void {
+	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
+		return typeof decodedJwt?.jti === 'string' && typeof decodedJwt?.accountId === 'string';
+	}
+
+	checkBrutForce(account: Account): void {
 		if (account.lasttriedFailedLogin) {
 			const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
 
@@ -71,6 +77,10 @@ export class AuthenticationService {
 				throw new BruteForceError(timeToWait, `Brute Force Prevention! Time to wait: ${timeToWait} s`);
 			}
 		}
+	}
+
+	async updateLastLogin(accountId: string): Promise<void> {
+		await this.accountService.updateLastLogin(accountId, new Date());
 	}
 
 	async updateLastTriedFailedLogin(id: string): Promise<void> {

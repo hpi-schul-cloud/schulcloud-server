@@ -1,28 +1,26 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	courseFactory,
 	fileRecordFactory,
 	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
+	schoolEntityFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { FileRecordParentType } from '../../entity';
+import { FileRecordParentType, StorageLocation } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { CopyFileParams, CopyFilesOfParentParams, FileRecordListResponse, FileRecordResponse } from '../dto';
@@ -127,14 +125,11 @@ describe(`${baseRouteName} (api)`, () => {
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-				});
-				const user = userFactory.build({ school, roles });
+				const school = schoolEntityFactory.build();
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent]);
+				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -143,7 +138,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 				copyFilesParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -151,18 +147,18 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.copy(`/123/users/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/123/users/${validId}`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['schoolId must be a mongodb id'],
-						field: ['schoolId'],
+						errors: ['storageLocationId must be a mongodb id'],
+						field: ['storageLocationId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.copy(`/${validId}/users/123`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/users/123`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
@@ -173,7 +169,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.copy(`/${validId}/cookies/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/cookies/${validId}`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
@@ -186,12 +182,13 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return status 400 for invalid parentType', async () => {
 				copyFilesParams = {
 					target: {
-						schoolId: 'invalidObjectId',
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: 'invalidObjectId',
 						parentId: 'invalidObjectId',
 						parentType: FileRecordParentType.Task,
 					},
 				};
-				const response = await api.copy(`/${validId}/users/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/users/${validId}`, copyFilesParams);
 				expect(response.status).toEqual(400);
 			});
 		});
@@ -199,14 +196,11 @@ describe(`${baseRouteName} (api)`, () => {
 		describe(`with valid request data`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-				});
-				const user = userFactory.build({ school, roles });
+				const school = schoolEntityFactory.build();
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent]);
+				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -215,7 +209,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 				copyFilesParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -225,16 +220,16 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				const response = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/schools/${validId}`, copyFilesParams);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
-				const { result } = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				const { result } = await api.copy(`/school/${validId}/schools/${validId}`, copyFilesParams);
 
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
@@ -254,14 +249,11 @@ describe(`${baseRouteName} (api)`, () => {
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-				});
-				const user = userFactory.build({ school, roles });
+				const school = schoolEntityFactory.build();
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent]);
+				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -270,7 +262,8 @@ describe(`${baseRouteName} (api)`, () => {
 				validId = user.school.id;
 				copyFileParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -295,14 +288,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-				});
-				const user = userFactory.build({ school, roles });
+				const school = schoolEntityFactory.build();
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent]);
+				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -311,14 +301,18 @@ describe(`${baseRouteName} (api)`, () => {
 				validId = user.school.id;
 				copyFileParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
 					fileNamePrefix: 'copy from',
 				};
 
-				const { result } = await api.postUploadFile(`/file/upload/${school.id}/schools/${school.id}`, 'test1.txt');
+				const { result } = await api.postUploadFile(
+					`/file/upload/school/${school.id}/schools/${school.id}`,
+					'test1.txt'
+				);
 
 				fileRecordId = result.id;
 			});
@@ -341,7 +335,6 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should return elements not equal of requested scope', async () => {
 				const otherFileRecords = fileRecordFactory.buildList(3, {
-					schoolId: new ObjectId().toHexString(),
 					parentType: FileRecordParentType.School,
 				});
 

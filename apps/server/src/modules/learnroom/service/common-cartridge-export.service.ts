@@ -1,18 +1,26 @@
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service';
-import { Injectable } from '@nestjs/common';
-import { ComponentProperties, Course, Task } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
+import {
+	AnyBoardNode,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	ColumnBoardService,
+	isCard,
+	isColumn,
+	isLinkElement,
+	isRichTextElement,
+} from '@modules/board';
 import {
 	CommonCartridgeFileBuilder,
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
+	CommonCartridgeOrganizationNode,
 	CommonCartridgeVersion,
-	ICommonCartridgeResourceProps,
-	ICommonCartridgeWebContentResourceProps,
-} from '../common-cartridge';
-import { createIdentifier } from '../common-cartridge/utils';
+	createIdentifier,
+} from '@modules/common-cartridge';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
+import { Injectable } from '@nestjs/common';
+import { ComponentProperties } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
 @Injectable()
@@ -20,153 +28,156 @@ export class CommonCartridgeExportService {
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly columnBoardService: ColumnBoardService,
+		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
+	public async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		exportedTopics: string[],
+		exportedTasks: string[],
+		exportedColumnBoards: string[]
+	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
-		const builder = new CommonCartridgeFileBuilder({
-			identifier: createIdentifier(courseId),
-			title: course.name,
-			version,
-			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
-			creationYear: course.createdAt.getFullYear().toString(),
-		});
+		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, course));
 
-		await this.addLessons(builder, version, courseId);
-		await this.addTasks(builder, version, courseId, userId);
+		builder.addMetadata(this.mapper.mapCourseToMetadata(course));
+
+		await this.addLessons(builder, courseId, version, exportedTopics);
+		await this.addTasks(builder, courseId, userId, version, exportedTasks);
+		await this.addColumnBoards(builder, courseId, exportedColumnBoards);
 
 		return builder.build();
 	}
 
 	private async addLessons(
 		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
 		version: CommonCartridgeVersion,
-		courseId: EntityId
+		topics: string[]
 	): Promise<void> {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
-			const organizationBuilder = builder.addOrganization({
-				version,
-				identifier: createIdentifier(lesson.id),
-				title: lesson.name,
-				resources: [],
-			});
+			if (!topics.includes(lesson.id)) {
+				return;
+			}
+
+			const lessonOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) => {
-				const resourceProps = this.mapContentToResource(lesson.id, content, version);
-				if (resourceProps) {
-					organizationBuilder.addResourceToOrganization(resourceProps);
-				}
+				this.addComponentToOrganization(content, lessonOrganization);
 			});
 
-			const tasks = lesson.tasks.getItems();
-			tasks.forEach((task) => {
-				organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+			lesson.getLessonLinkedTasks().forEach((task) => {
+				lessonOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 			});
 		});
 	}
 
 	private async addTasks(
 		builder: CommonCartridgeFileBuilder,
-		version: CommonCartridgeVersion,
 		courseId: EntityId,
-		userId: EntityId
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		exportedTasks: string[]
 	): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
-		const organizationBuilder = builder.addOrganization({
-			version,
+
+		if (tasks.length === 0) {
+			return;
+		}
+
+		const tasksOrganization = builder.createOrganization({
+			title: 'Aufgaben',
 			identifier: createIdentifier(),
-			// FIXME: change the title for tasks organization
-			title: '',
-			resources: [],
 		});
 
 		tasks.forEach((task) => {
-			organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+			if (!exportedTasks.includes(task.id)) {
+				return;
+			}
+
+			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 		});
 	}
 
-	private mapContentToResource(
-		lessonId: string,
-		content: ComponentProperties,
-		version: CommonCartridgeVersion
-	): ICommonCartridgeResourceProps | undefined {
-		const commonProps = {
-			version,
-			identifier: createIdentifier(content._id),
-			href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
-			title: content.title,
-		};
+	private async addColumnBoards(
+		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
+		exportedColumnBoards: string[]
+	): Promise<void> {
+		const columnBoards = (
+			await this.columnBoardService.findByExternalReference({
+				type: BoardExternalReferenceType.Course,
+				id: courseId,
+			})
+		).filter((cb) => exportedColumnBoards.includes(cb.id));
 
-		if (content.component === ComponentType.TEXT) {
-			return {
-				version,
-				identifier: createIdentifier(content._id),
-				href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
-				title: content.title,
-				type: CommonCartridgeResourceType.WEB_CONTENT,
-				intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
-				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
-			};
+		for (const columnBoard of columnBoards) {
+			const columnBoardOrganization = builder.createOrganization({
+				title: columnBoard.title,
+				identifier: createIdentifier(columnBoard.id),
+			});
+
+			columnBoard.children
+				.filter((child) => isColumn(child))
+				.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
 		}
-
-		if (content.component === ComponentType.GEOGEBRA) {
-			const url = `https://www.geogebra.org/m/${content.content.materialId}`;
-			return version === CommonCartridgeVersion.V_1_3_0
-				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
-				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
-		}
-
-		if (content.component === ComponentType.ETHERPAD) {
-			return version === CommonCartridgeVersion.V_1_3_0
-				? {
-						...commonProps,
-						type: CommonCartridgeResourceType.WEB_LINK_V3,
-						url: content.content.url,
-						title: content.content.description,
-				  }
-				: {
-						...commonProps,
-						type: CommonCartridgeResourceType.WEB_LINK_V1,
-						url: content.content.url,
-						title: content.content.description,
-				  };
-		}
-
-		return undefined;
 	}
 
-	/**
-	 * This method gets the course as parameter and maps the contained teacher names within the teachers Collection to a string.
-	 * @param Course
-	 * @return string
-	 * */
-	private mapCourseTeachersToCopyrightOwners(course: Course): string {
-		const result = course.teachers
-			.toArray()
-			.map((teacher) => `${teacher.firstName} ${teacher.lastName}`)
-			.reduce((previousTeachers, currentTeacher) => `${previousTeachers}, ${currentTeacher}`);
-		return result;
+	private addColumnToOrganization(column: Column, columnBoardOrganization: CommonCartridgeOrganizationNode): void {
+		const { id } = column;
+		const columnOrganization = columnBoardOrganization.createChild({
+			title: column.title || '',
+			identifier: createIdentifier(id),
+		});
+
+		column.children
+			.filter((child) => isCard(child))
+			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
 	}
 
-	private mapTaskToWebContentResource(
-		task: Task,
-		version: CommonCartridgeVersion
-	): ICommonCartridgeWebContentResourceProps {
-		const taskIdentifier = createIdentifier(task.id);
-		return {
-			version,
-			identifier: taskIdentifier,
-			href: `${taskIdentifier}/${taskIdentifier}.html`,
-			title: task.name,
-			type: CommonCartridgeResourceType.WEB_CONTENT,
-			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
-			intendedUse:
-				version === CommonCartridgeVersion.V_1_1_0
-					? CommonCartridgeIntendedUseType.UNSPECIFIED
-					: CommonCartridgeIntendedUseType.ASSIGNMENT,
-		};
+	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
+		const cardOrganization = columnOrganization.createChild({
+			title: card.title || '',
+			identifier: createIdentifier(card.id),
+		});
+
+		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization));
+	}
+
+	private addCardElementToOrganization(element: AnyBoardNode, cardOrganization: CommonCartridgeOrganizationNode): void {
+		if (isRichTextElement(element)) {
+			const resource = this.mapper.mapRichTextElementToResource(element);
+
+			cardOrganization.addResource(resource);
+		}
+
+		if (isLinkElement(element)) {
+			const resource = this.mapper.mapLinkElementToResource(element);
+
+			cardOrganization.addResource(resource);
+		}
+	}
+
+	private addComponentToOrganization(
+		component: ComponentProperties,
+		lessonOrganization: CommonCartridgeOrganizationNode
+	): void {
+		const resources = this.mapper.mapContentToResources(component);
+
+		if (Array.isArray(resources)) {
+			const componentOrganization = lessonOrganization.createChild(this.mapper.mapContentToOrganization(component));
+
+			resources.forEach((resource) => {
+				componentOrganization.addResource(resource);
+			});
+		} else {
+			lessonOrganization.addResource(resources);
+		}
 	}
 }

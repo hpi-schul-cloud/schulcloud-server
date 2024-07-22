@@ -1,10 +1,3 @@
-import {
-	basicToolConfigFactory,
-	customParameterFactory,
-	externalToolFactory,
-	lti11ToolConfigFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -26,6 +19,13 @@ import {
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '../testing';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 describe('ExternalToolResponseMapper', () => {
@@ -49,19 +49,6 @@ describe('ExternalToolResponseMapper', () => {
 				const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
 					type: ToolConfigType.BASIC,
 					baseUrl: 'mockUrl',
-				});
-
-				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
-					id: '1',
-					name: 'mockName',
-					url: 'mockUrl',
-					logoUrl: 'mockLogoUrl',
-					parameters: [customParameterResponse],
-					isHidden: true,
-					openNewTab: true,
-					version: 1,
-					config: basicToolConfigResponse,
-					isDeactivated: true,
 				});
 
 				const basicToolConfig: BasicToolConfig = basicToolConfigFactory.build({
@@ -90,9 +77,21 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameter],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: basicToolConfig,
 					isDeactivated: true,
+				});
+
+				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
+					id: '1',
+					name: 'mockName',
+					url: 'mockUrl',
+					logoUrl: 'mockLogoUrl',
+					parameters: [customParameterResponse],
+					isHidden: true,
+					openNewTab: true,
+					config: basicToolConfigResponse,
+					isDeactivated: true,
+					description: externalTool.description,
 				});
 
 				return {
@@ -149,19 +148,6 @@ describe('ExternalToolResponseMapper', () => {
 					isProtected: false,
 				});
 
-				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
-					id: '1',
-					name: 'mockName',
-					url: 'mockUrl',
-					logoUrl: 'mockLogoUrl',
-					parameters: [customParameterResponse],
-					isHidden: true,
-					openNewTab: true,
-					version: 1,
-					config: oauth2ToolConfigResponse,
-					isDeactivated: false,
-				});
-
 				const customParameter: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
 					displayName: 'displayName',
@@ -183,9 +169,21 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameter],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: oauth2ToolConfigDO,
 					isDeactivated: false,
+				});
+
+				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
+					id: '1',
+					name: 'mockName',
+					url: 'mockUrl',
+					logoUrl: 'mockLogoUrl',
+					parameters: [customParameterResponse],
+					isHidden: true,
+					openNewTab: true,
+					config: oauth2ToolConfigResponse,
+					isDeactivated: false,
+					description: externalTool.description,
 				});
 
 				return {
@@ -222,7 +220,6 @@ describe('ExternalToolResponseMapper', () => {
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
 					launch_presentation_locale: 'de-DE',
-					resource_link_id: 'linkId',
 				});
 
 				const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
@@ -237,19 +234,6 @@ describe('ExternalToolResponseMapper', () => {
 					regexComment: 'mockComment',
 					isOptional: false,
 					isProtected: false,
-				});
-
-				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
-					id: '1',
-					name: 'mockName',
-					url: 'mockUrl',
-					logoUrl: 'mockLogoUrl',
-					parameters: [customParameterResponse],
-					isHidden: true,
-					openNewTab: true,
-					version: 1,
-					config: lti11ToolConfigResponse,
-					isDeactivated: false,
 				});
 
 				const customParameter: CustomParameter = customParameterFactory.build({
@@ -272,9 +256,21 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameter],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: lti11ToolConfigDO,
 					isDeactivated: false,
+				});
+
+				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
+					id: '1',
+					name: 'mockName',
+					url: 'mockUrl',
+					logoUrl: 'mockLogoUrl',
+					parameters: [customParameterResponse],
+					isHidden: true,
+					openNewTab: true,
+					config: lti11ToolConfigResponse,
+					isDeactivated: false,
+					description: externalTool.description,
 				});
 
 				return {

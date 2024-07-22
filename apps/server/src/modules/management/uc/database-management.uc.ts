@@ -2,10 +2,12 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
+import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
@@ -403,5 +405,17 @@ export class DatabaseManagementUc {
 			}
 		});
 		return systems;
+	}
+
+	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
+		return this.databaseManagementService.migrationUp(from, to, only);
+	}
+
+	public async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
+		return this.databaseManagementService.migrationDown(from, to, only);
+	}
+
+	public async migrationPending(): Promise<UmzugMigration[]> {
+		return this.databaseManagementService.migrationPending();
 	}
 }

@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { readableStreamWithFileTypeFactory } from '@shared/testing/factory/readable-stream-with-file-type.factory';
 import { LegacyLogger } from '@src/core/logger';
@@ -13,7 +13,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
@@ -28,16 +28,17 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -157,6 +158,8 @@ describe('FilesStorageService upload methods', () => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				return {
@@ -187,6 +190,37 @@ describe('FilesStorageService upload methods', () => {
 				expect(getFileRecordsOfParentSpy).toHaveBeenCalledWith(params.parentId);
 			});
 
+			it('should call fileRecordRepo.save in first call with isUploading: true', async () => {
+				const { params, file, userId } = setup();
+
+				// haveBeenCalledWith can't be use here because fileRecord is a reference and
+				// it will always compare the final state of the object
+				let param: FileRecord | undefined;
+
+				fileRecordRepo.save.mockReset();
+				fileRecordRepo.save.mockImplementationOnce(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+
+					param = JSON.parse(JSON.stringify(fr)) as FileRecord;
+
+					return Promise.resolve();
+				});
+
+				fileRecordRepo.save.mockImplementationOnce(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+
+					return Promise.resolve();
+				});
+
+				await service.uploadFile(userId, params, file);
+
+				expect(param).toMatchObject({ isUploading: true });
+			});
+
 			it('should call fileRecordRepo.save twice with correct params', async () => {
 				const { params, file, fileSize, userId, readableStreamWithFileType, expectedFileRecord } = setup();
 
@@ -201,6 +235,7 @@ describe('FilesStorageService upload methods', () => {
 						size: fileSize,
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
+						isUploading: undefined,
 					})
 				);
 			});
@@ -210,7 +245,7 @@ describe('FilesStorageService upload methods', () => {
 
 				const fileRecord = await service.uploadFile(userId, params, file);
 
-				const filePath = [fileRecord.schoolId, fileRecord.id].join('/');
+				const filePath = [fileRecord.storageLocationId, fileRecord.id].join('/');
 				expect(storageClient.create).toHaveBeenCalledWith(filePath, file);
 			});
 

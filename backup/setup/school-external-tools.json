@@ -4,10 +4,14 @@
 			"$oid": "644a46e5d0a8301e6cf25d86"
 		},
 		"createdAt": {
-			"$date": "2023-04-27T09:56:53.401Z"
+			"$date": {
+				"$numberLong": "1682589413401"
+			}
 		},
 		"updatedAt": {
-			"$date": "2023-04-27T09:56:53.401Z"
+			"$date": {
+				"$numberLong": "1682589413401"
+			}
 		},
 		"tool": {
 			"$oid": "644a4593d0a8301e6cf25d85"
@@ -21,7 +25,10 @@
 				"value": "HelloWorld"
 			}
 		],
-		"toolVersion": 1
+		"status": {
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
+		}
 	},
 	{
 		"_id": {
@@ -44,190 +51,113 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 2
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5bb"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5b9"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 2
-	},
-	{
-		"_id": {
-			"$oid": "65685717ed7c14d921698602"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1685971828284"
-			}
-		},
-		"tool": {
-			"$oid": "644a4593d0a8301e6cf25d86"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5bc"
-		},
-		"createdAt": {
-			"$date": "2023-11-30T15:23:31.370Z"
-		},
-		"updatedAt": {
-			"$date": "2023-11-30T15:23:31.370Z"
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5b1"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [{
-			"name": "search",
-			"value": "xxx"
-		}],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5bd"
-		},
-		"createdAt": {
-			"$date": "2023-11-30T15:23:45.423Z"
-		},
-		"updatedAt": {
-			"$date": "2023-11-30T15:23:45.423Z"
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5c2"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e5be"
-		},
-		"createdAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
-		},
-		"updatedAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e5c3"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [{
-			"name": "schoolParan",
-			"value": "test"
-		}],
-		"toolVersion": 1
-	},
-	{
-		"_id": {
-			"$oid": "647de374cf6a427b9d39e6be"
-		},
-		"createdAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
-		},
-		"updatedAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
-		},
-		"tool": {
-			"$oid": "647de247cf6a427b9d39e6c3"
-		},
-		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"schoolParameters": [{
-			"name": "schoolParan",
-			"value": "test"
-		}],
-		"toolVersion": 1,
 		"status": {
-			"isDeactivated": false,
-			"isOutdatedOnScopeSchool": false
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
 		}
 	},
 	{
 		"_id": {
-			"$oid": "647de374cf6a427b9d39e7be"
+			"$oid": "65fd74c4d1c1ddf3bb2b05de"
 		},
 		"createdAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
+			"$date": {
+				"$numberLong": "1711109316850"
+			}
 		},
 		"updatedAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
+			"$date": {
+				"$numberLong": "1711109316850"
+			}
 		},
 		"tool": {
-			"$oid": "647de247cf6a427b9d39e7c3"
+			"$oid": "65fd44ba09e6ffd0bae3b8d3"
 		},
 		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
+			"$oid": "5f2987e020834114b8efd6f8"
 		},
-		"schoolParameters": [{
-			"name": "schoolParan",
-			"value": "test"
-		}],
-		"toolVersion": 1,
+		"schoolParameters": [],
 		"status": {
-			"isDeactivated": true,
-			"isOutdatedOnScopeSchool": false
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
 		}
 	},
 	{
 		"_id": {
-			"$oid": "659bf73f49e52dedff83a8f2"
+			"$oid": "65fd9882cb3d21d77bee50a7"
 		},
 		"createdAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
+			"$date": {
+				"$numberLong": "1711118466387"
+			}
 		},
 		"updatedAt": {
-			"$date": "2023-11-30T15:29:00.061Z"
+			"$date": {
+				"$numberLong": "1711118466387"
+			}
 		},
 		"tool": {
-			"$oid": "659bf6f049e52dedff83a8f1"
+			"$oid": "65fd9736cb3d21d77bee50a6"
 		},
 		"school": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
+			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"toolVersion": 1,
 		"status": {
-			"isDeactivated": false,
-			"isOutdatedOnScopeSchool": false
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
+		}
+	},
+	{
+		"_id": {
+			"$oid": "65fd9bfdcb3d21d77bee50ac"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1711119357634"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1711119357634"
+			}
+		},
+		"tool": {
+			"$oid": "65fad93bbe8ce15df1279d9b"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [],
+		"status": {
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
+		}
+	},
+	{
+		"_id": {
+			"$oid": "65fd9dd2cb3d21d77bee50af"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1711119826020"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1711119826020"
+			}
+		},
+		"tool": {
+			"$oid": "65fd9dabcb3d21d77bee50ae"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [],
+		"status": {
+			"isOutdatedOnScopeSchool": false,
+			"isDeactivated": false
 		}
 	}
 ]

@@ -1,10 +1,11 @@
-import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Embedded, Entity, Enum, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Course as CourseEntity } from '@shared/domain/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { ExternalSourceEntity } from '@shared/domain/entity/external-source.entity';
+import { ExternalSourceEmbeddable } from '@shared/domain/entity/external-source.embeddable';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { EntityId } from '@shared/domain/types';
-import { GroupUserEntity } from './group-user.entity';
-import { GroupValidPeriodEntity } from './group-valid-period.entity';
+import { GroupUserEmbeddable } from './group-user.embeddable';
+import { GroupValidPeriodEmbeddable } from './group-valid-period.embeddable';
 
 export enum GroupEntityTypes {
 	CLASS = 'class',
@@ -19,11 +20,11 @@ export interface GroupEntityProps {
 
 	type: GroupEntityTypes;
 
-	externalSource?: ExternalSourceEntity;
+	externalSource?: ExternalSourceEmbeddable;
 
-	validPeriod?: GroupValidPeriodEntity;
+	validPeriod?: GroupValidPeriodEmbeddable;
 
-	users: GroupUserEntity[];
+	users: GroupUserEmbeddable[];
 
 	organization?: SchoolEntity;
 }
@@ -36,17 +37,20 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Enum()
 	type: GroupEntityTypes;
 
-	@Embedded(() => ExternalSourceEntity, { nullable: true })
-	externalSource?: ExternalSourceEntity;
+	@Embedded(() => ExternalSourceEmbeddable, { nullable: true })
+	externalSource?: ExternalSourceEmbeddable;
 
-	@Embedded(() => GroupValidPeriodEntity, { nullable: true })
-	validPeriod?: GroupValidPeriodEntity;
+	@Embedded(() => GroupValidPeriodEmbeddable, { nullable: true })
+	validPeriod?: GroupValidPeriodEmbeddable;
 
-	@Embedded(() => GroupUserEntity, { array: true })
-	users: GroupUserEntity[];
+	@Embedded(() => GroupUserEmbeddable, { array: true })
+	users: GroupUserEmbeddable[];
 
 	@ManyToOne(() => SchoolEntity, { nullable: true })
 	organization?: SchoolEntity;
+
+	@OneToMany(() => CourseEntity, (course: CourseEntity) => course.syncedWithGroup)
+	syncedCourses: Collection<CourseEntity> = new Collection<CourseEntity>(this);
 
 	constructor(props: GroupEntityProps) {
 		super();

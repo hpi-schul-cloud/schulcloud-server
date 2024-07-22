@@ -1,6 +1,11 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
-import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '@modules/files-storage/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	FileRecord,
+	FileRecordProperties,
+	FileRecordSecurityCheck,
+	StorageLocation,
+} from '@modules/files-storage/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
@@ -22,6 +27,7 @@ export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequenc
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
-		schoolId: new ObjectId().toHexString(),
+		storageLocationId: new ObjectId().toHexString(),
+		storageLocation: StorageLocation.SCHOOL,
 	};
 });

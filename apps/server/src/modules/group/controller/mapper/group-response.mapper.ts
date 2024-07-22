@@ -1,14 +1,17 @@
 import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
+import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
+	GroupListResponse,
+	GroupPaginationParams,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
 } from '../dto';
+import { CourseInfoResponse } from '../dto/response/course-info.response';
 
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
@@ -42,10 +45,13 @@ export class GroupResponseMapper {
 			type: classInfo.type,
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
-			teachers: classInfo.teacherNames,
+			teacherNames: classInfo.teacherNames,
 			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
 			studentCount: classInfo.studentCount,
+			synchronizedCourses: classInfo.synchronizedCourses?.map(
+				(synchronizedCourse: CourseInfoDto): CourseInfoResponse => new CourseInfoResponse(synchronizedCourse)
+			),
 		});
 
 		return classInfoResponse;
@@ -79,5 +85,20 @@ export class GroupResponseMapper {
 		});
 
 		return groupResponse;
+	}
+
+	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>, pagination: GroupPaginationParams): GroupListResponse {
+		const groupResponseData: GroupResponse[] = groups.data.map(
+			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
+		);
+
+		const response: GroupListResponse = new GroupListResponse(
+			groupResponseData,
+			groups.total,
+			pagination.skip,
+			pagination.limit
+		);
+
+		return response;
 	}
 }

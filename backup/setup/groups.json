@@ -111,5 +111,102 @@
     "organization": {
       "$oid": "5fa2c5ccb229544f2c69666c"
     }
+  },
+  {
+    "createdAt": {
+      "$date": "2023-10-17T12:15:26.458Z"
+    },
+    "updatedAt": {
+      "$date": "2023-10-17T12:15:26.461Z"
+    },
+    "name": "Cypress-Test-Group-Course-Sync",
+    "type": "other",
+    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+    "externalSource_system": {
+      "$oid": "0000d186816abba584714c93"
+    },
+    "users": [
+      {
+        "user": {
+          "$oid": "5fa2c71bb229544f2c6966d9"
+        },
+        "role": {
+          "$oid": "0000d186816abba584714c98"
+        }
+      },
+      {
+        "user": {
+          "$oid": "5fa2cccab229544f2c696917"
+        },
+        "role": {
+          "$oid": "0000d186816abba584714c99"
+        }
+      }
+    ],
+    "organization": {
+      "$oid": "5fa2c5ccb229544f2c69666c"
+    }
+  },
+  {
+    "createdAt": {
+      "$date": "2023-10-17T12:15:26.458Z"
+    },
+    "updatedAt": {
+      "$date": "2023-10-17T12:15:26.461Z"
+    },
+    "name": "Cypress-Test-Group-Course-Sync2",
+    "type": "course",
+    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+    "externalSource_system": {
+      "$oid": "0000d186816abba584714c93"
+    },
+    "users": [
+      {
+        "user": {
+          "$oid": "5fa2c71bb229544f2c6966d9"
+        },
+        "role": {
+          "$oid": "0000d186816abba584714c98"
+        }
+      },
+      {
+        "user": {
+          "$oid": "5fa2cccab229544f2c696917"
+        },
+        "role": {
+          "$oid": "0000d186816abba584714c99"
+        }
+      }
+    ],
+    "organization": {
+      "$oid": "5fa2c5ccb229544f2c69666c"
+    }
+  },
+  {
+    "createdAt": {
+      "$date": "2023-10-17T12:15:26.458Z"
+    },
+    "updatedAt": {
+      "$date": "2023-10-17T12:15:26.461Z"
+    },
+    "name": "Cypress-Test-Group-Course-Sync-Without-Teacher",
+    "type": "class",
+    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+    "externalSource_system": {
+      "$oid": "0000d186816abba584714c93"
+    },
+    "users": [
+      {
+        "user": {
+          "$oid": "5fa2cccab229544f2c696917"
+        },
+        "role": {
+          "$oid": "0000d186816abba584714c99"
+        }
+      }
+    ],
+    "organization": {
+      "$oid": "5fa2c5ccb229544f2c69666c"
+    }
   }
 ]

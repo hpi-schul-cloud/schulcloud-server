@@ -1,13 +1,21 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+	ApiBadRequestResponse,
+	ApiCreatedResponse,
+	ApiForbiddenResponse,
+	ApiNoContentResponse,
+	ApiOperation,
+	ApiServiceUnavailableResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ImportUser, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { ImportUserMapper } from '../mapper/import-user.mapper';
-import { UserMatchMapper } from '../mapper/user-match.mapper';
-import { UserImportUc } from '../uc/user-import.uc';
-
+import { ImportUserMapper, UserMatchMapper } from '../mapper';
+import { UserImportFetchUc, UserImportUc } from '../uc';
 import {
 	FilterImportUserParams,
 	FilterUserParams,
@@ -24,7 +32,7 @@ import {
 @Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
-	constructor(private readonly userImportUc: UserImportUc, private readonly userUc: UserImportUc) {}
+	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}
 
 	@Get()
 	async findAllImportUsers(
@@ -88,7 +96,7 @@ export class ImportUserController {
 		const options: IFindOptions<User> = { pagination };
 
 		const query = UserMatchMapper.mapToDomain(scope);
-		const [userList, total] = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
+		const [userList, total] = await this.userImportUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = pagination;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserMatchListResponse(dtoList, total, skip, limit);
@@ -96,6 +104,7 @@ export class ImportUserController {
 		return response as unknown as UserMatchListResponse;
 	}
 
+	@RequestTimeout('IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS')
 	@Post('migrate')
 	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
@@ -112,5 +121,33 @@ export class ImportUserController {
 	@Post('startSync')
 	async endSchoolInMaintenance(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
+	}
+
+	@RequestTimeout('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS')
+	@Post('populate-import-users')
+	@ApiOperation({
+		summary: 'Populates import users',
+		description: 'Populates import users from specific user migration populate endpoint.',
+	})
+	@ApiCreatedResponse()
+	@ApiUnauthorizedResponse()
+	@ApiServiceUnavailableResponse()
+	@ApiBadRequestResponse()
+	@ApiForbiddenResponse()
+	async populateImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportFetchUc.populateImportUsers(currentUser.userId);
+	}
+
+	@Post('cancel')
+	@ApiOperation({
+		summary: 'Cancel migration wizard',
+		description: 'Cancel current migration process',
+	})
+	@ApiNoContentResponse()
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.cancelMigration(currentUser.userId);
 	}
 }

@@ -2,10 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, setupEntities, shareTokenFactory, taskFactory } from '@shared/testing';
+import { columnBoardFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/learnroom/service';
+import { ColumnBoardService } from '@modules/board/service';
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { ShareTokenService } from './share-token.service';
@@ -21,6 +23,7 @@ describe('ShareTokenService', () => {
 	let courseService: DeepMocked<CourseService>;
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,6 +49,10 @@ describe('ShareTokenService', () => {
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
 				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
+				},
 			],
 		}).compile();
 
@@ -55,6 +62,7 @@ describe('ShareTokenService', () => {
 		courseService = await module.get(CourseService);
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
+		columnBoardService = await module.get(ColumnBoardService);
 		await setupEntities();
 	});
 
@@ -179,6 +187,36 @@ describe('ShareTokenService', () => {
 			const result = await service.lookupTokenWithParentName(shareToken.token);
 
 			expect(result).toEqual({ shareToken, parentName: task.name });
+		});
+
+		describe('when parent is column board', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build();
+				columnBoardService.findById.mockResolvedValue(columnBoard);
+
+				const payload = { parentId: columnBoard.id, parentType: ShareTokenParentType.ColumnBoard };
+				const shareToken = shareTokenFactory.build({ payload });
+				repo.findOneByToken.mockResolvedValue(shareToken);
+
+				return { columnBoard, shareToken };
+			};
+			it('should return shareToken and parent name', async () => {
+				const { columnBoard, shareToken } = setup();
+
+				const result = await service.lookupTokenWithParentName(shareToken.token);
+				expect(result).toEqual({ shareToken, parentName: columnBoard.title });
+			});
+		});
+
+		it('should throw if parent type is not supported', async () => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const shareToken = shareTokenFactory.build({ payload: { parentType: 'invalid' } });
+			repo.findOneByToken.mockResolvedValue(shareToken);
+
+			const lookupToken = async () => service.lookupTokenWithParentName(shareToken.token);
+
+			await expect(lookupToken).rejects.toThrowError('Invalid parent type');
 		});
 	});
 });

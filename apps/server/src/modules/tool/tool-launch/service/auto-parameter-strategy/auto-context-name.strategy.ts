@@ -1,12 +1,17 @@
-import { ColumnBoardService, ContentElementService } from '@modules/board';
+import {
+	BoardCommonToolService,
+	BoardExternalReferenceType,
+	BoardNodeService,
+	ColumnBoard,
+	MediaBoard,
+} from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ParameterTypeNotImplementedLoggableException } from '../../error';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
@@ -15,13 +20,13 @@ import { AutoParameterStrategy } from './auto-parameter.strategy';
 export class AutoContextNameStrategy implements AutoParameterStrategy {
 	constructor(
 		private readonly courseService: CourseService,
-		private readonly contentElementService: ContentElementService,
-		private readonly columnBoardService: ColumnBoardService
+		private readonly boardCommonToolService: BoardCommonToolService,
+		private readonly boardNodeService: BoardNodeService
 	) {}
 
 	async getValue(
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {
 		switch (contextExternalTool.contextRef.type) {
 			case ToolContextType.COURSE: {
@@ -49,9 +54,9 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 	}
 
 	private async getBoardValue(elementId: EntityId): Promise<string | undefined> {
-		const element: AnyContentElementDo = await this.contentElementService.findById(elementId);
+		const element = await this.boardNodeService.findContentElementById(elementId);
 
-		const board: ColumnBoard = await this.columnBoardService.findByDescendant(element);
+		const board: ColumnBoard | MediaBoard = await this.boardCommonToolService.findByDescendant(element);
 
 		if (board.context.type === BoardExternalReferenceType.Course) {
 			const courseName: string = await this.getCourseValue(board.context.id);

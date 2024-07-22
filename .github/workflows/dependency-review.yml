@@ -3,6 +3,7 @@ on: [pull_request]
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   dependency-review:
@@ -11,9 +12,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         with:
-          allow-licenses: AGPL-3.0-only, LGPL-3.0, MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, X11, 0BSD, GPL-3.0 AND BSD-3-Clause-Clear, Unlicense
-          allow-dependencies-licenses: 'pkg:npm/parse-mongo-url'
-          # temporarily ignore dependency error for upgrade mongodb 4.9 to 4.11, remove when mikroORM is upgraded to 5.9
+          allow-licenses: AGPL-3.0-only, LGPL-3.0, MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, X11, 0BSD, GPL-3.0, Unlicense, CC0-1.0
           allow-ghsas: 'GHSA-vxvm-qww3-2fh7'

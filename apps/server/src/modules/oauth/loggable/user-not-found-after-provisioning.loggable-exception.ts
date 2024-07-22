@@ -1,21 +1,28 @@
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { OauthSsoErrorLoggableException } from './oauth-sso-error-loggable-exception';
 
-export class UserNotFoundAfterProvisioningLoggableException extends OauthSsoErrorLoggableException implements Loggable {
+export class UserNotFoundAfterProvisioningLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly externalUserId: string,
 		private readonly systemId: EntityId,
 		private readonly officialSchoolNumber?: string
 	) {
 		super(
-			'Unable to find user after provisioning. The feature for OAuth2 provisioning might be disabled for this school.',
-			'sso_user_not_found_after_provisioning'
+			{
+				type: 'USER_NOT_FOUND_AFTER_PROVISIONING',
+				title: 'User not found after provisioning',
+				defaultMessage:
+					'Unable to find user after provisioning. The feature for OAuth2 provisioning might be disabled for this school.',
+			},
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 
-	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
+			type: this.type,
 			message: this.message,
 			stack: this.stack,
 			data: {

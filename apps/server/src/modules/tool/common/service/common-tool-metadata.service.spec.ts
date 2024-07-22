@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContentElementService } from '@modules/board';
+import { BoardCommonToolService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { contextExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolMetadata } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { CommonToolMetadataService } from './common-tool-metadata.service';
 
 describe(CommonToolMetadataService.name, () => {
@@ -15,7 +16,7 @@ describe(CommonToolMetadataService.name, () => {
 
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
-	let contentElementService: DeepMocked<ContentElementService>;
+	let boardCommonToolService: DeepMocked<BoardCommonToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,8 +31,8 @@ describe(CommonToolMetadataService.name, () => {
 					useValue: createMock<ContextExternalToolRepo>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardCommonToolService,
+					useValue: createMock<BoardCommonToolService>(),
 				},
 			],
 		}).compile();
@@ -39,7 +40,7 @@ describe(CommonToolMetadataService.name, () => {
 		service = module.get(CommonToolMetadataService);
 		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
-		contentElementService = module.get(ContentElementService);
+		boardCommonToolService = module.get(BoardCommonToolService);
 	});
 
 	afterAll(async () => {
@@ -66,6 +67,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
@@ -79,7 +81,8 @@ describe(CommonToolMetadataService.name, () => {
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([schoolExternalTool]);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
-				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				boardCommonToolService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
 			};
 
 			it('should return the amount of usages for all contexts', async () => {
@@ -92,6 +95,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
+						mediaBoard: 2,
 					},
 				});
 			});
@@ -103,6 +107,8 @@ describe(CommonToolMetadataService.name, () => {
 			const setup = () => {
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				boardCommonToolService.countBoardUsageForExternalTools.mockResolvedValueOnce(0);
 			};
 
 			it('should return 0 usages for all contexts', async () => {
@@ -116,6 +122,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
@@ -127,7 +134,8 @@ describe(CommonToolMetadataService.name, () => {
 
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
-				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				boardCommonToolService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
 			};
 
 			it('should return the amount of usages for all contexts', async () => {
@@ -141,6 +149,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
+						mediaBoard: 2,
 					},
 				});
 			});

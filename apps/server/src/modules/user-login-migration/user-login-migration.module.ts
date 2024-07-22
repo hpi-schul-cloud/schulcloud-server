@@ -1,14 +1,15 @@
-import { Module } from '@nestjs/common';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
+import { Module } from '@nestjs/common';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import { LoggerModule } from '@src/core/logger';
 import {
 	MigrationCheckService,
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
+	UserLoginMigrationRollbackService,
 	UserLoginMigrationService,
 	UserMigrationService,
 } from './service';
@@ -22,6 +23,7 @@ import {
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
 		UserLoginMigrationRevertService,
+		UserLoginMigrationRollbackService,
 	],
 	exports: [
 		UserMigrationService,
@@ -29,6 +31,7 @@ import {
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRevertService,
+		UserLoginMigrationRollbackService,
 	],
 })
 export class UserLoginMigrationModule {}

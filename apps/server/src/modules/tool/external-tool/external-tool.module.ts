@@ -6,38 +6,40 @@ import { ExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
-import { ToolConfigModule } from '../tool-config.module';
 import { ExternalToolMetadataMapper } from './mapper';
 import {
+	DatasheetPdfService,
+	ExternalToolAuthorizableService,
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
-	ExternalToolVersionIncrementService,
 } from './service';
 
 @Module({
-	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
+	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
-		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
 		ExternalToolMetadataMapper,
 		ToolContextMapper,
+		DatasheetPdfService,
+		ExternalToolAuthorizableService,
 	],
 	exports: [
 		ExternalToolService,
 		ExternalToolValidationService,
-		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
+		DatasheetPdfService,
+		ExternalToolAuthorizableService,
 	],
 })
 export class ExternalToolModule {}

@@ -1,19 +1,32 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FilesService } from './files.service';
-import { FilesRepo } from '../repo';
-import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FileEntity } from '../entity';
+import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
+import { FilesRepo } from '../repo';
+import { FilesService } from './files.service';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;
 	let service: FilesService;
 	let repo: DeepMocked<FilesRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				FilesService,
@@ -25,13 +38,22 @@ describe(FilesService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesService);
 		repo = module.get(FilesRepo);
-
-		await setupEntities();
+		eventBus = module.get(EventBus);
 	});
 
 	afterEach(() => {
@@ -103,75 +125,110 @@ describe(FilesService.name, () => {
 	});
 
 	describe('removeUserPermissionsOrCreatorReferenceToAnyFiles', () => {
-		it('should not modify any files if there are none that user has permission to access or is creator', async () => {
+		const setup = () => {
 			const userId = new ObjectId().toHexString();
+			const userPermission = filePermissionEntityFactory.build({ refId: userId });
+			const anotherUserPermission = filePermissionEntityFactory.build();
+			const yetAnotherUserPermission = filePermissionEntityFactory.build();
+
+			const entity1 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity2 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity3 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+			});
+			const entity4 = fileEntityFactory.buildWithId({
+				permissions: [anotherUserPermission, yetAnotherUserPermission, userPermission],
+				creatorId: userId,
+			});
+			const entity5 = fileEntityFactory.buildWithId({
+				permissions: [anotherUserPermission, yetAnotherUserPermission, userPermission],
+				creatorId: userId,
+			});
+			const entity6 = fileEntityFactory.buildWithId({
+				permissions: [yetAnotherUserPermission, userPermission, anotherUserPermission],
+			});
+
+			const entities = [entity4, entity5, entity6];
+
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+			]);
+
+			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
+
+			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
+			]);
+
+			return {
+				entity1,
+				entity2,
+				entity3,
+				entities,
+				expectedResultWhenFilesExistsWithOnlyUserId,
+				expectedResultWhenManyFilesExistsWithOtherUsers,
+				expectedResultWhenFilesNotExists,
+				userId,
+				userPermission,
+				anotherUserPermission,
+				yetAnotherUserPermission,
+			};
+		};
+
+		it('should not modify any files if there are none that user has permission to access or is creator', async () => {
+			const { expectedResultWhenFilesNotExists, userId } = setup();
+
 			repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([]);
 
 			const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 
-			expect(result).toEqual(0);
+			expect(result).toEqual(expectedResultWhenFilesNotExists);
 
 			expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
-			expect(repo.save).not.toBeCalled();
 		});
 
 		describe('should properly remove user permissions, creatorId reference', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const userPermission = filePermissionEntityFactory.build({ refId: userId });
-
-				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission], creatorId: userId });
-				const entity2 = fileEntityFactory.buildWithId({ creatorId: userId });
-				const entity3 = fileEntityFactory.buildWithId({ permissions: [userPermission] });
-
-				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([entity, entity2, entity3]);
-				return { userId, userPermission, entity, entity2, entity3 };
-			};
 			it('in case of just a single file (permission) accessible by given user and couple of files created', async () => {
-				const { userId, userPermission, entity, entity2, entity3 } = setup();
+				const { entity1, entity2, entity3, expectedResultWhenFilesExistsWithOnlyUserId, userId, userPermission } =
+					setup();
+
+				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([entity1, entity2, entity3]);
 
 				const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 
-				expect(result).toEqual(3);
+				expect(result).toEqual(expectedResultWhenFilesExistsWithOnlyUserId);
 				expect(entity3.permissions).not.toContain(userPermission);
-				expect(entity._creatorId).toBe(undefined);
+				expect(entity1._creatorId).toBe(undefined);
 				expect(entity3.permissions).not.toContain(userPermission);
 				expect(entity2._creatorId).toBe(undefined);
 
 				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith([entity, entity2, entity3]);
+				expect(repo.save).toBeCalledWith([entity1, entity2, entity3]);
 			});
 
 			it('in case of many files accessible or created by given user', async () => {
-				const userId = new ObjectId().toHexString();
-				const userPermission = filePermissionEntityFactory.build({ refId: userId });
-				const anotherUserPermission = filePermissionEntityFactory.build();
-				const yetAnotherUserPermission = filePermissionEntityFactory.build();
-				const entities = [
-					fileEntityFactory.buildWithId({
-						permissions: [userPermission, anotherUserPermission, yetAnotherUserPermission],
-					}),
-					fileEntityFactory.buildWithId({
-						permissions: [yetAnotherUserPermission, userPermission, anotherUserPermission],
-						creatorId: userId,
-					}),
-					fileEntityFactory.buildWithId({
-						permissions: [anotherUserPermission, yetAnotherUserPermission, userPermission],
-					}),
-					fileEntityFactory.buildWithId({
-						permissions: [userPermission, yetAnotherUserPermission, anotherUserPermission],
-						creatorId: userId,
-					}),
-					fileEntityFactory.buildWithId({
-						permissions: [yetAnotherUserPermission, anotherUserPermission, userPermission],
-					}),
-				];
+				const {
+					entities,
+					expectedResultWhenManyFilesExistsWithOtherUsers,
+					userId,
+					userPermission,
+					anotherUserPermission,
+					yetAnotherUserPermission,
+				} = setup();
 
 				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce(entities);
 
 				const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 
-				expect(result).toEqual(5);
+				expect(result).toEqual(expectedResultWhenManyFilesExistsWithOtherUsers);
 
 				for (let i = 0; i < entities.length; i += 1) {
 					expect(entities[i].permissions).not.toContain(userPermission);
@@ -236,6 +293,35 @@ describe(FilesService.name, () => {
 	});
 
 	describe('markFilesOwnedByUserForDeletion', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const entity1 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity2 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity3 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entities = [entity1, entity2, entity3];
+
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+			]);
+
+			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [entity1.id]),
+			]);
+
+			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
+
+			return {
+				entities,
+				entity1,
+				expectedResultWhenOneFileExists,
+				expectedResultWhenManyFilesExists,
+				expectedResultWhenFilesNotExists,
+				userId,
+			};
+		};
+
 		const verifyEntityChanges = (entity: FileEntity) => {
 			expect(entity.deleted).toEqual(true);
 
@@ -246,50 +332,170 @@ describe(FilesService.name, () => {
 		};
 
 		it('should not mark any files for deletion if there are none owned by given user', async () => {
-			const userId = new ObjectId().toHexString();
-			repo.findByOwnerUserId.mockResolvedValueOnce([]);
+			const { expectedResultWhenFilesNotExists, userId } = setup();
 
+			repo.findByOwnerUserId.mockResolvedValueOnce([]);
 			const result = await service.markFilesOwnedByUserForDeletion(userId);
 
-			expect(result).toEqual(0);
+			expect(result).toEqual(expectedResultWhenFilesNotExists);
 
 			expect(repo.findByOwnerUserId).toBeCalledWith(userId);
-			expect(repo.save).not.toBeCalled();
 		});
 
 		describe('should properly mark files for deletion', () => {
 			it('in case of just a single file owned by given user', async () => {
-				const entity = fileEntityFactory.buildWithId();
-				const userId = entity.ownerId;
-				repo.findByOwnerUserId.mockResolvedValueOnce([entity]);
+				const { entity1, expectedResultWhenOneFileExists, userId } = setup();
+				repo.findByOwnerUserId.mockResolvedValueOnce([entity1]);
 
 				const result = await service.markFilesOwnedByUserForDeletion(userId);
 
-				expect(result).toEqual(1);
-				verifyEntityChanges(entity);
+				expect(result).toEqual(expectedResultWhenOneFileExists);
+				verifyEntityChanges(entity1);
 
 				expect(repo.findByOwnerUserId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith([entity]);
+				expect(repo.save).toBeCalledWith([entity1]);
 			});
 
 			it('in case of many files owned by the user', async () => {
-				const userId = new ObjectId().toHexString();
-				const entities = [
-					fileEntityFactory.buildWithId({ ownerId: userId }),
-					fileEntityFactory.buildWithId({ ownerId: userId }),
-					fileEntityFactory.buildWithId({ ownerId: userId }),
-					fileEntityFactory.buildWithId({ ownerId: userId }),
-					fileEntityFactory.buildWithId({ ownerId: userId }),
-				];
+				const { entities, expectedResultWhenManyFilesExists, userId } = setup();
 				repo.findByOwnerUserId.mockResolvedValueOnce(entities);
 
 				const result = await service.markFilesOwnedByUserForDeletion(userId);
 
-				expect(result).toEqual(5);
+				expect(result).toEqual(expectedResultWhenManyFilesExists);
 				entities.forEach((entity) => verifyEntityChanges(entity));
 
 				expect(repo.findByOwnerUserId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith(entities);
+			});
+		});
+	});
+
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const entity1 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity2 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity3 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const userPermission = filePermissionEntityFactory.build({ refId: userId });
+
+			const entity4 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity5 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity6 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+			});
+
+			const expectedResultForMarkingFiles = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
+
+			const expectedResultForRemoveUserPermission = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
+			]);
+
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 6, [
+					entity1.id,
+					entity2.id,
+					entity3.id,
+					entity4.id,
+					entity5.id,
+					entity6.id,
+				]),
+			]);
+
+			return {
+				expectedResult,
+				expectedResultForMarkingFiles,
+				expectedResultForRemoveUserPermission,
+				userId,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call markFilesOwnedByUserForDeletion with userId', async () => {
+				const { userId, expectedResultForMarkingFiles } = setup();
+				jest.spyOn(service, 'markFilesOwnedByUserForDeletion').mockResolvedValueOnce(expectedResultForMarkingFiles);
+
+				await service.deleteUserData(userId);
+
+				expect(service.markFilesOwnedByUserForDeletion).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call removeUserPermissionsOrCreatorReferenceToAnyFiles with userId', async () => {
+				const { userId, expectedResultForRemoveUserPermission } = setup();
+
+				jest
+					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
+					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
+
+				await service.deleteUserData(userId);
+
+				expect(service.removeUserPermissionsOrCreatorReferenceToAnyFiles).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return domainOperation object with information about deleted user data', async () => {
+				const { userId, expectedResult, expectedResultForMarkingFiles, expectedResultForRemoveUserPermission } =
+					setup();
+
+				jest.spyOn(service, 'markFilesOwnedByUserForDeletion').mockResolvedValueOnce(expectedResultForMarkingFiles);
+				jest
+					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
+					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
+
+				const result = await service.deleteUserData(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILE;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

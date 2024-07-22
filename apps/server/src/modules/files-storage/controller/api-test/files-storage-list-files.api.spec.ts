@@ -5,21 +5,18 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
 	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	userFactory,
+	schoolEntityFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { FileRecordParentType, PreviewStatus, StorageLocation } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
@@ -83,13 +80,10 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('with bad request data', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			const school = schoolFactory.build();
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-			});
-			const user = userFactory.build({ school, roles });
+			const school = schoolEntityFactory.build();
+			const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, account]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
@@ -97,18 +91,18 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid schoolId', async () => {
-			const response = await api.get(`/123/users/${validId}`);
+			const response = await api.get(`/school/123/users/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
-					errors: ['schoolId must be a mongodb id'],
-					field: ['schoolId'],
+					errors: ['storageLocationId must be a mongodb id'],
+					field: ['storageLocationId'],
 				},
 			]);
 			expect(response.status).toEqual(400);
 		});
 
 		it('should return status 400 for invalid parentId', async () => {
-			const response = await api.get(`/${validId}/users/123`);
+			const response = await api.get(`/school/${validId}/users/123`);
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['parentId must be a mongodb id'],
@@ -119,7 +113,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid parentType', async () => {
-			const response = await api.get(`/${validId}/cookies/${validId}`);
+			const response = await api.get(`/school/${validId}/cookies/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: [`parentType must be one of the following values: ${availableParentTypes}`],
@@ -133,13 +127,10 @@ describe(`${baseRouteName} (api)`, () => {
 	describe(`with valid request data`, () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			const school = schoolFactory.build();
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-			});
-			const user = userFactory.build({ school, roles });
+			const school = schoolEntityFactory.build();
+			const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, account]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
@@ -147,13 +138,13 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 200 for successful request', async () => {
-			const response = await api.get(`/${validId}/schools/${validId}`);
+			const response = await api.get(`/school/${validId}/schools/${validId}`);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should return a paginated result as default', async () => {
-			const { result } = await api.get(`/${validId}/schools/${validId}`);
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`);
 
 			expect(result).toEqual({
 				total: 0,
@@ -164,7 +155,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should pass the pagination qurey params', async () => {
-			const { result } = await api.get(`/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
 
 			expect(result.limit).toEqual(100);
 			expect(result.skip).toEqual(100);
@@ -172,7 +163,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return right type of data', async () => {
 			const fileRecords = fileRecordFactory.buildList(1, {
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
@@ -180,7 +172,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush(fileRecords);
 			em.clear();
 
-			const { result } = await api.get(`/${validId}/schools/${validId}`);
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`);
 
 			expect(Array.isArray(result.data)).toBe(true);
 			expect(result.data[0]).toBeDefined();
@@ -190,6 +182,8 @@ describe(`${baseRouteName} (api)`, () => {
 				name: expect.any(String),
 				url: expect.any(String),
 				parentId: expect.any(String),
+				createdAt: expect.any(String),
+				updatedAt: expect.any(String),
 				parentType: 'schools',
 				mimeType: 'application/octet-stream',
 				securityCheckStatus: 'pending',
@@ -200,19 +194,21 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return elements of requested scope', async () => {
 			const fileRecords = fileRecordFactory.buildList(3, {
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
 			const otherFileRecords = fileRecordFactory.buildList(3, {
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentType: FileRecordParentType.School,
 			});
 
 			await em.persistAndFlush([...otherFileRecords, ...fileRecords]);
 			em.clear();
 
-			const { result } = await api.get(`/${validId}/schools/${validId}`);
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`);
 
 			const resultData: FileRecordResponse[] = result.data;
 			const ids: EntityId[] = resultData.map((o) => o.id);

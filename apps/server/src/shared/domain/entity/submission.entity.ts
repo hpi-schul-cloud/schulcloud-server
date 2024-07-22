@@ -11,7 +11,7 @@ import type { User } from './user.entity';
 export interface SubmissionProperties {
 	school: SchoolEntity;
 	task: Task;
-	student: User;
+	student?: User;
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
@@ -23,7 +23,10 @@ export interface SubmissionProperties {
 
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
-@Unique({ properties: ['student', 'task'] })
+@Unique({
+	properties: ['student', 'task'],
+	options: { partialFilterExpression: { studentId: { $exists: true } } },
+})
 export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
@@ -33,13 +36,15 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Index()
 	task: Task;
 
-	@ManyToOne('User', { fieldName: 'studentId' })
-	student: User;
+	@ManyToOne('User', { fieldName: 'studentId', nullable: true })
+	student?: User;
 
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
+	@Index()
 	courseGroup?: CourseGroup;
 
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
+	@Index()
 	teamMembers = new Collection<User>(this);
 
 	@Property({ nullable: true })
@@ -60,6 +65,9 @@ export class Submission extends BaseEntityWithTimestamps {
 	constructor(props: SubmissionProperties) {
 		super();
 		this.school = props.school;
+		if (props.student !== undefined) {
+			this.student = props.student;
+		}
 		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
@@ -112,10 +120,13 @@ export class Submission extends BaseEntityWithTimestamps {
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getSubmitterIds(): EntityId[] {
-		const creatorId = this.student.id;
+		const creatorId = this.student?.id;
 		const teamMemberIds = this.getTeamMemberIds();
 		const courseGroupMemberIds = this.getCourseGroupStudentIds();
-		const memberIds = [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
+		const memberIds =
+			creatorId !== undefined
+				? [creatorId, ...teamMemberIds, ...courseGroupMemberIds]
+				: [...teamMemberIds, ...courseGroupMemberIds];
 
 		const uniqueMemberIds = [...new Set(memberIds)];
 
@@ -139,5 +150,29 @@ export class Submission extends BaseEntityWithTimestamps {
 		const isGradedForUser = isMember && isGraded;
 
 		return isGradedForUser;
+	}
+
+	public isGroupSubmission(): boolean {
+		return this.hasCourseGroup() || (!this.hasCourseGroup() && this.teamMembers.length > 1);
+	}
+
+	public isSingleSubmissionOwnedByUser(): boolean {
+		return !this.hasCourseGroup() && this.teamMembers.length === 1;
+	}
+
+	private hasCourseGroup(): boolean {
+		return !!this.courseGroup;
+	}
+
+	public removeStudentById(userId: EntityId): void {
+		if (userId === this.student?.id) {
+			this.student = undefined;
+		}
+	}
+
+	public removeUserFromTeamMembers(userId: EntityId): void {
+		const modifiedArray = this.teamMembers.getItems().filter((user) => user.id !== userId);
+
+		this.teamMembers.set(modifiedArray);
 	}
 }

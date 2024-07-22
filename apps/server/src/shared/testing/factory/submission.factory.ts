@@ -1,7 +1,7 @@
 import { Submission, SubmissionProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 
@@ -34,7 +34,7 @@ class SubmissionFactory extends BaseFactory<Submission, SubmissionProperties> {
 
 export const submissionFactory = SubmissionFactory.define(Submission, ({ sequence }) => {
 	return {
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		task: taskFactory.build(),
 		student: userFactory.build(),
 		comment: `submission comment #${sequence}`,

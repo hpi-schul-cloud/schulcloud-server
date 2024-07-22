@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { UserDO } from '@shared/domain/domainobject';
-import { groupFactory, userDoFactory } from '@shared/testing';
-import { Group, GroupTypes } from '../domain';
+import { Page } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+import { groupFactory } from '@shared/testing';
+import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
 
@@ -13,6 +15,7 @@ describe('GroupService', () => {
 	let service: GroupService;
 
 	let groupRepo: DeepMocked<GroupRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,11 +25,16 @@ describe('GroupService', () => {
 					provide: GroupRepo,
 					useValue: createMock<GroupRepo>(),
 				},
+				{
+					provide: EventBus,
+					useValue: createMock<EventBus>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(GroupService);
 		groupRepo = module.get(GroupRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -42,7 +50,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(group);
+				groupRepo.findGroupById.mockResolvedValue(group);
 
 				return {
 					group,
@@ -62,7 +70,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(null);
+				groupRepo.findGroupById.mockResolvedValue(null);
 
 				return {
 					group,
@@ -84,7 +92,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(group);
+				groupRepo.findGroupById.mockResolvedValue(group);
 
 				return {
 					group,
@@ -104,7 +112,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(null);
+				groupRepo.findGroupById.mockResolvedValue(null);
 
 				return {
 					group,
@@ -121,140 +129,186 @@ describe('GroupService', () => {
 		});
 	});
 
-	describe('findGroupsByUserAndGroupTypes', () => {
-		describe('when groups with the user exists', () => {
+	describe('findGroups', () => {
+		describe('when groups exist', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId: EntityId = new ObjectId().toHexString();
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const systemId: EntityId = new ObjectId().toHexString();
+				const nameQuery = 'name';
 				const groups: Group[] = groupFactory.buildList(2);
+				const page: Page<Group> = new Page<Group>(groups, groups.length);
 
-				groupRepo.findByUserAndGroupTypes.mockResolvedValue(groups);
-
-				return {
-					user,
-					groups,
-				};
-			};
-
-			it('should return the groups', async () => {
-				const { user, groups } = setup();
-
-				const result: Group[] = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
-
-				expect(result).toEqual(groups);
-			});
-
-			it('should call the repo with given group types', async () => {
-				const { user } = setup();
-
-				await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
-
-				expect(groupRepo.findByUserAndGroupTypes).toHaveBeenCalledWith(user, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
-			});
-		});
-
-		describe('when no groups with the user exists', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-
-				groupRepo.findByUserAndGroupTypes.mockResolvedValue([]);
+				groupRepo.findGroups.mockResolvedValue(page);
 
 				return {
-					user,
-				};
-			};
-
-			it('should return empty array', async () => {
-				const { user } = setup();
-
-				const result: Group[] = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
-
-				expect(result).toEqual([]);
-			});
-		});
-	});
-
-	describe('findGroupsBySchoolIdAndGroupTypes', () => {
-		describe('when the school has groups of type class', () => {
-			const setup = () => {
-				const schoolId: string = new ObjectId().toHexString();
-				const groups: Group[] = groupFactory.buildList(3);
-
-				groupRepo.findBySchoolIdAndGroupTypes.mockResolvedValue(groups);
-
-				return {
+					userId,
 					schoolId,
+					systemId,
+					nameQuery,
 					groups,
 				};
 			};
 
-			it('should call the repo', async () => {
-				const { schoolId } = setup();
+			it('should return the groups for the user', async () => {
+				const { userId, groups } = setup();
 
-				await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
+				const result: Page<Group> = await service.findGroups({ userId });
 
-				expect(groupRepo.findBySchoolIdAndGroupTypes).toHaveBeenCalledWith(schoolId, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
+				expect(result.data).toEqual(groups);
 			});
 
-			it('should return the groups', async () => {
+			it('should return the groups for school', async () => {
 				const { schoolId, groups } = setup();
 
-				const result: Group[] = await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [GroupTypes.CLASS]);
+				const result: Page<Group> = await service.findGroups({ schoolId });
 
-				expect(result).toEqual(groups);
+				expect(result.data).toEqual(groups);
+			});
+
+			it('should return the groups for school and system', async () => {
+				const { schoolId, systemId, groups } = setup();
+
+				const result: Page<Group> = await service.findGroups({ schoolId, systemId });
+
+				expect(result.data).toEqual(groups);
+			});
+
+			it('should call the repo with all given arguments', async () => {
+				const { userId, schoolId, systemId, nameQuery } = setup();
+
+				await service.findGroups({
+					userId,
+					schoolId,
+					systemId,
+					nameQuery,
+					groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+				});
+
+				expect(groupRepo.findGroups).toHaveBeenCalledWith(
+					{
+						userId,
+						schoolId,
+						systemId,
+						nameQuery,
+						groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					},
+					undefined
+				);
+			});
+		});
+
+		describe('when no groups exist', () => {
+			const setup = () => {
+				const userId: EntityId = new ObjectId().toHexString();
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const systemId: EntityId = new ObjectId().toHexString();
+
+				groupRepo.findGroups.mockResolvedValue(new Page<Group>([], 0));
+
+				return {
+					userId,
+					schoolId,
+					systemId,
+				};
+			};
+
+			it('should return empty array for user', async () => {
+				const { userId } = setup();
+
+				const result: Page<Group> = await service.findGroups({ userId });
+
+				expect(result.data).toEqual([]);
+			});
+
+			it('should return empty array for school', async () => {
+				const { schoolId } = setup();
+
+				const result: Page<Group> = await service.findGroups({ schoolId });
+
+				expect(result.data).toEqual([]);
+			});
+
+			it('should return empty array for school and system', async () => {
+				const { schoolId, systemId } = setup();
+
+				const result: Page<Group> = await service.findGroups({ schoolId, systemId });
+
+				expect(result.data).toEqual([]);
 			});
 		});
 	});
 
-	describe('findGroupsBySchoolIdAndSystemIdAndGroupType', () => {
-		describe('when the school has groups of type class', () => {
+	describe('findAvailableGroups', () => {
+		describe('when available groups exist', () => {
 			const setup = () => {
-				const schoolId: string = new ObjectId().toHexString();
-				const systemId: string = new ObjectId().toHexString();
-				const groups: Group[] = groupFactory.buildList(3);
+				const userId: EntityId = new ObjectId().toHexString();
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const nameQuery = 'name';
+				const groups: Group[] = groupFactory.buildList(2);
 
-				groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType.mockResolvedValue(groups);
+				groupRepo.findAvailableGroups.mockResolvedValue(new Page<Group>([groups[1]], 1));
 
 				return {
+					userId,
 					schoolId,
-					systemId,
+					nameQuery,
 					groups,
 				};
 			};
 
-			it('should search for the groups', async () => {
-				const { schoolId, systemId } = setup();
+			it('should return groups for user', async () => {
+				const { userId, groups } = setup();
 
-				await service.findGroupsBySchoolIdAndSystemIdAndGroupType(schoolId, systemId, GroupTypes.CLASS);
+				const result: Page<Group> = await service.findAvailableGroups({ userId });
 
-				expect(groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType).toHaveBeenCalledWith(
-					schoolId,
-					systemId,
-					GroupTypes.CLASS
-				);
+				expect(result.data).toEqual([groups[1]]);
 			});
 
-			it('should return the groups', async () => {
-				const { schoolId, systemId, groups } = setup();
+			it('should return groups for school', async () => {
+				const { schoolId, groups } = setup();
 
-				const result: Group[] = await service.findGroupsBySchoolIdAndSystemIdAndGroupType(
+				const result: Page<Group> = await service.findAvailableGroups({ schoolId });
+
+				expect(result.data).toEqual([groups[1]]);
+			});
+
+			it('should call repo', async () => {
+				const { userId, schoolId, nameQuery } = setup();
+
+				await service.findAvailableGroups({ userId, schoolId, nameQuery });
+
+				expect(groupRepo.findAvailableGroups).toHaveBeenCalledWith({ userId, schoolId, nameQuery }, undefined);
+			});
+		});
+
+		describe('when no groups exist', () => {
+			const setup = () => {
+				const userId: EntityId = new ObjectId().toHexString();
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				groupRepo.findAvailableGroups.mockResolvedValue(new Page<Group>([], 0));
+
+				return {
+					userId,
 					schoolId,
-					systemId,
-					GroupTypes.CLASS
-				);
+				};
+			};
 
-				expect(result).toEqual(groups);
+			it('should return empty array for user', async () => {
+				const { userId } = setup();
+
+				const result: Page<Group> = await service.findAvailableGroups({ userId });
+
+				expect(result.data).toEqual([]);
+			});
+
+			it('should return empty array for school', async () => {
+				const { schoolId } = setup();
+
+				const result: Page<Group> = await service.findAvailableGroups({ schoolId });
+
+				expect(result.data).toEqual([]);
 			});
 		});
 	});
@@ -290,7 +344,7 @@ describe('GroupService', () => {
 	});
 
 	describe('delete', () => {
-		describe('when saving a group', () => {
+		describe('when deleting a group', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
@@ -305,6 +359,14 @@ describe('GroupService', () => {
 				await service.delete(group);
 
 				expect(groupRepo.delete).toHaveBeenCalledWith(group);
+			});
+
+			it('should send an event', async () => {
+				const { group } = setup();
+
+				await service.delete(group);
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new GroupDeletedEvent(group));
 			});
 		});
 	});

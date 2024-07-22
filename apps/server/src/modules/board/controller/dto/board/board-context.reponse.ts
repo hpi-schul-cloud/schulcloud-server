@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '../../../domain';
 
 export class BoardContextResponse {
 	constructor({ id, type }: BoardContextResponse) {

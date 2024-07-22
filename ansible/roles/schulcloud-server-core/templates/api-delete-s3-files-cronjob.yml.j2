@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: api-delete-s3-files-cronjob
     cronjob: delete-s3-files
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -20,6 +20,11 @@ spec:
     spec:
       template:
         spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            runAsNonRoot: true
           containers:
           - name: delete-s3-files-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -28,6 +33,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh', '-c']
             args: ['npm run nest:start:console -- files cleanup-job 7']
             resources:
@@ -55,7 +62,7 @@ spec:
 {% endif %}
         metadata:
           labels:
-            app: api
+            app: api-delete-s3-files-cronjob
             cronjob: delete-s3-files
             app.kubernetes.io/part-of: schulcloud-verbund
             app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}

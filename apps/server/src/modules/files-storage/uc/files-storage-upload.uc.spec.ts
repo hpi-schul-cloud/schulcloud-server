@@ -1,21 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
+import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action } from '@modules/authorization';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
+	AuthorizationReferenceService,
+} from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { AxiosHeadersKeyValue, axiosResponseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
+import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
@@ -37,18 +43,19 @@ const createAxiosErrorResponse = (): AxiosResponse => {
 	return errorResponse;
 };
 
-const buildFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = (storageLocation: StorageLocation = StorageLocation.SCHOOL) => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId,
+		storageLocation,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};
@@ -83,6 +90,10 @@ describe('FilesStorageUC upload methods', () => {
 			providers: [
 				FilesStorageUC,
 				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
+				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
 				},
@@ -110,6 +121,10 @@ describe('FilesStorageUC upload methods', () => {
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
 				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
+				},
 			],
 		}).compile();
 
@@ -132,8 +147,8 @@ describe('FilesStorageUC upload methods', () => {
 	});
 
 	describe('uploadFromUrl is called', () => {
-		const createUploadFromUrlParams = () => {
-			const { params, userId, fileRecords } = buildFileRecordsWithParams();
+		const createUploadFromUrlParams = (storageLocation: StorageLocation = StorageLocation.SCHOOL) => {
+			const { params, userId, fileRecords } = buildFileRecordsWithParams(storageLocation);
 			const fileRecord = fileRecords[0];
 
 			const uploadFromUrlParams = {
@@ -177,6 +192,19 @@ describe('FilesStorageUC upload methods', () => {
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
 					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				);
+			});
+
+			it('should call authorizationService for storage location', async () => {
+				const { uploadFromUrlParams, userId } = setup();
+
+				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AuthorizableReferenceType.School,
+					uploadFromUrlParams.storageLocationId,
+					AuthorizationContextBuilder.write([])
 				);
 			});
 
@@ -255,7 +283,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN uploadFile throws error', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
+				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams(StorageLocation.SCHOOL);
 				const error = new Error('test');
 
 				httpService.get.mockReturnValueOnce(of(response));
@@ -275,7 +303,7 @@ describe('FilesStorageUC upload methods', () => {
 	describe('upload is called', () => {
 		describe('WHEN user is authorized, busboy emits event and file is uploaded successfully', () => {
 			const setup = () => {
-				const { params, userId, fileRecords } = buildFileRecordsWithParams();
+				const { params, userId, fileRecords } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
 				const readable = Readable.from('abc');
@@ -285,12 +313,20 @@ describe('FilesStorageUC upload methods', () => {
 					mimeType: fileRecord.mimeType,
 				};
 
+				let resolveUploadFile: (value: FileRecord | PromiseLike<FileRecord>) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve) => {
+					resolveUploadFile = resolve;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
+
 				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('file', 'file', readable, fileInfo);
+
+					requestStream.emit('finish');
+					resolveUploadFile(fileRecord);
+
 					return requestStream;
 				});
-
-				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
 				return { params, userId, request, fileRecord, readable, fileInfo };
 			};
@@ -309,12 +345,24 @@ describe('FilesStorageUC upload methods', () => {
 				);
 			});
 
+			it('should call checkPermissionByReferences for storage location instance', async () => {
+				const { params, userId, request } = setup();
+
+				await filesStorageUC.upload(userId, params, request);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AuthorizableReferenceType.Instance,
+					params.storageLocationId,
+					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
+				);
+			});
+
 			it('should call uploadFile with correct params', async () => {
 				const { params, userId, request, readable, fileInfo } = setup();
 				const file = FileDtoBuilder.buildFromRequest(fileInfo, readable);
 
 				await filesStorageUC.upload(userId, params, request);
-
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, file);
 			});
 
@@ -333,8 +381,15 @@ describe('FilesStorageUC upload methods', () => {
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
 				const readable = Readable.from('abc');
+				const error = new Error('test');
 
 				const size = request.headers['content-length'];
+
+				let rejectUploadFile: (value: Error) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve, reject) => {
+					rejectUploadFile = reject;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
 
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
@@ -344,11 +399,11 @@ describe('FilesStorageUC upload methods', () => {
 						mimeType: fileRecord.mimeType,
 					});
 
+					requestStream.emit('finish');
+					rejectUploadFile(error);
+
 					return requestStream;
 				});
-
-				const error = new Error('test');
-				filesStorageService.uploadFile.mockRejectedValueOnce(error);
 
 				return { params, userId, request, error };
 			};

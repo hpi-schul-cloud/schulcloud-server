@@ -2,19 +2,16 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import { RichTextElementNode } from '@shared/domain/entity';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
+import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	submissionContainerElementNodeFactory,
-	submissionItemNodeFactory,
-} from '@shared/testing';
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	submissionContainerElementEntityFactory,
+	submissionItemEntityFactory,
+} from '../../testing';
 import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
 
 const baseRouteName = '/cards';
@@ -52,11 +49,11 @@ describe(`content element create (api)`, () => {
 				const course = courseFactory.build({ teachers: [teacherUser] });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 				await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
 				em.clear();
@@ -111,13 +108,23 @@ describe(`content element create (api)`, () => {
 				expect((response.body as SubmissionContainerElementResponse).content.dueDate).toBeNull();
 			});
 
+			it('should return the created content element of type COLABORATIVE_TEXT_EDITOR', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.COLLABORATIVE_TEXT_EDITOR,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
+			});
+
 			it('should actually create the content element', async () => {
 				const { loggedInClient, cardNode } = await setup();
 				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });
 
 				const elementId = (response.body as AnyContentElementResponse).id;
 
-				const result = await em.findOneOrFail(RichTextElementNode, elementId);
+				const result = await em.findOneOrFail(BoardNodeEntity, elementId);
 				expect(result.id).toEqual(elementId);
 			});
 
@@ -142,6 +149,24 @@ describe(`content element create (api)`, () => {
 
 				expect(response.statusCode).toEqual(400);
 			});
+
+			it('should return the created content element of type DRAWING', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.DRAWING });
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.DRAWING);
+			});
+
+			it('should actually create the DRAWING element', async () => {
+				const { loggedInClient, cardNode } = await setup();
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.DRAWING });
+
+				const elementId = (response.body as AnyContentElementResponse).id;
+
+				const result = await em.findOneOrFail(BoardNodeEntity, elementId);
+				expect(result.id).toEqual(elementId);
+			});
 		});
 		describe('with invalid user', () => {
 			describe('with teacher not belonging to course', () => {
@@ -152,11 +177,11 @@ describe(`content element create (api)`, () => {
 					const course = courseFactory.build({});
 					await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					const columnBoardNode = columnBoardEntityFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 					await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
 					em.clear();
@@ -184,11 +209,11 @@ describe(`content element create (api)`, () => {
 						const course = courseFactory.build({ students: [studentUser] });
 						await em.persistAndFlush([studentAccount, studentUser, course]);
 
-						const columnBoardNode = columnBoardNodeFactory.buildWithId({
+						const columnBoardNode = columnBoardEntityFactory.build({
 							context: { id: course.id, type: BoardExternalReferenceType.Course },
 						});
-						const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-						const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+						const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+						const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 						await em.persistAndFlush([columnBoardNode, columnNode, cardNode]);
 						em.clear();
@@ -203,6 +228,16 @@ describe(`content element create (api)`, () => {
 
 						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
 							type: ContentElementType.RICH_TEXT,
+						});
+
+						expect(response.statusCode).toEqual(403);
+					});
+
+					it('should return status 403 for DRAWING', async () => {
+						const { cardNode, loggedInClient } = await setup();
+
+						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+							type: ContentElementType.DRAWING,
 						});
 
 						expect(response.statusCode).toEqual(403);
@@ -225,16 +260,13 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
-				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
-					parent: cardNode,
-				});
-				const submissionItemNode = submissionItemNodeFactory.buildWithId({
-					parent: submissionElementContainerNode,
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const submissionElementContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
+				const submissionItemNode = submissionItemEntityFactory.withParent(submissionElementContainerNode).build({
 					userId: studentUser.id,
 				});
 
@@ -300,7 +332,7 @@ describe(`content element create (api)`, () => {
 
 				const elementId = (response.body as AnyContentElementResponse).id;
 
-				const result = await em.findOneOrFail(RichTextElementNode, elementId);
+				const result = await em.findOneOrFail(BoardNodeEntity, elementId);
 				expect(result.id).toEqual(elementId);
 			});
 		});
@@ -315,16 +347,13 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
-				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
-					parent: cardNode,
-				});
-				const submissionItemNode = submissionItemNodeFactory.buildWithId({
-					parent: submissionElementContainerNode,
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const submissionElementContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
+				const submissionItemNode = submissionItemEntityFactory.withParent(submissionElementContainerNode).build({
 					userId: teacherUser.id,
 				});
 
@@ -361,18 +390,15 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
-					parent: cardNode,
-				});
-				const submissionItemNode = submissionItemNodeFactory.buildWithId({
-					parent: submissionElementContainerNode,
-					userId: teacherUser.id,
-				});
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const submissionElementContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
+				const submissionItemNode = submissionItemEntityFactory
+					.withParent(submissionElementContainerNode)
+					.build({ userId: teacherUser.id });
 
 				await em.persistAndFlush([
 					columnBoardNode,
@@ -408,16 +434,13 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
-				const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const submissionElementContainerNode = submissionContainerElementNodeFactory.buildWithId({
-					parent: cardNode,
-				});
-				const submissionItemNode = submissionItemNodeFactory.buildWithId({
-					parent: submissionElementContainerNode,
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const submissionElementContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
+				const submissionItemNode = submissionItemEntityFactory.withParent(submissionElementContainerNode).build({
 					userId: studentUser.id,
 				});
 

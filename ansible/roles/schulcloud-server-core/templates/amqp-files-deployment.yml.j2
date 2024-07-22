@@ -48,8 +48,12 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: amqp-files-configmap
         - secretRef:
-            name: api-secret
+            name: amqp-files-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:files-storage-amqp:prod']
         resources:
           limits:
@@ -95,5 +99,5 @@ spec:
                   - amqp-files
               topologyKey: "topology.kubernetes.io/zone"
 {% endif %}
-              
-          
+
+

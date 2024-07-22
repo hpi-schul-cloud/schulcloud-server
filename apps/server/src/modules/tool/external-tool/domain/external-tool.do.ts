@@ -1,14 +1,16 @@
-import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ToolVersion } from '../../common/interface';
-import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameter } from '../../common/domain';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
+import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
+import { ExternalToolMedium } from './external-tool-medium.do';
 
-export interface ExternalToolProps {
-	id?: string;
+export interface ExternalToolProps extends AuthorizableObject {
+	id: string;
 
 	name: string;
+
+	description?: string;
 
 	url?: string;
 
@@ -26,38 +28,123 @@ export interface ExternalToolProps {
 
 	openNewTab: boolean;
 
-	version: number;
-
 	restrictToContexts?: ToolContextType[];
+
+	medium?: ExternalToolMedium;
+
+	createdAt?: Date;
 }
 
-export class ExternalTool extends BaseDO implements ToolVersion {
-	name: string;
+export class ExternalTool extends DomainObject<ExternalToolProps> {
+	get name(): string {
+		return this.props.name;
+	}
 
-	url?: string;
+	set name(value: string) {
+		this.props.name = value;
+	}
 
-	logoUrl?: string;
+	get description(): string | undefined {
+		return this.props.description;
+	}
 
-	logo?: string;
+	set description(value: string | undefined) {
+		this.props.description = value;
+	}
 
-	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
+	get url(): string | undefined {
+		return this.props.url;
+	}
 
-	parameters?: CustomParameter[];
+	set url(value: string | undefined) {
+		this.props.url = value;
+	}
 
-	isHidden: boolean;
+	get logoUrl(): string | undefined {
+		return this.props.logoUrl;
+	}
 
-	isDeactivated: boolean;
+	set logoUrl(value: string | undefined) {
+		this.props.logoUrl = value;
+	}
 
-	openNewTab: boolean;
+	get logo(): string | undefined {
+		return this.props.logo;
+	}
 
-	version: number;
+	set logo(value: string | undefined) {
+		this.props.logo = value;
+	}
 
-	restrictToContexts?: ToolContextType[];
+	get config(): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
+		return this.props.config;
+	}
+
+	set config(value: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) {
+		this.props.config = value;
+	}
+
+	get parameters(): CustomParameter[] | undefined {
+		return this.props.parameters;
+	}
+
+	set parameters(value: CustomParameter[] | undefined) {
+		this.props.parameters = value;
+	}
+
+	get isHidden(): boolean {
+		return this.props.isHidden;
+	}
+
+	set isHidden(value: boolean) {
+		this.props.isHidden = value;
+	}
+
+	get isDeactivated(): boolean {
+		return this.props.isDeactivated;
+	}
+
+	set isDeactivated(value: boolean) {
+		this.props.isDeactivated = value;
+	}
+
+	get openNewTab(): boolean {
+		return this.props.openNewTab;
+	}
+
+	set openNewTab(value: boolean) {
+		this.props.openNewTab = value;
+	}
+
+	get restrictToContexts(): ToolContextType[] | undefined {
+		return this.props.restrictToContexts;
+	}
+
+	set restrictToContexts(value: ToolContextType[] | undefined) {
+		this.props.restrictToContexts = value;
+	}
+
+	get medium(): ExternalToolMedium | undefined {
+		return this.props.medium;
+	}
+
+	set medium(value: ExternalToolMedium | undefined) {
+		this.props.medium = value;
+	}
+
+	get createdAt(): Date | undefined {
+		return this.props.createdAt;
+	}
+
+	set createdAt(value: Date | undefined) {
+		this.props.createdAt = value;
+	}
 
 	constructor(props: ExternalToolProps) {
-		super(props.id);
+		super(props);
 
 		this.name = props.name;
+		this.description = props.description;
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
 		this.logo = props.logo;
@@ -74,12 +161,9 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.isHidden = props.isHidden;
 		this.isDeactivated = props.isDeactivated;
 		this.openNewTab = props.openNewTab;
-		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
-	}
-
-	getVersion(): number {
-		return this.version;
+		this.medium = props.medium;
+		this.createdAt = props.createdAt;
 	}
 
 	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {

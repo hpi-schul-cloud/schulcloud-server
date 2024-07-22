@@ -1,15 +1,11 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import {
-	FederalStateEntity,
-	SchoolProperties,
-	SchoolRoles,
-	SchoolYearEntity,
-	SystemEntity,
-} from '@shared/domain/entity';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
+import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { federalStateFactory, schoolFactory } from '@shared/testing';
+import { federalStateFactory, schoolEntityFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
-import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -152,7 +148,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
-		language: 'de',
+		language: LanguageType.DE,
 		logo_dataUrl: '',
 		officialSchoolNumber: '',
 	},
@@ -181,7 +177,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
-		language: 'de',
+		language: LanguageType.DE,
 		logo_dataUrl: '',
 		logo_name: '',
 		officialSchoolNumber: '',
@@ -206,7 +202,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		experimental: false,
 		pilot: false,
 		timezone: 'America/Belem',
-		language: 'en',
+		language: LanguageType.EN,
 		logo_dataUrl: '',
 		logo_name: '',
 		officialSchoolNumber: '',
@@ -303,7 +299,7 @@ export function generateSchools(entities: {
 			systems,
 			federalState,
 		};
-		const schoolEntity = schoolFactory.buildWithId(params, partial.id);
+		const schoolEntity = schoolEntityFactory.buildWithId(params, partial.id);
 
 		schoolEntity.permissions = partial.permissions;
 

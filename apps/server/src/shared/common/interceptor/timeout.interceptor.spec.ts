@@ -1,8 +1,10 @@
-import { Controller, Get, HttpStatus, INestApplication, NestInterceptor } from '@nestjs/common';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Controller, Get, HttpStatus, INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { RequestTimeout, TimeoutInterceptor } from '@shared/common';
-import request from 'supertest';
+import { TestApiClient } from '@shared/testing';
 
 const delay = (ms: number) =>
 	new Promise((resolve) => {
@@ -10,74 +12,132 @@ const delay = (ms: number) =>
 	});
 
 @Controller()
-class DelayController {
-	/** default route to test public access */
+class TestController {
 	@Get()
-	async getHello(): Promise<string> {
+	async testDefault(): Promise<{ message: string }> {
 		await delay(100);
-		return 'Schulcloud Server API';
+
+		return { message: 'MyMessage' };
 	}
 
-	@RequestTimeout(1)
-	@Get('/timeout')
-	async getHelloWithTimeout(): Promise<string> {
+	@Get('overriden')
+	@RequestTimeout('MY_CONFIG_NAME')
+	async testOverriden(): Promise<{ message: string }> {
 		await delay(100);
-		return 'Schulcloud Server API';
+
+		return { message: 'MyMessage' };
 	}
 }
 
-export const createTestModule = (interceptor: NestInterceptor): Promise<TestingModule> =>
-	Test.createTestingModule({
-		providers: [
-			{
-				provide: APP_INTERCEPTOR,
-				useValue: interceptor,
-			},
-		],
-		controllers: [DelayController],
-	}).compile();
-
 describe('TimeoutInterceptor', () => {
-	describe('when integrate TimeoutInterceptor', () => {
-		let app: INestApplication;
+	let app: INestApplication;
+	let configServiceMock: DeepMocked<ConfigService>;
+	let testApiClient: TestApiClient;
 
-		beforeEach(async () => {});
+	beforeAll(async () => {
+		const moduleFixture = await Test.createTestingModule({
+			providers: [
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: APP_INTERCEPTOR,
+					useFactory: (configService: ConfigService) => new TimeoutInterceptor(configService),
+					inject: [ConfigService],
+				},
+			],
+			controllers: [TestController],
+		}).compile();
 
-		afterEach(async () => {
-			await app.close();
-		});
+		app = moduleFixture.createNestApplication();
+		configServiceMock = app.get(ConfigService);
+		await app.init();
 
-		it('should respond with error code if request runs into timeout', async () => {
-			const interceptor = new TimeoutInterceptor(1);
+		testApiClient = new TestApiClient(app, '');
+	});
 
-			app = (await createTestModule(interceptor)).createNestApplication();
-			await app.init();
+	afterEach(async () => {
+		await app.close();
+	});
 
-			const response = await request(app.getHttpServer()).get('/');
+	describe('when response is faster then the request timeout', () => {
+		const setup = () => {
+			configServiceMock.getOrThrow.mockReturnValueOnce(1000);
+		};
 
-			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
-		});
+		it('should respond with status code 200', async () => {
+			setup();
 
-		it('should pass if request does not run into timeout', async () => {
-			const interceptor = new TimeoutInterceptor(30000);
-
-			app = (await createTestModule(interceptor)).createNestApplication();
-			await app.init();
-
-			const response = await request(app.getHttpServer()).get('/');
+			const response = await testApiClient.get();
 
 			expect(response.status).toEqual(HttpStatus.OK);
+			expect(response.body).toEqual({ message: 'MyMessage' });
 		});
+	});
 
-		it('should respond with error code if request runs into timeout by timeout decorator', async () => {
-			const interceptor = new TimeoutInterceptor(30000);
+	describe('when response is slower then the request timeout', () => {
+		const setup = () => {
+			configServiceMock.getOrThrow.mockReturnValueOnce(1);
+		};
 
-			app = (await createTestModule(interceptor)).createNestApplication();
-			await app.init();
+		it('should respond with status request timeout', async () => {
+			setup();
 
-			const response = await request(app.getHttpServer()).get('/timeout');
+			const response = await testApiClient.get();
 
 			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
+		});
+	});
+
+	describe('when override the default timeout ', () => {
+		const setup = () => {
+			configServiceMock.getOrThrow.mockImplementationOnce((key: string) => {
+				const result = key === 'MY_CONFIG_NAME' ? 1000 : 1;
+
+				return result;
+			});
+		};
+
+		it('should respond with status code 200', async () => {
+			setup();
+
+			const response = await testApiClient.get('overriden');
+
+			expect(response.status).toEqual(HttpStatus.OK);
+			expect(response.body).toEqual({ message: 'MyMessage' });
+		});
+	});
+
+	describe('when override the default timeout', () => {
+		const setup = () => {
+			configServiceMock.getOrThrow.mockImplementationOnce((key: string) => {
+				const result = key === 'MY_CONFIG_NAME' ? 1 : 1000;
+
+				return result;
+			});
+		};
+
+		it('should respond with status request timeout', async () => {
+			setup();
+
+			const response = await testApiClient.get('overriden');
+
+			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
+		});
+	});
+
+	describe('when requested config is not a number', () => {
+		const setup = () => {
+			configServiceMock.getOrThrow.mockReturnValueOnce('string');
+		};
+
+		it('should respond with status request timeout', async () => {
+			setup();
+
+			const response = await testApiClient.get('overriden');
+
+			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 });

@@ -3,17 +3,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing';
 import { CustomParameterEntry } from '../../../common/domain';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalTool } from '../../../external-tool/domain';
+import { customParameterFactory, externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -26,6 +23,7 @@ import {
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -73,6 +71,7 @@ describe(AbstractLaunchStrategy.name, () => {
 	let autoSchoolNumberStrategy: DeepMocked<AutoSchoolNumberStrategy>;
 	let autoContextIdStrategy: DeepMocked<AutoContextIdStrategy>;
 	let autoContextNameStrategy: DeepMocked<AutoContextNameStrategy>;
+	let autoMediumIdStrategy: DeepMocked<AutoMediumIdStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -94,6 +93,10 @@ describe(AbstractLaunchStrategy.name, () => {
 					provide: AutoContextNameStrategy,
 					useValue: createMock<AutoContextNameStrategy>(),
 				},
+				{
+					provide: AutoMediumIdStrategy,
+					useValue: createMock<AutoMediumIdStrategy>(),
+				},
 			],
 		}).compile();
 
@@ -103,6 +106,7 @@ describe(AbstractLaunchStrategy.name, () => {
 		autoSchoolNumberStrategy = module.get(AutoSchoolNumberStrategy);
 		autoContextIdStrategy = module.get(AutoContextIdStrategy);
 		autoContextNameStrategy = module.get(AutoContextNameStrategy);
+		autoMediumIdStrategy = module.get(AutoMediumIdStrategy);
 	});
 
 	afterAll(async () => {
@@ -159,6 +163,12 @@ describe(AbstractLaunchStrategy.name, () => {
 					name: 'autoSchoolNumberParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
+				const autoMediumIdCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.QUERY,
+					name: 'autoMediumIdParam',
+					type: CustomParameterType.AUTO_MEDIUMID,
+				});
 
 				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [
@@ -169,6 +179,7 @@ describe(AbstractLaunchStrategy.name, () => {
 						autoSchoolNumberCustomParameter,
 						autoContextIdCustomParameter,
 						autoContextNameCustomParameter,
+						autoMediumIdCustomParameter,
 					],
 				});
 
@@ -205,6 +216,7 @@ describe(AbstractLaunchStrategy.name, () => {
 				autoSchoolNumberStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
 				autoContextIdStrategy.getValue.mockReturnValueOnce(mockedAutoValue);
 				autoContextNameStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
+				autoMediumIdStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
 
 				return {
 					globalCustomParameter,
@@ -213,6 +225,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoSchoolNumberCustomParameter,
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
+					autoMediumIdCustomParameter,
 					schoolParameterEntry,
 					contextParameterEntry,
 					externalTool,
@@ -232,6 +245,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoSchoolNumberCustomParameter,
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
+					autoMediumIdCustomParameter,
 					schoolParameterEntry,
 					externalTool,
 					schoolExternalTool,
@@ -286,6 +300,11 @@ describe(AbstractLaunchStrategy.name, () => {
 							name: autoContextNameCustomParameter.name,
 							value: mockedAutoValue,
 							location: PropertyLocation.BODY,
+						},
+						{
+							name: autoMediumIdCustomParameter.name,
+							value: mockedAutoValue,
+							location: PropertyLocation.QUERY,
 						},
 						{
 							name: concreteConfigParameter.name,

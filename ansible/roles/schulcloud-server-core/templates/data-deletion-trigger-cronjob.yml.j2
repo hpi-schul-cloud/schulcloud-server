@@ -29,12 +29,21 @@ spec:
     spec:
       template:
         spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            runAsNonRoot: true
           containers:
           - name: data-deletion-trigger-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
+            - configMapRef:
+                name: data-deletion-trigger-cronjob-configmap
             - secretRef:
                 name: admin-api-client-secret
+            - secretRef:
+                name: api-files-secret
             command: ['/bin/sh', '-c']
             args: ['npm run nest:start:deletion-console -- execution trigger']
             resources:

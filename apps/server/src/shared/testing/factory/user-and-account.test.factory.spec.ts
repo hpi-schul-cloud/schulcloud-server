@@ -1,7 +1,8 @@
-import { Account, User } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@shared/domain/entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { setupEntities } from '../setup-entities';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {
@@ -10,7 +11,7 @@ describe('user-and-account.test.factory', () => {
 	});
 
 	const createParams = () => {
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const systemId = new ObjectId().toHexString();
 
 		const params: UserAndAccountParams = {
@@ -39,7 +40,7 @@ describe('user-and-account.test.factory', () => {
 			const result = UserAndAccountTestFactory.buildStudent(params, additionalPermissions);
 
 			expect(result.studentUser).toBeInstanceOf(User);
-			expect(result.studentAccount).toBeInstanceOf(Account);
+			expect(result.studentAccount).toBeInstanceOf(AccountEntity);
 
 			expect(result.studentUser.firstName).toEqual(params.firstName);
 			expect(result.studentUser.lastName).toEqual(params.lastName);
@@ -66,7 +67,7 @@ describe('user-and-account.test.factory', () => {
 			const result = UserAndAccountTestFactory.buildTeacher(params, additionalPermissions);
 
 			expect(result.teacherUser).toBeInstanceOf(User);
-			expect(result.teacherAccount).toBeInstanceOf(Account);
+			expect(result.teacherAccount).toBeInstanceOf(AccountEntity);
 
 			expect(result.teacherUser.firstName).toEqual(params.firstName);
 			expect(result.teacherUser.lastName).toEqual(params.lastName);
@@ -93,7 +94,7 @@ describe('user-and-account.test.factory', () => {
 			const result = UserAndAccountTestFactory.buildAdmin(params, additionalPermissions);
 
 			expect(result.adminUser).toBeInstanceOf(User);
-			expect(result.adminAccount).toBeInstanceOf(Account);
+			expect(result.adminAccount).toBeInstanceOf(AccountEntity);
 
 			expect(result.adminUser.firstName).toEqual(params.firstName);
 			expect(result.adminUser.lastName).toEqual(params.lastName);

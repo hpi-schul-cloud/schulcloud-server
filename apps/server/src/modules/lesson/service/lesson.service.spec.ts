@@ -1,6 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
@@ -14,8 +24,11 @@ describe('LessonService', () => {
 
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				LessonService,
@@ -31,14 +44,23 @@ describe('LessonService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 		lessonService = module.get(LessonService);
 
 		lessonRepo = module.get(LessonRepo);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-
-		await setupEntities();
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -149,7 +171,12 @@ describe('LessonService', () => {
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
+					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [lesson1.id, lesson2.id]),
+				]);
+
 				return {
+					expectedResult,
 					userId,
 				};
 			};
@@ -157,17 +184,61 @@ describe('LessonService', () => {
 			it('should call lessonRepo.findByUserId', async () => {
 				const { userId } = setup();
 
-				await lessonService.deleteUserDataFromLessons(userId);
+				await lessonService.deleteUserData(userId);
 
 				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
 			});
 
 			it('should update lessons without deleted user', async () => {
-				const { userId } = setup();
+				const { expectedResult, userId } = setup();
 
-				const result = await lessonService.deleteUserDataFromLessons(userId);
+				const result = await lessonService.deleteUserData(userId);
 
-				expect(result).toEqual(2);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in lessonService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(lessonService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await lessonService.handle({ deletionRequestId, targetRefId });
+
+				expect(lessonService.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(lessonService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await lessonService.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

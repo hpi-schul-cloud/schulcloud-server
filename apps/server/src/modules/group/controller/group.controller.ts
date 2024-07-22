@@ -1,9 +1,12 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import { Group } from '@modules/group';
+import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
-import { GroupUc } from '../uc';
+import { ClassGroupUc, GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
 	ClassCallerParams,
@@ -11,7 +14,9 @@ import {
 	ClassInfoSearchListResponse,
 	ClassSortParams,
 	GroupIdParams,
+	GroupListResponse,
 	GroupPaginationParams,
+	GroupParams,
 	GroupResponse,
 } from './dto';
 import { GroupResponseMapper } from './mapper';
@@ -20,7 +25,7 @@ import { GroupResponseMapper } from './mapper';
 @Authenticate('jwt')
 @Controller('groups')
 export class GroupController {
-	constructor(private readonly groupUc: GroupUc) {}
+	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
 
 	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
@@ -34,13 +39,12 @@ export class GroupController {
 		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
-		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
+		const board: Page<ClassInfoDto> = await this.classGroupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
 			callerParams.calledFrom,
-			pagination.skip,
-			pagination.limit,
+			pagination,
 			sortingQuery.sortBy,
 			sortingQuery.sortOrder
 		);
@@ -66,6 +70,33 @@ export class GroupController {
 		const group: ResolvedGroupDto = await this.groupUc.getGroup(currentUser.userId, params.groupId);
 
 		const response: GroupResponse = GroupResponseMapper.mapToGroupResponse(group);
+
+		return response;
+	}
+
+	@Get()
+	@ApiOperation({ summary: 'Get a list of all groups.' })
+	@ApiResponse({ status: HttpStatus.OK, type: GroupListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getAllGroups(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() pagination: GroupPaginationParams,
+		@Query() params: GroupParams
+	): Promise<GroupListResponse> {
+		const options: IFindOptions<Group> = { pagination };
+
+		const groups: Page<ResolvedGroupDto> = await this.groupUc.getAllGroups(
+			currentUser.userId,
+			currentUser.schoolId,
+			options,
+			params.nameQuery,
+			params.availableGroupsForCourseSync
+		);
+
+		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;
 	}

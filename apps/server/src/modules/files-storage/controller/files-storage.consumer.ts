@@ -1,6 +1,5 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
-import { RpcMessage } from '@infra/rabbitmq/rpc-message';
+import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -8,7 +7,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
+import { CopyFilesOfParentPayload } from './dto';
 
 @Injectable()
 export class FilesStorageConsumer {
@@ -45,10 +44,10 @@ export class FilesStorageConsumer {
 		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<FileDO[]>> {
+	public async getFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'getFilesOfParent', payload });
 
-		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload.parentId);
+		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
@@ -69,6 +68,26 @@ export class FilesStorageConsumer {
 		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+
+		return { message: response.data };
+	}
+
+	@RabbitRPC({
+		exchange: FilesStorageExchange,
+		routingKey: FilesStorageEvents.DELETE_FILES,
+		queue: FilesStorageEvents.DELETE_FILES,
+	})
+	@UseRequestContext()
+	public async deleteFiles(@RabbitPayload() payload: EntityId[]): Promise<RpcMessage<FileDO[]>> {
+		this.logger.debug({ action: 'deleteFiles', payload });
+
+		const promise = payload.map((fileRecordId) => this.filesStorageService.getFileRecord({ fileRecordId }));
+		const fileRecords = await Promise.all(promise);
+
+		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.delete(fileRecords);
+
+		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
 		return { message: response.data };
 	}

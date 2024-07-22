@@ -1,40 +1,38 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { OauthConfigDto } from '@modules/system/service/dto';
+import { OauthConfig } from '@modules/system/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { IDMLoginError } from '../errors/idm-login-error.loggable';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
-	private _oauthConfigCache: OauthConfigDto | undefined;
+	private _oauthConfigCache: OauthConfig | undefined;
 
 	constructor(
 		private readonly kcAdminService: KeycloakAdministrationService,
-		private readonly configService: ConfigService,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
+		private readonly logger: Logger
 	) {
 		super();
 	}
 
-	async getOauthConfig(): Promise<OauthConfigDto> {
+	async getOauthConfig(): Promise<OauthConfig> {
 		if (this._oauthConfigCache) {
 			return this._oauthConfigCache;
 		}
 		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
-		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
-		const redirectUri =
-			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
-		this._oauthConfigCache = new OauthConfigDto({
+		this._oauthConfigCache = new OauthConfig({
 			clientId: this.kcAdminService.getClientId(),
 			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
 			provider: 'oauth',
-			redirectUri,
+			redirectUri: '',
 			responseType: 'code',
 			grantType: 'authorization_code',
 			scope: 'openid profile email',
@@ -59,15 +57,15 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	}
 
 	async resourceOwnerPasswordGrant(username: string, password: string): Promise<string | undefined> {
-		const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
-		const data = {
-			username,
-			password,
-			grant_type: 'password',
-			client_id: clientId,
-			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
-		};
 		try {
+			const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
+			const data = {
+				username,
+				password,
+				grant_type: 'password',
+				client_id: clientId,
+				client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
+			};
 			const response = await lastValueFrom(
 				this.httpService.request<{ access_token: string }>({
 					method: 'post',
@@ -80,6 +78,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
+			this.logger.warning(new IDMLoginError(err as Error));
+
 			return undefined;
 		}
 	}

@@ -18,9 +18,11 @@ docker run \
   --name erwinidm \
   -p 8080:8080 \
   -p 8443:8443 \
-  -v "$PWD/backup/idm/keycloak:/tmp/realms" \
+  -e KEYCLOAK_ADMIN=keycloak
+  -e KEYCLOAK_ADMIN_PASSWORD=keycloak
+  -v "$PWD/backup/idm/keycloak:/opt/keycloak/data/import" \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
-  "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
+  "--import-realm"
 ```
 
 **PowerShell:**
@@ -30,9 +32,11 @@ docker run `
   --name erwinidm `
   -p 8080:8080 `
   -p 8443:8443 `
-  -v "$PWD/backup/idm/keycloak:/tmp/realms" `
+  -e KEYCLOAK_ADMIN=keycloak `
+  -e KEYCLOAK_ADMIN_PASSWORD=keycloak `
+  -v "$PWD/backup/idm/keycloak:/opt/keycloak/data/import" `
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest `
-  "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
+  "--import-realm"
 ```
 
 ### Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering
@@ -41,7 +45,7 @@ To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Prov
 
 - Set env vars (or in your .env file) 'OIDCMOCK\_\_BASE_URL' to http://\<your-local-ip\>:4011.
 - To make it work with the nuxt client set the env var HOST=http://localhost:4000
-- re-trigger `npm run setup:db` and `npm run setup:idm` to reset and apply seed data.
+- re-trigger `npm run setup:db:seed` and `npm run setup:idm` to reset and apply seed data.
 - start the 'oidc-server-mock' as follows:
 
 ```bash

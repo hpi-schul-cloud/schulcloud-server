@@ -10,5 +10,4 @@ export * from './school-purpose.enum';
 export * from './system.type';
 export * from './task.types';
 export * from './value-of';
-export * from './domain';
-export * from './status-model.enum';
+export * from './schulcloud-theme.enum';

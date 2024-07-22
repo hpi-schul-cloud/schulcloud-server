@@ -11,11 +11,12 @@ import {
 	ProvisioningService,
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
+import { SystemEntity } from '@modules/system/entity';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { SystemEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {

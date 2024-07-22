@@ -158,7 +158,7 @@ export class FilesStorageService {
 		params: FileRecordParams,
 		file: FileDto
 	): Promise<void> {
-		const filePath = createPath(params.schoolId, fileRecord.id);
+		const filePath = createPath(params.storageLocationId, fileRecord.id);
 		const useStreamToAntivirus = this.configService.get<boolean>('USE_STREAM_TO_ANTIVIRUS');
 
 		try {
@@ -180,6 +180,9 @@ export class FilesStorageService {
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
+
+			fileRecord.markAsUploaded();
+
 			await this.fileRecordRepo.save(fileRecord);
 
 			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
@@ -217,8 +220,14 @@ export class FilesStorageService {
 		}
 	}
 
+	public getMaxFileSize(): number {
+		const maxFileSize = this.configService.get<number>('MAX_FILE_SIZE');
+
+		return maxFileSize;
+	}
+
 	private throwErrorIfFileIsTooBig(fileSize: number): void {
-		if (fileSize > this.configService.get<number>('MAX_FILE_SIZE')) {
+		if (fileSize > this.getMaxFileSize()) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 	}
@@ -266,7 +275,7 @@ export class FilesStorageService {
 	}
 
 	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise<GetFileResponse> {
-		const pathToFile = createPath(fileRecord.schoolId, fileRecord.id);
+		const pathToFile = createPath(fileRecord.storageLocationId, fileRecord.id);
 		const file = await this.storageClient.get(pathToFile, bytesRange);
 		const response = FileResponseBuilder.build(file, fileRecord.getName());
 
@@ -342,8 +351,9 @@ export class FilesStorageService {
 	}
 
 	public async restoreFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
-			params.schoolId,
+		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+			params.storageLocation,
+			params.storageLocationId,
 			params.parentId
 		);
 
@@ -368,7 +378,11 @@ export class FilesStorageService {
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<CopyFileResponse[]>> {
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentId(
+			params.storageLocation,
+			params.storageLocationId,
+			params.parentId
+		);
 
 		if (count === 0) {
 			return [[], 0];

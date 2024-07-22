@@ -1,14 +1,14 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { BoardElement, BoardElementType } from './boardelement.entity';
-import { ColumnBoardTarget } from './column-board-target.entity';
+import { ColumnBoardNode } from '../column-board-node.entity';
+import { LegacyBoardElement, LegacyBoardElementType } from './legacy-boardelement.entity';
 
-@Entity({ discriminatorValue: BoardElementType.ColumnBoard })
-export class ColumnboardBoardElement extends BoardElement {
-	constructor(props: { target: ColumnBoardTarget }) {
+@Entity({ discriminatorValue: LegacyBoardElementType.ColumnBoard })
+export class ColumnboardBoardElement extends LegacyBoardElement {
+	constructor(props: { target: ColumnBoardNode }) {
 		super(props);
-		this.boardElementType = BoardElementType.ColumnBoard;
+		this.boardElementType = LegacyBoardElementType.ColumnBoard;
 	}
 
-	@ManyToOne('ColumnBoardTarget')
-	target!: ColumnBoardTarget;
+	@ManyToOne('ColumnBoardNode')
+	target!: ColumnBoardNode;
 }

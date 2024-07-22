@@ -1,13 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { SortOrder, SortOrderMap } from '@shared/domain/interface';
-import {
-	basicToolConfigFactory,
-	customParameterFactory,
-	externalToolFactory,
-	lti11ToolConfigFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -35,6 +28,14 @@ import {
 	SortExternalToolParams,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '../testing';
+import { ExternalToolCreate, ExternalToolUpdate } from '../uc';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
@@ -82,6 +83,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = basicConfigParams;
 				externalToolCreateParams.isDeactivated = true;
+				externalToolCreateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -108,23 +110,54 @@ describe('ExternalToolRequestMapper', () => {
 					parameters: [customParameterDO],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: basicToolConfigDO,
 					isDeactivated: true,
+					createdAt: undefined,
 				});
 
 				return {
 					externalToolCreateParams,
 					externalToolDOCreate,
+					customParameterDO,
 				};
 			};
 
 			it('should map the request to external tool DO with basicConfig', () => {
-				const { externalToolCreateParams, externalToolDOCreate } = setup();
+				const { externalToolCreateParams, externalToolDOCreate, customParameterDO } = setup();
 
-				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
+				const result = mapper.mapCreateRequest(externalToolCreateParams);
 
-				expect(result).toEqual(externalToolDOCreate);
+				expect(result).toEqual<ExternalToolCreate>({
+					name: externalToolDOCreate.name,
+					description: externalToolDOCreate.description,
+					url: externalToolDOCreate.url,
+					logoUrl: externalToolDOCreate.logoUrl,
+					parameters: [
+						{
+							name: customParameterDO.name,
+							displayName: customParameterDO.displayName,
+							description: customParameterDO.description,
+							default: customParameterDO.default,
+							location: customParameterDO.location,
+							scope: customParameterDO.scope,
+							type: customParameterDO.type,
+							regex: customParameterDO.regex,
+							regexComment: customParameterDO.regexComment,
+							isOptional: customParameterDO.isOptional,
+							isProtected: customParameterDO.isProtected,
+						},
+					],
+					isHidden: externalToolDOCreate.isHidden,
+					openNewTab: externalToolDOCreate.openNewTab,
+					config: {
+						type: ToolConfigType.BASIC,
+						baseUrl: 'mockUrl',
+					},
+					isDeactivated: externalToolDOCreate.isDeactivated,
+					createdAt: externalToolDOCreate.createdAt,
+					medium: externalToolDOCreate.medium,
+					restrictToContexts: externalToolDOCreate.restrictToContexts,
+				});
 			});
 		});
 
@@ -135,7 +168,6 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.baseUrl = 'mockUrl';
 				lti11ConfigParams.key = 'mockKey';
 				lti11ConfigParams.secret = 'mockSecret';
-				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 				lti11ConfigParams.launch_presentation_locale = 'de-DE';
@@ -144,7 +176,6 @@ describe('ExternalToolRequestMapper', () => {
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
-					resource_link_id: 'mockLink',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
@@ -173,6 +204,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = lti11ConfigParams;
 				externalToolCreateParams.isDeactivated = false;
+				externalToolCreateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -194,23 +226,60 @@ describe('ExternalToolRequestMapper', () => {
 					parameters: [customParameterDO],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: lti11ToolConfigDO,
 					isDeactivated: false,
+					createdAt: undefined,
 				});
 
 				return {
 					externalToolCreateParams,
 					externalToolDOCreate,
+					customParameterDO,
+					lti11ToolConfigDO,
 				};
 			};
 
 			it('should map the request to external tool DO with lti11 config', () => {
-				const { externalToolCreateParams, externalToolDOCreate } = setup();
+				const { externalToolCreateParams, externalToolDOCreate, customParameterDO, lti11ToolConfigDO } = setup();
 
-				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
+				const result = mapper.mapCreateRequest(externalToolCreateParams);
 
-				expect(result).toEqual(externalToolDOCreate);
+				expect(result).toEqual<ExternalToolCreate>({
+					name: externalToolDOCreate.name,
+					description: externalToolDOCreate.description,
+					url: externalToolDOCreate.url,
+					logoUrl: externalToolDOCreate.logoUrl,
+					parameters: [
+						{
+							name: customParameterDO.name,
+							displayName: customParameterDO.displayName,
+							description: customParameterDO.description,
+							default: customParameterDO.default,
+							location: customParameterDO.location,
+							scope: customParameterDO.scope,
+							type: customParameterDO.type,
+							regex: customParameterDO.regex,
+							regexComment: customParameterDO.regexComment,
+							isOptional: customParameterDO.isOptional,
+							isProtected: customParameterDO.isProtected,
+						},
+					],
+					isHidden: externalToolDOCreate.isHidden,
+					openNewTab: externalToolDOCreate.openNewTab,
+					config: {
+						privacy_permission: lti11ToolConfigDO.privacy_permission,
+						secret: lti11ToolConfigDO.secret,
+						key: lti11ToolConfigDO.key,
+						lti_message_type: lti11ToolConfigDO.lti_message_type,
+						type: lti11ToolConfigDO.type,
+						baseUrl: lti11ToolConfigDO.baseUrl,
+						launch_presentation_locale: lti11ToolConfigDO.launch_presentation_locale,
+					},
+					isDeactivated: externalToolDOCreate.isDeactivated,
+					createdAt: externalToolDOCreate.createdAt,
+					medium: externalToolDOCreate.medium,
+					restrictToContexts: externalToolDOCreate.restrictToContexts,
+				});
 			});
 		});
 
@@ -261,6 +330,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = oauth2ConfigParams;
 				externalToolCreateParams.isDeactivated = false;
+				externalToolCreateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -282,23 +352,62 @@ describe('ExternalToolRequestMapper', () => {
 					parameters: [customParameterDO],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: oauth2ToolConfigDO,
 					isDeactivated: false,
+					createdAt: undefined,
 				});
 
 				return {
 					externalToolCreateParams,
 					externalToolDOCreate,
+					customParameterDO,
+					oauth2ToolConfigDO,
 				};
 			};
 
 			it('should map the request to external tool DO with oauth2', () => {
-				const { externalToolCreateParams, externalToolDOCreate } = setup();
+				const { externalToolCreateParams, externalToolDOCreate, customParameterDO, oauth2ToolConfigDO } = setup();
 
-				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
+				const result = mapper.mapCreateRequest(externalToolCreateParams);
 
-				expect(result).toEqual(externalToolDOCreate);
+				expect(result).toEqual<ExternalToolCreate>({
+					name: externalToolDOCreate.name,
+					description: externalToolDOCreate.description,
+					url: externalToolDOCreate.url,
+					logoUrl: externalToolDOCreate.logoUrl,
+					parameters: [
+						{
+							name: customParameterDO.name,
+							displayName: customParameterDO.displayName,
+							description: customParameterDO.description,
+							default: customParameterDO.default,
+							location: customParameterDO.location,
+							scope: customParameterDO.scope,
+							type: customParameterDO.type,
+							regex: customParameterDO.regex,
+							regexComment: customParameterDO.regexComment,
+							isOptional: customParameterDO.isOptional,
+							isProtected: customParameterDO.isProtected,
+						},
+					],
+					isHidden: externalToolDOCreate.isHidden,
+					openNewTab: externalToolDOCreate.openNewTab,
+					config: {
+						clientId: oauth2ToolConfigDO.clientId,
+						type: oauth2ToolConfigDO.type,
+						baseUrl: oauth2ToolConfigDO.baseUrl,
+						clientSecret: oauth2ToolConfigDO.clientSecret,
+						frontchannelLogoutUri: oauth2ToolConfigDO.frontchannelLogoutUri,
+						skipConsent: oauth2ToolConfigDO.skipConsent,
+						scope: oauth2ToolConfigDO.scope,
+						redirectUris: oauth2ToolConfigDO.redirectUris,
+						tokenEndpointAuthMethod: oauth2ToolConfigDO.tokenEndpointAuthMethod,
+					},
+					isDeactivated: externalToolDOCreate.isDeactivated,
+					createdAt: externalToolDOCreate.createdAt,
+					medium: externalToolDOCreate.medium,
+					restrictToContexts: externalToolDOCreate.restrictToContexts,
+				});
 			});
 		});
 	});
@@ -333,6 +442,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = basicConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
+				externalToolUpdateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -360,9 +470,9 @@ describe('ExternalToolRequestMapper', () => {
 						parameters: [customParameterDO],
 						isHidden: true,
 						openNewTab: true,
-						version: 1,
 						config: basicToolConfigDO,
 						isDeactivated: false,
+						createdAt: undefined,
 					},
 					externalToolUpdateParams.id
 				);
@@ -370,15 +480,47 @@ describe('ExternalToolRequestMapper', () => {
 				return {
 					externalToolUpdateParams,
 					externalToolDOUpdate,
+					customParameterDO,
 				};
 			};
 
 			it('should map the request to external tool DO with basicConfig', () => {
-				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
+				const { externalToolUpdateParams, externalToolDOUpdate, customParameterDO } = setup();
 
-				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolUpdateParams);
 
-				expect(result).toEqual(externalToolDOUpdate);
+				expect(result).toEqual<ExternalToolUpdate>({
+					id: externalToolDOUpdate.id,
+					name: externalToolDOUpdate.name,
+					description: externalToolDOUpdate.description,
+					url: externalToolDOUpdate.url,
+					logoUrl: externalToolDOUpdate.logoUrl,
+					parameters: [
+						{
+							name: customParameterDO.name,
+							displayName: customParameterDO.displayName,
+							description: customParameterDO.description,
+							default: customParameterDO.default,
+							location: customParameterDO.location,
+							scope: customParameterDO.scope,
+							type: customParameterDO.type,
+							regex: customParameterDO.regex,
+							regexComment: customParameterDO.regexComment,
+							isOptional: customParameterDO.isOptional,
+							isProtected: customParameterDO.isProtected,
+						},
+					],
+					isHidden: externalToolDOUpdate.isHidden,
+					openNewTab: externalToolDOUpdate.openNewTab,
+					config: {
+						type: ToolConfigType.BASIC,
+						baseUrl: 'mockUrl',
+					},
+					isDeactivated: externalToolDOUpdate.isDeactivated,
+					createdAt: externalToolDOUpdate.createdAt,
+					medium: externalToolDOUpdate.medium,
+					restrictToContexts: externalToolDOUpdate.restrictToContexts,
+				});
 			});
 		});
 
@@ -389,7 +531,6 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.baseUrl = 'mockUrl';
 				lti11ConfigParams.key = 'mockKey';
 				lti11ConfigParams.secret = 'mockSecret';
-				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 				lti11ConfigParams.launch_presentation_locale = 'de-DE';
@@ -398,7 +539,6 @@ describe('ExternalToolRequestMapper', () => {
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
-					resource_link_id: 'mockLink',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
@@ -428,6 +568,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = lti11ConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
+				externalToolUpdateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -450,9 +591,9 @@ describe('ExternalToolRequestMapper', () => {
 						parameters: [customParameterDO],
 						isHidden: true,
 						openNewTab: true,
-						version: 1,
 						config: lti11ToolConfigDO,
 						isDeactivated: false,
+						createdAt: undefined,
 					},
 					externalToolUpdateParams.id
 				);
@@ -460,15 +601,53 @@ describe('ExternalToolRequestMapper', () => {
 				return {
 					externalToolUpdateParams,
 					externalToolDOUpdate,
+					customParameterDO,
+					lti11ToolConfigDO,
 				};
 			};
 
 			it('should map the request to external tool DO with lti11 config', () => {
-				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
+				const { externalToolUpdateParams, externalToolDOUpdate, customParameterDO, lti11ToolConfigDO } = setup();
 
-				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolUpdateParams);
 
-				expect(result).toEqual(externalToolDOUpdate);
+				expect(result).toEqual<ExternalToolUpdate>({
+					id: externalToolDOUpdate.id,
+					name: externalToolDOUpdate.name,
+					description: externalToolDOUpdate.description,
+					url: externalToolDOUpdate.url,
+					logoUrl: externalToolDOUpdate.logoUrl,
+					parameters: [
+						{
+							name: customParameterDO.name,
+							displayName: customParameterDO.displayName,
+							description: customParameterDO.description,
+							default: customParameterDO.default,
+							location: customParameterDO.location,
+							scope: customParameterDO.scope,
+							type: customParameterDO.type,
+							regex: customParameterDO.regex,
+							regexComment: customParameterDO.regexComment,
+							isOptional: customParameterDO.isOptional,
+							isProtected: customParameterDO.isProtected,
+						},
+					],
+					isHidden: externalToolDOUpdate.isHidden,
+					openNewTab: externalToolDOUpdate.openNewTab,
+					config: {
+						privacy_permission: lti11ToolConfigDO.privacy_permission,
+						secret: lti11ToolConfigDO.secret,
+						key: lti11ToolConfigDO.key,
+						lti_message_type: lti11ToolConfigDO.lti_message_type,
+						type: lti11ToolConfigDO.type,
+						baseUrl: lti11ToolConfigDO.baseUrl,
+						launch_presentation_locale: lti11ToolConfigDO.launch_presentation_locale,
+					},
+					isDeactivated: externalToolDOUpdate.isDeactivated,
+					createdAt: externalToolDOUpdate.createdAt,
+					medium: externalToolDOUpdate.medium,
+					restrictToContexts: externalToolDOUpdate.restrictToContexts,
+				});
 			});
 		});
 
@@ -520,6 +699,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = oauth2ConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
+				externalToolUpdateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -542,9 +722,9 @@ describe('ExternalToolRequestMapper', () => {
 						parameters: [customParameterDO],
 						isHidden: true,
 						openNewTab: true,
-						version: 1,
 						config: oauth2ToolConfigDO,
 						isDeactivated: false,
+						createdAt: undefined,
 					},
 					externalToolUpdateParams.id
 				);
@@ -552,15 +732,55 @@ describe('ExternalToolRequestMapper', () => {
 				return {
 					externalToolUpdateParams,
 					externalToolDOUpdate,
+					customParameterDO,
+					oauth2ToolConfigDO,
 				};
 			};
 
 			it('should map the request to external tool DO with oauth2', () => {
-				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
+				const { externalToolUpdateParams, externalToolDOUpdate, customParameterDO, oauth2ToolConfigDO } = setup();
 
-				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolUpdateParams);
 
-				expect(result).toEqual(externalToolDOUpdate);
+				expect(result).toEqual<ExternalToolUpdate>({
+					id: externalToolDOUpdate.id,
+					name: externalToolDOUpdate.name,
+					description: externalToolDOUpdate.description,
+					url: externalToolDOUpdate.url,
+					logoUrl: externalToolDOUpdate.logoUrl,
+					parameters: [
+						{
+							name: customParameterDO.name,
+							displayName: customParameterDO.displayName,
+							description: customParameterDO.description,
+							default: customParameterDO.default,
+							location: customParameterDO.location,
+							scope: customParameterDO.scope,
+							type: customParameterDO.type,
+							regex: customParameterDO.regex,
+							regexComment: customParameterDO.regexComment,
+							isOptional: customParameterDO.isOptional,
+							isProtected: customParameterDO.isProtected,
+						},
+					],
+					isHidden: externalToolDOUpdate.isHidden,
+					openNewTab: externalToolDOUpdate.openNewTab,
+					config: {
+						clientId: oauth2ToolConfigDO.clientId,
+						type: oauth2ToolConfigDO.type,
+						baseUrl: oauth2ToolConfigDO.baseUrl,
+						clientSecret: oauth2ToolConfigDO.clientSecret,
+						frontchannelLogoutUri: oauth2ToolConfigDO.frontchannelLogoutUri,
+						skipConsent: oauth2ToolConfigDO.skipConsent,
+						scope: oauth2ToolConfigDO.scope,
+						redirectUris: oauth2ToolConfigDO.redirectUris,
+						tokenEndpointAuthMethod: oauth2ToolConfigDO.tokenEndpointAuthMethod,
+					},
+					isDeactivated: externalToolDOUpdate.isDeactivated,
+					createdAt: externalToolDOUpdate.createdAt,
+					medium: externalToolDOUpdate.medium,
+					restrictToContexts: externalToolDOUpdate.restrictToContexts,
+				});
 			});
 		});
 	});

@@ -2,15 +2,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { ColumnBoardNode } from '@shared/domain/entity';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	courseFactory,
-} from '@shared/testing';
+import { ApiValidationError } from '@shared/common';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 
@@ -45,7 +41,7 @@ describe(`board update title (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -74,7 +70,7 @@ describe(`board update title (api)`, () => {
 
 			await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
 
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
@@ -86,9 +82,41 @@ describe(`board update title (api)`, () => {
 			const sanitizedTitle = 'foo bar';
 
 			await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: unsanitizedTitle });
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
+		});
+
+		it('should return status 400 when title is too long', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const newTitle = 'a'.repeat(101);
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+
+			expect((response.body as ApiValidationError).validationErrors).toEqual([
+				{
+					errors: ['title must be shorter than or equal to 100 characters'],
+					field: ['title'],
+				},
+			]);
+			expect(response.status).toEqual(400);
+		});
+
+		it('should return status 400 when title is empty string', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const newTitle = '';
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+
+			expect((response.body as ApiValidationError).validationErrors).toEqual([
+				{
+					errors: ['title must be longer than or equal to 1 characters'],
+					field: ['title'],
+				},
+			]);
+			expect(response.status).toEqual(400);
 		});
 	});
 
@@ -100,7 +128,7 @@ describe(`board update title (api)`, () => {
 			await em.persistAndFlush([studentUser, course]);
 
 			const title = 'old title';
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				title,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
@@ -122,7 +150,7 @@ describe(`board update title (api)`, () => {
 
 			expect(response.status).toEqual(403);
 
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 			expect(result.title).toEqual(title);
 		});
 	});

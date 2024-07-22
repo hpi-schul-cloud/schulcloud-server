@@ -4,28 +4,25 @@ import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionServi
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
-import { OauthConfigDto } from '@modules/system/service';
-import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { OauthConfigEntity } from '@modules/system/entity';
+import { SystemService } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
-import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { LegacySystemService } from '@src/modules/system';
+import { System } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	AuthCodeFailureLoggableException,
 	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
@@ -51,12 +48,12 @@ describe('OAuthService', () => {
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let systemService: DeepMocked<LegacySystemService>;
+	let systemService: DeepMocked<SystemService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
-	let testSystem: SystemEntity;
+	let testSystem: System;
 	let testOauthConfig: OauthConfigEntity;
 
 	const hostUri = 'https://mock.de';
@@ -88,8 +85,8 @@ describe('OAuthService', () => {
 					useValue: createMock<ProvisioningService>(),
 				},
 				{
-					provide: LegacySystemService,
-					useValue: createMock<LegacySystemService>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: OauthAdapterService,
@@ -106,7 +103,7 @@ describe('OAuthService', () => {
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		systemService = module.get(LegacySystemService);
+		systemService = module.get(SystemService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
 		schoolService = module.get(LegacySchoolService);
@@ -131,41 +128,41 @@ describe('OAuthService', () => {
 			}
 		});
 
-		testSystem = systemEntityFactory.withOauthConfig().buildWithId();
+		testSystem = systemFactory.withOauthConfig().build();
 		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});
 
 	describe('requestToken', () => {
 		const setupRequest = () => {
 			const code = '43534543jnj543342jn2';
-			const tokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
+			const oauthToken: OAuthTokenDto = {
+				accessToken: 'accessToken',
+				idToken: 'idToken',
+				refreshToken: 'refreshToken',
 			};
 
 			return {
 				code,
-				tokenResponse,
+				oauthToken,
 			};
 		};
 
 		beforeEach(() => {
-			const { tokenResponse } = setupRequest();
+			const { oauthToken } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(tokenResponse);
+			oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 		});
 
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
-				const { code, tokenResponse } = setupRequest();
+				const { code, oauthToken } = setupRequest();
 
 				const result: OAuthTokenDto = await service.requestToken(code, testOauthConfig, 'redirectUri');
 
 				expect(result).toEqual<OAuthTokenDto>({
-					idToken: tokenResponse.id_token,
-					accessToken: tokenResponse.access_token,
-					refreshToken: tokenResponse.refresh_token,
+					idToken: oauthToken.idToken,
+					accessToken: oauthToken.accessToken,
+					refreshToken: oauthToken.refreshToken,
 				});
 			});
 		});
@@ -202,84 +199,55 @@ describe('OAuthService', () => {
 		const setup = () => {
 			const authCode = '43534543jnj543342jn2';
 
-			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				clientId: '12345',
-				clientSecret: 'mocksecret',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-				grantType: 'authorization_code',
-				scope: 'openid uuid',
-				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
-				provider: 'mock_provider',
-				logoutEndpoint: 'mock_logoutEndpoint',
-				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
-				redirectUri: 'mock_codeRedirectUri',
-			});
-			const system: SystemDto = new SystemDto({
-				id: 'systemId',
-				type: 'oauth',
-				oauthConfig,
+			const system: System = systemFactory.withOauthConfig().build({
+				displayName: 'External System',
 			});
 
-			const oauthTokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
+			const ldapSystem: System = systemFactory.withLdapConfig().build({
+				displayName: 'External System',
+			});
+
+			const oauthToken: OAuthTokenDto = {
+				accessToken: 'accessToken',
+				idToken: 'idToken',
+				refreshToken: 'refreshToken',
 			};
 
 			return {
 				authCode,
 				system,
-				oauthTokenResponse,
-				oauthConfig,
+				oauthToken,
+				ldapSystem,
 			};
 		};
 
 		describe('when system does not have oauth config', () => {
 			it('should authenticate a user', async () => {
-				const { authCode, system, oauthTokenResponse } = setup();
+				const { authCode, system, oauthToken } = setup();
 				systemService.findById.mockResolvedValue(testSystem);
 				oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
-				oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
+				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 
-				const result: OAuthTokenDto = await service.authenticateUser(system.id!, 'redirectUri', authCode);
+				const result: OAuthTokenDto = await service.authenticateUser(system.id, 'redirectUri', authCode);
 
 				expect(result).toEqual<OAuthTokenDto>({
-					accessToken: oauthTokenResponse.access_token,
-					idToken: oauthTokenResponse.id_token,
-					refreshToken: oauthTokenResponse.refresh_token,
+					accessToken: oauthToken.accessToken,
+					idToken: oauthToken.idToken,
+					refreshToken: oauthToken.refreshToken,
 				});
 			});
 		});
 
 		describe('when system does not have oauth config', () => {
 			it('the authentication should fail', async () => {
-				const { authCode, system } = setup();
-				system.oauthConfig = undefined;
+				const { authCode, ldapSystem } = setup();
 
-				systemService.findById.mockResolvedValueOnce(system);
+				systemService.findById.mockResolvedValueOnce(ldapSystem);
 
 				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 
 				await expect(func).rejects.toThrow(new OauthConfigMissingLoggableException(testSystem.id));
-			});
-		});
-
-		describe('when query has an error code', () => {
-			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', 'redirectUri', undefined, 'errorCode');
-
-				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException('errorCode'));
-			});
-		});
-
-		describe('when query has no code and no error', () => {
-			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', 'redirectUri');
-
-				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException());
 			});
 		});
 	});

@@ -3,13 +3,13 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, LdapEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 import { DatabaseManagementUc } from './database-management.uc';
@@ -655,6 +655,34 @@ describe('DatabaseManagementService', () => {
 				(c) => `${c.collectionName}:${c.data.length}`
 			);
 			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
+		});
+	});
+
+	describe('migration', () => {
+		it('should call migrationUp', async () => {
+			dbService.migrationUp = jest.fn();
+			await uc.migrationUp();
+			expect(dbService.migrationUp).toHaveBeenCalled();
+		});
+		it('should call migrationUp with params', async () => {
+			dbService.migrationUp = jest.fn();
+			await uc.migrationUp('foo', 'bar', 'baz');
+			expect(dbService.migrationUp).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+		it('should call migrationDown', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationDown();
+			expect(dbService.migrationDown).toHaveBeenCalled();
+		});
+		it('should call migrationDown with params', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationDown('foo', 'bar', 'baz');
+			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+		it('should call migrationPending', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationPending();
+			expect(dbService.migrationPending).toHaveBeenCalled();
 		});
 	});
 });

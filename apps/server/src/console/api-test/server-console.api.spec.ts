@@ -29,7 +29,7 @@ describe('ServerConsole (API)', () => {
 		consoleService.resetCli();
 	});
 
-	it('should poduce default output when executing "console server test"', async () => {
+	it('should produce default output when executing "console server test"', async () => {
 		await execute(bootstrap, ['server', 'test']);
 		expect(logMock).toHaveBeenCalledWith('Schulcloud Server API');
 	});

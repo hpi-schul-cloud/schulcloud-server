@@ -137,7 +137,8 @@
 			"GROUP_LIST",
 			"GROUP_FULL_ADMIN",
 			"SCHOOL_SYSTEM_EDIT",
-			"SCHOOL_SYSTEM_VIEW"
+			"SCHOOL_SYSTEM_VIEW",
+			"USER_CHANGE_OWN_NAME"
 		],
 		"__v": 2
 	},
@@ -195,7 +196,12 @@
 			"TOOL_EDIT",
 			"YEARS_EDIT",
 			"GROUP_LIST",
-			"GROUP_FULL_ADMIN"
+			"GROUP_FULL_ADMIN",
+			"USER_CHANGE_OWN_NAME",
+			"ACCOUNT_VIEW",
+			"ACCOUNT_DELETE",
+			"USER_LOGIN_MIGRATION_ROLLBACK",
+			"INSTANCE_VIEW"
 		],
 		"__v": 2
 	},
@@ -205,7 +211,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-10-18T05:59:16.621Z"
+			"$date": "2024-04-19T10:32:51.070Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -253,7 +259,8 @@
 			"HOMEWORK_EDIT",
 			"CONTEXT_TOOL_ADMIN",
 			"JOIN_MEETING",
-			"GROUP_LIST"
+			"GROUP_LIST",
+			"USER_CHANGE_OWN_NAME"
 		],
 		"__v": 2
 	},

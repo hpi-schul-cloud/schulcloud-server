@@ -50,6 +50,8 @@ spec:
             name: preview-generator-configmap
         - secretRef:
             name: preview-generator-secret
+        - secretRef:
+            name: api-files-secret
         command: ['npm', 'run', 'nest:start:preview-generator-amqp:prod']
         resources:
           limits:

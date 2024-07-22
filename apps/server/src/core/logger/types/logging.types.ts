@@ -1,3 +1,6 @@
+/**
+ * Information inside this file should be placed in shared, type are copied to it.
+ */
 export type LogMessage = {
 	message: string;
 	data?: LogMessageData;
@@ -7,7 +10,7 @@ export type ErrorLogMessage = {
 	error?: Error;
 	type: string; // TODO: use enum
 	stack?: string;
-	data?: { [key: string]: string | number | boolean | undefined };
+	data?: LogMessageDataObject;
 };
 
 export type ValidationErrorLogMessage = {

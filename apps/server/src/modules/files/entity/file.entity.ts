@@ -37,12 +37,16 @@ export interface FileEntityProps {
 @Index({ options: { 'permissions.refId': 1 } })
 export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
+	@Index()
 	deletedAt?: Date;
 
-	@Property()
+	// you have to set the type explicitly to boolean, otherwise metadata will be wrong
+	@Property({ type: 'boolean' })
+	@Index()
 	deleted = false;
 
-	@Property()
+	// you have to set the type explicitly to boolean, otherwise metadata will be wrong
+	@Property({ type: 'boolean' })
 	isDirectory = false;
 
 	@Property()
@@ -93,6 +97,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	}
 
 	@Enum({ nullable: false })
+	@Index()
 	refOwnerModel: FileOwnerModel;
 
 	@Property({ fieldName: 'creator', nullable: true })

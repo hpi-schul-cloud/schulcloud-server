@@ -1,46 +1,40 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
+import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { SystemEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { EntityId, SystemType, SystemTypeEnum } from '@shared/domain/types';
-import { System } from '../domain';
-import { LegacySystemService, SystemDto, SystemService } from '../service';
+import { EntityId } from '@shared/domain/types';
+import { System, SystemDeletedEvent, SystemType } from '../domain';
+import { SystemService } from '../service';
 
 @Injectable()
 export class SystemUc {
 	constructor(
-		private readonly legacySystemService: LegacySystemService,
 		private readonly systemService: SystemService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly eventBus: EventBus
 	) {}
 
-	async findByFilter(type?: SystemType, onlyOauth = false): Promise<SystemDto[]> {
-		let systems: SystemDto[];
+	async find(types?: SystemType[]): Promise<System[]> {
+		let systems: System[] = await this.systemService.find({ types });
 
-		if (onlyOauth) {
-			systems = await this.legacySystemService.findByType(SystemTypeEnum.OAUTH);
-		} else {
-			systems = await this.legacySystemService.findByType(type);
-		}
-
-		systems = systems.filter((system: SystemDto) => system.ldapActive !== false);
+		systems = systems.filter((system: System) => system.ldapConfig?.active !== false);
 
 		return systems;
 	}
 
-	async findById(id: EntityId): Promise<SystemDto> {
-		const system: SystemDto = await this.legacySystemService.findById(id);
+	async findById(systemId: EntityId): Promise<System> {
+		const system: System | null = await this.systemService.findById(systemId);
 
-		if (system.ldapActive === false) {
-			throw new EntityNotFoundError(SystemEntity.name, { id });
+		if (!system || system.ldapConfig?.active === false) {
+			throw new NotFoundLoggableException(System.name, { id: systemId });
 		}
 
 		return system;
 	}
 
-	async delete(userId: EntityId, systemId: EntityId): Promise<void> {
+	async delete(userId: EntityId, schoolId: EntityId, systemId: EntityId): Promise<void> {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		if (!system) {
@@ -55,5 +49,7 @@ export class SystemUc {
 		);
 
 		await this.systemService.delete(system);
+
+		await this.eventBus.publish(new SystemDeletedEvent({ schoolId, system }));
 	}
 }

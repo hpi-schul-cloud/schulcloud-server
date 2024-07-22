@@ -1,32 +1,32 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
-import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action, AuthorizationContext, Rule } from '../type';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class LessonRule implements Rule {
+export class LessonRule implements Rule<LessonEntity> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
 		private readonly courseGroupRule: CourseGroupRule
 	) {}
 
-	public isApplicable(user: User, entity: LessonEntity): boolean {
-		const isMatched = entity instanceof LessonEntity;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched = object instanceof LessonEntity;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: LessonEntity, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: LessonEntity, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		let hasLessonPermission = false;
 
 		if (action === Action.read) {
-			hasLessonPermission = this.lessonReadPermission(user, entity);
+			hasLessonPermission = this.lessonReadPermission(user, object);
 		} else if (action === Action.write) {
-			hasLessonPermission = this.lessonWritePermission(user, entity);
+			hasLessonPermission = this.lessonWritePermission(user, object);
 		} else {
 			throw new NotImplementedException('Action is not supported.');
 		}

@@ -2,17 +2,23 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { AuthorizationReferenceApiModule } from '@modules/authorization/authorization-reference.api.module';
 import { BoardApiModule } from '@modules/board/board-api.module';
+import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
+import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
+import { MeApiModule } from '@modules/me/me-api.module';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
@@ -26,7 +32,9 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule } from '@modules/user-import';
+import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
+import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
@@ -35,13 +43,14 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { ServerController } from './controller/server.controller';
-import { serverConfig } from './server.config';
+import { ServerConfigController, ServerController, ServerUc } from './api';
+import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AuthorizationReferenceApiModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
@@ -50,6 +59,8 @@ const serverModules = [
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
+	UsersAdminApiModule,
+	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
 	LearnroomApiModule,
 	FilesStorageClientModule,
@@ -64,6 +75,7 @@ const serverModules = [
 		adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+		rocketchatClientTimeoutInMs: Configuration.get('ROCKET_CHAT_CLIENT_TIMEOUT_MS') as number,
 	}),
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
@@ -77,6 +89,11 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
+	MeApiModule,
+	MediaBoardApiModule,
+	CollaborativeTextEditorApiModule,
+	AlertModule,
+	UserLicenseModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -84,6 +101,9 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
+
+const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
+const controllers = [ServerController, ServerConfigController];
 
 /**
  * Server Module used for production
@@ -105,7 +125,8 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		LoggerModule,
 	],
-	controllers: [ServerController],
+	providers,
+	controllers,
 })
 export class ServerModule {}
 
@@ -124,7 +145,8 @@ export class ServerModule {}
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
-	controllers: [ServerController],
+	providers,
+	controllers,
 })
 export class ServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
@@ -135,7 +157,8 @@ export class ServerTestModule {
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
 				RabbitMQWrapperTestModule,
 			],
-			controllers: [ServerController],
+			providers,
+			controllers,
 		};
 	}
 }

@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPath } from '../helper';
@@ -18,16 +18,17 @@ import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -215,7 +216,7 @@ describe('FilesStorageService download methods', () => {
 			it('calls get with correct params', async () => {
 				const { fileRecord } = setup();
 
-				const path = createPath(fileRecord.schoolId, fileRecord.id);
+				const path = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 				await service.downloadFile(fileRecord);
 

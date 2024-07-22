@@ -13,14 +13,15 @@ import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 @Injectable()
 export class RoomBoardResponseMapper {
 	mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
-		const elements = this.mapBoardElements(board);
+		const elements: BoardElementResponse[] = this.mapBoardElements(board);
 
-		const mapped = new SingleColumnBoardResponse({
+		const mapped: SingleColumnBoardResponse = new SingleColumnBoardResponse({
 			roomId: board.roomId,
 			title: board.title,
 			displayColor: board.displayColor,
 			elements,
 			isArchived: board.isArchived,
+			isSynchronized: board.isSynchronized,
 		});
 
 		return mapped;
@@ -98,6 +99,7 @@ export class RoomBoardResponseMapper {
 			published: columnBoardInfo.published,
 			createdAt: columnBoardInfo.createdAt,
 			updatedAt: columnBoardInfo.updatedAt,
+			layout: columnBoardInfo.layout,
 		});
 
 		const boardElementResponse = new BoardElementResponse({

@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptions } from '@modules/legacy-school';
+import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	schoolFactory,
+	schoolEntityFactory,
 	schoolSystemOptionsFactory,
 	setupEntities,
 	systemEntityFactory,
@@ -90,7 +91,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 		describe('when the user accesses a system at his school with the required permissions', () => {
 			const setup = () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
@@ -132,7 +133,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 		describe('when the user accesses a system at his school, but does not have the required permissions', () => {
 			const setup = () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
@@ -163,7 +164,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 		describe('when the system is not part of the users school', () => {
 			const setup = () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
@@ -195,7 +196,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 			const setup = () => {
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build();
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const user: User = userFactory.buildWithId({ school });

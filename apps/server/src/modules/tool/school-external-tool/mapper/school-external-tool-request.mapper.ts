@@ -1,28 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameterEntry } from '../../common/domain';
-import {
-	CustomParameterEntryParam,
-	SchoolExternalToolConfigurationStatus,
-	SchoolExternalToolPostParams,
-} from '../controller/dto';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
+import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
+import { SchoolExternalToolProps } from '../domain';
 
-@Injectable()
 export class SchoolExternalToolRequestMapper {
-	mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalToolDto {
+	public static mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalToolProps {
 		return {
+			id: new ObjectId().toHexString(),
 			toolId: request.toolId,
 			schoolId: request.schoolId,
-			toolVersion: request.version,
-			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
-			status: new SchoolExternalToolConfigurationStatus({
-				isOutdatedOnScopeSchool: false,
-				isDeactivated: request.isDeactivated,
-			}),
+			parameters: SchoolExternalToolRequestMapper.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
+			isDeactivated: request.isDeactivated,
 		};
 	}
 
-	private mapRequestToCustomParameterEntryDO(
+	private static mapRequestToCustomParameterEntryDO(
 		customParameterParams: CustomParameterEntryParam[]
 	): CustomParameterEntry[] {
 		return customParameterParams.map((customParameterParam: CustomParameterEntryParam) => {

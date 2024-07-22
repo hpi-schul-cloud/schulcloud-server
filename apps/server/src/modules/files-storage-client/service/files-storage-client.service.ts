@@ -1,16 +1,44 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import {
+	DataDeletedEvent,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	UserDeletedEvent,
+} from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { FileDO } from '@src/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
-import { FileRequestInfo } from '../interfaces';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
-export class FilesStorageClientAdapterService {
-	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+@EventsHandler(UserDeletedEvent)
+export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private logger: LegacyLogger,
+		private readonly fileStorageMQProducer: FilesStorageProducer,
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
+	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
+	}
+
+	@UseRequestContext()
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		try {
+			const dataDeleted = await this.deleteUserData(targetRefId);
+			await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		} catch (error) {
+			this.logger.error('error during deletionRequest proccess', error);
+		}
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {
@@ -20,8 +48,8 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
-		const response = await this.fileStorageMQProducer.listFilesOfParent(param);
+	async listFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.listFilesOfParent(parentId);
 
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
@@ -36,9 +64,25 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+	async deleteFiles(fileRecordIds: EntityId[]): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.deleteFiles(fileRecordIds);
+
+		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
+
+		return fileInfos;
+	}
+
+	async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		return response.length;
+		const result = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, response.length, this.getFileRecordsId(response)),
+		]);
+
+		return result;
+	}
+
+	private getFileRecordsId(files: FileDO[]): EntityId[] {
+		return files.map((file) => file.id);
 	}
 }

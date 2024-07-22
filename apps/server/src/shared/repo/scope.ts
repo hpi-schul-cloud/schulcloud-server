@@ -1,12 +1,12 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EmptyResultQuery } from './query/empty-result.query';
+import { EmptyResultQuery } from './query';
 
 type EmptyResultQueryType = typeof EmptyResultQuery;
 
 type ScopeOperator = '$and' | '$or';
 
 export class Scope<T> {
-	private _queries: FilterQuery<T | EmptyResultQueryType>[] = [];
+	private _queries: (FilterQuery<T> | EmptyResultQueryType)[] = [];
 
 	private _operator: ScopeOperator;
 
@@ -32,8 +32,9 @@ export class Scope<T> {
 		this._queries.push(query);
 	}
 
-	allowEmptyQuery(isEmptyQueryAllowed: boolean): Scope<T> {
+	allowEmptyQuery(isEmptyQueryAllowed: boolean): this {
 		this._allowEmptyQuery = isEmptyQueryAllowed;
+
 		return this;
 	}
 }

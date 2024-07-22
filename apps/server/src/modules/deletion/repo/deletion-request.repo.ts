@@ -2,10 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionRequestEntity } from '../entity';
-import { DeletionRequestScope } from './deletion-request-scope';
-import { DeletionRequestMapper } from './mapper/deletion-request.mapper';
+import { DeletionRequest } from '../domain/do';
+import { DeletionRequestEntity } from './entity';
+import { DeletionRequestMapper } from './mapper';
+import { DeletionRequestScope } from './scope';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -31,9 +31,10 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(limit?: number): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(threshold: number, limit?: number): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus();
+		const modificationThreshold = new Date(Date.now() - threshold);
+		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(modificationThreshold);
 		const order = { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
@@ -44,6 +45,14 @@ export class DeletionRequestRepo {
 		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
 
 		return mapped;
+	}
+
+	async countPendingDeletionRequests(): Promise<number> {
+		const scope = new DeletionRequestScope().byStatusPending();
+
+		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+
+		return numberItemsWithStatusPending;
 	}
 
 	async update(deletionRequest: DeletionRequest): Promise<void> {
@@ -70,6 +79,17 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.failed();
+		await this.em.persistAndFlush(deletionRequest);
+
+		return true;
+	}
+
+	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
+		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
+
+		deletionRequest.pending();
 		await this.em.persistAndFlush(deletionRequest);
 
 		return true;

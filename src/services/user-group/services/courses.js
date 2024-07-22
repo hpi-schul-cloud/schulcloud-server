@@ -21,6 +21,7 @@ const restrictToCurrentSchoolIfNotLocal = ifNotLocal(restrictToCurrentSchool);
 const restrictToUsersOwnCoursesIfNotLocal = ifNotLocal(restrictToUsersOwnCourses);
 
 const {
+	splitClassIdsInGroupsAndClasses,
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
 	removeColumnBoard,
@@ -28,6 +29,7 @@ const {
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
 	removeSubstitutionDuplicates,
+	restrictChangesToSyncedCourse,
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
@@ -94,6 +96,7 @@ const courseHooks = {
 		create: [
 			injectUserId,
 			hasPermission('COURSE_CREATE'),
+			splitClassIdsInGroupsAndClasses,
 			removeSubstitutionDuplicates,
 			restrictToCurrentSchoolIfNotLocal,
 			iff(isProvider('external'), preventPopulate),
@@ -110,6 +113,8 @@ const courseHooks = {
 			restrictToCurrentSchoolIfNotLocal,
 			restrictChangesToArchivedCourse,
 			permitGroupOperation,
+			restrictChangesToSyncedCourse,
+			splitClassIdsInGroupsAndClasses,
 			removeSubstitutionDuplicates,
 			deleteWholeClassFromCourse,
 			iff(isProvider('external'), preventPopulate),

@@ -1,6 +1,6 @@
-import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 import { CustomParameter } from '../../../common/domain';
 import { ToolContextType } from '../../../common/enum';
+import { BasicToolConfig, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -16,8 +16,12 @@ export type Oauth2ToolConfigUpdate = PartialBy<Oauth2ToolConfig, 'clientSecret'>
 
 export type CustomParameterDto = CustomParameter;
 
+export type ExternalToolMediumDto = ExternalToolMedium;
+
 export type ExternalToolDto<T> = {
 	name: string;
+
+	description?: string;
 
 	url?: string;
 
@@ -35,9 +39,11 @@ export type ExternalToolDto<T> = {
 
 	openNewTab: boolean;
 
-	version: number;
-
 	restrictToContexts?: ToolContextType[];
+
+	medium?: ExternalToolMediumDto;
+
+	createdAt?: Date;
 };
 
 export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;

@@ -1,17 +1,43 @@
+import { SchulconnexClientModule } from '@infra/schulconnex-client';
+import { AccountModule } from '@modules/account';
+import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { OauthModule } from '@modules/oauth';
+import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
+import { UserLoginMigrationModule } from '@modules/user-login-migration';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '../account';
-import { AuthorizationModule } from '../authorization';
 import { ImportUserController } from './controller/import-user.controller';
-import { UserImportUc } from './uc/user-import.uc';
+import { SchulconnexFetchImportUsersService, UserImportService } from './service';
+import { UserImportFetchUc, UserImportUc } from './uc';
 
 @Module({
-	imports: [LoggerModule, AccountModule, LegacySchoolModule, AuthorizationModule],
+	imports: [
+		LoggerModule,
+		AccountModule,
+		LegacySchoolModule,
+		AuthorizationModule,
+		HttpModule,
+		UserModule,
+		OauthModule,
+		SchulconnexClientModule.registerAsync(),
+		UserLoginMigrationModule,
+		SystemModule,
+	],
 	controllers: [ImportUserController],
-	providers: [UserImportUc, ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo],
-	exports: [],
+	providers: [
+		UserImportUc,
+		UserImportFetchUc,
+		ImportUserRepo,
+		LegacySchoolRepo,
+		UserRepo,
+		UserImportService,
+		SchulconnexFetchImportUsersService,
+	],
+	exports: [UserImportService],
 })
 /**
  * Module to provide user migration,

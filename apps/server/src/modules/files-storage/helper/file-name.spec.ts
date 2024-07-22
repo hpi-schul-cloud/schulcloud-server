@@ -1,6 +1,6 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { ObjectId } from 'bson';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { FileRecord } from '../entity';
@@ -9,12 +9,12 @@ import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.e
 describe('File Name Helper', () => {
 	const setupFileRecords = () => {
 		const userId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
+		const storageLocationId: EntityId = new ObjectId().toHexString();
 
 		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 		];
 
 		return fileRecords;

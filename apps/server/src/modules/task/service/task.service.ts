@@ -1,23 +1,45 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReport,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Task } from '@shared/domain/entity';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { IFindOptions } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
-import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
-export class TaskService {
+@EventsHandler(UserDeletedEvent)
+export class TaskService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(TaskService.name);
+	}
+
+	@UseRequestContext()
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findBySingleParent(
@@ -48,11 +70,29 @@ export class TaskService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
+		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] = await Promise.all([
+			this.deleteTasksByOnlyCreator(creatorId),
+			this.removeCreatorIdFromTasks(creatorId),
+			this.removeUserFromFinished(creatorId),
+		]);
+
+		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
+		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
+
+		const result = DomainDeletionReportBuilder.build(DomainName.TASK, [
+			tasksDeleted,
+			DomainOperationReportBuilder.build(OperationType.UPDATE, modifiedTasksCount, modifiedTasksRef),
+		]);
+
+		return result;
+	}
+
+	public async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperationReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.PENDING
 			)
@@ -65,11 +105,16 @@ export class TaskService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
+		const result = DomainOperationReportBuilder.build(
+			OperationType.DELETE,
+			counterOfTasksOnlyWithCreatorId,
+			this.getTasksId(tasksByOnlyCreatorId)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksOnlyWithCreatorId,
@@ -80,11 +125,11 @@ export class TaskService {
 		return result;
 	}
 
-	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperation> {
+	public async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperationReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.PENDING
 			)
@@ -97,11 +142,16 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+		const result = DomainOperationReportBuilder.build(
+			OperationType.UPDATE,
+			counterOfTasksWithCoursesorLessons,
+			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksWithCoursesorLessons,
@@ -111,11 +161,11 @@ export class TaskService {
 		return result;
 	}
 
-	async removeUserFromFinished(userId: EntityId): Promise<DomainOperation> {
+	public async removeUserFromFinished(userId: EntityId): Promise<DomainOperationReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Task archive collection',
-				DomainModel.TASK,
+				DomainName.TASK,
 				userId,
 				StatusModel.PENDING
 			)
@@ -130,11 +180,16 @@ export class TaskService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
+		const result = DomainOperationReportBuilder.build(
+			OperationType.UPDATE,
+			counterOfTasksWithUserInFinished,
+			this.getTasksId(tasksWithUserInFinished)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Task archive collection',
-				DomainModel.TASK,
+				DomainName.TASK,
 				userId,
 				StatusModel.FINISHED,
 				counterOfTasksWithUserInFinished,
@@ -143,5 +198,9 @@ export class TaskService {
 		);
 
 		return result;
+	}
+
+	private getTasksId(tasks: Task[]): EntityId[] {
+		return tasks.map((task) => task.id);
 	}
 }

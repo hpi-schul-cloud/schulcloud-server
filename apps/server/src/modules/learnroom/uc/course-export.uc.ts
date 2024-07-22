@@ -1,19 +1,30 @@
 import { AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
-import { Injectable } from '@nestjs/common';
+import { CommonCartridgeVersion } from '@modules/common-cartridge';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CommonCartridgeVersion } from '../common-cartridge';
+import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
 export class CourseExportUc {
 	constructor(
+		private readonly configService: ConfigService<LearnroomConfig, true>,
 		private readonly courseExportService: CommonCartridgeExportService,
 		private readonly authorizationService: AuthorizationReferenceService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
+	public async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[],
+		tasks: string[],
+		columnBoards: string[]
+	): Promise<Buffer> {
+		this.checkFeatureEnabled();
 		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
@@ -22,6 +33,12 @@ export class CourseExportUc {
 			context
 		);
 
-		return this.courseExportService.exportCourse(courseId, userId, version);
+		return this.courseExportService.exportCourse(courseId, userId, version, topics, tasks, columnBoards);
+	}
+
+	private checkFeatureEnabled(): void {
+		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')) {
+			throw new NotFoundException();
+		}
 	}
 }

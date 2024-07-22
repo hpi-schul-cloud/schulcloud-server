@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  MONGODB_VERSION: 4.4
+  MONGODB_VERSION: 6.0
   NODE_VERSION: '18'
 jobs:
   feathers_tests_cov:
@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.10.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: environment setup
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -53,20 +53,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.10.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        timeout-minutes: 25
+        timeout-minutes: 15
         run: export RUN_WITHOUT_JEST_COVERAGE='true' && export NODE_OPTIONS='--max_old_space_size=4096' && ./node_modules/.bin/jest --shard=${{ matrix.shard }}/${{ strategy.job-total }} --coverage --force-exit
       - name: save-coverage
         run: mv coverage/lcov.info coverage/${{matrix.shard}}.info
       - name: "upload-artifacts"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-artifacts
+          name: coverage-artifacts-${{ matrix.shard }}
           path: coverage/
   sonarcloud:
       name: SonarCloud coverage
@@ -76,15 +76,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: coverage-artifacts
+          pattern: coverage-artifacts-*
           path: coverage
+          merge-multiple: true
       - name: Merge Code Coverage
         run: |
           sudo apt-get install -y lcov
           find coverage -name *.info -exec echo -a {} \; | xargs lcov -o merged-lcov.info
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'

@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountService, Account } from '@modules/account';
 import { ICurrentUser } from '@modules/authentication';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -8,8 +7,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
-import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
+import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { AuthenticationService } from './authentication.service';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 jest.mock('jsonwebtoken');
 
@@ -21,12 +21,12 @@ describe('AuthenticationService', () => {
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
-	const mockAccount: AccountDto = {
+	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		username: 'mockedUsername',
-	};
+	});
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -65,7 +65,7 @@ describe('AuthenticationService', () => {
 		describe('when resolving an account without system id', () => {
 			it('should find an account', async () => {
 				accountService.searchByUsernameExactMatch.mockResolvedValueOnce([
-					[{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
+					[{ ...mockAccount, systemId: 'mockSystemId' } as Account, mockAccount],
 					2,
 				]);
 				const account = await authenticationService.loadAccount('username');
@@ -75,7 +75,10 @@ describe('AuthenticationService', () => {
 
 		describe('when resolving an account with system id', () => {
 			it('should find an account', async () => {
-				accountService.findByUsernameAndSystemId.mockResolvedValueOnce({ ...mockAccount, systemId: 'mockSystemId' });
+				accountService.findByUsernameAndSystemId.mockResolvedValueOnce({
+					...mockAccount,
+					systemId: 'mockSystemId',
+				} as Account);
 				const account = await authenticationService.loadAccount('username', 'mockSystemId');
 				expect(account).toEqual({ ...mockAccount, systemId: 'mockSystemId' });
 			});
@@ -87,6 +90,23 @@ describe('AuthenticationService', () => {
 				await expect(authenticationService.loadAccount('username', 'mockSystemId')).rejects.toThrow(
 					UnauthorizedException
 				);
+			});
+		});
+
+		describe('when account is deactivated', () => {
+			const setup = () =>
+				new Account({
+					id: 'mockAccountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'mockedUsername',
+					deactivatedAt: new Date(),
+				});
+			it('should throw USER_ACCOUNT_DEACTIVATED exception', async () => {
+				const deactivatedAccount = setup();
+				accountService.findByUsernameAndSystemId.mockResolvedValue(deactivatedAccount);
+				const func = authenticationService.loadAccount('username', 'mockSystemId');
+				await expect(func).rejects.toThrow(UserAccountDeactivatedLoggableException);
 			});
 		});
 	});
@@ -146,16 +166,24 @@ describe('AuthenticationService', () => {
 			it('should fail for account with recently failed login', () => {
 				const lasttriedFailedLogin = setup(14);
 				expect(() =>
-					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
 				).toThrow(BruteForceError);
 			});
 
 			it('should not fail for account with failed login above threshold', () => {
 				const lasttriedFailedLogin = setup(16);
 				expect(() =>
-					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
 				).not.toThrow();
 			});
+		});
+	});
+
+	describe('updateLastLogin', () => {
+		it('should call accountService to update last login', async () => {
+			await authenticationService.updateLastLogin('mockAccountId');
+
+			expect(accountService.updateLastLogin).toHaveBeenCalledWith('mockAccountId', expect.any(Date));
 		});
 	});
 

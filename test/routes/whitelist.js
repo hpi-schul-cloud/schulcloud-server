@@ -10,7 +10,6 @@ const whitelistNoJwt = {
 	'oauth2/baseUrl': { get: 200 },
 	registrationlink: { post: 201 },
 	roster: { get: 200 },
-	schoolsList: { get: 200 },
 	'tools/link': { post: 404 },
 	years: { get: 200 },
 	'system_info/haproxy': { get: 200 },
@@ -20,7 +19,6 @@ const whitelistNoJwt = {
 
 const whitelistInvalidJwt = {
 	...whitelistNoJwt,
-	schoolsList: { get: 401 },
 	years: { get: 401 },
 	gradeLevels: { get: 401 },
 };

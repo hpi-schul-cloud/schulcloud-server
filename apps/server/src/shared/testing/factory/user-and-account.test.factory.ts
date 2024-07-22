@@ -1,9 +1,10 @@
-import { Account, SchoolEntity, User } from '@shared/domain/entity';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
 import _ from 'lodash';
-import { accountFactory } from './account.factory';
+import { accountFactory } from '@src/modules/account/testing/account.factory';
 import { userFactory } from './user.factory';
 
 interface UserParams {
@@ -27,7 +28,7 @@ export class UserAndAccountTestFactory {
 		return userParams;
 	}
 
-	private static buildAccount(user: User, params: UserAndAccountParams = {}): Account {
+	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
 		const account = accountFactory.withUser(user).build(accountParams);
 		return account;
@@ -37,7 +38,7 @@ export class UserAndAccountTestFactory {
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): {
-		studentAccount: Account;
+		studentAccount: AccountEntity;
 		studentUser: User;
 	} {
 		const user = userFactory
@@ -51,7 +52,7 @@ export class UserAndAccountTestFactory {
 	public static buildTeacher(
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
-	): { teacherAccount: Account; teacherUser: User } {
+	): { teacherAccount: AccountEntity; teacherUser: User } {
 		const user = userFactory
 			.asTeacher(additionalPermissions)
 			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
@@ -63,12 +64,24 @@ export class UserAndAccountTestFactory {
 	public static buildAdmin(
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
-	): { adminAccount: Account; adminUser: User } {
+	): { adminAccount: AccountEntity; adminUser: User } {
 		const user = userFactory
 			.asAdmin(additionalPermissions)
 			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
 		const account = UserAndAccountTestFactory.buildAccount(user, params);
 
 		return { adminAccount: account, adminUser: user };
+	}
+
+	public static buildSuperhero(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { superheroAccount: AccountEntity; superheroUser: User } {
+		const user = userFactory
+			.asSuperhero(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { superheroAccount: account, superheroUser: user };
 	}
 }

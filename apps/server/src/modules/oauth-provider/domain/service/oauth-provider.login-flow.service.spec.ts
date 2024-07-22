@@ -1,21 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LtiToolService } from '@modules/lti-tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { ToolConfig } from '@modules/tool/tool-config';
 import { NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject';
-import { externalToolFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
-import { LtiToolService } from '../../../lti-tool';
-import { ExternalTool } from '../../../tool/external-tool/domain';
-import { ExternalToolService } from '../../../tool/external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../../tool/tool-config';
+import { ltiToolDOFactory, setupEntities } from '@shared/testing';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
-describe('OauthProviderLoginFlowService', () => {
+describe(OauthProviderLoginFlowService.name, () => {
 	let module: TestingModule;
 	let service: OauthProviderLoginFlowService;
 
 	let ltiToolService: DeepMocked<LtiToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let toolFeatures: IToolFeatures;
+	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,10 +32,8 @@ describe('OauthProviderLoginFlowService', () => {
 					useValue: createMock<ExternalToolService>(),
 				},
 				{
-					provide: ToolFeatures,
-					useValue: {
-						ctlToolsTabEnabled: false,
-					},
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 			],
 		}).compile();
@@ -41,7 +41,7 @@ describe('OauthProviderLoginFlowService', () => {
 		service = module.get(OauthProviderLoginFlowService);
 		ltiToolService = module.get(LtiToolService);
 		externalToolService = module.get(ExternalToolService);
-		toolFeatures = module.get(ToolFeatures);
+		configService = module.get(ConfigService);
 
 		await setupEntities();
 	});
@@ -57,7 +57,7 @@ describe('OauthProviderLoginFlowService', () => {
 	describe('findToolByClientId', () => {
 		describe('when it finds a ctl tool and the ctl feature is active', () => {
 			const setup = () => {
-				toolFeatures.ctlToolsTabEnabled = true;
+				configService.get.mockReturnValue(true);
 
 				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
@@ -80,7 +80,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 		describe('when a lti tool exists and the ctl feature is deactivated', () => {
 			const setup = () => {
-				toolFeatures.ctlToolsTabEnabled = false;
+				configService.get.mockReturnValue(false);
 
 				const tool: LtiToolDO = ltiToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
@@ -110,7 +110,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 		describe('when a lti tool exists and the ctl feature is active and no ctl tool exists', () => {
 			const setup = () => {
-				toolFeatures.ctlToolsTabEnabled = true;
+				configService.get.mockReturnValue(true);
 
 				const tool: LtiToolDO = ltiToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
@@ -141,7 +141,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 		describe('when no lti or ctl tool was found', () => {
 			const setup = () => {
-				toolFeatures.ctlToolsTabEnabled = true;
+				configService.get.mockReturnValue(true);
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 				ltiToolService.findByClientIdAndIsLocal.mockResolvedValue(null);

@@ -1,6 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { InternalServerErrorException } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
@@ -16,8 +26,11 @@ describe(ClassService.name, () => {
 	let module: TestingModule;
 	let service: ClassService;
 	let classesRepo: DeepMocked<ClassesRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				ClassService,
@@ -29,13 +42,22 @@ describe(ClassService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(ClassService);
 		classesRepo = module.get(ClassesRepo);
-
-		await setupEntities();
+		eventBus = module.get(EventBus);
 	});
 
 	beforeEach(() => {
@@ -117,7 +139,7 @@ describe(ClassService.name, () => {
 			it('should throw and error', async () => {
 				const { userId } = setup();
 
-				await expect(service.deleteUserDataFromClasses(userId)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.deleteUserData(userId)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
@@ -128,30 +150,76 @@ describe(ClassService.name, () => {
 				const userId3 = new ObjectId();
 				const class1 = classEntityFactory.withUserIds([userId1, userId2]).build();
 				const class2 = classEntityFactory.withUserIds([userId1, userId3]).build();
-				classEntityFactory.withUserIds([userId2, userId3]).build();
 
 				const mappedClasses = ClassMapper.mapToDOs([class1, class2]);
 
 				classesRepo.findAllByUserId.mockResolvedValue(mappedClasses);
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CLASS, [
+					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [class1.id, class2.id]),
+				]);
+
 				return {
+					expectedResult,
 					userId1,
 				};
 			};
 
 			it('should call classesRepo.findAllByUserId', async () => {
 				const { userId1 } = setup();
-				await service.deleteUserDataFromClasses(userId1.toHexString());
+				await service.deleteUserData(userId1.toHexString());
 
 				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1.toHexString());
 			});
 
 			it('should update classes without updated user', async () => {
-				const { userId1 } = setup();
+				const { expectedResult, userId1 } = setup();
 
-				const result = await service.deleteUserDataFromClasses(userId1.toHexString());
+				const result = await service.deleteUserData(userId1.toHexString());
 
-				expect(result).toEqual(2);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.CLASS;
+			const classId = new ObjectId().toHexString();
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.CLASS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [classId]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

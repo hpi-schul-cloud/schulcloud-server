@@ -9,3 +9,5 @@ export * from './school-id.params';
 export * from './context-ref.params';
 export * from './school-external-tool-id.params';
 export * from './context-external-tool-id.params';
+export { ExternalToolMediumParams } from './external-tool-medium.params';
+export { ExternalToolBulkCreateParams } from './external-tool-bulk-create.params';

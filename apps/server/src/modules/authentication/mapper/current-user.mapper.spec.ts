@@ -1,7 +1,7 @@
 import { ValidationError } from '@shared/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
@@ -65,7 +65,7 @@ describe('CurrentUserMapper', () => {
 			describe('when systemId is provided', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId({
-						school: schoolFactory.buildWithId(),
+						school: schoolEntityFactory.buildWithId(),
 					});
 					const systemId = 'mockSystemId';
 

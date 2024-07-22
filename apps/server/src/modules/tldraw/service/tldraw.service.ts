@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TldrawRepo } from '../repo/tldraw.repo';
+import { TldrawRepo } from '../repo';
 
 @Injectable()
 export class TldrawService {

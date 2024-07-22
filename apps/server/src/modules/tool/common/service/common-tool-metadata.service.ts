@@ -1,4 +1,4 @@
-import { ContentElementService } from '@modules/board';
+import { BoardCommonToolService } from '@modules/board';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
@@ -14,17 +14,15 @@ export class CommonToolMetadataService {
 	constructor(
 		private readonly schoolToolRepo: SchoolExternalToolRepo,
 		private readonly contextToolRepo: ContextExternalToolRepo,
-		@Inject(forwardRef(() => ContentElementService))
-		private readonly contentElementService: ContentElementService
+		@Inject(forwardRef(() => BoardCommonToolService))
+		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
 	async getMetadataForExternalTool(toolId: EntityId): Promise<ExternalToolMetadata> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolToolRepo.findByExternalToolId(toolId);
 
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string =>
-				// We can be sure that the repo returns the id
-				schoolExternalTool.id as string
+			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
 		);
 
 		const externalToolMetadata: ExternalToolMetadata = await this.getMetadata(schoolExternalToolIds);
@@ -43,51 +41,46 @@ export class CommonToolMetadataService {
 	}
 
 	private async getMetadata(schoolExternalToolIds: EntityId[]): Promise<ExternalToolMetadata> {
-		const contextExternalToolCount: Record<ContextExternalToolType, number> = {
-			[ContextExternalToolType.BOARD_ELEMENT]: 0,
-			[ContextExternalToolType.COURSE]: 0,
-		};
+		const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+			schoolExternalToolCount: schoolExternalToolIds.length,
+			contextExternalToolCountPerContext: {
+				[ContextExternalToolType.BOARD_ELEMENT]: 0,
+				[ContextExternalToolType.COURSE]: 0,
+				[ContextExternalToolType.MEDIA_BOARD]: 0,
+			},
+		});
 
 		if (schoolExternalToolIds.length) {
 			await Promise.all(
 				Object.values(ToolContextType).map(async (contextType: ToolContextType): Promise<void> => {
 					const type: ContextExternalToolType = ToolContextMapper.contextMapping[contextType];
 
-					const count: number = await this.countUsageForType(schoolExternalToolIds, type);
+					const contextExternalTools: ContextExternalTool[] =
+						await this.contextToolRepo.findBySchoolToolIdsAndContextType(schoolExternalToolIds, type);
 
-					contextExternalToolCount[type] = count;
+					const count: number = await this.countUsageForType(contextExternalTools, type);
+
+					externalToolMetadata.contextExternalToolCountPerContext[type] = count;
 				})
 			);
 		}
-
-		const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
-			schoolExternalToolCount: schoolExternalToolIds.length,
-			contextExternalToolCountPerContext: contextExternalToolCount,
-		});
 
 		return externalToolMetadata;
 	}
 
 	private async countUsageForType(
-		schoolExternalToolIds: string[],
+		contextExternalTools: ContextExternalTool[],
 		contextType: ContextExternalToolType
 	): Promise<number> {
-		const contextExternalTools: ContextExternalTool[] = await this.contextToolRepo.findBySchoolToolIdsAndContextType(
-			schoolExternalToolIds,
-			contextType
-		);
-
 		let count = 0;
-		if (contextExternalTools.length) {
-			if (contextType === ContextExternalToolType.BOARD_ELEMENT) {
-				count = await this.contentElementService.countBoardUsageForExternalTools(contextExternalTools);
-			} else {
-				const contextIds: EntityId[] = contextExternalTools.map(
-					(contextExternalTool: ContextExternalTool): EntityId => contextExternalTool.contextRef.id
-				);
+		if (contextType === ContextExternalToolType.BOARD_ELEMENT) {
+			count = await this.boardCommonToolService.countBoardUsageForExternalTools(contextExternalTools);
+		} else {
+			const contextIds: EntityId[] = contextExternalTools.map(
+				(contextExternalTool: ContextExternalTool): EntityId => contextExternalTool.contextRef.id
+			);
 
-				count = new Set(contextIds).size;
-			}
+			count = new Set(contextIds).size;
 		}
 
 		return count;

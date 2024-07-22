@@ -26,13 +26,13 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
 
       - name: Log into docker registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Log into quay registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
@@ -81,7 +81,7 @@ jobs:
       contents: write
     steps:
       - name: create sbom
-        uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2
+        uses: aquasecurity/trivy-action@1f6384b6ceecbbc6673526f865b818a2a06b07c9
         with:
           scan-type: 'image'
           format: 'cyclonedx'

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/learnroom/service';
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	ShareTokenContext,
 	ShareTokenDO,
@@ -19,7 +20,8 @@ export class ShareTokenService {
 		private readonly shareTokenRepo: ShareTokenRepo,
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly columnBoardService: ColumnBoardService
 	) {}
 
 	async createToken(
@@ -61,7 +63,11 @@ export class ShareTokenService {
 			case ShareTokenParentType.Task:
 				parentName = (await this.taskService.findById(shareToken.payload.parentId)).name;
 				break;
+			case ShareTokenParentType.ColumnBoard:
+				parentName = (await this.columnBoardService.findById(shareToken.payload.parentId)).title;
+				break;
 			default:
+				throw new UnprocessableEntityException('Invalid parent type');
 		}
 
 		return { shareToken, parentName };

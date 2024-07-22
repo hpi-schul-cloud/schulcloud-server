@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '@shared/testing';
 import {
 	CustomParameterLocation,
@@ -33,7 +34,6 @@ describe('ExternalToolEntity', () => {
 				baseUrl: 'mockBaseUrl',
 				key: 'mockKey',
 				secret: 'mockSecret',
-				resource_link_id: 'mockLink',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 				launch_presentation_locale: 'de-DE',
@@ -51,6 +51,7 @@ describe('ExternalToolEntity', () => {
 				isProtected: false,
 			});
 			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
+				id: new ObjectId().toHexString(),
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -59,7 +60,6 @@ describe('ExternalToolEntity', () => {
 				isHidden: true,
 				isDeactivated: false,
 				openNewTab: true,
-				version: 1,
 			});
 			return {
 				externalToolEntity,

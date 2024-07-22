@@ -1,62 +1,205 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { FilterQuery, Utils } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { AnyBoardNode, BoardExternalReference, getBoardNodeType } from '../domain';
+import { pathOfChildren } from '../domain/path-utils';
+import { BoardNodeEntity } from './entity/board-node.entity';
+import { TreeBuilder } from './tree-builder';
 
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<BoardNode> {
-		let entity = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, id);
-		if (entity) {
-			return entity;
-		}
+	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
+		const props = await this.em.findOneOrFail(BoardNodeEntity, { id });
+		const descendants = await this.findDescendants(props, depth);
 
-		entity = await this.em.findOneOrFail(BoardNode, id);
-		return entity;
+		const builder = new TreeBuilder(descendants);
+		const boardNode = builder.build(props);
+
+		return boardNode;
 	}
 
-	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {
-		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
+	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
-		const descendants = await this.em.find(BoardNode, {
-			path: { $re: `^${node.pathOfChildren}` },
+		// TODO refactor descendants mapping, more DRY?
+		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes = entities.map((props) => {
+			const descentants = descendantsMap[pathOfChildren(props)];
+			const builder = new TreeBuilder(descentants);
+			const boardNode = builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
+		const entities = await this.em.find(BoardNodeEntity, {
+			context: {
+				_contextId: new ObjectId(reference.id),
+				_contextType: reference.type,
+			} as FilterQuery<BoardExternalReference>,
+		});
+
+		// TODO refactor descendants mapping, more DRY?
+		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes = entities.map((props) => {
+			const children = descendantsMap[pathOfChildren(props)];
+			const builder = new TreeBuilder(children);
+			const boardNode = builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	async findByContextExternalToolIds(contextExternalToolIds: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+		const entities = await this.em.find(BoardNodeEntity, {
+			contextExternalToolId: { $in: contextExternalToolIds },
+		});
+
+		// TODO refactor descendants mapping, more DRY?
+		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes = entities.map((props) => {
+			const children = descendantsMap[pathOfChildren(props)];
+			const builder = new TreeBuilder(children);
+			const boardNode = builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	// TODO maybe we don't need that method
+	// async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
+	// 	const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
+	// 	const sortedPaths = entities.map((e) => e.path).sort();
+	// 	const commonPath = sortedPaths[0];
+	// 	const dontMatch = sortedPaths.some((p) => !p.startsWith(commonPath));
+
+	// 	if (!commonPath || commonPath === ROOT_PATH || dontMatch) {
+	// 		throw new EntityNotFoundError(`Parent node of [${ids.join(',')}] not found`);
+	// 	}
+
+	// 	const commonAncestorIds = commonPath.split(',').filter((id) => id !== '');
+	// 	const parentId = commonAncestorIds[commonAncestorIds.length - 1];
+	// 	const parentNode = await this.findById(parentId, depth);
+
+	// 	return parentNode;
+	// }
+
+	async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+		return this.persist(boardNode).flush();
+	}
+
+	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+		await this.remove(boardNode).flush();
+	}
+
+	private async findDescendants(props: BoardNodeEntity, depth?: number): Promise<BoardNodeEntity[]> {
+		const levelQuery = depth !== undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
+
+		const descendants = await this.em.find(BoardNodeEntity, {
+			path: { $re: `^${pathOfChildren(props)}` },
 			level: levelQuery,
 		});
 
 		return descendants;
 	}
 
-	async findDescendantsOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
-		const pathQueries = nodes.map((node) => {
-			return { path: { $re: `^${node.pathOfChildren}` } };
+	private async findDescendantsOfMany(
+		entities: BoardNodeEntity[],
+		depth?: number
+	): Promise<Record<string, BoardNodeEntity[]>> {
+		const pathQueries = entities.map((props) => {
+			const levelQuery = depth !== undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
+
+			return { path: { $re: `^${pathOfChildren(props)}` }, level: levelQuery };
 		});
 
-		const map: Record<string, BoardNode[]> = {};
+		const map: Record<string, BoardNodeEntity[]> = {};
 		if (pathQueries.length === 0) {
 			return map;
 		}
 
-		const descendants = await this.em.find(BoardNode, {
+		const descendants = await this.em.find(BoardNodeEntity, {
 			$or: pathQueries,
 		});
 
-		// this is for finding tha ancestors of a descendant
+		// this is for finding the ancestors of a descendant
 		// we use this to group the descendants by ancestor
 		// TODO we probably need a more efficient way to do the grouping
-		const matchAncestors = (descendant: BoardNode): BoardNode[] => {
-			const result = nodes.filter((n) => descendant.path.match(`^${n.pathOfChildren}`));
+		const matchAncestors = (descendant: BoardNodeEntity): BoardNodeEntity[] => {
+			const result = entities.filter((props) => descendant.path.match(`^${pathOfChildren(props)}`));
 			return result;
 		};
 
 		for (const desc of descendants) {
-			const ancestorNodes = matchAncestors(desc);
-			ancestorNodes.forEach((node) => {
-				map[node.pathOfChildren] ||= [];
-				map[node.pathOfChildren].push(desc);
+			const ancestors = matchAncestors(desc);
+			ancestors.forEach((props) => {
+				map[pathOfChildren(props)] ||= [];
+				map[pathOfChildren(props)].push(desc);
 			});
 		}
 		return map;
+	}
+
+	private persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes = Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) => {
+			bn.children.forEach((child) => this.persist(child));
+
+			const props = this.getProps(bn);
+
+			if (!(props instanceof BoardNodeEntity)) {
+				const entity = this.em.create(BoardNodeEntity, props);
+				entity.type = getBoardNodeType(bn);
+				this.setProps(bn, entity);
+				this.em.persist(entity);
+			} else {
+				// for the unlikely case that the props are not managed yet
+				this.em.persist(props);
+			}
+		});
+
+		return this;
+	}
+
+	private remove(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes = Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) => {
+			this.em.remove(this.getProps(bn));
+			bn.children.forEach((child) => this.remove(child));
+		});
+
+		return this;
+	}
+
+	private async flush(): Promise<void> {
+		return this.em.flush();
+	}
+
+	private getProps(boardNode: AnyBoardNode): BoardNodeEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } = boardNode;
+		return props as BoardNodeEntity;
+	}
+
+	private setProps(boardNode: AnyBoardNode, props: BoardNodeEntity): void {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		boardNode.props = props;
 	}
 }

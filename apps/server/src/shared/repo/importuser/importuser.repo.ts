@@ -71,4 +71,8 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
 		await this._em.nativeDelete(ImportUser, { school });
 	}
+
+	public async saveImportUsers(importUsers: ImportUser[]): Promise<void> {
+		await this._em.persistAndFlush(importUsers);
+	}
 }

@@ -1,20 +1,22 @@
 import { LtiToolService } from '@modules/lti-tool/service';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { ConfigService } from '@nestjs/config';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolService: LtiToolService,
-		@Inject(forwardRef(() => ExternalToolService)) private readonly externalToolService: ExternalToolService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly externalToolService: ExternalToolService,
+		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
 	public async findToolByClientId(clientId: string): Promise<ExternalTool | LtiToolDO> {
-		if (this.toolFeatures.ctlToolsTabEnabled) {
+		if (this.configService.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
 			const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
 				clientId
 			);

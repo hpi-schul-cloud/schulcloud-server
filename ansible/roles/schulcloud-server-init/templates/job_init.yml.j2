@@ -9,12 +9,14 @@ spec:
     spec:
       containers:
       - name: api-init
-        image: schulcloud/infra-tools:latest
+        image: quay.io/schulcloudverbund/infra-tools:latest
         envFrom:
         - configMapRef:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-files-secret
         env:
         - name: K8S_NAMESPACE
           valueFrom:
@@ -25,11 +27,11 @@ spec:
           mountPath: /update.sh
           subPath: update.sh
         command: ['/bin/sh','-c']
-        args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
+        args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh && ./update.run.sh']
         resources:
           limits:
             cpu: "3000m"
-            memory: "1Gi"
+            memory: "2Gi"
           requests:
             cpu: "100m"
             memory: "150Mi"

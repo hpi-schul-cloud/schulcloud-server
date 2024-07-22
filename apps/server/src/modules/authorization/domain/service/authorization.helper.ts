@@ -35,17 +35,19 @@ export class AuthorizationHelper {
 		return result;
 	}
 
-	private isUserReferenced<T, K extends keyof T>(user: User, entity: T, prop: K) {
+	private isUserReferenced<T, K extends keyof T>(user: User, entity: T, prop: K): boolean {
 		let result = false;
 
-		const reference = entity[prop];
+		const reference: T[K] = entity[prop];
 
 		if (reference instanceof Collection) {
 			result = reference.contains(user);
 		} else if (reference instanceof User) {
 			result = reference === user;
+		} else if (Array.isArray(reference)) {
+			result = reference.includes(user.id);
 		} else {
-			result = (reference as unknown as string) === user.id;
+			result = reference === user.id;
 		}
 
 		return result;

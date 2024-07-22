@@ -1,34 +1,61 @@
-import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	SchulconnexLizenzInfoResponse,
+	SchulconnexResponse,
+	SchulconnexResponseValidationGroups,
+} from '@infra/schulconnex-client/response';
+import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
+import { GroupService } from '@modules/group/service/group.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { firstValueFrom } from 'rxjs';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
+	ExternalLicenseDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from '../../dto';
-import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
-import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from './response';
-import { SanisResponseMapper } from './sanis-response.mapper';
+import { ProvisioningConfig } from '../../provisioning.config';
+import { SchulconnexProvisioningStrategy } from '../oidc';
+import {
+	SchulconnexCourseSyncService,
+	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
+	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
+	SchulconnexUserProvisioningService,
+} from '../oidc/service';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 @Injectable()
-export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
+export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
-		protected readonly oidcProvisioningService: OidcProvisioningService,
-		private readonly responseMapper: SanisResponseMapper,
-		private readonly httpService: HttpService
+		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
+		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
+		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
+		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
+		protected readonly groupService: GroupService,
+		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
+		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
+		protected readonly configService: ConfigService<ProvisioningConfig, true>,
+		private readonly responseMapper: SchulconnexResponseMapper,
+		private readonly schulconnexRestClient: SchulconnexRestClient
 	) {
-		super(provisioningFeatures, oidcProvisioningService);
+		super(
+			schulconnexSchoolProvisioningService,
+			schulconnexUserProvisioningService,
+			schulconnexGroupProvisioningService,
+			schulconnexCourseSyncService,
+			schulconnexLicenseProvisioningService,
+			schulconnexToolProvisioningService,
+			groupService,
+			configService
+		);
 	}
 
 	getType(): SystemProvisioningStrategy {
@@ -42,36 +69,46 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 			);
 		}
 
-		const axiosConfig: AxiosRequestConfig = {
-			headers: {
-				Authorization: `Bearer ${input.accessToken}`,
-				'Accept-Encoding': 'gzip',
-			},
-		};
-
-		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
-			this.httpService.get(input.system.provisioningUrl, axiosConfig)
+		const schulconnexAxiosResponse: SchulconnexResponse = await this.schulconnexRestClient.getPersonInfo(
+			input.accessToken,
+			{
+				overrideUrl: input.system.provisioningUrl,
+			}
 		);
 
-		const fixedData: SanisResponse = this.removeEmptyObjectsFromResponse(axiosResponse.data);
+		const schulconnexResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, schulconnexAxiosResponse);
 
-		const response: SanisResponse = plainToClass(SanisResponse, fixedData);
-
-		await this.checkResponseValidation(response, [
-			SanisResponseValidationGroups.USER,
-			SanisResponseValidationGroups.SCHOOL,
+		await this.checkResponseValidation(schulconnexResponse, [
+			SchulconnexResponseValidationGroups.USER,
+			SchulconnexResponseValidationGroups.SCHOOL,
 		]);
 
-		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(axiosResponse.data);
+		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(schulconnexResponse);
 		this.addTeacherRoleIfAdmin(externalUser);
 
-		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
+		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
-			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
+		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
-			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);
+		}
+
+		let externalLicenses: ExternalLicenseDto[] | undefined;
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			const schulconnexLizenzInfoAxiosResponse: SchulconnexLizenzInfoResponse[] =
+				await this.schulconnexRestClient.getLizenzInfo(input.accessToken, {
+					overrideUrl: this.configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL'),
+				});
+
+			const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] = plainToClass(
+				SchulconnexLizenzInfoResponse,
+				schulconnexLizenzInfoAxiosResponse
+			);
+			await this.checkResponseValidation(schulconnexLizenzInfoResponses);
+
+			externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
 		}
 
 		const oauthData: OauthDataDto = new OauthDataDto({
@@ -79,48 +116,29 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 			externalSchool,
 			externalUser,
 			externalGroups,
+			externalLicenses,
 		});
 
 		return oauthData;
 	}
 
-	// This is a temporary fix to a problem with moin.schule and should be resolved after 12.12.23
-	private removeEmptyObjectsFromResponse(response: SanisResponse): SanisResponse {
-		const fixedResponse: SanisResponse = { ...response };
+	private async checkResponseValidation(
+		response: SchulconnexResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[],
+		groups?: SchulconnexResponseValidationGroups[]
+	): Promise<void> {
+		const responsesArray = Array.isArray(response) ? response : [response];
 
-		if (fixedResponse?.personenkontexte?.length && fixedResponse.personenkontexte[0].gruppen) {
-			const groups: SanisGruppenResponse[] = fixedResponse.personenkontexte[0].gruppen;
+		const validationPromises: Promise<ValidationError[]>[] = responsesArray.map((item) =>
+			validate(item, {
+				always: true,
+				forbidUnknownValues: false,
+				groups,
+			})
+		);
 
-			for (const group of groups) {
-				group.sonstige_gruppenzugehoerige = group.sonstige_gruppenzugehoerige?.filter(
-					(relation) => !this.isObjectEmpty(relation)
-				);
+		const validationResults: ValidationError[][] = await Promise.all(validationPromises);
 
-				if (!group.sonstige_gruppenzugehoerige?.length) {
-					group.sonstige_gruppenzugehoerige = undefined;
-				}
-			}
-
-			fixedResponse.personenkontexte[0].gruppen = groups.filter((group) => !this.isObjectEmpty(group));
-
-			if (!fixedResponse.personenkontexte[0].gruppen.length) {
-				fixedResponse.personenkontexte[0].gruppen = undefined;
-			}
-		}
-
-		return fixedResponse;
-	}
-
-	private isObjectEmpty(obj: unknown): boolean {
-		return typeof obj === 'object' && !!obj && !Object.keys(obj).some((key) => obj[key] !== undefined);
-	}
-
-	private async checkResponseValidation(response: SanisResponse, groups: SanisResponseValidationGroups[]) {
-		const validationErrors: ValidationError[] = await validate(response, {
-			always: true,
-			forbidUnknownValues: false,
-			groups,
-		});
+		const validationErrors: ValidationError[] = validationResults.flat();
 
 		if (validationErrors.length) {
 			throw new ValidationErrorLoggableException(validationErrors);

@@ -1,3 +1,4 @@
+import { BoardLayout } from '@modules/board';
 import { TaskWithStatusVo } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
@@ -7,6 +8,7 @@ export type RoomBoardDTO = {
 	title: string;
 	elements: RoomBoardElementDTO[];
 	isArchived: boolean;
+	isSynchronized: boolean;
 };
 
 export enum RoomBoardElementTypes {
@@ -34,6 +36,7 @@ export type ColumnBoardMetaData = {
 	published: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	layout: BoardLayout;
 };
 
 export type RoomBoardElementDTO = {

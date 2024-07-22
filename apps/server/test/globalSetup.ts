@@ -1,7 +1,11 @@
-import { MongoMemoryServer } from 'mongodb-memory-server-global-4.4';
+import { MongoMemoryServer } from 'mongodb-memory-server-global';
 
 export = async function globalSetup() {
-	const instance = await MongoMemoryServer.create();
+	const instance = await MongoMemoryServer.create({
+		binary: {
+			version: '6.0.16',
+		},
+	});
 	const uri = instance.getUri();
 	global.__MONGOINSTANCE = instance;
 	// eslint-disable-next-line no-process-env

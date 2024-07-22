@@ -4,14 +4,14 @@ import { Mail, MailService } from '@infra/mail';
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
-import { AccountValidationService } from '@modules/account/services/account.validation.service';
-import { AccountUc } from '@modules/account/uc/account.uc';
+import { AccountUc } from '@src/modules/account/api/account.uc';
 import { SystemRule } from '@modules/authorization/domain/rules';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
 import { FeathersRosterService } from '@modules/pseudonym';
 import { RocketChatService } from '@modules/rocketchat';
 import { ServerModule } from '@modules/server';
+import { InternalServerModule } from '@modules/internal-server';
 import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -63,6 +63,12 @@ async function bootstrap() {
 
 	await nestApp.init();
 
+	// create the internal server module on a separate express instance
+	const internalServerExpress = express();
+	const internalServerExpressAdapter = new ExpressAdapter(internalServerExpress);
+	const internalServerApp = await NestFactory.create(InternalServerModule, internalServerExpressAdapter);
+	await internalServerApp.init();
+
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-mail'] = {
@@ -75,8 +81,6 @@ async function bootstrap() {
 	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-	feathersExpress.services['nest-account-validation-service'] = nestApp.get(AccountValidationService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
@@ -103,6 +107,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
+	rootExpress.use('/internal', internalServerExpress);
 	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	// logger middleware for deprecated paths

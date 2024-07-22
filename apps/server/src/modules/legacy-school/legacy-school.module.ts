@@ -1,5 +1,5 @@
 import { GroupModule } from '@modules/group';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FederalStateRepo, LegacySchoolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { SchoolSystemOptionsRepo, SchoolYearRepo } from './repo';
@@ -17,7 +17,7 @@ import {
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Module({
-	imports: [LoggerModule, GroupModule],
+	imports: [LoggerModule, forwardRef(() => GroupModule)],
 	providers: [
 		LegacySchoolRepo,
 		LegacySchoolService,

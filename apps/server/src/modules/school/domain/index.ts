@@ -3,4 +3,4 @@ export * from './interface';
 export * from './query';
 export * from './service';
 export * from './type';
-export * from './util';
+export * from './helper';

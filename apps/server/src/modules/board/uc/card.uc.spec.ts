@@ -1,22 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationService } from '@modules/authorization';
-import { HttpService } from '@nestjs/axios';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject';
-import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
-import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
+import { setupEntities, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BoardNodeAuthorizable, BoardNodeFactory, Card, ContentElementType } from '../domain';
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
+import { cardFactory, columnBoardFactory, richTextElementFactory } from '../testing';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
-	let cardService: DeepMocked<CardService>;
-	let elementService: DeepMocked<ContentElementService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
+	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
+	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,34 +26,34 @@ describe(CardUc.name, () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
+					provide: BoardNodePermissionService,
+					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
+				},
+				{
+					provide: BoardNodeFactory,
+					useValue: createMock<BoardNodeFactory>(),
 				},
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
-				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
 
 		uc = module.get(CardUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-
-		cardService = module.get(CardService);
-		elementService = module.get(ContentElementService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
+		boardNodePermissionService = module.get(BoardNodePermissionService);
+		boardNodeService = module.get(BoardNodeService);
+		boardNodeFactory = module.get(BoardNodeFactory);
 		await setupEntities();
 	});
 
@@ -73,24 +72,69 @@ describe(CardUc.name, () => {
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
+				boardNodeAuthorizableService.getBoardAuthorizables.mockResolvedValue([
+					new BoardNodeAuthorizable({
+						users: [],
+						id: cards[0].id,
+						boardNode: cards[0],
+						rootNode: columnBoardFactory.build(),
+					}),
+					new BoardNodeAuthorizable({
+						users: [],
+						id: cards[1].id,
+						boardNode: cards[1],
+						rootNode: columnBoardFactory.build(),
+					}),
+					new BoardNodeAuthorizable({
+						users: [],
+						id: cards[2].id,
+						boardNode: cards[2],
+						rootNode: columnBoardFactory.build(),
+					}),
+				]);
+				authorizationService.hasPermission.mockReturnValue(true);
 
 				return { user, cards, cardIds };
 			};
 
-			it('should call the service', async () => {
+			it('should call boardNodeService service to find cards', async () => {
 				const { user, cardIds } = setup();
 
 				await uc.findCards(user.id, cardIds);
 
-				expect(cardService.findByIds).toHaveBeenCalledWith(cardIds);
+				expect(boardNodeService.findByClassAndIds).toHaveBeenCalledWith(Card, cardIds);
+			});
+
+			it('should call the service to get the user with permissions', async () => {
+				const { user, cards, cardIds } = setup();
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
+
+				await uc.findCards(user.id, cardIds);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should call the service to filter by authorization', async () => {
+				const { user, cards, cardIds } = setup();
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
+
+				await uc.findCards(user.id, cardIds);
+
+				expect(boardNodeAuthorizableService.getBoardAuthorizables).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call the service to check the user permission', async () => {
+				const { user, cards, cardIds } = setup();
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
+
+				await uc.findCards(user.id, cardIds);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledTimes(3);
 			});
 
 			it('should return the card objects', async () => {
 				const { user, cards, cardIds } = setup();
-				cardService.findByIds.mockResolvedValueOnce(cards);
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
 
 				const result = await uc.findCards(user.id, cardIds);
 
@@ -102,41 +146,37 @@ describe(CardUc.name, () => {
 	describe('deleteCard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const board = columnBoardFactory.build();
-			const boardId = board.id;
-			const column = columnFactory.build();
 			const card = cardFactory.build();
-			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
-			});
-			const createCardBodyParams = {
-				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
-			};
-
-			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
-
-			return { user, board, boardId, column, card, createCardBodyParams };
+			return { user, card };
 		};
 
 		describe('when deleting a card', () => {
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.deleteCard(user.id, card.id);
 
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
+			});
+
+			it('should call the Board Permission Service to check the user permission', async () => {
+				const { user, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				await uc.deleteCard(user.id, card.id);
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
 			});
 
 			it('should call the service to delete the card', async () => {
 				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.deleteCard(user.id, card.id);
 
-				expect(cardService.delete).toHaveBeenCalledWith(card);
+				expect(boardNodeService.delete).toHaveBeenCalledWith(card);
 			});
 		});
 	});
@@ -144,23 +184,9 @@ describe(CardUc.name, () => {
 	describe('updateCardHeight', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const board = columnBoardFactory.build();
-			const boardId = board.id;
-			const column = columnFactory.build();
 			const card = cardFactory.build();
-			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
-			});
-			const createCardBodyParams = {
-				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
-			};
-
-			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
-
-			return { user, board, boardId, column, card, createCardBodyParams };
+			return { user, card };
 		};
 
 		describe('when updating a card height', () => {
@@ -170,26 +196,27 @@ describe(CardUc.name, () => {
 
 				await uc.updateCardHeight(user.id, card.id, cardHeight);
 
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
 			});
 
-			it('should check the permission', async () => {
+			it('should call the Board Permission Service to check the user permission', async () => {
 				const { user, card } = setup();
 				const cardHeight = 200;
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.updateCardHeight(user.id, card.id, cardHeight);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalled();
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
 			});
 
 			it('should call the service to update the card height', async () => {
 				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
 				const newHeight = 250;
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.updateCardHeight(user.id, card.id, newHeight);
 
-				expect(cardService.updateHeight).toHaveBeenCalledWith(card, newHeight);
+				expect(boardNodeService.updateHeight).toHaveBeenCalledWith(card, newHeight);
 			});
 		});
 	});
@@ -197,23 +224,9 @@ describe(CardUc.name, () => {
 	describe('updateCardTitle', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const board = columnBoardFactory.build();
-			const boardId = board.id;
-			const column = columnFactory.build();
 			const card = cardFactory.build();
-			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
-			});
-			const createCardBodyParams = {
-				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
-			};
-
-			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
-
-			return { user, board, boardId, column, card, createCardBodyParams };
+			return { user, card };
 		};
 
 		describe('when updating a card title', () => {
@@ -222,17 +235,26 @@ describe(CardUc.name, () => {
 
 				await uc.updateCardTitle(user.id, card.id, 'new title');
 
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
+			});
+
+			it('should call the service to check the user permission', async () => {
+				const { user, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				await uc.updateCardTitle(user.id, card.id, 'new title');
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
 			});
 
 			it('should call the service to update the card title', async () => {
 				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
 				const newTitle = 'new title';
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.updateCardTitle(user.id, card.id, newTitle);
 
-				expect(cardService.updateTitle).toHaveBeenCalledWith(card, newTitle);
+				expect(boardNodeService.updateTitle).toHaveBeenCalledWith(card, newTitle);
 			});
 		});
 	});
@@ -244,13 +266,6 @@ describe(CardUc.name, () => {
 				const card = cardFactory.build();
 				const element = richTextElementFactory.build();
 
-				cardService.findById.mockResolvedValueOnce(card);
-				elementService.create.mockResolvedValueOnce(element);
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
-
 				return { user, card, element };
 			};
 
@@ -259,33 +274,39 @@ describe(CardUc.name, () => {
 
 				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT);
 
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
 			});
 
-			it('should call the service to create the content element', async () => {
+			it('should call the service to check the user permission', async () => {
+				const { user, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT);
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+			});
+
+			it('should call the factory to build element', async () => {
 				const { user, card } = setup();
 
 				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT);
 
-				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.RICH_TEXT);
+				expect(boardNodeFactory.buildContentElement).toHaveBeenCalledWith(ContentElementType.RICH_TEXT);
 			});
-			it('should call the service to move the element', async () => {
+
+			it('should call the service to create add the content element to the card', async () => {
 				const { user, card, element } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+				boardNodeFactory.buildContentElement.mockReturnValueOnce(element);
 
 				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 3);
 
-				expect(elementService.move).toHaveBeenCalledWith(element, card, 3);
-			});
-			it('should not call the service to move the element if position is not a number', async () => {
-				const { user, card } = setup();
-
-				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
-
-				expect(elementService.move).not.toHaveBeenCalled();
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(card, element, 3);
 			});
 
 			it('should return new content element', async () => {
 				const { user, card, element } = setup();
+				boardNodeFactory.buildContentElement.mockReturnValueOnce(element);
 
 				const result = await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT);
 
@@ -301,15 +322,6 @@ describe(CardUc.name, () => {
 				const element = richTextElementFactory.build();
 				const card = cardFactory.build();
 
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-
-				const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-					id: element.id,
-				});
-
-				boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
-
 				return { user, card, element };
 			};
 
@@ -318,7 +330,7 @@ describe(CardUc.name, () => {
 
 				await uc.moveElement(user.id, element.id, card.id, 3);
 
-				expect(elementService.findById).toHaveBeenCalledWith(element.id);
+				expect(boardNodeService.findContentElementById).toHaveBeenCalledWith(element.id);
 			});
 
 			it('should call the service to find the target card', async () => {
@@ -326,17 +338,35 @@ describe(CardUc.name, () => {
 
 				await uc.moveElement(user.id, element.id, card.id, 3);
 
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
+			});
+
+			it('should call the service to check the user permission for the element', async () => {
+				const { user, element, card } = setup();
+				boardNodeService.findContentElementById.mockResolvedValueOnce(element);
+
+				await uc.moveElement(user.id, element.id, card.id, 3);
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, element, Action.write);
+			});
+
+			it('should call the service to check the user permission for the target card', async () => {
+				const { user, element, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				await uc.moveElement(user.id, element.id, card.id, 3);
+
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
 			});
 
 			it('should call the service to move the element', async () => {
 				const { user, element, card } = setup();
-				elementService.findById.mockResolvedValueOnce(element);
-				cardService.findById.mockResolvedValueOnce(card);
+				boardNodeService.findContentElementById.mockResolvedValueOnce(element);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await uc.moveElement(user.id, element.id, card.id, 3);
 
-				expect(elementService.move).toHaveBeenCalledWith(element, card, 3);
+				expect(boardNodeService.move).toHaveBeenCalledWith(element, card, 3);
 			});
 		});
 	});

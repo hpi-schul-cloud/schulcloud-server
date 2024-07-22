@@ -1,23 +1,89 @@
+import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { LanguageType } from '@shared/domain/interface';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, SchoolPermissions } from '../type';
+import { FileStorageType, InstanceFeature, SchoolPermissions } from '../type';
 import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 
+interface SchoolLogo {
+	dataUrl?: string;
+	name?: string;
+}
+
+interface SchoolInfo {
+	id: EntityId;
+	name: string;
+	language?: LanguageType;
+	logo?: SchoolLogo;
+}
+
 export class School extends DomainObject<SchoolProps> {
-	public addFeature(feature: SchoolFeature): void {
-		this.props.features.add(feature);
+	get systems(): EntityId[] {
+		return this.props.systemIds;
 	}
 
-	public removeFeature(feature: SchoolFeature): void {
-		this.props.features.delete(feature);
+	set externalId(externalId: string | undefined) {
+		this.props.externalId = externalId;
+	}
+
+	set ldapLastSync(ldapLastSync: string | undefined) {
+		this.props.ldapLastSync = ldapLastSync;
+	}
+
+	public getInfo(): SchoolInfo {
+		const info = {
+			id: this.props.id,
+			name: this.props.name,
+			language: this.props.language,
+			logo: this.props.logo,
+		};
+
+		return info;
 	}
 
 	public getPermissions(): SchoolPermissions | undefined {
 		const { permissions } = this.props;
 
 		return permissions;
+	}
+
+	public addInstanceFeature(feature: InstanceFeature): void {
+		if (!this.props.instanceFeatures) {
+			this.props.instanceFeatures = new Set();
+		}
+		this.props.instanceFeatures.add(feature);
+	}
+
+	public removeInstanceFeature(feature: InstanceFeature): void {
+		if (this.props.instanceFeatures) {
+			this.props.instanceFeatures.delete(feature);
+		}
+	}
+
+	public updateCounty(countyId: EntityId): void {
+		const { county, federalState } = this.props;
+
+		if (county) {
+			throw new ValidationError('County cannot be updated, once it is set.');
+		}
+		const { counties } = federalState.getProps();
+		const countyObject = counties?.find((item) => item.id === countyId);
+
+		if (!countyObject) {
+			throw new ValidationError('County not found.');
+		}
+
+		this.props.county = countyObject;
+	}
+
+	public updateOfficialSchoolNumber(officialSchoolNumber: string): void {
+		if (this.props.officialSchoolNumber) {
+			throw new ValidationError('Official school number cannot be updated, once it is set.');
+		}
+
+		this.props.officialSchoolNumber = officialSchoolNumber;
 	}
 
 	public isInMaintenance(): boolean {
@@ -42,6 +108,18 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
+
+	public hasSystem(systemId: EntityId): boolean {
+		const { systemIds } = this.props;
+
+		const result = systemIds.includes(systemId);
+
+		return result;
+	}
+
+	public removeSystem(systemId: EntityId) {
+		this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
+	}
 }
 
 export interface SchoolProps extends AuthorizableObject {
@@ -58,15 +136,16 @@ export interface SchoolProps extends AuthorizableObject {
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;
-	systemIds?: EntityId[];
-	logo_dataUrl?: string;
-	logo_name?: string;
+	instanceFeatures?: Set<InstanceFeature>;
+	systemIds: EntityId[];
+	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;
-	language?: string;
+	language?: LanguageType;
 	timezone?: string;
 	permissions?: SchoolPermissions;
 	// The enableStudentTeamCreation property is for compatibility with the existing data.
-	// It can't be mapped to a feature straight-forwardly in the repo,
+	// It can't be mapped to a feature straight-forwardly,
 	// because the config value STUDENT_TEAM_CREATION has to be taken into account.
 	enableStudentTeamCreation?: boolean;
+	ldapLastSync?: string;
 }

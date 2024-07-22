@@ -1,9 +1,8 @@
+import { Course, CourseProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 
-import { Course, CourseProperties } from '@shared/domain/entity';
-
 import { BaseFactory } from './base.factory';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 import { userFactory } from './user.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
@@ -43,6 +42,6 @@ export const courseFactory = CourseFactory.define(Course, ({ sequence }) => {
 		name: `course #${sequence}`,
 		description: `course #${sequence} description`,
 		color: '#FFFFFF',
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 	};
 });

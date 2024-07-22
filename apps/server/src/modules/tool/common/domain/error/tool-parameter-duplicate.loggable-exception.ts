@@ -1,17 +1,31 @@
-import { ValidationError } from '@shared/common';
+import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { HttpStatus } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 
-export class ToolParameterDuplicateLoggableException extends ValidationError implements Loggable {
-	constructor(private readonly parameterName: string) {
-		super(`tool_param_duplicate: The parameter with name ${parameterName} is defined multiple times.`);
+export class ToolParameterDuplicateLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly toolId: EntityId | undefined, private readonly parameterName: string) {
+		super(
+			{
+				type: 'TOOL_PARAMETER_DUPLICATE',
+				title: 'Duplicate tool parameter',
+				defaultMessage: 'The parameter is defined multiple times.',
+			},
+			HttpStatus.BAD_REQUEST,
+			{
+				toolId,
+				parameterName,
+			}
+		);
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'TOOL_PARAMETER_DUPLICATE',
-			message: 'The parameter is defined multiple times.',
+			type: this.type,
+			message: this.message,
 			stack: this.stack,
 			data: {
+				toolId: this.toolId,
 				parameterName: this.parameterName,
 			},
 		};

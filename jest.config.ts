@@ -29,6 +29,7 @@ let config: Config.InitialOptions = {
 		'^@infra/(.*)$': '<rootDir>/apps/server/src/infra/$1',
 	},
 	maxWorkers: 2, // limited for not taking all workers within of a single github action
+	workerIdleMemoryLimit: '1.5GB', // without this, jest can lead to big memory leaks and out of memory errors
 };
 
 if (!process.env.RUN_WITHOUT_JEST_COVERAGE) {

@@ -32,7 +32,7 @@ describe('authentication hooks', () => {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('redis', redisMock);
+		mockery.registerMock('ioredis', redisMock);
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../../../../src/app')];

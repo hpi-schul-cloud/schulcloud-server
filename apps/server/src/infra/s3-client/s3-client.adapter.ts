@@ -73,7 +73,7 @@ export class S3ClientAdapter {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err?.Code === 'NoSuchKey') {
-				this.logger.warn(`could not find one of the files for deletion with id ${path}`);
+				this.logger.warn(`Could not get file with id ${path}`);
 				throw new NotFoundException('NoSuchKey', ErrorUtils.createHttpExceptionOptions(err));
 			} else {
 				throw new InternalServerErrorException('S3ClientAdapter:get', ErrorUtils.createHttpExceptionOptions(err));

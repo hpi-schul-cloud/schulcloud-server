@@ -2,18 +2,20 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
+import { SystemEntity } from '@modules/system/entity';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { LanguageType, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
-import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	userDoFactory,
 	userFactory,
@@ -101,46 +103,70 @@ describe('UserRepo', () => {
 	});
 
 	describe('findByExternalId', () => {
-		const externalId = 'externalId';
-		let system: SystemEntity;
-		let school: SchoolEntity;
-		let user: User;
+		describe('when one user was found', () => {
+			const externalId = 'externalId';
+			let system: SystemEntity;
+			let school: SchoolEntity;
+			let user: User;
 
-		beforeEach(async () => {
-			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
-			school.systems.add(system);
-			user = userFactory.buildWithId({ externalId, school });
+			beforeEach(async () => {
+				system = systemEntityFactory.buildWithId();
+				school = schoolEntityFactory.buildWithId();
+				school.systems.add(system);
+				user = userFactory.buildWithId({ externalId, school });
 
-			await em.persistAndFlush([user, system, school]);
+				await em.persistAndFlush([user, system, school]);
+			});
+
+			it('should find a user by its external id', async () => {
+				const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						id: user.id,
+						externalId: user.externalId,
+						schoolId: school.id,
+					})
+				);
+			});
+
+			it('should return null if no user with external id was found', async () => {
+				await em.nativeDelete(User, {});
+
+				const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
+
+				expect(result).toBeNull();
+			});
+
+			it('should return null if school has no corresponding system', async () => {
+				school.systems.removeAll();
+
+				const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
+
+				expect(result).toBeNull();
+			});
 		});
 
-		it('should find a user by its external id', async () => {
-			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
+		describe('when multiple users were found', () => {
+			const externalId = 'externalId';
+			let system: SystemEntity;
+			let school: SchoolEntity;
+			let users: User[];
 
-			expect(result).toEqual(
-				expect.objectContaining({
-					id: user.id,
-					externalId: user.externalId,
-					schoolId: school.id,
-				})
-			);
-		});
+			beforeEach(async () => {
+				system = systemEntityFactory.buildWithId();
+				school = schoolEntityFactory.buildWithId();
+				school.systems.add(system);
+				users = userFactory.buildList(2, { externalId, school });
 
-		it('should return null if no user with external id was found', async () => {
-			await em.nativeDelete(User, {});
+				await em.persistAndFlush([...users, system, school]);
+			});
 
-			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
-
-			expect(result).toBeNull();
-		});
-
-		it('should return null if school has no corresponding system', async () => {
-			school.systems.removeAll();
-
-			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
-
-			expect(result).toBeNull();
+			it('should throw error', async () => {
+				await expect(repo.findByExternalId(users[0].externalId as string, system.id)).rejects.toThrow(
+					new MultipleUsersFoundLoggableException(externalId)
+				);
+			});
 		});
 	});
 
@@ -152,7 +178,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -234,7 +260,7 @@ describe('UserRepo', () => {
 					email: 'email@email.email',
 					firstName: 'firstName',
 					lastName: 'lastName',
-					school: schoolFactory.buildWithId(),
+					school: schoolEntityFactory.buildWithId(),
 					ldapDn: 'ldapDn',
 					externalId: 'externalId',
 					language: LanguageType.DE,

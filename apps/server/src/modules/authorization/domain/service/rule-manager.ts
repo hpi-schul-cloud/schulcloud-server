@@ -3,11 +3,12 @@ import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
-	BoardDoRule,
+	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
 	GroupRule,
+	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
@@ -20,6 +21,7 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from '../rules';
+import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
 
 @Injectable()
@@ -27,40 +29,44 @@ export class RuleManager {
 	private readonly rules: Rule[];
 
 	constructor(
-		private readonly courseRule: CourseRule,
-		private readonly courseGroupRule: CourseGroupRule,
-		private readonly lessonRule: LessonRule,
-		private readonly legaySchoolRule: LegacySchoolRule,
-		private readonly taskRule: TaskRule,
-		private readonly userRule: UserRule,
-		private readonly teamRule: TeamRule,
-		private readonly submissionRule: SubmissionRule,
-		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardDoRule: BoardDoRule,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
-		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly schoolRule: SchoolRule,
+		private readonly courseGroupRule: CourseGroupRule,
+		private readonly courseRule: CourseRule,
 		private readonly groupRule: GroupRule,
+		private readonly legaySchoolRule: LegacySchoolRule,
+		private readonly lessonRule: LessonRule,
+		private readonly schoolExternalToolRule: SchoolExternalToolRule,
+		private readonly schoolRule: SchoolRule,
+		private readonly schoolSystemOptionsRule: SchoolSystemOptionsRule,
+		private readonly submissionRule: SubmissionRule,
 		private readonly systemRule: SystemRule,
-		private readonly schoolSystemOptionsRule: SchoolSystemOptionsRule
+		private readonly taskRule: TaskRule,
+		private readonly teamRule: TeamRule,
+		private readonly userLoginMigrationRule: UserLoginMigrationRule,
+		private readonly userRule: UserRule,
+		private readonly externalToolRule: ExternalToolRule,
+		private readonly instanceRule: InstanceRule
 	) {
 		this.rules = [
-			this.courseRule,
+			this.boardNodeRule,
+			this.contextExternalToolRule,
 			this.courseGroupRule,
+			this.courseRule,
+			this.groupRule,
+			this.legaySchoolRule,
 			this.lessonRule,
+			this.schoolExternalToolRule,
+			this.schoolRule,
+			this.schoolSystemOptionsRule,
+			this.submissionRule,
+			this.systemRule,
 			this.taskRule,
 			this.teamRule,
-			this.userRule,
-			this.legaySchoolRule,
-			this.submissionRule,
-			this.schoolExternalToolRule,
-			this.boardDoRule,
-			this.contextExternalToolRule,
 			this.userLoginMigrationRule,
-			this.schoolRule,
-			this.groupRule,
-			this.systemRule,
-			this.schoolSystemOptionsRule,
+			this.userRule,
+			this.externalToolRule,
+			this.instanceRule,
 		];
 	}
 

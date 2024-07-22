@@ -1,6 +1,6 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionLogEntity } from '../../entity/deletion-log.entity';
-import { DeletionLog } from '../../domain/deletion-log.do';
+import { ObjectId } from 'bson';
+import { DeletionLog } from '../../domain/do';
+import { DeletionLogEntity } from '../entity';
 
 export class DeletionLogMapper {
 	static mapToDO(entity: DeletionLogEntity): DeletionLog {
@@ -9,10 +9,9 @@ export class DeletionLogMapper {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			domain: entity.domain,
-			operation: entity.operation,
-			modifiedCount: entity.modifiedCount,
-			deletedCount: entity.deletedCount,
-			deletionRequestId: entity.deletionRequestId?.toHexString(),
+			operations: entity.operations,
+			subdomainOperations: entity.subdomainOperations,
+			deletionRequestId: entity.deletionRequestId.toHexString(),
 			performedAt: entity.performedAt,
 		});
 	}
@@ -23,9 +22,8 @@ export class DeletionLogMapper {
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			domain: domainObject.domain,
-			operation: domainObject.operation,
-			modifiedCount: domainObject.modifiedCount,
-			deletedCount: domainObject.deletedCount,
+			operations: domainObject.operations,
+			subdomainOperations: domainObject.subdomainOperations,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 			performedAt: domainObject.performedAt,
 		});

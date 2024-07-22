@@ -1,55 +1,36 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { Board, ColumnBoardTarget } from '@shared/domain/entity';
+import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo } from '@shared/repo';
-import { ColumnBoardTargetService } from './column-board-target.service';
+import { LegacyBoardRepo } from '@shared/repo';
+import { ColumnBoardNodeRepo } from '../repo';
 
 @Injectable()
 export class RoomsService {
 	constructor(
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,
-		private readonly boardRepo: BoardRepo,
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnBoardTargetService: ColumnBoardTargetService
+		private readonly boardRepo: LegacyBoardRepo,
+		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
-	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
+	async updateLegacyBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {
 		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 
-		const courseColumnBoardTargets = await this.handleColumnBoardIntegration(roomId);
+		// TODO comment this, legacy!
+		const columnBoardNodes = await this.columnBoardNodeRepo.findByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: roomId,
+		});
 
-		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
+		const boardElementTargets = [...courseLessons, ...courseTasks, ...columnBoardNodes];
 
 		board.syncBoardElementReferences(boardElementTargets);
 
 		await this.boardRepo.save(board);
 		return board;
-	}
-
-	private async handleColumnBoardIntegration(roomId: EntityId): Promise<ColumnBoardTarget[]> {
-		let courseColumnBoardTargets: ColumnBoardTarget[] = [];
-
-		if ((Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true) {
-			const courseReference = {
-				type: BoardExternalReferenceType.Course,
-				id: roomId,
-			};
-
-			const columnBoardIds = await this.columnBoardService.findIdsByExternalReference(courseReference);
-			if (columnBoardIds.length === 0) {
-				const columnBoard = await this.columnBoardService.createWelcomeColumnBoard(courseReference);
-				columnBoardIds.push(columnBoard.id);
-			}
-
-			courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
-		}
-		return courseColumnBoardTargets;
 	}
 }

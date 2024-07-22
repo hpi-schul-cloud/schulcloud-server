@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationService } from '@modules/authorization';
 import { AuthorizableReferenceType } from '../type';
-import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationContextBuilder } from '../mapper';
 import { ForbiddenLoggableException } from '../error';
@@ -22,12 +22,12 @@ describe('AuthorizationReferenceService', () => {
 			providers: [
 				AuthorizationReferenceService,
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
-				},
-				{
 					provide: ReferenceLoader,
 					useValue: createMock<ReferenceLoader>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();
