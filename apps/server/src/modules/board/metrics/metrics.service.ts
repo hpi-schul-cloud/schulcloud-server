@@ -129,7 +129,7 @@ export class MetricsService {
 
 		if (!counter) {
 			counter = new Gauge({
-				name: `sc_boards_count2_${actionName}`,
+				name: `sc_boards_actions_gauge_${actionName}`,
 				help: 'Number of calls for a specific action per minute',
 				// async collect() {
 				// 	// Invoked when the registry collects its metrics' values.
