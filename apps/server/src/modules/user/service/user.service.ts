@@ -283,18 +283,4 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
 	}
-
-	public async isEmailUniqueForExternal(email: string, externalId?: string): Promise<boolean> {
-		const foundUsers: UserDO[] = await this.findByEmail(email);
-		if (!externalId && foundUsers.length) {
-			return false;
-		}
-
-		const unmatchedUsers: UserDO[] = foundUsers.filter((user: UserDO) => user.externalId !== externalId);
-		if (unmatchedUsers.length) {
-			return false;
-		}
-
-		return true;
-	}
 }

@@ -1,36 +1,34 @@
-import { OauthProviderServiceModule } from '@infra/oauth-provider';
 import { AuthorizationModule } from '@modules/authorization';
 import { PseudonymModule } from '@modules/pseudonym';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { OauthProviderController } from './controller/oauth-provider.controller';
-import { OauthProviderResponseMapper } from './mapper/oauth-provider-response.mapper';
-import { OauthProviderModule } from './oauth-provider.module';
 import {
 	OauthProviderClientCrudUc,
 	OauthProviderConsentFlowUc,
+	OauthProviderController,
 	OauthProviderLoginFlowUc,
 	OauthProviderLogoutFlowUc,
-	OauthProviderUc,
-} from './uc';
+	OauthProviderSessionUc,
+} from './api';
+import { OauthProviderServiceModule } from './oauth-provider-service.module';
+import { OauthProviderModule } from './oauth-provider.module';
 
 @Module({
 	imports: [
-		OauthProviderServiceModule,
 		OauthProviderModule,
+		OauthProviderServiceModule,
 		PseudonymModule,
 		LoggerModule,
 		AuthorizationModule,
 		UserModule,
 	],
 	providers: [
-		OauthProviderUc,
+		OauthProviderSessionUc,
 		OauthProviderClientCrudUc,
 		OauthProviderConsentFlowUc,
 		OauthProviderLogoutFlowUc,
 		OauthProviderLoginFlowUc,
-		OauthProviderResponseMapper,
 	],
 	controllers: [OauthProviderController],
 })
