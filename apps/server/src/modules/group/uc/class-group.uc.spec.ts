@@ -12,8 +12,8 @@ import { SchoolYearService } from '@modules/legacy-school';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { School, SchoolProps, SchoolService, SchoolYear, SchoolYearProps } from '@modules/school/domain';
-import { federalStateFactory, schoolFactory, schoolYearFactory } from '@modules/school/testing';
+import { School, SchoolService } from '@modules/school/domain';
+import { schoolFactory, schoolYearFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
@@ -155,9 +155,12 @@ describe('ClassGroupUc', () => {
 
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
+				const schoolYearDo = schoolYearFactory.build();
 				const school: School = schoolFactory.build({
 					permissions: { teacher: { STUDENT_LIST: true } },
+					currentYear: schoolYearDo,
 				});
+
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
@@ -178,10 +181,13 @@ describe('ClassGroupUc', () => {
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
-				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
+
+				const startDate = schoolYearDo.getProps().startDate;
+				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({ startDate });
 				const nextSchoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({
 					startDate: schoolYear.endDate,
 				});
+
 				const clazz: Class = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
@@ -218,6 +224,7 @@ describe('ClassGroupUc', () => {
 				const synchronizedCourse: Course = courseFactory.build({ syncedWithGroup: group.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getCurrentYear.mockResolvedValueOnce(schoolYearDo);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
