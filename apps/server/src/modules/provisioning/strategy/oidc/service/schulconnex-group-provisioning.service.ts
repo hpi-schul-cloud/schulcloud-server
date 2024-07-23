@@ -201,7 +201,7 @@ export class SchulconnexGroupProvisioningService {
 
 				if (group.isEmpty()) {
 					const courses: Course[] = await this.courseService.findBySyncedGroup(group);
-					if (!courses) {
+					if (!courses || courses.length === 0) {
 						await this.groupService.delete(group);
 					}
 					return null;
