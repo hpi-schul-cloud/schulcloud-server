@@ -5,7 +5,7 @@ import { Course } from '@modules/learnroom/domain';
 import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { SchoolYearService } from '@modules/legacy-school';
 import { ProvisioningConfig } from '@modules/provisioning';
-import { School, SchoolService } from '@modules/school/domain';
+import { School, SchoolService, SchoolYear } from '@modules/school/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
@@ -138,7 +138,8 @@ export class ClassGroupUc {
 		classes: Class[],
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
-		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
+		const school: School = await this.schoolService.getSchoolById(classes[0].schoolId);
+		const currentYear = school.getProps().currentYear;
 
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
 			classes
@@ -172,7 +173,7 @@ export class ClassGroupUc {
 	}
 
 	private isClassOfQueryType(
-		currentYear: SchoolYearEntity,
+		currentYear: SchoolYear | undefined,
 		schoolYear?: SchoolYearEntity,
 		schoolYearQueryType?: SchoolYearQueryType
 	): boolean {
@@ -180,17 +181,17 @@ export class ClassGroupUc {
 			return true;
 		}
 
-		if (schoolYear === undefined) {
+		if (schoolYear === undefined || currentYear === undefined) {
 			return schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR;
 		}
 
 		switch (schoolYearQueryType) {
 			case SchoolYearQueryType.CURRENT_YEAR:
-				return schoolYear.startDate === currentYear.startDate;
+				return schoolYear.startDate === currentYear.getProps().startDate;
 			case SchoolYearQueryType.NEXT_YEAR:
-				return schoolYear.startDate > currentYear.startDate;
+				return schoolYear.startDate > currentYear.getProps().startDate;
 			case SchoolYearQueryType.PREVIOUS_YEARS:
-				return schoolYear.startDate < currentYear.startDate;
+				return schoolYear.startDate < currentYear.getProps().startDate;
 			default:
 				throw new UnknownQueryTypeLoggableException(schoolYearQueryType);
 		}
