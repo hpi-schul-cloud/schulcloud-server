@@ -669,6 +669,11 @@
 			"default": "default",
 			"description": "The used theming."
 		},
+		"SC_SHORTNAME": {
+			"type": "string",
+			"default": "default",
+			"description": "The sort name of the instance (dbc, nbc, brb, thr)."
+		},
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
