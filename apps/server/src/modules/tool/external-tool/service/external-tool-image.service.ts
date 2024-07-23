@@ -12,14 +12,14 @@ import { FileRecordRef } from '../domain';
 
 @Injectable()
 export class ExternalToolImageService {
-	private readonly internalApiUrl: string;
+	private readonly internalFileApiUrl: string;
 
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly httpService: HttpService,
 		private readonly instanceService: InstanceService
 	) {
-		this.internalApiUrl = this.configService.get('API_HOST');
+		this.internalFileApiUrl = this.configService.get('FILES_STORAGE__SERVICE_BASE_URL');
 	}
 
 	async uploadImageFileFromUrl(url: string, fileNameAffix: string, externalToolId: EntityId): Promise<FileRecordRef> {
@@ -28,7 +28,7 @@ export class ExternalToolImageService {
 		const instance: Instance = await this.instanceService.getInstance();
 
 		const observable: Observable<AxiosResponse<FileRecordResponse>> = this.httpService.post(
-			`${this.internalApiUrl}/v3/file/upload-from-url/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
+			`${this.internalFileApiUrl}/v3/file/upload-from-url/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
 			{
 				url,
 				fileName,
@@ -46,7 +46,7 @@ export class ExternalToolImageService {
 
 	async deleteImageFile(fileRecordId: EntityId): Promise<void> {
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
-			`${this.internalApiUrl}/v3/file/delete/${fileRecordId}`
+			`${this.internalFileApiUrl}/v3/file/delete/${fileRecordId}`
 		);
 
 		await firstValueFrom(observable);
@@ -56,7 +56,7 @@ export class ExternalToolImageService {
 		const instance: Instance = await this.instanceService.getInstance();
 
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
-			`${this.internalApiUrl}/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`
+			`${this.internalFileApiUrl}/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`
 		);
 
 		await firstValueFrom(observable);

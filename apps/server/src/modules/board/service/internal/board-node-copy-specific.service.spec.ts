@@ -51,7 +51,7 @@ describe(BoardNodeCopyService.name, () => {
 		CTL_TOOLS_BACKEND_URL: '',
 		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
 		CTL_TOOLS_RELOAD_TIME_MS: 0,
-		API_HOST: '',
+		FILES_STORAGE__SERVICE_BASE_URL: '',
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;

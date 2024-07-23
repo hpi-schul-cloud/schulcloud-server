@@ -5,5 +5,5 @@ export interface ToolConfig {
 	CTL_TOOLS_BACKEND_URL: string;
 	FEATURE_CTL_TOOLS_COPY_ENABLED: boolean;
 	CTL_TOOLS_RELOAD_TIME_MS: number;
-	API_HOST: string;
+	FILES_STORAGE__SERVICE_BASE_URL: string;
 }
