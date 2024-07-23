@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class SchulconnexLizenzInfoTargetResponse {
+export class SchulconnexPoliciesInfoTargetResponse {
 	@IsString()
 	uid!: string;
 

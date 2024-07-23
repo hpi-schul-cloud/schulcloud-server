@@ -6,8 +6,8 @@ import {
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
-import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
-import { schulconnexLizenzInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory';
+import { SchulconnexPoliciesInfoResponse } from '@infra/schulconnex-client/response';
+import { schulconnexPoliciesInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-policies-info-response-factory';
 import { GroupService } from '@modules/group';
 import { GroupTypes } from '@modules/group/domain';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -16,6 +16,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { Logger } from '@src/core/logger';
 import * as classValidator from 'class-validator';
 import {
 	ExternalGroupDto,
@@ -45,6 +46,7 @@ describe(SanisProvisioningStrategy.name, () => {
 	let strategy: SanisProvisioningStrategy;
 
 	let mapper: DeepMocked<SchulconnexResponseMapper>;
+	let logger: DeepMocked<Logger>;
 
 	let validationFunction: SpyInstance<
 		ReturnType<typeof classValidator.validate>,
@@ -100,12 +102,17 @@ describe(SanisProvisioningStrategy.name, () => {
 					provide: SchulconnexRestClient,
 					useValue: createMock<SchulconnexRestClient>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		strategy = module.get(SanisProvisioningStrategy);
 		mapper = module.get(SchulconnexResponseMapper);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
+		logger = module.get(Logger);
 
 		validationFunction = jest.spyOn(classValidator, 'validate');
 	});
@@ -163,8 +170,8 @@ describe(SanisProvisioningStrategy.name, () => {
 						},
 					}),
 				];
-				const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] =
-					schulconnexLizenzInfoResponseFactory.buildList(1);
+				const schulconnexLizenzInfoResponses: SchulconnexPoliciesInfoResponse[] =
+					schulconnexPoliciesInfoResponseFactory.buildList(1);
 				const schulconnexLizenzInfoResponse = schulconnexLizenzInfoResponses[0];
 				const licenses: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses([
 					schulconnexLizenzInfoResponse,
@@ -178,7 +185,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
 				validationFunction.mockResolvedValueOnce([]);
 				validationFunction.mockResolvedValueOnce([]);
-				schulconnexRestClient.getLizenzInfo.mockResolvedValueOnce(schulconnexLizenzInfoResponses);
+				schulconnexRestClient.getPoliciesInfo.mockResolvedValueOnce(schulconnexLizenzInfoResponses);
 				validationFunction.mockResolvedValueOnce([]);
 
 				return {
@@ -307,6 +314,56 @@ describe(SanisProvisioningStrategy.name, () => {
 			});
 		});
 
+		describe('when fetching policies info from schulconnex fails', () => {
+			const setup = () => {
+				const provisioningUrl = 'sanisProvisioningUrl';
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+				});
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: 'schoolName',
+				});
+
+				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
+				mapper.mapToExternalUserDto.mockReturnValue(user);
+				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				schulconnexRestClient.getPoliciesInfo.mockRejectedValueOnce(new Error());
+
+				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
+
+				return {
+					input,
+				};
+			};
+
+			it('should log a warning', async () => {
+				const { input } = setup();
+
+				await strategy.getData(input);
+
+				expect(logger.warning).toHaveBeenCalled();
+			});
+
+			it('should return undefined external licenses ', async () => {
+				const { input } = setup();
+
+				const oauthDataDto: OauthDataDto = await strategy.getData(input);
+
+				expect(oauthDataDto.externalLicenses).toBeUndefined();
+			});
+		});
+
 		describe('when FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED is false', () => {
 			const setup = () => {
 				const provisioningUrl = 'sanisProvisioningUrl';
@@ -347,7 +404,7 @@ describe(SanisProvisioningStrategy.name, () => {
 
 				await strategy.getData(input);
 
-				expect(schulconnexRestClient.getLizenzInfo).not.toHaveBeenCalled();
+				expect(schulconnexRestClient.getPoliciesInfo).not.toHaveBeenCalled();
 			});
 		});
 

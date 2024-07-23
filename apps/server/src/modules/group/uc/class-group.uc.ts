@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
@@ -139,6 +140,7 @@ export class ClassGroupUc {
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
 		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
+		const schoolById = await this.schoolService.getSchoolById(new ObjectId().toHexString());
 
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
 			classes

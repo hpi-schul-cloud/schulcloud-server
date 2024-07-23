@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
-import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
+import { SchulconnexPoliciesInfoResponse } from '@infra/schulconnex-client/response';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
@@ -464,8 +464,8 @@ describe('UserLoginMigrationController (API)', () => {
 						},
 					],
 				})
-				.onGet(configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL'))
-				.replyOnce<SchulconnexLizenzInfoResponse[]>(200, []);
+				.onGet(configService.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL'))
+				.replyOnce<SchulconnexPoliciesInfoResponse[]>(200, []);
 		};
 
 		describe('when providing a code and being eligible to migrate', () => {
