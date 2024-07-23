@@ -5,11 +5,10 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
 import { ToolConfig } from '../../tool-config';
-import { FileRecordRef } from '../domain/file-record-ref';
+import { FileRecordRef } from '../domain';
 
 @Injectable()
 export class ExternalToolImageService {
@@ -17,7 +16,6 @@ export class ExternalToolImageService {
 
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
-		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly instanceService: InstanceService
 	) {
