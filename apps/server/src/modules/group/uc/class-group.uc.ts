@@ -138,8 +138,7 @@ export class ClassGroupUc {
 		classes: Class[],
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
-		const school: School = await this.schoolService.getSchoolById(classes[0].schoolId);
-		const currentYear = school.getProps().currentYear;
+		const currentYear = await this.schoolService.getCurrentYear(classes[0].schoolId);
 
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
 			classes
