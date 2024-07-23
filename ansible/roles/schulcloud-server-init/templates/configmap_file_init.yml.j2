@@ -556,7 +556,7 @@ data:
 
     # ========== Start of the Instance seed data configuration section.
         echo "Removing instance seed data that does not belong to the currently deployed instance..."
-        mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").deleteMany(
+        mongosh $DATABASE__URL --quiet --eval 'db.getCollection("instances").deleteMany(
                  {
                    "name": { $ne: "'$SC_SHORTNAME'" },
                  }
