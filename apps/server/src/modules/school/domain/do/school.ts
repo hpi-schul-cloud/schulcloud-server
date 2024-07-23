@@ -20,6 +20,10 @@ interface SchoolInfo {
 }
 
 export class School extends DomainObject<SchoolProps> {
+	get currentYear() {
+		return this.props.currentYear;
+	}
+
 	get systems(): EntityId[] {
 		return this.props.systemIds;
 	}
