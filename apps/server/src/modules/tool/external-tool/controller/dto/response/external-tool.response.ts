@@ -63,6 +63,7 @@ export class ExternalToolResponse {
 		this.description = response.description;
 		this.url = response.url;
 		this.logoUrl = response.logoUrl;
+		this.thumbnailUrl = response.thumbnailUrl;
 		this.config = response.config;
 		this.parameters = response.parameters;
 		this.isHidden = response.isHidden;
