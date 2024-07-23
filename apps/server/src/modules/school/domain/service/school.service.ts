@@ -55,7 +55,7 @@ export class SchoolService {
 
 	public async getCurrentYear(schoolId: EntityId) {
 		const school = await this.getSchoolById(schoolId);
-		return school.getProps().currentYear;
+		return school.currentYear;
 	}
 
 	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {

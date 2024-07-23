@@ -187,11 +187,11 @@ export class ClassGroupUc {
 
 		switch (schoolYearQueryType) {
 			case SchoolYearQueryType.CURRENT_YEAR:
-				return schoolYear.startDate === currentYear.getProps().startDate;
+				return schoolYear.startDate === currentYear.startDate;
 			case SchoolYearQueryType.NEXT_YEAR:
-				return schoolYear.startDate > currentYear.getProps().startDate;
+				return schoolYear.startDate > currentYear.startDate;
 			case SchoolYearQueryType.PREVIOUS_YEARS:
-				return schoolYear.startDate < currentYear.getProps().startDate;
+				return schoolYear.startDate < currentYear.startDate;
 			default:
 				throw new UnknownQueryTypeLoggableException(schoolYearQueryType);
 		}
