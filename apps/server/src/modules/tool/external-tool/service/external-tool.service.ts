@@ -1,6 +1,6 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { OauthProviderService } from '@infra/oauth-provider';
-import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { ProviderOauthClient } from '@modules/oauth-provider/domain';
+import { OauthProviderService } from '@modules/oauth-provider/domain/service/oauth-provider.service';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
@@ -29,7 +29,7 @@ export class ExternalToolService {
 		if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
 			externalTool.config.secret = this.encryptionService.encrypt(externalTool.config.secret);
 		} else if (ExternalTool.isOauth2Config(externalTool.config)) {
-			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+			const oauthClient: Partial<ProviderOauthClient> = this.mapper.mapDoToProviderOauthClient(
 				externalTool.name,
 				externalTool.config
 			);
@@ -122,7 +122,7 @@ export class ExternalToolService {
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
 		if (ExternalTool.isOauth2Config(toUpdate.config)) {
-			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+			const toUpdateOauthClient: Partial<ProviderOauthClient> = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
 				toUpdate.config
 			);
@@ -135,7 +135,7 @@ export class ExternalToolService {
 
 	private async updateOauthClientOrThrow(
 		loadedOauthClient: ProviderOauthClient,
-		toUpdateOauthClient: ProviderOauthClient,
+		toUpdateOauthClient: Partial<ProviderOauthClient>,
 		toUpdate: ExternalTool
 	) {
 		if (loadedOauthClient && loadedOauthClient.client_id) {

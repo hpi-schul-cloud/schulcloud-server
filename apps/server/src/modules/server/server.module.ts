@@ -21,7 +21,7 @@ import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MeApiModule } from '@modules/me/me-api.module';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
-import { OauthProviderApiModule } from '@modules/oauth-provider';
+import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
 import { OauthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
