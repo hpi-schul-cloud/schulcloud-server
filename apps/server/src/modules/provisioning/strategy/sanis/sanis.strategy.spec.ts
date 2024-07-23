@@ -338,6 +338,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				validationFunction.mockResolvedValueOnce([]);
 				schulconnexRestClient.getPoliciesInfo.mockRejectedValueOnce(new Error());
 
 				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
