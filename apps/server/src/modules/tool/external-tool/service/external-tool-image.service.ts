@@ -55,9 +55,8 @@ export class ExternalToolImageService {
 	}
 
 	async deleteImageFile(fileRecordId: EntityId, jwt: string): Promise<void> {
-		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
+		const observable: Observable<AxiosResponse<unknown>> = this.httpService.delete(
 			`${this.internalFileApiUrl}/api/v3/file/delete/${fileRecordId}`,
-			undefined,
 			{
 				headers: {
 					Authorization: `Bearer ${jwt}`,
@@ -71,9 +70,8 @@ export class ExternalToolImageService {
 	async deleteAllFiles(externalToolId: EntityId, jwt: string): Promise<void> {
 		const instance: Instance = await this.instanceService.getInstance();
 
-		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
+		const observable: Observable<AxiosResponse<unknown>> = this.httpService.delete(
 			`${this.internalFileApiUrl}/api/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
-			undefined,
 			{
 				headers: {
 					Authorization: `Bearer ${jwt}`,
