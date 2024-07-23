@@ -22,7 +22,12 @@ export class ExternalToolImageService {
 		this.internalFileApiUrl = this.configService.get('FILES_STORAGE__SERVICE_BASE_URL');
 	}
 
-	async uploadImageFileFromUrl(url: string, fileNameAffix: string, externalToolId: EntityId): Promise<FileRecordRef> {
+	async uploadImageFileFromUrl(
+		url: string,
+		fileNameAffix: string,
+		externalToolId: EntityId,
+		jwt: string
+	): Promise<FileRecordRef> {
 		const fileName = `external-tool-${fileNameAffix}-${externalToolId}`;
 
 		const instance: Instance = await this.instanceService.getInstance();
@@ -32,6 +37,11 @@ export class ExternalToolImageService {
 			{
 				url,
 				fileName,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+				},
 			}
 		);
 
@@ -44,19 +54,31 @@ export class ExternalToolImageService {
 		});
 	}
 
-	async deleteImageFile(fileRecordId: EntityId): Promise<void> {
+	async deleteImageFile(fileRecordId: EntityId, jwt: string): Promise<void> {
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
-			`${this.internalFileApiUrl}/api/v3/file/delete/${fileRecordId}`
+			`${this.internalFileApiUrl}/api/v3/file/delete/${fileRecordId}`,
+			undefined,
+			{
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+				},
+			}
 		);
 
 		await firstValueFrom(observable);
 	}
 
-	async deleteAllFiles(externalToolId: EntityId): Promise<void> {
+	async deleteAllFiles(externalToolId: EntityId, jwt: string): Promise<void> {
 		const instance: Instance = await this.instanceService.getInstance();
 
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
-			`${this.internalFileApiUrl}/api/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`
+			`${this.internalFileApiUrl}/api/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
+			undefined,
+			{
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+				},
+			}
 		);
 
 		await firstValueFrom(observable);

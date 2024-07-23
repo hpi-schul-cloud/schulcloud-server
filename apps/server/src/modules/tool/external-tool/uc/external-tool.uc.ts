@@ -14,11 +14,11 @@ import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, Ex
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
 	DatasheetPdfService,
+	ExternalToolImageService,
 	ExternalToolLogoService,
 	ExternalToolService,
 	ExternalToolValidationService,
 } from '../service';
-import { ExternalToolImageService } from '../service/external-tool-image.service';
 import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate } from './dto';
 
 @Injectable()
@@ -35,17 +35,22 @@ export class ExternalToolUc {
 		private readonly externalToolImageService: ExternalToolImageService
 	) {}
 
-	public async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+	public async createExternalTool(
+		userId: EntityId,
+		externalToolCreate: ExternalToolCreate,
+		jwt: string
+	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate);
+		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate, jwt);
 
 		return tool;
 	}
 
 	public async importExternalTools(
 		userId: EntityId,
-		externalTools: ExternalToolCreate[]
+		externalTools: ExternalToolCreate[],
+		jwt: string
 	): Promise<ExternalToolImportResult[]> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
@@ -60,7 +65,7 @@ export class ExternalToolUc {
 
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool);
+				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool, jwt);
 
 				result.toolId = savedTool.id;
 			} catch (error: unknown) {
@@ -75,7 +80,10 @@ export class ExternalToolUc {
 		return results;
 	}
 
-	private async validateAndSaveExternalTool(externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+	private async validateAndSaveExternalTool(
+		externalToolCreate: ExternalToolCreate,
+		jwt: string
+	): Promise<ExternalTool> {
 		const { thumbnailUrl, ...externalToolCreateProps } = externalToolCreate;
 
 		const pendingExternalTool: ExternalTool = new ExternalTool({
@@ -92,7 +100,8 @@ export class ExternalToolUc {
 			savedExternalTool.thumbnail = await this.externalToolImageService.uploadImageFileFromUrl(
 				thumbnailUrl,
 				ExternalTool.thumbnailNameAffix,
-				savedExternalTool.id
+				savedExternalTool.id,
+				jwt
 			);
 
 			savedExternalTool = await this.externalToolService.updateExternalTool(savedExternalTool);
@@ -104,7 +113,8 @@ export class ExternalToolUc {
 	public async updateExternalTool(
 		userId: EntityId,
 		toolId: string,
-		externalToolUpdate: ExternalToolUpdate
+		externalToolUpdate: ExternalToolUpdate,
+		jwt: string
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
@@ -127,14 +137,15 @@ export class ExternalToolUc {
 
 		if (thumbnailUrl !== currentExternalTool.thumbnail?.uploadUrl) {
 			if (currentExternalTool.thumbnail) {
-				await this.externalToolImageService.deleteImageFile(currentExternalTool.thumbnail.fileRecordId);
+				await this.externalToolImageService.deleteImageFile(currentExternalTool.thumbnail.fileRecordId, jwt);
 			}
 
 			if (thumbnailUrl) {
 				pendingExternalTool.thumbnail = await this.externalToolImageService.uploadImageFileFromUrl(
 					thumbnailUrl,
 					ExternalTool.thumbnailNameAffix,
-					pendingExternalTool.id
+					pendingExternalTool.id,
+					jwt
 				);
 			}
 		}
@@ -152,6 +163,7 @@ export class ExternalToolUc {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const tools: Page<ExternalTool> = await this.externalToolService.findExternalTools(query, options);
+
 		return tools;
 	}
 
@@ -163,10 +175,10 @@ export class ExternalToolUc {
 		return tool;
 	}
 
-	public async deleteExternalTool(userId: EntityId, externalToolId: EntityId): Promise<void> {
+	public async deleteExternalTool(userId: EntityId, externalToolId: EntityId, jwt: string): Promise<void> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		await this.externalToolImageService.deleteAllFiles(externalToolId);
+		await this.externalToolImageService.deleteAllFiles(externalToolId, jwt);
 
 		await this.externalToolService.deleteExternalTool(externalToolId);
 	}
