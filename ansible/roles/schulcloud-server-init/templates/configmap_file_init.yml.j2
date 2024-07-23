@@ -554,5 +554,16 @@ data:
 
     # ========== End of the CTL seed data configuration section.
 
+    # ========== Start of the Instance seed data configuration section.
+        echo "Removing instance seed data that does not belong to the currently deployed instance..."
+        mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").deleteMany(
+                 {
+                   "name": { $ne: "'$SC_SHORTNAME'" },
+                 }
+             );'
+        echo "Removed all inapplicable instances from the seed data."
+
+        # ========== End of the Instance seed data configuration section.
+
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
