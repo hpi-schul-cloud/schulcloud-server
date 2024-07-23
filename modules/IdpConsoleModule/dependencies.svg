@@ -24,103 +24,103 @@
 <title>cluster_IdpConsoleModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1140,-195 1140,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_IdpConsoleModule_providers</title>
-<polygon fill="none" stroke="black" points="944,-78 944,-130 1132,-130 1132,-78 944,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_IdpConsoleModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 936,-130 936,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="212,-78 212,-130 1132,-130 1132,-78 212,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_IdpConsoleModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 204,-130 204,-78 16,-78"/>
 </g>
 <!-- ConsoleWriterModule -->
 <g id="node1" class="node">
 <title>ConsoleWriterModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="927.97,-122 924.97,-126 903.97,-126 900.97,-122 786.03,-122 786.03,-86 927.97,-86 927.97,-122"/>
-<text text-anchor="middle" x="857" y="-99.8" font-family="Times,serif" font-size="14.00">ConsoleWriterModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1123.97,-122 1120.97,-126 1099.97,-126 1096.97,-122 982.03,-122 982.03,-86 1123.97,-86 1123.97,-122"/>
+<text text-anchor="middle" x="1053" y="-99.8" font-family="Times,serif" font-size="14.00">ConsoleWriterModule</text>
 </g>
 <!-- IdpConsoleModule -->
 <g id="node7" class="node">
 <title>IdpConsoleModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="628.1,-187 625.1,-191 604.1,-191 601.1,-187 503.9,-187 503.9,-151 628.1,-151 628.1,-187"/>
-<text text-anchor="middle" x="566" y="-164.8" font-family="Times,serif" font-size="14.00">IdpConsoleModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="639.1,-187 636.1,-191 615.1,-191 612.1,-187 514.9,-187 514.9,-151 639.1,-151 639.1,-187"/>
+<text text-anchor="middle" x="577" y="-164.8" font-family="Times,serif" font-size="14.00">IdpConsoleModule</text>
 </g>
 <!-- ConsoleWriterModule&#45;&gt;IdpConsoleModule -->
 <g id="edge1" class="edge">
 <title>ConsoleWriterModule&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M857,-122.11C857,-141.34 857,-169 857,-169 857,-169 638.07,-169 638.07,-169"/>
-<polygon fill="black" stroke="black" points="638.07,-165.5 628.07,-169 638.07,-172.5 638.07,-165.5"/>
+<path fill="none" stroke="black" d="M1053,-122.29C1053,-144.21 1053,-178 1053,-178 1053,-178 649.23,-178 649.23,-178"/>
+<polygon fill="black" stroke="black" points="649.23,-174.5 639.23,-178 649.23,-181.5 649.23,-174.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="767.98,-122 764.98,-126 743.98,-126 740.98,-122 668.02,-122 668.02,-86 767.98,-86 767.98,-122"/>
-<text text-anchor="middle" x="718" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="963.98,-122 960.98,-126 939.98,-126 936.98,-122 864.02,-122 864.02,-86 963.98,-86 963.98,-122"/>
+<text text-anchor="middle" x="914" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;IdpConsoleModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M718,-122.03C718,-138.4 718,-160 718,-160 718,-160 638.26,-160 638.26,-160"/>
-<polygon fill="black" stroke="black" points="638.26,-156.5 628.26,-160 638.26,-163.5 638.26,-156.5"/>
+<path fill="none" stroke="black" d="M914,-122.11C914,-141.34 914,-169 914,-169 914,-169 649.2,-169 649.2,-169"/>
+<polygon fill="black" stroke="black" points="649.2,-165.5 639.2,-169 649.2,-172.5 649.2,-165.5"/>
 </g>
 <!-- RabbitMQWrapperModule -->
 <g id="node3" class="node">
 <title>RabbitMQWrapperModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="650.4,-122 647.4,-126 626.4,-126 623.4,-122 481.6,-122 481.6,-86 650.4,-86 650.4,-122"/>
-<text text-anchor="middle" x="566" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="846.4,-122 843.4,-126 822.4,-126 819.4,-122 677.6,-122 677.6,-86 846.4,-86 846.4,-122"/>
+<text text-anchor="middle" x="762" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
 </g>
 <!-- RabbitMQWrapperModule&#45;&gt;IdpConsoleModule -->
 <g id="edge3" class="edge">
 <title>RabbitMQWrapperModule&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M566,-122.11C566,-122.11 566,-140.99 566,-140.99"/>
-<polygon fill="black" stroke="black" points="562.5,-140.99 566,-150.99 569.5,-140.99 562.5,-140.99"/>
+<path fill="none" stroke="black" d="M762,-122.03C762,-138.4 762,-160 762,-160 762,-160 649.12,-160 649.12,-160"/>
+<polygon fill="black" stroke="black" points="649.12,-156.5 639.12,-160 649.12,-163.5 649.12,-156.5"/>
 </g>
 <!-- SchulconnexClientModule -->
 <g id="node4" class="node">
 <title>SchulconnexClientModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="464.09,-122 461.09,-126 440.09,-126 437.09,-122 297.91,-122 297.91,-86 464.09,-86 464.09,-122"/>
-<text text-anchor="middle" x="381" y="-99.8" font-family="Times,serif" font-size="14.00">SchulconnexClientModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="660.09,-122 657.09,-126 636.09,-126 633.09,-122 493.91,-122 493.91,-86 660.09,-86 660.09,-122"/>
+<text text-anchor="middle" x="577" y="-99.8" font-family="Times,serif" font-size="14.00">SchulconnexClientModule</text>
 </g>
 <!-- SchulconnexClientModule&#45;&gt;IdpConsoleModule -->
 <g id="edge4" class="edge">
 <title>SchulconnexClientModule&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M381,-122.03C381,-138.4 381,-160 381,-160 381,-160 493.88,-160 493.88,-160"/>
-<polygon fill="black" stroke="black" points="493.88,-163.5 503.88,-160 493.88,-156.5 493.88,-163.5"/>
+<path fill="none" stroke="black" d="M577,-122.11C577,-122.11 577,-140.99 577,-140.99"/>
+<polygon fill="black" stroke="black" points="573.5,-140.99 577,-150.99 580.5,-140.99 573.5,-140.99"/>
 </g>
 <!-- SynchronizationModule -->
 <g id="node5" class="node">
 <title>SynchronizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="279.81,-122 276.81,-126 255.81,-126 252.81,-122 128.19,-122 128.19,-86 279.81,-86 279.81,-122"/>
-<text text-anchor="middle" x="204" y="-99.8" font-family="Times,serif" font-size="14.00">SynchronizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="475.81,-122 472.81,-126 451.81,-126 448.81,-122 324.19,-122 324.19,-86 475.81,-86 475.81,-122"/>
+<text text-anchor="middle" x="400" y="-99.8" font-family="Times,serif" font-size="14.00">SynchronizationModule</text>
 </g>
 <!-- SynchronizationModule&#45;&gt;IdpConsoleModule -->
 <g id="edge5" class="edge">
 <title>SynchronizationModule&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M204,-122.11C204,-141.34 204,-169 204,-169 204,-169 493.77,-169 493.77,-169"/>
-<polygon fill="black" stroke="black" points="493.77,-172.5 503.77,-169 493.77,-165.5 493.77,-172.5"/>
+<path fill="none" stroke="black" d="M400,-122.03C400,-138.4 400,-160 400,-160 400,-160 504.6,-160 504.6,-160"/>
+<polygon fill="black" stroke="black" points="504.6,-163.5 514.6,-160 504.6,-156.5 504.6,-163.5"/>
 </g>
 <!-- UserModule -->
 <g id="node6" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="305.98,-122 302.98,-126 281.98,-126 278.98,-122 220.02,-122 220.02,-86 305.98,-86 305.98,-122"/>
+<text text-anchor="middle" x="263" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;IdpConsoleModule -->
 <g id="edge6" class="edge">
 <title>UserModule&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M67,-122.29C67,-144.21 67,-178 67,-178 67,-178 493.81,-178 493.81,-178"/>
-<polygon fill="black" stroke="black" points="493.81,-181.5 503.81,-178 493.81,-174.5 493.81,-181.5"/>
+<path fill="none" stroke="black" d="M263,-122.11C263,-141.34 263,-169 263,-169 263,-169 504.59,-169 504.59,-169"/>
+<polygon fill="black" stroke="black" points="504.59,-172.5 514.59,-169 504.59,-165.5 504.59,-172.5"/>
 </g>
 <!-- SynchronizationUc -->
 <g id="node8" class="node">
 <title>SynchronizationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1038" cy="-104" rx="85.68" ry="18"/>
-<text text-anchor="middle" x="1038" y="-99.8" font-family="Times,serif" font-size="14.00">SynchronizationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="110" cy="-104" rx="85.68" ry="18"/>
+<text text-anchor="middle" x="110" y="-99.8" font-family="Times,serif" font-size="14.00">SynchronizationUc</text>
 </g>
 <!-- SynchronizationUc&#45;&gt;IdpConsoleModule -->
 <g id="edge7" class="edge">
 <title>SynchronizationUc&#45;&gt;IdpConsoleModule</title>
-<path fill="none" stroke="black" d="M1038,-122.29C1038,-144.21 1038,-178 1038,-178 1038,-178 638.19,-178 638.19,-178"/>
-<polygon fill="black" stroke="black" points="638.19,-174.5 628.19,-178 638.19,-181.5 638.19,-174.5"/>
+<path fill="none" stroke="black" d="M110,-122.29C110,-144.21 110,-178 110,-178 110,-178 504.5,-178 504.5,-178"/>
+<polygon fill="black" stroke="black" points="504.5,-181.5 514.5,-178 504.5,-174.5 504.5,-181.5"/>
 </g>
 </g>
 </svg>
