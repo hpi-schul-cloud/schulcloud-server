@@ -671,7 +671,7 @@
 		},
 		"SC_SHORTNAME": {
 			"type": "string",
-			"default": "default",
+			"default": "dbc",
 			"description": "The sort name of the instance (dbc, nbc, brb, thr)."
 		},
 		"FEATURE_OAUTH_LOGIN": {

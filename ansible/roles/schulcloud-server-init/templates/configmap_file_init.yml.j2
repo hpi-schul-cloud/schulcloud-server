@@ -555,7 +555,7 @@ data:
     # ========== End of the CTL seed data configuration section.
 
     # ========== Start of the Instance seed data configuration section.
-        echo "Removing instance seed data that does not belong to the currently deployed instance..."
+        echo "Removing instance seed data that does not belong to '$SC_SHORTNAME'..."
         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("instances").deleteMany(
                  {
                    "name": { $ne: "'$SC_SHORTNAME'" },
