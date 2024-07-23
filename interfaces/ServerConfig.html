@@ -293,12 +293,6 @@
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#FEATURE_NEW_LAYOUT_ENABLED" 
->
-                                            FEATURE_NEW_LAYOUT_ENABLED
-                                        </a>
-                                </li>
-                                <li>
                                         <a href="#FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED" 
 >
                                             FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED
@@ -1156,39 +1150,6 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <code>FEATURE_LOGIN_LINK_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="FEATURE_NEW_LAYOUT_ENABLED"></a>
-                                        <span class="name "><b>FEATURE_NEW_LAYOUT_ENABLED</b>
-                                            <a href="#FEATURE_NEW_LAYOUT_ENABLED">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>FEATURE_NEW_LAYOUT_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -2456,7 +2417,6 @@ export interface ServerConfig
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
-	FEATURE_NEW_LAYOUT_ENABLED: boolean;
 	SCHULCONNEX_CLIENT__API_URL: string | undefined;
 	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
@@ -2605,7 +2565,6 @@ const config: ServerConfig &#x3D; {
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;) as boolean,
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get(&#x27;PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL&#x27;) as string,
 	BOARD_COLLABORATION_URI: Configuration.get(&#x27;BOARD_COLLABORATION_URI&#x27;) as string,
-	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get(&#x27;FEATURE_NEW_LAYOUT_ENABLED&#x27;) as boolean,
 	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get(&#x27;FEATURE_CTL_TOOLS_TAB_ENABLED&#x27;) as boolean,
 	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get(&#x27;FEATURE_LTI_TOOLS_TAB_ENABLED&#x27;) as boolean,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(

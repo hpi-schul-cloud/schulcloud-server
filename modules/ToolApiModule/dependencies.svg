@@ -24,271 +24,271 @@
 <title>cluster_ToolApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 3760,-195 3760,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_ToolApiModule_imports</title>
-<polygon fill="none" stroke="black" points="2442,-78 2442,-130 3752,-130 3752,-78 2442,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_ToolApiModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 2434,-130 2434,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1334,-78 1334,-130 3752,-130 3752,-78 1334,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_ToolApiModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1326,-130 1326,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="3743.81,-122 3740.81,-126 3719.81,-126 3716.81,-122 3606.19,-122 3606.19,-86 3743.81,-86 3743.81,-122"/>
-<text text-anchor="middle" x="3675" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1317.81,-122 1314.81,-126 1293.81,-126 1290.81,-122 1180.19,-122 1180.19,-86 1317.81,-86 1317.81,-122"/>
+<text text-anchor="middle" x="1249" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- ToolApiModule -->
 <g id="node11" class="node">
 <title>ToolApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2375.49,-187 2372.49,-191 2351.49,-191 2348.49,-187 2268.51,-187 2268.51,-151 2375.49,-151 2375.49,-187"/>
-<text text-anchor="middle" x="2322" y="-164.8" font-family="Times,serif" font-size="14.00">ToolApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1475.49,-187 1472.49,-191 1451.49,-191 1448.49,-187 1368.51,-187 1368.51,-151 1475.49,-151 1475.49,-187"/>
+<text text-anchor="middle" x="1422" y="-164.8" font-family="Times,serif" font-size="14.00">ToolApiModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;ToolApiModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M3675,-122.15C3675,-145.76 3675,-184 3675,-184 3675,-184 2385.87,-184 2385.87,-184"/>
-<polygon fill="black" stroke="black" points="2385.87,-180.5 2375.87,-184 2385.87,-187.5 2385.87,-180.5"/>
+<path fill="none" stroke="black" d="M1249,-122.12C1249,-136.78 1249,-155 1249,-155 1249,-155 1358.21,-155 1358.21,-155"/>
+<polygon fill="black" stroke="black" points="1358.21,-158.5 1368.21,-155 1358.21,-151.5 1358.21,-158.5"/>
 </g>
 <!-- BoardModule -->
 <g id="node2" class="node">
 <title>BoardModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="3587.76,-122 3584.76,-126 3563.76,-126 3560.76,-122 3494.24,-122 3494.24,-86 3587.76,-86 3587.76,-122"/>
-<text text-anchor="middle" x="3541" y="-99.8" font-family="Times,serif" font-size="14.00">BoardModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1161.76,-122 1158.76,-126 1137.76,-126 1134.76,-122 1068.24,-122 1068.24,-86 1161.76,-86 1161.76,-122"/>
+<text text-anchor="middle" x="1115" y="-99.8" font-family="Times,serif" font-size="14.00">BoardModule</text>
 </g>
 <!-- BoardModule&#45;&gt;ToolApiModule -->
 <g id="edge2" class="edge">
 <title>BoardModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M3541,-122.25C3541,-145.02 3541,-181 3541,-181 3541,-181 2385.56,-181 2385.56,-181"/>
-<polygon fill="black" stroke="black" points="2385.56,-177.5 2375.56,-181 2385.56,-184.5 2385.56,-177.5"/>
+<path fill="none" stroke="black" d="M1115,-122.28C1115,-137.95 1115,-158 1115,-158 1115,-158 1358.17,-158 1358.17,-158"/>
+<polygon fill="black" stroke="black" points="1358.17,-161.5 1368.17,-158 1358.17,-154.5 1358.17,-161.5"/>
 </g>
 <!-- CommonToolModule -->
 <g id="node3" class="node">
 <title>CommonToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="3476.11,-122 3473.11,-126 3452.11,-126 3449.11,-122 3337.89,-122 3337.89,-86 3476.11,-86 3476.11,-122"/>
-<text text-anchor="middle" x="3407" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1050.11,-122 1047.11,-126 1026.11,-126 1023.11,-122 911.89,-122 911.89,-86 1050.11,-86 1050.11,-122"/>
+<text text-anchor="middle" x="981" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
 </g>
 <!-- CommonToolModule&#45;&gt;ToolApiModule -->
 <g id="edge3" class="edge">
 <title>CommonToolModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M3407,-122.29C3407,-144.21 3407,-178 3407,-178 3407,-178 2385.81,-178 2385.81,-178"/>
-<polygon fill="black" stroke="black" points="2385.81,-174.5 2375.81,-178 2385.81,-181.5 2385.81,-174.5"/>
+<path fill="none" stroke="black" d="M981,-122.04C981,-138.73 981,-161 981,-161 981,-161 1358.37,-161 1358.37,-161"/>
+<polygon fill="black" stroke="black" points="1358.37,-164.5 1368.37,-161 1358.37,-157.5 1358.37,-164.5"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node4" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="3319.74,-122 3316.74,-126 3295.74,-126 3292.74,-122 3198.26,-122 3198.26,-86 3319.74,-86 3319.74,-122"/>
-<text text-anchor="middle" x="3259" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="893.74,-122 890.74,-126 869.74,-126 866.74,-122 772.26,-122 772.26,-86 893.74,-86 893.74,-122"/>
+<text text-anchor="middle" x="833" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- LearnroomModule&#45;&gt;ToolApiModule -->
 <g id="edge4" class="edge">
 <title>LearnroomModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M3259,-122.03C3259,-142.77 3259,-174 3259,-174 3259,-174 2385.74,-174 2385.74,-174"/>
-<polygon fill="black" stroke="black" points="2385.74,-170.5 2375.74,-174 2385.74,-177.5 2385.74,-170.5"/>
+<path fill="none" stroke="black" d="M833,-122.3C833,-140.27 833,-165 833,-165 833,-165 1358.43,-165 1358.43,-165"/>
+<polygon fill="black" stroke="black" points="1358.43,-168.5 1368.43,-165 1358.43,-161.5 1358.43,-168.5"/>
 </g>
 <!-- LegacySchoolModule -->
 <g id="node5" class="node">
 <title>LegacySchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="3179.63,-122 3176.63,-126 3155.63,-126 3152.63,-122 3040.37,-122 3040.37,-86 3179.63,-86 3179.63,-122"/>
-<text text-anchor="middle" x="3110" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="753.63,-122 750.63,-126 729.63,-126 726.63,-122 614.37,-122 614.37,-86 753.63,-86 753.63,-122"/>
+<text text-anchor="middle" x="684" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;ToolApiModule -->
 <g id="edge5" class="edge">
 <title>LegacySchoolModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M3110,-122.31C3110,-142.15 3110,-171 3110,-171 3110,-171 2385.54,-171 2385.54,-171"/>
-<polygon fill="black" stroke="black" points="2385.54,-167.5 2375.54,-171 2385.54,-174.5 2385.54,-167.5"/>
+<path fill="none" stroke="black" d="M684,-122.17C684,-141.09 684,-168 684,-168 684,-168 1358.33,-168 1358.33,-168"/>
+<polygon fill="black" stroke="black" points="1358.33,-171.5 1368.33,-168 1358.33,-164.5 1358.33,-171.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node6" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="3021.98,-122 3018.98,-126 2997.98,-126 2994.98,-122 2922.02,-122 2922.02,-86 3021.98,-86 3021.98,-122"/>
-<text text-anchor="middle" x="2972" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="595.98,-122 592.98,-126 571.98,-126 568.98,-122 496.02,-122 496.02,-86 595.98,-86 595.98,-122"/>
+<text text-anchor="middle" x="546" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;ToolApiModule -->
 <g id="edge6" class="edge">
 <title>LoggerModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2972,-122.17C2972,-141.09 2972,-168 2972,-168 2972,-168 2385.75,-168 2385.75,-168"/>
-<polygon fill="black" stroke="black" points="2385.75,-164.5 2375.75,-168 2385.75,-171.5 2385.75,-164.5"/>
+<path fill="none" stroke="black" d="M546,-122.31C546,-142.15 546,-171 546,-171 546,-171 1358.19,-171 1358.19,-171"/>
+<polygon fill="black" stroke="black" points="1358.19,-174.5 1368.19,-171 1358.19,-167.5 1358.19,-174.5"/>
 </g>
 <!-- SchoolModule -->
 <g id="node7" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2904.44,-122 2901.44,-126 2880.44,-126 2877.44,-122 2805.56,-122 2805.56,-86 2904.44,-86 2904.44,-122"/>
-<text text-anchor="middle" x="2855" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="478.44,-122 475.44,-126 454.44,-126 451.44,-122 379.56,-122 379.56,-86 478.44,-86 478.44,-122"/>
+<text text-anchor="middle" x="429" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- SchoolModule&#45;&gt;ToolApiModule -->
 <g id="edge7" class="edge">
 <title>SchoolModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2855,-122.3C2855,-140.27 2855,-165 2855,-165 2855,-165 2385.55,-165 2385.55,-165"/>
-<polygon fill="black" stroke="black" points="2385.55,-161.5 2375.55,-165 2385.55,-168.5 2385.55,-161.5"/>
+<path fill="none" stroke="black" d="M429,-122.03C429,-142.77 429,-174 429,-174 429,-174 1358.26,-174 1358.26,-174"/>
+<polygon fill="black" stroke="black" points="1358.26,-177.5 1368.26,-174 1358.26,-170.5 1358.26,-177.5"/>
 </g>
 <!-- ToolModule -->
 <g id="node8" class="node">
 <title>ToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2787.99,-122 2784.99,-126 2763.99,-126 2760.99,-122 2702.01,-122 2702.01,-86 2787.99,-86 2787.99,-122"/>
-<text text-anchor="middle" x="2745" y="-99.8" font-family="Times,serif" font-size="14.00">ToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="361.99,-122 358.99,-126 337.99,-126 334.99,-122 276.01,-122 276.01,-86 361.99,-86 361.99,-122"/>
+<text text-anchor="middle" x="319" y="-99.8" font-family="Times,serif" font-size="14.00">ToolModule</text>
 </g>
 <!-- ToolModule&#45;&gt;ToolApiModule -->
 <g id="edge8" class="edge">
 <title>ToolModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2745,-122.04C2745,-138.73 2745,-161 2745,-161 2745,-161 2385.57,-161 2385.57,-161"/>
-<polygon fill="black" stroke="black" points="2385.57,-157.5 2375.57,-161 2385.57,-164.5 2385.57,-157.5"/>
+<path fill="none" stroke="black" d="M319,-122.29C319,-144.21 319,-178 319,-178 319,-178 1358.43,-178 1358.43,-178"/>
+<polygon fill="black" stroke="black" points="1358.43,-181.5 1368.43,-178 1358.43,-174.5 1358.43,-181.5"/>
 </g>
 <!-- UserLicenseModule -->
 <g id="node9" class="node">
 <title>UserLicenseModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2683.51,-122 2680.51,-126 2659.51,-126 2656.51,-122 2554.49,-122 2554.49,-86 2683.51,-86 2683.51,-122"/>
-<text text-anchor="middle" x="2619" y="-99.8" font-family="Times,serif" font-size="14.00">UserLicenseModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="257.51,-122 254.51,-126 233.51,-126 230.51,-122 128.49,-122 128.49,-86 257.51,-86 257.51,-122"/>
+<text text-anchor="middle" x="193" y="-99.8" font-family="Times,serif" font-size="14.00">UserLicenseModule</text>
 </g>
 <!-- UserLicenseModule&#45;&gt;ToolApiModule -->
 <g id="edge9" class="edge">
 <title>UserLicenseModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2619,-122.28C2619,-137.95 2619,-158 2619,-158 2619,-158 2385.78,-158 2385.78,-158"/>
-<polygon fill="black" stroke="black" points="2385.78,-154.5 2375.78,-158 2385.78,-161.5 2385.78,-154.5"/>
+<path fill="none" stroke="black" d="M193,-122.25C193,-145.02 193,-181 193,-181 193,-181 1358.4,-181 1358.4,-181"/>
+<polygon fill="black" stroke="black" points="1358.4,-184.5 1368.4,-181 1358.4,-177.5 1358.4,-184.5"/>
 </g>
 <!-- UserModule -->
 <g id="node10" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2535.98,-122 2532.98,-126 2511.98,-126 2508.98,-122 2450.02,-122 2450.02,-86 2535.98,-86 2535.98,-122"/>
-<text text-anchor="middle" x="2493" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
+<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;ToolApiModule -->
 <g id="edge10" class="edge">
 <title>UserModule&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2493,-122.12C2493,-136.78 2493,-155 2493,-155 2493,-155 2385.64,-155 2385.64,-155"/>
-<polygon fill="black" stroke="black" points="2385.64,-151.5 2375.64,-155 2385.64,-158.5 2385.64,-151.5"/>
+<path fill="none" stroke="black" d="M67,-122.15C67,-145.76 67,-184 67,-184 67,-184 1358.47,-184 1358.47,-184"/>
+<polygon fill="black" stroke="black" points="1358.47,-187.5 1368.47,-184 1358.47,-180.5 1358.47,-187.5"/>
 </g>
 <!-- ContextExternalToolUc -->
 <g id="node12" class="node">
 <title>ContextExternalToolUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="2322" cy="-104" rx="103.65" ry="18"/>
-<text text-anchor="middle" x="2322" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="3640" cy="-104" rx="103.65" ry="18"/>
+<text text-anchor="middle" x="3640" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolUc</text>
 </g>
 <!-- ContextExternalToolUc&#45;&gt;ToolApiModule -->
 <g id="edge11" class="edge">
 <title>ContextExternalToolUc&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2322,-122.11C2322,-122.11 2322,-140.99 2322,-140.99"/>
-<polygon fill="black" stroke="black" points="2318.5,-140.99 2322,-150.99 2325.5,-140.99 2318.5,-140.99"/>
+<path fill="none" stroke="black" d="M3640,-122.15C3640,-145.76 3640,-184 3640,-184 3640,-184 1485.73,-184 1485.73,-184"/>
+<polygon fill="black" stroke="black" points="1485.73,-180.5 1475.73,-184 1485.73,-187.5 1485.73,-180.5"/>
 </g>
 <!-- ExternalToolConfigurationService -->
 <g id="node13" class="node">
 <title>ExternalToolConfigurationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="2055" cy="-104" rx="145.24" ry="18"/>
-<text text-anchor="middle" x="2055" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolConfigurationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="3373" cy="-104" rx="145.24" ry="18"/>
+<text text-anchor="middle" x="3373" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolConfigurationService</text>
 </g>
 <!-- ExternalToolConfigurationService&#45;&gt;ToolApiModule -->
 <g id="edge12" class="edge">
 <title>ExternalToolConfigurationService&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M2055,-122.12C2055,-136.78 2055,-155 2055,-155 2055,-155 2258.29,-155 2258.29,-155"/>
-<polygon fill="black" stroke="black" points="2258.29,-158.5 2268.29,-155 2258.29,-151.5 2258.29,-158.5"/>
+<path fill="none" stroke="black" d="M3373,-122.25C3373,-145.02 3373,-181 3373,-181 3373,-181 1485.71,-181 1485.71,-181"/>
+<polygon fill="black" stroke="black" points="1485.71,-177.5 1475.71,-181 1485.71,-184.5 1485.71,-177.5"/>
 </g>
 <!-- ExternalToolConfigurationUc -->
 <g id="node14" class="node">
 <title>ExternalToolConfigurationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1764" cy="-104" rx="127.35" ry="18"/>
-<text text-anchor="middle" x="1764" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolConfigurationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="3082" cy="-104" rx="127.35" ry="18"/>
+<text text-anchor="middle" x="3082" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolConfigurationUc</text>
 </g>
 <!-- ExternalToolConfigurationUc&#45;&gt;ToolApiModule -->
 <g id="edge13" class="edge">
 <title>ExternalToolConfigurationUc&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M1764,-122.28C1764,-137.95 1764,-158 1764,-158 1764,-158 2258.5,-158 2258.5,-158"/>
-<polygon fill="black" stroke="black" points="2258.5,-161.5 2268.5,-158 2258.5,-154.5 2258.5,-161.5"/>
+<path fill="none" stroke="black" d="M3082,-122.29C3082,-144.21 3082,-178 3082,-178 3082,-178 1485.82,-178 1485.82,-178"/>
+<polygon fill="black" stroke="black" points="1485.82,-174.5 1475.82,-178 1485.82,-181.5 1485.82,-174.5"/>
 </g>
 <!-- ExternalToolRequestMapper -->
 <g id="node15" class="node">
 <title>ExternalToolRequestMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="1495" cy="-104" rx="123.26" ry="18"/>
-<text text-anchor="middle" x="1495" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolRequestMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="2813" cy="-104" rx="123.26" ry="18"/>
+<text text-anchor="middle" x="2813" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolRequestMapper</text>
 </g>
 <!-- ExternalToolRequestMapper&#45;&gt;ToolApiModule -->
 <g id="edge14" class="edge">
 <title>ExternalToolRequestMapper&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M1495,-122.04C1495,-138.73 1495,-161 1495,-161 1495,-161 2258.38,-161 2258.38,-161"/>
-<polygon fill="black" stroke="black" points="2258.38,-164.5 2268.38,-161 2258.38,-157.5 2258.38,-164.5"/>
+<path fill="none" stroke="black" d="M2813,-122.03C2813,-142.77 2813,-174 2813,-174 2813,-174 1485.68,-174 1485.68,-174"/>
+<polygon fill="black" stroke="black" points="1485.68,-170.5 1475.68,-174 1485.68,-177.5 1485.68,-170.5"/>
 </g>
 <!-- ExternalToolResponseMapper -->
 <g id="node16" class="node">
 <title>ExternalToolResponseMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="1225" cy="-104" rx="129.06" ry="18"/>
-<text text-anchor="middle" x="1225" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolResponseMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="2543" cy="-104" rx="129.06" ry="18"/>
+<text text-anchor="middle" x="2543" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolResponseMapper</text>
 </g>
 <!-- ExternalToolResponseMapper&#45;&gt;ToolApiModule -->
 <g id="edge15" class="edge">
 <title>ExternalToolResponseMapper&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M1225,-122.3C1225,-140.27 1225,-165 1225,-165 1225,-165 2258.35,-165 2258.35,-165"/>
-<polygon fill="black" stroke="black" points="2258.35,-168.5 2268.35,-165 2258.35,-161.5 2258.35,-168.5"/>
+<path fill="none" stroke="black" d="M2543,-122.31C2543,-142.15 2543,-171 2543,-171 2543,-171 1485.69,-171 1485.69,-171"/>
+<polygon fill="black" stroke="black" points="1485.69,-167.5 1475.69,-171 1485.69,-174.5 1485.69,-167.5"/>
 </g>
 <!-- ExternalToolUc -->
 <g id="node17" class="node">
 <title>ExternalToolUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1005" cy="-104" rx="73.49" ry="18"/>
-<text text-anchor="middle" x="1005" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="2323" cy="-104" rx="73.49" ry="18"/>
+<text text-anchor="middle" x="2323" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolUc</text>
 </g>
 <!-- ExternalToolUc&#45;&gt;ToolApiModule -->
 <g id="edge16" class="edge">
 <title>ExternalToolUc&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M1005,-122.17C1005,-141.09 1005,-168 1005,-168 1005,-168 2258.33,-168 2258.33,-168"/>
-<polygon fill="black" stroke="black" points="2258.33,-171.5 2268.33,-168 2258.33,-164.5 2258.33,-171.5"/>
+<path fill="none" stroke="black" d="M2323,-122.17C2323,-141.09 2323,-168 2323,-168 2323,-168 1485.66,-168 1485.66,-168"/>
+<polygon fill="black" stroke="black" points="1485.66,-164.5 1475.66,-168 1485.66,-171.5 1485.66,-164.5"/>
 </g>
 <!-- LtiToolRepo -->
 <g id="node18" class="node">
 <title>LtiToolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="853" cy="-104" rx="60.85" ry="18"/>
-<text text-anchor="middle" x="853" y="-99.8" font-family="Times,serif" font-size="14.00">LtiToolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="2171" cy="-104" rx="60.85" ry="18"/>
+<text text-anchor="middle" x="2171" y="-99.8" font-family="Times,serif" font-size="14.00">LtiToolRepo</text>
 </g>
 <!-- LtiToolRepo&#45;&gt;ToolApiModule -->
 <g id="edge17" class="edge">
 <title>LtiToolRepo&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M853,-122.31C853,-142.15 853,-171 853,-171 853,-171 2258.41,-171 2258.41,-171"/>
-<polygon fill="black" stroke="black" points="2258.41,-174.5 2268.41,-171 2258.41,-167.5 2258.41,-174.5"/>
+<path fill="none" stroke="black" d="M2171,-122.3C2171,-140.27 2171,-165 2171,-165 2171,-165 1485.57,-165 1485.57,-165"/>
+<polygon fill="black" stroke="black" points="1485.57,-161.5 1475.57,-165 1485.57,-168.5 1485.57,-161.5"/>
 </g>
 <!-- SchoolExternalToolUc -->
 <g id="node19" class="node">
 <title>SchoolExternalToolUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="674" cy="-104" rx="100.14" ry="18"/>
-<text text-anchor="middle" x="674" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1992" cy="-104" rx="100.14" ry="18"/>
+<text text-anchor="middle" x="1992" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolUc</text>
 </g>
 <!-- SchoolExternalToolUc&#45;&gt;ToolApiModule -->
 <g id="edge18" class="edge">
 <title>SchoolExternalToolUc&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M674,-122.03C674,-142.77 674,-174 674,-174 674,-174 2258.11,-174 2258.11,-174"/>
-<polygon fill="black" stroke="black" points="2258.11,-177.5 2268.11,-174 2258.11,-170.5 2258.11,-177.5"/>
+<path fill="none" stroke="black" d="M1992,-122.04C1992,-138.73 1992,-161 1992,-161 1992,-161 1485.62,-161 1485.62,-161"/>
+<polygon fill="black" stroke="black" points="1485.62,-157.5 1475.62,-161 1485.62,-164.5 1485.62,-157.5"/>
 </g>
 <!-- ToolLaunchUc -->
 <g id="node20" class="node">
 <title>ToolLaunchUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="486" cy="-104" rx="69.49" ry="18"/>
-<text text-anchor="middle" x="486" y="-99.8" font-family="Times,serif" font-size="14.00">ToolLaunchUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1804" cy="-104" rx="69.49" ry="18"/>
+<text text-anchor="middle" x="1804" y="-99.8" font-family="Times,serif" font-size="14.00">ToolLaunchUc</text>
 </g>
 <!-- ToolLaunchUc&#45;&gt;ToolApiModule -->
 <g id="edge19" class="edge">
 <title>ToolLaunchUc&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M486,-122.29C486,-144.21 486,-178 486,-178 486,-178 2258.05,-178 2258.05,-178"/>
-<polygon fill="black" stroke="black" points="2258.05,-181.5 2268.05,-178 2258.05,-174.5 2258.05,-181.5"/>
+<path fill="none" stroke="black" d="M1804,-122.28C1804,-137.95 1804,-158 1804,-158 1804,-158 1485.52,-158 1485.52,-158"/>
+<polygon fill="black" stroke="black" points="1485.52,-154.5 1475.52,-158 1485.52,-161.5 1485.52,-154.5"/>
 </g>
 <!-- ToolPermissionHelper -->
 <g id="node21" class="node">
 <title>ToolPermissionHelper</title>
-<ellipse fill="#fdb462" stroke="black" cx="300" cy="-104" rx="98.43" ry="18"/>
-<text text-anchor="middle" x="300" y="-99.8" font-family="Times,serif" font-size="14.00">ToolPermissionHelper</text>
+<ellipse fill="#fdb462" stroke="black" cx="1618" cy="-104" rx="98.43" ry="18"/>
+<text text-anchor="middle" x="1618" y="-99.8" font-family="Times,serif" font-size="14.00">ToolPermissionHelper</text>
 </g>
 <!-- ToolPermissionHelper&#45;&gt;ToolApiModule -->
 <g id="edge20" class="edge">
 <title>ToolPermissionHelper&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M300,-122.25C300,-145.02 300,-181 300,-181 300,-181 2258.44,-181 2258.44,-181"/>
-<polygon fill="black" stroke="black" points="2258.44,-184.5 2268.44,-181 2258.44,-177.5 2258.44,-184.5"/>
+<path fill="none" stroke="black" d="M1618,-122.12C1618,-136.78 1618,-155 1618,-155 1618,-155 1485.56,-155 1485.56,-155"/>
+<polygon fill="black" stroke="black" points="1485.56,-151.5 1475.56,-155 1485.56,-158.5 1485.56,-151.5"/>
 </g>
 <!-- ToolReferenceUc -->
 <g id="node22" class="node">
 <title>ToolReferenceUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="104" cy="-104" rx="79.83" ry="18"/>
-<text text-anchor="middle" x="104" y="-99.8" font-family="Times,serif" font-size="14.00">ToolReferenceUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1422" cy="-104" rx="79.83" ry="18"/>
+<text text-anchor="middle" x="1422" y="-99.8" font-family="Times,serif" font-size="14.00">ToolReferenceUc</text>
 </g>
 <!-- ToolReferenceUc&#45;&gt;ToolApiModule -->
 <g id="edge21" class="edge">
 <title>ToolReferenceUc&#45;&gt;ToolApiModule</title>
-<path fill="none" stroke="black" d="M104,-122.15C104,-145.76 104,-184 104,-184 104,-184 2258.27,-184 2258.27,-184"/>
-<polygon fill="black" stroke="black" points="2258.27,-187.5 2268.27,-184 2258.27,-180.5 2258.27,-187.5"/>
+<path fill="none" stroke="black" d="M1422,-122.11C1422,-122.11 1422,-140.99 1422,-140.99"/>
+<polygon fill="black" stroke="black" points="1418.5,-140.99 1422,-150.99 1425.5,-140.99 1418.5,-140.99"/>
 </g>
 </g>
 </svg>
