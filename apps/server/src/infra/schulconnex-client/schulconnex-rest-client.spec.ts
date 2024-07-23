@@ -8,8 +8,7 @@ import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
-import { schulconnexResponseFactory } from './testing';
-import { schulconnexPoliciesInfoResponseFactory } from './testing/schulconnex-policies-info-response-factory';
+import { schulconnexPoliciesInfoResponseFactory, schulconnexResponseFactory } from './testing';
 
 describe(SchulconnexRestClient.name, () => {
 	let client: SchulconnexRestClient;
@@ -196,8 +195,8 @@ describe(SchulconnexRestClient.name, () => {
 		});
 	});
 
-	describe('getLizenzInfo', () => {
-		describe('when requesting lizenz-info', () => {
+	describe('getPoliciesInfo', () => {
+		describe('when requesting policies-info', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
 				const response: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
@@ -214,7 +213,7 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPoliciesInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/lizenz-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/policies-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
@@ -234,7 +233,7 @@ describe(SchulconnexRestClient.name, () => {
 		describe('when overriding the url', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const customUrl = 'https://override.url/lizenz-info';
+				const customUrl = 'https://override.url/policies-info';
 				const response: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
