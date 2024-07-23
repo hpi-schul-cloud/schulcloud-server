@@ -28,7 +28,7 @@ export class ExternalToolImageService {
 		const instance: Instance = await this.instanceService.getInstance();
 
 		const observable: Observable<AxiosResponse<FileRecordResponse>> = this.httpService.post(
-			`${this.internalFileApiUrl}/v3/file/upload-from-url/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
+			`${this.internalFileApiUrl}/api/v3/file/upload-from-url/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
 			{
 				url,
 				fileName,
@@ -46,7 +46,7 @@ export class ExternalToolImageService {
 
 	async deleteImageFile(fileRecordId: EntityId): Promise<void> {
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
-			`${this.internalFileApiUrl}/v3/file/delete/${fileRecordId}`
+			`${this.internalFileApiUrl}/api/v3/file/delete/${fileRecordId}`
 		);
 
 		await firstValueFrom(observable);
@@ -56,7 +56,7 @@ export class ExternalToolImageService {
 		const instance: Instance = await this.instanceService.getInstance();
 
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.post(
-			`${this.internalFileApiUrl}/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`
+			`${this.internalFileApiUrl}/api/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`
 		);
 
 		await firstValueFrom(observable);
