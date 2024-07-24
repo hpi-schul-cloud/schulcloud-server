@@ -207,7 +207,7 @@
 		"ioredis": "^5.3.2",
 		"jose": "^5.6.3",
 		"jsdom": "^23.2.0",
-		"jsonwebtoken": "^9.0.0",
+		"jsonwebtoken": "^9.0.2",
 		"jwks-rsa": "^2.0.5",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.19",
