@@ -139,6 +139,8 @@ async function bootstrap() {
 	});
 
 	console.log('#################################');
+	// eslint-disable-next-line no-process-env
+	console.log(process.env.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED);
 	console.log(`### Start Server              ###`);
 	console.log(`### Port: ${port}                ###`);
 	console.log(`### Mounts                    ###`);

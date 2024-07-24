@@ -1380,12 +1380,12 @@
 		},
 		"FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the new class list view"
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables groups of type class in courses"
 		},
 		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
