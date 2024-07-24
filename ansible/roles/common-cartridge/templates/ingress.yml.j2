@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ NAMESPACE }}-common-ingress
+  name: {{ NAMESPACE }}-common-cartridge-ingress
   namespace: {{ NAMESPACE }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABLED|default("false") }}"
@@ -11,7 +11,8 @@ metadata:
 {% endif %}
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
-  rules:
+  rules: []
+  {# This rule is only for testing purpose
   - host: {{ DOMAIN }}
     http:
       paths:
@@ -21,4 +22,4 @@ spec:
           service:
             name: common-cartridge-svc
             port:
-              number: 3350
+              number: 3350 #}
