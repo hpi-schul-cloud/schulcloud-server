@@ -1603,7 +1603,7 @@
 		},
 		"HOSTNAME": {
 			"type": "string",
-			"description": "Hostname. Should not be usually defined as it's expected to be taken from the process env."
+			"description": "Hostname. Should usually not be defined as it's expected to be taken from the process env."
 		},
 		"HEALTH_CHECKS_EXCLUDE_MONGODB": {
 			"type": "boolean",
@@ -1650,11 +1650,6 @@
 			"type": "string",
 			"default": "ws://localhost:4450",
 			"description": "URL for connecting to the WebSocketServer"
-		},
-		"FEATURE_NEW_LAYOUT_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the new layout feature"
 		}
 	},
 	"required": []
