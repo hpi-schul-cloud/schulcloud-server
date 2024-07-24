@@ -1,20 +1,21 @@
 import {
-	H5PConfig,
 	cacheImplementations,
-	LibraryManager,
 	ContentTypeCache,
+	H5PConfig,
+	ILibraryAdministrationOverviewItem,
 	IUser,
 	LibraryAdministration,
-	ILibraryAdministrationOverviewItem,
+	LibraryManager,
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
+import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
-import { ConfigService } from '@nestjs/config';
-import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
+import PermissionSystem from '../permission-system';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 
 const h5pConfig = new H5PConfig(undefined, {
@@ -75,8 +76,14 @@ export class H5PLibraryManagementService {
 			undefined,
 			h5pConfig
 		);
-		this.contentTypeRepo = new ContentTypeInformationRepository(this.contentTypeCache, this.libraryManager, h5pConfig);
-		const contentManager = new ContentManager(this.contentStorage);
+		const permissionSystem = new PermissionSystem();
+		this.contentTypeRepo = new ContentTypeInformationRepository(
+			this.contentTypeCache,
+			this.libraryManager,
+			h5pConfig,
+			permissionSystem
+		);
+		const contentManager = new ContentManager(this.contentStorage, permissionSystem);
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
 		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
 
@@ -115,9 +122,6 @@ export class H5PLibraryManagementService {
 
 	private createDefaultIUser(): IUser {
 		const user: IUser = {
-			canCreateRestricted: true,
-			canInstallRecommended: true,
-			canUpdateAndInstallLibraries: true,
 			email: 'a@b.de',
 			id: 'a',
 			name: 'a',
