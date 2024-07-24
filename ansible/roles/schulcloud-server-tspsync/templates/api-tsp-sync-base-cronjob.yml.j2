@@ -11,6 +11,7 @@ metadata:
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    infra.tools: true
   name: api-tsp-sync-base-cronjob
 spec:
   schedule: "{{ SERVER_TSP_SYNC_BASE_CRONJOB|default("9 3 * * *", true) }}"
@@ -21,6 +22,7 @@ spec:
           containers:
           - name: api-tsp-sync-base-cronjob
             image: quay.io/schulcloudverbund/infra-tools:latest
+            imagePullPolicy: IfNotPresent
             envFrom:
             - secretRef:
                 name: api-secret
@@ -43,6 +45,16 @@ spec:
                       - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: infra.tools
+                      operator: In
+                      values:
+                      - true
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
 {% endif %}
         metadata:
           labels:
@@ -54,3 +66,4 @@ spec:
             app.kubernetes.io/managed-by: ansible
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+            infra.tools: true
