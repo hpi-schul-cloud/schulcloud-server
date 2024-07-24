@@ -138,6 +138,8 @@ export class ExternalToolUc {
 		if (thumbnailUrl !== currentExternalTool.thumbnail?.uploadUrl) {
 			if (currentExternalTool.thumbnail) {
 				await this.externalToolImageService.deleteImageFile(currentExternalTool.thumbnail.fileRecordId, jwt);
+
+				pendingExternalTool.thumbnail = undefined;
 			}
 
 			if (thumbnailUrl) {
