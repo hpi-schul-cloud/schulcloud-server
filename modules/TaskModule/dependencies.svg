@@ -24,167 +24,167 @@
 <title>cluster_TaskModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1401,-268 1401,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_TaskModule_imports</title>
+<polygon fill="none" stroke="black" points="949,-78 949,-130 1393,-130 1393,-78 949,-78"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_TaskModule_exports</title>
-<polygon fill="none" stroke="black" points="488,-208 488,-260 874,-260 874,-208 488,-208"/>
+<polygon fill="none" stroke="black" points="547,-208 547,-260 933,-260 933,-208 547,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_TaskModule_providers</title>
-<polygon fill="none" stroke="black" points="468,-78 468,-130 1393,-130 1393,-78 468,-78"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_TaskModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 460,-130 460,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 941,-130 941,-78 16,-78"/>
 </g>
 <!-- CopyHelperModule -->
 <g id="node1" class="node">
 <title>CopyHelperModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="451.97,-122 448.97,-126 427.97,-126 424.97,-122 324.03,-122 324.03,-86 451.97,-86 451.97,-122"/>
-<text text-anchor="middle" x="388" y="-99.8" font-family="Times,serif" font-size="14.00">CopyHelperModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1384.97,-122 1381.97,-126 1360.97,-126 1357.97,-122 1257.03,-122 1257.03,-86 1384.97,-86 1384.97,-122"/>
+<text text-anchor="middle" x="1321" y="-99.8" font-family="Times,serif" font-size="14.00">CopyHelperModule</text>
 </g>
 <!-- TaskModule -->
 <g id="node4" class="node">
 <title>TaskModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="705.26,-187 702.26,-191 681.26,-191 678.26,-187 618.74,-187 618.74,-151 705.26,-151 705.26,-187"/>
-<text text-anchor="middle" x="662" y="-164.8" font-family="Times,serif" font-size="14.00">TaskModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="764.26,-187 761.26,-191 740.26,-191 737.26,-187 677.74,-187 677.74,-151 764.26,-151 764.26,-187"/>
+<text text-anchor="middle" x="721" y="-164.8" font-family="Times,serif" font-size="14.00">TaskModule</text>
 </g>
 <!-- CopyHelperModule&#45;&gt;TaskModule -->
 <g id="edge1" class="edge">
 <title>CopyHelperModule&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M388,-122.02C388,-139.37 388,-163 388,-163 388,-163 608.58,-163 608.58,-163"/>
-<polygon fill="black" stroke="black" points="608.58,-166.5 618.58,-163 608.58,-159.5 608.58,-166.5"/>
+<path fill="none" stroke="black" d="M1321,-122.28C1321,-143.32 1321,-175 1321,-175 1321,-175 774.63,-175 774.63,-175"/>
+<polygon fill="black" stroke="black" points="774.63,-171.5 764.63,-175 774.63,-178.5 774.63,-171.5"/>
 </g>
 <!-- FilesStorageClientModule -->
 <g id="node2" class="node">
 <title>FilesStorageClientModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="305.76,-122 302.76,-126 281.76,-126 278.76,-122 142.24,-122 142.24,-86 305.76,-86 305.76,-122"/>
-<text text-anchor="middle" x="224" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageClientModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1238.76,-122 1235.76,-126 1214.76,-126 1211.76,-122 1075.24,-122 1075.24,-86 1238.76,-86 1238.76,-122"/>
+<text text-anchor="middle" x="1157" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageClientModule</text>
 </g>
 <!-- FilesStorageClientModule&#45;&gt;TaskModule -->
 <g id="edge2" class="edge">
 <title>FilesStorageClientModule&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M224,-122.11C224,-141.34 224,-169 224,-169 224,-169 608.4,-169 608.4,-169"/>
-<polygon fill="black" stroke="black" points="608.4,-172.5 618.4,-169 608.4,-165.5 608.4,-172.5"/>
+<path fill="none" stroke="black" d="M1157,-122.11C1157,-141.34 1157,-169 1157,-169 1157,-169 774.4,-169 774.4,-169"/>
+<polygon fill="black" stroke="black" points="774.4,-165.5 764.4,-169 774.4,-172.5 774.4,-165.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node3" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1056.98,-122 1053.98,-126 1032.98,-126 1029.98,-122 957.02,-122 957.02,-86 1056.98,-86 1056.98,-122"/>
+<text text-anchor="middle" x="1007" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;TaskModule -->
 <g id="edge3" class="edge">
 <title>LoggerModule&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M74,-122.28C74,-143.32 74,-175 74,-175 74,-175 608.28,-175 608.28,-175"/>
-<polygon fill="black" stroke="black" points="608.28,-178.5 618.28,-175 608.28,-171.5 608.28,-178.5"/>
+<path fill="none" stroke="black" d="M1007,-122.02C1007,-139.37 1007,-163 1007,-163 1007,-163 774.44,-163 774.44,-163"/>
+<polygon fill="black" stroke="black" points="774.44,-159.5 764.44,-163 774.44,-166.5 774.44,-159.5"/>
 </g>
 <!-- SubmissionService  -->
 <g id="node5" class="node">
 <title>SubmissionService </title>
-<polygon fill="#fb8072" stroke="black" points="866.32,-252 739.68,-252 739.68,-216 866.32,-216 866.32,-252"/>
-<text text-anchor="middle" x="803" y="-229.8" font-family="Times,serif" font-size="14.00">SubmissionService </text>
+<polygon fill="#fb8072" stroke="black" points="925.32,-252 798.68,-252 798.68,-216 925.32,-216 925.32,-252"/>
+<text text-anchor="middle" x="862" y="-229.8" font-family="Times,serif" font-size="14.00">SubmissionService </text>
 </g>
 <!-- TaskModule&#45;&gt;SubmissionService  -->
 <g id="edge4" class="edge">
 <title>TaskModule&#45;&gt;SubmissionService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M705.46,-181C746.88,-181 803,-181 803,-181 803,-181 803,-205.76 803,-205.76"/>
-<polygon fill="black" stroke="black" points="799.5,-205.76 803,-215.76 806.5,-205.76 799.5,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M764.46,-181C785.76,-181 806.91,-181 806.91,-181 806.91,-181 806.91,-205.76 806.91,-205.76"/>
+<polygon fill="black" stroke="black" points="803.41,-205.76 806.91,-215.76 810.41,-205.76 803.41,-205.76"/>
 </g>
 <!-- TaskCopyService  -->
 <g id="node6" class="node">
 <title>TaskCopyService </title>
-<polygon fill="#fb8072" stroke="black" points="721.53,-252 602.47,-252 602.47,-216 721.53,-216 721.53,-252"/>
-<text text-anchor="middle" x="662" y="-229.8" font-family="Times,serif" font-size="14.00">TaskCopyService </text>
+<polygon fill="#fb8072" stroke="black" points="780.53,-252 661.47,-252 661.47,-216 780.53,-216 780.53,-252"/>
+<text text-anchor="middle" x="721" y="-229.8" font-family="Times,serif" font-size="14.00">TaskCopyService </text>
 </g>
 <!-- TaskModule&#45;&gt;TaskCopyService  -->
 <g id="edge5" class="edge">
 <title>TaskModule&#45;&gt;TaskCopyService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M662,-187.11C662,-187.11 662,-205.99 662,-205.99"/>
-<polygon fill="black" stroke="black" points="658.5,-205.99 662,-215.99 665.5,-205.99 658.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M721,-187.11C721,-187.11 721,-205.99 721,-205.99"/>
+<polygon fill="black" stroke="black" points="717.5,-205.99 721,-215.99 724.5,-205.99 717.5,-205.99"/>
 </g>
 <!-- TaskService  -->
 <g id="node7" class="node">
 <title>TaskService </title>
-<polygon fill="#fb8072" stroke="black" points="584.19,-252 495.81,-252 495.81,-216 584.19,-216 584.19,-252"/>
-<text text-anchor="middle" x="540" y="-229.8" font-family="Times,serif" font-size="14.00">TaskService </text>
+<polygon fill="#fb8072" stroke="black" points="643.19,-252 554.81,-252 554.81,-216 643.19,-216 643.19,-252"/>
+<text text-anchor="middle" x="599" y="-229.8" font-family="Times,serif" font-size="14.00">TaskService </text>
 </g>
 <!-- TaskModule&#45;&gt;TaskService  -->
 <g id="edge6" class="edge">
 <title>TaskModule&#45;&gt;TaskService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M618.64,-181C583.58,-181 540,-181 540,-181 540,-181 540,-205.76 540,-205.76"/>
-<polygon fill="black" stroke="black" points="536.5,-205.76 540,-215.76 543.5,-205.76 536.5,-205.76"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M677.6,-181C656.11,-181 634.7,-181 634.7,-181 634.7,-181 634.7,-205.76 634.7,-205.76"/>
+<polygon fill="black" stroke="black" points="631.2,-205.76 634.7,-215.76 638.2,-205.76 631.2,-205.76"/>
 </g>
 <!-- CourseRepo -->
 <g id="node8" class="node">
 <title>CourseRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1326" cy="-104" rx="58.55" ry="18"/>
-<text text-anchor="middle" x="1326" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="874" cy="-104" rx="58.55" ry="18"/>
+<text text-anchor="middle" x="874" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRepo</text>
 </g>
 <!-- CourseRepo&#45;&gt;TaskModule -->
 <g id="edge7" class="edge">
 <title>CourseRepo&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M1326,-122.28C1326,-143.32 1326,-175 1326,-175 1326,-175 715.31,-175 715.31,-175"/>
-<polygon fill="black" stroke="black" points="715.31,-171.5 705.31,-175 715.31,-178.5 715.31,-171.5"/>
+<path fill="none" stroke="black" d="M870.32,-122.24C870.32,-137.57 870.32,-157 870.32,-157 870.32,-157 774.59,-157 774.59,-157"/>
+<polygon fill="black" stroke="black" points="774.59,-153.5 764.59,-157 774.59,-160.5 774.59,-153.5"/>
 </g>
 <!-- SubmissionRepo -->
 <g id="node9" class="node">
 <title>SubmissionRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1173" cy="-104" rx="76.49" ry="18"/>
-<text text-anchor="middle" x="1173" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="721" cy="-104" rx="76.49" ry="18"/>
+<text text-anchor="middle" x="721" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionRepo</text>
 </g>
 <!-- SubmissionRepo&#45;&gt;TaskModule -->
 <g id="edge8" class="edge">
 <title>SubmissionRepo&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M1173,-122.11C1173,-141.34 1173,-169 1173,-169 1173,-169 715.57,-169 715.57,-169"/>
-<polygon fill="black" stroke="black" points="715.57,-165.5 705.57,-169 715.57,-172.5 715.57,-165.5"/>
+<path fill="none" stroke="black" d="M721,-122.11C721,-122.11 721,-140.99 721,-140.99"/>
+<polygon fill="black" stroke="black" points="717.5,-140.99 721,-150.99 724.5,-140.99 717.5,-140.99"/>
 </g>
 <!-- SubmissionService -->
 <g id="node10" class="node">
 <title>SubmissionService</title>
-<ellipse fill="#fdb462" stroke="black" cx="993" cy="-104" rx="85.13" ry="18"/>
-<text text-anchor="middle" x="993" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionService</text>
+<ellipse fill="#fdb462" stroke="black" cx="541" cy="-104" rx="85.13" ry="18"/>
+<text text-anchor="middle" x="541" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionService</text>
 </g>
 <!-- SubmissionService&#45;&gt;TaskModule -->
 <g id="edge9" class="edge">
 <title>SubmissionService&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M993,-122.02C993,-139.37 993,-163 993,-163 993,-163 715.27,-163 715.27,-163"/>
-<polygon fill="black" stroke="black" points="715.27,-159.5 705.27,-163 715.27,-166.5 715.27,-159.5"/>
+<path fill="none" stroke="black" d="M590.36,-118.76C590.36,-134.45 590.36,-157 590.36,-157 590.36,-157 667.5,-157 667.5,-157"/>
+<polygon fill="black" stroke="black" points="667.5,-160.5 677.5,-157 667.5,-153.5 667.5,-160.5"/>
 </g>
 <!-- TaskCopyService -->
 <g id="node11" class="node">
 <title>TaskCopyService</title>
-<ellipse fill="#fdb462" stroke="black" cx="810" cy="-104" rx="79.88" ry="18"/>
-<text text-anchor="middle" x="810" y="-99.8" font-family="Times,serif" font-size="14.00">TaskCopyService</text>
+<ellipse fill="#fdb462" stroke="black" cx="358" cy="-104" rx="79.88" ry="18"/>
+<text text-anchor="middle" x="358" y="-99.8" font-family="Times,serif" font-size="14.00">TaskCopyService</text>
 </g>
 <!-- TaskCopyService&#45;&gt;TaskModule -->
 <g id="edge10" class="edge">
 <title>TaskCopyService&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M734.95,-110.08C734.95,-124 734.95,-157 734.95,-157 734.95,-157 715.28,-157 715.28,-157"/>
-<polygon fill="black" stroke="black" points="715.28,-153.5 705.28,-157 715.28,-160.5 715.28,-153.5"/>
+<path fill="none" stroke="black" d="M358,-122.02C358,-139.37 358,-163 358,-163 358,-163 667.57,-163 667.57,-163"/>
+<polygon fill="black" stroke="black" points="667.57,-166.5 677.57,-163 667.57,-159.5 667.57,-166.5"/>
 </g>
 <!-- TaskRepo -->
 <g id="node12" class="node">
 <title>TaskRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="662" cy="-104" rx="50.38" ry="18"/>
-<text text-anchor="middle" x="662" y="-99.8" font-family="Times,serif" font-size="14.00">TaskRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="210" cy="-104" rx="50.38" ry="18"/>
+<text text-anchor="middle" x="210" y="-99.8" font-family="Times,serif" font-size="14.00">TaskRepo</text>
 </g>
 <!-- TaskRepo&#45;&gt;TaskModule -->
 <g id="edge11" class="edge">
 <title>TaskRepo&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M662,-122.11C662,-122.11 662,-140.99 662,-140.99"/>
-<polygon fill="black" stroke="black" points="658.5,-140.99 662,-150.99 665.5,-140.99 658.5,-140.99"/>
+<path fill="none" stroke="black" d="M210,-122.11C210,-141.34 210,-169 210,-169 210,-169 667.43,-169 667.43,-169"/>
+<polygon fill="black" stroke="black" points="667.43,-172.5 677.43,-169 667.43,-165.5 667.43,-172.5"/>
 </g>
 <!-- TaskService -->
 <g id="node13" class="node">
 <title>TaskService</title>
-<ellipse fill="#fdb462" stroke="black" cx="535" cy="-104" rx="58.53" ry="18"/>
-<text text-anchor="middle" x="535" y="-99.8" font-family="Times,serif" font-size="14.00">TaskService</text>
+<ellipse fill="#fdb462" stroke="black" cx="83" cy="-104" rx="58.53" ry="18"/>
+<text text-anchor="middle" x="83" y="-99.8" font-family="Times,serif" font-size="14.00">TaskService</text>
 </g>
 <!-- TaskService&#45;&gt;TaskModule -->
 <g id="edge12" class="edge">
 <title>TaskService&#45;&gt;TaskModule</title>
-<path fill="none" stroke="black" d="M589.05,-111.37C589.05,-125.93 589.05,-157 589.05,-157 589.05,-157 608.72,-157 608.72,-157"/>
-<polygon fill="black" stroke="black" points="608.72,-160.5 618.72,-157 608.72,-153.5 608.72,-160.5"/>
+<path fill="none" stroke="black" d="M83,-122.28C83,-143.32 83,-175 83,-175 83,-175 667.65,-175 667.65,-175"/>
+<polygon fill="black" stroke="black" points="667.65,-178.5 677.65,-175 667.65,-171.5 667.65,-178.5"/>
 </g>
 </g>
 </svg>
