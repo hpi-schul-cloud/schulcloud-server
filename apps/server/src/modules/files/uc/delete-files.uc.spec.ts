@@ -150,7 +150,9 @@ describe(DeleteFilesUc.name, () => {
 				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage').mockImplementation(() => error);
+				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage').mockImplementation(() => {
+					throw error;
+				});
 
 				return { thresholdDate, batchSize, error, spy };
 			};
@@ -168,7 +170,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(filesRepo.delete).toBeCalledTimes(2);
+				expect(filesRepo.delete).toBeCalledTimes(0);
 			});
 
 			it('should continue with other files', async () => {
