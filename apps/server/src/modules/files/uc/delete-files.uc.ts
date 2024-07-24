@@ -4,12 +4,13 @@ import { Injectable } from '@nestjs/common';
 import { StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { LegacyLogger } from '@src/core/logger';
+import { TypeGuard } from '@shared/common';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
 @Injectable()
 export class DeleteFilesUc {
-	private s3ClientMap: Map<string, S3Client> = new Map();
+	private s3ClientMap = new Map<string, S3Client>();
 
 	constructor(
 		private readonly filesRepo: FilesRepo,
@@ -63,7 +64,7 @@ export class DeleteFilesUc {
 		}
 	}
 
-	private async initializeS3ClientMap() {
+	private async initializeS3ClientMap(): Promise<void> {
 		const providers = await this.storageProviderRepo.findAll();
 
 		providers.forEach((provider) => {
@@ -103,13 +104,23 @@ export class DeleteFilesUc {
 		}
 	}
 
-	private async deleteFileInStorage(file: FileEntity) {
-		const bucket = file.bucket as string;
-		const storageFileName = file.storageFileName as string;
+	private getProviderForFile(file: FileEntity): S3Client {
+		const storageProvider = TypeGuard.checkNotNullOrUndefined(
+			file.storageProvider,
+			new Error(`File ${file.id} has no provider.`)
+		);
+
+		const client = this.s3ClientMap.get(storageProvider.id);
+		const clientWithProvider = TypeGuard.checkNotNullOrUndefined(client, new Error('Provider is invalid.'));
+
+		return clientWithProvider;
+	}
+
+	private async deleteFileInStorage(file: FileEntity): Promise<void> {
+		const { bucket, storageFileName } = file;
 		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 
-		const storageProvider = file.storageProvider as StorageProviderEntity;
-		const client = this.s3ClientMap.get(storageProvider.id) as S3Client;
+		const client = this.getProviderForFile(file);
 
 		await client.send(deletionCommand);
 	}
