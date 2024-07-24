@@ -12,7 +12,6 @@ import { FilesStorageProducer } from './files-storage.producer';
 describe('FilesStorageProducer', () => {
 	let module: TestingModule;
 	let service: FilesStorageProducer;
-	let configService: DeepMocked<ConfigService>;
 	let amqpConnection: DeepMocked<AmqpConnection>;
 
 	const timeout = 10000;
@@ -32,19 +31,28 @@ describe('FilesStorageProducer', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService>({
+						get: jest.fn().mockImplementation((key: string) => {
+							if (key === 'INCOMING_REQUEST_TIMEOUT_COPY_API') {
+								return timeout;
+							}
+							throw new Error('Config key not found');
+						}),
+					}),
 				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageProducer);
 		amqpConnection = module.get(AmqpConnection);
-		configService = module.get(ConfigService);
-		configService.get.mockReturnValue(timeout);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('copyFilesOfParent', () => {
@@ -111,6 +119,7 @@ describe('FilesStorageProducer', () => {
 					routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
 					payload: params,
 					timeout,
+					expiration: timeout * 1.5,
 				};
 
 				return { params, expectedParams, message };
@@ -163,6 +172,7 @@ describe('FilesStorageProducer', () => {
 					routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 					payload: parentId,
 					timeout,
+					expiration: timeout * 1.5,
 				};
 
 				const message = [];
@@ -221,6 +231,7 @@ describe('FilesStorageProducer', () => {
 					routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 					payload: parentId,
 					timeout,
+					expiration: timeout * 1.5,
 				};
 
 				return { parentId, message, expectedParams };
@@ -275,6 +286,7 @@ describe('FilesStorageProducer', () => {
 					routingKey: FilesStorageEvents.DELETE_FILES,
 					payload: [recordId],
 					timeout,
+					expiration: timeout * 1.5,
 				};
 				return { recordId, message, expectedParams };
 			};
@@ -329,6 +341,7 @@ describe('FilesStorageProducer', () => {
 					routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
 					payload: creatorId,
 					timeout,
+					expiration: timeout * 1.5,
 				};
 
 				return { creatorId, message, expectedParams };
