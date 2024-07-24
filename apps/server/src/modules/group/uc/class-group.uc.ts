@@ -5,7 +5,7 @@ import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
 import { SchoolYearService } from '@modules/legacy-school';
 import { ProvisioningConfig } from '@modules/provisioning';
-import { School, SchoolService } from '@modules/school/domain';
+import { School, SchoolService, SchoolYear } from '@modules/school/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
@@ -138,7 +138,8 @@ export class ClassGroupUc {
 		classes: Class[],
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
-		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
+		const currentYear: SchoolYear | undefined =
+			classes.length > 0 ? await this.schoolService.getCurrentYear(classes[0].schoolId) : undefined;
 
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
 			classes
@@ -172,7 +173,7 @@ export class ClassGroupUc {
 	}
 
 	private isClassOfQueryType(
-		currentYear: SchoolYearEntity,
+		currentYear: SchoolYear | undefined,
 		schoolYear?: SchoolYearEntity,
 		schoolYearQueryType?: SchoolYearQueryType
 	): boolean {
@@ -180,7 +181,7 @@ export class ClassGroupUc {
 			return true;
 		}
 
-		if (schoolYear === undefined) {
+		if (schoolYear === undefined || currentYear === undefined) {
 			return schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR;
 		}
 
