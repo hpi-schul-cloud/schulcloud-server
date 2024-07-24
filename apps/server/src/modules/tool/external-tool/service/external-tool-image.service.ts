@@ -22,7 +22,7 @@ export class ExternalToolImageService {
 		this.internalFileApiUrl = this.configService.get('FILES_STORAGE__SERVICE_BASE_URL');
 	}
 
-	async uploadImageFileFromUrl(
+	public async uploadImageFileFromUrl(
 		url: string,
 		fileNameAffix: string,
 		externalToolId: EntityId,
@@ -54,7 +54,7 @@ export class ExternalToolImageService {
 		});
 	}
 
-	async deleteImageFile(fileRecordId: EntityId, jwt: string): Promise<void> {
+	public async deleteImageFile(fileRecordId: EntityId, jwt: string): Promise<void> {
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.delete(
 			`${this.internalFileApiUrl}/api/v3/file/delete/${fileRecordId}`,
 			{
@@ -67,7 +67,7 @@ export class ExternalToolImageService {
 		await firstValueFrom(observable);
 	}
 
-	async deleteAllFiles(externalToolId: EntityId, jwt: string): Promise<void> {
+	public async deleteAllFiles(externalToolId: EntityId, jwt: string): Promise<void> {
 		const instance: Instance = await this.instanceService.getInstance();
 
 		const observable: Observable<AxiosResponse<unknown>> = this.httpService.delete(
