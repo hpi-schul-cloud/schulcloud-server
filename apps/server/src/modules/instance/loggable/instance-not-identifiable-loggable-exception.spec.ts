@@ -16,7 +16,7 @@ describe(InstanceNotIdentifiableLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'INTERNAL_SERVER_ERROR',
+				type: 'INSTANCE_NOT_IDENTIFIABLE',
 				stack: expect.any(String),
 				message: 'Instance could not be identified.',
 			});

@@ -4,7 +4,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class InstanceNotIdentifiableLoggableException extends InternalServerErrorException implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'INTERNAL_SERVER_ERROR',
+			type: 'INSTANCE_NOT_IDENTIFIABLE',
 			stack: this.stack,
 			message: 'Instance could not be identified.',
 		};

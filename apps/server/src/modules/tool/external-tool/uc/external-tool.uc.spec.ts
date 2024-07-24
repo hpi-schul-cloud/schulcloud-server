@@ -766,6 +766,41 @@ describe(ExternalToolUc.name, () => {
 			});
 		});
 
+		describe('when no thumbnail url is given and previous is existing', () => {
+			const setupThumbnail = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				const externalTool: ExternalToolUpdate = {
+					...externalToolFactory.buildWithId().getProps(),
+					thumbnailUrl: '',
+				};
+
+				const jwt = 'jwt';
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				const existingExternalTool = externalToolFactory.withFileRecordRef().build();
+				externalToolService.findById.mockResolvedValue(existingExternalTool);
+
+				return {
+					currentUser,
+					externalTool,
+					jwt,
+					existingExternalTool,
+				};
+			};
+
+			it('should delete existing thumbnail', async () => {
+				const { currentUser, externalTool, jwt } = setupThumbnail();
+
+				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool, jwt);
+
+				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining({ thumbnail: undefined })
+				);
+			});
+		});
+
 		describe('when thumbnail url is given', () => {
 			const setupThumbnail = () => {
 				const user: User = userFactory.buildWithId();
