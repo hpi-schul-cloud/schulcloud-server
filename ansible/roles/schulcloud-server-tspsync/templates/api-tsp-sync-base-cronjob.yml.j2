@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-    infra.tools: true
+    infra.tools: "true"
   name: api-tsp-sync-base-cronjob
 spec:
   schedule: "{{ SERVER_TSP_SYNC_BASE_CRONJOB|default("9 3 * * *", true) }}"
@@ -52,7 +52,7 @@ spec:
                     - key: infra.tools
                       operator: In
                       values:
-                      - true
+                      - "true"
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
 {% endif %}
@@ -66,4 +66,4 @@ spec:
             app.kubernetes.io/managed-by: ansible
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-            infra.tools: true
+            infra.tools: "true"
