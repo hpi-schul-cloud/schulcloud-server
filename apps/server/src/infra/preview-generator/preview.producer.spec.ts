@@ -12,8 +12,9 @@ import { PreviewProducer } from './preview.producer';
 describe('PreviewProducer', () => {
 	let module: TestingModule;
 	let service: PreviewProducer;
-	let configService: DeepMocked<ConfigService>;
 	let amqpConnection: DeepMocked<AmqpConnection>;
+
+	const timeout = 10000;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -30,14 +31,20 @@ describe('PreviewProducer', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService>({
+						get: jest.fn().mockImplementation((key: string) => {
+							if (key === 'INCOMING_REQUEST_TIMEOUT') {
+								return timeout;
+							}
+							throw new Error('Config key not found');
+						}),
+					}),
 				},
 			],
 		}).compile();
 
 		service = module.get(PreviewProducer);
 		amqpConnection = module.get(AmqpConnection);
-		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -47,6 +54,7 @@ describe('PreviewProducer', () => {
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
+
 	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
@@ -54,8 +62,6 @@ describe('PreviewProducer', () => {
 	describe('generate', () => {
 		describe('when valid params are passed and amqp connection return with a message', () => {
 			const setup = () => {
-				const timeout = 10000;
-
 				const params: PreviewFileOptions = {
 					originFilePath: 'file/test.jpeg',
 					previewFilePath: 'preview/text.webp',
@@ -67,13 +73,13 @@ describe('PreviewProducer', () => {
 
 				const message = [];
 				amqpConnection.request.mockResolvedValueOnce({ message });
-				configService.get.mockReturnValue(timeout);
 
 				const expectedParams = {
 					exchange: FilesPreviewExchange,
 					routingKey: FilesPreviewEvents.GENERATE_PREVIEW,
 					payload: params,
 					timeout,
+					expiration: timeout * 1.5,
 				};
 
 				return { params, expectedParams, message };
