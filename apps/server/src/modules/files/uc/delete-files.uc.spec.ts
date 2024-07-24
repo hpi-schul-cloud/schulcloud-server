@@ -1,5 +1,3 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -11,36 +9,14 @@ import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 
 describe(DeleteFilesUc.name, () => {
+	let module: TestingModule;
 	let service: DeleteFilesUc;
 	let filesRepo: DeepMocked<FilesRepo>;
 	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
-	let s3Mock: AwsClientStub<S3Client>;
 	let logger: DeepMocked<LegacyLogger>;
 
-	const userId = new ObjectId().toHexString();
-
-	const storageProvider = storageProviderFactory.build();
-
-	const exampleFiles = [
-		fileEntityFactory.build({
-			storageProvider,
-			ownerId: userId,
-			creatorId: userId,
-			permissions: [filePermissionEntityFactory.build({ refId: userId })],
-		}),
-		fileEntityFactory.build({
-			storageProvider,
-			ownerId: userId,
-			creatorId: userId,
-			permissions: [filePermissionEntityFactory.build({ refId: userId })],
-		}),
-	];
-
 	beforeAll(async () => {
-		exampleFiles[0].id = '123';
-		exampleFiles[1].id = '456';
-
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				DeleteFilesUc,
 				{
@@ -65,11 +41,11 @@ describe(DeleteFilesUc.name, () => {
 	});
 
 	beforeEach(() => {
-		s3Mock = mockClient(S3Client);
+		jest.resetAllMocks();
 	});
 
-	afterEach(() => {
-		jest.resetAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -81,24 +57,62 @@ describe(DeleteFilesUc.name, () => {
 			const setup = () => {
 				const thresholdDate = new Date();
 				const batchSize = 3;
-				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
-				filesRepo.findForCleanup.mockResolvedValueOnce([]);
 
+				const userId = new ObjectId().toHexString();
+				const storageProvider = storageProviderFactory.build();
+
+				const exampleFiles = [
+					fileEntityFactory.buildWithId({
+						storageProvider,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						isDirectory: false,
+					}),
+					fileEntityFactory.buildWithId({
+						storageProvider,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						isDirectory: false,
+					}),
+				];
+
+				const s3ClientMock = {
+					send: jest.fn(),
+				};
+
+				// Please note the second try, that found no more files that needs to be deleted.
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
+				filesRepo.delete.mockResolvedValueOnce();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
+				const spy = jest
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					.spyOn(DeleteFilesUc.prototype as any, 'getClientForFile')
+					.mockImplementation(() => s3ClientMock);
 
-				return { thresholdDate, batchSize };
+				return { thresholdDate, batchSize, exampleFiles, spy };
 			};
 
-			it('should delete all marked files in storage', async () => {
+			it('should create correct log result', async () => {
 				const { thresholdDate, batchSize } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(s3Mock.send.callCount).toEqual(2);
+				expect(logger.log).toBeCalledTimes(4);
+				expect(logger.error).toBeCalledTimes(0);
+			});
+
+			it('should delete all marked files in S3', async () => {
+				const { thresholdDate, batchSize, spy } = setup();
+
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				expect(spy).toHaveBeenCalledTimes(2);
 			});
 
 			it('should delete all marked files in database', async () => {
-				const { thresholdDate, batchSize } = setup();
+				const { thresholdDate, batchSize, exampleFiles } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
@@ -114,13 +128,29 @@ describe(DeleteFilesUc.name, () => {
 				const batchSize = 3;
 				const error = new Error();
 
-				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
-				filesRepo.findForCleanup.mockResolvedValueOnce([]);
+				const userId = new ObjectId().toHexString();
+				const storageProvider = storageProviderFactory.build();
 
+				const exampleFiles = [
+					fileEntityFactory.buildWithId({
+						storageProvider,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+					}),
+					fileEntityFactory.buildWithId({
+						storageProvider,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+					}),
+				];
+
+				// Please note the second try, that found no more files that needs to be deleted.
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
-
-				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage');
-				spy.mockRejectedValueOnce(error);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage').mockImplementation(() => error);
 
 				return { thresholdDate, batchSize, error, spy };
 			};
@@ -138,7 +168,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(filesRepo.delete).toBeCalledTimes(exampleFiles.length - 1);
+				expect(filesRepo.delete).toBeCalledTimes(2);
 			});
 
 			it('should continue with other files', async () => {
@@ -146,7 +176,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(spy).toBeCalledTimes(exampleFiles.length);
+				expect(spy).toBeCalledTimes(2);
 			});
 		});
 	});

@@ -104,7 +104,7 @@ export class DeleteFilesUc {
 		}
 	}
 
-	private getProviderForFile(file: FileEntity): S3Client {
+	private getClientForFile(file: FileEntity): S3Client {
 		const storageProvider = TypeGuard.checkNotNullOrUndefined(
 			file.storageProvider,
 			new Error(`File ${file.id} has no provider.`)
@@ -120,7 +120,7 @@ export class DeleteFilesUc {
 		const { bucket, storageFileName } = file;
 		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 
-		const client = this.getProviderForFile(file);
+		const client = this.getClientForFile(file);
 
 		await client.send(deletionCommand);
 	}

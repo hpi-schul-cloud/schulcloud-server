@@ -296,7 +296,6 @@
 		"@typescript-eslint/eslint-plugin": "^5.47.1",
 		"@typescript-eslint/parser": "^5.47.1",
 		"@typescript-eslint/typescript-estree": "^5.47.1",
-		"aws-sdk-client-mock": "^0.5.5",
 		"chai": "^4.2.0",
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.0",
