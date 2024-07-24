@@ -59,6 +59,7 @@ describe('RpcMessageProducer', () => {
 					routingKey: TestEvent,
 					payload: params,
 					timeout,
+					expiration: timeout * 1.5,
 				};
 
 				return { params, expectedParams, message };
