@@ -20,7 +20,7 @@ describe(UserLoginMigrationSchoolAlreadyMigratedLoggableException.name, () => {
 
 			expect(message).toEqual({
 				type: 'USER_LOGIN_MIGRATION_SCHOOL_HAS_ALREADY_MIGRATED',
-				message: 'School with externalId has already migrated',
+				message: 'School has already migrated',
 				stack: exception.stack,
 				data: {
 					schoolId,
