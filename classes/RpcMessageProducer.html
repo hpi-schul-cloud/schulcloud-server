@@ -391,7 +391,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>{ exchange: string; routingKey: string; payload: unknown; timeout: number; }</code>
+                            <b>Returns : </b>    <code>{ exchange: string; routingKey: string; payload: unknown; timeout: number; expiration: number; }</code>
 
                         </div>
                             <div class="io-description">
@@ -529,11 +529,15 @@ export abstract class RpcMessageProducer {
 	}
 
 	protected createRequest(event: string, payload: unknown) {
+		// expiration should be greater than timeout
+		const expiration &#x3D; this.timeout &gt; 0 ? this.timeout * 1.5 : undefined;
+
 		return {
 			exchange: this.exchange,
 			routingKey: event,
 			payload,
 			timeout: this.timeout,
+			expiration,
 		};
 	}
 }

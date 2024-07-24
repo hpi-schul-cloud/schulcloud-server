@@ -24,143 +24,143 @@
 <title>cluster_PseudonymModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1394,-268 1394,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_PseudonymModule_imports</title>
+<polygon fill="none" stroke="black" points="1026,-78 1026,-130 1386,-130 1386,-78 1026,-78"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_PseudonymModule_providers</title>
-<polygon fill="none" stroke="black" points="384,-78 384,-130 1386,-130 1386,-78 384,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1018,-130 1018,-78 16,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_PseudonymModule_exports</title>
-<polygon fill="none" stroke="black" points="415,-208 415,-260 721,-260 721,-208 415,-208"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_PseudonymModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 376,-130 376,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="613,-208 613,-260 919,-260 919,-208 613,-208"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node1" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="367.74,-122 364.74,-126 343.74,-126 340.74,-122 246.26,-122 246.26,-86 367.74,-86 367.74,-122"/>
-<text text-anchor="middle" x="307" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1377.74,-122 1374.74,-126 1353.74,-126 1350.74,-122 1256.26,-122 1256.26,-86 1377.74,-86 1377.74,-122"/>
+<text text-anchor="middle" x="1317" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- PseudonymModule -->
 <g id="node4" class="node">
 <title>PseudonymModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="625.38,-187 622.38,-191 601.38,-191 598.38,-187 500.62,-187 500.62,-151 625.38,-151 625.38,-187"/>
-<text text-anchor="middle" x="563" y="-164.8" font-family="Times,serif" font-size="14.00">PseudonymModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="823.38,-187 820.38,-191 799.38,-191 796.38,-187 698.62,-187 698.62,-151 823.38,-151 823.38,-187"/>
+<text text-anchor="middle" x="761" y="-164.8" font-family="Times,serif" font-size="14.00">PseudonymModule</text>
 </g>
 <!-- LearnroomModule&#45;&gt;PseudonymModule -->
 <g id="edge1" class="edge">
 <title>LearnroomModule&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M307,-122.03C307,-138.4 307,-160 307,-160 307,-160 490.38,-160 490.38,-160"/>
-<polygon fill="black" stroke="black" points="490.38,-163.5 500.38,-160 490.38,-156.5 490.38,-163.5"/>
+<path fill="none" stroke="black" d="M1317,-122.29C1317,-144.21 1317,-178 1317,-178 1317,-178 833.43,-178 833.43,-178"/>
+<polygon fill="black" stroke="black" points="833.43,-174.5 823.43,-178 833.43,-181.5 833.43,-174.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="227.98,-122 224.98,-126 203.98,-126 200.98,-122 128.02,-122 128.02,-86 227.98,-86 227.98,-122"/>
-<text text-anchor="middle" x="178" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1237.98,-122 1234.98,-126 1213.98,-126 1210.98,-122 1138.02,-122 1138.02,-86 1237.98,-86 1237.98,-122"/>
+<text text-anchor="middle" x="1188" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;PseudonymModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M178,-122.11C178,-141.34 178,-169 178,-169 178,-169 490.29,-169 490.29,-169"/>
-<polygon fill="black" stroke="black" points="490.29,-172.5 500.29,-169 490.29,-165.5 490.29,-172.5"/>
+<path fill="none" stroke="black" d="M1188,-122.11C1188,-141.34 1188,-169 1188,-169 1188,-169 833.55,-169 833.55,-169"/>
+<polygon fill="black" stroke="black" points="833.55,-165.5 823.55,-169 833.55,-172.5 833.55,-165.5"/>
 </g>
 <!-- UserModule -->
 <g id="node3" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1119.98,-122 1116.98,-126 1095.98,-126 1092.98,-122 1034.02,-122 1034.02,-86 1119.98,-86 1119.98,-122"/>
+<text text-anchor="middle" x="1077" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;PseudonymModule -->
 <g id="edge3" class="edge">
 <title>UserModule&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M67,-122.29C67,-144.21 67,-178 67,-178 67,-178 490.43,-178 490.43,-178"/>
-<polygon fill="black" stroke="black" points="490.43,-181.5 500.43,-178 490.43,-174.5 490.43,-181.5"/>
+<path fill="none" stroke="black" d="M1077,-122.03C1077,-138.4 1077,-160 1077,-160 1077,-160 833.43,-160 833.43,-160"/>
+<polygon fill="black" stroke="black" points="833.43,-156.5 823.43,-160 833.43,-163.5 833.43,-156.5"/>
 </g>
 <!-- FeathersRosterService  -->
 <g id="node5" class="node">
 <title>FeathersRosterService </title>
-<polygon fill="#fb8072" stroke="black" points="712.95,-252 567.05,-252 567.05,-216 712.95,-216 712.95,-252"/>
-<text text-anchor="middle" x="640" y="-229.8" font-family="Times,serif" font-size="14.00">FeathersRosterService </text>
+<polygon fill="#fb8072" stroke="black" points="910.95,-252 765.05,-252 765.05,-216 910.95,-216 910.95,-252"/>
+<text text-anchor="middle" x="838" y="-229.8" font-family="Times,serif" font-size="14.00">FeathersRosterService </text>
 </g>
 <!-- PseudonymModule&#45;&gt;FeathersRosterService  -->
 <g id="edge4" class="edge">
 <title>PseudonymModule&#45;&gt;FeathersRosterService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M596.36,-187.11C596.36,-187.11 596.36,-205.99 596.36,-205.99"/>
-<polygon fill="black" stroke="black" points="592.86,-205.99 596.36,-215.99 599.86,-205.99 592.86,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M794.36,-187.11C794.36,-187.11 794.36,-205.99 794.36,-205.99"/>
+<polygon fill="black" stroke="black" points="790.86,-205.99 794.36,-215.99 797.86,-205.99 790.86,-205.99"/>
 </g>
 <!-- PseudonymService  -->
 <g id="node6" class="node">
 <title>PseudonymService </title>
-<polygon fill="#fb8072" stroke="black" points="549.31,-252 422.69,-252 422.69,-216 549.31,-216 549.31,-252"/>
-<text text-anchor="middle" x="486" y="-229.8" font-family="Times,serif" font-size="14.00">PseudonymService </text>
+<polygon fill="#fb8072" stroke="black" points="747.31,-252 620.69,-252 620.69,-216 747.31,-216 747.31,-252"/>
+<text text-anchor="middle" x="684" y="-229.8" font-family="Times,serif" font-size="14.00">PseudonymService </text>
 </g>
 <!-- PseudonymModule&#45;&gt;PseudonymService  -->
 <g id="edge5" class="edge">
 <title>PseudonymModule&#45;&gt;PseudonymService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M524.98,-187.11C524.98,-187.11 524.98,-205.99 524.98,-205.99"/>
-<polygon fill="black" stroke="black" points="521.48,-205.99 524.98,-215.99 528.48,-205.99 521.48,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M722.98,-187.11C722.98,-187.11 722.98,-205.99 722.98,-205.99"/>
+<polygon fill="black" stroke="black" points="719.48,-205.99 722.98,-215.99 726.48,-205.99 719.48,-205.99"/>
 </g>
 <!-- ExternalToolPseudonymRepo -->
 <g id="node7" class="node">
 <title>ExternalToolPseudonymRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1251" cy="-104" rx="127.37" ry="18"/>
-<text text-anchor="middle" x="1251" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolPseudonymRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="883" cy="-104" rx="127.37" ry="18"/>
+<text text-anchor="middle" x="883" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolPseudonymRepo</text>
 </g>
 <!-- ExternalToolPseudonymRepo&#45;&gt;PseudonymModule -->
 <g id="edge6" class="edge">
 <title>ExternalToolPseudonymRepo&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M1251,-122.29C1251,-144.21 1251,-178 1251,-178 1251,-178 635.57,-178 635.57,-178"/>
-<polygon fill="black" stroke="black" points="635.57,-174.5 625.57,-178 635.57,-181.5 635.57,-174.5"/>
+<path fill="none" stroke="black" d="M789.5,-116.53C789.5,-116.53 789.5,-140.85 789.5,-140.85"/>
+<polygon fill="black" stroke="black" points="786,-140.85 789.5,-150.85 793,-140.85 786,-140.85"/>
 </g>
 <!-- FeathersRosterService -->
 <g id="node8" class="node">
 <title>FeathersRosterService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1008" cy="-104" rx="97.82" ry="18"/>
-<text text-anchor="middle" x="1008" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersRosterService</text>
+<ellipse fill="#fdb462" stroke="black" cx="640" cy="-104" rx="97.82" ry="18"/>
+<text text-anchor="middle" x="640" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersRosterService</text>
 </g>
 <!-- FeathersRosterService&#45;&gt;PseudonymModule -->
 <g id="edge7" class="edge">
 <title>FeathersRosterService&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M1008,-122.11C1008,-141.34 1008,-169 1008,-169 1008,-169 635.81,-169 635.81,-169"/>
-<polygon fill="black" stroke="black" points="635.81,-165.5 625.81,-169 635.81,-172.5 635.81,-165.5"/>
+<path fill="none" stroke="black" d="M718.24,-115.03C718.24,-115.03 718.24,-140.78 718.24,-140.78"/>
+<polygon fill="black" stroke="black" points="714.74,-140.78 718.24,-150.78 721.74,-140.78 714.74,-140.78"/>
 </g>
 <!-- LegacyLogger -->
 <g id="node9" class="node">
 <title>LegacyLogger</title>
-<ellipse fill="#fdb462" stroke="black" cx="825" cy="-104" rx="67.18" ry="18"/>
-<text text-anchor="middle" x="825" y="-99.8" font-family="Times,serif" font-size="14.00">LegacyLogger</text>
+<ellipse fill="#fdb462" stroke="black" cx="457" cy="-104" rx="67.18" ry="18"/>
+<text text-anchor="middle" x="457" y="-99.8" font-family="Times,serif" font-size="14.00">LegacyLogger</text>
 </g>
 <!-- LegacyLogger&#45;&gt;PseudonymModule -->
 <g id="edge8" class="edge">
 <title>LegacyLogger&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M825,-122.03C825,-138.4 825,-160 825,-160 825,-160 635.42,-160 635.42,-160"/>
-<polygon fill="black" stroke="black" points="635.42,-156.5 625.42,-160 635.42,-163.5 635.42,-156.5"/>
+<path fill="none" stroke="black" d="M457,-122.03C457,-138.4 457,-160 457,-160 457,-160 688.38,-160 688.38,-160"/>
+<polygon fill="black" stroke="black" points="688.38,-163.5 698.38,-160 688.38,-156.5 688.38,-163.5"/>
 </g>
 <!-- PseudonymService -->
 <g id="node10" class="node">
 <title>PseudonymService</title>
-<ellipse fill="#fdb462" stroke="black" cx="655" cy="-104" rx="85.11" ry="18"/>
-<text text-anchor="middle" x="655" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymService</text>
+<ellipse fill="#fdb462" stroke="black" cx="287" cy="-104" rx="85.11" ry="18"/>
+<text text-anchor="middle" x="287" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymService</text>
 </g>
 <!-- PseudonymService&#45;&gt;PseudonymModule -->
 <g id="edge9" class="edge">
 <title>PseudonymService&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M597.69,-117.47C597.69,-117.47 597.69,-140.86 597.69,-140.86"/>
-<polygon fill="black" stroke="black" points="594.19,-140.86 597.69,-150.86 601.19,-140.86 594.19,-140.86"/>
+<path fill="none" stroke="black" d="M287,-122.11C287,-141.34 287,-169 287,-169 287,-169 688.55,-169 688.55,-169"/>
+<polygon fill="black" stroke="black" points="688.55,-172.5 698.55,-169 688.55,-165.5 688.55,-172.5"/>
 </g>
 <!-- PseudonymsRepo -->
 <g id="node11" class="node">
 <title>PseudonymsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="472" cy="-104" rx="80.48" ry="18"/>
-<text text-anchor="middle" x="472" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="104" cy="-104" rx="80.48" ry="18"/>
+<text text-anchor="middle" x="104" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymsRepo</text>
 </g>
 <!-- PseudonymsRepo&#45;&gt;PseudonymModule -->
 <g id="edge10" class="edge">
 <title>PseudonymsRepo&#45;&gt;PseudonymModule</title>
-<path fill="none" stroke="black" d="M526.4,-117.47C526.4,-117.47 526.4,-140.86 526.4,-140.86"/>
-<polygon fill="black" stroke="black" points="522.9,-140.86 526.4,-150.86 529.9,-140.86 522.9,-140.86"/>
+<path fill="none" stroke="black" d="M104,-122.29C104,-144.21 104,-178 104,-178 104,-178 688.6,-178 688.6,-178"/>
+<polygon fill="black" stroke="black" points="688.6,-181.5 698.6,-178 688.6,-174.5 688.6,-181.5"/>
 </g>
 </g>
 </svg>
