@@ -1,8 +1,5 @@
 [
 	{
-		"_id": {
-			"$oid": "669f600182d5ff057ecfe895"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -11,14 +8,9 @@
 		},
 		"name": "Cypress-Test-Group",
 		"type": "class",
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-23T07:48:43.982Z"
-			}
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
 		},
 		"users": [
 			{
@@ -43,9 +35,6 @@
 		}
 	},
 	{
-		"_id": {
-			"$oid": "669f600182d5ff057ecfe896"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -54,14 +43,9 @@
 		},
 		"name": "Cypress-Test-Group1",
 		"type": "class",
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-23T07:48:43.982Z"
-			}
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
 		},
 		"users": [
 			{
@@ -86,9 +70,6 @@
 		}
 	},
 	{
-		"_id": {
-			"$oid": "669f600182d5ff057ecfe897"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -97,14 +78,9 @@
 		},
 		"name": "Cypress-Test-Group2",
 		"type": "class",
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-23T07:48:43.982Z"
-			}
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
 		},
 		"users": [
 			{
@@ -137,9 +113,6 @@
 		}
 	},
 	{
-		"_id": {
-			"$oid": "669f600182d5ff057ecfe898"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -148,14 +121,9 @@
 		},
 		"name": "Cypress-Test-Group-Course-Sync",
 		"type": "other",
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-23T07:48:43.982Z"
-			}
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
 		},
 		"users": [
 			{
@@ -180,9 +148,6 @@
 		}
 	},
 	{
-		"_id": {
-			"$oid": "669f600182d5ff057ecfe899"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -191,14 +156,9 @@
 		},
 		"name": "Cypress-Test-Group-Course-Sync2",
 		"type": "course",
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-23T07:48:43.982Z"
-			}
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
 		},
 		"users": [
 			{
@@ -223,9 +183,6 @@
 		}
 	},
 	{
-		"_id": {
-			"$oid": "669f600182d5ff057ecfe89a"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -234,14 +191,9 @@
 		},
 		"name": "Cypress-Test-Group-Course-Sync-Without-Teacher",
 		"type": "class",
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-23T07:48:43.982Z"
-			}
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
 		},
 		"users": [
 			{
