@@ -1,8 +1,5 @@
 [
 	{
-		"_id": {
-			"$oid": "66a0d94082d5ff057ed0cd01"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -11,6 +8,10 @@
 		},
 		"name": "Cypress-Test-Group",
 		"type": "class",
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
+		},
 		"users": [
 			{
 				"user": {
@@ -31,21 +32,9 @@
 		],
 		"organization": {
 			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T10:37:00.935Z"
-			}
 		}
 	},
 	{
-		"_id": {
-			"$oid": "66a0d94082d5ff057ed0cd02"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -54,6 +43,10 @@
 		},
 		"name": "Cypress-Test-Group1",
 		"type": "class",
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
+		},
 		"users": [
 			{
 				"user": {
@@ -74,21 +67,9 @@
 		],
 		"organization": {
 			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T10:37:00.935Z"
-			}
 		}
 	},
 	{
-		"_id": {
-			"$oid": "66a0d94082d5ff057ed0cd03"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -97,6 +78,10 @@
 		},
 		"name": "Cypress-Test-Group2",
 		"type": "class",
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
+		},
 		"users": [
 			{
 				"user": {
@@ -125,21 +110,9 @@
 		],
 		"organization": {
 			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T10:37:00.935Z"
-			}
 		}
 	},
 	{
-		"_id": {
-			"$oid": "66a0d94082d5ff057ed0cd04"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -148,6 +121,10 @@
 		},
 		"name": "Cypress-Test-Group-Course-Sync",
 		"type": "other",
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
+		},
 		"users": [
 			{
 				"user": {
@@ -168,21 +145,9 @@
 		],
 		"organization": {
 			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T10:37:00.935Z"
-			}
 		}
 	},
 	{
-		"_id": {
-			"$oid": "66a0d94082d5ff057ed0cd05"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -191,6 +156,10 @@
 		},
 		"name": "Cypress-Test-Group-Course-Sync2",
 		"type": "course",
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
+		},
 		"users": [
 			{
 				"user": {
@@ -211,21 +180,9 @@
 		],
 		"organization": {
 			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T10:37:00.935Z"
-			}
 		}
 	},
 	{
-		"_id": {
-			"$oid": "66a0d94082d5ff057ed0cd06"
-		},
 		"createdAt": {
 			"$date": "2023-10-17T12:15:26.458Z"
 		},
@@ -234,6 +191,10 @@
 		},
 		"name": "Cypress-Test-Group-Course-Sync-Without-Teacher",
 		"type": "class",
+		"externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+		"externalSource_system": {
+			"$oid": "0000d186816abba584714c93"
+		},
 		"users": [
 			{
 				"user": {
@@ -246,15 +207,6 @@
 		],
 		"organization": {
 			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T10:37:00.935Z"
-			}
 		}
 	}
 ]
