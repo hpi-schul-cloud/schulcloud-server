@@ -120,7 +120,7 @@
       "$date": "2023-10-17T12:15:26.461Z"
     },
     "name": "Cypress-Test-Group-Course-Sync",
-    "type": "class",
+    "type": "other",
     "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
     "externalSource_system": {
       "$oid": "0000d186816abba584714c93"
@@ -155,7 +155,7 @@
       "$date": "2023-10-17T12:15:26.461Z"
     },
     "name": "Cypress-Test-Group-Course-Sync2",
-    "type": "class",
+    "type": "course",
     "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
     "externalSource_system": {
       "$oid": "0000d186816abba584714c93"

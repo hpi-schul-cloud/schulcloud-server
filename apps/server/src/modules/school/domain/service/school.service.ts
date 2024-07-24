@@ -53,6 +53,11 @@ export class SchoolService {
 		return schoolsForExternalInvite;
 	}
 
+	public async getCurrentYear(schoolId: EntityId) {
+		const school = await this.getSchoolById(schoolId);
+		return school.currentYear;
+	}
+
 	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {
 		try {
 			await this.schoolRepo.getSchoolById(schoolId);
