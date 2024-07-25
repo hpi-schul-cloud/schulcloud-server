@@ -5,7 +5,7 @@ import { SchulconnexPoliciesInfoTargetResponse } from './schulconnex-policies-in
 
 export class SchulconnexPoliciesInfoResponse {
 	@IsObject()
-	@ValidateNested({ each: true })
+	@ValidateNested()
 	@Type(() => SchulconnexPoliciesInfoTargetResponse)
 	target!: SchulconnexPoliciesInfoTargetResponse;
 
