@@ -663,7 +663,7 @@ describe(UserLoginMigrationUc.name, () => {
 				};
 			};
 
-			it('should migrate the school', async () => {
+			it('should check permission', async () => {
 				const { user, externalUserId, externalSchoolId } = setup();
 
 				await uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId);
