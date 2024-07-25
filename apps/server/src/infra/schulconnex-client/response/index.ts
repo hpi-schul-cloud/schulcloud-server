@@ -15,4 +15,4 @@ export { SchulconnexResponseValidationGroups } from './schulconnex-response-vali
 export { SchulconnexErreichbarkeitenResponse } from './schulconnex-erreichbarkeiten-response';
 export { SchulconnexCommunicationType } from './schulconnex-communication-type';
 export { SchulconnexLaufzeitResponse, lernperiodeFormat } from './schulconnex-laufzeit-response';
-export * from './lizenz-info';
+export * from './policies-info';

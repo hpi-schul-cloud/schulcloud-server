@@ -3,9 +3,9 @@ import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
-	SchulconnexLizenzInfoResponse,
-	schulconnexLizenzInfoResponseFactory,
 	SchulconnexPersonenkontextResponse,
+	SchulconnexPoliciesInfoResponse,
+	schulconnexPoliciesInfoResponseFactory,
 	SchulconnexResponse,
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
@@ -561,7 +561,7 @@ describe(SchulconnexResponseMapper.name, () => {
 	describe('mapToExternalLicenses', () => {
 		describe('when a license response has a medium id and no media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
 					target: { uid: 'bildungscloud', partOf: '' },
 				});
 
@@ -573,7 +573,8 @@ describe(SchulconnexResponseMapper.name, () => {
 			it('should map the response to an ExternalLicenseDto', () => {
 				const { licenseResponse } = setup();
 
-				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
@@ -586,7 +587,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has a medium id and a media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
 					target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
 				});
 
@@ -598,7 +599,8 @@ describe(SchulconnexResponseMapper.name, () => {
 			it('should map the response to an ExternalLicenseDto', () => {
 				const { licenseResponse } = setup();
 
-				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
@@ -611,7 +613,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has no medium id', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
 					target: { uid: '', partOf: 'bildungscloud-source' },
 				});
 
@@ -623,7 +625,8 @@ describe(SchulconnexResponseMapper.name, () => {
 			it('should should be filtered out', () => {
 				const { licenseResponse } = setup();
 
-				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
 				expect(result).toEqual<ExternalLicenseDto[]>([]);
 			});
