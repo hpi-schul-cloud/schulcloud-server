@@ -425,10 +425,10 @@ export class CopyHelperService {
 			return name;
 		}
 		let num &#x3D; 1;
-		const matches &#x3D; name.match(/^(?&lt;name&gt;.*) \((?&lt;number&gt;\d+)\)$/);
-		if (matches &amp;&amp; matches.groups) {
-			({ name } &#x3D; matches.groups);
-			num &#x3D; Number(matches.groups.number) + 1;
+		const matches &#x3D; name.match(/^(.*) \((\d+)\)$/);
+		if (matches) {
+			name &#x3D; matches[1];
+			num &#x3D; Number(matches[2]) + 1;
 		}
 		const composedName &#x3D; &#x60;${name} (${num})&#x60;;
 		if (existingNames.includes(composedName)) {

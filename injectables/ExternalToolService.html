@@ -1219,7 +1219,7 @@ export class ExternalToolService {
 			})
 		);
 
-		tools.data &#x3D; resolvedTools.filter((tool) &#x3D;&gt; tool !&#x3D;&#x3D; undefined) as ExternalTool[];
+		tools.data &#x3D; resolvedTools.filter((tool) &#x3D;&gt; tool !&#x3D;&#x3D; undefined);
 
 		return tools;
 	}

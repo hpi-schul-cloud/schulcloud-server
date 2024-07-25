@@ -1203,7 +1203,7 @@ export class CommonCartridgeExportService {
 
 		column.children
 			.filter((child) &#x3D;&gt; isCard(child))
-			.forEach((card) &#x3D;&gt; this.addCardToOrganization(card as Card, columnOrganization));
+			.forEach((card) &#x3D;&gt; this.addCardToOrganization(card, columnOrganization));
 	}
 
 	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {

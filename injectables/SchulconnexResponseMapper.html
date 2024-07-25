@@ -1154,9 +1154,9 @@ export class SchulconnexResponseMapper {
 		let otherUsers: ExternalGroupUserDto[] | undefined;
 		if (this.configService.get(&#x27;FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED&#x27;)) {
 			otherUsers &#x3D; group.sonstige_gruppenzugehoerige
-				? (group.sonstige_gruppenzugehoerige
+				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null &#x3D;&gt; this.mapToExternalGroupUser(relation))
-						.filter((otherUser: ExternalGroupUserDto | null) &#x3D;&gt; otherUser !&#x3D;&#x3D; null) as ExternalGroupUserDto[])
+						.filter((otherUser: ExternalGroupUserDto | null) &#x3D;&gt; otherUser !&#x3D;&#x3D; null)
 				: [];
 		}
 
