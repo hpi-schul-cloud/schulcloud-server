@@ -13,9 +13,9 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { Course } from '../../../../learnroom/domain';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
-import { Course } from '../../../../learnroom/domain';
 
 @Injectable()
 export class SchulconnexGroupProvisioningService {
@@ -203,8 +203,8 @@ export class SchulconnexGroupProvisioningService {
 					const courses: Course[] = await this.courseService.findBySyncedGroup(group);
 					if (!courses || courses.length === 0) {
 						await this.groupService.delete(group);
+						return null;
 					}
-					return null;
 				}
 
 				return this.groupService.save(group);

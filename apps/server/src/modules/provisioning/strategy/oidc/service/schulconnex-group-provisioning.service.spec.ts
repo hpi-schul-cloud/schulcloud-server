@@ -823,6 +823,14 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 					expect(groupService.delete).not.toHaveBeenCalled();
 				});
+
+				it('should save the group', async () => {
+					const { externalGroups, systemId, externalUserId, existingGroups } = setup();
+
+					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+
+					expect(groupService.save).toHaveBeenCalledWith(existingGroups[1]);
+				});
 			});
 
 			describe('when group is not empty after removal of the User', () => {
