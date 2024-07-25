@@ -8,7 +8,7 @@ import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPersonenInfoParams } from './request';
-import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from './response';
+import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
@@ -48,13 +48,13 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		return response;
 	}
 
-	public async getLizenzInfo(
+	public async getPoliciesInfo(
 		accessToken: string,
 		options?: { overrideUrl: string }
-	): Promise<SchulconnexLizenzInfoResponse[]> {
-		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/lizenz-info`);
+	): Promise<SchulconnexPoliciesInfoResponse[]> {
+		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/policies-info`);
 
-		const response: Promise<SchulconnexLizenzInfoResponse[]> = this.getRequest<SchulconnexLizenzInfoResponse[]>(
+		const response: Promise<SchulconnexPoliciesInfoResponse[]> = this.getRequest<SchulconnexPoliciesInfoResponse[]>(
 			url,
 			accessToken
 		);
