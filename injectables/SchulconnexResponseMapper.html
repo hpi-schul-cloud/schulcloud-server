@@ -710,7 +710,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToExternalLicenses(licenseInfos: <a href="../classes/SchulconnexLizenzInfoResponse.html" target="_self">SchulconnexLizenzInfoResponse[]</a>)</code>
+                    <code>mapToExternalLicenses(licenseInfos: <a href="../classes/SchulconnexPoliciesInfoResponse.html" target="_self">SchulconnexPoliciesInfoResponse[]</a>)</code>
                 </td>
             </tr>
 
@@ -741,7 +741,7 @@
                                         <tr>
                                                 <td>licenseInfos</td>
                                             <td>
-                                                            <code><a href="../classes/SchulconnexLizenzInfoResponse.html" target="_self" >SchulconnexLizenzInfoResponse[]</a></code>
+                                                            <code><a href="../classes/SchulconnexPoliciesInfoResponse.html" target="_self" >SchulconnexPoliciesInfoResponse[]</a></code>
                                             </td>
 
                                             <td>
@@ -1016,7 +1016,7 @@
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexLaufzeitResponse,
-	SchulconnexLizenzInfoResponse,
+	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
@@ -1250,9 +1250,9 @@ export class SchulconnexResponseMapper {
 		};
 	}
 
-	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
+	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] &#x3D; licenseInfos
-			.map((license: SchulconnexLizenzInfoResponse) &#x3D;&gt; {
+			.map((license: SchulconnexPoliciesInfoResponse) &#x3D;&gt; {
 				if (license.target.partOf &#x3D;&#x3D;&#x3D; &#x27;&#x27;) {
 					license.target.partOf &#x3D; undefined;
 				}

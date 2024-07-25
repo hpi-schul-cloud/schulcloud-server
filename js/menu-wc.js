@@ -5189,6 +5189,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/FetchCardsMessageParams.html" data-type="entity-link" >FetchCardsMessageParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FetchingPoliciesInfoFailedLoggable.html" data-type="entity-link" >FetchingPoliciesInfoFailedLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/FileContentBody.html" data-type="entity-link" >FileContentBody</a>
                             </li>
                             <li class="link">
@@ -6590,15 +6593,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchulconnexLaufzeitResponse.html" data-type="entity-link" >SchulconnexLaufzeitResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/SchulconnexLizenzInfoPermissionResponse.html" data-type="entity-link" >SchulconnexLizenzInfoPermissionResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SchulconnexLizenzInfoResponse.html" data-type="entity-link" >SchulconnexLizenzInfoResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SchulconnexLizenzInfoTargetResponse.html" data-type="entity-link" >SchulconnexLizenzInfoTargetResponse</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/SchulconnexNameResponse.html" data-type="entity-link" >SchulconnexNameResponse</a>
                             </li>
                             <li class="link">
@@ -6609,6 +6603,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchulconnexPersonResponse.html" data-type="entity-link" >SchulconnexPersonResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexPoliciesInfoPermissionResponse.html" data-type="entity-link" >SchulconnexPoliciesInfoPermissionResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexPoliciesInfoResponse.html" data-type="entity-link" >SchulconnexPoliciesInfoResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexPoliciesInfoTargetResponse.html" data-type="entity-link" >SchulconnexPoliciesInfoTargetResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchulConneXProvisioningOptions.html" data-type="entity-link" >SchulConneXProvisioningOptions</a>

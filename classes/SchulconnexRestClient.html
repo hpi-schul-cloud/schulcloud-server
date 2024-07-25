@@ -169,17 +169,17 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getLizenzInfo" >getLizenzInfo</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#getPersonenInfo" >getPersonenInfo</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getPersonInfo" >getPersonInfo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getPoliciesInfo" >getPoliciesInfo</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -371,88 +371,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getLizenzInfo"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getLizenzInfo</b></span>
-                        <a href="#getLizenzInfo"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLizenzInfo(accessToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: literal type)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:51</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>accessToken</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                        <code>literal type</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchulconnexLizenzInfoResponse.html" target="_self" >Promise&lt;SchulconnexLizenzInfoResponse[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="getPersonenInfo"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -592,6 +510,88 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/SchulconnexResponse.html" target="_self" >Promise&lt;SchulconnexResponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPoliciesInfo"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getPoliciesInfo</b></span>
+                        <a href="#getPoliciesInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPoliciesInfo(accessToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>accessToken</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SchulconnexPoliciesInfoResponse.html" target="_self" >Promise&lt;SchulconnexPoliciesInfoResponse[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -763,7 +763,7 @@ import QueryString from &#x27;qs&#x27;;
 import { lastValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { SchulconnexConfigurationMissingLoggable } from &#x27;./loggable&#x27;;
 import { SchulconnexPersonenInfoParams } from &#x27;./request&#x27;;
-import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from &#x27;./response&#x27;;
+import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from &#x27;./response&#x27;;
 import { SchulconnexApiInterface } from &#x27;./schulconnex-api.interface&#x27;;
 import { SchulconnexRestClientOptions } from &#x27;./schulconnex-rest-client-options&#x27;;
 
@@ -803,13 +803,13 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		return response;
 	}
 
-	public async getLizenzInfo(
+	public async getPoliciesInfo(
 		accessToken: string,
 		options?: { overrideUrl: string }
-	): Promise&lt;SchulconnexLizenzInfoResponse[]&gt; {
-		const url: URL &#x3D; new URL(options?.overrideUrl ?? &#x60;${this.SCHULCONNEX_API_BASE_URL}/lizenz-info&#x60;);
+	): Promise&lt;SchulconnexPoliciesInfoResponse[]&gt; {
+		const url: URL &#x3D; new URL(options?.overrideUrl ?? &#x60;${this.SCHULCONNEX_API_BASE_URL}/policies-info&#x60;);
 
-		const response: Promise&lt;SchulconnexLizenzInfoResponse[]&gt; &#x3D; this.getRequest&lt;SchulconnexLizenzInfoResponse[]&gt;(
+		const response: Promise&lt;SchulconnexPoliciesInfoResponse[]&gt; &#x3D; this.getRequest&lt;SchulconnexPoliciesInfoResponse[]&gt;(
 			url,
 			accessToken
 		);

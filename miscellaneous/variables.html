@@ -1189,7 +1189,7 @@
                             <a href="#schoolYearFactory" title="apps/server/src/shared/testing/factory/schoolyear.factory.ts" ><b>schoolYearFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyear.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#schulconnexLizenzInfoResponseFactory" title="apps/server/src/infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory.ts" ><b>schulconnexLizenzInfoResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-lizenz-info-response-factory.ts)</a>
+                            <a href="#schulconnexPoliciesInfoResponseFactory" title="apps/server/src/infra/schulconnex-client/testing/schulconnex-policies-info-response-factory.ts" ><b>schulconnexPoliciesInfoResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-policies-info-response-factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schulconnexResponseFactory" title="apps/server/src/infra/schulconnex-client/testing/schulconnex-response-factory.ts" ><b>schulconnexResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-response-factory.ts)</a>
@@ -6451,7 +6451,7 @@ This allows adding console commands to execute provider methods.</p>
 	) as boolean,
 	ALERT_CACHE_INTERVAL_MIN: Configuration.get(&#x27;ALERT_CACHE_INTERVAL_MIN&#x27;) as number,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;) as boolean,
-	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get(&#x27;PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL&#x27;) as string,
+	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get(&#x27;PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL&#x27;) as string,
 	BOARD_COLLABORATION_URI: Configuration.get(&#x27;BOARD_COLLABORATION_URI&#x27;) as string,
 	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get(&#x27;FEATURE_CTL_TOOLS_TAB_ENABLED&#x27;) as boolean,
 	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get(&#x27;FEATURE_LTI_TOOLS_TAB_ENABLED&#x27;) as boolean,
@@ -21532,22 +21532,22 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory.ts</h3>
+    <h3>apps/server/src/infra/schulconnex-client/testing/schulconnex-policies-info-response-factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="schulconnexLizenzInfoResponseFactory"></a>
+                    <a name="schulconnexPoliciesInfoResponseFactory"></a>
                     <span class="name">
-                        <span ><b>schulconnexLizenzInfoResponseFactory</b></span>
-                        <a href="#schulconnexLizenzInfoResponseFactory"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>schulconnexPoliciesInfoResponseFactory</b></span>
+                        <a href="#schulconnexPoliciesInfoResponseFactory"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>Factory.define&lt;SchulconnexLizenzInfoResponse&gt;(() &#x3D;&gt; {
+                        <i>Default value : </i><code>Factory.define&lt;SchulconnexPoliciesInfoResponse&gt;(() &#x3D;&gt; {
 	return {
 		target: {
 			uid: &#x27;bildungscloud&#x27;,
@@ -21555,7 +21555,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		},
 		permission: [
 			{
-				action: [SchulconnexLizenzInfoActionType.EXECUTE],
+				action: [SchulconnexPoliciesInfoActionType.EXECUTE],
 			},
 		],
 	};
