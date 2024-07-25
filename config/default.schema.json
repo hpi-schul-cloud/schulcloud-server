@@ -1640,11 +1640,11 @@
 			"default": false,
 			"description": "Enables the storing and checking media license of users"
 		},
-		"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": {
+		"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": {
 			"type": "string",
 			"default": "",
-			"description": "URL for fetching lizenz info from moin.schule schulconnex",
-			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
+			"description": "URL for fetching policies info from moin.schule schulconnex",
+			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
