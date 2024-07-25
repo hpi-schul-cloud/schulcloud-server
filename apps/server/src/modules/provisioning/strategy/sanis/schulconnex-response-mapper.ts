@@ -6,7 +6,7 @@ import {
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexLaufzeitResponse,
-	SchulconnexLizenzInfoResponse,
+	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
@@ -144,9 +144,9 @@ export class SchulconnexResponseMapper {
 		let otherUsers: ExternalGroupUserDto[] | undefined;
 		if (this.configService.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED')) {
 			otherUsers = group.sonstige_gruppenzugehoerige
-				? (group.sonstige_gruppenzugehoerige
+				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
-						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null) as ExternalGroupUserDto[])
+						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null)
 				: [];
 		}
 
@@ -240,9 +240,9 @@ export class SchulconnexResponseMapper {
 		};
 	}
 
-	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
+	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
-			.map((license: SchulconnexLizenzInfoResponse) => {
+			.map((license: SchulconnexPoliciesInfoResponse) => {
 				if (license.target.partOf === '') {
 					license.target.partOf = undefined;
 				}
