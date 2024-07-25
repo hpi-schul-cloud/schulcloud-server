@@ -2,6 +2,7 @@ import {
 	CopyObjectCommand,
 	CopyObjectCommandOutput,
 	CreateBucketCommand,
+	DeleteObjectCommandOutput,
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
@@ -15,6 +16,7 @@ import { Inject, Injectable, InternalServerErrorException, NotFoundException } f
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
+import { TypeGuard } from '@shared/common';
 import { S3_CLIENT, S3_CONFIG } from './constants';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 
@@ -31,14 +33,14 @@ export class S3ClientAdapter {
 	}
 
 	// is public but only used internally
-	public async createBucket() {
+	public async createBucket(): Promise<void> {
 		try {
 			this.logger.debug({ action: 'create bucket', params: { bucket: this.config.bucket } });
 
 			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
 			await this.client.send(req);
 		} catch (err) {
-			if (err instanceof Error) {
+			if (TypeGuard.isError(err)) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
 			throw new InternalServerErrorException(
@@ -70,9 +72,8 @@ export class S3ClientAdapter {
 				contentRange: data.ContentRange,
 				etag: data.ETag,
 			};
-		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err?.Code === 'NoSuchKey') {
+		} catch (err: unknown) {
+			if (TypeGuard.getValueFromObjectKey(err, 'Code') === 'NoSuchKey') {
 				this.logger.warn(`Could not get file with id ${path}`);
 				throw new NotFoundException('NoSuchKey', ErrorUtils.createHttpExceptionOptions(err));
 			} else {
@@ -97,10 +98,10 @@ export class S3ClientAdapter {
 			});
 
 			const commandOutput = await upload.done();
+
 			return commandOutput;
-		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err?.Code === 'NoSuchBucket') {
+		} catch (err: unknown) {
+			if (TypeGuard.getValueFromObjectKey(err, 'Code') === 'NoSuchBucket') {
 				await this.createBucket();
 
 				return await this.create(path, file);
@@ -123,10 +124,10 @@ export class S3ClientAdapter {
 			await this.delete(paths);
 
 			return result;
-		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err?.cause?.name === 'NoSuchKey') {
+		} catch (err: unknown) {
+			if (TypeGuard.getValueFromDeepObjectKey(err, ['cause', 'name']) === 'NoSuchKey') {
 				this.logger.warn(`could not find one of the files for deletion with ids ${paths.join(',')}`);
+
 				return [];
 			}
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
@@ -154,7 +155,7 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async copy(paths: CopyFiles[]) {
+	public async copy(paths: CopyFiles[]): Promise<CopyObjectCommandOutput[]> {
 		try {
 			this.logger.debug({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
@@ -178,7 +179,7 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async delete(paths: string[]) {
+	public async delete(paths: string[]): Promise<DeleteObjectCommandOutput> {
 		try {
 			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
@@ -253,8 +254,7 @@ export class S3ClientAdapter {
 
 			return headResponse;
 		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.message && err.message === 'NoSuchKey') {
+			if (TypeGuard.getValueFromObjectKey(err, 'message') === 'NoSuchKey') {
 				this.logger.warn(`could not find the file for head with id ${path}`);
 				throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'NoSuchKey'));
 			}
@@ -262,7 +262,7 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async deleteDirectory(path: string) {
+	public async deleteDirectory(path: string): Promise<void> {
 		try {
 			this.logger.debug({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
@@ -289,10 +289,9 @@ export class S3ClientAdapter {
 	}
 
 	/* istanbul ignore next */
-	private checkStreamResponsive(stream: Readable, context: string) {
+	private checkStreamResponsive(stream: Readable, context: string): void {
 		let timer: NodeJS.Timeout;
 		const refreshTimeout = () => {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
 				this.logger.log(`Stream unresponsive: S3 object key ${context}`);

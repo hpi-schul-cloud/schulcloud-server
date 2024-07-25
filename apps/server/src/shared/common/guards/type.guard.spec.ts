@@ -88,33 +88,33 @@ describe('TypeGuard', () => {
 	describe('isObject', () => {
 		describe('when passing type of value is an object', () => {
 			it('should be return true', () => {
-				expect(TypeGuard.isObject({})).toBe(true);
+				expect(TypeGuard.isDefinedObject({})).toBe(true);
 			});
 
 			it('should be return true', () => {
-				expect(TypeGuard.isObject({ a: 1 })).toBe(true);
+				expect(TypeGuard.isDefinedObject({ a: 1 })).toBe(true);
 			});
 
 			it('should be return true', () => {
-				expect(TypeGuard.isObject({ a: { b: 1 } })).toBe(true);
+				expect(TypeGuard.isDefinedObject({ a: { b: 1 } })).toBe(true);
 			});
 		});
 
 		describe('when passing type of value is NOT an object', () => {
 			it('should be return false', () => {
-				expect(TypeGuard.isObject(undefined)).toBe(false);
+				expect(TypeGuard.isDefinedObject(undefined)).toBe(false);
 			});
 
 			it('should be return false', () => {
-				expect(TypeGuard.isObject(null)).toBe(false);
+				expect(TypeGuard.isDefinedObject(null)).toBe(false);
 			});
 
 			it('should be return false', () => {
-				expect(TypeGuard.isObject([])).toBe(false);
+				expect(TypeGuard.isDefinedObject([])).toBe(false);
 			});
 
 			it('should be return false', () => {
-				expect(TypeGuard.isObject('string')).toBe(false);
+				expect(TypeGuard.isDefinedObject('string')).toBe(false);
 			});
 		});
 	});
@@ -122,33 +122,33 @@ describe('TypeGuard', () => {
 	describe('checkObject', () => {
 		describe('when passing type of value is an object', () => {
 			it('should be return value', () => {
-				expect(TypeGuard.checkObject({})).toEqual({});
+				expect(TypeGuard.checkDefinedObject({})).toEqual({});
 			});
 
 			it('should be return value', () => {
-				expect(TypeGuard.checkObject({ a: 1 })).toEqual({ a: 1 });
+				expect(TypeGuard.checkDefinedObject({ a: 1 })).toEqual({ a: 1 });
 			});
 
 			it('should be return value', () => {
-				expect(TypeGuard.checkObject({ a: { b: 1 } })).toEqual({ a: { b: 1 } });
+				expect(TypeGuard.checkDefinedObject({ a: { b: 1 } })).toEqual({ a: { b: 1 } });
 			});
 		});
 
 		describe('when passing type of value is NOT an object', () => {
 			it('should be return false', () => {
-				expect(() => TypeGuard.checkObject(undefined)).toThrowError('Type is not an object');
+				expect(() => TypeGuard.checkDefinedObject(undefined)).toThrowError('Type is not an object');
 			});
 
 			it('should be return false', () => {
-				expect(() => TypeGuard.checkObject(null)).toThrowError('Type is not an object');
+				expect(() => TypeGuard.checkDefinedObject(null)).toThrowError('Type is not an object');
 			});
 
 			it('should be return false', () => {
-				expect(() => TypeGuard.checkObject([])).toThrowError('Type is not an object');
+				expect(() => TypeGuard.checkDefinedObject([])).toThrowError('Type is not an object');
 			});
 
 			it('should be return false', () => {
-				expect(() => TypeGuard.checkObject('string')).toThrowError('Type is not an object');
+				expect(() => TypeGuard.checkDefinedObject('string')).toThrowError('Type is not an object');
 			});
 		});
 	});

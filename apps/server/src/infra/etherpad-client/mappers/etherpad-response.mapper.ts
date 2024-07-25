@@ -67,7 +67,7 @@ export class EtherpadResponseMapper {
 
 	static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
 		try {
-			const isObject = TypeGuard.isObject(etherpadSessions);
+			const isObject = TypeGuard.isDefinedObject(etherpadSessions);
 			if (!isObject) return [];
 
 			const sessions = Object.entries(etherpadSessions)
@@ -83,7 +83,7 @@ export class EtherpadResponseMapper {
 
 	static mapEtherpadSessionToSession([etherpadId, etherpadSession]: [string, unknown | undefined]): Session {
 		if (
-			!TypeGuard.isObject(etherpadSession) ||
+			!TypeGuard.isDefinedObject(etherpadSession) ||
 			!('groupID' in etherpadSession) ||
 			!('authorID' in etherpadSession) ||
 			!('validUntil' in etherpadSession)

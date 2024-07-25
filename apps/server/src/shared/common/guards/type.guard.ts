@@ -1,4 +1,22 @@
 export class TypeGuard {
+	static isError(value: unknown): value is Error {
+		const isError = value instanceof Error;
+
+		return isError;
+	}
+
+	static isNull(value: unknown): value is null {
+		const isNull = value === null;
+
+		return isNull;
+	}
+
+	static isUndefined(value: unknown): value is undefined {
+		const isUndefined = value === undefined;
+
+		return isUndefined;
+	}
+
 	static checkNumber(value: unknown): number {
 		if (!TypeGuard.isNumber(value)) {
 			throw new Error('Type is not a number');
@@ -27,36 +45,77 @@ export class TypeGuard {
 		return isString;
 	}
 
-	static isArrayWithElements(value: unknown): value is [] {
-		const isArrayWithElements = Array.isArray(value) && value.length > 0;
+	static isArray(value: unknown): value is [] {
+		const isArray = Array.isArray(value);
 
-		return isArrayWithElements;
+		return isArray;
 	}
 
-	static checkObject(value: unknown): object {
-		if (!TypeGuard.isObject(value)) {
-			throw new Error('Type is not an object');
+	static checkArray(value: unknown): [] {
+		if (!TypeGuard.isArray(value)) {
+			throw new Error('Type is not an array');
 		}
 
 		return value;
 	}
 
-	static isObject(value: unknown): value is object {
-		const isObject = typeof value === 'object' && !Array.isArray(value) && value !== null;
+	static isArrayWithElements(value: unknown): value is [] {
+		const isArrayWithElements = TypeGuard.isArray(value) && value.length > 0;
+
+		return isArrayWithElements;
+	}
+
+	static checkArrayWithElements(value: unknown): [] {
+		if (!TypeGuard.isArrayWithElements(value)) {
+			throw new Error('Type is not an array with elements.');
+		}
+
+		return value;
+	}
+
+	static isDefinedObject(value: unknown): value is object {
+		const isObject = typeof value === 'object' && !TypeGuard.isArray(value) && !TypeGuard.isNull(value);
 
 		return isObject;
 	}
 
-	static isNull(value: unknown): value is null {
-		const isNull = value === null;
+	static checkDefinedObject(value: unknown): object {
+		if (!TypeGuard.isDefinedObject(value)) {
+			throw new Error('Type is not an object.');
+		}
 
-		return isNull;
+		return value;
 	}
 
-	static isUndefined(value: unknown): value is undefined {
-		const isUndefined = value === undefined;
+	/** @return undefined if no object or key do not exists, otherwise the value of the key. */
+	static getValueFromObjectKey(value: unknown, key: string): unknown {
+		if (!TypeGuard.checkDefinedObject(value)) {
+			return undefined;
+		}
 
-		return isUndefined;
+		const result: unknown = (value as object)[key];
+
+		return result;
+	}
+
+	static getValueFromDeepObjectKey(value: unknown, keyPath: string[]): unknown {
+		let result: unknown = value;
+
+		keyPath.forEach((key) => {
+			result = TypeGuard.getValueFromObjectKey(result, key);
+		});
+
+		return result;
+	}
+
+	/** @return value of requested key in object. */
+	static checkKeyInObject(value: unknown, key: string): unknown {
+		const object = TypeGuard.checkDefinedObject(value);
+		if (!(key in object)) {
+			throw new Error(`Object has no ${key}.`);
+		}
+
+		return object[key];
 	}
 
 	static checkNotNullOrUndefined<T>(value: T | null | undefined, toThrow?: Error): T {
