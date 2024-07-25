@@ -138,7 +138,7 @@ export class CommonCartridgeExportService {
 
 		column.children
 			.filter((child) => isCard(child))
-			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
+			.forEach((card) => this.addCardToOrganization(card, columnOrganization));
 	}
 
 	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
