@@ -5,12 +5,12 @@ import { SchulconnexPoliciesInfoTargetResponse } from './schulconnex-policies-in
 
 export class SchulconnexPoliciesInfoResponse {
 	@IsObject()
-	@ValidateNested()
+	@ValidateNested({ each: true })
 	@Type(() => SchulconnexPoliciesInfoTargetResponse)
 	target!: SchulconnexPoliciesInfoTargetResponse;
 
 	@IsArray()
-	@ValidateNested()
+	@ValidateNested({ each: true })
 	@Type(() => SchulconnexPoliciesInfoPermissionResponse)
 	permission!: SchulconnexPoliciesInfoPermissionResponse[];
 }
