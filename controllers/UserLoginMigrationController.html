@@ -167,6 +167,16 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#forceMigration" >forceMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getMigrations" >getMigrations</a>
                             </li>
@@ -262,8 +272,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:205</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +352,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -405,6 +415,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="forceMigration"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>forceMigration</b></span>
+                        <a href="#forceMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>forceMigration(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, forceMigrationParams: <a href="../classes/ForceMigrationParams.html" target="_self">ForceMigrationParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;force-migration&#x27;)<br />@ApiOperation({summary: &#x27;Force migrate an administrator account and its school&#x27;})<br />@ApiCreatedResponse({description: &#x27;The user and their school were successfully migrated&#x27;})<br />@ApiUnprocessableEntityResponse({description: undefined})<br />@ApiNotFoundResponse({description: &#x27;There is no user with the email&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="244"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:244</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>forceMigrationParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ForceMigrationParams.html" target="_self" >ForceMigrationParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getMigrations"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -435,8 +539,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -520,14 +624,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;migrate-to-oauth2&#x27;)<br />@ApiOkResponse({description: &#x27;The User has been successfully migrated.&#x27;, status: 200})<br />@ApiInternalServerErrorResponse({description: &#x27;The migration of the User was not possible.&#x27;})<br /></code>
+                    <code>@Post(&#x27;migrate-to-oauth2&#x27;)<br />@ApiOkResponse({description: &#x27;The User has been successfully migrated.&#x27;, status: 200})<br />@ApiUnprocessableEntityResponse({description: &#x27;The migration of the User was not possible.&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="223"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:223</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -632,8 +736,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:143</a></div>
                         </td>
                     </tr>
 
@@ -715,8 +819,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -808,8 +912,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -862,6 +966,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser, JWT } from &#x27;@modules/authentication&#x27;;
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
@@ -890,13 +995,14 @@ import {
 	UserLoginMigrationUc,
 } from &#x27;../uc&#x27;;
 import {
+	ForceMigrationParams,
+	Oauth2MigrationParams,
 	SchoolIdParams,
 	UserLoginMigrationMandatoryParams,
 	UserLoginMigrationResponse,
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from &#x27;./dto&#x27;;
-import { Oauth2MigrationParams } from &#x27;./dto/oauth2-migration.params&#x27;;
 
 @ApiTags(&#x27;UserLoginMigration&#x27;)
 @Controller(&#x27;user-login-migrations&#x27;)
@@ -1080,13 +1186,36 @@ export class UserLoginMigrationController {
 
 	@Post(&#x27;migrate-to-oauth2&#x27;)
 	@ApiOkResponse({ description: &#x27;The User has been successfully migrated.&#x27;, status: 200 })
-	@ApiInternalServerErrorResponse({ description: &#x27;The migration of the User was not possible.&#x27; })
+	@ApiUnprocessableEntityResponse({ description: &#x27;The migration of the User was not possible.&#x27; })
 	async migrateUserLogin(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2MigrationParams
 	): Promise&lt;void&gt; {
 		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);
+	}
+
+	@Post(&#x27;force-migration&#x27;)
+	@ApiOperation({ summary: &#x27;Force migrate an administrator account and its school&#x27; })
+	@ApiCreatedResponse({ description: &#x27;The user and their school were successfully migrated&#x27; })
+	@ApiUnprocessableEntityResponse({
+		description:
+			&#x27;There are multiple users with the email,&#x27; +
+			&#x27;or the user is not an administrator,&#x27; +
+			&#x27;or the school is already migrated,&#x27; +
+			&#x27;or the external user id is already assigned&#x27;,
+	})
+	@ApiNotFoundResponse({ description: &#x27;There is no user with the email&#x27; })
+	public async forceMigration(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() forceMigrationParams: ForceMigrationParams
+	): Promise&lt;void&gt; {
+		await this.userLoginMigrationUc.forceMigration(
+			currentUser.userId,
+			forceMigrationParams.email,
+			forceMigrationParams.externalUserId,
+			forceMigrationParams.externalSchoolId
+		);
 	}
 }
 </code></pre>

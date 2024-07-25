@@ -141,6 +141,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#forceMigration" >forceMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getMigrations" >getMigrations</a>
                             </li>
                             <li>
@@ -165,12 +169,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -272,6 +276,30 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>logger</td>
                                                   
                                                         <td>
@@ -319,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -382,6 +410,111 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="forceMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>forceMigration</b></span>
+                        <a href="#forceMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>forceMigration(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalSchoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:134</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalUserId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalSchoolId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getMigrations"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -400,8 +533,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -481,8 +614,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -584,19 +717,24 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthenticationService } from &#x27;@modules/authentication&#x27;;
 import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { OAuthService, OAuthTokenDto } from &#x27;@modules/oauth&#x27;;
 import { OauthDataDto, ProvisioningService } from &#x27;@modules/provisioning&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { LegacySchoolDo, Page, UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
-import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { Permission, RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	SchoolMigrationSuccessfulLoggable,
+	UserLoginMigrationInvalidAdminLoggableException,
+	UserLoginMigrationMultipleEmailUsersLoggableException,
+	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
 } from &#x27;../loggable&#x27;;
@@ -613,6 +751,8 @@ export class UserLoginMigrationUc {
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: Logger
 	) {}
 
@@ -671,7 +811,7 @@ export class UserLoginMigrationUc {
 
 		const tokenDto: OAuthTokenDto &#x3D; await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
 
-		this.logger.debug(new UserMigrationStartedLoggable(currentUserId, userLoginMigration));
+		this.logger.info(new UserMigrationStartedLoggable(currentUserId, userLoginMigration));
 
 		const data: OauthDataDto &#x3D; await this.provisioningService.getData(
 			targetSystemId,
@@ -697,15 +837,73 @@ export class UserLoginMigrationUc {
 					targetSystemId
 				);
 
-				this.logger.debug(new SchoolMigrationSuccessfulLoggable(schoolToMigrate, userLoginMigration));
+				this.logger.info(new SchoolMigrationSuccessfulLoggable(schoolToMigrate, userLoginMigration));
 			}
 		}
 
 		await this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, targetSystemId);
 
-		this.logger.debug(new UserMigrationSuccessfulLoggable(currentUserId, userLoginMigration));
+		this.logger.info(new UserMigrationSuccessfulLoggable(currentUserId, userLoginMigration));
 
 		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+	}
+
+	async forceMigration(
+		userId: EntityId,
+		email: string,
+		externalUserId: string,
+		externalSchoolId: string
+	): Promise&lt;void&gt; {
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
+
+		const schoolAdminUsers: UserDO[] &#x3D; await this.userService.findByEmail(email);
+
+		if (schoolAdminUsers.length &#x3D;&#x3D;&#x3D; 0) {
+			throw new NotFoundLoggableException(&#x27;User&#x27;, { email });
+		}
+		if (schoolAdminUsers.length &gt; 1) {
+			throw new UserLoginMigrationMultipleEmailUsersLoggableException(email);
+		}
+
+		const schoolAdminUser: UserDO &#x3D; schoolAdminUsers[0];
+		// TODO Use new domain object to always have an id
+		if (!schoolAdminUser.id) {
+			throw new NotFoundLoggableException(&#x27;User&#x27;, { email });
+		}
+
+		const isAdmin &#x3D; !!schoolAdminUser.roles.find((value: RoleReference) &#x3D;&gt; value.name &#x3D;&#x3D;&#x3D; RoleName.ADMINISTRATOR);
+		if (!isAdmin) {
+			throw new UserLoginMigrationInvalidAdminLoggableException(schoolAdminUser.id);
+		}
+
+		const activeUserLoginMigration: UserLoginMigrationDO | null &#x3D;
+			await this.userLoginMigrationService.findMigrationBySchool(schoolAdminUser.schoolId);
+		if (activeUserLoginMigration) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(activeUserLoginMigration.schoolId);
+		}
+
+		const userLoginMigration: UserLoginMigrationDO &#x3D; await this.userLoginMigrationService.startMigration(
+			schoolAdminUser.schoolId
+		);
+
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolAdminUser.schoolId);
+
+		const hasSchoolMigrated: boolean &#x3D; this.schoolMigrationService.hasSchoolMigrated(
+			school.externalId,
+			externalSchoolId
+		);
+		if (hasSchoolMigrated) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(schoolAdminUser.schoolId);
+		}
+
+		await this.schoolMigrationService.migrateSchool(school, externalSchoolId, userLoginMigration.targetSystemId);
+
+		this.logger.info(new SchoolMigrationSuccessfulLoggable(school, userLoginMigration));
+
+		await this.userMigrationService.migrateUser(schoolAdminUser.id, externalUserId, userLoginMigration.targetSystemId);
+
+		this.logger.info(new UserMigrationSuccessfulLoggable(schoolAdminUser.id, userLoginMigration));
 	}
 }
 </code></pre>

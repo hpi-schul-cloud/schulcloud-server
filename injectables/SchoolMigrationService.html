@@ -150,7 +150,7 @@
                                 <a href="#getSchoolForMigration" >getSchoolForMigration</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Public</span>
                                 <a href="#hasSchoolMigrated" >hasSchoolMigrated</a>
                             </li>
                             <li>
@@ -567,7 +567,7 @@
                 <td class="col-md-4">
                     <a name="hasSchoolMigrated"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
+                            <span class="modifier">Public</span>
                         <span ><b>hasSchoolMigrated</b></span>
                         <a href="#hasSchoolMigrated"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1111,7 +1111,7 @@ export class SchoolMigrationService {
 		}
 	}
 
-	private hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
+	public hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
 		const isExternalIdEquivalent: boolean &#x3D; sourceExternalId &#x3D;&#x3D;&#x3D; targetExternalId;
 
 		return isExternalIdEquivalent;

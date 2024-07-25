@@ -263,8 +263,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="162"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:162</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="164"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:164</a></div>
                         </td>
                     </tr>
 
@@ -826,7 +826,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:143</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:145</a></code>
 </div>
                         </td>
                     </tr>
@@ -899,7 +899,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:109</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:111</a></code>
 </div>
                         </td>
                     </tr>
@@ -969,8 +969,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="172"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:172</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -1696,6 +1696,8 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User&gt; {
 		const userEntitys: User[] &#x3D; await this._em.find(User, {
 			email: new RegExp(&#x60;^${email.replace(/\W/g, &#x27;\\$&amp;&#x27;)}$&#x60;, &#x27;i&#x27;),
 		});
+
+		await this._em.populate(userEntitys, [&#x27;roles&#x27;]);
 
 		const userDos: UserDO[] &#x3D; userEntitys.map((userEntity: User): UserDO &#x3D;&gt; this.mapEntityToDO(userEntity));
 
