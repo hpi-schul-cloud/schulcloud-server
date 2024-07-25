@@ -27,8 +27,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
-import { UserLoginMigrationResponse } from '../dto';
-import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
+import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -1402,6 +1401,101 @@ describe('UserLoginMigrationController (API)', () => {
 				const school = await em.findOneOrFail(SchoolEntity, { id: adminUser.school.id });
 				expect(school.inUserMigration).toBe(undefined);
 				expect(school.inMaintenanceSince).toBe(undefined);
+			});
+		});
+	});
+
+	describe('[GET] /user-login-migrations/force-migration', () => {
+		describe('when forcing a school to migrate', () => {
+			const setup = async () => {
+				const targetSystem: SystemEntity = systemEntityFactory
+					.withOauthConfig()
+					.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+
+				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [sourceSystem],
+				});
+
+				const email = 'admin@test.com';
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
+					email,
+					school,
+				});
+				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
+
+				await em.persistAndFlush([
+					sourceSystem,
+					targetSystem,
+					school,
+					superheroAccount,
+					superheroUser,
+					adminAccount,
+					adminUser,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(superheroAccount);
+
+				const requestBody: ForceMigrationParams = new ForceMigrationParams();
+				requestBody.email = email;
+				requestBody.externalUserId = 'externalUserId';
+				requestBody.externalSchoolId = 'externalSchoolId';
+
+				return {
+					requestBody,
+					loggedInClient,
+					sourceSystem,
+					targetSystem,
+					school,
+					adminUser,
+				};
+			};
+
+			it('should start the migration for the school and migrate the user and school', async () => {
+				const { requestBody, loggedInClient, school, sourceSystem, targetSystem, adminUser } = await setup();
+
+				const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+
+				expect(response.status).toEqual(HttpStatus.CREATED);
+
+				const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
+				expect(userLoginMigration.sourceSystem?.id).toEqual(sourceSystem.id);
+				expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
+
+				expect(await em.findOne(User, adminUser.id)).toEqual(
+					expect.objectContaining({
+						externalId: requestBody.externalUserId,
+					})
+				);
+
+				expect(await em.findOne(SchoolEntity, school.id)).toEqual(
+					expect.objectContaining({
+						externalId: requestBody.externalSchoolId,
+					})
+				);
+			});
+		});
+
+		describe('when authentication of user failed', () => {
+			const setup = () => {
+				const requestBody: ForceMigrationParams = new ForceMigrationParams();
+				requestBody.email = 'fail@test.com';
+				requestBody.externalUserId = 'externalUserId';
+				requestBody.externalSchoolId = 'externalSchoolId';
+
+				return {
+					requestBody,
+				};
+			};
+
+			it('should throw an UnauthorizedException', async () => {
+				const { requestBody } = setup();
+
+				const response: Response = await testApiClient.post(`/force-migration`, requestBody);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});

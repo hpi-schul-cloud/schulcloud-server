@@ -101,6 +101,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
 		});
 
+		await this._em.populate(userEntitys, ['roles']);
+
 		const userDos: UserDO[] = userEntitys.map((userEntity: User): UserDO => this.mapEntityToDO(userEntity));
 
 		return userDos;

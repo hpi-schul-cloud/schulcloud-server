@@ -1,18 +1,23 @@
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
+import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	SchoolMigrationSuccessfulLoggable,
+	UserLoginMigrationInvalidAdminLoggableException,
+	UserLoginMigrationMultipleEmailUsersLoggableException,
+	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
 } from '../loggable';
@@ -29,6 +34,8 @@ export class UserLoginMigrationUc {
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: Logger
 	) {}
 
@@ -87,7 +94,7 @@ export class UserLoginMigrationUc {
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
 
-		this.logger.debug(new UserMigrationStartedLoggable(currentUserId, userLoginMigration));
+		this.logger.info(new UserMigrationStartedLoggable(currentUserId, userLoginMigration));
 
 		const data: OauthDataDto = await this.provisioningService.getData(
 			targetSystemId,
@@ -113,14 +120,72 @@ export class UserLoginMigrationUc {
 					targetSystemId
 				);
 
-				this.logger.debug(new SchoolMigrationSuccessfulLoggable(schoolToMigrate, userLoginMigration));
+				this.logger.info(new SchoolMigrationSuccessfulLoggable(schoolToMigrate, userLoginMigration));
 			}
 		}
 
 		await this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, targetSystemId);
 
-		this.logger.debug(new UserMigrationSuccessfulLoggable(currentUserId, userLoginMigration));
+		this.logger.info(new UserMigrationSuccessfulLoggable(currentUserId, userLoginMigration));
 
 		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+	}
+
+	async forceMigration(
+		userId: EntityId,
+		email: string,
+		externalUserId: string,
+		externalSchoolId: string
+	): Promise<void> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
+
+		const schoolAdminUsers: UserDO[] = await this.userService.findByEmail(email);
+
+		if (schoolAdminUsers.length === 0) {
+			throw new NotFoundLoggableException('User', { email });
+		}
+		if (schoolAdminUsers.length > 1) {
+			throw new UserLoginMigrationMultipleEmailUsersLoggableException(email);
+		}
+
+		const schoolAdminUser: UserDO = schoolAdminUsers[0];
+		// TODO Use new domain object to always have an id
+		if (!schoolAdminUser.id) {
+			throw new NotFoundLoggableException('User', { email });
+		}
+
+		const isAdmin = !!schoolAdminUser.roles.find((value: RoleReference) => value.name === RoleName.ADMINISTRATOR);
+		if (!isAdmin) {
+			throw new UserLoginMigrationInvalidAdminLoggableException(schoolAdminUser.id);
+		}
+
+		const activeUserLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolAdminUser.schoolId);
+		if (activeUserLoginMigration) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(activeUserLoginMigration.schoolId);
+		}
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(
+			schoolAdminUser.schoolId
+		);
+
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolAdminUser.schoolId);
+
+		const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
+			school.externalId,
+			externalSchoolId
+		);
+		if (hasSchoolMigrated) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(schoolAdminUser.schoolId);
+		}
+
+		await this.schoolMigrationService.migrateSchool(school, externalSchoolId, userLoginMigration.targetSystemId);
+
+		this.logger.info(new SchoolMigrationSuccessfulLoggable(school, userLoginMigration));
+
+		await this.userMigrationService.migrateUser(schoolAdminUser.id, externalUserId, userLoginMigration.targetSystemId);
+
+		this.logger.info(new UserMigrationSuccessfulLoggable(schoolAdminUser.id, userLoginMigration));
 	}
 }
