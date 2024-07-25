@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService, Account } from '@modules/account';
-import { ICurrentUser } from '@modules/authentication';
+import { Account, AccountService } from '@modules/account';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -8,8 +7,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { AuthenticationService } from './authentication.service';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { iCurrentUserFactory } from '../testing';
+import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
 
@@ -114,18 +114,13 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
-				const mockCurrentUser: ICurrentUser = {
-					accountId: 'mockAccountId',
-					roles: ['student'],
-					schoolId: 'mockSchoolId',
-					userId: 'mockUserId',
-					isExternalUser: false,
-				};
-				await authenticationService.generateJwt(mockCurrentUser);
+				const mockCurrentStudentUser = iCurrentUserFactory.buildStudentICurrentUser();
+
+				await authenticationService.generateJwt(mockCurrentStudentUser);
 				expect(jwtService.sign).toBeCalledWith(
-					mockCurrentUser,
+					mockCurrentStudentUser,
 					expect.objectContaining({
-						subject: mockCurrentUser.accountId,
+						subject: mockCurrentStudentUser.accountId,
 					})
 				);
 			});
