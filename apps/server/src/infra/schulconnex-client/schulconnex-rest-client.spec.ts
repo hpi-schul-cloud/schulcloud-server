@@ -5,11 +5,10 @@ import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
-import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from './response';
+import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
-import { schulconnexResponseFactory } from './testing';
-import { schulconnexLizenzInfoResponseFactory } from './testing/schulconnex-lizenz-info-response-factory';
+import { schulconnexPoliciesInfoResponseFactory, schulconnexResponseFactory } from './testing';
 
 describe(SchulconnexRestClient.name, () => {
 	let client: SchulconnexRestClient;
@@ -196,11 +195,11 @@ describe(SchulconnexRestClient.name, () => {
 		});
 	});
 
-	describe('getLizenzInfo', () => {
-		describe('when requesting lizenz-info', () => {
+	describe('getPoliciesInfo', () => {
+		describe('when requesting policies-info', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1);
+				const response: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -212,9 +211,9 @@ describe(SchulconnexRestClient.name, () => {
 			it('should make a request to a SchulConneX-API', async () => {
 				const { accessToken } = setup();
 
-				await client.getLizenzInfo(accessToken);
+				await client.getPoliciesInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/lizenz-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/policies-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
@@ -225,7 +224,7 @@ describe(SchulconnexRestClient.name, () => {
 			it('should return the response', async () => {
 				const { accessToken } = setup();
 
-				const result: SchulconnexLizenzInfoResponse[] = await client.getLizenzInfo(accessToken);
+				const result: SchulconnexPoliciesInfoResponse[] = await client.getPoliciesInfo(accessToken);
 
 				expect(result).toBeDefined();
 			});
@@ -234,8 +233,8 @@ describe(SchulconnexRestClient.name, () => {
 		describe('when overriding the url', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const customUrl = 'https://override.url/lizenz-info';
-				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1);
+				const customUrl = 'https://override.url/policies-info';
+				const response: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -248,7 +247,7 @@ describe(SchulconnexRestClient.name, () => {
 			it('should make a request to a SchulConneX-API', async () => {
 				const { accessToken, customUrl } = setup();
 
-				await client.getLizenzInfo(accessToken, { overrideUrl: customUrl });
+				await client.getPoliciesInfo(accessToken, { overrideUrl: customUrl });
 
 				expect(httpService.get).toHaveBeenCalledWith(customUrl, expect.anything());
 			});
