@@ -124,7 +124,7 @@
 		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'"
 	},
 	"dependencies": {
-		"@aws-sdk/lib-storage": "^3.616.0",
+		"@aws-sdk/lib-storage": "^3.617.0",
 		"@feathersjs/adapter-commons": "^5.0.12",
 		"@feathersjs/authentication": "^5.0.12",
 		"@feathersjs/authentication-local": "^5.0.12",
@@ -263,7 +263,7 @@
 		"yjs": "^13.6.11"
 	},
 	"devDependencies": {
-		"@aws-sdk/client-s3": "^3.352.0",
+		"@aws-sdk/client-s3": "^3.617.0",
 		"@faker-js/faker": "^8.0.2",
 		"@feathersjs/adapter-tests": "^5.0.12",
 		"@golevelup/ts-jest": "^0.3.4",

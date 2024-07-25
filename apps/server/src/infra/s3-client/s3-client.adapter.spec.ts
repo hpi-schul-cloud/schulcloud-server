@@ -52,7 +52,7 @@ describe('S3ClientAdapter', () => {
 		}).compile();
 
 		service = module.get(S3ClientAdapter);
-		client = module.get('S3_Client');
+		client = module.get(S3_CLIENT);
 	});
 
 	afterAll(async () => {
@@ -197,7 +197,7 @@ describe('S3ClientAdapter', () => {
 			return { file };
 		};
 
-		describe('WHEN file is created successfully', () => {
+		describe.only('WHEN file is created successfully', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();

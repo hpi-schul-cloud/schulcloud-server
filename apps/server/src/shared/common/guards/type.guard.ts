@@ -89,11 +89,7 @@ export class TypeGuard {
 
 	/** @return undefined if no object or key do not exists, otherwise the value of the key. */
 	static getValueFromObjectKey(value: unknown, key: string): unknown {
-		if (!TypeGuard.checkDefinedObject(value)) {
-			return undefined;
-		}
-
-		const result: unknown = (value as object)[key];
+		const result: unknown = TypeGuard.isDefinedObject(value) ? value[key] : undefined;
 
 		return result;
 	}

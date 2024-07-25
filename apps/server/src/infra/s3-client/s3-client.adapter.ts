@@ -8,6 +8,7 @@ import {
 	HeadObjectCommand,
 	HeadObjectCommandOutput,
 	ListObjectsV2Command,
+	PutObjectCommandInput,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -86,12 +87,14 @@ export class S3ClientAdapter {
 		try {
 			this.logger.debug({ action: 'create', params: { path, bucket: this.config.bucket } });
 
-			const req = {
+			const req: PutObjectCommandInput = {
 				Body: file.data,
 				Bucket: this.config.bucket,
 				Key: path,
 				ContentType: file.mimeType,
 			};
+
+			console.log(this.client);
 			const upload = new Upload({
 				client: this.client,
 				params: req,
