@@ -87,7 +87,7 @@ export class SchoolMigrationService {
 		}
 	}
 
-	private hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
+	public hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
 		const isExternalIdEquivalent: boolean = sourceExternalId === targetExternalId;
 
 		return isExternalIdEquivalent;
