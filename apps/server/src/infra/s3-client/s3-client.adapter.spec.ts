@@ -38,7 +38,13 @@ describe('S3ClientAdapter', () => {
 				S3ClientAdapter,
 				{
 					provide: S3_CLIENT,
-					useValue: createMock<S3Client>(),
+					useValue: createMock<S3Client>({
+						config: {
+							endpoint: () => {
+								return { protocol: '', hostname: '' };
+							},
+						},
+					}),
 				},
 				{
 					provide: S3_CONFIG,
@@ -197,32 +203,20 @@ describe('S3ClientAdapter', () => {
 			return { file };
 		};
 
-		describe.only('WHEN file is created successfully', () => {
+		describe('WHEN file is created successfully', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
 
-				// @ts-expect-error EndpointMock
-				client.config.endpoint = () => {
-					return { protocol: '' };
-				};
-
-				const restoreMocks = () => {
-					// Set of undefined works as mock restore
-					client.config.endpoint = undefined;
-				};
-
-				return { file, pathToFile, restoreMocks };
+				return { file, pathToFile };
 			};
 
 			it('should return data', async () => {
-				const { file, pathToFile, restoreMocks } = setup();
+				const { file, pathToFile } = setup();
 
 				const result = await service.create(pathToFile, file);
 
 				expect(result).toBeDefined();
-
-				restoreMocks();
 			});
 		});
 
@@ -235,17 +229,11 @@ describe('S3ClientAdapter', () => {
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 				const createBucketMock = jest.spyOn(service, 'createBucket').mockResolvedValueOnce();
 				const createSpy = jest.spyOn(service, 'create');
-				// @ts-expect-error EndpointMock
-				client.config.endpoint = () => {
-					return { protocol: '' };
-				};
 
 				const restoreMocks = () => {
 					uploadDoneMock.mockRestore();
 					createBucketMock.mockRestore();
 					createSpy.mockRestore();
-					// Set of undefined works as mock restore
-					client.config.endpoint = undefined;
 				};
 
 				return { file, pathToFile, error, createSpy, restoreMocks };

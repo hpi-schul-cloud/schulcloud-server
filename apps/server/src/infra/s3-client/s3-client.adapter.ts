@@ -14,10 +14,10 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { TypeGuard } from '@shared/common';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { TypeGuard } from '@shared/common';
 import { S3_CLIENT, S3_CONFIG } from './constants';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 
@@ -94,7 +94,6 @@ export class S3ClientAdapter {
 				ContentType: file.mimeType,
 			};
 
-			console.log(this.client);
 			const upload = new Upload({
 				client: this.client,
 				params: req,
