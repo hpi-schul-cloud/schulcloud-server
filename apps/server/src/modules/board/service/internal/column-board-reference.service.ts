@@ -11,6 +11,6 @@ export class ColumnBoardReferenceService {
 
 		const boards = boardNodes.filter((bn) => isColumnBoard(bn));
 
-		return boards as ColumnBoard[];
+		return boards;
 	}
 }
