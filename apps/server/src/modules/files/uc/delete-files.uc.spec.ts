@@ -95,12 +95,14 @@ describe(DeleteFilesUc.name, () => {
 			};
 
 			it('should create correct log result', async () => {
-				const { thresholdDate, batchSize } = setup();
+				const { thresholdDate, batchSize, spy } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(logger.log).toBeCalledTimes(4);
 				expect(logger.error).toBeCalledTimes(0);
+
+				spy.mockRestore();
 			});
 
 			it('should delete all marked files in S3', async () => {
@@ -109,16 +111,20 @@ describe(DeleteFilesUc.name, () => {
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(spy).toHaveBeenCalledTimes(2);
+
+				spy.mockRestore();
 			});
 
 			it('should delete all marked files in database', async () => {
-				const { thresholdDate, batchSize, exampleFiles } = setup();
+				const { thresholdDate, batchSize, exampleFiles, spy } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				for (const file of exampleFiles) {
 					expect(filesRepo.delete).toHaveBeenCalledWith(file);
 				}
+
+				spy.mockRestore();
 			});
 		});
 
@@ -158,19 +164,23 @@ describe(DeleteFilesUc.name, () => {
 			};
 
 			it('should log the error', async () => {
-				const { thresholdDate, batchSize, error } = setup();
+				const { thresholdDate, batchSize, error, spy } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(logger.error).toHaveBeenCalledWith(error);
+
+				spy.mockRestore();
 			});
 
 			it('should not call delete on repo for that file', async () => {
-				const { thresholdDate, batchSize } = setup();
+				const { thresholdDate, batchSize, spy } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(filesRepo.delete).toBeCalledTimes(0);
+
+				spy.mockRestore();
 			});
 
 			it('should continue with other files', async () => {
@@ -179,6 +189,72 @@ describe(DeleteFilesUc.name, () => {
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(spy).toBeCalledTimes(2);
+
+				spy.mockRestore();
+			});
+		});
+
+		describe('when no provider exists', () => {
+			const setup = () => {
+				const thresholdDate = new Date();
+				const batchSize = 3;
+
+				const userId = new ObjectId().toHexString();
+				const storageProvider = storageProviderFactory.build();
+
+				const exampleFiles = [
+					fileEntityFactory.buildWithId({
+						storageProvider,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+					}),
+				];
+
+				// Please note the second try, that found no more files that needs to be deleted.
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
+				storageProviderRepo.findAll.mockResolvedValueOnce([]);
+
+				return { thresholdDate, batchSize };
+			};
+
+			it('should throw an error ', async () => {
+				const { thresholdDate, batchSize } = setup();
+
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				expect(logger.error).toBeCalledTimes(2);
+			});
+		});
+
+		describe('when file without provider exists', () => {
+			const setup = () => {
+				const thresholdDate = new Date();
+				const batchSize = 3;
+
+				const userId = new ObjectId().toHexString();
+				const storageProvider = storageProviderFactory.build();
+
+				const exampleFiles = [
+					fileEntityFactory.buildWithId({
+						storageProvider: undefined,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+					}),
+				];
+
+				// Please note the second try, that found no more files that needs to be deleted.
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
+				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
+
+				return { thresholdDate, batchSize };
+			};
+
+			it('should throw an error ', async () => {
+				const { thresholdDate, batchSize } = setup();
+
+				await expect(() => service.deleteMarkedFiles(thresholdDate, batchSize)).rejects.toThrowError();
 			});
 		});
 	});
