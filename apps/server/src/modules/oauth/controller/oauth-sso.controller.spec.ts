@@ -85,7 +85,7 @@ describe('OAuthController', () => {
 	});
 
 	describe('requestAuthToken', () => {
-		const currentUser = iCurrentUserFactory.buildWithId({ userId: 'userId' });
+		const currentUser = iCurrentUserFactory.build({ userId: 'userId' });
 		const oauthClientId = 'clientId';
 
 		it('should call the hydraOauthUc', async () => {

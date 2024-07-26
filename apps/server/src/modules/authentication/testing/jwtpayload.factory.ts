@@ -1,4 +1,5 @@
 import { BaseFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { JwtPayload } from '../interface/jwt-payload';
 
 class JWTPayload implements JwtPayload {
@@ -49,11 +50,11 @@ export class JwtPayloadFactory extends BaseFactory<JWTPayload, JwtPayload> {}
 
 export const jwtPayloadFactory = JwtPayloadFactory.define(JWTPayload, ({ sequence }) => {
 	return {
-		accountId: `dummyAccountId ${sequence}`,
-		userId: `dummyUserId ${sequence}`,
-		schoolId: `dummySchoolId ${sequence}`,
+		accountId: new ObjectId().toHexString(),
+		userId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
 		roles: ['mockRoleId'],
-		systemId: `dummySystemId ${sequence}`,
+		systemId: new ObjectId().toHexString(),
 		support: true,
 		isExternalUser: true,
 		sub: `dummyAccountId ${sequence}`,
