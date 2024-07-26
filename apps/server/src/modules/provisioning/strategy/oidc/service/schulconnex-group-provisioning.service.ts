@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import { CourseDoService } from '@modules/learnroom';
+import { Course } from '@modules/learnroom/domain';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -13,7 +14,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { Course } from '../../../../learnroom/domain';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 

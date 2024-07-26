@@ -41,6 +41,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 	let courseService: DeepMocked<CourseDoService>;
 	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
 	let logger: DeepMocked<Logger>;
+	const mockDate = new Date(2024, 1, 1);
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -85,6 +86,9 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 		courseService = module.get(CourseDoService);
 		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
 		logger = module.get(Logger);
+
+		jest.useFakeTimers();
+		jest.setSystemTime(mockDate);
 	});
 
 	afterAll(async () => {
@@ -453,7 +457,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: {
 							externalId: externalGroupDto.externalId,
 							systemId,
-							lastSyncedAt: expect.any(Date),
+							lastSyncedAt: mockDate,
 						},
 						type: externalGroupDto.type,
 						organizationId: school.id,
@@ -489,7 +493,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					externalSource: {
 						externalId: externalGroupDto.externalId,
 						systemId,
-						lastSyncedAt: expect.any(Date),
+						lastSyncedAt: mockDate,
 					},
 					type: externalGroupDto.type,
 					organizationId: school.id,
@@ -558,7 +562,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: {
 							externalId: externalGroupDto.externalId,
 							systemId,
-							lastSyncedAt: expect.any(Date),
+							lastSyncedAt: mockDate,
 						},
 						type: externalGroupDto.type,
 						organizationId: undefined,
@@ -628,7 +632,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: {
 							externalId: externalGroupDto.externalId,
 							systemId,
-							lastSyncedAt: expect.any(Date),
+							lastSyncedAt: mockDate,
 						},
 						type: externalGroupDto.type,
 						organizationId: undefined,
@@ -716,7 +720,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: 'externalId-1',
 							systemId,
-							lastSyncedAt: new Date(),
+							lastSyncedAt: mockDate,
 						}),
 					});
 					const secondExistingGroup: Group = groupFactory.build({
@@ -724,7 +728,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: 'externalId-2',
 							systemId,
-							lastSyncedAt: new Date(),
+							lastSyncedAt: mockDate,
 						}),
 					});
 					const existingGroups = [firstExistingGroup, secondExistingGroup];
@@ -774,6 +778,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					expect(result).toHaveLength(0);
 				});
 			});
+
 			describe('when group is empty after removal of the User but synced with a course', () => {
 				const setup = () => {
 					const systemId = 'systemId';
@@ -787,7 +792,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: 'externalId-1',
 							systemId,
-							lastSyncedAt: new Date(),
+							lastSyncedAt: mockDate,
 						}),
 					});
 					const secondExistingGroup: Group = groupFactory.build({
@@ -795,7 +800,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: 'externalId-2',
 							systemId,
-							lastSyncedAt: new Date(),
+							lastSyncedAt: mockDate,
 						}),
 					});
 					const existingGroups = [firstExistingGroup, secondExistingGroup];
@@ -809,6 +814,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					userService.findByExternalId.mockResolvedValue(user);
 					groupService.findGroups.mockResolvedValue(new Page<Group>(existingGroups, 2));
 					courseService.findBySyncedGroup.mockResolvedValue([course]);
+
 					return {
 						externalGroups,
 						systemId,
@@ -816,6 +822,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						existingGroups,
 					};
 				};
+
 				it('should not delete the group', async () => {
 					const { externalGroups, systemId, externalUserId } = setup();
 
@@ -850,7 +857,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: `externalId-1`,
 							systemId,
-							lastSyncedAt: new Date(),
+							lastSyncedAt: mockDate,
 						}),
 					});
 
@@ -862,7 +869,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						externalSource: new ExternalSource({
 							externalId: `externalId-2`,
 							systemId,
-							lastSyncedAt: new Date(),
+							lastSyncedAt: mockDate,
 						}),
 					});
 
@@ -902,6 +909,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 					expect(groupService.delete).not.toHaveBeenCalled();
 				});
+
 				it('should return the modified groups', async () => {
 					const { externalGroups, systemId, externalUserId, secondExistingGroup } = setup();
 

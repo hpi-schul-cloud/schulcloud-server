@@ -68,7 +68,7 @@ describe('GroupRepo', () => {
 					externalSource: new ExternalSource({
 						externalId: group.externalSource?.externalId ?? '',
 						systemId: group.externalSource?.system.id ?? '',
-						lastSyncedAt: group.externalSource?.lastSyncedAt ?? (expect.any(Date) as unknown as Date),
+						lastSyncedAt: group.externalSource?.lastSyncedAt ?? new Date(2024, 1, 1),
 					}),
 					users: [
 						new GroupUser({
