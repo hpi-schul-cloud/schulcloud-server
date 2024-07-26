@@ -10,7 +10,7 @@ export class UserLoginMigrationUserAlreadyMigratedLoggableException extends Busi
 				title: 'User has already migrated',
 				defaultMessage: 'User with externalId has already migrated',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.UNPROCESSABLE_ENTITY,
 			{
 				multipleUsersFound: true,
 			}

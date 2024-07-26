@@ -85,7 +85,7 @@
 		"PAD_URI": "http://localhost:9001/p",
 		"URI": "http://localhost:9001/api/1.2.14"
 	},
-	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo",
+	"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": "http://localhost:8888/v1/policies-info",
 	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"

@@ -43,7 +43,7 @@ class Channel {
 	async connect() {
 		try {
 			const conn = await getConnection();
-			this.channel = await conn.createChannel();
+			this.channel = await conn.createConfirmChannel();
 			// the default is 0, 0 means get absolutely everything, internet claims this is limited by rabbitmq by 2000, which basically defeats the purpose of using separate processes
 			await this.channel.prefetch(Configuration.get('LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT'), true);
 			await this.channel.assertQueue(this.queue, this.queueOptions);
