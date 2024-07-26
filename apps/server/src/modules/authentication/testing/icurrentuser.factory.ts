@@ -1,4 +1,5 @@
 import { BaseFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { ICurrentUser } from '../interface';
 
 class CurrentUser implements ICurrentUser {
@@ -25,47 +26,31 @@ class CurrentUser implements ICurrentUser {
 }
 
 export class ICurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
-	public buildAdminICurrentUser(): ICurrentUser {
-		return {
-			userId: 'mockUserId',
-			roles: ['admin'],
-			schoolId: 'mockSchoolId',
-			accountId: 'mockAccountId',
-			systemId: 'mockSystemId',
-			isExternalUser: false,
-		};
+	public withRole(role: string): this {
+		const params = { roles: [role] };
+		return this.params(params);
 	}
 
-	public buildStudentICurrentUser(): ICurrentUser {
-		return {
-			userId: 'mockUserId',
-			roles: ['student'],
-			schoolId: 'mockSchoolId',
-			accountId: 'mockAccountId',
-			systemId: 'mockSystemId',
-			isExternalUser: false,
-		};
+	public withRoleAdmin() {
+		return this.withRole('admin');
 	}
 
-	public buildTeacherICurrentUser(): ICurrentUser {
-		return {
-			userId: 'mockUserId',
-			roles: ['teacher'],
-			schoolId: 'mockSchoolId',
-			accountId: 'mockAccountId',
-			systemId: 'mockSystemId',
-			isExternalUser: false,
-		};
+	public withRoleStudent() {
+		return this.withRole('student');
+	}
+
+	public withRoleTeacher() {
+		return this.withRole('teacher');
 	}
 }
 
-export const iCurrentUserFactory = ICurrentUserFactory.define(CurrentUser, ({ sequence }) => {
+export const iCurrentUserFactory = ICurrentUserFactory.define(CurrentUser, () => {
 	return {
-		userId: `mockUserId ${sequence}`,
+		userId: new ObjectId().toHexString(),
 		roles: [],
-		schoolId: `mockSchoolId ${sequence}`,
-		accountId: `mockAccountId ${sequence}`,
-		systemId: `mockSystemId ${sequence}`,
+		schoolId: new ObjectId().toHexString(),
+		accountId: new ObjectId().toHexString(),
+		systemId: new ObjectId().toHexString(),
 		isExternalUser: false,
 	};
 });

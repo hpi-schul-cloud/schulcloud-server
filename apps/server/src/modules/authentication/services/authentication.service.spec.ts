@@ -114,7 +114,7 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
-				const mockCurrentStudentUser = iCurrentUserFactory.buildStudentICurrentUser();
+				const mockCurrentStudentUser = iCurrentUserFactory.withRoleStudent().build();
 
 				await authenticationService.generateJwt(mockCurrentStudentUser);
 				expect(jwtService.sign).toBeCalledWith(

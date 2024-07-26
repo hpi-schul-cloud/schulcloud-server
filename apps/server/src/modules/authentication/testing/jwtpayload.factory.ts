@@ -45,27 +45,7 @@ class JWTPayload implements JwtPayload {
 	}
 }
 
-export class JwtPayloadFactory extends BaseFactory<JWTPayload, JwtPayload> {
-	public static buildJWTPayloadCurrentUser(): JwtPayload {
-		const jwtPayload: JwtPayload = {
-			accountId: 'dummyAccountId',
-			systemId: 'dummySystemId',
-			roles: ['mockRoleId'],
-			schoolId: 'dummySchoolId',
-			userId: 'dummyUserId',
-			support: true,
-			isExternalUser: true,
-			sub: 'dummyAccountId',
-			jti: 'random string',
-			aud: 'some audience',
-			iss: 'feathers',
-			iat: Math.floor(new Date().getTime() / 1000),
-			exp: Math.floor(new Date().getTime() / 1000) + 3600,
-		};
-
-		return jwtPayload;
-	}
-}
+export class JwtPayloadFactory extends BaseFactory<JWTPayload, JwtPayload> {}
 
 export const jwtPayloadFactory = JwtPayloadFactory.define(JWTPayload, ({ sequence }) => {
 	return {
