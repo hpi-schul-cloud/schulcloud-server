@@ -15,8 +15,8 @@ import { ConfigService } from '@nestjs/config';
 import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
-import PermissionSystem from '../permission-system';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
+import LibraryManagementPermissionSystem from './library-management-permission-system';
 
 const h5pConfig = new H5PConfig(undefined, {
 	baseUrl: '/api/v3/h5p-editor',
@@ -76,7 +76,7 @@ export class H5PLibraryManagementService {
 			undefined,
 			h5pConfig
 		);
-		const permissionSystem = new PermissionSystem();
+		const permissionSystem = new LibraryManagementPermissionSystem();
 		this.contentTypeRepo = new ContentTypeInformationRepository(
 			this.contentTypeCache,
 			this.libraryManager,

@@ -8,14 +8,14 @@ import {
 	UserDataPermission,
 } from '@lumieducation/h5p-server';
 
-export default class PermissionSystem implements IPermissionSystem<IUser> {
+export default class EditorPermissionSystem implements IPermissionSystem<IUser> {
 	checkForUserData(
 		actingUser: IUser,
 		permission: UserDataPermission,
 		contentId: string,
 		affectedUserId?: string
 	): Promise<boolean> {
-		return Promise.resolve(true);
+		return Promise.resolve(false);
 	}
 
 	async checkForContent(
@@ -35,6 +35,6 @@ export default class PermissionSystem implements IPermissionSystem<IUser> {
 	}
 
 	async checkForGeneralAction(actingUser: IUser | undefined, permission: GeneralPermission): Promise<boolean> {
-		return Promise.resolve(true);
+		return Promise.resolve(false);
 	}
 }
