@@ -60,7 +60,7 @@ const addWholeClassToCourse = async (hook) => {
 			const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
 			const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
 
-			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: uniqueUserIds } } }).exec();
+			await CourseModel.updateOne({ _id: course._id }, { $addToSet: { userIds: { $each: uniqueUserIds } } }).exec();
 
 			return undefined;
 		});
@@ -78,7 +78,7 @@ const addWholeClassToCourse = async (hook) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
-			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
+			await CourseModel.updateOne({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
 
 			return hook;
 		});
@@ -118,7 +118,7 @@ const deleteWholeClassFromCourse = (hook) => {
 					const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
 					const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
 
-					await CourseModel.update(
+					await CourseModel.updateOne(
 						{ _id: course._id },
 						{ $pull: { userIds: { $in: uniqueUserIds } } },
 						{ multi: true }
@@ -142,7 +142,7 @@ const deleteWholeClassFromCourse = (hook) => {
 				studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 				// remove class students from course DB and from hook body to not patch them back
-				await CourseModel.update(
+				await CourseModel.updateOne(
 					{ _id: course._id },
 					{ $pull: { userIds: { $in: studentIds } } },
 					{ multi: true }

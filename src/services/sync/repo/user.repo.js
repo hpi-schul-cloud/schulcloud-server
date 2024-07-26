@@ -95,7 +95,7 @@ const updateUser = async (userId, changedUser) => {
 };
 
 const deleteUser = async (userId) => {
-	await userModel.remove({ _id: userId }).lean().exec();
+	await userModel.deleteOne({ _id: userId }).lean().exec();
 };
 
 const findImportUsersBySchoolAndName = async (schoolId, firstName, lastName) => {
