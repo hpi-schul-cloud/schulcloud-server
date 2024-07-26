@@ -338,7 +338,7 @@ describe('TypeGuard', () => {
 			});
 
 			it('should throw an error', () => {
-				expect(() => TypeGuard.checkArray(1)).toThrowError('Type is not an array with elements.');
+				expect(() => TypeGuard.checkArrayWithElements(1)).toThrowError('Type is not an array with elements.');
 			});
 		});
 	});
@@ -411,9 +411,117 @@ describe('TypeGuard', () => {
 		});
 	});
 
-	// getValueFromObjectKey
+	describe('getValueFromObjectKey', () => {
+		describe('when passing value is an object that has the requested key', () => {
+			it('should be return the key value', () => {
+				expect(TypeGuard.getValueFromObjectKey({ xyz: 'abc' }, 'xyz')).toEqual('abc');
+			});
+		});
 
-	// getValueFromDeepObjectKey
+		describe('when passing value and key do not match', () => {
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromObjectKey({ xyz: 'abc' }, 'zzz')).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromObjectKey([], 'zzz')).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromObjectKey('string', 'zzz')).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromObjectKey(1, 'zzz')).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromObjectKey(null, 'zzz')).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromObjectKey(undefined, 'zzz')).toBeUndefined();
+			});
+		});
+
+		describe('when param contract is not fullfilled', () => {
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.getValueFromObjectKey({ xyz: 'abc' }, undefined)).toThrowError('Type is not a string');
+			});
+
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.getValueFromObjectKey({ xyz: 'abc' }, null)).toThrowError('Type is not a string');
+			});
+
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.getValueFromObjectKey({ xyz: 'abc' }, 1)).toThrowError('Type is not a string');
+			});
+		});
+	});
+
+	describe('getValueFromDeepObjectKey', () => {
+		describe('when passing value is an object that has the requested key path', () => {
+			it('should be return the key value', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey({ x1: { x2: 'abc' } }, ['x1', 'x2'])).toEqual('abc');
+			});
+		});
+
+		describe('when passing value and key path do not match', () => {
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey({ xyz: 'abc' }, ['x1', 'x2'])).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey({ x1: { zzz: 'abc' } }, ['x1', 'x2'])).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey([], ['x1', 'x2'])).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey('string', ['x1', 'x2'])).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey(1, ['x1', 'x2'])).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey(null, ['x1', 'x2'])).toBeUndefined();
+			});
+
+			it('should be return undefined', () => {
+				expect(TypeGuard.getValueFromDeepObjectKey(undefined, ['x1', 'x2'])).toBeUndefined();
+			});
+		});
+
+		describe('when param contract is not fullfilled', () => {
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.getValueFromDeepObjectKey({ x1: { x2: 'abc' } }, undefined)).toThrowError(
+					'Type is not an array with elements.'
+				);
+			});
+
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.getValueFromDeepObjectKey({ x1: { x2: 'abc' } }, null)).toThrowError(
+					'Type is not an array with elements.'
+				);
+			});
+
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.getValueFromDeepObjectKey({ x1: { x2: 'abc' } }, 1)).toThrowError(
+					'Type is not an array with elements.'
+				);
+			});
+		});
+	});
 
 	// checkKeyInObject
 

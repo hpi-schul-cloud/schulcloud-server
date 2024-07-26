@@ -17,23 +17,15 @@ export class TypeGuard {
 		return isUndefined;
 	}
 
-	static checkNumber(value: unknown): number {
-		if (!TypeGuard.isNumber(value)) {
-			throw new Error('Type is not a number');
-		}
-
-		return value;
-	}
-
 	static isNumber(value: unknown): value is number {
 		const isNumber = typeof value === 'number';
 
 		return isNumber;
 	}
 
-	static checkString(value: unknown): string {
-		if (!TypeGuard.isString(value)) {
-			throw new Error('Type is not a string');
+	static checkNumber(value: unknown): number {
+		if (!TypeGuard.isNumber(value)) {
+			throw new Error('Type is not a number');
 		}
 
 		return value;
@@ -45,6 +37,14 @@ export class TypeGuard {
 		return isString;
 	}
 
+	static checkString(value: unknown): string {
+		if (!TypeGuard.isString(value)) {
+			throw new Error('Type is not a string');
+		}
+
+		return value;
+	}
+
 	static isArray(value: unknown): value is [] {
 		const isArray = Array.isArray(value);
 
@@ -53,7 +53,7 @@ export class TypeGuard {
 
 	static checkArray(value: unknown): [] {
 		if (!TypeGuard.isArray(value)) {
-			throw new Error('Type is not an array');
+			throw new Error('Type is not an array.');
 		}
 
 		return value;
@@ -89,12 +89,16 @@ export class TypeGuard {
 
 	/** @return undefined if no object or key do not exists, otherwise the value of the key. */
 	static getValueFromObjectKey(value: unknown, key: string): unknown {
+		TypeGuard.checkString(key);
+
 		const result: unknown = TypeGuard.isDefinedObject(value) ? value[key] : undefined;
 
 		return result;
 	}
 
 	static getValueFromDeepObjectKey(value: unknown, keyPath: string[]): unknown {
+		TypeGuard.checkArrayWithElements(keyPath);
+
 		let result: unknown = value;
 
 		keyPath.forEach((key) => {
