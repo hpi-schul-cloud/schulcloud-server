@@ -218,7 +218,7 @@ describe(DeleteFilesUc.name, () => {
 				return { thresholdDate, batchSize };
 			};
 
-			it('should throw an error ', async () => {
+			it('should log errors', async () => {
 				const { thresholdDate, batchSize } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
@@ -237,12 +237,14 @@ describe(DeleteFilesUc.name, () => {
 
 				const exampleFiles = [
 					fileEntityFactory.buildWithId({
-						storageProvider: undefined,
+						storageProvider,
 						ownerId: userId,
 						creatorId: userId,
 						permissions: [filePermissionEntityFactory.build({ refId: userId })],
 					}),
 				];
+
+				exampleFiles[0].storageProvider = undefined;
 
 				// Please note the second try, that found no more files that needs to be deleted.
 				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
@@ -251,10 +253,12 @@ describe(DeleteFilesUc.name, () => {
 				return { thresholdDate, batchSize };
 			};
 
-			it('should throw an error ', async () => {
+			it('should log errors', async () => {
 				const { thresholdDate, batchSize } = setup();
 
-				await expect(() => service.deleteMarkedFiles(thresholdDate, batchSize)).rejects.toThrowError();
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				expect(logger.error).toBeCalledTimes(2);
 			});
 		});
 	});
