@@ -14,6 +14,9 @@ export class Migration20240719115036 extends Migration {
 			},
 			{ $merge: 'groups' },
 		]);
+		console.info(
+			`Migrate fields externalSource_externalId and externalSource_system to nested document externalSource`
+		);
 
 		await this.driver.nativeUpdate(
 			'groups',
@@ -22,6 +25,7 @@ export class Migration20240719115036 extends Migration {
 				$unset: { externalSource_externalId: '', externalSource_system: '' },
 			}
 		);
+		console.info(`Removed fields externalSource_externalId and externalSource_system`);
 
 		await this.driver.aggregate('groups', [
 			{ $match: { externalSource: { $exists: true } } },
@@ -35,12 +39,31 @@ export class Migration20240719115036 extends Migration {
 			{ $merge: 'groups' },
 		]);
 
-		console.info(`' Removed synced courses for all groups and added lastSyncedAt to externalSource`);
+		console.info(`Updated nested document externalSource. Added nested field lastSyncedAt`);
 	}
 
 	async down(): Promise<void> {
-		await this.driver.nativeUpdate('groups', {}, { $unset: { 'externalSource.lastSyncedAt': '' } });
+		await this.driver.aggregate('groups', [
+			{ $match: { externalSource: { $exists: true } } },
+			{
+				$set: {
+					externalSource_externalId: '$externalSource.externalId',
+					externalSource_system: '$externalSource.system',
+				},
+			},
+			{ $merge: 'groups' },
+		]);
+		console.info(
+			`Rollback: Migrate fields externalSource_externalId and externalSource_system to nested document externalSource`
+		);
 
-		console.info(`Removed lastSyncedAt of externalSource in all groups.'`);
+		await this.driver.nativeUpdate(
+			'groups',
+			{ externalSource: { $exists: true } },
+			{
+				$unset: { externalSource: '' },
+			}
+		);
+		console.info(`Removed externalSource nested document`);
 	}
 }
