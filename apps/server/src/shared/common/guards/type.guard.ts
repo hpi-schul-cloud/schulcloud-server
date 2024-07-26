@@ -121,6 +121,10 @@ export class TypeGuard {
 		return object[key];
 	}
 
+	// add additional method checkKeysInObject with key array see use case for example in method mapEtherpadSessionToSession
+	// return an value that represent as type a interface that include all checked keys.
+	// Same interface can be usefull for checkKeyInObject
+
 	static checkNotNullOrUndefined<T>(value: T | null | undefined, toThrow?: Error): T {
 		if (TypeGuard.isNull(value)) {
 			throw toThrow || new Error('Type is null.');
