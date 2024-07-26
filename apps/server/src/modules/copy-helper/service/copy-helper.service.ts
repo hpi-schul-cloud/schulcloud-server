@@ -36,10 +36,10 @@ export class CopyHelperService {
 			return name;
 		}
 		let num = 1;
-		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
-		if (matches && matches.groups) {
-			({ name } = matches.groups);
-			num = Number(matches.groups.number) + 1;
+		const matches = name.match(/^(.*) \((\d+)\)$/);
+		if (matches) {
+			name = matches[1];
+			num = Number(matches[2]) + 1;
 		}
 		const composedName = `${name} (${num})`;
 		if (existingNames.includes(composedName)) {

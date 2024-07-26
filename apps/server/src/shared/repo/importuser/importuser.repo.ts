@@ -64,7 +64,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		const [importUserEntities, count] = await this._em.findAndCount(ImportUser, query, queryOptions);
 		const userMatches = importUserEntities.map((importUser) => importUser.user).filter((user) => user != null);
 		// load role names of referenced users
-		await this._em.populate(userMatches as User[], ['roles']);
+		await this._em.populate(userMatches, ['roles']);
 		return [importUserEntities, count];
 	}
 
