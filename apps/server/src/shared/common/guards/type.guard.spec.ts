@@ -523,7 +523,56 @@ describe('TypeGuard', () => {
 		});
 	});
 
-	// checkKeyInObject
+	describe('checkKeyInObject', () => {
+		describe('when passing value is an object that has the requested key', () => {
+			it('should be return the key value', () => {
+				expect(TypeGuard.checkKeyInObject({ xyz: 'abc' }, 'xyz')).toEqual('abc');
+			});
+		});
+
+		describe('when passing value and key do not match', () => {
+			it('should be throw an error', () => {
+				expect(TypeGuard.checkKeyInObject({ xyz: 'abc' }, 'zzz')).toThrowError('Object has no zzz.');
+			});
+
+			it('should be throw an error', () => {
+				expect(TypeGuard.checkKeyInObject([], 'zzz')).toThrowError('Type is not an object.');
+			});
+
+			it('should be throw an error', () => {
+				expect(TypeGuard.checkKeyInObject('string', 'zzz')).toThrowError('Type is not an object.');
+			});
+
+			it('should be throw an error', () => {
+				expect(TypeGuard.checkKeyInObject(1, 'zzz')).toThrowError('Type is not an object.');
+			});
+
+			it('should be throw an error', () => {
+				expect(TypeGuard.checkKeyInObject(null, 'zzz')).toThrowError('Type is not an object.');
+			});
+
+			it('should be throw an error', () => {
+				expect(TypeGuard.checkKeyInObject(undefined, 'zzz')).toThrowError('Type is not an object.');
+			});
+		});
+
+		describe('when param contract is not fullfilled', () => {
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.checkKeyInObject({ xyz: 'abc' }, undefined)).toThrowError('Type is not a string');
+			});
+
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.checkKeyInObject({ xyz: 'abc' }, null)).toThrowError('Type is not a string');
+			});
+
+			it('should be throw an error', () => {
+				// @ts-expect-error test-case
+				expect(() => TypeGuard.checkKeyInObject({ xyz: 'abc' }, 1)).toThrowError('Type is not a string');
+			});
+		});
+	});
 
 	describe('checkNotNullOrUndefined', () => {
 		describe('when value is null', () => {

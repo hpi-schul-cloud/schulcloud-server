@@ -110,7 +110,10 @@ export class TypeGuard {
 
 	/** @return value of requested key in object. */
 	static checkKeyInObject(value: unknown, key: string): unknown {
+		TypeGuard.checkString(key);
+
 		const object = TypeGuard.checkDefinedObject(value);
+
 		if (!(key in object)) {
 			throw new Error(`Object has no ${key}.`);
 		}
