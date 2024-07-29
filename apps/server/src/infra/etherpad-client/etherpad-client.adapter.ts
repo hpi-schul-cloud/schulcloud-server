@@ -64,7 +64,7 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetPadsOfAuthor(authorId);
 		const pads = this.handleEtherpadResponse<ListPadsUsingGET200Response>(response, { authorId });
 
-		if (!TypeGuard.isObject(pads)) {
+		if (!TypeGuard.isDefinedObject(pads)) {
 			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
 		}
 
@@ -280,7 +280,7 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetAuthorsOfPad(padId);
 		const authors = this.handleEtherpadResponse<ListAuthorsOfPadUsingGET200Response>(response, { padId });
 
-		if (!TypeGuard.isObject(authors)) {
+		if (!TypeGuard.isDefinedObject(authors)) {
 			throw new InternalServerErrorException('Etherpad listAuthorsOfPad response is not an object');
 		}
 
