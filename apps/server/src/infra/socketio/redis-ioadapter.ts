@@ -4,10 +4,12 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { Redis } from 'ioredis';
 import { ServerOptions } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 export class RedisIoAdapter extends IoAdapter {
 	connectToRedis(): ReturnType<typeof createAdapter> {
-		const pubClient = new Redis();
+		const redisUri = Configuration.get('REDIS_URI') ?? 'http://localhost:6379';
+		const pubClient = new Redis(redisUri as string);
 		const subClient = pubClient.duplicate();
 
 		pubClient.on('error', (err) => {
