@@ -36,9 +36,9 @@ import {
 	customParameterFactory,
 	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
+	fileRecordRefFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
-import { fileRecordRefFactory } from '../testing/file-record-ref.factory';
 import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
@@ -137,6 +137,7 @@ describe(ExternalToolUc.name, () => {
 
 	const setupDefault = () => {
 		const toolId = 'toolId';
+		const mockLogoBase64 = 'base64LogoString';
 
 		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).buildWithId();
 		const oauth2ConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigFactory.build();
@@ -161,6 +162,7 @@ describe(ExternalToolUc.name, () => {
 
 		externalToolService.createExternalTool.mockResolvedValueOnce(externalTool);
 		externalToolService.findExternalTools.mockResolvedValueOnce(page);
+		logoService.fetchLogo.mockResolvedValueOnce(mockLogoBase64);
 
 		return {
 			externalTool,
@@ -169,6 +171,7 @@ describe(ExternalToolUc.name, () => {
 			page,
 			query,
 			toolId,
+			mockLogoBase64,
 		};
 	};
 
@@ -207,13 +210,14 @@ describe(ExternalToolUc.name, () => {
 
 		it('should validate the tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalTool } = setupDefault();
+			const { externalTool, mockLogoBase64 } = setupDefault();
 
 			await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
 
 			expect(toolValidationService.validateCreate).toHaveBeenCalledWith(
-				expect.objectContaining<ExternalToolProps>({
+				new ExternalTool({
 					...externalTool.getProps(),
+					logo: mockLogoBase64,
 					id: expect.any(String),
 				})
 			);
@@ -233,13 +237,14 @@ describe(ExternalToolUc.name, () => {
 
 		it('should call the service to save a tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalTool } = setupDefault();
+			const { externalTool, mockLogoBase64 } = setupDefault();
 
 			await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
 
 			expect(externalToolService.createExternalTool).toHaveBeenCalledWith(
-				expect.objectContaining<ExternalToolProps>({
+				new ExternalTool({
 					...externalTool.getProps(),
+					logo: mockLogoBase64,
 					id: expect.any(String),
 				})
 			);
@@ -626,7 +631,7 @@ describe(ExternalToolUc.name, () => {
 
 	describe('updateExternalTool', () => {
 		const setup = () => {
-			const { externalTool, toolId } = setupDefault();
+			const { externalTool, toolId, mockLogoBase64 } = setupDefault();
 
 			const externalToolToUpdate: ExternalToolUpdate = {
 				...externalTool.getProps(),
@@ -647,6 +652,7 @@ describe(ExternalToolUc.name, () => {
 				updatedExternalToolDO: updatedExternalTool,
 				externalToolDOtoUpdate: externalToolToUpdate,
 				toolId,
+				mockLogoBase64,
 			};
 		};
 
@@ -689,13 +695,13 @@ describe(ExternalToolUc.name, () => {
 
 		it('should validate the tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { toolId, externalToolDOtoUpdate } = setup();
+			const { toolId, externalToolDOtoUpdate, mockLogoBase64 } = setup();
 
 			await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
 
 			expect(toolValidationService.validateUpdate).toHaveBeenCalledWith(
 				toolId,
-				expect.objectContaining<ExternalToolProps>({ ...externalToolDOtoUpdate, id: expect.any(String) })
+				new ExternalTool({ ...externalToolDOtoUpdate, logo: mockLogoBase64, id: expect.any(String) })
 			);
 		});
 
