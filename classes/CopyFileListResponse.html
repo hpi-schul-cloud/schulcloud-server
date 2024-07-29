@@ -187,7 +187,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:96</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:97</a></div>
                             </td>
                         </tr>
 
@@ -301,7 +301,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:103</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:104</a></code>
 </div>
                         </td>
                     </tr>
@@ -454,8 +454,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities, PaginationResponse } from &#x27;@shared/controller&#x27;;
-import { FileRecord, FileRecordParentType, PreviewStatus, ScanStatus } from &#x27;../../entity&#x27;;
+import { FileRecord, PreviewStatus, ScanStatus } from &#x27;../../entity&#x27;;
 import { API_VERSION_PATH } from &#x27;../../files-storage.const&#x27;;
+import { FileRecordParentType } from &#x27;../../interface&#x27;;
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {

@@ -258,7 +258,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolParams: <a href="../classes/ExternalToolCreateParams.html" target="_self">ExternalToolCreateParams</a>)</code>
+                    <code>createExternalTool(jwt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolParams: <a href="../classes/ExternalToolCreateParams.html" target="_self">ExternalToolCreateParams</a>)</code>
                 </td>
             </tr>
 
@@ -293,6 +293,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>jwt</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>currentUser</td>
                                             <td>
@@ -351,7 +363,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>)</code>
+                    <code>deleteExternalTool(jwt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>)</code>
                 </td>
             </tr>
 
@@ -365,8 +377,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="183"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:183</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:188</a></div>
                         </td>
                     </tr>
 
@@ -386,6 +398,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>jwt</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>currentUser</td>
                                             <td>
@@ -458,8 +482,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -574,8 +598,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="236"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:236</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="246"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:246</a></div>
                         </td>
                     </tr>
 
@@ -676,8 +700,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="142"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:142</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:145</a></div>
                         </td>
                     </tr>
 
@@ -768,8 +792,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="201"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:201</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="211"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:211</a></div>
                         </td>
                     </tr>
 
@@ -860,8 +884,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="217"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:217</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="227"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:227</a></div>
                         </td>
                     </tr>
 
@@ -940,7 +964,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>importExternalTools(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolBulkParams: <a href="../classes/ExternalToolBulkCreateParams.html" target="_self">ExternalToolBulkCreateParams</a>)</code>
+                    <code>importExternalTools(jwt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolBulkParams: <a href="../classes/ExternalToolBulkCreateParams.html" target="_self">ExternalToolBulkCreateParams</a>)</code>
                 </td>
             </tr>
 
@@ -954,8 +978,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -975,6 +999,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>jwt</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>currentUser</td>
                                             <td>
@@ -1034,7 +1070,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>, externalToolParams: <a href="../classes/ExternalToolUpdateParams.html" target="_self">ExternalToolUpdateParams</a>)</code>
+                    <code>updateExternalTool(jwt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>, externalToolParams: <a href="../classes/ExternalToolUpdateParams.html" target="_self">ExternalToolUpdateParams</a>)</code>
                 </td>
             </tr>
 
@@ -1048,8 +1084,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="161"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:161</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="164"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:164</a></div>
                         </td>
                     </tr>
 
@@ -1069,6 +1105,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>jwt</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>currentUser</td>
                                             <td>
@@ -1123,7 +1171,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser, JWT } from &#x27;@modules/authentication&#x27;;
 import {
 	Body,
 	Controller,
@@ -1195,12 +1243,13 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
 	@ApiOperation({ summary: &#x27;Creates an ExternalTool&#x27; })
 	async createExternalTool(
+		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise&lt;ExternalToolResponse&gt; {
 		const externalTool: ExternalToolCreate &#x3D; this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 
-		const created: ExternalTool &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalTool);
+		const created: ExternalTool &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalTool, jwt);
 
 		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(created);
 
@@ -1216,6 +1265,7 @@ export class ToolController {
 	@ApiBadRequestResponse({ description: &#x27;Request data has invalid format.&#x27; })
 	@ApiOperation({ summary: &#x27;Creates multiple ExternalTools at the same time.&#x27; })
 	async importExternalTools(
+		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
 	): Promise&lt;ExternalToolImportResultListResponse&gt; {
@@ -1223,7 +1273,8 @@ export class ToolController {
 
 		const results: ExternalToolImportResult[] &#x3D; await this.externalToolUc.importExternalTools(
 			currentUser.userId,
-			externalTools
+			externalTools,
+			jwt
 		);
 
 		const response: ExternalToolImportResultListResponse &#x3D; ExternalToolResponseMapper.mapToImportResponse(results);
@@ -1284,6 +1335,7 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
 	@ApiOperation({ summary: &#x27;Updates an ExternalTool&#x27; })
 	async updateExternalTool(
+		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
 		@Body() externalToolParams: ExternalToolUpdateParams
@@ -1292,7 +1344,8 @@ export class ToolController {
 		const updated: ExternalTool &#x3D; await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.externalToolId,
-			externalTool
+			externalTool,
+			jwt
 		);
 		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(&#x60;ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}&#x60;);
@@ -1306,10 +1359,15 @@ export class ToolController {
 	@ApiOperation({ summary: &#x27;Deletes an ExternalTool&#x27; })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteExternalTool(
+		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise&lt;void&gt; {
-		const promise: Promise&lt;void&gt; &#x3D; this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
+		const promise: Promise&lt;void&gt; &#x3D; this.externalToolUc.deleteExternalTool(
+			currentUser.userId,
+			params.externalToolId,
+			jwt
+		);
 		this.logger.debug(
 			&#x60;ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}&#x60;
 		);

@@ -490,7 +490,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:151</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:152</a></code>
 </div>
                         </td>
                     </tr>
@@ -578,7 +578,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:192</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:193</a></code>
 </div>
                         </td>
                     </tr>
@@ -647,8 +647,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="173"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:173</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -1752,6 +1752,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 		const additionalProperties: PropertyData[] &#x3D; [
 			new PropertyData({ name: &#x27;key&#x27;, value: config.key }),
+			// TODO N21-2097 use decryption for secret
 			new PropertyData({ name: &#x27;secret&#x27;, value: config.secret }),
 
 			new PropertyData({ name: &#x27;lti_message_type&#x27;, value: config.lti_message_type, location: PropertyLocation.BODY }),

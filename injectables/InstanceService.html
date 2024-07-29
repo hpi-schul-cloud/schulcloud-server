@@ -140,6 +140,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getInstance" >getInstance</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -276,6 +281,46 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getInstance"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getInstance</b></span>
+                        <a href="#getInstance"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getInstance()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/instance/service/instance.service.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Instance.html" target="_self" >Promise&lt;Instance&gt;</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -294,6 +339,12 @@ export class InstanceService implements AuthorizationLoaderServiceGeneric&lt;Ins
 
 	public async findById(id: EntityId): Promise&lt;Instance&gt; {
 		const instance: Instance &#x3D; await this.instanceRepo.findById(id);
+
+		return instance;
+	}
+
+	public async getInstance(): Promise&lt;Instance&gt; {
+		const instance: Instance &#x3D; await this.instanceRepo.getInstance();
 
 		return instance;
 	}

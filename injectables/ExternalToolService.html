@@ -348,8 +348,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="147"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:147</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="149"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:149</a></div>
                         </td>
                     </tr>
 
@@ -488,8 +488,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="111"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:111</a></div>
                         </td>
                     </tr>
 
@@ -558,8 +558,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -627,8 +627,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -708,8 +708,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -777,8 +777,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -847,8 +847,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -999,8 +999,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -1069,8 +1069,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="137"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:137</a></div>
                         </td>
                     </tr>
 
@@ -1191,7 +1191,9 @@ export class ExternalToolService {
 	}
 
 	public async updateExternalTool(toUpdate: ExternalTool): Promise&lt;ExternalTool&gt; {
+		// TODO N21-2097 use encryption for secret
 		await this.updateOauth2ToolConfig(toUpdate);
+
 		const externalTool: ExternalTool &#x3D; await this.externalToolRepo.save(toUpdate);
 
 		return externalTool;

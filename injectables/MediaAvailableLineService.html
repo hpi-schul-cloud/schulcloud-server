@@ -998,8 +998,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="155"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:155</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:156</a></div>
                         </td>
                     </tr>
 
@@ -1212,6 +1212,7 @@ export class MediaAvailableLineService {
 			name: externalTool.name,
 			description: externalTool.description,
 			logoUrl,
+			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),
 		});
 
 		return element;

@@ -285,8 +285,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -1377,6 +1377,7 @@ import {
 } from &#x27;@modules/tool/external-tool/domain&#x27;;
 import { DoBaseFactory } from &#x27;@shared/testing/factory/domainobject/do-base.factory&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
+import { fileRecordRefFactory } from &#x27;./file-record-ref.factory&#x27;;
 
 export const basicToolConfigFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfig, BasicToolConfig&gt;(BasicToolConfig, () &#x3D;&gt; {
 	return {
@@ -1480,6 +1481,14 @@ class ExternalToolFactory extends DoBaseFactory&lt;ExternalTool, ExternalToolPro
 				mediaSourceId: &#x27;mediaSourceId&#x27;,
 				...externalToolMedium,
 			},
+		};
+
+		return this.params(params);
+	}
+
+	withFileRecordRef(): this {
+		const params: DeepPartial&lt;ExternalTool&gt; &#x3D; {
+			thumbnail: fileRecordRefFactory.build(),
 		};
 
 		return this.params(params);

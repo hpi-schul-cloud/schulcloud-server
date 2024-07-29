@@ -268,7 +268,7 @@
                             <a href="#FileRecordParentType" title="apps/server/src/infra/rabbitmq/exchange/files-storage.ts" ><b>FileRecordParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.ts)</a>
                         </li>
                         <li>
-                            <a href="#FileRecordParentType" title="apps/server/src/modules/files-storage/entity/filerecord.entity.ts" ><b>FileRecordParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.entity.ts)</a>
+                            <a href="#FileRecordParentType" title="apps/server/src/modules/files-storage/interface/file-storage-parent-type.enum.ts" ><b>FileRecordParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../file-storage-parent-type.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#FileSecurityCheckStatus" title="apps/server/src/modules/files/domain/types/file-security-check-status.enum.ts" ><b>FileSecurityCheckStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../file-security-check-status.enum.ts)</a>
@@ -472,7 +472,7 @@
                             <a href="#StatusModel" title="apps/server/src/modules/deletion/domain/types/status-model.enum.ts" ><b>StatusModel</b>&nbsp;&nbsp;&nbsp;(apps/.../status-model.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#StorageLocation" title="apps/server/src/modules/files-storage/entity/filerecord.entity.ts" ><b>StorageLocation</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.entity.ts)</a>
+                            <a href="#StorageLocation" title="apps/server/src/modules/files-storage/interface/storage-location.enum.ts" ><b>StorageLocation</b>&nbsp;&nbsp;&nbsp;(apps/.../storage-location.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#SubjectTypeEnum" title="apps/server/src/modules/oauth-provider/domain/interface/subject-type.enum.ts" ><b>SubjectTypeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../subject-type.enum.ts)</a>
@@ -4081,7 +4081,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/files-storage/entity/filerecord.entity.ts</h3>
+    <h3>apps/server/src/modules/files-storage/interface/file-storage-parent-type.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -4179,166 +4179,6 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>externaltools</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="PreviewStatus"></a>
-                        <span class="name "><b>PreviewStatus</b><a href="#PreviewStatus"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;PREVIEW_POSSIBLE
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>preview_possible</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;AWAITING_SCAN_STATUS
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>awaiting_scan_status</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>preview_not_possible_scan_status_error</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>preview_not_possible_scan_status_wont_check</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>preview_not_possible_scan_status_blocked</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>preview_not_possible_wrong_mime_type</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="ScanStatus"></a>
-                        <span class="name "><b>ScanStatus</b><a href="#ScanStatus"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;PENDING
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>pending</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;VERIFIED
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>verified</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;BLOCKED
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>blocked</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;WONT_CHECK
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>wont_check</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;ERROR
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>error</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="StorageLocation"></a>
-                        <span class="name "><b>StorageLocation</b><a href="#StorageLocation"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;SCHOOL
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>school</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;INSTANCE
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>instance</code>
                             </td>
                         </tr>
             </tbody>
@@ -7635,6 +7475,139 @@
             </tbody>
         </table>
 </section>
+    <h3>apps/server/src/modules/files-storage/entity/filerecord.entity.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="PreviewStatus"></a>
+                        <span class="name "><b>PreviewStatus</b><a href="#PreviewStatus"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_POSSIBLE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_possible</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;AWAITING_SCAN_STATUS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>awaiting_scan_status</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_scan_status_error</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_scan_status_wont_check</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_scan_status_blocked</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_wrong_mime_type</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ScanStatus"></a>
+                        <span class="name "><b>ScanStatus</b><a href="#ScanStatus"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PENDING
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>pending</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;VERIFIED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>verified</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BLOCKED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>blocked</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WONT_CHECK
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>wont_check</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ERROR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>error</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
     <h3>apps/server/src/modules/files-storage/interface/preview-width.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
@@ -9045,6 +9018,39 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>registered</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/files-storage/interface/storage-location.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="StorageLocation"></a>
+                        <span class="name "><b>StorageLocation</b><a href="#StorageLocation"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;SCHOOL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>school</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;INSTANCE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>instance</code>
                             </td>
                         </tr>
             </tbody>

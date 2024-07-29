@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/instance/repo/instance-repo.service.ts</code>
+            <code>apps/server/src/modules/instance/repo/instance.repo.ts</code>
         </p>
 
 
@@ -145,6 +145,11 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getInstance" >getInstance</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -236,8 +241,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/instance/repo/instance-repo.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/instance/repo/instance.repo.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -287,6 +292,46 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getInstance"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getInstance</b></span>
+                        <a href="#getInstance"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getInstance()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/instance/repo/instance.repo.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Instance.html" target="_self" >Promise&lt;Instance&gt;</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapDOToEntityProperties"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
@@ -312,7 +357,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDomainObjectRepo.html#source" target="_self" >BaseDomainObjectRepo:14</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDomainObjectRepo.html#source" target="_self" >BaseDomainObjectRepo:15</a></code>
 </div>
                         </td>
                     </tr>
@@ -381,8 +426,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/instance/repo/instance-repo.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/instance/repo/instance.repo.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -904,7 +949,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/instance/repo/instance-repo.service.ts:10</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/instance/repo/instance.repo.ts:11</a></div>
                                 </td>
                             </tr>
 
@@ -921,6 +966,7 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BaseDomainObjectRepo } from &#x27;@shared/repo/base-domain-object.repo&#x27;;
 import { Instance, InstanceProps } from &#x27;../domain&#x27;;
 import { InstanceEntity } from &#x27;../entity&#x27;;
+import { InstanceNotIdentifiableLoggableException } from &#x27;../loggable&#x27;;
 
 @Injectable()
 export class InstanceRepo extends BaseDomainObjectRepo&lt;Instance, InstanceEntity&gt; {
@@ -948,9 +994,21 @@ export class InstanceRepo extends BaseDomainObjectRepo&lt;Instance, InstanceEnti
 	public async findById(id: EntityId): Promise&lt;Instance&gt; {
 		const entity: InstanceEntity &#x3D; await super.findEntityById(id);
 
-		const course: Instance &#x3D; new Instance(this.mapEntityToDoProperties(entity));
+		const instance: Instance &#x3D; new Instance(this.mapEntityToDoProperties(entity));
 
-		return course;
+		return instance;
+	}
+
+	public async getInstance(): Promise&lt;Instance&gt; {
+		const entities: InstanceEntity[] &#x3D; await this.em.find(this.entityName, {});
+
+		if (entities.length !&#x3D;&#x3D; 1) {
+			throw new InstanceNotIdentifiableLoggableException();
+		}
+
+		const instance: Instance &#x3D; new Instance(this.mapEntityToDoProperties(entities[0]));
+
+		return instance;
 	}
 }
 </code></pre>

@@ -601,6 +601,9 @@
                             <a href="#fileRecordFactory" title="apps/server/src/shared/testing/factory/filerecord.factory.ts" ><b>fileRecordFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#fileRecordRefFactory" title="apps/server/src/modules/tool/external-tool/testing/file-record-ref.factory.ts" ><b>fileRecordRefFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../file-record-ref.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#FILES_STORAGE_S3_CONNECTION" title="apps/server/src/modules/files-storage/files-storage.config.ts" ><b>FILES_STORAGE_S3_CONNECTION</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.config.ts)</a>
                         </li>
                         <li>
@@ -6462,6 +6465,7 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get(&#x27;FEATURE_CTL_TOOLS_COPY_ENABLED&#x27;) as boolean,
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get(&#x27;CTL_TOOLS_RELOAD_TIME_MS&#x27;) as number,
 	HOST: Configuration.get(&#x27;HOST&#x27;) as string,
+	FILES_STORAGE__SERVICE_BASE_URL: Configuration.get(&#x27;FILES_STORAGE__SERVICE_BASE_URL&#x27;) as string,
 	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get(&#x27;FEATURE_VIDEOCONFERENCE_ENABLED&#x27;) as boolean,
 	VIDEOCONFERENCE_HOST: Configuration.get(&#x27;VIDEOCONFERENCE_HOST&#x27;) as string,
 	VIDEOCONFERENCE_SALT: Configuration.get(&#x27;VIDEOCONFERENCE_SALT&#x27;) as string,
@@ -9252,6 +9256,10 @@ To filter by consentStatus, it has to created first</p>
 			isHidden: false,
 			isDeactivated: false,
 			openNewTab: true,
+			thumbnail: {
+				uploadUrl: &#x27;https://uploadurl.com&#x27;,
+				fileRecord: fileRecordFactory.build(),
+			},
 		};
 	}
 )</code>
@@ -12640,6 +12648,41 @@ it should ensure an empty result</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>new Date(Date.now() - 86400000)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/tool/external-tool/testing/file-record-ref.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileRecordRefFactory"></a>
+                    <span class="name">
+                        <span ><b>fileRecordRefFactory</b></span>
+                        <a href="#fileRecordRefFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;FileRecordRef&gt;(({ sequence }) &#x3D;&gt; {
+	const fileName &#x3D; &#x60;fileName-${sequence}&#x60;;
+	const fileRecordId &#x3D; new ObjectId().toHexString();
+
+	return {
+		uploadUrl: &#x27;uploadUrl&#x27;,
+		fileName,
+		fileRecordId,
+		getPreviewUrl(): string {
+			return &#x60;/api/v3/file/preview/${fileRecordId}/${encodeURIComponent(fileName)}&#x60;;
+		},
+	};
+})</code>
                     </td>
                 </tr>
 
