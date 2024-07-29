@@ -122,8 +122,6 @@ export class ExternalToolUc {
 
 		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
-		externalToolUpdate.logo = await this.externalToolLogoService.fetchLogo(externalToolUpdate);
-
 		// Use secrets from existing config
 		const updatedConfigProps: ExternalToolConfig = { ...currentExternalTool.config, ...externalToolUpdateProps.config };
 
@@ -132,6 +130,7 @@ export class ExternalToolUc {
 			...externalToolUpdateProps,
 			config: updatedConfigProps,
 		});
+		pendingExternalTool.logo = await this.externalToolLogoService.fetchLogo(pendingExternalTool);
 
 		await this.toolValidationService.validateUpdate(toolId, pendingExternalTool);
 
