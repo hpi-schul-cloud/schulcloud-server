@@ -96,7 +96,7 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
-				// TODO: could use a factory here
+				// TODO: could use a factory here done EW-660
 				const mockCurrentUser: ICurrentUser = {
 					accountId: 'mockAccountId',
 					roles: ['student'],

@@ -54,7 +54,7 @@ describe('Oauth2Strategy', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
-				// TODO: use factory
+				// TODO: use factory done EW-660
 				const account: AccountDto = new AccountDto({
 					id: 'accountId',
 					createdAt: new Date(),

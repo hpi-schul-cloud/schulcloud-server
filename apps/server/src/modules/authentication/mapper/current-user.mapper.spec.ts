@@ -138,7 +138,7 @@ describe('CurrentUserMapper', () => {
 		// TODO: extract setup methods
 		describe('when JWT is provided with all claims', () => {
 			it('should return current user', () => {
-				// TODO: put into a factory
+				// TODO: put into a factory done EW-660
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					systemId: 'dummySystemId',

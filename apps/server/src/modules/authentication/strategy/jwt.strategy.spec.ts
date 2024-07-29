@@ -17,7 +17,7 @@ describe('jwt strategy', () => {
 	let strategy: JwtStrategy;
 	let module: TestingModule;
 
-	// TODO: move into setup function, use a factory
+	// TODO: move into setup function, use a factory done EW-660
 	const jwtPayload: JwtPayload = {
 		accountId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),
