@@ -70,6 +70,7 @@ export class GroupDomainMapper {
 		const externalSourceEntity: ExternalSourceEmbeddable = new ExternalSourceEmbeddable({
 			externalId: externalSource.externalId,
 			system: em.getReference(SystemEntity, externalSource.systemId),
+			lastSyncedAt: externalSource.lastSyncedAt,
 		});
 
 		return externalSourceEntity;
@@ -79,6 +80,7 @@ export class GroupDomainMapper {
 		const externalSource: ExternalSource = new ExternalSource({
 			externalId: entity.externalId,
 			systemId: entity.system.id,
+			lastSyncedAt: entity.lastSyncedAt,
 		});
 
 		return externalSource;

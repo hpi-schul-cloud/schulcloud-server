@@ -68,6 +68,7 @@ describe('GroupRepo', () => {
 					externalSource: new ExternalSource({
 						externalId: group.externalSource?.externalId ?? '',
 						systemId: group.externalSource?.system.id ?? '',
+						lastSyncedAt: group.externalSource?.lastSyncedAt ?? new Date(2024, 1, 1),
 					}),
 					users: [
 						new GroupUser({
@@ -676,6 +677,7 @@ describe('GroupRepo', () => {
 					externalSource: new ExternalSource({
 						externalId: groupEntity.externalSource?.externalId ?? '',
 						systemId: groupEntity.externalSource?.system.id ?? '',
+						lastSyncedAt: groupEntity.externalSource?.lastSyncedAt ?? new Date(2024, 1, 1),
 					}),
 					users: [
 						new GroupUser({
