@@ -7,7 +7,7 @@ import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
-import { jwtPayloadFactory } from '..';
+import { jwtPayloadFactory } from '../testing';
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;

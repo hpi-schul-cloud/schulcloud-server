@@ -4,7 +4,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload } from '../interface/jwt-payload';
-import { currentUserFactory, jwtPayloadFactory } from '..';
+import { currentUserFactory, jwtPayloadFactory } from '../testing';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {

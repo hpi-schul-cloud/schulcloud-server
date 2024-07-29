@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
-import { currentUserFactory } from '..';
+import { currentUserFactory } from '../testing';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');

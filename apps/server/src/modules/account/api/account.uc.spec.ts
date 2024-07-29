@@ -10,7 +10,7 @@ import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { currentUserFactory } from '@modules/authentication';
+import { currentUserFactory } from '@modules/authentication/testing';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../domain/entity/account.entity';
 import { AccountService } from '../domain/services';
