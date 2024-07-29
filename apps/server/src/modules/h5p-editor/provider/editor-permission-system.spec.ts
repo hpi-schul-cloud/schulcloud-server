@@ -77,7 +77,7 @@ describe('EditorPermissionSystem', () => {
 	});
 
 	describe('checkForContent', () => {
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -86,7 +86,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -95,7 +95,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -104,7 +104,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -113,7 +113,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -122,7 +122,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -131,7 +131,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -142,7 +142,7 @@ describe('EditorPermissionSystem', () => {
 	});
 
 	describe('checkForTemporaryFile', () => {
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -151,7 +151,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -160,7 +160,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -169,7 +169,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(true);
 		});
 
-		it('should return false', async () => {
+		it('should return true', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -180,7 +180,7 @@ describe('EditorPermissionSystem', () => {
 	});
 
 	describe('checkForGeneralAction', () => {
-		it('should return true', async () => {
+		it('should return false', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -189,7 +189,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(false);
 		});
 
-		it('should return true', async () => {
+		it('should return false', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
@@ -198,7 +198,7 @@ describe('EditorPermissionSystem', () => {
 			expect(result).toBe(false);
 		});
 
-		it('should return true', async () => {
+		it('should return false', async () => {
 			const user = buildUser();
 
 			const permissionSystem = new EditorPermissionSystem();
