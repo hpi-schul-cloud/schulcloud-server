@@ -40,7 +40,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, {
 			externalSource: {
 				externalId,
-				system: systemId,
+				system: new ObjectId(systemId),
 			},
 		});
 
