@@ -1,3 +1,5 @@
+import { EntityManager } from '@mikro-orm/mongodb';
+import { FileRecord } from '@modules/files-storage/entity';
 import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
 import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
 import { ToolConfigType } from '@modules/tool/common/enum';
@@ -8,6 +10,7 @@ import {
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '@modules/tool/external-tool/domain';
+import { FileRecordRef } from '@modules/tool/external-tool/domain/file-record-ref';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -17,6 +20,7 @@ import {
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@modules/tool/external-tool/entity';
+import { FileRecordRefEmbeddable } from '@modules/tool/external-tool/entity/file-record-ref.embeddable';
 import { UnprocessableEntityException } from '@nestjs/common';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
@@ -45,6 +49,13 @@ export class ExternalToolRepoMapper {
 			url: entity.url,
 			logoUrl: entity.logoUrl,
 			logo: entity.logoBase64,
+			thumbnail: entity.thumbnail
+				? new FileRecordRef({
+						uploadUrl: entity.thumbnail.uploadUrl,
+						fileRecordId: entity.thumbnail.fileRecord.id,
+						fileName: entity.thumbnail.fileRecord.name,
+				  })
+				: undefined,
 			config,
 			parameters: this.mapCustomParametersToDOs(entity.parameters || []),
 			isHidden: entity.isHidden,
@@ -96,17 +107,17 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): ExternalToolEntityProps {
+	static mapDOToEntityProperties(domainObject: ExternalTool, em: EntityManager): ExternalToolEntityProps {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
-		switch (entityDO.config.type) {
+		switch (domainObject.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfig);
+				config = this.mapBasicToolConfigDOToEntity(domainObject.config as BasicToolConfig);
 				break;
 			case ToolConfigType.OAUTH2:
-				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfig);
+				config = this.mapOauth2ConfigDOToEntity(domainObject.config as Oauth2ToolConfig);
 				break;
 			case ToolConfigType.LTI11:
-				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfig);
+				config = this.mapLti11ToolConfigDOToEntity(domainObject.config as Lti11ToolConfig);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -114,19 +125,25 @@ export class ExternalToolRepoMapper {
 		}
 
 		return {
-			id: entityDO.id,
-			name: entityDO.name,
-			description: entityDO.description,
-			url: entityDO.url,
-			logoUrl: entityDO.logoUrl,
-			logoBase64: entityDO.logo,
+			id: domainObject.id,
+			name: domainObject.name,
+			description: domainObject.description,
+			url: domainObject.url,
+			logoUrl: domainObject.logoUrl,
+			logoBase64: domainObject.logo,
+			thumbnail: domainObject.thumbnail
+				? new FileRecordRefEmbeddable({
+						fileRecord: em.getReference(FileRecord, domainObject.thumbnail.fileRecordId),
+						uploadUrl: domainObject.thumbnail.uploadUrl,
+				  })
+				: undefined,
 			config,
-			parameters: this.mapCustomParameterDOsToEntities(entityDO.parameters ?? []),
-			isHidden: entityDO.isHidden,
-			isDeactivated: entityDO.isDeactivated,
-			openNewTab: entityDO.openNewTab,
-			restrictToContexts: entityDO.restrictToContexts,
-			medium: this.mapExternalToolMediumDOToEntity(entityDO.medium),
+			parameters: this.mapCustomParameterDOsToEntities(domainObject.parameters ?? []),
+			isHidden: domainObject.isHidden,
+			isDeactivated: domainObject.isDeactivated,
+			openNewTab: domainObject.openNewTab,
+			restrictToContexts: domainObject.restrictToContexts,
+			medium: this.mapExternalToolMediumDOToEntity(domainObject.medium),
 		};
 	}
 

@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { FileRecordParentType } from '@src/infra/rabbitmq';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { BoardNodeCopyContext } from './board-node-copy-context';

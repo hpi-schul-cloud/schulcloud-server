@@ -7,6 +7,8 @@ export class ToolReference {
 
 	logoUrl?: string;
 
+	thumbnailUrl?: string;
+
 	displayName: string;
 
 	openInNewTab: boolean;
@@ -17,6 +19,7 @@ export class ToolReference {
 		this.contextToolId = toolReference.contextToolId;
 		this.description = toolReference.description;
 		this.logoUrl = toolReference.logoUrl;
+		this.thumbnailUrl = toolReference.thumbnailUrl;
 		this.displayName = toolReference.displayName;
 		this.openInNewTab = toolReference.openInNewTab;
 		this.status = toolReference.status;

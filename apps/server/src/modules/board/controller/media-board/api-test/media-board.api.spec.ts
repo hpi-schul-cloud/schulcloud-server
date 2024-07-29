@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
+import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
@@ -7,7 +7,7 @@ import { MediaUserLicenseEntity } from '@modules/user-license/entity';
 import { mediaSourceEntityFactory, mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, type DatesToStrings } from '@shared/testing';
+import { type DatesToStrings, fileRecordFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {
@@ -20,8 +20,8 @@ import {
 	ColorBodyParams,
 	LayoutBodyParams,
 	MediaAvailableLineResponse,
-	MediaLineResponse,
 	type MediaBoardResponse,
+	MediaLineResponse,
 } from '../dto';
 
 const baseRouteName = '/media-boards';
@@ -303,7 +303,13 @@ describe('Media Board (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				const externalTool = externalToolEntityFactory.build();
-				const unusedExternalTool = externalToolEntityFactory.build();
+				const thumbnailFileRecord = fileRecordFactory.build();
+				const unusedExternalTool = externalToolEntityFactory.build({
+					thumbnail: {
+						uploadUrl: 'https://uploadurl.com',
+						fileRecord: thumbnailFileRecord,
+					},
+				});
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					tool: externalTool,
 					school: studentUser.school,
@@ -340,6 +346,7 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					mediaLine,
 					mediaElement,
+					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -350,11 +357,13 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					unusedExternalTool,
 					unusedSchoolExternalTool,
+					thumbnailFileRecord,
 				};
 			};
 
 			it('should return the available media line', async () => {
-				const { studentClient, mediaBoard, unusedExternalTool, unusedSchoolExternalTool } = await setup();
+				const { studentClient, mediaBoard, unusedExternalTool, unusedSchoolExternalTool, thumbnailFileRecord } =
+					await setup();
 
 				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
 
@@ -365,6 +374,9 @@ describe('Media Board (API)', () => {
 							schoolExternalToolId: unusedSchoolExternalTool.id,
 							name: unusedExternalTool.name,
 							description: unusedExternalTool.description,
+							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
+								thumbnailFileRecord.name
+							)}`,
 						},
 					],
 					collapsed: mediaBoard.collapsed as boolean,
@@ -500,12 +512,18 @@ describe('Media Board (API)', () => {
 
 				const mediaSource = mediaSourceEntityFactory.build();
 				const externalTool = externalToolEntityFactory.build();
+				const thumbnailFileRecord = fileRecordFactory.build();
 				const licensedUnusedExternalTool = externalToolEntityFactory
 					.withMedium({
 						mediumId: 'mediumId',
 						mediaSourceId: mediaSource.sourceId,
 					})
-					.build();
+					.build({
+						thumbnail: {
+							uploadUrl: 'https://uploadurl.com',
+							fileRecord: thumbnailFileRecord,
+						},
+					});
 				const unusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'notLicensedByUser' } });
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					tool: externalTool,
@@ -554,6 +572,7 @@ describe('Media Board (API)', () => {
 					mediaLine,
 					mediaElement,
 					userLicense,
+					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -564,12 +583,18 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					licensedUnusedExternalTool,
 					licensedUnusedSchoolExternalTool,
+					thumbnailFileRecord,
 				};
 			};
 
 			it('should return the available media line with only the licensed element', async () => {
-				const { studentClient, mediaBoard, licensedUnusedExternalTool, licensedUnusedSchoolExternalTool } =
-					await setup();
+				const {
+					studentClient,
+					mediaBoard,
+					licensedUnusedExternalTool,
+					licensedUnusedSchoolExternalTool,
+					thumbnailFileRecord,
+				} = await setup();
 
 				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
 
@@ -580,6 +605,9 @@ describe('Media Board (API)', () => {
 							schoolExternalToolId: licensedUnusedSchoolExternalTool.id,
 							name: licensedUnusedExternalTool.name,
 							description: licensedUnusedExternalTool.description,
+							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
+								thumbnailFileRecord.name
+							)}`,
 						},
 					],
 					collapsed: false,

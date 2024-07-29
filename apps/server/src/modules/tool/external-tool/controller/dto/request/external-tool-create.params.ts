@@ -1,6 +1,6 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { ToolConfigType, ToolContextType } from '../../../../common/enum';
 import {
 	BasicToolConfigParams,
@@ -31,6 +31,11 @@ export class ExternalToolCreateParams {
 	@IsOptional()
 	@ApiPropertyOptional({ type: String, description: 'URL of the logo of the external tool' })
 	logoUrl?: string;
+
+	@IsUrl()
+	@IsOptional()
+	@ApiPropertyOptional({ type: String, description: 'URL of the thumbnail of the external tool' })
+	thumbnailUrl?: string;
 
 	@ValidateNested()
 	@Type(() => ExternalToolConfigCreateParams, {

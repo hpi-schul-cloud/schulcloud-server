@@ -20,9 +20,10 @@ import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileRecordParentType } from '../../interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 

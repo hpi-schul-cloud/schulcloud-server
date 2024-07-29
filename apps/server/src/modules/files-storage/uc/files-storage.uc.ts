@@ -25,10 +25,10 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
-import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { GetFileResponse } from '../interface';
+import { FileRecordParentType, GetFileResponse, StorageLocation } from '../interface';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService, PreviewService } from '../service';
 
