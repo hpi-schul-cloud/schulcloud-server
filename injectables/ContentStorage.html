@@ -534,8 +534,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="272"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:272</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="278"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:278</a></div>
                         </td>
                     </tr>
 
@@ -931,8 +931,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="220"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:220</a></div>
                         </td>
                     </tr>
 
@@ -1082,8 +1082,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="282"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:282</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="288"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:288</a></div>
                         </td>
                     </tr>
 
@@ -1151,8 +1151,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="293"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:293</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:299</a></div>
                         </td>
                     </tr>
 
@@ -1664,7 +1664,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Promise&lt;Permission[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Promise&lt;ContentPermission[]&gt;</a></code>
 
                         </div>
                 </td>
@@ -1693,8 +1693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="231"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:231</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="237"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:237</a></div>
                         </td>
                     </tr>
 
@@ -1775,8 +1775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="193"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:193</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:199</a></div>
                         </td>
                     </tr>
 
@@ -1815,8 +1815,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -1885,8 +1885,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="249"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:249</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/contentStorage.service.ts:255</a></div>
                         </td>
                     </tr>
 
@@ -1950,15 +1950,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
+import {
 	ContentId,
+	ContentPermission,
 	IContentMetadata,
 	IContentStorage,
 	IFileStats,
 	ILibraryName,
 	IUser as ILumiUser,
 	LibraryName,
-	Permission,
 } from &#x27;@lumieducation/h5p-server&#x27;;
 import {
 	HttpException,
@@ -1969,7 +1970,6 @@ import {
 	NotFoundException,
 	UnprocessableEntityException,
 } from &#x27;@nestjs/common&#x27;;
-import { S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { Readable } from &#x27;stream&#x27;;
 import { H5pFileDto } from &#x27;../controller/dto/h5p-file.dto&#x27;;
@@ -2136,8 +2136,14 @@ export class ContentStorage implements IContentStorage {
 		return result;
 	}
 
-	public getUserPermissions(): Promise&lt;Permission[]&gt; {
-		const permissions &#x3D; [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
+	public getUserPermissions(): Promise&lt;ContentPermission[]&gt; {
+		const permissions &#x3D; [
+			ContentPermission.Delete,
+			ContentPermission.Download,
+			ContentPermission.Edit,
+			ContentPermission.Embed,
+			ContentPermission.View,
+		];
 
 		return Promise.resolve(permissions);
 	}

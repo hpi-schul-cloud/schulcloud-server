@@ -4976,6 +4976,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DtoCreator.html" data-type="entity-link" >DtoCreator</a>
                             </li>
                             <li class="link">
+                                <a href="classes/EditorPermissionSystem.html" data-type="entity-link" >EditorPermissionSystem</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ElementContentBody.html" data-type="entity-link" >ElementContentBody</a>
                             </li>
                             <li class="link">
@@ -5619,6 +5622,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/LibraryFileUrlParams.html" data-type="entity-link" >LibraryFileUrlParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LibraryManagementPermissionSystem.html" data-type="entity-link" >LibraryManagementPermissionSystem</a>
                             </li>
                             <li class="link">
                                 <a href="classes/LibraryName.html" data-type="entity-link" >LibraryName</a>

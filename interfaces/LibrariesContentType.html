@@ -196,23 +196,24 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-	H5PConfig,
 	cacheImplementations,
-	LibraryManager,
 	ContentTypeCache,
+	H5PConfig,
+	ILibraryAdministrationOverviewItem,
 	IUser,
 	LibraryAdministration,
-	ILibraryAdministrationOverviewItem,
+	LibraryManager,
 } from &#x27;@lumieducation/h5p-server&#x27;;
 import ContentManager from &#x27;@lumieducation/h5p-server/build/src/ContentManager&#x27;;
 import ContentTypeInformationRepository from &#x27;@lumieducation/h5p-server/build/src/ContentTypeInformationRepository&#x27;;
+import { IHubContentType } from &#x27;@lumieducation/h5p-server/build/src/types&#x27;;
 import { Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ContentStorage, LibraryStorage } from &#x27;@src/modules/h5p-editor&#x27;;
 import { readFileSync } from &#x27;fs&#x27;;
 import { parse } from &#x27;yaml&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { IHubContentType } from &#x27;@lumieducation/h5p-server/build/src/types&#x27;;
 import { IH5PLibraryManagementConfig } from &#x27;./h5p-library-management.config&#x27;;
+import LibraryManagementPermissionSystem from &#x27;./library-management-permission-system&#x27;;
 
 const h5pConfig &#x3D; new H5PConfig(undefined, {
 	baseUrl: &#x27;/api/v3/h5p-editor&#x27;,
@@ -272,8 +273,14 @@ export class H5PLibraryManagementService {
 			undefined,
 			h5pConfig
 		);
-		this.contentTypeRepo &#x3D; new ContentTypeInformationRepository(this.contentTypeCache, this.libraryManager, h5pConfig);
-		const contentManager &#x3D; new ContentManager(this.contentStorage);
+		const permissionSystem &#x3D; new LibraryManagementPermissionSystem();
+		this.contentTypeRepo &#x3D; new ContentTypeInformationRepository(
+			this.contentTypeCache,
+			this.libraryManager,
+			h5pConfig,
+			permissionSystem
+		);
+		const contentManager &#x3D; new ContentManager(this.contentStorage, permissionSystem);
 		this.libraryAdministration &#x3D; new LibraryAdministration(this.libraryManager, contentManager);
 		const filePath &#x3D; this.configService.get&lt;string&gt;(&#x27;H5P_EDITOR__LIBRARY_LIST_PATH&#x27;);
 
@@ -312,9 +319,6 @@ export class H5PLibraryManagementService {
 
 	private createDefaultIUser(): IUser {
 		const user: IUser &#x3D; {
-			canCreateRestricted: true,
-			canInstallRecommended: true,
-			canUpdateAndInstallLibraries: true,
 			email: &#x27;a@b.de&#x27;,
 			id: &#x27;a&#x27;,
 			name: &#x27;a&#x27;,

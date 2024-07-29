@@ -14382,9 +14382,11 @@ it should ensure an empty result</p>
 	) {
 		const cache &#x3D; new cacheImplementations.CachedKeyValueStorage(&#x27;kvcache&#x27;);
 
+		const permissionSystem &#x3D; new EditorPermissionSystem();
 		const h5pOptions: IH5PEditorOptions &#x3D; {
 			enableHubLocalization: true,
 			enableLibraryNameLocalization: true,
+			permissionSystem,
 		};
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const translationFunction: ITranslationFunction &#x3D; await Translator.translate();
