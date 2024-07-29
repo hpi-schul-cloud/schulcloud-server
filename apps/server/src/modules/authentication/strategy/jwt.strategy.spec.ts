@@ -8,7 +8,7 @@ import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
 
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { jwtPayloadFactory } from '../testing';
+import { jwtPayloadFactory } from '..';
 import { JwtStrategy } from './jwt.strategy';
 
 describe('jwt strategy', () => {
