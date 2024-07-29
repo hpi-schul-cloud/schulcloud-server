@@ -356,9 +356,6 @@ export class H5PEditorUc {
 
 	private changeUserType(currentUser: ICurrentUser): LumiIUser {
 		const user: LumiIUser = {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
 			email: '',
 			id: currentUser.userId,
 			name: '',
