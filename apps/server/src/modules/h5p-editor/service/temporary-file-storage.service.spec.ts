@@ -13,9 +13,6 @@ import { TemporaryFileStorage } from './temporary-file-storage.service';
 const helpers = {
 	createUser() {
 		return {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
 			email: 'example@schul-cloud.org',
 			id: '12345',
 			name: 'Example User',
