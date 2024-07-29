@@ -1,8 +1,9 @@
+import { faker } from '@faker-js/faker';
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { JwtPayload } from '../interface/jwt-payload';
 
-class JWTPayload implements JwtPayload {
+class JwtPayloadImpl implements JwtPayload {
 	accountId: string;
 
 	userId: string;
@@ -46,21 +47,21 @@ class JWTPayload implements JwtPayload {
 	}
 }
 
-export class JwtPayloadFactory extends BaseFactory<JWTPayload, JwtPayload> {}
+export class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {}
 
-export const jwtPayloadFactory = JwtPayloadFactory.define(JWTPayload, ({ sequence }) => {
+export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadImpl, ({ sequence }) => {
 	return {
 		accountId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),
 		schoolId: new ObjectId().toHexString(),
-		roles: ['mockRoleId'],
+		roles: ['dummyRoleId'],
 		systemId: new ObjectId().toHexString(),
 		support: true,
 		isExternalUser: true,
-		sub: `dummyAccountId ${sequence}`,
-		jti: `random string ${sequence}`,
-		aud: 'some audience',
-		iss: 'feathers',
+		sub: `${faker.lorem.word()} ${sequence}`,
+		jti: `${faker.lorem.word()} ${sequence}`,
+		aud: `${faker.lorem.word()}`,
+		iss: `${faker.lorem.word()}`,
 		iat: Math.floor(new Date().getTime() / 1000),
 		exp: Math.floor(new Date().getTime() / 1000) + 3600,
 	};

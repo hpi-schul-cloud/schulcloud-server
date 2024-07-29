@@ -4,7 +4,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload } from '../interface/jwt-payload';
-import { iCurrentUserFactory, jwtPayloadFactory } from '../testing';
+import { currentUserFactory, jwtPayloadFactory } from '..';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
@@ -292,7 +292,7 @@ describe('CurrentUserMapper', () => {
 
 	describe('mapCurrentUserToCreateJwtPayload', () => {
 		it('should map current user to create jwt payload', () => {
-			const currentUser = iCurrentUserFactory.build();
+			const currentUser = currentUserFactory.build();
 
 			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
 

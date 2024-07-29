@@ -6,7 +6,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { userDoFactory } from '@shared/testing';
-import { accountDoFactory } from '@src/modules/account/testing';
+import { accountDoFactory } from '@modules/account/testing';
 
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 

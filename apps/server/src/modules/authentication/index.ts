@@ -5,3 +5,5 @@ export { AuthenticationService } from './services';
 export { XApiKeyConfig } from './config';
 export { WsJwtAuthGuard } from './guard/ws-jwt-auth.guard';
 export { AuthenticationConfig } from './authentication-config';
+export { currentUserFactory } from './testing/currentuser.factory';
+export { jwtPayloadFactory } from './testing/jwtpayload.factory';

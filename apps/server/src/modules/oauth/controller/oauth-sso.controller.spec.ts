@@ -4,7 +4,7 @@ import { HydraOauthUc } from '@modules/oauth/uc/hydra-oauth.uc';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { iCurrentUserFactory } from '@src/modules/authentication/testing';
+import { currentUserFactory } from '@modules/authentication';
 import { Request } from 'express';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
@@ -85,7 +85,7 @@ describe('OAuthController', () => {
 	});
 
 	describe('requestAuthToken', () => {
-		const currentUser = iCurrentUserFactory.build({ userId: 'userId' });
+		const currentUser = currentUserFactory.build({ userId: 'userId' });
 		const oauthClientId = 'clientId';
 
 		it('should call the hydraOauthUc', async () => {

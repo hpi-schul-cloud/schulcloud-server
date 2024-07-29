@@ -25,7 +25,7 @@ class CurrentUser implements ICurrentUser {
 	}
 }
 
-export class ICurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
+export class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 	public withRole(role: string): this {
 		const params = { roles: [role] };
 		return this.params(params);
@@ -44,7 +44,7 @@ export class ICurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> 
 	}
 }
 
-export const iCurrentUserFactory = ICurrentUserFactory.define(CurrentUser, () => {
+export const currentUserFactory = CurrentUserFactory.define(CurrentUser, () => {
 	return {
 		userId: new ObjectId().toHexString(),
 		roles: [],

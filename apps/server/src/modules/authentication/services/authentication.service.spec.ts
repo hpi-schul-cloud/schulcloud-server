@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
-import { iCurrentUserFactory } from '../testing';
+import { currentUserFactory } from '..';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
@@ -114,13 +114,13 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
-				const mockCurrentStudentUser = iCurrentUserFactory.withRoleStudent().build();
+				const mockCurrentUser = currentUserFactory.withRole('random role').build();
 
-				await authenticationService.generateJwt(mockCurrentStudentUser);
+				await authenticationService.generateJwt(mockCurrentUser);
 				expect(jwtService.sign).toBeCalledWith(
-					mockCurrentStudentUser,
+					mockCurrentUser,
 					expect.objectContaining({
-						subject: mockCurrentStudentUser.accountId,
+						subject: mockCurrentUser.accountId,
 					})
 				);
 			});
