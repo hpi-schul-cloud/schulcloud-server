@@ -1,8 +1,9 @@
 import { H5PEditor, cacheImplementations } from '@lumieducation/h5p-server';
 
 import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
+import { ContentStorage, LibraryStorage, TemporaryFileStorage, Translator } from '../service';
 import { h5pConfig, h5pUrlGenerator } from '../service/config/h5p-service-config';
-import { ContentStorage, Translator, LibraryStorage, TemporaryFileStorage } from '../service';
+import EditorPermissionSystem from './editor-permission-system';
 
 export const H5PEditorProvider = {
 	provide: H5PEditor,
@@ -14,9 +15,11 @@ export const H5PEditorProvider = {
 	) {
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache');
 
+		const permissionSystem = new EditorPermissionSystem();
 		const h5pOptions: IH5PEditorOptions = {
 			enableHubLocalization: true,
 			enableLibraryNameLocalization: true,
+			permissionSystem,
 		};
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const translationFunction: ITranslationFunction = await Translator.translate();
