@@ -66,9 +66,6 @@ const helpers = {
 
 	createUser() {
 		return {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
 			email: 'example@schul-cloud.org',
 			id: '12345',
 			name: 'Example User',
@@ -131,9 +128,6 @@ describe('ContentStorage', () => {
 			const existingContent = helpers.buildContent(0).withID();
 
 			const iUser: IUser = {
-				canCreateRestricted: false,
-				canInstallRecommended: false,
-				canUpdateAndInstallLibraries: false,
 				email: 'example@schul-cloud.org',
 				id: new ObjectId().toHexString(),
 				name: 'Example User',
