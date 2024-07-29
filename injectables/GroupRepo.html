@@ -1143,7 +1143,7 @@ export class GroupRepo extends BaseDomainObjectRepo&lt;Group, GroupEntity&gt; {
 		const entity: GroupEntity | null &#x3D; await this.em.findOne(GroupEntity, {
 			externalSource: {
 				externalId,
-				system: systemId,
+				system: new ObjectId(systemId),
 			},
 		});
 

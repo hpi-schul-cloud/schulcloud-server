@@ -13990,6 +13990,7 @@ it should ensure an empty result</p>
 		externalSource: new ExternalSourceEmbeddable({
 			externalId: &#x60;externalId-${sequence}&#x60;,
 			system: systemEntityFactory.buildWithId(),
+			lastSyncedAt: new Date(),
 		}),
 	};
 })</code>
@@ -14095,6 +14096,7 @@ it should ensure an empty result</p>
 		externalSource: new ExternalSource({
 			externalId: &#x60;externalId-${sequence}&#x60;,
 			systemId: new ObjectId().toHexString(),
+			lastSyncedAt: new Date(),
 		}),
 	};
 })</code>
