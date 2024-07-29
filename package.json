@@ -265,7 +265,7 @@
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.617.0",
 		"@faker-js/faker": "^8.0.2",
-		"@feathersjs/adapter-tests": "^5.0.12",
+		"@feathersjs/adapter-tests": "^5.0.29",
 		"@golevelup/ts-jest": "^0.3.4",
 		"@jest-mock/express": "^1.4.5",
 		"@nestjs/cli": "^10.1.17",
