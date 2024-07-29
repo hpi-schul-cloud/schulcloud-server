@@ -1,5 +1,4 @@
-import { Collection, Embedded, Entity, Enum, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
-import { Course as CourseEntity } from '@shared/domain/entity';
+import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { ExternalSourceEmbeddable } from '@shared/domain/entity/external-source.embeddable';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
@@ -37,7 +36,7 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Enum()
 	type: GroupEntityTypes;
 
-	@Embedded(() => ExternalSourceEmbeddable, { nullable: true })
+	@Embedded(() => ExternalSourceEmbeddable, { nullable: true, object: true })
 	externalSource?: ExternalSourceEmbeddable;
 
 	@Embedded(() => GroupValidPeriodEmbeddable, { nullable: true })
@@ -48,9 +47,6 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 
 	@ManyToOne(() => SchoolEntity, { nullable: true })
 	organization?: SchoolEntity;
-
-	@OneToMany(() => CourseEntity, (course: CourseEntity) => course.syncedWithGroup)
-	syncedCourses: Collection<CourseEntity> = new Collection<CourseEntity>(this);
 
 	constructor(props: GroupEntityProps) {
 		super();

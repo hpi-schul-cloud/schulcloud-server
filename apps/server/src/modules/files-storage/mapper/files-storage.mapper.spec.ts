@@ -8,7 +8,8 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType, PreviewStatus } from '../entity';
+import { FileRecord, PreviewStatus } from '../entity';
+import { FileRecordParentType } from '../interface';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {

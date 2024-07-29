@@ -3,8 +3,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InstanceProps } from '../domain';
 import { InstanceEntity } from '../entity';
+import { InstanceNotIdentifiableLoggableException } from '../loggable';
 import { instanceEntityFactory, instanceFactory } from '../testing';
-import { InstanceRepo } from './instance-repo.service';
+import { InstanceRepo } from './instance.repo';
 
 describe(InstanceRepo.name, () => {
 	let module: TestingModule;
@@ -113,6 +114,46 @@ describe(InstanceRepo.name, () => {
 				const result = await repo.save(instance);
 
 				expect(result).toEqual(instance);
+			});
+		});
+	});
+
+	describe('getInstance', () => {
+		describe('when the instance is identifiable', () => {
+			const setup = async () => {
+				const instanceEntity = instanceEntityFactory.buildWithId();
+
+				await em.getCollection(InstanceEntity.name).deleteMany({});
+				await em.persistAndFlush(instanceEntity);
+				em.clear();
+
+				return {
+					instanceEntity,
+				};
+			};
+
+			it('should return the instance', async () => {
+				const { instanceEntity } = await setup();
+
+				const result = await repo.getInstance();
+
+				expect(result.getProps()).toEqual<InstanceProps>({
+					id: instanceEntity.id,
+					name: instanceEntity.name,
+				});
+			});
+		});
+
+		describe('when the instance is not identifiable', () => {
+			const setup = async () => {
+				await em.getCollection(InstanceEntity.name).deleteMany({});
+				em.clear();
+			};
+
+			it('should throw an error', async () => {
+				await setup();
+
+				await expect(repo.getInstance()).rejects.toThrowError(InstanceNotIdentifiableLoggableException);
 			});
 		});
 	});

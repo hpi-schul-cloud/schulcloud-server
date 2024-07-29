@@ -22,6 +22,7 @@ export class MediaAvailableLineResponseMapper {
 					name: element.name,
 					description: element.description,
 					logoUrl: element.logoUrl,
+					thumbnailUrl: element.thumbnailUrl,
 				})
 		);
 	}

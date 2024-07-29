@@ -1,11 +1,7 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	FileRecord,
-	FileRecordProperties,
-	FileRecordSecurityCheck,
-	StorageLocation,
-} from '@modules/files-storage/entity';
+import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 

@@ -68,6 +68,7 @@ describe('GroupRepo', () => {
 					externalSource: new ExternalSource({
 						externalId: group.externalSource?.externalId ?? '',
 						systemId: group.externalSource?.system.id ?? '',
+						lastSyncedAt: group.externalSource?.lastSyncedAt ?? new Date(2024, 1, 1),
 					}),
 					users: [
 						new GroupUser({
@@ -382,13 +383,20 @@ describe('GroupRepo', () => {
 				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					users: [groupUserEntity],
 				});
+
+				const courseGroup = groupEntityFactory.buildWithId({
+					users: [groupUserEntity],
+					type: GroupEntityTypes.COURSE,
+				});
+				groups.push(courseGroup);
 				const nameQuery = groups[2].name.slice(-3);
 				const course: CourseEntity = courseFactory.build({ syncedWithGroup: groups[0] });
-				const availableGroupsCount = 2;
+				const courseSyncedWithGroupOfTypeClass = courseFactory.build({ syncedWithGroup: groups[3] });
+				const availableGroupsCount = 3;
 
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
 
-				await em.persistAndFlush([userEntity, ...groups, ...otherGroups, course]);
+				await em.persistAndFlush([userEntity, ...groups, ...otherGroups, course, courseSyncedWithGroupOfTypeClass]);
 				em.clear();
 
 				const defaultOptions: IFindOptions<Group> = { pagination: { skip: 0 } };
@@ -418,7 +426,7 @@ describe('GroupRepo', () => {
 
 				expect(result.total).toEqual(availableGroupsCount);
 				expect(result.data.length).toEqual(1);
-				expect(result.data[0].id).toEqual(groups[2].id);
+				expect(result.data[0].id).toEqual(groups[1].id);
 			});
 
 			it('should return groups according to name query', async () => {
@@ -463,7 +471,7 @@ describe('GroupRepo', () => {
 				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const schoolId: EntityId = school.id;
 				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
-					type: GroupEntityTypes.CLASS,
+					type: GroupEntityTypes.OTHER,
 					organization: school,
 				});
 				const nameQuery = groups[2].name.slice(-3);
@@ -472,7 +480,7 @@ describe('GroupRepo', () => {
 
 				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
-					type: GroupEntityTypes.CLASS,
+					type: GroupEntityTypes.OTHER,
 					organization: otherSchool,
 				});
 
@@ -669,6 +677,7 @@ describe('GroupRepo', () => {
 					externalSource: new ExternalSource({
 						externalId: groupEntity.externalSource?.externalId ?? '',
 						systemId: groupEntity.externalSource?.system.id ?? '',
+						lastSyncedAt: groupEntity.externalSource?.lastSyncedAt ?? new Date(2024, 1, 1),
 					}),
 					users: [
 						new GroupUser({

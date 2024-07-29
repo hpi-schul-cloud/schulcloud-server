@@ -9,3 +9,4 @@ export {
 export { externalToolParameterDatasheetTemplateDataFactory } from './external-tool-datasheet-template-data.factory';
 export { toolConfigurationStatusFactory } from './tool-configuration-status.factory';
 export { externalToolDatasheetTemplateDataFactory } from './external-tool-datasheet-template-data.factory';
+export { fileRecordRefFactory } from './file-record-ref.factory';

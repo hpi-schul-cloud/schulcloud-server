@@ -62,13 +62,6 @@
 		"SECURE": false,
 		"EXPIRES_SECONDS": 2592000000
 	},
-	"SESSION": {
-		"SAME_SITE": "lax",
-		"SECURE": false,
-		"HTTP_ONLY": true,
-		"EXPIRES_SECONDS": 2592000000,
-		"SECRET": "devSecret"
-	},
 	"HYDRA_URI": "http://localhost:9001",
 	"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": true,
 	"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": true,
@@ -92,7 +85,7 @@
 		"PAD_URI": "http://localhost:9001/p",
 		"URI": "http://localhost:9001/api/1.2.14"
 	},
-	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo",
+	"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": "http://localhost:8888/v1/policies-info",
 	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"

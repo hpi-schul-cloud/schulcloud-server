@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
@@ -51,6 +51,7 @@ describe(BoardNodeCopyService.name, () => {
 		CTL_TOOLS_BACKEND_URL: '',
 		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
 		CTL_TOOLS_RELOAD_TIME_MS: 0,
+		FILES_STORAGE__SERVICE_BASE_URL: '',
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;

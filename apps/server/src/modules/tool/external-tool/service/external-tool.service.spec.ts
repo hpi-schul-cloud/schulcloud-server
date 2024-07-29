@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { OauthProviderService } from '@infra/oauth-provider';
-import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { OauthProviderService } from '../../../oauth-provider/domain/service/oauth-provider.service';
+import { providerOauthClientFactory } from '../../../oauth-provider/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
@@ -85,13 +86,13 @@ describe(ExternalToolService.name, () => {
 		const oauth2ToolConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigFactory.build();
 		const lti11ToolConfig: Lti11ToolConfig = lti11ToolConfigFactory.build();
 
-		const oauthClient: ProviderOauthClient = {
+		const oauthClient: ProviderOauthClient = providerOauthClientFactory.build({
 			client_id: oauth2ToolConfig.clientId,
 			scope: oauth2ToolConfig.scope,
 			token_endpoint_auth_method: oauth2ToolConfig.tokenEndpointAuthMethod,
 			redirect_uris: oauth2ToolConfig.redirectUris,
 			frontchannel_logout_uri: oauth2ToolConfig.frontchannelLogoutUri,
-		};
+		});
 
 		return {
 			externalTool,
@@ -545,9 +546,9 @@ describe(ExternalToolService.name, () => {
 
 				const oauthClientId: string =
 					existingTool.config instanceof Oauth2ToolConfig ? existingTool.config.clientId : 'undefined';
-				const providerOauthClient: ProviderOauthClient = {
+				const providerOauthClient: ProviderOauthClient = providerOauthClientFactory.build({
 					client_id: oauthClientId,
-				};
+				});
 
 				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
 				mapper.mapDoToProviderOauthClient.mockReturnValue(providerOauthClient);
@@ -578,9 +579,9 @@ describe(ExternalToolService.name, () => {
 
 				const oauthClientId: string =
 					existingTool.config instanceof Oauth2ToolConfig ? existingTool.config.clientId : 'undefined';
-				const providerOauthClient: ProviderOauthClient = {
+				const providerOauthClient: ProviderOauthClient = providerOauthClientFactory.build({
 					client_id: oauthClientId,
-				};
+				});
 
 				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
 				mapper.mapDoToProviderOauthClient.mockReturnValue(providerOauthClient);
@@ -611,9 +612,9 @@ describe(ExternalToolService.name, () => {
 
 				const oauthClientId: string =
 					existingTool.config instanceof Oauth2ToolConfig ? existingTool.config.clientId : 'undefined';
-				const providerOauthClient: ProviderOauthClient = {
+				const providerOauthClient: ProviderOauthClient = providerOauthClientFactory.build({
 					client_id: oauthClientId,
-				};
+				});
 
 				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
 				mapper.mapDoToProviderOauthClient.mockReturnValue(providerOauthClient);
@@ -642,9 +643,9 @@ describe(ExternalToolService.name, () => {
 					.withOauth2Config()
 					.build({ id: existingTool.id, name: 'newName' });
 
-				const providerOauthClient: ProviderOauthClient = {
+				const providerOauthClient: ProviderOauthClient = providerOauthClientFactory.build({
 					client_id: undefined,
-				};
+				});
 
 				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
 				mapper.mapDoToProviderOauthClient.mockReturnValue(providerOauthClient);

@@ -27,11 +27,15 @@ export abstract class RpcMessageProducer {
 	}
 
 	protected createRequest(event: string, payload: unknown) {
+		// expiration should be greater than timeout
+		const expiration = this.timeout > 0 ? this.timeout * 1.5 : undefined;
+
 		return {
 			exchange: this.exchange,
 			routingKey: event,
 			payload,
 			timeout: this.timeout,
+			expiration,
 		};
 	}
 }

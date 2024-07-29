@@ -1,5 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { CourseDoService } from '@modules/learnroom';
+import { Course } from '@modules/learnroom/domain';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -22,6 +24,7 @@ export class SchulconnexGroupProvisioningService {
 		private readonly schoolService: LegacySchoolService,
 		private readonly roleService: RoleService,
 		private readonly groupService: GroupService,
+		private readonly courseService: CourseDoService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly logger: Logger
 	) {}
@@ -103,6 +106,7 @@ export class SchulconnexGroupProvisioningService {
 			externalSource: new ExternalSource({
 				externalId: externalGroup.externalId,
 				systemId,
+				lastSyncedAt: new Date(),
 			}),
 			type: externalGroup.type,
 			organizationId,
@@ -196,8 +200,11 @@ export class SchulconnexGroupProvisioningService {
 				group.removeUser(user);
 
 				if (group.isEmpty()) {
-					await this.groupService.delete(group);
-					return null;
+					const courses: Course[] = await this.courseService.findBySyncedGroup(group);
+					if (!courses || courses.length === 0) {
+						await this.groupService.delete(group);
+						return null;
+					}
 				}
 
 				return this.groupService.save(group);
