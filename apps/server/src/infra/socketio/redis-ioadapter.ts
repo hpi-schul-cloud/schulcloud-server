@@ -9,6 +9,14 @@ export class RedisIoAdapter extends IoAdapter {
 	connectToRedis(): ReturnType<typeof createAdapter> {
 		const pubClient = new Redis();
 		const subClient = pubClient.duplicate();
+
+		pubClient.on('error', (err) => {
+			console.error('pubClient error', err);
+		});
+		subClient.on('error', (err) => {
+			console.error('subClient error', err);
+		});
+
 		const adapterConstructor = createAdapter(pubClient, subClient);
 		return adapterConstructor as ReturnType<typeof createAdapter>;
 	}
