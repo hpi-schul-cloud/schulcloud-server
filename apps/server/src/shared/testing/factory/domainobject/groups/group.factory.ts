@@ -1,6 +1,6 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupProps, GroupTypes } from '@modules/group/domain';
 import { ExternalSource } from '@shared/domain/domainobject';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObjectFactory } from '../domain-object.factory';
 
 export const groupFactory = DomainObjectFactory.define<Group, GroupProps>(Group, ({ sequence }) => {
@@ -20,6 +20,7 @@ export const groupFactory = DomainObjectFactory.define<Group, GroupProps>(Group,
 		externalSource: new ExternalSource({
 			externalId: `externalId-${sequence}`,
 			systemId: new ObjectId().toHexString(),
+			lastSyncedAt: new Date(),
 		}),
 	};
 });
