@@ -159,6 +159,7 @@
 		"@nestjs/swagger": "^7.1.10",
 		"@nestjs/websockets": "^10.3.7",
 		"@socket.io/mongo-adapter": "^0.3.2",
+		"@socket.io/redis-adapter": "^8.3.0",
 		"@types/gm": "^1.25.1",
 		"@types/ldapjs": "^2.2.5",
 		"@types/pdfmake": "^0.2.8",
