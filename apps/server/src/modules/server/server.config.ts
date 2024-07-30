@@ -272,6 +272,7 @@ const config: ServerConfig = {
 	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	HOST: Configuration.get('HOST') as string,
+	FILES_STORAGE__SERVICE_BASE_URL: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
 	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
 	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
 	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,

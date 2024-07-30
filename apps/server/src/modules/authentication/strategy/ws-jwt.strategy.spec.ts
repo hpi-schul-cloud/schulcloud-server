@@ -1,4 +1,3 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,23 +5,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { WsException } from '@nestjs/websockets';
 import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
-import { JwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
+import { jwtPayloadFactory } from '../testing';
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;
 	let strategy: WsJwtStrategy;
 	let module: TestingModule;
-	const jwtPayload: JwtPayload = {
-		accountId: new ObjectId().toHexString(),
-		userId: new ObjectId().toHexString(),
-		schoolId: new ObjectId().toHexString(),
-		roles: [new ObjectId().toHexString()],
-		jti: 'someRandomString',
-		systemId: new ObjectId().toHexString(),
-		support: true,
-	} as JwtPayload;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -53,39 +43,49 @@ describe('jwt strategy', () => {
 
 	describe('when authenticate a user with jwt', () => {
 		const setup = () => {
+			const mockJwtPayload = jwtPayloadFactory.build();
+
 			validationAdapter.isWhitelisted.mockResolvedValueOnce();
 			validationAdapter.isWhitelisted.mockClear();
+			return {
+				mockJwtPayload,
+			};
 		};
 
 		it('should check jwt for being whitelisted', async () => {
-			setup();
-			await strategy.validate(jwtPayload);
-			expect(validationAdapter.isWhitelisted).toHaveBeenCalledWith(jwtPayload.accountId, jwtPayload.jti);
+			const { mockJwtPayload } = setup();
+			await strategy.validate(mockJwtPayload);
+			expect(validationAdapter.isWhitelisted).toHaveBeenCalledWith(mockJwtPayload.accountId, mockJwtPayload.jti);
 		});
 
 		it('should return user', async () => {
-			setup();
-			const user = await strategy.validate(jwtPayload);
+			const { mockJwtPayload } = setup();
+			const user = await strategy.validate(mockJwtPayload);
 			expect(user).toMatchObject({
-				userId: jwtPayload.userId,
-				roles: [jwtPayload.roles[0]],
-				schoolId: jwtPayload.schoolId,
-				accountId: jwtPayload.accountId,
-				systemId: jwtPayload.systemId,
-				impersonated: jwtPayload.support,
+				userId: mockJwtPayload.userId,
+				roles: [mockJwtPayload.roles[0]],
+				schoolId: mockJwtPayload.schoolId,
+				accountId: mockJwtPayload.accountId,
+				systemId: mockJwtPayload.systemId,
+				impersonated: mockJwtPayload.support,
 			});
 		});
 	});
 
 	describe('when jwt is not whitelisted', () => {
 		const setup = () => {
+			const mockJwtPayload = jwtPayloadFactory.build();
+
 			validationAdapter.isWhitelisted.mockRejectedValueOnce(null);
 			validationAdapter.isWhitelisted.mockClear();
+			return {
+				mockJwtPayload,
+			};
 		};
 
 		it('should throw an UnauthorizedException', async () => {
-			setup();
-			await expect(() => strategy.validate(jwtPayload)).rejects.toThrow(WsException);
+			const { mockJwtPayload } = setup();
+			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(WsException);
 		});
 	});
 });

@@ -13,10 +13,14 @@ export class MediaAvailableLineElementResponse {
 	@ApiPropertyOptional({ description: 'Logo url of the media available line element' })
 	logoUrl?: string;
 
+	@ApiPropertyOptional({ description: 'Thumbnail url of the media available line element' })
+	thumbnailUrl?: string;
+
 	constructor(props: MediaAvailableLineElementResponse) {
 		this.schoolExternalToolId = props.schoolExternalToolId;
 		this.name = props.name;
 		this.description = props.description;
 		this.logoUrl = props.logoUrl;
+		this.thumbnailUrl = props.thumbnailUrl;
 	}
 }

@@ -2,11 +2,12 @@ import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
+import { FileRecordParentType, StorageLocation } from '../interface';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -14,23 +15,6 @@ export enum ScanStatus {
 	BLOCKED = 'blocked',
 	WONT_CHECK = 'wont_check',
 	ERROR = 'error',
-}
-
-export enum FileRecordParentType {
-	'User' = 'users',
-	'School' = 'schools',
-	'Course' = 'courses',
-	'Task' = 'tasks',
-	'Lesson' = 'lessons',
-	'Submission' = 'submissions',
-	'Grading' = 'gradings',
-	'BoardNode' = 'boardnodes',
-	'ExternalTool' = 'externaltools',
-}
-
-export enum StorageLocation {
-	SCHOOL = 'school',
-	INSTANCE = 'instance',
 }
 
 export enum PreviewStatus {

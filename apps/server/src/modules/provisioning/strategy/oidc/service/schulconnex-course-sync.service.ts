@@ -1,5 +1,5 @@
 import { Group, GroupUser } from '@modules/group';
-import { CourseDoService } from '@modules/learnroom/service/course-do.service';
+import { CourseDoService } from '@modules/learnroom';
 import { RoleDto, RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
@@ -36,9 +36,7 @@ export class SchulconnexCourseSyncService {
 					course.students = students.map((user: GroupUser): EntityId => user.userId);
 					course.teachers = teachers.map((user: GroupUser): EntityId => user.userId);
 				} else {
-					// Remove all remaining students and break the link, when the last teacher of the group should be removed
 					course.students = [];
-					course.syncedWithGroup = undefined;
 				}
 			});
 

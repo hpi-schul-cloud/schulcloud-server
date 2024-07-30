@@ -1,6 +1,6 @@
 import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

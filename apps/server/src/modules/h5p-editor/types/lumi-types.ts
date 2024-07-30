@@ -15,12 +15,6 @@ export class LumiUserWithContentData implements IUser {
 
 	schoolId: EntityId;
 
-	canCreateRestricted: boolean;
-
-	canInstallRecommended: boolean;
-
-	canUpdateAndInstallLibraries: boolean;
-
 	email: string;
 
 	id: EntityId;
@@ -34,9 +28,6 @@ export class LumiUserWithContentData implements IUser {
 		this.contentParentId = parentParams.parentId;
 		this.schoolId = parentParams.schoolId;
 
-		this.canCreateRestricted = user.canCreateRestricted;
-		this.canInstallRecommended = user.canInstallRecommended;
-		this.canUpdateAndInstallLibraries = user.canUpdateAndInstallLibraries;
 		this.email = user.email;
 		this.id = user.id;
 		this.name = user.name;

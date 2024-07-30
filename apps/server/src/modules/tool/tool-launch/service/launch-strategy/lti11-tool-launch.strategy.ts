@@ -62,6 +62,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 		const additionalProperties: PropertyData[] = [
 			new PropertyData({ name: 'key', value: config.key }),
+			// TODO N21-2097 use decryption for secret
 			new PropertyData({ name: 'secret', value: config.secret }),
 
 			new PropertyData({ name: 'lti_message_type', value: config.lti_message_type, location: PropertyLocation.BODY }),

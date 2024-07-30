@@ -26,9 +26,10 @@ import {
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
+import { fileRecordRefFactory } from '../testing/file-record-ref.factory';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
-describe('ExternalToolResponseMapper', () => {
+describe(ExternalToolResponseMapper.name, () => {
 	describe('mapToExternalToolResponse', () => {
 		describe('when mapping basic tool DO', () => {
 			const setup = () => {
@@ -79,6 +80,7 @@ describe('ExternalToolResponseMapper', () => {
 					openNewTab: true,
 					config: basicToolConfig,
 					isDeactivated: true,
+					thumbnail: fileRecordRefFactory.build(),
 				});
 
 				const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
@@ -92,6 +94,7 @@ describe('ExternalToolResponseMapper', () => {
 					config: basicToolConfigResponse,
 					isDeactivated: true,
 					description: externalTool.description,
+					thumbnailUrl: externalTool.thumbnail?.uploadUrl,
 				});
 
 				return {

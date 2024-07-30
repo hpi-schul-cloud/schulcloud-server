@@ -15,6 +15,13 @@ export class ToolReferenceResponse {
 	})
 	logoUrl?: string;
 
+	@ApiPropertyOptional({
+		nullable: false,
+		required: false,
+		description: 'The url of the thumbnail which is stored in the db',
+	})
+	thumbnailUrl?: string;
+
 	@ApiProperty({ nullable: false, required: true, description: 'The display name of the tool' })
 	displayName: string;
 
@@ -33,6 +40,7 @@ export class ToolReferenceResponse {
 		this.contextToolId = toolReferenceResponse.contextToolId;
 		this.description = toolReferenceResponse.description;
 		this.logoUrl = toolReferenceResponse.logoUrl;
+		this.thumbnailUrl = toolReferenceResponse.thumbnailUrl;
 		this.displayName = toolReferenceResponse.displayName;
 		this.openInNewTab = toolReferenceResponse.openInNewTab;
 		this.status = toolReferenceResponse.status;

@@ -1,12 +1,13 @@
+import { S3ClientAdapter } from '@infra/s3-client';
 import {
 	ContentId,
+	ContentPermission,
 	IContentMetadata,
 	IContentStorage,
 	IFileStats,
 	ILibraryName,
 	IUser as ILumiUser,
 	LibraryName,
-	Permission,
 } from '@lumieducation/h5p-server';
 import {
 	HttpException,
@@ -17,7 +18,6 @@ import {
 	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { ErrorUtils } from '@src/core/error/utils';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
@@ -184,8 +184,14 @@ export class ContentStorage implements IContentStorage {
 		return result;
 	}
 
-	public getUserPermissions(): Promise<Permission[]> {
-		const permissions = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
+	public getUserPermissions(): Promise<ContentPermission[]> {
+		const permissions = [
+			ContentPermission.Delete,
+			ContentPermission.Download,
+			ContentPermission.Edit,
+			ContentPermission.Embed,
+			ContentPermission.View,
+		];
 
 		return Promise.resolve(permissions);
 	}

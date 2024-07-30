@@ -66,6 +66,7 @@ export class ExternalToolResponseMapper {
 			description: externalTool.description,
 			url: externalTool.url,
 			logoUrl: externalTool.logoUrl,
+			thumbnailUrl: externalTool.thumbnail?.uploadUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalTool.isHidden,

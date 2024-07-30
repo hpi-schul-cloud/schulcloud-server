@@ -1,8 +1,8 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
+import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
-import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { SchoolYearService } from '@modules/legacy-school';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { School, SchoolService, SchoolYear } from '@modules/school/domain';

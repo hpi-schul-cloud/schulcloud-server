@@ -29,6 +29,8 @@ export type ExternalToolDto<T> = {
 
 	logoUrl?: string;
 
+	thumbnailUrl?: string;
+
 	config: T;
 
 	parameters?: CustomParameterDto[];
@@ -42,8 +44,6 @@ export type ExternalToolDto<T> = {
 	restrictToContexts?: ToolContextType[];
 
 	medium?: ExternalToolMediumDto;
-
-	createdAt?: Date;
 };
 
 export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;

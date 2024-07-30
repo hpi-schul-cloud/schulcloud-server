@@ -15,8 +15,9 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType } from '../../entity';
+import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordParentType } from '../../interface';
 import { FileRecordResponse, RenameFileParams } from '../dto';
 
 const baseRouteName = '/file/rename/';
