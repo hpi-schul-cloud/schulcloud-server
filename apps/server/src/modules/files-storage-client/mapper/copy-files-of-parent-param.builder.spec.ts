@@ -1,6 +1,6 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
 import { FileParamBuilder } from './files-storage-param.builder';

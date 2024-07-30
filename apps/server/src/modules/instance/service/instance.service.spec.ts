@@ -54,4 +54,26 @@ describe(InstanceService.name, () => {
 			});
 		});
 	});
+
+	describe('getInstance', () => {
+		describe('when a instance exists', () => {
+			const setup = () => {
+				const instance = instanceFactory.build();
+
+				instanceRepo.getInstance.mockResolvedValue(instance);
+
+				return {
+					instance,
+				};
+			};
+
+			it('should return the instance', async () => {
+				const { instance } = setup();
+
+				const result = await service.getInstance();
+
+				expect(result).toEqual(instance);
+			});
+		});
+	});
 });

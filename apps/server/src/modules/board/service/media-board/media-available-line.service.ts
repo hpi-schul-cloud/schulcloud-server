@@ -147,6 +147,7 @@ export class MediaAvailableLineService {
 			name: externalTool.name,
 			description: externalTool.description,
 			logoUrl,
+			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),
 		});
 
 		return element;

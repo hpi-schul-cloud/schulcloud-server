@@ -19,6 +19,7 @@ import {
 } from '@modules/tool/external-tool/domain';
 import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
 import { DeepPartial } from 'fishery';
+import { fileRecordRefFactory } from './file-record-ref.factory';
 
 export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
 	return {
@@ -122,6 +123,14 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 				mediaSourceId: 'mediaSourceId',
 				...externalToolMedium,
 			},
+		};
+
+		return this.params(params);
+	}
+
+	withFileRecordRef(): this {
+		const params: DeepPartial<ExternalTool> = {
+			thumbnail: fileRecordRefFactory.build(),
 		};
 
 		return this.params(params);
