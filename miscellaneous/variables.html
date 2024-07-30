@@ -424,6 +424,9 @@
                             <a href="#CurrentUser" title="apps/server/src/modules/authentication/decorator/auth.decorator.ts" ><b>CurrentUser</b>&nbsp;&nbsp;&nbsp;(apps/.../auth.decorator.ts)</a>
                         </li>
                         <li>
+                            <a href="#currentUserFactory" title="apps/server/src/modules/authentication/testing/currentuser.factory.ts" ><b>currentUserFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../currentuser.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#customParameterEntityFactory" title="apps/server/src/modules/tool/external-tool/testing/external-tool-entity.factory.ts" ><b>customParameterEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -848,6 +851,9 @@
                         </li>
                         <li>
                             <a href="#jwtModuleOptions" title="apps/server/src/modules/authentication/authentication.module.ts" ><b>jwtModuleOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../authentication.module.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#jwtPayloadFactory" title="apps/server/src/modules/authentication/testing/jwtpayload.factory.ts" ><b>jwtPayloadFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../jwtpayload.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#KeycloakConfigurationInputFiles" title="apps/server/src/infra/identity-management/keycloak-configuration/interface/keycloak-configuration-input-files.interface.ts" ><b>KeycloakConfigurationInputFiles</b>&nbsp;&nbsp;&nbsp;(apps/.../keycloak-configuration-input-files.interface.ts)</a>
@@ -9189,6 +9195,38 @@ To filter by consentStatus, it has to created first</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/authentication/testing/currentuser.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currentUserFactory"></a>
+                    <span class="name">
+                        <span ><b>currentUserFactory</b></span>
+                        <a href="#currentUserFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>CurrentUserFactory.define(CurrentUser, () &#x3D;&gt; {
+	return {
+		userId: new ObjectId().toHexString(),
+		roles: [],
+		schoolId: new ObjectId().toHexString(),
+		accountId: new ObjectId().toHexString(),
+		systemId: new ObjectId().toHexString(),
+		isExternalUser: false,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/tool/external-tool/testing/external-tool-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -15597,6 +15635,45 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>externalAuthConfig</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/authentication/testing/jwtpayload.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="jwtPayloadFactory"></a>
+                    <span class="name">
+                        <span ><b>jwtPayloadFactory</b></span>
+                        <a href="#jwtPayloadFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>JwtPayloadFactory.define(JwtPayloadImpl, ({ sequence }) &#x3D;&gt; {
+	return {
+		accountId: new ObjectId().toHexString(),
+		userId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
+		roles: [&#x27;dummyRoleId&#x27;],
+		systemId: new ObjectId().toHexString(),
+		support: true,
+		isExternalUser: true,
+		sub: &#x60;${faker.lorem.word()} ${sequence}&#x60;,
+		jti: &#x60;${faker.lorem.word()} ${sequence}&#x60;,
+		aud: &#x60;${faker.lorem.word()}&#x60;,
+		iss: &#x60;${faker.lorem.word()}&#x60;,
+		iat: Math.floor(new Date().getTime() / 1000),
+		exp: Math.floor(new Date().getTime() / 1000) + 3600,
+	};
+})</code>
                     </td>
                 </tr>
 

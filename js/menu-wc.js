@@ -4772,6 +4772,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CreateSubmissionItemBodyParams.html" data-type="entity-link" >CreateSubmissionItemBodyParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CurrentUser.html" data-type="entity-link" >CurrentUser</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CurrentUserFactory.html" data-type="entity-link" >CurrentUserFactory</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CurrentUserMapper.html" data-type="entity-link" >CurrentUserMapper</a>
                             </li>
                             <li class="link">
@@ -5544,6 +5550,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/JwtExtractor.html" data-type="entity-link" >JwtExtractor</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/JwtPayloadFactory.html" data-type="entity-link" >JwtPayloadFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/JwtPayloadImpl.html" data-type="entity-link" >JwtPayloadImpl</a>
                             </li>
                             <li class="link">
                                 <a href="classes/JwtTestFactory.html" data-type="entity-link" >JwtTestFactory</a>
