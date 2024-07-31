@@ -5,9 +5,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { authorizationClientConfig } from './authorization-client-config';
 import { FileSecurityController, FilesStorageConfigController, FilesStorageController } from './controller';
-import { config } from './files-storage.config';
+import { authorizationClientConfig, config } from './files-storage.config';
 import { FilesStorageModule } from './files-storage.module';
 import { FilesStorageUC } from './uc';
 

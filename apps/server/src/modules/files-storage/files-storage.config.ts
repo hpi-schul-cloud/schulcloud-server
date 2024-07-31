@@ -1,6 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { S3Config } from '@infra/s3-client';
 import { CoreModuleConfig } from '@src/core';
+import { AuthorizationClientConfig } from '@src/infra/authorization-client/authorization-client.module';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
 export interface FileStorageConfig extends CoreModuleConfig {
@@ -14,10 +15,15 @@ export const defaultConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
 };
 
+export const authorizationClientConfig: AuthorizationClientConfig = {
+	basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+};
+
 const fileStorageConfig: FileStorageConfig = {
 	MAX_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
 	MAX_SECURITY_CHECK_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
 	USE_STREAM_TO_ANTIVIRUS: Configuration.get('FILES_STORAGE__USE_STREAM_TO_ANTIVIRUS') as boolean,
+	...authorizationClientConfig,
 	...defaultConfig,
 };
 
