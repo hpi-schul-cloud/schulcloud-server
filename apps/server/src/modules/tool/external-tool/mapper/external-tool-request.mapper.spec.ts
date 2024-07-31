@@ -84,6 +84,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.config = basicConfigParams;
 				externalToolCreateParams.isDeactivated = true;
 				externalToolCreateParams.description = 'description';
+				externalToolCreateParams.thumbnailUrl = 'mockThumbnailUrl';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -154,9 +155,9 @@ describe('ExternalToolRequestMapper', () => {
 						baseUrl: 'mockUrl',
 					},
 					isDeactivated: externalToolDOCreate.isDeactivated,
-					createdAt: externalToolDOCreate.createdAt,
 					medium: externalToolDOCreate.medium,
 					restrictToContexts: externalToolDOCreate.restrictToContexts,
+					thumbnailUrl: externalToolCreateParams.thumbnailUrl,
 				});
 			});
 		});
@@ -276,7 +277,6 @@ describe('ExternalToolRequestMapper', () => {
 						launch_presentation_locale: lti11ToolConfigDO.launch_presentation_locale,
 					},
 					isDeactivated: externalToolDOCreate.isDeactivated,
-					createdAt: externalToolDOCreate.createdAt,
 					medium: externalToolDOCreate.medium,
 					restrictToContexts: externalToolDOCreate.restrictToContexts,
 				});
@@ -404,7 +404,6 @@ describe('ExternalToolRequestMapper', () => {
 						tokenEndpointAuthMethod: oauth2ToolConfigDO.tokenEndpointAuthMethod,
 					},
 					isDeactivated: externalToolDOCreate.isDeactivated,
-					createdAt: externalToolDOCreate.createdAt,
 					medium: externalToolDOCreate.medium,
 					restrictToContexts: externalToolDOCreate.restrictToContexts,
 				});
@@ -517,7 +516,6 @@ describe('ExternalToolRequestMapper', () => {
 						baseUrl: 'mockUrl',
 					},
 					isDeactivated: externalToolDOUpdate.isDeactivated,
-					createdAt: externalToolDOUpdate.createdAt,
 					medium: externalToolDOUpdate.medium,
 					restrictToContexts: externalToolDOUpdate.restrictToContexts,
 				});
@@ -644,7 +642,6 @@ describe('ExternalToolRequestMapper', () => {
 						launch_presentation_locale: lti11ToolConfigDO.launch_presentation_locale,
 					},
 					isDeactivated: externalToolDOUpdate.isDeactivated,
-					createdAt: externalToolDOUpdate.createdAt,
 					medium: externalToolDOUpdate.medium,
 					restrictToContexts: externalToolDOUpdate.restrictToContexts,
 				});
@@ -777,7 +774,6 @@ describe('ExternalToolRequestMapper', () => {
 						tokenEndpointAuthMethod: oauth2ToolConfigDO.tokenEndpointAuthMethod,
 					},
 					isDeactivated: externalToolDOUpdate.isDeactivated,
-					createdAt: externalToolDOUpdate.createdAt,
 					medium: externalToolDOUpdate.medium,
 					restrictToContexts: externalToolDOUpdate.restrictToContexts,
 				});

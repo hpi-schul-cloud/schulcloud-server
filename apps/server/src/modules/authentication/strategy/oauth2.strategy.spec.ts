@@ -6,6 +6,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { userDoFactory } from '@shared/testing';
+import { accountDoFactory } from '@modules/account/testing';
 
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 
@@ -56,12 +57,7 @@ describe('Oauth2Strategy', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
-				const account: Account = new Account({
-					id: 'accountId',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					username: 'username',
-				});
+				const account = accountDoFactory.build();
 
 				const idToken = 'idToken';
 				oauthService.authenticateUser.mockResolvedValue(

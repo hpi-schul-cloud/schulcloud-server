@@ -3,7 +3,8 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
+import { CreateJwtPayload } from '../interface/jwt-payload';
+import { currentUserFactory, jwtPayloadFactory } from '../testing';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
@@ -221,95 +222,69 @@ describe('CurrentUserMapper', () => {
 	describe('jwtToICurrentUser', () => {
 		describe('when JWT is provided with all claims', () => {
 			const setup = () => {
-				const jwtPayload: JwtPayload = {
-					accountId: 'dummyAccountId',
-					systemId: 'dummySystemId',
-					roles: ['mockRoleId'],
-					schoolId: 'dummySchoolId',
-					userId: 'dummyUserId',
-					support: true,
-					isExternalUser: true,
-					sub: 'dummyAccountId',
-					jti: 'random string',
-					aud: 'some audience',
-					iss: 'feathers',
-					iat: Math.floor(new Date().getTime() / 1000),
-					exp: Math.floor(new Date().getTime() / 1000) + 3600,
-				};
+				const mockJwtPayload = jwtPayloadFactory.build();
 
 				return {
-					jwtPayload,
+					mockJwtPayload,
 				};
 			};
 
 			it('should return current user', () => {
-				const { jwtPayload } = setup();
+				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
-					accountId: jwtPayload.accountId,
-					systemId: jwtPayload.systemId,
-					roles: [jwtPayload.roles[0]],
-					schoolId: jwtPayload.schoolId,
-					userId: jwtPayload.userId,
-					impersonated: jwtPayload.support,
+					accountId: mockJwtPayload.accountId,
+					systemId: mockJwtPayload.systemId,
+					roles: [mockJwtPayload.roles[0]],
+					schoolId: mockJwtPayload.schoolId,
+					userId: mockJwtPayload.userId,
+					impersonated: mockJwtPayload.support,
 				});
 			});
 
 			it('should return current user with default for isExternalUser', () => {
-				const { jwtPayload } = setup();
+				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
-					isExternalUser: jwtPayload.isExternalUser,
+					isExternalUser: mockJwtPayload.isExternalUser,
 				});
 			});
 		});
 
 		describe('when JWT is provided without optional claims', () => {
 			const setup = () => {
-				const jwtPayload: JwtPayload = {
-					accountId: 'dummyAccountId',
-					roles: ['mockRoleId'],
-					schoolId: 'dummySchoolId',
-					userId: 'dummyUserId',
-					isExternalUser: false,
-					sub: 'dummyAccountId',
-					jti: 'random string',
-					aud: 'some audience',
-					iss: 'feathers',
-					iat: Math.floor(new Date().getTime() / 1000),
-					exp: Math.floor(new Date().getTime() / 1000) + 3600,
-				};
+				const mockJwtPayload = jwtPayloadFactory.build();
 
 				return {
-					jwtPayload,
+					mockJwtPayload,
 				};
 			};
 
 			it('should return current user', () => {
-				const { jwtPayload } = setup();
+				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
-					accountId: jwtPayload.accountId,
-					roles: [jwtPayload.roles[0]],
-					schoolId: jwtPayload.schoolId,
-					userId: jwtPayload.userId,
-					isExternalUser: false,
+					accountId: mockJwtPayload.accountId,
+					roles: [mockJwtPayload.roles[0]],
+					schoolId: mockJwtPayload.schoolId,
+					userId: mockJwtPayload.userId,
+					isExternalUser: true,
 				});
 			});
 
 			it('should return current user with default for isExternalUser', () => {
-				const { jwtPayload } = setup();
+				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
-					isExternalUser: false,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -317,15 +292,7 @@ describe('CurrentUserMapper', () => {
 
 	describe('mapCurrentUserToCreateJwtPayload', () => {
 		it('should map current user to create jwt payload', () => {
-			const currentUser: ICurrentUser = {
-				accountId: 'dummyAccountId',
-				systemId: 'dummySystemId',
-				roles: ['mockRoleId'],
-				schoolId: 'dummySchoolId',
-				userId: 'dummyUserId',
-				impersonated: true,
-				isExternalUser: false,
-			};
+			const currentUser = currentUserFactory.build();
 
 			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
 
@@ -335,7 +302,6 @@ describe('CurrentUserMapper', () => {
 				roles: currentUser.roles,
 				schoolId: currentUser.schoolId,
 				userId: currentUser.userId,
-				support: currentUser.impersonated,
 				isExternalUser: false,
 			});
 		});

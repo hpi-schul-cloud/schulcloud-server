@@ -13,4 +13,10 @@ export class InstanceService implements AuthorizationLoaderServiceGeneric<Instan
 
 		return instance;
 	}
+
+	public async getInstance(): Promise<Instance> {
+		const instance: Instance = await this.instanceRepo.getInstance();
+
+		return instance;
+	}
 }

@@ -16,6 +16,7 @@ import {
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@modules/tool/external-tool/entity';
+import { fileRecordFactory } from '@shared/testing';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 
@@ -121,6 +122,10 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 			isHidden: false,
 			isDeactivated: false,
 			openNewTab: true,
+			thumbnail: {
+				uploadUrl: 'https://uploadurl.com',
+				fileRecord: fileRecordFactory.build(),
+			},
 		};
 	}
 );
