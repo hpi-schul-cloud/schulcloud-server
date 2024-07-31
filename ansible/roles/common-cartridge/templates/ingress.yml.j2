@@ -20,8 +20,8 @@ metadata:
 {% endif %}
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
-  rules: []
   {# This rule is only for testing purpose
+  rules:
   - host: {{ DOMAIN }}
     http:
       paths:
