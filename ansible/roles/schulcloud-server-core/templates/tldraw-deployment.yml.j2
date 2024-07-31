@@ -55,9 +55,6 @@ spec:
         - containerPort: 9090
           name: api-metrics
           protocol: TCP
-        env:
-        - name: NODE_OPTIONS
-          value "--max-old-space-size=4096"
         envFrom:
         - configMapRef:
             name: api-configmap
@@ -67,6 +64,9 @@ spec:
             name: tldraw-server-secret
         - secretRef:
             name: api-files-secret
+        env:
+        - name: NODE_OPTIONS
+          value "--max-old-space-size=4096"
         command: ['npm', 'run', 'nest:start:tldraw:prod']
         resources:
           limits:
