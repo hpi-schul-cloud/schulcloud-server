@@ -12,6 +12,7 @@ export class ToolReferenceMapper {
 			contextToolId: contextExternalTool.id ?? '',
 			description: externalTool.description,
 			logoUrl: externalTool.logoUrl,
+			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),
 			displayName: contextExternalTool.displayName ?? externalTool.name,
 			status,
 			openInNewTab: externalTool.openNewTab,

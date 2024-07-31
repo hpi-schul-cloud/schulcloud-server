@@ -20,10 +20,9 @@ export class ExternalToolRepo {
 	}
 
 	public async save(domainObject: ExternalTool): Promise<ExternalTool> {
-		const existing: ExternalToolEntity | null = await this.em.findOne<ExternalToolEntity>(
-			ExternalToolEntity.name,
-			domainObject.id
-		);
+		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id, {
+			populate: ['thumbnail.fileRecord'],
+		});
 
 		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
 		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
@@ -41,7 +40,9 @@ export class ExternalToolRepo {
 	}
 
 	public async findById(id: EntityId): Promise<ExternalTool> {
-		const entity: ExternalToolEntity = await this.em.findOneOrFail(this.entityName, { id });
+		const entity: ExternalToolEntity = await this.em.findOneOrFail(this.entityName, id, {
+			populate: ['thumbnail.fileRecord'],
+		});
 		const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 
 		return domainObject;
@@ -52,7 +53,13 @@ export class ExternalToolRepo {
 	}
 
 	public async findByName(name: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { name });
+		const entity: ExternalToolEntity | null = await this.em.findOne(
+			this.entityName,
+			{ name },
+			{
+				populate: ['thumbnail.fileRecord'],
+			}
+		);
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -61,7 +68,13 @@ export class ExternalToolRepo {
 	}
 
 	public async findAllByConfigType(type: ToolConfigType): Promise<ExternalTool[]> {
-		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, { config: { type } });
+		const entities: ExternalToolEntity[] = await this.em.find(
+			this.entityName,
+			{ config: { type } },
+			{
+				populate: ['thumbnail.fileRecord'],
+			}
+		);
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -70,7 +83,13 @@ export class ExternalToolRepo {
 	}
 
 	public async findByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { config: { clientId } });
+		const entity: ExternalToolEntity | null = await this.em.findOne(
+			this.entityName,
+			{ config: { clientId } },
+			{
+				populate: ['thumbnail.fileRecord'],
+			}
+		);
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -79,9 +98,15 @@ export class ExternalToolRepo {
 	}
 
 	public async findByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
-			medium: { mediumId, mediaSourceId },
-		});
+		const entity: ExternalToolEntity | null = await this.em.findOne(
+			this.entityName,
+			{
+				medium: { mediumId, mediaSourceId },
+			},
+			{
+				populate: ['thumbnail.fileRecord'],
+			}
+		);
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -112,6 +137,7 @@ export class ExternalToolRepo {
 				offset: pagination?.skip,
 				limit: pagination?.limit,
 				orderBy: order,
+				populate: ['thumbnail.fileRecord'],
 			}
 		);
 
@@ -128,7 +154,7 @@ export class ExternalToolRepo {
 	}
 
 	private mapDomainObjectToEntityProps(entityDO: ExternalTool): ExternalToolEntityProps {
-		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO, this.em);
 
 		return entity;
 	}

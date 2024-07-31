@@ -16,8 +16,9 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus, StorageLocation } from '../../entity';
+import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordParentType, StorageLocation } from '../../interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 

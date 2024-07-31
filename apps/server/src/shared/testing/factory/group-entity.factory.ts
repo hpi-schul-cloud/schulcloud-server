@@ -29,6 +29,7 @@ export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityPro
 		externalSource: new ExternalSourceEmbeddable({
 			externalId: `externalId-${sequence}`,
 			system: systemEntityFactory.buildWithId(),
+			lastSyncedAt: new Date(),
 		}),
 	};
 });

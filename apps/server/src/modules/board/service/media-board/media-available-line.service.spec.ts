@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { mediaBoardFactory, mediaExternalToolElementFactory } from '@modules/board/testing';
 import { ExternalToolService } from '@modules/tool';
 import { CustomParameterScope, ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
@@ -12,10 +13,9 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { setupEntities, userFactory } from '@shared/testing';
-import { mediaBoardFactory, mediaExternalToolElementFactory } from '@modules/board/testing';
-import { Page } from '@shared/domain/domainobject';
 import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
 import { MediaBoardService } from './media-board.service';
@@ -321,7 +321,7 @@ describe(MediaAvailableLineService.name, () => {
 	describe('createMediaAvailableLine', () => {
 		const setup = () => {
 			const mediaBoard = mediaBoardFactory.build();
-			const externalTool1: ExternalTool = externalToolFactory.buildWithId();
+			const externalTool1: ExternalTool = externalToolFactory.withFileRecordRef().buildWithId();
 			const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 			const externalTool2: ExternalTool = externalToolFactory.buildWithId();
 			const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -373,6 +373,7 @@ describe(MediaAvailableLineService.name, () => {
 						name: externalTool1.name,
 						description: externalTool1.description,
 						logoUrl,
+						thumbnailUrl: externalTool1.thumbnail?.getPreviewUrl(),
 					},
 					{
 						schoolExternalToolId: schoolExternalTool2.id,
