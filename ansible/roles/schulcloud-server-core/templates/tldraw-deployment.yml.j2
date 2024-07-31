@@ -55,6 +55,9 @@ spec:
         - containerPort: 9090
           name: api-metrics
           protocol: TCP
+        env:
+        - name: NODE_OPTIONS
+          value "--max-old-space-size=4096"
         envFrom:
         - configMapRef:
             name: api-configmap
