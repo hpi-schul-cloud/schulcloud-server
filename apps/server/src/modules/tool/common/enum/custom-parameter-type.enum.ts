@@ -7,6 +7,7 @@ export enum CustomParameterType {
 	AUTO_SCHOOLID = 'auto_schoolid',
 	AUTO_SCHOOLNUMBER = 'auto_schoolnumber',
 	AUTO_MEDIUMID = 'auto_mediumid',
+	AUTO_MOINSCHULE_GROUPUUID = 'auto_moinschule_groupuuid',
 }
 
 export const autoParameters: CustomParameterType[] = [
@@ -15,4 +16,5 @@ export const autoParameters: CustomParameterType[] = [
 	CustomParameterType.AUTO_SCHOOLID,
 	CustomParameterType.AUTO_SCHOOLNUMBER,
 	CustomParameterType.AUTO_MEDIUMID,
+	CustomParameterType.AUTO_MOINSCHULE_GROUPUUID,
 ];
