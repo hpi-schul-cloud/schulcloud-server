@@ -45,6 +45,12 @@ export class ExternalToolParameterValidationService {
 					);
 				}
 
+				if (!this.isAutoParameterMoinSchuleGroupUuidValid(param)) {
+					throw new ValidationError(
+						`tool_param_auto_moin_schule_group_uuid: The custom parameter "${param.name}" with type "${param.type} must be optional."`
+					);
+				}
+
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new ValidationError(
 						`tool_param_regexComment: The custom parameter "${param.name}" parameter is missing a regex comment.`
@@ -160,6 +166,14 @@ export class ExternalToolParameterValidationService {
 
 	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
 		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private isAutoParameterMoinSchuleGroupUuidValid(customParameter: CustomParameter) {
+		if (customParameter.type === CustomParameterType.AUTO_MOINSCHULE_GROUPUUID && !customParameter.isOptional) {
 			return false;
 		}
 
