@@ -28,7 +28,7 @@ export class AutoMoinSchuleGroupUuidStrategy implements AutoParameterStrategy {
 			return undefined;
 		}
 
-		const uuid = syncedGroup.externalSource?.externalId;
+		const uuid = syncedGroup.getProps().externalSource?.externalId;
 		if (!uuid) {
 			// TODO: think if a new special error is needed for this case
 			throw new MissingToolParameterValueLoggableException(contextExternalTool, []);
