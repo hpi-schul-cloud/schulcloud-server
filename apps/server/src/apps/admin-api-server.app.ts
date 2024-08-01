@@ -14,6 +14,8 @@ import {
 } from './helpers/prometheus-metrics';
 
 async function bootstrap() {
+	console.log("Admin API");
+	
 	sourceMapInstall();
 
 	const nestAdminServerExpress = express();
