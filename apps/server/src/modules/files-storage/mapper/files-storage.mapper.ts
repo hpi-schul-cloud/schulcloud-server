@@ -1,5 +1,5 @@
+import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
-import { AuthorizationBodyParamsReferenceType } from '@src/infra/authorization-client/authorization-api-client';
 import { plainToClass } from 'class-transformer';
 import {
 	DownloadFileParams,

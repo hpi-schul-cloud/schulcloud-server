@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { CoreModuleConfig } from '@src/core';
-import { AuthorizationClientConfig } from '@src/infra/authorization-client/authorization-client.module';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
 export interface FileStorageConfig extends CoreModuleConfig {
