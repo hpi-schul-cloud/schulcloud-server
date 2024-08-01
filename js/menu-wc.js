@@ -831,6 +831,40 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="modules/CommonCartridgeApiModule.html" data-type="entity-link" >CommonCartridgeApiModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#controllers-links-module-CommonCartridgeApiModule-cb82b48a7aaa7aa2cb41c79c740bb3e37814ecec3d0de5099af8f102d427161ec75173b61d0fda1b56d26fc0d4535c495e944c6294f6dc148cdf30a918cb243c"' : 'data-bs-target="#xs-controllers-links-module-CommonCartridgeApiModule-cb82b48a7aaa7aa2cb41c79c740bb3e37814ecec3d0de5099af8f102d427161ec75173b61d0fda1b56d26fc0d4535c495e944c6294f6dc148cdf30a918cb243c"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-CommonCartridgeApiModule-cb82b48a7aaa7aa2cb41c79c740bb3e37814ecec3d0de5099af8f102d427161ec75173b61d0fda1b56d26fc0d4535c495e944c6294f6dc148cdf30a918cb243c"' :
+                                            'id="xs-controllers-links-module-CommonCartridgeApiModule-cb82b48a7aaa7aa2cb41c79c740bb3e37814ecec3d0de5099af8f102d427161ec75173b61d0fda1b56d26fc0d4535c495e944c6294f6dc148cdf30a918cb243c"' }>
+                                            <li class="link">
+                                                <a href="controllers/CommonCartridgeController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                            </li>
+                            <li class="link">
+                                <a href="modules/CommonCartridgeModule.html" data-type="entity-link" >CommonCartridgeModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-CommonCartridgeModule-71c98fede0c4c8b34a1c1fadea632b068fa7b12b2befc5fb02f1a228e03b76ba31047568f067dde09446d5af24e9e6c11929f262afa161121710c0bd53bfd886"' : 'data-bs-target="#xs-injectables-links-module-CommonCartridgeModule-71c98fede0c4c8b34a1c1fadea632b068fa7b12b2befc5fb02f1a228e03b76ba31047568f067dde09446d5af24e9e6c11929f262afa161121710c0bd53bfd886"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CommonCartridgeModule-71c98fede0c4c8b34a1c1fadea632b068fa7b12b2befc5fb02f1a228e03b76ba31047568f067dde09446d5af24e9e6c11929f262afa161121710c0bd53bfd886"' :
+                                        'id="xs-injectables-links-module-CommonCartridgeModule-71c98fede0c4c8b34a1c1fadea632b068fa7b12b2befc5fb02f1a228e03b76ba31047568f067dde09446d5af24e9e6c11929f262afa161121710c0bd53bfd886"' }>
+                                        <li class="link">
+                                            <a href="injectables/CommonCartridgeExportService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeExportService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/CommonCartridgeUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeUc</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </li>
                             <li class="link">
                                 <a href="modules/CommonToolModule.html" data-type="entity-link" >CommonToolModule</a>
@@ -4697,6 +4731,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CourseFactory.html" data-type="entity-link" >CourseFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CourseFileIdsResponse.html" data-type="entity-link" >CourseFileIdsResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CourseGroup.html" data-type="entity-link" >CourseGroup</a>
                             </li>
                             <li class="link">
@@ -5016,6 +5053,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/EtherpadResponseMapper.html" data-type="entity-link" >EtherpadResponseMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExportCourseParams.html" data-type="entity-link" >ExportCourseParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalGroupDto.html" data-type="entity-link" >ExternalGroupDto</a>
@@ -7569,7 +7609,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/ColumnUc.html" data-type="entity-link" >ColumnUc</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/CommonCartridgeExportService.html" data-type="entity-link" >CommonCartridgeExportService</a>
+                                    <a href="injectables/CommonCartridgeExportService-1.html" data-type="entity-link" >CommonCartridgeExportService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CommonCartridgeFileValidatorPipe.html" data-type="entity-link" >CommonCartridgeFileValidatorPipe</a>

@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/school/testing/school-year.factory.ts</code>
+            <code>apps/server/src/shared/testing/factory/schoolyear.factory.ts</code>
         </p>
 
 
@@ -287,8 +287,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/school/testing/school-year.factory.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="9"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/schoolyear.factory.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -1352,24 +1352,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseFactory } from &#x27;@shared/testing&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { SchoolYear, SchoolYearProps } from &#x27;../domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolYearEntity, SchoolYearProperties } from &#x27;@shared/domain/entity/schoolyear.entity&#x27;;
+import { BaseFactory } from &#x27;./base.factory&#x27;;
 
 type SchoolYearTransientParams &#x3D; {
 	startYear: number;
 };
 
-class SchoolYearFactory extends BaseFactory&lt;SchoolYear, SchoolYearProps, SchoolYearTransientParams&gt; {
+class SchoolYearFactory extends BaseFactory&lt;SchoolYearEntity, SchoolYearProperties, SchoolYearTransientParams&gt; {
 	public withStartYear(startYear: number): this {
 		this.rewindSequence();
 		return this.transient({ startYear });
 	}
 }
 
-export const schoolYearFactory &#x3D; SchoolYearFactory.define(SchoolYear, ({ transientParams, sequence }) &#x3D;&gt; {
-	const id &#x3D; new ObjectId().toHexString();
-
+export const schoolYearFactory &#x3D; SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) &#x3D;&gt; {
 	const now &#x3D; new Date();
 	const startYearWithoutSequence &#x3D; transientParams?.startYear ?? now.getFullYear();
 	const sequenceStartingWithZero &#x3D; sequence - 1;
@@ -1385,7 +1382,7 @@ export const schoolYearFactory &#x3D; SchoolYearFactory.define(SchoolYear, ({ tr
 	const startDate &#x3D; new Date(&#x60;${startYear}-08-01&#x60;);
 	const endDate &#x3D; new Date(&#x60;${startYear + 1}-07-31&#x60;);
 
-	return { id, name, startDate, endDate };
+	return { name, startDate, endDate };
 });
 </code></pre>
     </div>
