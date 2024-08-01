@@ -20,6 +20,13 @@ metadata:
 {% endif %}
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
+  {# This is a default backend, but you will not get any response at all #}
+  spec:
+    defaultBackend:
+      service:
+        name: test
+        port:
+          number: 80
   {# This rule is only for testing purpose
   rules:
   - host: {{ DOMAIN }}
