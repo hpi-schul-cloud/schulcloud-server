@@ -29,9 +29,10 @@
     template: svc.yml.j2
   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
 
-- name: Ingress
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: ingress.yml.j2
-  when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+# This is a testing route and will not be deployed
+# - name: Ingress
+#   kubernetes.core.k8s:
+#     kubeconfig: ~/.kube/config
+#     namespace: "{{ NAMESPACE }}"
+#     template: ingress.yml.j2
+#   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool

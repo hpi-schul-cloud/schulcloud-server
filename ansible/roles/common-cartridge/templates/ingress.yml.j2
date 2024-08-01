@@ -21,14 +21,14 @@ metadata:
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
   rules:
-  {# This is a dummy rule #}
+  {# This is a testing route and will be removed in the future #}
   - host: {{ DOMAIN }}
     http:
       paths:
-      - path: /
+      - path: /api/v3/common-cartridge/
         pathType: Prefix
         backend:
           service:
             name: common-cartridge-svc
             port:
-              number: 80
+              number: 3350
