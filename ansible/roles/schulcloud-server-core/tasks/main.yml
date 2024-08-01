@@ -271,30 +271,6 @@
       template: tldraw-svc-monitor.yml.j2
     when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
-  - name: common cartridge configmap
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: common-cartridge-configmap.yml.j2
-      apply: yes
-    when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
-  
-  - name: common cartridge Secret by 1Password
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: common-cartridge-onepassword.yml.j2
-    when: 
-      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-      - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
-
-  - name: common cartridge deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: common-cartridge-deployment.yml.j2
-    when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
-
   - name: BoardCollaboration configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
