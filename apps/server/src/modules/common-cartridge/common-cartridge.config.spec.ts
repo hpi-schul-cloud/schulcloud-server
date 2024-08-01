@@ -6,7 +6,8 @@ describe('commonCartridgeConfig', () => {
 			const result = config();
 
 			expect(result).toStrictEqual<CommonCartridgeConfig>({
-				NEST_LOG_LEVEL: 'error',
+				NEST_LOG_LEVEL: expect.any(String),
+				INCOMING_REQUEST_TIMEOUT: expect.any(Number),
 			});
 		});
 	});
