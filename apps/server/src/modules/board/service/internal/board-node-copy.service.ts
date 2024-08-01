@@ -242,7 +242,7 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 		};
 
 		return Promise.resolve(result);
