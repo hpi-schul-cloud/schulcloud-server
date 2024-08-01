@@ -24,13 +24,13 @@
 <title>cluster_TaskModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1401,-268 1401,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_TaskModule_exports</title>
-<polygon fill="none" stroke="black" points="488,-208 488,-260 874,-260 874,-208 488,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_TaskModule_providers</title>
 <polygon fill="none" stroke="black" points="468,-78 468,-130 1393,-130 1393,-78 468,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_TaskModule_exports</title>
+<polygon fill="none" stroke="black" points="488,-208 488,-260 874,-260 874,-208 488,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_TaskModule_imports</title>
