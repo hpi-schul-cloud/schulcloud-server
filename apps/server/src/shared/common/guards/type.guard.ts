@@ -1,3 +1,12 @@
+import { shallowEqual, shallowEqualArrays, shallowEqualObjects } from 'shallow-equal';
+
+export type PrimitiveType = number | string | boolean | undefined | symbol | bigint;
+
+/** Note that undefined is also added to match our usage. */
+export type ObjectType = Record<string, unknown> | unknown[] | null | undefined;
+
+export type PrimitiveTypeArray = PrimitiveType[];
+
 export class TypeGuard {
 	static isError(value: unknown): value is Error {
 		const isError = value instanceof Error;
@@ -136,4 +145,46 @@ export class TypeGuard {
 
 		return value;
 	}
+
+	static isBoolean(value: unknown): boolean {
+		const isBoolean = typeof value === 'boolean';
+
+		return isBoolean;
+	}
+
+	static isBigInt(value: unknown): boolean {
+		const isBigInt = typeof value === 'bigint';
+
+		return isBigInt;
+	}
+
+	static isSymbol(value: unknown): boolean {
+		const isSymbol = typeof value === 'symbol';
+
+		return isSymbol;
+	}
+
+	static isPrimitiveType(value: unknown): boolean {
+		const isPrimitiveType =
+			TypeGuard.isNumber(value) ||
+			TypeGuard.isString(value) ||
+			TypeGuard.isBoolean(value) ||
+			TypeGuard.isUndefined(value) ||
+			TypeGuard.isSymbol(value) ||
+			TypeGuard.isBigInt(value);
+
+		return isPrimitiveType;
+	}
+
+	static isSameClassTyp(value1: unknown, value2: unknown): boolean {
+		const isSameClassTyp = TypeGuard.isDefinedObject(value1) && TypeGuard.isDefinedObject(value2) && value1.constructor.name === value2.constructor.name; 
+	
+		return isSameClassTyp;
+	}
+
+	static isShallowEqualArray = shallowEqualArrays;
+
+	static isShallowEqualObject = shallowEqualObjects;
+
+	static shallowEqualObjectOrArray = shallowEqual;
 }
