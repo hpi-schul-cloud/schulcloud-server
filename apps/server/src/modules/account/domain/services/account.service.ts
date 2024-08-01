@@ -288,7 +288,10 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		});
 
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
-			if (idmAccount === null || (accountSave.username && idmAccount.username !== accountSave.username)) {
+			if (
+				idmAccount === null ||
+				(accountSave.username && idmAccount.username.toLowerCase() !== accountSave.username.toLowerCase())
+			) {
 				throw new ValidationError('Account could not be updated');
 			}
 		}
