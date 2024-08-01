@@ -1,27 +1,27 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FilesStorageService } from '@src/modules/files-storage/service';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeExportService;
-	let filesStorageServiceMock: DeepMocked<FilesStorageService>;
+	let filesStorageServiceMock: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeExportService,
 				{
-					provide: FilesStorageService,
-					useValue: createMock<FilesStorageService>(),
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeExportService);
-		filesStorageServiceMock = module.get(FilesStorageService);
+		filesStorageServiceMock = module.get(FilesStorageClientAdapterService);
 	});
 
 	afterAll(async () => {
@@ -37,7 +37,7 @@ describe('CommonCartridgeExportService', () => {
 			const courseId = faker.string.uuid();
 			const expected = [];
 
-			filesStorageServiceMock.getFileRecordsOfParent.mockResolvedValue([[], 0]);
+			filesStorageServiceMock.listFilesOfParent.mockResolvedValue([]);
 
 			return { courseId, expected };
 		};
