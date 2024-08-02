@@ -26,6 +26,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoGroupUuidStrategy,
 } from '../auto-parameter-strategy';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
@@ -72,6 +73,7 @@ describe(AbstractLaunchStrategy.name, () => {
 	let autoContextIdStrategy: DeepMocked<AutoContextIdStrategy>;
 	let autoContextNameStrategy: DeepMocked<AutoContextNameStrategy>;
 	let autoMediumIdStrategy: DeepMocked<AutoMediumIdStrategy>;
+	let autoGroupUuidStrategy: DeepMocked<AutoGroupUuidStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -97,6 +99,10 @@ describe(AbstractLaunchStrategy.name, () => {
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
+				{
+					provide: AutoGroupUuidStrategy,
+					useValue: createMock<AutoGroupUuidStrategy>(),
+				},
 			],
 		}).compile();
 
@@ -107,6 +113,7 @@ describe(AbstractLaunchStrategy.name, () => {
 		autoContextIdStrategy = module.get(AutoContextIdStrategy);
 		autoContextNameStrategy = module.get(AutoContextNameStrategy);
 		autoMediumIdStrategy = module.get(AutoMediumIdStrategy);
+		autoGroupUuidStrategy = module.get(AutoGroupUuidStrategy);
 	});
 
 	afterAll(async () => {
@@ -154,13 +161,13 @@ describe(AbstractLaunchStrategy.name, () => {
 				const autoContextIdCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
-					name: 'autoSchoolNumberParam',
+					name: 'autoContextIdParam',
 					type: CustomParameterType.AUTO_CONTEXTID,
 				});
 				const autoContextNameCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
-					name: 'autoSchoolNumberParam',
+					name: 'autoContextNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
 				const autoMediumIdCustomParameter = customParameterFactory.build({
@@ -168,6 +175,12 @@ describe(AbstractLaunchStrategy.name, () => {
 					location: CustomParameterLocation.QUERY,
 					name: 'autoMediumIdParam',
 					type: CustomParameterType.AUTO_MEDIUMID,
+				});
+				const autoGroupUuidCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.QUERY,
+					name: 'autoGroupUuidParam',
+					type: CustomParameterType.AUTO_GROUPUUID,
 				});
 
 				const externalTool: ExternalTool = externalToolFactory.build({
@@ -180,6 +193,7 @@ describe(AbstractLaunchStrategy.name, () => {
 						autoContextIdCustomParameter,
 						autoContextNameCustomParameter,
 						autoMediumIdCustomParameter,
+						autoGroupUuidCustomParameter,
 					],
 				});
 
@@ -217,6 +231,7 @@ describe(AbstractLaunchStrategy.name, () => {
 				autoContextIdStrategy.getValue.mockReturnValueOnce(mockedAutoValue);
 				autoContextNameStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
 				autoMediumIdStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
+				autoGroupUuidStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
 
 				return {
 					globalCustomParameter,
@@ -226,6 +241,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
 					autoMediumIdCustomParameter,
+					autoGroupUuidCustomParameter,
 					schoolParameterEntry,
 					contextParameterEntry,
 					externalTool,
@@ -246,6 +262,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
 					autoMediumIdCustomParameter,
+					autoGroupUuidCustomParameter,
 					schoolParameterEntry,
 					externalTool,
 					schoolExternalTool,
@@ -303,6 +320,11 @@ describe(AbstractLaunchStrategy.name, () => {
 						},
 						{
 							name: autoMediumIdCustomParameter.name,
+							value: mockedAutoValue,
+							location: PropertyLocation.QUERY,
+						},
+						{
+							name: autoGroupUuidCustomParameter.name,
 							value: mockedAutoValue,
 							location: PropertyLocation.QUERY,
 						},

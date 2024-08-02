@@ -13,6 +13,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoGroupUuidStrategy,
 } from '../auto-parameter-strategy';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
@@ -44,6 +45,10 @@ describe('BasicToolLaunchStrategy', () => {
 				{
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
+				},
+				{
+					provide: AutoGroupUuidStrategy,
+					useValue: createMock<AutoGroupUuidStrategy>(),
 				},
 			],
 		}).compile();
