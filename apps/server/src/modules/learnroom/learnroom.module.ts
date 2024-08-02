@@ -34,6 +34,8 @@ import {
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
+import { GroupService } from '../group';
+import { GroupRepo } from '../group/repo';
 
 @Module({
 	imports: [
@@ -67,6 +69,8 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		},
 		CourseService,
 		CourseDoService,
+		GroupRepo,
+		GroupService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
@@ -80,6 +84,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
+		GroupService,
 		RoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,

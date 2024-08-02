@@ -4,9 +4,16 @@ import { Group } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { groupFactory } from '@shared/testing';
-import { Course, COURSE_REPO, CourseNotSynchronizedLoggableException, CourseRepo } from '../domain';
+import {
+	Course,
+	COURSE_REPO,
+	CourseAlreadySynchronizedLoggableException,
+	CourseNotSynchronizedLoggableException,
+	CourseRepo,
+} from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';
+import { ro } from '@faker-js/faker';
 
 describe(CourseDoService.name, () => {
 	let module: TestingModule;
@@ -166,6 +173,52 @@ describe(CourseDoService.name, () => {
 				const { course } = setup();
 
 				await expect(service.stopSynchronization(course)).rejects.toThrow(CourseNotSynchronizedLoggableException);
+			});
+		});
+	});
+
+	describe('startSynchronization', () => {
+		describe('when a course is нот synchronized with a group', () => {
+			const setup = () => {
+				const course: Course = courseFactory.build();
+				const group: Group = groupFactory.build();
+
+				return {
+					course,
+					group,
+				};
+			};
+
+			it('should save a course with a synchronized group', async () => {
+				const { course, group } = setup();
+
+				await service.startSynchronization(course, group);
+
+				expect(courseRepo.save).toHaveBeenCalledWith(
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: group.id,
+					})
+				);
+			});
+		});
+
+		describe('when a course is synchronized with a group', () => {
+			const setup = () => {
+				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
+				const group: Group = groupFactory.build();
+
+				return {
+					course,
+					group,
+				};
+			};
+			it('should throw an unprocessable entity exception', async () => {
+				const { course, group } = setup();
+
+				await expect(service.startSynchronization(course, group)).rejects.toThrow(
+					CourseAlreadySynchronizedLoggableException
+				);
 			});
 		});
 	});
