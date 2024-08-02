@@ -50,7 +50,6 @@ export class H5PEditorUc {
 	) {}
 
 	private async checkContentPermission(
-		userId: EntityId,
 		parentType: H5PContentParentType,
 		parentId: EntityId,
 		context: AuthorizationContext
@@ -168,7 +167,7 @@ export class H5PEditorUc {
 
 	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user = this.changeUserType(currentUser);
 
@@ -188,7 +187,7 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser
 	): Promise<GetLibraryFile> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user = this.changeUserType(currentUser);
 
@@ -247,7 +246,7 @@ export class H5PEditorUc {
 
 	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise<IPlayerModel> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -272,7 +271,7 @@ export class H5PEditorUc {
 
 	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user = this.changeUserType(currentUser);
 
@@ -289,7 +288,7 @@ export class H5PEditorUc {
 
 	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise<boolean> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user = this.changeUserType(currentUser);
 		let deletedContent = false;
@@ -314,7 +313,7 @@ export class H5PEditorUc {
 		parentType: H5PContentParentType,
 		parentId: EntityId
 	): Promise<{ id: string; metadata: IContentMetadata }> {
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
 		const fakeAsString = this.fakeUndefinedAsString();
@@ -339,7 +338,7 @@ export class H5PEditorUc {
 		parentType: H5PContentParentType,
 		parentId: EntityId
 	): Promise<{ id: string; metadata: IContentMetadata }> {
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
 
