@@ -4,7 +4,7 @@ import { S3Config } from '@infra/s3-client';
 import { CoreModuleConfig } from '@src/core';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
-export interface FileStorageConfig extends CoreModuleConfig {
+export interface FileStorageConfig extends CoreModuleConfig, AuthorizationClientConfig {
 	MAX_FILE_SIZE: number;
 	MAX_SECURITY_CHECK_FILE_SIZE: number;
 	USE_STREAM_TO_ANTIVIRUS: boolean;
