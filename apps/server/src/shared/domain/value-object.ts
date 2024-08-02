@@ -7,6 +7,7 @@ export abstract class ValueObject<T extends ValueObjectTyp> {
 
 	constructor(value: T) {
 		// TODO: No Test for the execution order exists for now, but we must clarify if we want first the modifcation, or first the validation
+		// For operations with truncat before make more sense. Adding before/after modifications are also possible, but it can be overload the interface
 		const modifiedValue = this.modified(value);
 		this.checkValue(modifiedValue);
 		this.value = Object.freeze(modifiedValue);
@@ -18,7 +19,7 @@ export abstract class ValueObject<T extends ValueObjectTyp> {
 		return true;
 	}
 
-	/** Use this method with override for add modifications */
+	/** Use this method with override for add modifications, before execute the validation. */
 	protected modified(value: T): T {
 		// TODO: Why eslint think that T is from type any is unlear for me.
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
