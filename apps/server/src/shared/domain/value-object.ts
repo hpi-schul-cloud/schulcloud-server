@@ -6,8 +6,9 @@ export abstract class ValueObject<T extends ValueObjectTyp> {
 	public readonly value: T;
 
 	constructor(value: T) {
-		this.checkValue(value);
+		// TODO: No Test for the execution order exists for now, but we must clarify if we want first the modifcation, or first the validation
 		const modifiedValue = this.modified(value);
+		this.checkValue(modifiedValue);
 		this.value = Object.freeze(modifiedValue);
 	}
 
@@ -30,6 +31,7 @@ export abstract class ValueObject<T extends ValueObjectTyp> {
 		return this.validation(value);
 	}
 
+	// TODO: Same questions make it sense without static? If not than we can change it to private for a less overloaded interface at the value object
 	public checkValue(value: unknown): void {
 		if (!this.validation(value)) {
 			throw new Error(`ValueObject ${this.constructor.name} validation is failed for input ${JSON.stringify(value)}`);
