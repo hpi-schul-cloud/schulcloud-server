@@ -7,5 +7,5 @@ export enum CustomParameterTypeParams {
 	AUTO_SCHOOLID = 'auto_schoolid',
 	AUTO_SCHOOLNUMBER = 'auto_schoolnumber',
 	AUTO_MEDIUMID = 'auto_mediumid',
-	AUTO_MOINSCHULE_GROUPUUID = 'auto_moinschule_groupuuid',
+	AUTO_GROUPUUID = 'auto_groupuuid',
 }

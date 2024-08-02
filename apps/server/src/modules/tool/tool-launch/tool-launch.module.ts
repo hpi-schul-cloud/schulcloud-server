@@ -16,7 +16,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoMoinSchuleGroupUuidStrategy,
+	AutoGroupUuidStrategy,
 } from './service/auto-parameter-strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
 
@@ -44,7 +44,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		AutoSchoolIdStrategy,
 		AutoSchoolNumberStrategy,
 		AutoMediumIdStrategy,
-		AutoMoinSchuleGroupUuidStrategy,
+		AutoGroupUuidStrategy,
 	],
 	exports: [ToolLaunchService],
 })

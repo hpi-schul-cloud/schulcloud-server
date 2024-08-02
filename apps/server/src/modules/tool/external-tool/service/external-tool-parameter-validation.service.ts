@@ -45,9 +45,9 @@ export class ExternalToolParameterValidationService {
 					);
 				}
 
-				if (!this.isAutoParameterMoinSchuleGroupUuidValid(param)) {
+				if (!this.isAutoParameterGroupUuidValid(param)) {
 					throw new ValidationError(
-						`tool_param_auto_moin_schule_group_uuid: The custom parameter "${param.name}" with type "${param.type} must be optional."`
+						`tool_param_auto_group_uuid: The custom parameter "${param.name}" with type "${param.type} must be optional."`
 					);
 				}
 
@@ -172,8 +172,8 @@ export class ExternalToolParameterValidationService {
 		return true;
 	}
 
-	private isAutoParameterMoinSchuleGroupUuidValid(customParameter: CustomParameter) {
-		if (customParameter.type === CustomParameterType.AUTO_MOINSCHULE_GROUPUUID && !customParameter.isOptional) {
+	private isAutoParameterGroupUuidValid(customParameter: CustomParameter) {
+		if (customParameter.type === CustomParameterType.AUTO_GROUPUUID && !customParameter.isOptional) {
 			return false;
 		}
 

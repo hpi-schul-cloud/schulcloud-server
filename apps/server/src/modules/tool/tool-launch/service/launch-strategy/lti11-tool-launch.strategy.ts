@@ -16,7 +16,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoMoinSchuleGroupUuidStrategy,
+	AutoGroupUuidStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
@@ -33,7 +33,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		autoContextIdStrategy: AutoContextIdStrategy,
 		autoContextNameStrategy: AutoContextNameStrategy,
 		autoMediumIdStrategy: AutoMediumIdStrategy,
-		autoMoinSchuleGroupUuidStrategy: AutoMoinSchuleGroupUuidStrategy
+		autoGroupUuidStrategy: AutoGroupUuidStrategy
 	) {
 		super(
 			autoSchoolIdStrategy,
@@ -41,7 +41,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			autoContextIdStrategy,
 			autoContextNameStrategy,
 			autoMediumIdStrategy,
-			autoMoinSchuleGroupUuidStrategy
+			autoGroupUuidStrategy
 		);
 	}
 
