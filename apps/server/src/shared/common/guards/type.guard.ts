@@ -177,8 +177,11 @@ export class TypeGuard {
 	}
 
 	static isSameClassTyp(value1: unknown, value2: unknown): boolean {
-		const isSameClassTyp = TypeGuard.isDefinedObject(value1) && TypeGuard.isDefinedObject(value2) && value1.constructor.name === value2.constructor.name; 
-	
+		const isSameClassTyp =
+			TypeGuard.isDefinedObject(value1) &&
+			TypeGuard.isDefinedObject(value2) &&
+			value1.constructor.name === value2.constructor.name;
+
 		return isSameClassTyp;
 	}
 
