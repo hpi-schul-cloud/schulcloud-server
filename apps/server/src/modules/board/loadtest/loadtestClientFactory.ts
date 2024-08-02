@@ -1,4 +1,6 @@
+/* eslint-disable no-await-in-loop */
 import { chunk } from 'lodash';
+import { performance } from 'perf_hooks';
 import { InputFormat } from '@shared/domain/types';
 import { io } from 'socket.io-client';
 import {
@@ -16,10 +18,12 @@ import {
 	DeleteColumnMessageParams,
 	DeleteContentElementMessageParams,
 	FetchCardsMessageParams,
+	UpdateBoardTitleMessageParams,
 	UpdateCardTitleMessageParams,
 	UpdateColumnTitleMessageParams,
 	UpdateContentElementMessageParams,
 } from '../gateway/dto';
+import { ResponseTimeRecord } from './types';
 
 let columns: Array<ColumnResponse> = [];
 
@@ -28,7 +32,10 @@ async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+let clientCount = 0;
+
 export function createLoadtestClient(baseUrl: string, boardId: string, token: string) {
+	const logs: Array<{ event: string; payload: { isOwnAction: boolean }; time: number }> = [];
 	const cards: Array<CardResponse> = [];
 	const socket = io(baseUrl, {
 		path: '/board-collaboration',
@@ -49,35 +56,61 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		socket.emit(action, data);
 	};
 
-	const waitForSuccess = async (eventName: string, options?: { checkIsOwnAction?: boolean; timeoutMs?: number }) =>
-		new Promise((resolve, reject) => {
-			const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 500000, ...options };
-			const timeoutId = setTimeout(() => {
-				reject(new Error(`Timeout waiting for ${eventName}`));
-			}, timeoutMs);
-			const listener = (data: { isOwnAction: boolean }) => {
-				if (checkIsOwnAction === true && data.isOwnAction === false) {
-					return;
+	const waitForSuccess = async (
+		eventName: string,
+		options: { timeoutMs?: number; startTime: number; event: unknown }
+	): Promise<unknown> => {
+		const failureEventName = eventName.replace('success', 'failure');
+		const { timeoutMs, startTime } = { timeoutMs: 5000, ...options };
+		while (performance.now() <= startTime + timeoutMs) {
+			const ownEvents = logs
+				.filter((e) => e.payload.isOwnAction === true)
+				.filter((e) => e.event === eventName || e.event === failureEventName)
+				.filter((e) => e.time >= startTime);
+			if (ownEvents.length > 0) {
+				if (ownEvents[0].event === failureEventName) {
+					throw new Error(`Failure event ${failureEventName}`);
 				}
+				return ownEvents[0].payload;
+			}
+			await sleep(20);
+		}
+		throw new Error(`Timeout waiting for ${eventName}`);
+	};
 
-				clearTimeout(timeoutId);
-				resolve(data);
-				socket.off(eventName, listener);
-			};
-			socket.on(eventName, listener);
-		});
+	// const waitForSuccess = async (eventName: string, options?: { checkIsOwnAction?: boolean; timeoutMs?: number }) =>
+	// 	new Promise((resolve, reject) => {
+	// 		const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 15000, ...options };
+	// 		const timeoutId = setTimeout(() => {
+	// 			reject(new Error(`Timeout waiting for ${eventName}`));
+	// 		}, timeoutMs);
+	// 		const listener = (data: { isOwnAction: boolean }) => {
+	// 			if (checkIsOwnAction === true && data.isOwnAction === false) {
+	// 				return;
+	// 			}
 
-	const responseTimes: Array<{ action: string; responseTime: number }> = [];
-	const logResponseTime = (action: string, responseTime: number) => {
-		responseTimes.push({ action, responseTime });
+	// 			clearTimeout(timeoutId);
+	// 			resolve(data);
+	// 			socket.off(eventName, listener);
+	// 		};
+	// 		socket.on(eventName, listener);
+	// 	});
+
+	const responseTimes: Array<ResponseTimeRecord> = [];
+	const logResponseTime = (responseTime: ResponseTimeRecord) => {
+		responseTimes.push(responseTime);
 	};
 
 	const emitAndWait = async (actionPrefix: string, data: unknown) => {
 		const startTime = performance.now();
+		const prepareWaitForSuccess = waitForSuccess(`${actionPrefix}-success`, {
+			event: { name: `${actionPrefix}-request`, payload: data },
+			startTime: performance.now(),
+		});
 		emitOnSocket(`${actionPrefix}-request`, data);
-		const result = await waitForSuccess(`${actionPrefix}-success`);
+		const result = await prepareWaitForSuccess;
 		const responseTime = performance.now() - startTime;
-		logResponseTime(actionPrefix, responseTime);
+		logResponseTime({ action: actionPrefix, responseTime });
 		return result;
 	};
 
@@ -94,9 +127,15 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		return newCard;
 	};
 
-	socket.on('connect', async () => {
-		console.log('connected');
-		await fetchBoard();
+	const disconnect = () => {
+		socket.disconnect();
+	};
+
+	socket.on('connect', () => {
+		clientCount += 1;
+		console.log(clientCount);
+		// await sleep(100 + Math.ceil(Math.random() * 1000));
+		// await fetchBoard();
 	});
 
 	socket.on('disconnect', () => {
@@ -105,6 +144,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 
 	socket.onAny(
 		(event: string, payload: { isOwnAction: boolean; newCard?: CardResponse; newColumn?: ColumnResponse }) => {
+			logs.push({ event, payload, time: performance.now() });
 			if (event === 'create-card-success' && payload.newCard) {
 				cards.push(payload.newCard);
 				// fetchCard({ cardIds: [payload.newCard.id] }).catch(console.error);
@@ -173,6 +213,11 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		return result;
 	};
 
+	const updateBoardTitle = async (payload: UpdateBoardTitleMessageParams) => {
+		const result = await emitAndWait('update-board-title', payload);
+		return result;
+	};
+
 	const updateColumnTitle = async (payload: UpdateColumnTitleMessageParams) => {
 		const result = await emitAndWait('update-column-title', payload);
 		return result;
@@ -200,12 +245,19 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		return result;
 	};
 
-	const createAndUpdateTextElement = async (cardId: string, text: string) => {
+	const createAndUpdateTextElement = async (cardId: string, text: string, simulateTyping = true) => {
 		const element = await createElement({
 			cardId,
 			type: ContentElementType.RICH_TEXT,
 		});
-		const textChunks = chunk(text.split(''), 20).map((c) => c.join(''));
+
+		let textChunks: string[] = [];
+		if (simulateTyping === true) {
+			textChunks = chunk(text.split(''), 20).map((c) => c.join(''));
+		} else {
+			textChunks = [text];
+		}
+
 		let result;
 		let currentText = '';
 		for (const textChunk of textChunks) {
@@ -240,10 +292,12 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		deleteCard,
 		deleteElement,
 		deleteAllColumns,
+		disconnect,
 		fetchBoard,
 		fetchCard,
 		moveColumn,
 		moveCard,
+		updateBoardTitle,
 		updateColumnTitle,
 		updateCardTitle,
 		updateElement,
@@ -252,5 +306,6 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		waitForSuccess,
 		getCardPosition,
 		getColumnPosition,
+		logs,
 	};
 }
