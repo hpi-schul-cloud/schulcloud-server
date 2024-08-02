@@ -48,14 +48,10 @@ export abstract class ValueObject<T extends ValueObjectTyp> {
 		}
 
 		let isEqual = false;
-		if (TypeGuard.isPrimitiveType(vo.value) && vo.value === this.value) {
-			isEqual = true;
-		} else if (
-			TypeGuard.isArray(vo.value) &&
-			TypeGuard.isArray(this.value) &&
-			TypeGuard.isShallowEqualArray(this.value, vo.value)
-		) {
-			isEqual = true;
+		if (TypeGuard.isPrimitiveType(vo.value)) {
+			isEqual = vo.value === this.value;
+		} else if (TypeGuard.isArray(vo.value) && TypeGuard.isArray(this.value)) {
+			isEqual = TypeGuard.isShallowEqualArray(this.value, vo.value);
 		}
 
 		return isEqual;
