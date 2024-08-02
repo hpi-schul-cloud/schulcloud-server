@@ -415,5 +415,69 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 			});
 		});
+
+		describe('when auto parameter is auto group uuid', () => {
+			describe('when the optional flag is not set', () => {
+				const setup = () => {
+					const parameter = customParameterFactory.buildWithId({
+						type: CustomParameterType.AUTO_GROUPUUID,
+						scope: CustomParameterScope.GLOBAL,
+						isOptional: false,
+					});
+
+					const externalTool: ExternalTool = externalToolFactory.withMedium().buildWithId({
+						parameters: [parameter],
+					});
+
+					externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+
+					return {
+						externalTool,
+						parameter,
+					};
+				};
+
+				it('should throw an exception', async () => {
+					const { externalTool, parameter } = setup();
+
+					const result: Promise<void> = service.validateCommon(externalTool);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							`tool_param_auto_group_uuid: The custom parameter "${parameter.name}" with type "${parameter.type} must be optional."`
+						)
+					);
+				});
+			});
+
+			describe('when the optional flag is set', () => {
+				const setup = () => {
+					const parameter = customParameterFactory.buildWithId({
+						type: CustomParameterType.AUTO_GROUPUUID,
+						scope: CustomParameterScope.GLOBAL,
+						isOptional: true,
+					});
+
+					const externalTool: ExternalTool = externalToolFactory.withMedium().buildWithId({
+						parameters: [parameter],
+					});
+
+					externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+
+					return {
+						externalTool,
+						parameter,
+					};
+				};
+
+				it('should not throw an exception', async () => {
+					const { externalTool } = setup();
+
+					const result: Promise<void> = service.validateCommon(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+			});
+		});
 	});
 });
