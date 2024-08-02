@@ -1,3 +1,4 @@
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import {
 	AjaxSuccessResponse,
 	H5PAjaxEndpoint,
@@ -25,7 +26,6 @@ import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
-import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
@@ -45,7 +45,7 @@ export class H5PEditorUc {
 		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
 		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
-		private readonly authorizationReferenceService: AuthorizationReferenceService,
+		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
 		private readonly h5pContentRepo: H5PContentRepo
 	) {}
 
@@ -56,7 +56,7 @@ export class H5PEditorUc {
 		context: AuthorizationContext
 	) {
 		const allowedType = H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationClientAdapter.checkPermissionsByReference(allowedType, parentId, context);
 	}
 
 	private fakeUndefinedAsString = () => {

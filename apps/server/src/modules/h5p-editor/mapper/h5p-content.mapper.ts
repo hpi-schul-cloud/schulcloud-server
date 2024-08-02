@@ -1,12 +1,12 @@
+import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException } from '@nestjs/common';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain';
 import { H5PContentParentType } from '../entity';
 
 export class H5PContentMapper {
-	static mapToAllowedAuthorizationEntityType(type: H5PContentParentType): AuthorizableReferenceType {
-		const types = new Map<H5PContentParentType, AuthorizableReferenceType>();
+	static mapToAllowedAuthorizationEntityType(type: H5PContentParentType): AuthorizationBodyParamsReferenceType {
+		const types = new Map<H5PContentParentType, AuthorizationBodyParamsReferenceType>();
 
-		types.set(H5PContentParentType.Lesson, AuthorizableReferenceType.Lesson);
+		types.set(H5PContentParentType.Lesson, AuthorizationBodyParamsReferenceType.LESSONS);
 
 		const res = types.get(type);
 
