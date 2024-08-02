@@ -9,6 +9,7 @@ export class RegistrationPinResponseMapper {
 			username: registrationPin.email,
 			registrationPin: registrationPin.pin,
 			verified: registrationPin.verified,
+			createdAt: registrationPin.createdAt,
 		});
 	}
 }
