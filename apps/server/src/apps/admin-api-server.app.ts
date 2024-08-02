@@ -1,21 +1,19 @@
 /* istanbul ignore file */
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { NestFactory } from '@nestjs/core';
-import { install as sourceMapInstall } from 'source-map-support';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { AdminApiServerModule } from '@src/modules/server/admin-api.server.module';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import express from 'express';
+import { install as sourceMapInstall } from 'source-map-support';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
 
 async function bootstrap() {
-	console.log("Admin API");
-	
 	sourceMapInstall();
 
 	const nestAdminServerExpress = express();

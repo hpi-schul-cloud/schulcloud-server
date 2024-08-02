@@ -6,7 +6,7 @@ import { RegistrationPinUc } from './registration-pin.uc';
 
 @ApiTags('AdminRegistrationPin')
 @UseGuards(AuthGuard('api-key'))
-@Controller('admin/registration-pin')
+@Controller('registration-pin')
 export class AdminApiRegistrationPinController {
 	constructor(private readonly uc: RegistrationPinUc) {}
 
