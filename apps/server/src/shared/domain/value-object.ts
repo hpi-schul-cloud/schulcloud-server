@@ -28,12 +28,14 @@ export abstract class ValueObject<T extends ValueObjectTyp> {
 
 	// TODO: make this method sense if we not can add this as static MyValueObject.isValidValue() ?
 	// Should it be optional by adding in extended class, or as abstract that it must be implemented?
+	/*
 	public isValidValue(value: unknown): boolean {
 		return this.validation(value);
 	}
-
-	// TODO: Same questions make it sense without static? If not than we can change it to private for a less overloaded interface at the value object
-	public checkValue(value: unknown): void {
+	*/
+	// TODO: Same questions make it sense without static to set it public?
+	// If not than we can change it to private for a less overloaded interface at the value object
+	private checkValue(value: unknown): void {
 		if (!this.validation(value)) {
 			throw new Error(`ValueObject ${this.constructor.name} validation is failed for input ${JSON.stringify(value)}`);
 		}
