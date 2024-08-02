@@ -1,111 +1,134 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest/lib/mocks';
+import { createMock } from '@golevelup/ts-jest/lib/mocks';
 import { S3ClientAdapter } from '@infra/s3-client';
+import { H5PEditor } from '@lumieducation/h5p-server';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolEntityFactory,
-	userFactory,
+	h5pContentFactory,
+	lessonFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { Request } from 'express';
-import request from 'supertest';
+import { AuthorizationClientAdapter } from '@src/infra/authorization-client';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
-import { H5PEditorUc } from '../../uc/h5p.uc';
-
-class API {
-	constructor(private app: INestApplication) {
-		this.app = app;
-	}
-
-	async deleteH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).post(`/h5p-editor/delete/${contentId}`);
-	}
-}
-
-const setup = () => {
-	const contentId = new ObjectId(0).toString();
-	const notExistingContentId = new ObjectId(1).toString();
-	const badContentId = '';
-
-	return { contentId, notExistingContentId, badContentId };
-};
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
-	let api: API;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let h5PEditorUc: DeepMocked<H5PEditorUc>;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
-		const module = await Test.createTestingModule({
+		const moduleFixture = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider(H5PEditorUc)
-			.useValue(createMock<H5PEditorUc>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
+			.overrideProvider(H5PEditor)
+			.useValue(createMock<H5PEditor>())
 			.compile();
 
-		app = module.createNestApplication();
+		app = moduleFixture.createNestApplication();
 		await app.init();
-		h5PEditorUc = module.get(H5PEditorUc);
-
-		api = new API(app);
-		em = module.get(EntityManager);
+		em = app.get(EntityManager);
+		testApiClient = new TestApiClient(app, 'h5p-editor');
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
+	beforeEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	describe('delete h5p content', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-			const school = schoolEntityFactory.build();
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-			});
-			const user = userFactory.build({ school, roles });
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const someId = new ObjectId().toHexString();
 
-			await em.persistAndFlush([user, school]);
-			em.clear();
+				const response = await testApiClient.post(`delete/${someId}`);
 
-			currentUser = mapUserToCurrentUser(user);
-		});
-		describe('with valid request params', () => {
-			it('should return 200 status', async () => {
-				const { contentId } = setup();
-
-				h5PEditorUc.deleteH5pContent.mockResolvedValueOnce(true);
-				const response = await api.deleteH5pContent(contentId);
-				expect(response.status).toEqual(201);
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
-		describe('with bad request params', () => {
-			it('should return 500 status', async () => {
-				const { notExistingContentId } = setup();
 
-				h5PEditorUc.deleteH5pContent.mockRejectedValueOnce(new Error('Could not delete H5P content'));
-				const response = await api.deleteH5pContent(notExistingContentId);
-				expect(response.status).toEqual(500);
+		describe('when user is logged in', () => {
+			describe('when id in params is not a mongo id', () => {
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+					await em.persistAndFlush([studentAccount, studentUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					return { loggedInClient };
+				};
+
+				it('should return 400', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(`delete/123`);
+
+					expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+					expect(response.body).toEqual(
+						expect.objectContaining({
+							validationErrors: [{ errors: ['contentId must be a mongodb id'], field: ['contentId'] }],
+						})
+					);
+				});
+			});
+
+			describe('when requested content is not found', () => {
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+					await em.persistAndFlush([studentAccount, studentUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					return { loggedInClient };
+				};
+
+				it('should return 404', async () => {
+					const { loggedInClient } = await setup();
+					const someId = new ObjectId().toHexString();
+
+					const response = await loggedInClient.post(`delete/${someId}`);
+
+					expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+				});
+			});
+
+			describe('when content is found', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const lesson = lessonFactory.build();
+					const h5pContent = h5pContentFactory.build({ parentId: lesson.id });
+
+					await em.persistAndFlush([lesson, h5pContent, teacherAccount, teacherUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { contentId: h5pContent.id, loggedInClient };
+				};
+
+				it('should respond with code 201', async () => {
+					const { contentId, loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(`delete/${contentId}`);
+
+					expect(response.status).toEqual(HttpStatus.CREATED);
+				});
 			});
 		});
 	});
