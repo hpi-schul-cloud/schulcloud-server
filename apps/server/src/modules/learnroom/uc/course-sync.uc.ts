@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { type User as UserEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupService } from '../../group';
+import { Group, GroupService } from '@modules/group';
 import { Course } from '../domain';
 import { CourseDoService } from '../service';
 

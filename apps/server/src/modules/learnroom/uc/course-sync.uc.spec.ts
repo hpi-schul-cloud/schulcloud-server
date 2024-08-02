@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { GroupService } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { groupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseDoService } from '../service';
 import { courseFactory } from '../testing';
 import { CourseSyncUc } from './course-sync.uc';
-import { GroupService } from '../../group';
 
 describe(CourseSyncUc.name, () => {
 	let module: TestingModule;

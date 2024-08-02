@@ -13,7 +13,6 @@ import {
 } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';
-import { ro } from '@faker-js/faker';
 
 describe(CourseDoService.name, () => {
 	let module: TestingModule;

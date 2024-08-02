@@ -1,5 +1,7 @@
 import { BoardModule } from '@modules/board';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { GroupService } from '@modules/group';
+import { GroupRepo } from '@modules/group/repo';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
@@ -34,8 +36,6 @@ import {
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
-import { GroupService } from '../group';
-import { GroupRepo } from '../group/repo';
 
 @Module({
 	imports: [
