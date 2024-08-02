@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CourseService } from '@modules/learnroom';
 import { Group, GroupService } from '@modules/group';
 import { Course } from '@shared/domain/entity';
-import { ToolContextType } from '../../../common/enum';
-import { MissingToolParameterValueLoggableException } from '../../error';
+import { CustomParameterType, ToolContextType } from '../../../common/enum';
+import { MissingAutoParameterValueLoggableException } from '../../error';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
@@ -21,17 +21,16 @@ export class AutoGroupUuidStrategy implements AutoParameterStrategy {
 		}
 
 		const courseId = contextExternalTool.contextRef.id;
-		const course = await this.courseService.findById(courseId);
+		const course: Course = await this.courseService.findById(courseId);
 
-		const syncedGroup = await this.getSyncedGroup(course);
+		const syncedGroup: Group | undefined = await this.getSyncedGroup(course);
 		if (!syncedGroup) {
 			return undefined;
 		}
 
 		const groupUuid = syncedGroup.externalSource?.externalId;
 		if (!groupUuid) {
-			// TODO: think if a new special error is needed for this case
-			throw new MissingToolParameterValueLoggableException(contextExternalTool, []);
+			throw new MissingAutoParameterValueLoggableException(contextExternalTool, CustomParameterType.AUTO_GROUPUUID);
 		}
 
 		return groupUuid;

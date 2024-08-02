@@ -6,11 +6,12 @@ import { courseFactory, groupEntityFactory, groupFactory, setupEntities } from '
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from '@shared/domain/entity';
 import { GroupEntity } from '@modules/group/entity';
-import { ToolContextType } from '../../../common/enum';
+import { CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
+import { MissingAutoParameterValueLoggableException } from '../../error';
 import { AutoGroupUuidStrategy } from './auto-group-uuid.strategy';
 
 describe(AutoGroupUuidStrategy.name, () => {
@@ -135,7 +136,9 @@ describe(AutoGroupUuidStrategy.name, () => {
 				it('should throw an error', async () => {
 					const { schoolExternalTool, contextExternalTool } = setup();
 
-					await expect(strategy.getValue(schoolExternalTool, contextExternalTool)).rejects.toThrow();
+					await expect(strategy.getValue(schoolExternalTool, contextExternalTool)).rejects.toThrow(
+						new MissingAutoParameterValueLoggableException(contextExternalTool, CustomParameterType.AUTO_GROUPUUID)
+					);
 				});
 			});
 
