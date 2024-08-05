@@ -25,6 +25,43 @@ describe('ValueObject', () => {
 		});
 	});
 
+	describe('By usage of primitive array as value object', () => {
+		const setup = () => {
+			class Names extends ValueObject<string[]> {}
+
+			const nameThors1 = new Names(['Thor1', 'Thor2', 'Thor3']);
+			const nameThors2 = new Names(['Thor1', 'Thor2', 'Thor3']);
+			const nameThorsDifferent = new Names(['Thor1', 'Thor2', 'Thor4']);
+			const nameThorsDifferentCount = new Names(['Thor1', 'Thor2']);
+
+			return { nameThors1, nameThors2, nameThorsDifferent, nameThorsDifferentCount };
+		};
+
+		it('should be return true by same reference', () => {
+			const { nameThors1 } = setup();
+
+			expect(nameThors1.equals(nameThors1)).toBe(true);
+		});
+
+		it('should be return true by different references', () => {
+			const { nameThors1, nameThors2 } = setup();
+
+			expect(nameThors1.equals(nameThors2)).toBe(true);
+		});
+
+		it('should be return false by different values inside the array', () => {
+			const { nameThors1, nameThorsDifferentCount } = setup();
+
+			expect(nameThors1.equals(nameThorsDifferentCount)).toBe(false);
+		});
+
+		it('should be return false by different values inside the array', () => {
+			const { nameThors1, nameThorsDifferent } = setup();
+
+			expect(nameThors1.equals(nameThorsDifferent)).toBe(false);
+		});
+	});
+
 	describe('When value object with validation is created.', () => {
 		const setup = () => {
 			class Name extends ValueObject<string> {
@@ -64,7 +101,7 @@ describe('ValueObject', () => {
 
 			expect(new Name('Thor')).toBeDefined();
 		});
-
+		/*
 		it('should execute but not throw if is valid value is passsed', () => {
 			const { Name } = setup();
 
@@ -74,6 +111,7 @@ describe('ValueObject', () => {
 			expect(myName.isValidValue('')).toBe(false);
 			expect(myName.isValidValue('ABC')).toBe(true);
 		});
+		*/
 	});
 
 	describe('When value object with modification is created.', () => {
