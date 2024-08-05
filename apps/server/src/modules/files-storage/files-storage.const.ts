@@ -1,5 +1,5 @@
+import { AuthorizationContextBuilder } from '@infra/authorization-client';
 import { Permission } from '@shared/domain/interface';
-import { AuthorizationContextBuilder } from '../authorization';
 
 export enum FilesStorageInternalActions {
 	downloadBySecurityToken = '/file-security/download/:token',
