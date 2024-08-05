@@ -1,39 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest/lib/mocks';
 import { S3ClientAdapter } from '@infra/s3-client';
+import { H5PEditor, IContentMetadata } from '@lumieducation/h5p-server';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolEntityFactory,
-	userFactory,
+	h5pContentFactory,
+	lessonFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { Request } from 'express';
-import request from 'supertest';
+import { AuthorizationClientAdapter } from '@src/infra/authorization-client';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
-import { H5PEditorUc } from '../../uc/h5p.uc';
 
-class API {
-	constructor(private app: INestApplication) {
-		this.app = app;
-	}
-
-	async emptyEditor() {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/de`);
-	}
-
-	async editH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/${contentId}/de`);
-	}
-}
-
-const setup = () => {
+const buildContent = () => {
 	const contentId = new ObjectId(0).toString();
 	const notExistingContentId = new ObjectId(1).toString();
 	const badContentId = '';
@@ -44,10 +26,10 @@ const setup = () => {
 	};
 
 	const exampleContent = {
-		h5p: {},
+		h5p: createMock<IContentMetadata>(),
 		library: 'ExampleLib-1.0',
 		params: {
-			metadata: {},
+			metadata: createMock<IContentMetadata>(),
 			params: { anything: true },
 		},
 	};
@@ -57,104 +39,180 @@ const setup = () => {
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
-	let api: API;
+	let testApiClient: TestApiClient;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let h5PEditorUc: DeepMocked<H5PEditorUc>;
+	let h5pEditor: DeepMocked<H5PEditor>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
+
 			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider(H5PEditorUc)
-			.useValue(createMock<H5PEditorUc>())
+			.overrideProvider(H5PEditor)
+			.useValue(createMock<H5PEditor>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
-		h5PEditorUc = module.get(H5PEditorUc);
 
-		api = new API(app);
+		testApiClient = new TestApiClient(app, '/h5p-editor/edit');
 		em = module.get(EntityManager);
+		h5pEditor = module.get(H5PEditor);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
+	beforeEach(async () => {
+		jest.resetAllMocks();
+		await cleanupCollections(em);
+	});
+
 	describe('get new h5p editor', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-			const school = schoolEntityFactory.build();
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-			});
-			const user = userFactory.build({ school, roles });
+		describe('when user is not logged in', () => {
+			it('should return UNAUTHORIZED status', async () => {
+				const response = await testApiClient.get('de');
 
-			await em.persistAndFlush([user, school]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-		});
-		describe('with valid request params', () => {
-			it('should return 200 status', async () => {
-				const { editorModel } = setup();
-				// @ts-expect-error partial object
-				h5PEditorUc.getEmptyH5pEditor.mockResolvedValueOnce(editorModel);
-				const response = await api.emptyEditor();
-				expect(response.status).toEqual(200);
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
-		describe('with bad request params', () => {
-			it('should return 500 status', async () => {
-				h5PEditorUc.getEmptyH5pEditor.mockRejectedValueOnce(new Error('Could not get H5P editor'));
-				const response = await api.emptyEditor();
-				expect(response.status).toEqual(500);
+
+		describe('when user is logged in', () => {
+			describe('when editor is created successfully', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+					await em.persistAndFlush([teacherAccount, teacherUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					const { editorModel } = buildContent();
+					h5pEditor.render.mockResolvedValueOnce(editorModel);
+
+					return { loggedInClient };
+				};
+
+				it('should return OK status', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get('de');
+
+					expect(response.status).toEqual(HttpStatus.OK);
+				});
+			});
+
+			describe('when editor throws error', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+					await em.persistAndFlush([teacherAccount, teacherUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					h5pEditor.render.mockRejectedValueOnce(new Error('Could not get H5P editor'));
+
+					return { loggedInClient };
+				};
+
+				it('should return INTERNAL_SERVER_ERROR status', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get('de');
+
+					expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+				});
 			});
 		});
 	});
 
 	describe('get h5p editor', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-			const school = schoolEntityFactory.build();
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-			});
-			const user = userFactory.build({ school, roles });
+		describe('when user is not logged in', () => {
+			it('should return UNAUTHORIZED status', async () => {
+				const response = await testApiClient.get('123/de');
 
-			await em.persistAndFlush([user, school]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-		});
-		describe('with valid request params', () => {
-			it('should return 200 status', async () => {
-				const { contentId, editorModel, exampleContent } = setup();
-				// @ts-expect-error partial object
-				h5PEditorUc.getH5pEditor.mockResolvedValueOnce({ editorModel, content: exampleContent });
-				const response = await api.editH5pContent(contentId);
-				expect(response.status).toEqual(200);
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
-		describe('with bad request params', () => {
-			it('should return 500 status', async () => {
-				const { notExistingContentId } = setup();
-				h5PEditorUc.getH5pEditor.mockRejectedValueOnce(new Error('Could not get H5P editor'));
-				const response = await api.editH5pContent(notExistingContentId);
-				expect(response.status).toEqual(500);
+
+		describe('when user is logged in', () => {
+			describe('when editor is returned successfully', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const lesson = lessonFactory.build();
+					const h5pContent = h5pContentFactory.build({ parentId: lesson.id });
+
+					await em.persistAndFlush([teacherAccount, teacherUser, lesson, h5pContent]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					const { editorModel, exampleContent } = buildContent();
+					h5pEditor.render.mockResolvedValueOnce({ editorModel, content: exampleContent });
+					h5pEditor.getContent.mockResolvedValueOnce(exampleContent);
+
+					return { loggedInClient, contentId: h5pContent.id };
+				};
+
+				it('should return 200 status', async () => {
+					const { contentId, loggedInClient } = await setup();
+
+					const response = await loggedInClient.get(`${contentId}/de`);
+
+					expect(response.status).toEqual(200);
+				});
+			});
+
+			describe('when content is not existing', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+					await em.persistAndFlush([teacherAccount, teacherUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					const { contentId } = buildContent();
+
+					return { loggedInClient, contentId };
+				};
+
+				it('should return 200 status', async () => {
+					const { contentId, loggedInClient } = await setup();
+
+					const response = await loggedInClient.get(`${contentId}/de`);
+
+					expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+				});
+			});
+
+			describe('when id is not a mongo id', () => {
+				const setup = async () => {
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+					await em.persistAndFlush([teacherAccount, teacherUser]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { loggedInClient };
+				};
+
+				it('should return 200 status', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get(`123/de`);
+
+					expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				});
 			});
 		});
 	});
