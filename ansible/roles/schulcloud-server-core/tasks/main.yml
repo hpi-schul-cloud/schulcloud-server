@@ -75,6 +75,14 @@
       apply: yes
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
+  - name: Remove External Secret for amqp files
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-external-secret.yml.j2
+      state: absent
+    when: EXTERNAL_SECRETS_OPERATOR and not WITH_BRANCH_MONGO_DB_MANAGEMENT
+
   - name: Admin API server Secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -83,6 +91,13 @@
     when:
       - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
       - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+  
+  - name: External Secret (namespace specific) for amqp files
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-external-secret.yml.j2
+    when: EXTERNAL_SECRETS_OPERATOR and WITH_BRANCH_MONGO_DB_MANAGEMENT and WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: Admin API client secret (from 1Password)
     kubernetes.core.k8s:
@@ -191,12 +206,27 @@
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-configmap.yml.j2
 
+  - name: Remove External Secret for amqp files
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-external-secret.yml.j2
+      state: absent
+    when: EXTERNAL_SECRETS_OPERATOR and not WITH_BRANCH_MONGO_DB_MANAGEMENT
+
   - name: amqp files storage Secret by 1Password
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: External Secret (namespace specific) for amqp files
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-external-secret.yml.j2
+    when: EXTERNAL_SECRETS_OPERATOR and WITH_BRANCH_MONGO_DB_MANAGEMENT
 
   - name: Preview Generator Deployment
     kubernetes.core.k8s:
