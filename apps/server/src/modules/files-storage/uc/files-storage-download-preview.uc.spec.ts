@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -45,7 +45,7 @@ describe('FilesStorageUC', () => {
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let previewService: DeepMocked<PreviewService>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -78,8 +78,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: HttpService,
@@ -93,7 +93,7 @@ describe('FilesStorageUC', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		filesStorageService = module.get(FilesStorageService);
 		previewService = module.get(PreviewService);
 	});
@@ -148,8 +148,7 @@ describe('FilesStorageUC', () => {
 				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					allowedType,
 					fileRecord.parentId,
 					FileStorageAuthorizationContext.read
@@ -195,7 +194,7 @@ describe('FilesStorageUC', () => {
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 
 				const error = new ForbiddenException();
-				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, fileRecord, previewParams, error };
 			};
