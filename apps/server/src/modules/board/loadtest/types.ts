@@ -8,12 +8,18 @@ export type UserProfile = {
 	name: string;
 	sleepMs: number;
 	maxCards: number;
-	amount?: number | undefined;
+};
+
+export type UserProfileWithAmount = {
+	name: string;
+	sleepMs: number;
+	maxCards: number;
+	amount: number;
 };
 
 export type ClassDefinition = {
 	name: string;
-	users: UserProfile[];
+	users: UserProfileWithAmount[];
 };
 
 export type Configuration = {

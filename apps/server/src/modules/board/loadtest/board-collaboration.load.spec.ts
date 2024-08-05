@@ -8,8 +8,8 @@ import { createLoadtestClient } from './loadtestClientFactory';
 import { createBoards, getToken } from './helper/createBoards';
 import { UserProfile, UrlConfiguration, ResponseTimeRecord, ClassDefinition } from './types';
 import { getUrlConfiguration } from './helper/getUrlConfiguration';
-import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/getRandomData';
-import { viewersClass, createSeveralClasses, expandUserProfiles } from './helper/scenarios';
+import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
+import { viewersClass, createSeveralClasses, duplicateUserProfiles } from './helper/classDefinitions';
 import { getStats, getSummaryText } from './helper/responseTimes';
 import { formatDate } from './helper/formatDate';
 
@@ -96,7 +96,7 @@ describe('Board Collaboration Load Test', () => {
 	};
 
 	const runBoardTest = async (boardId: string, configuration: ClassDefinition, urls: UrlConfiguration) => {
-		const userProfiles = expandUserProfiles(configuration.users);
+		const userProfiles = duplicateUserProfiles(configuration.users);
 		const boardSocket = createLoadtestClient(urls.websocket, boardId, getToken());
 		const board = await boardSocket.fetchBoard();
 		const promises = userProfiles.map((userProfile: UserProfile, index) =>

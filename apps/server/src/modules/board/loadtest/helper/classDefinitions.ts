@@ -1,4 +1,4 @@
-import { ClassDefinition, UserProfile } from '../types';
+import { ClassDefinition, UserProfile, UserProfileWithAmount } from '../types';
 
 const fastEditor: UserProfile = { name: 'fastEditor', sleepMs: 1000, maxCards: 10 };
 const slowEditor: UserProfile = { name: 'slowEditor', sleepMs: 3000, maxCards: 5 };
@@ -22,10 +22,10 @@ export const collaborativeClass: ClassDefinition = {
 	],
 };
 
-export const expandUserProfiles = (users: UserProfile[]) => {
+export const duplicateUserProfiles = (users: UserProfileWithAmount[]) => {
 	const expandedUsers: UserProfile[] = [];
-	users.forEach(({ amount, ...user }: UserProfile) => {
-		if (amount !== undefined && amount > 0) {
+	users.forEach(({ amount, ...user }: UserProfileWithAmount) => {
+		if (amount > 0) {
 			const userProfiles = Array(amount).fill(user) as UserProfile[];
 			expandedUsers.push(...userProfiles);
 		}
