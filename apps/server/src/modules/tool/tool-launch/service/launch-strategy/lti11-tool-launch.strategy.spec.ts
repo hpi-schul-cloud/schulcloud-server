@@ -23,7 +23,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupUuidStrategy,
+	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
@@ -74,8 +74,8 @@ describe('Lti11ToolLaunchStrategy', () => {
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 				{
-					provide: AutoGroupUuidStrategy,
-					useValue: createMock<AutoGroupUuidStrategy>(),
+					provide: AutoGroupExternalUuidStrategy,
+					useValue: createMock<AutoGroupExternalUuidStrategy>(),
 				},
 			],
 		}).compile();

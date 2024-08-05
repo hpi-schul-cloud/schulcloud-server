@@ -12,11 +12,11 @@ import { contextExternalToolFactory } from '../../../context-external-tool/testi
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { MissingAutoParameterValueLoggableException } from '../../error';
-import { AutoGroupUuidStrategy } from './auto-group-uuid.strategy';
+import { AutoGroupExternalUuidStrategy } from './auto-group-external-uuid-strategy.service';
 
-describe(AutoGroupUuidStrategy.name, () => {
+describe(AutoGroupExternalUuidStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: AutoGroupUuidStrategy;
+	let strategy: AutoGroupExternalUuidStrategy;
 
 	let courseService: DeepMocked<CourseService>;
 	let groupService: DeepMocked<GroupService>;
@@ -26,7 +26,7 @@ describe(AutoGroupUuidStrategy.name, () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				AutoGroupUuidStrategy,
+				AutoGroupExternalUuidStrategy,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
@@ -38,7 +38,7 @@ describe(AutoGroupUuidStrategy.name, () => {
 			],
 		}).compile();
 
-		strategy = module.get(AutoGroupUuidStrategy);
+		strategy = module.get(AutoGroupExternalUuidStrategy);
 		courseService = module.get(CourseService);
 		groupService = module.get(GroupService);
 	});
@@ -137,7 +137,10 @@ describe(AutoGroupUuidStrategy.name, () => {
 					const { schoolExternalTool, contextExternalTool } = setup();
 
 					await expect(strategy.getValue(schoolExternalTool, contextExternalTool)).rejects.toThrow(
-						new MissingAutoParameterValueLoggableException(contextExternalTool, CustomParameterType.AUTO_GROUPUUID)
+						new MissingAutoParameterValueLoggableException(
+							contextExternalTool,
+							CustomParameterType.AUTO_GROUP_EXTERNALUUID
+						)
 					);
 				});
 			});

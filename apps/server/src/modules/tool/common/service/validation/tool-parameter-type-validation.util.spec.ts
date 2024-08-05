@@ -110,7 +110,7 @@ describe(ToolParameterTypeValidationUtil.name, () => {
 		describe('when the type is AUTO_GROUPUUID', () => {
 			it('should return false', () => {
 				const result: boolean = ToolParameterTypeValidationUtil.isValueValidForType(
-					CustomParameterType.AUTO_GROUPUUID,
+					CustomParameterType.AUTO_GROUP_EXTERNALUUID,
 					'any value'
 				);
 

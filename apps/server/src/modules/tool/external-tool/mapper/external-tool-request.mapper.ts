@@ -57,7 +57,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
 	[CustomParameterTypeParams.AUTO_SCHOOLNUMBER]: CustomParameterType.AUTO_SCHOOLNUMBER,
 	[CustomParameterTypeParams.AUTO_MEDIUMID]: CustomParameterType.AUTO_MEDIUMID,
-	[CustomParameterTypeParams.AUTO_GROUPUUID]: CustomParameterType.AUTO_GROUPUUID,
+	[CustomParameterTypeParams.AUTO_GROUP_EXTERNALUUID]: CustomParameterType.AUTO_GROUP_EXTERNALUUID,
 };
 
 @Injectable()

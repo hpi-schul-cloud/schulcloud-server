@@ -8,7 +8,7 @@ describe(MissingAutoParameterValueLoggableException.name, () => {
 		const setup = () => {
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
-			const parameterType: CustomParameterType = CustomParameterType.AUTO_GROUPUUID;
+			const parameterType: CustomParameterType = CustomParameterType.AUTO_GROUP_EXTERNALUUID;
 
 			const exception = new MissingAutoParameterValueLoggableException(contextExternalTool, parameterType);
 

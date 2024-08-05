@@ -13,7 +13,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupUuidStrategy,
+	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
@@ -47,8 +47,8 @@ describe('OAuth2ToolLaunchStrategy', () => {
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 				{
-					provide: AutoGroupUuidStrategy,
-					useValue: createMock<AutoGroupUuidStrategy>(),
+					provide: AutoGroupExternalUuidStrategy,
+					useValue: createMock<AutoGroupExternalUuidStrategy>(),
 				},
 			],
 		}).compile();

@@ -9,7 +9,7 @@ import { MissingAutoParameterValueLoggableException } from '../../error';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
 
 @Injectable()
-export class AutoGroupUuidStrategy implements AutoParameterStrategy {
+export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {
 	constructor(private readonly courseService: CourseService, private readonly groupService: GroupService) {}
 
 	async getValue(
@@ -30,7 +30,10 @@ export class AutoGroupUuidStrategy implements AutoParameterStrategy {
 
 		const groupUuid = syncedGroup.externalSource?.externalId;
 		if (!groupUuid) {
-			throw new MissingAutoParameterValueLoggableException(contextExternalTool, CustomParameterType.AUTO_GROUPUUID);
+			throw new MissingAutoParameterValueLoggableException(
+				contextExternalTool,
+				CustomParameterType.AUTO_GROUP_EXTERNALUUID
+			);
 		}
 
 		return groupUuid;
