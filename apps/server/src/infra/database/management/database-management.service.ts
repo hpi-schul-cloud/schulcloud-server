@@ -26,7 +26,7 @@ export class DatabaseManagementService {
 		const collection = this.getDatabaseCollection(collectionName);
 		const { insertedCount } = await collection.insertMany(jsonDocuments as BaseEntity[], {
 			forceServerObjectId: true,
-			bypassDocumentValidation: true,
+			// bypassDocumentValidation: true,
 		});
 
 		return insertedCount;
