@@ -26,6 +26,7 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
+import { Course } from '@shared/domain/entity';
 import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
@@ -56,7 +57,7 @@ export class CourseController {
 		@Query() pagination: PaginationParams
 	): Promise<CourseMetadataListResponse> {
 		const [courses, total] = await this.courseUc.findAllByUser(currentUser.userId, pagination);
-		const courseResponses = courses.map((course) => CourseMapper.mapToMetadataResponse(course));
+		const courseResponses = courses.map((course: Course) => CourseMapper.mapToMetadataResponse(course));
 		const { skip, limit } = pagination;
 
 		const result = new CourseMetadataListResponse(courseResponses, total, skip, limit);
