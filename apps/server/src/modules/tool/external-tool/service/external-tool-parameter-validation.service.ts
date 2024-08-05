@@ -45,12 +45,6 @@ export class ExternalToolParameterValidationService {
 					);
 				}
 
-				if (!this.isAutoParameterGroupUuidValid(param)) {
-					throw new ValidationError(
-						`tool_param_auto_group_uuid: The custom parameter "${param.name}" with type "${param.type} must be optional."`
-					);
-				}
-
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new ValidationError(
 						`tool_param_regexComment: The custom parameter "${param.name}" parameter is missing a regex comment.`
@@ -166,14 +160,6 @@ export class ExternalToolParameterValidationService {
 
 	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
 		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
-			return false;
-		}
-
-		return true;
-	}
-
-	private isAutoParameterGroupUuidValid(customParameter: CustomParameter) {
-		if (customParameter.type === CustomParameterType.AUTO_GROUPUUID && !customParameter.isOptional) {
 			return false;
 		}
 
