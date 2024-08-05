@@ -1,3 +1,1 @@
-import moment from 'moment';
-
-export const formatDate = (date: Date) => moment(date).format('YYYY-MM-DD HH:mm:ss');
+export const formatDate = (date: Date) => `${date.toISOString().slice(0, 10)} ${date.toLocaleTimeString('de-DE')}`;
