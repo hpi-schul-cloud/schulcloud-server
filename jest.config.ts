@@ -14,7 +14,7 @@ let config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
+	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$', '.load.spec.ts'],
 	testEnvironment: 'node',
 	// detectOpenHandles: true,
 	// detectLeaks: true,
@@ -44,7 +44,7 @@ if (!process.env.RUN_WITHOUT_JEST_COVERAGE) {
 			},
 			// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 		},
-		testTimeout: 5000
+		testTimeout: 5000,
 	};
 }
 
