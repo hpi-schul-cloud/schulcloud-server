@@ -32,7 +32,7 @@ describe(MissingAutoParameterValueLoggableException.name, () => {
 				stack: expect.any(String),
 				data: {
 					contextExternalToolId: contextExternalTool.id,
-					parameterType: parameterType,
+					parameterType,
 				},
 			});
 		});

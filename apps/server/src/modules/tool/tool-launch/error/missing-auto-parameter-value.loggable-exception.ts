@@ -19,7 +19,7 @@ export class MissingAutoParameterValueLoggableException extends BusinessError im
 			},
 			HttpStatus.UNPROCESSABLE_ENTITY,
 			{
-				parameterType: parameterType,
+				parameterType,
 			}
 		);
 	}

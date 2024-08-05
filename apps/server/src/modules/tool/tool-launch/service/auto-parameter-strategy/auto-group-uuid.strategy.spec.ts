@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseService } from '@modules/learnroom';
-import { Group, GroupService } from '@modules/group';
-import { courseFactory, groupEntityFactory, groupFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseService } from '@modules/learnroom';
 import { Course } from '@shared/domain/entity';
+import { Group, GroupService } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
+import { courseFactory, groupEntityFactory, groupFactory, setupEntities } from '@shared/testing';
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';

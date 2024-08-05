@@ -3,9 +3,9 @@ import { CourseService } from '@modules/learnroom';
 import { Group, GroupService } from '@modules/group';
 import { Course } from '@shared/domain/entity';
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
-import { MissingAutoParameterValueLoggableException } from '../../error';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { MissingAutoParameterValueLoggableException } from '../../error';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
 
 @Injectable()
