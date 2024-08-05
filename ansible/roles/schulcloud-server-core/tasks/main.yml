@@ -30,12 +30,27 @@
       template: configmap.yml.j2
       apply: yes
 
+  - name: Remove External Secret
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret.yml.j2
+      state: absent
+    when: EXTERNAL_SECRETS_OPERATOR and not WITH_BRANCH_MONGO_DB_MANAGEMENT
+
   - name: Secret by 1Password
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: External Secret (namespace specific)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret.yml.j2
+    when: EXTERNAL_SECRETS_OPERATOR and WITH_BRANCH_MONGO_DB_MANAGEMENT
 
   - name: File Storage Secret by 1Password
     kubernetes.core.k8s:
