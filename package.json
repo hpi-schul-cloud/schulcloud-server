@@ -108,7 +108,7 @@
 		"nest:start:common-cartridge:dev": "nest start common-cartridge --watch --",
 		"nest:start:common-cartridge:debug": "nest start common-cartridge --debug --watch --",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
-		"nest:test:all": "jest",
+		"nest:test:all": "jest \"^((?!(\\.load)\\.spec\\.ts).)*\"",
 		"nest:test:unit": "jest \"^((?!(\\.api|\\.load)\\.spec\\.ts).)*\\.spec\\.ts$\"",
 		"nest:test:api": "jest \"\\.api\\.spec\\.ts$\"",
 		"nest:test:load": "jest \"\\.load\\.spec\\.ts$\"",
