@@ -8,13 +8,13 @@ let config: Config.InitialOptions = {
 	preset: 'ts-jest',
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
-	testPathIgnorePatterns: ['^src', '^test'],
+	testPathIgnorePatterns: ['^src', '^test', '\\.load\\.spec\\.ts$'],
 	transform: {
 		'^.+\\.(t|j)s$': 'ts-jest',
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$', '.load.spec.ts'],
+	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
 	testEnvironment: 'node',
 	// detectOpenHandles: true,
 	// detectLeaks: true,
