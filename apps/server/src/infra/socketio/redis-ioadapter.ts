@@ -8,7 +8,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 
 export class RedisIoAdapter extends IoAdapter {
 	connectToRedis(): ReturnType<typeof createAdapter> {
-		const redisUri = Configuration.get('REDIS_URI') ?? 'http://localhost:6379';
+		const redisUri = Configuration.has('REDIS_URI') ? Configuration.get('REDIS_URI') : 'redis://localhost:6379';
 		const pubClient = new Redis(redisUri as string);
 		const subClient = pubClient.duplicate();
 
@@ -20,7 +20,7 @@ export class RedisIoAdapter extends IoAdapter {
 		});
 
 		const adapterConstructor = createAdapter(pubClient, subClient);
-		return adapterConstructor as ReturnType<typeof createAdapter>;
+		return adapterConstructor;
 	}
 
 	createIOServer(port: number, options?: ServerOptions): IoAdapter {
