@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -29,14 +29,14 @@ const buildFileRecordWithParams = () => {
 		fileRecordId: fileRecord.id,
 	};
 
-	return { params, fileRecord, userId };
+	return { params, fileRecord };
 };
 
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -65,8 +65,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: HttpService,
@@ -84,7 +84,7 @@ describe('FilesStorageUC', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		filesStorageService = module.get(FilesStorageService);
 	});
 
@@ -103,22 +103,22 @@ describe('FilesStorageUC', () => {
 	describe('download is called', () => {
 		describe('WHEN file is found, user is authorized and file is successfully downloaded', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
+				const { fileRecord, params } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
 				const fileResponse = createMock<GetFileResponse>();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValue();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValue();
 				filesStorageService.download.mockResolvedValueOnce(fileResponse);
 
-				return { fileDownloadParams, userId, fileRecord, fileResponse };
+				return { fileDownloadParams, fileRecord, fileResponse };
 			};
 
 			it('should call getFile with correct params', async () => {
-				const { fileDownloadParams, userId } = setup();
+				const { fileDownloadParams } = setup();
 
-				await filesStorageUC.download(userId, fileDownloadParams);
+				await filesStorageUC.download(fileDownloadParams);
 
 				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith({
 					fileRecordId: fileDownloadParams.fileRecordId,
@@ -126,13 +126,12 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call checkPermissionByReferences with correct params', async () => {
-				const { fileDownloadParams, userId, fileRecord } = setup();
+				const { fileDownloadParams, fileRecord } = setup();
 
-				await filesStorageUC.download(userId, fileDownloadParams);
+				await filesStorageUC.download(fileDownloadParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					allowedType,
 					fileRecord.parentId,
 					FileStorageAuthorizationContext.read
@@ -140,17 +139,17 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call donwload with correct params', async () => {
-				const { fileDownloadParams, userId, fileRecord } = setup();
+				const { fileDownloadParams, fileRecord } = setup();
 
-				await filesStorageUC.download(userId, fileDownloadParams);
+				await filesStorageUC.download(fileDownloadParams);
 
 				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams, undefined);
 			});
 
 			it('should return correct result', async () => {
-				const { fileDownloadParams, userId, fileResponse } = setup();
+				const { fileDownloadParams, fileResponse } = setup();
 
-				const result = await filesStorageUC.download(userId, fileDownloadParams);
+				const result = await filesStorageUC.download(fileDownloadParams);
 
 				expect(result).toEqual(fileResponse);
 			});
@@ -158,58 +157,58 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFile throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
+				const { fileRecord, params } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, userId, error };
+				return { fileDownloadParams, error };
 			};
 
 			it('should pass error', async () => {
-				const { fileDownloadParams, error, userId } = setup();
+				const { fileDownloadParams, error } = setup();
 
-				await expect(filesStorageUC.download(userId, fileDownloadParams)).rejects.toThrowError(error);
+				await expect(filesStorageUC.download(fileDownloadParams)).rejects.toThrowError(error);
 			});
 		});
 
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
+				const { fileRecord, params } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, userId, fileRecord };
+				return { fileDownloadParams, fileRecord };
 			};
 
 			it('should throw Error', async () => {
-				const { fileDownloadParams, userId } = setup();
+				const { fileDownloadParams } = setup();
 
-				await expect(filesStorageUC.download(userId, fileDownloadParams)).rejects.toThrow();
+				await expect(filesStorageUC.download(fileDownloadParams)).rejects.toThrow();
 			});
 		});
 
 		describe('WHEN service throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
+				const { fileRecord, params } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValue();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValue();
 				filesStorageService.download.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, userId, error };
+				return { fileDownloadParams, error };
 			};
 
 			it('should pass error', async () => {
-				const { fileDownloadParams, userId, error } = setup();
+				const { fileDownloadParams, error } = setup();
 
-				await expect(filesStorageUC.download(userId, fileDownloadParams)).rejects.toThrow(error);
+				await expect(filesStorageUC.download(fileDownloadParams)).rejects.toThrow(error);
 			});
 		});
 	});
