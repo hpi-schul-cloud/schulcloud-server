@@ -1,6 +1,13 @@
 import { MikroORM } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { courseFactory, courseGroupFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	courseGroupFactory,
+	groupEntityFactory,
+	schoolEntityFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -43,7 +50,8 @@ describe('CourseEntity', () => {
 
 	describe('getMetadata', () => {
 		it('should return a metadata object', () => {
-			const course = courseFactory.build({ name: 'History', color: '#445566' });
+			const group = groupEntityFactory.build();
+			const course = courseFactory.build({ name: 'History', color: '#445566', syncedWithGroup: group });
 
 			const result = course.getMetadata();
 
@@ -51,6 +59,7 @@ describe('CourseEntity', () => {
 			expect(result.shortTitle).toEqual('Hi');
 			expect(result.displayColor).toEqual('#445566');
 			expect(result.id).toEqual(course.id);
+			expect(result.syncedWithGroup?.id).toEqual(group.id);
 		});
 
 		it('should return only emoji as shortTitle if used as first character', () => {
