@@ -1128,7 +1128,7 @@
 		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
-			"default": "lernen.cloud@dataport.de",
+			"default": "dbildungscloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
