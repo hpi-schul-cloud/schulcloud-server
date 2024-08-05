@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/infra/authorization-client/mapper/authorization-context.builder.ts</code>
+            <code>apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts</code>
         </p>
 
 
@@ -141,6 +141,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Static</span>
                                 <a href="#build" >build</a>
                             </li>
@@ -177,6 +178,7 @@
                 <td class="col-md-4">
                     <a name="build"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                             <span class="modifier">Static</span>
                         <span ><b>build</b></span>
                         <a href="#build"><span class="icon ion-ios-link"></span></a>
@@ -186,7 +188,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(requiredPermissions: <a href="../undefineds/Permission.html" target="_self">Array&lt;Permission&gt;</a>, action: <a href="../s/Action.html" target="_self">Action</a>)</code>
+                    <code>build(requiredPermissions: <a href="../undefineds/Permission.html" target="_self">Permission[]</a>, action: <a href="../s/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
@@ -194,7 +196,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/infra/authorization-client/mapper/authorization-context.builder.ts:5</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -217,7 +219,7 @@
                                         <tr>
                                                 <td>requiredPermissions</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Array&lt;Permission&gt;</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission[]</a></code>
                                             </td>
 
                                             <td>
@@ -242,7 +244,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizationContextParams.html" target="_self" >AuthorizationContextParams</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
 
                         </div>
                             <div class="io-description">
@@ -274,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/infra/authorization-client/mapper/authorization-context.builder.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -311,7 +313,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizationContextParams.html" target="_self" >AuthorizationContextParams</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
 
                         </div>
                             <div class="io-description">
@@ -343,8 +345,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/infra/authorization-client/mapper/authorization-context.builder.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/mapper/authorization-context.builder.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -380,7 +382,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizationContextParams.html" target="_self" >AuthorizationContextParams</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
 
                         </div>
                             <div class="io-description">
@@ -401,24 +403,23 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain/interface&#x27;;
-import { Action, AuthorizationContextParams } from &#x27;../authorization-api-client&#x27;;
+import { Action, AuthorizationContext } from &#x27;../type&#x27;;
 
 export class AuthorizationContextBuilder {
-	static build(requiredPermissions: Array&lt;Permission&gt;, action: Action): AuthorizationContextParams {
-		return {
-			action,
-			requiredPermissions,
-		};
-	}
-
-	static write(requiredPermissions: Permission[]): AuthorizationContextParams {
-		const context &#x3D; this.build(requiredPermissions, Action.WRITE);
+	private static build(requiredPermissions: Permission[], action: Action): AuthorizationContext {
+		const context &#x3D; { requiredPermissions, action };
 
 		return context;
 	}
 
-	static read(requiredPermissions: Permission[]): AuthorizationContextParams {
-		const context &#x3D; this.build(requiredPermissions, Action.READ);
+	static write(requiredPermissions: Permission[]): AuthorizationContext {
+		const context &#x3D; this.build(requiredPermissions, Action.write);
+
+		return context;
+	}
+
+	static read(requiredPermissions: Permission[]): AuthorizationContext {
+		const context &#x3D; this.build(requiredPermissions, Action.read);
 
 		return context;
 	}
@@ -461,7 +462,7 @@ export class AuthorizationContextBuilder {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'AuthorizationContextBuilder.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AuthorizationContextBuilder-1.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

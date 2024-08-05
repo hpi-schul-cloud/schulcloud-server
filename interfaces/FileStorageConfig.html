@@ -132,6 +132,7 @@
             </p>
             <p class="comment">
                             <code><a href="../interfaces/CoreModuleConfig.html" target="_self" >CoreModuleConfig</a></code>
+                            <code><a href="../interfaces/AuthorizationClientConfig.html" target="_self" >AuthorizationClientConfig</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -280,11 +281,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { AuthorizationClientConfig } from &#x27;@infra/authorization-client&#x27;;
 import { S3Config } from &#x27;@infra/s3-client&#x27;;
 import { CoreModuleConfig } from &#x27;@src/core&#x27;;
 
 export const FILES_STORAGE_S3_CONNECTION &#x3D; &#x27;FILES_STORAGE_S3_CONNECTION&#x27;;
-export interface FileStorageConfig extends CoreModuleConfig {
+export interface FileStorageConfig extends CoreModuleConfig, AuthorizationClientConfig {
 	MAX_FILE_SIZE: number;
 	MAX_SECURITY_CHECK_FILE_SIZE: number;
 	USE_STREAM_TO_ANTIVIRUS: boolean;
@@ -295,10 +297,15 @@ export const defaultConfig &#x3D; {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;FILES_STORAGE__INCOMING_REQUEST_TIMEOUT&#x27;) as number,
 };
 
+export const authorizationClientConfig: AuthorizationClientConfig &#x3D; {
+	basePath: &#x60;${Configuration.get(&#x27;API_HOST&#x27;) as string}/v3/&#x60;,
+};
+
 const fileStorageConfig: FileStorageConfig &#x3D; {
 	MAX_FILE_SIZE: Configuration.get(&#x27;FILES_STORAGE__MAX_FILE_SIZE&#x27;) as number,
 	MAX_SECURITY_CHECK_FILE_SIZE: Configuration.get(&#x27;FILES_STORAGE__MAX_FILE_SIZE&#x27;) as number,
 	USE_STREAM_TO_ANTIVIRUS: Configuration.get(&#x27;FILES_STORAGE__USE_STREAM_TO_ANTIVIRUS&#x27;) as boolean,
+	...authorizationClientConfig,
 	...defaultConfig,
 };
 

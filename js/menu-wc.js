@@ -1195,13 +1195,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/FilesStorageApiModule.html" data-type="entity-link" >FilesStorageApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' : 'data-bs-target="#xs-controllers-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' }>
+                                            'data-bs-target="#controllers-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' : 'data-bs-target="#xs-controllers-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' :
-                                            'id="xs-controllers-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' :
+                                            'id="xs-controllers-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' }>
                                             <li class="link">
                                                 <a href="controllers/FileSecurityController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FileSecurityController</a>
                                             </li>
@@ -1215,13 +1215,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' : 'data-bs-target="#xs-injectables-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' }>
+                                        'data-bs-target="#injectables-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' : 'data-bs-target="#xs-injectables-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' :
-                                        'id="xs-injectables-links-module-FilesStorageApiModule-c6d6040d6e03106474322599cacd3feeadfbc7b8d25802b842fd231e8b85992f14d0388ceac7819b5312b767d24590fa5e53e584f898937ca2330d3d09f9ca79"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' :
+                                        'id="xs-injectables-links-module-FilesStorageApiModule-3260fbc413469de7a6515f6bb10f0936e39b02824cbf650cf85e987272c25cbba1392eb76bda15874edb14038f4b1a160a415ce3ccda0e5bb4a858cff75fad2b"' }>
                                         <li class="link">
                                             <a href="injectables/FilesStorageUC.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FilesStorageUC</a>
                                         </li>
@@ -4174,6 +4174,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/AuthorizationContextBuilder.html" data-type="entity-link" >AuthorizationContextBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AuthorizationContextBuilder-1.html" data-type="entity-link" >AuthorizationContextBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/AuthorizationContextParams.html" data-type="entity-link" >AuthorizationContextParams</a>

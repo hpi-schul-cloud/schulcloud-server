@@ -247,12 +247,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, authorizationReferenceService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>, httpService: HttpService, filesStorageService: <a href="../injectables/FilesStorageService.html" target="_self">FilesStorageService</a>, previewService: <a href="../injectables/PreviewService.html" target="_self">PreviewService</a>, em: EntityManager, domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, authorizationClientAdapter: <a href="../injectables/AuthorizationClientAdapter.html" target="_self">AuthorizationClientAdapter</a>, httpService: HttpService, filesStorageService: <a href="../injectables/FilesStorageService.html" target="_self">FilesStorageService</a>, previewService: <a href="../injectables/PreviewService.html" target="_self">PreviewService</a>, em: EntityManager, domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:40</a></div>
                             </td>
                         </tr>
 
@@ -282,10 +282,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>authorizationReferenceService</td>
+                                                        <td>authorizationClientAdapter</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationReferenceService.html" target="_self" >AuthorizationReferenceService</a></code>
+                                                                        <code><a href="../injectables/AuthorizationClientAdapter.html" target="_self" >AuthorizationClientAdapter</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -383,15 +383,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parentType: <a href="../undefineds/FileRecordParentType.html" target="_self">FileRecordParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>checkPermission(parentType: <a href="../undefineds/FileRecordParentType.html" target="_self">FileRecordParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContextParams.html" target="_self">AuthorizationContextParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -411,18 +411,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>parentType</td>
                                             <td>
@@ -450,7 +438,7 @@
                                         <tr>
                                                 <td>context</td>
                                             <td>
-                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
+                                                            <code><a href="../interfaces/AuthorizationContextParams.html" target="_self" >AuthorizationContextParams</a></code>
                                             </td>
 
                                             <td>
@@ -489,15 +477,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkStorageLocation(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, storageLocation: <a href="../undefineds/StorageLocation.html" target="_self">StorageLocation</a>, storageLocationId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>checkStorageLocation(storageLocation: <a href="../undefineds/StorageLocation.html" target="_self">StorageLocation</a>, storageLocationId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -517,18 +505,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>storageLocation</td>
                                             <td>
@@ -590,8 +566,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="254"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:254</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="251"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:251</a></div>
                         </td>
                     </tr>
 
@@ -684,8 +660,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="274"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:274</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="270"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:270</a></div>
                         </td>
                     </tr>
 
@@ -771,15 +747,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteFilesOfParent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>deleteFilesOfParent(params: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="215"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:215</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -799,18 +775,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -853,15 +817,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteOneFile(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../classes/SingleFileParams.html" target="_self">SingleFileParams</a>)</code>
+                    <code>deleteOneFile(params: <a href="../classes/SingleFileParams.html" target="_self">SingleFileParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="224"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:224</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="221"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:221</a></div>
                         </td>
                     </tr>
 
@@ -881,18 +845,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -935,15 +887,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>download(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>download(params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="178"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:178</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -963,18 +915,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -1036,8 +976,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="185"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:185</a></div>
                         </td>
                     </tr>
 
@@ -1106,8 +1046,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:192</a></div>
                         </td>
                     </tr>
 
@@ -1205,15 +1145,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFileRecordsOfParent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>getFileRecordsOfParent(params: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="315"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:315</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="310"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:310</a></div>
                         </td>
                     </tr>
 
@@ -1233,18 +1173,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -1293,8 +1221,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -1333,8 +1261,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:145</a></div>
                         </td>
                     </tr>
 
@@ -1392,15 +1320,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>patchFilename(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../classes/SingleFileParams.html" target="_self">SingleFileParams</a>, data: <a href="../classes/RenameFileParams.html" target="_self">RenameFileParams</a>)</code>
+                    <code>patchFilename(params: <a href="../classes/SingleFileParams.html" target="_self">SingleFileParams</a>, data: <a href="../classes/RenameFileParams.html" target="_self">RenameFileParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="298"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:298</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="293"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:293</a></div>
                         </td>
                     </tr>
 
@@ -1420,18 +1348,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -1486,15 +1402,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>restoreFilesOfParent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>restoreFilesOfParent(params: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="236"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:236</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:233</a></div>
                         </td>
                     </tr>
 
@@ -1514,18 +1430,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -1568,15 +1472,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>restoreOneFile(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../classes/SingleFileParams.html" target="_self">SingleFileParams</a>)</code>
+                    <code>restoreOneFile(params: <a href="../classes/SingleFileParams.html" target="_self">SingleFileParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="243"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:243</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:240</a></div>
                         </td>
                     </tr>
 
@@ -1596,18 +1500,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>params</td>
                                             <td>
@@ -1657,8 +1549,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="309"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:309</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:304</a></div>
                         </td>
                     </tr>
 
@@ -1739,8 +1631,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -1833,8 +1725,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -1927,8 +1819,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="134"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:134</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:131</a></div>
                         </td>
                     </tr>
 
@@ -1991,9 +1883,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, RequestContext } from &#x27;@mikro-orm/core&#x27;;
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
-import { AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+	AuthorizationContextParams,
+} from &#x27;@infra/authorization-client&#x27;;
+import { EntityManager, RequestContext } from &#x27;@mikro-orm/core&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
@@ -2029,7 +1925,7 @@ import { FilesStorageService, PreviewService } from &#x27;../service&#x27;;
 export class FilesStorageUC {
 	constructor(
 		private readonly logger: LegacyLogger,
-		private readonly authorizationReferenceService: AuthorizationReferenceService,
+		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService,
@@ -2041,14 +1937,13 @@ export class FilesStorageUC {
 	}
 
 	private async checkPermission(
-		userId: EntityId,
 		parentType: FileRecordParentType,
 		parentId: EntityId,
-		context: AuthorizationContext
+		context: AuthorizationContextParams
 	): Promise&lt;void&gt; {
-		const allowedType: AuthorizableReferenceType &#x3D; FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		const referenceType &#x3D; FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 
-		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationClientAdapter.checkPermissionsByReference(referenceType, parentId, context);
 	}
 
 	public getPublicConfig(): FilesStorageConfigResponse {
@@ -2061,33 +1956,27 @@ export class FilesStorageUC {
 
 	// upload
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise&lt;FileRecord&gt; {
-		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
+		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
-		await this.checkStorageLocation(userId, params.storageLocation, params.storageLocationId);
+		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
 
 		const fileRecord &#x3D; await this.uploadFileWithBusboy(userId, params, req);
 
 		return fileRecord;
 	}
 
-	private async checkStorageLocation(
-		userId: EntityId,
-		storageLocation: StorageLocation,
-		storageLocationId: EntityId
-	): Promise&lt;void&gt; {
+	private async checkStorageLocation(storageLocation: StorageLocation, storageLocationId: EntityId): Promise&lt;void&gt; {
 		if (storageLocation &#x3D;&#x3D;&#x3D; StorageLocation.INSTANCE) {
-			await this.authorizationReferenceService.checkPermissionByReferences(
-				userId,
-				AuthorizableReferenceType.Instance,
+			await this.authorizationClientAdapter.checkPermissionsByReference(
+				AuthorizationBodyParamsReferenceType.INSTANCES,
 				storageLocationId,
 				AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
 			);
 		}
 
 		if (storageLocation &#x3D;&#x3D;&#x3D; StorageLocation.SCHOOL) {
-			await this.authorizationReferenceService.checkPermissionByReferences(
-				userId,
-				AuthorizableReferenceType.School,
+			await this.authorizationClientAdapter.checkPermissionsByReference(
+				AuthorizationBodyParamsReferenceType.SCHOOLS,
 				storageLocationId,
 				AuthorizationContextBuilder.write([])
 			);
@@ -2125,9 +2014,9 @@ export class FilesStorageUC {
 	}
 
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams &amp; FileUrlParams) {
-		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
+		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
-		await this.checkStorageLocation(userId, params.storageLocation, params.storageLocationId);
+		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
 
 		const response &#x3D; await this.getResponse(params);
 
@@ -2168,12 +2057,12 @@ export class FilesStorageUC {
 	}
 
 	// download
-	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string): Promise&lt;GetFileResponse&gt; {
+	public async download(params: DownloadFileParams, bytesRange?: string): Promise&lt;GetFileResponse&gt; {
 		const singleFileParams &#x3D; FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord &#x3D; await this.filesStorageService.getFileRecord(singleFileParams);
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
+		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.read);
 
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
@@ -2195,7 +2084,7 @@ export class FilesStorageUC {
 		const fileRecord &#x3D; await this.filesStorageService.getFileRecord(singleFileParams);
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
+		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.read);
 
 		this.filesStorageService.checkFileName(fileRecord, params);
 
@@ -2205,8 +2094,8 @@ export class FilesStorageUC {
 	}
 
 	// delete
-	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
-		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
+	public async deleteFilesOfParent(params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
 		const [fileRecords, count] &#x3D; await this.filesStorageService.getFileRecordsOfParent(params.parentId);
 		await this.previewService.deletePreviews(fileRecords);
 		await this.filesStorageService.deleteFilesOfParent(fileRecords);
@@ -2214,11 +2103,11 @@ export class FilesStorageUC {
 		return [fileRecords, count];
 	}
 
-	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise&lt;FileRecord&gt; {
+	public async deleteOneFile(params: SingleFileParams): Promise&lt;FileRecord&gt; {
 		const fileRecord &#x3D; await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
+		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.delete);
 		await this.previewService.deletePreviews([fileRecord]);
 		await this.filesStorageService.delete([fileRecord]);
 
@@ -2226,18 +2115,18 @@ export class FilesStorageUC {
 	}
 
 	// restore
-	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
-		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
+	public async restoreFilesOfParent(params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 		const [fileRecords, count] &#x3D; await this.filesStorageService.restoreFilesOfParent(params);
 
 		return [fileRecords, count];
 	}
 
-	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise&lt;FileRecord&gt; {
+	public async restoreOneFile(params: SingleFileParams): Promise&lt;FileRecord&gt; {
 		const fileRecord &#x3D; await this.filesStorageService.getFileRecordMarkedForDelete(params);
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.create);
+		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.create);
 		await this.filesStorageService.restore([fileRecord]);
 
 		return fileRecord;
@@ -2250,9 +2139,8 @@ export class FilesStorageUC {
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise&lt;Counted&lt;CopyFileResponse[]&gt;&gt; {
 		await Promise.all([
-			this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create),
+			this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create),
 			this.checkPermission(
-				userId,
 				copyFilesParams.target.parentType,
 				copyFilesParams.target.parentId,
 				FileStorageAuthorizationContext.create
@@ -2273,9 +2161,8 @@ export class FilesStorageUC {
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
 		await Promise.all([
-			this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.create),
+			this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.create),
 			this.checkPermission(
-				userId,
 				copyFileParams.target.parentType,
 				copyFileParams.target.parentId,
 				FileStorageAuthorizationContext.create
@@ -2288,11 +2175,11 @@ export class FilesStorageUC {
 	}
 
 	// update
-	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams): Promise&lt;FileRecord&gt; {
+	public async patchFilename(params: SingleFileParams, data: RenameFileParams): Promise&lt;FileRecord&gt; {
 		const fileRecord &#x3D; await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.update);
+		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.update);
 
 		const modifiedFileRecord &#x3D; await this.filesStorageService.patchFilename(fileRecord, data);
 
@@ -2305,8 +2192,8 @@ export class FilesStorageUC {
 	}
 
 	// get
-	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
-		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.read);
+	public async getFileRecordsOfParent(params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.read);
 
 		const countedFileRecords &#x3D; await this.filesStorageService.getFileRecordsOfParent(params.parentId);
 

@@ -24,83 +24,83 @@
 <title>cluster_CommonCartridgeModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 899,-268 899,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_CommonCartridgeModule_imports</title>
+<polygon fill="none" stroke="black" points="525,-78 525,-130 891,-130 891,-78 525,-78"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_CommonCartridgeModule_providers</title>
-<polygon fill="none" stroke="black" points="390,-78 390,-130 891,-130 891,-78 390,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 517,-130 517,-78 16,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_CommonCartridgeModule_exports</title>
-<polygon fill="none" stroke="black" points="314,-208 314,-260 470,-260 470,-208 314,-208"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_CommonCartridgeModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 382,-130 382,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="415,-208 415,-260 571,-260 571,-208 415,-208"/>
 </g>
 <!-- FilesStorageClientModule -->
 <g id="node1" class="node">
 <title>FilesStorageClientModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="373.76,-122 370.76,-126 349.76,-126 346.76,-122 210.24,-122 210.24,-86 373.76,-86 373.76,-122"/>
-<text text-anchor="middle" x="292" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageClientModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="882.76,-122 879.76,-126 858.76,-126 855.76,-122 719.24,-122 719.24,-86 882.76,-86 882.76,-122"/>
+<text text-anchor="middle" x="801" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageClientModule</text>
 </g>
 <!-- CommonCartridgeModule -->
 <g id="node3" class="node">
 <title>CommonCartridgeModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="474.04,-187 471.04,-191 450.04,-191 447.04,-187 309.96,-187 309.96,-151 474.04,-151 474.04,-187"/>
-<text text-anchor="middle" x="392" y="-164.8" font-family="Times,serif" font-size="14.00">CommonCartridgeModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="575.04,-187 572.04,-191 551.04,-191 548.04,-187 410.96,-187 410.96,-151 575.04,-151 575.04,-187"/>
+<text text-anchor="middle" x="493" y="-164.8" font-family="Times,serif" font-size="14.00">CommonCartridgeModule</text>
 </g>
 <!-- FilesStorageClientModule&#45;&gt;CommonCartridgeModule -->
 <g id="edge1" class="edge">
 <title>FilesStorageClientModule&#45;&gt;CommonCartridgeModule</title>
-<path fill="none" stroke="black" d="M341.81,-122.11C341.81,-122.11 341.81,-140.99 341.81,-140.99"/>
-<polygon fill="black" stroke="black" points="338.31,-140.99 341.81,-150.99 345.31,-140.99 338.31,-140.99"/>
+<path fill="none" stroke="black" d="M801,-122.11C801,-141.34 801,-169 801,-169 801,-169 585.13,-169 585.13,-169"/>
+<polygon fill="black" stroke="black" points="585.13,-165.5 575.13,-169 585.13,-172.5 585.13,-165.5"/>
 </g>
 <!-- RabbitMQWrapperModule -->
 <g id="node2" class="node">
 <title>RabbitMQWrapperModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="192.4,-122 189.4,-126 168.4,-126 165.4,-122 23.6,-122 23.6,-86 192.4,-86 192.4,-122"/>
-<text text-anchor="middle" x="108" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="701.4,-122 698.4,-126 677.4,-126 674.4,-122 532.6,-122 532.6,-86 701.4,-86 701.4,-122"/>
+<text text-anchor="middle" x="617" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
 </g>
 <!-- RabbitMQWrapperModule&#45;&gt;CommonCartridgeModule -->
 <g id="edge2" class="edge">
 <title>RabbitMQWrapperModule&#45;&gt;CommonCartridgeModule</title>
-<path fill="none" stroke="black" d="M108,-122.11C108,-141.34 108,-169 108,-169 108,-169 299.86,-169 299.86,-169"/>
-<polygon fill="black" stroke="black" points="299.86,-172.5 309.86,-169 299.86,-165.5 299.86,-172.5"/>
+<path fill="none" stroke="black" d="M554.03,-122.11C554.03,-122.11 554.03,-140.99 554.03,-140.99"/>
+<polygon fill="black" stroke="black" points="550.53,-140.99 554.03,-150.99 557.53,-140.99 550.53,-140.99"/>
 </g>
 <!-- CommonCartridgeUc  -->
 <g id="node4" class="node">
 <title>CommonCartridgeUc </title>
-<polygon fill="#fb8072" stroke="black" points="462.31,-252 321.69,-252 321.69,-216 462.31,-216 462.31,-252"/>
-<text text-anchor="middle" x="392" y="-229.8" font-family="Times,serif" font-size="14.00">CommonCartridgeUc </text>
+<polygon fill="#fb8072" stroke="black" points="563.31,-252 422.69,-252 422.69,-216 563.31,-216 563.31,-252"/>
+<text text-anchor="middle" x="493" y="-229.8" font-family="Times,serif" font-size="14.00">CommonCartridgeUc </text>
 </g>
 <!-- CommonCartridgeModule&#45;&gt;CommonCartridgeUc  -->
 <g id="edge3" class="edge">
 <title>CommonCartridgeModule&#45;&gt;CommonCartridgeUc </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M392,-187.11C392,-187.11 392,-205.99 392,-205.99"/>
-<polygon fill="black" stroke="black" points="388.5,-205.99 392,-215.99 395.5,-205.99 388.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M493,-187.11C493,-187.11 493,-205.99 493,-205.99"/>
+<polygon fill="black" stroke="black" points="489.5,-205.99 493,-215.99 496.5,-205.99 489.5,-205.99"/>
 </g>
 <!-- CommonCartridgeExportService -->
 <g id="node5" class="node">
 <title>CommonCartridgeExportService</title>
-<ellipse fill="#fdb462" stroke="black" cx="744" cy="-104" rx="138.89" ry="18"/>
-<text text-anchor="middle" x="744" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeExportService</text>
+<ellipse fill="#fdb462" stroke="black" cx="370" cy="-104" rx="138.89" ry="18"/>
+<text text-anchor="middle" x="370" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeExportService</text>
 </g>
 <!-- CommonCartridgeExportService&#45;&gt;CommonCartridgeModule -->
 <g id="edge4" class="edge">
 <title>CommonCartridgeExportService&#45;&gt;CommonCartridgeModule</title>
-<path fill="none" stroke="black" d="M744,-122.11C744,-141.34 744,-169 744,-169 744,-169 484.08,-169 484.08,-169"/>
-<polygon fill="black" stroke="black" points="484.08,-165.5 474.08,-169 484.08,-172.5 484.08,-165.5"/>
+<path fill="none" stroke="black" d="M459.71,-117.78C459.71,-117.78 459.71,-140.55 459.71,-140.55"/>
+<polygon fill="black" stroke="black" points="456.21,-140.55 459.71,-150.55 463.21,-140.55 456.21,-140.55"/>
 </g>
 <!-- CommonCartridgeUc -->
 <g id="node6" class="node">
 <title>CommonCartridgeUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="493" cy="-104" rx="94.92" ry="18"/>
-<text text-anchor="middle" x="493" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="119" cy="-104" rx="94.92" ry="18"/>
+<text text-anchor="middle" x="119" y="-99.8" font-family="Times,serif" font-size="14.00">CommonCartridgeUc</text>
 </g>
 <!-- CommonCartridgeUc&#45;&gt;CommonCartridgeModule -->
 <g id="edge5" class="edge">
 <title>CommonCartridgeUc&#45;&gt;CommonCartridgeModule</title>
-<path fill="none" stroke="black" d="M436.28,-118.43C436.28,-118.43 436.28,-140.89 436.28,-140.89"/>
-<polygon fill="black" stroke="black" points="432.78,-140.89 436.28,-150.89 439.78,-140.89 432.78,-140.89"/>
+<path fill="none" stroke="black" d="M119,-122.11C119,-141.34 119,-169 119,-169 119,-169 400.92,-169 400.92,-169"/>
+<polygon fill="black" stroke="black" points="400.92,-172.5 410.92,-169 400.92,-165.5 400.92,-172.5"/>
 </g>
 </g>
 </svg>
