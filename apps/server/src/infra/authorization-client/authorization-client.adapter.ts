@@ -1,23 +1,42 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
-import { extractJwtFromHeader } from '@shared/common';
-import { AuthorizationApi, AuthorizationBodyParams } from './authorization-api-client';
+import {
+	AuthorizationApi,
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationContextParams,
+} from './authorization-api-client';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
 @Injectable()
 export class AuthorizationClientAdapter {
 	constructor(private readonly authorizationApi: AuthorizationApi, @Inject(REQUEST) private request: Request) {}
 
-	public async checkPermissionsByReference(params: AuthorizationBodyParams): Promise<void> {
-		const hasPermission = await this.hasPermissionsByReference(params);
+	public async checkPermissionsByReference(
+		referenceType: AuthorizationBodyParamsReferenceType,
+		referenceId: string,
+		context: AuthorizationContextParams
+	): Promise<void> {
+		const hasPermission = await this.hasPermissionsByReference(referenceType, referenceId, context);
+
 		if (!hasPermission) {
-			throw new AuthorizationForbiddenLoggableException(params);
+			throw new AuthorizationForbiddenLoggableException({ referenceType, referenceId, context });
 		}
 	}
 
-	public async hasPermissionsByReference(params: AuthorizationBodyParams): Promise<boolean> {
+	public async hasPermissionsByReference(
+		referenceType: AuthorizationBodyParamsReferenceType,
+		referenceId: string,
+		context: AuthorizationContextParams
+	): Promise<boolean> {
+		const params = {
+			referenceType,
+			referenceId,
+			context,
+		};
+
 		try {
 			const options = this.createOptionParams();
 
