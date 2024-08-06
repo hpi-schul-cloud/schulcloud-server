@@ -1,4 +1,8 @@
-import { AuthorizationClientAdapter } from '@infra/authorization-client';
+import {
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+	AuthorizationContextParams,
+} from '@infra/authorization-client';
 import {
 	AjaxSuccessResponse,
 	H5PAjaxEndpoint,
@@ -25,7 +29,6 @@ import {
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
@@ -52,7 +55,7 @@ export class H5PEditorUc {
 	private async checkContentPermission(
 		parentType: H5PContentParentType,
 		parentId: EntityId,
-		context: AuthorizationContext
+		context: AuthorizationContextParams
 	) {
 		const allowedType = H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationClientAdapter.checkPermissionsByReference(allowedType, parentId, context);
