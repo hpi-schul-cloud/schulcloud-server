@@ -437,7 +437,7 @@ const signedUrlService = {
 					userId: creatorId,
 					flatFileName: fileObject.storageFileName,
 					localFileName: query.name || fileObject.name,
-					download,
+					download: true,
 					bucket: fileObject.bucket,
 				})
 			)

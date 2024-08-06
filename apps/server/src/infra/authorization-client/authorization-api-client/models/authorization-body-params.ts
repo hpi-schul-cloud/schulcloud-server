@@ -54,7 +54,9 @@ export const AuthorizationBodyParamsReferenceType = {
     SUBMISSIONS: 'submissions',
     SCHOOL_EXTERNAL_TOOLS: 'school-external-tools',
     BOARDNODES: 'boardnodes',
-    CONTEXT_EXTERNAL_TOOLS: 'context-external-tools'
+    CONTEXT_EXTERNAL_TOOLS: 'context-external-tools',
+    EXTERNAL_TOOLS: 'external-tools',
+    INSTANCES: 'instances'
 } as const;
 
 export type AuthorizationBodyParamsReferenceType = typeof AuthorizationBodyParamsReferenceType[keyof typeof AuthorizationBodyParamsReferenceType];
