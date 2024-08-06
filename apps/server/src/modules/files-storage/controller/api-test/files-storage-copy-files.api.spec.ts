@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
@@ -105,6 +106,8 @@ describe(`${baseRouteName} (api)`, () => {
 			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();

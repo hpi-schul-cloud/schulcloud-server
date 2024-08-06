@@ -8,6 +8,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
@@ -106,6 +107,8 @@ describe(`${baseRouteName} (api)`, () => {
 			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
