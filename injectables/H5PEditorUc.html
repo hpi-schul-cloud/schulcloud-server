@@ -250,12 +250,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(h5pEditor: H5PEditor, h5pPlayer: H5PPlayer, h5pAjaxEndpoint: H5PAjaxEndpoint, libraryService: <a href="../injectables/LibraryStorage.html" target="_self">LibraryStorage</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, authorizationReferenceService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>, h5pContentRepo: <a href="../injectables/H5PContentRepo.html" target="_self">H5PContentRepo</a>)</code>
+<code>constructor(h5pEditor: H5PEditor, h5pPlayer: H5PPlayer, h5pAjaxEndpoint: H5PAjaxEndpoint, libraryService: <a href="../injectables/LibraryStorage.html" target="_self">LibraryStorage</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, authorizationClientAdapter: <a href="../injectables/AuthorizationClientAdapter.html" target="_self">AuthorizationClientAdapter</a>, h5pContentRepo: <a href="../injectables/H5PContentRepo.html" target="_self">H5PContentRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:44</a></div>
                             </td>
                         </tr>
 
@@ -333,10 +333,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>authorizationReferenceService</td>
+                                                        <td>authorizationClientAdapter</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationReferenceService.html" target="_self" >AuthorizationReferenceService</a></code>
+                                                                        <code><a href="../injectables/AuthorizationClientAdapter.html" target="_self" >AuthorizationClientAdapter</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -392,8 +392,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="357"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:357</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="359"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:359</a></div>
                         </td>
                     </tr>
 
@@ -455,15 +455,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkContentPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parentType: <a href="../undefineds/H5PContentParentType.html" target="_self">H5PContentParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>checkContentPermission(parentType: <a href="../undefineds/H5PContentParentType.html" target="_self">H5PContentParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContextParams.html" target="_self">AuthorizationContextParams</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -483,18 +483,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>parentType</td>
                                             <td>
@@ -522,7 +510,7 @@
                                         <tr>
                                                 <td>context</td>
                                             <td>
-                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
+                                                            <code><a href="../interfaces/AuthorizationContextParams.html" target="_self" >AuthorizationContextParams</a></code>
                                             </td>
 
                                             <td>
@@ -567,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="368"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:368</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="370"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:370</a></div>
                         </td>
                     </tr>
 
@@ -661,8 +649,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="309"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:309</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="311"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:311</a></div>
                         </td>
                     </tr>
 
@@ -790,8 +778,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="290"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:290</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="292"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:292</a></div>
                         </td>
                     </tr>
 
@@ -872,8 +860,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -954,8 +942,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -1060,8 +1048,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -1142,8 +1130,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="259"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:259</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="261"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:261</a></div>
                         </td>
                     </tr>
 
@@ -1224,8 +1212,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="273"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:273</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="275"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:275</a></div>
                         </td>
                     </tr>
 
@@ -1318,8 +1306,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="248"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:248</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="250"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:250</a></div>
                         </td>
                     </tr>
 
@@ -1400,8 +1388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="215"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:215</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -1481,8 +1469,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -1553,8 +1541,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="229"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:229</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="231"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:231</a></div>
                         </td>
                     </tr>
 
@@ -1647,8 +1635,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="382"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:382</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="384"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:384</a></div>
                         </td>
                     </tr>
 
@@ -1717,8 +1705,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -1835,8 +1823,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="333"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:333</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="335"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:335</a></div>
                         </td>
                     </tr>
 
@@ -1978,7 +1966,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:62</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -1992,6 +1980,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+	AuthorizationContextParams,
+} from &#x27;@infra/authorization-client&#x27;;
+import {
 	AjaxSuccessResponse,
 	H5PAjaxEndpoint,
 	H5PEditor,
@@ -2017,8 +2010,6 @@ import {
 import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@src/modules/authorization&#x27;;
-import { AuthorizationReferenceService } from &#x27;@src/modules/authorization/domain&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { Request } from &#x27;express&#x27;;
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from &#x27;../controller/dto&#x27;;
@@ -2038,18 +2029,17 @@ export class H5PEditorUc {
 		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
 		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
-		private readonly authorizationReferenceService: AuthorizationReferenceService,
+		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
 		private readonly h5pContentRepo: H5PContentRepo
 	) {}
 
 	private async checkContentPermission(
-		userId: EntityId,
 		parentType: H5PContentParentType,
 		parentId: EntityId,
-		context: AuthorizationContext
+		context: AuthorizationContextParams
 	) {
 		const allowedType &#x3D; H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationClientAdapter.checkPermissionsByReference(allowedType, parentId, context);
 	}
 
 	private fakeUndefinedAsString &#x3D; () &#x3D;&gt; {
@@ -2161,7 +2151,7 @@ export class H5PEditorUc {
 
 	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
 		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user &#x3D; this.changeUserType(currentUser);
 
@@ -2181,7 +2171,7 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser
 	): Promise&lt;GetLibraryFile&gt; {
 		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user &#x3D; this.changeUserType(currentUser);
 
@@ -2240,7 +2230,7 @@ export class H5PEditorUc {
 
 	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise&lt;IPlayerModel&gt; {
 		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user &#x3D; this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -2265,7 +2255,7 @@ export class H5PEditorUc {
 
 	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
 		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user &#x3D; this.changeUserType(currentUser);
 
@@ -2282,7 +2272,7 @@ export class H5PEditorUc {
 
 	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise&lt;boolean&gt; {
 		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user &#x3D; this.changeUserType(currentUser);
 		let deletedContent &#x3D; false;
@@ -2307,7 +2297,7 @@ export class H5PEditorUc {
 		parentType: H5PContentParentType,
 		parentId: EntityId
 	): Promise&lt;{ id: string; metadata: IContentMetadata }&gt; {
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user &#x3D; this.createAugmentedLumiUser(currentUser, parentType, parentId);
 		const fakeAsString &#x3D; this.fakeUndefinedAsString();
@@ -2332,7 +2322,7 @@ export class H5PEditorUc {
 		parentType: H5PContentParentType,
 		parentId: EntityId
 	): Promise&lt;{ id: string; metadata: IContentMetadata }&gt; {
-		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
 		const user &#x3D; this.createAugmentedLumiUser(currentUser, parentType, parentId);
 

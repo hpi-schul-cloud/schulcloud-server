@@ -222,7 +222,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#AuthorizationBodyParamsReferenceType" target="_self" >AuthorizationBodyParamsReferenceType</a></code>
 
                         </div>
                             <div class="io-description">
@@ -242,15 +242,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { AuthorizableReferenceType } from &#x27;@src/modules/authorization/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationBodyParamsReferenceType } from &#x27;@infra/authorization-client&#x27;;
+import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { H5PContentParentType } from &#x27;../entity&#x27;;
 
 export class H5PContentMapper {
-	static mapToAllowedAuthorizationEntityType(type: H5PContentParentType): AuthorizableReferenceType {
-		const types &#x3D; new Map&lt;H5PContentParentType, AuthorizableReferenceType&gt;();
+	static mapToAllowedAuthorizationEntityType(type: H5PContentParentType): AuthorizationBodyParamsReferenceType {
+		const types &#x3D; new Map&lt;H5PContentParentType, AuthorizationBodyParamsReferenceType&gt;();
 
-		types.set(H5PContentParentType.Lesson, AuthorizableReferenceType.Lesson);
+		types.set(H5PContentParentType.Lesson, AuthorizationBodyParamsReferenceType.LESSONS);
 
 		const res &#x3D; types.get(type);
 
