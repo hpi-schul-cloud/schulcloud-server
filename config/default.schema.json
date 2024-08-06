@@ -1388,6 +1388,11 @@
 			"default": false,
 			"description": "Enables the new class list view"
 		},
+		"FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new course list view"
+		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
 			"default": false,
