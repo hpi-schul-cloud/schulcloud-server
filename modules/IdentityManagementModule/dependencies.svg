@@ -24,13 +24,13 @@
 <title>cluster_IdentityManagementModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 628,-268 628,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_IdentityManagementModule_exports</title>
-<polygon fill="none" stroke="black" points="83,-208 83,-260 507,-260 507,-208 83,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_IdentityManagementModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 620,-130 620,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_IdentityManagementModule_exports</title>
+<polygon fill="none" stroke="black" points="83,-208 83,-260 507,-260 507,-208 83,-208"/>
 </g>
 <!-- EncryptionModule -->
 <g id="node1" class="node">
