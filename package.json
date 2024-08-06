@@ -269,7 +269,7 @@
 		"@feathersjs/adapter-tests": "^5.0.29",
 		"@golevelup/ts-jest": "^0.5.0",
 		"@jest-mock/express": "^1.4.5",
-		"@nestjs/cli": "^10.1.17",
+		"@nestjs/cli": "^10.4.2",
 		"@nestjs/schematics": "^10.0.2",
 		"@nestjs/testing": "^10.2.4",
 		"@openapitools/openapi-generator-cli": "^2.13.4",
