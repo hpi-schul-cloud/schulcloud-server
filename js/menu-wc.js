@@ -3342,18 +3342,21 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ToolLaunchModule.html" data-type="entity-link" >ToolLaunchModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ToolLaunchModule-71c734eaf345c1953d8c8292e144c51ae133f8d39e15a0d54c1138d0388b0c3cbed638085b35c2a8b6b98fc512c34777cda19efe2eb21dc4c88e83705b2fc773"' : 'data-bs-target="#xs-injectables-links-module-ToolLaunchModule-71c734eaf345c1953d8c8292e144c51ae133f8d39e15a0d54c1138d0388b0c3cbed638085b35c2a8b6b98fc512c34777cda19efe2eb21dc4c88e83705b2fc773"' }>
+                                        'data-bs-target="#injectables-links-module-ToolLaunchModule-9220aac9afa1b56c41568a5706c142ed0cd0860ec7e3a071b27fd81eb65e4685a9e0065c9d5abcb67496c1ab7d2aa7bb5deb945570d11c5ebdd404045c1f5c37"' : 'data-bs-target="#xs-injectables-links-module-ToolLaunchModule-9220aac9afa1b56c41568a5706c142ed0cd0860ec7e3a071b27fd81eb65e4685a9e0065c9d5abcb67496c1ab7d2aa7bb5deb945570d11c5ebdd404045c1f5c37"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolLaunchModule-71c734eaf345c1953d8c8292e144c51ae133f8d39e15a0d54c1138d0388b0c3cbed638085b35c2a8b6b98fc512c34777cda19efe2eb21dc4c88e83705b2fc773"' :
-                                        'id="xs-injectables-links-module-ToolLaunchModule-71c734eaf345c1953d8c8292e144c51ae133f8d39e15a0d54c1138d0388b0c3cbed638085b35c2a8b6b98fc512c34777cda19efe2eb21dc4c88e83705b2fc773"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolLaunchModule-9220aac9afa1b56c41568a5706c142ed0cd0860ec7e3a071b27fd81eb65e4685a9e0065c9d5abcb67496c1ab7d2aa7bb5deb945570d11c5ebdd404045c1f5c37"' :
+                                        'id="xs-injectables-links-module-ToolLaunchModule-9220aac9afa1b56c41568a5706c142ed0cd0860ec7e3a071b27fd81eb65e4685a9e0065c9d5abcb67496c1ab7d2aa7bb5deb945570d11c5ebdd404045c1f5c37"' }>
                                         <li class="link">
                                             <a href="injectables/AutoContextIdStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoContextIdStrategy</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/AutoContextNameStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoContextNameStrategy</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/AutoGroupExternalUuidStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoGroupExternalUuidStrategy</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/AutoMediumIdStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AutoMediumIdStrategy</a>
@@ -7493,6 +7496,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/AutoContextNameStrategy.html" data-type="entity-link" >AutoContextNameStrategy</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AutoGroupExternalUuidStrategy.html" data-type="entity-link" >AutoGroupExternalUuidStrategy</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/AutoMediumIdStrategy.html" data-type="entity-link" >AutoMediumIdStrategy</a>
