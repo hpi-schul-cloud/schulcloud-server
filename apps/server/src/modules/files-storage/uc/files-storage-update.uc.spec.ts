@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -33,7 +33,7 @@ describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -62,8 +62,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: HttpService,
@@ -81,7 +81,7 @@ describe('FilesStorageUC', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		filesStorageService = module.get(FilesStorageService);
 	});
 
@@ -142,31 +142,29 @@ describe('FilesStorageUC', () => {
 	describe('patchFilename is called', () => {
 		describe('WHEN user is authorised and single file exists', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
 				const { fileRecord, params } = buildFileRecordWithParams();
 				const data: RenameFileParams = { fileName: 'test_new_name.txt' };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 				filesStorageService.patchFilename.mockResolvedValueOnce(fileRecord);
 
-				return { userId, params, fileRecord, data };
+				return { params, fileRecord, data };
 			};
 
 			it('should call service method getFile with right parameters', async () => {
-				const { userId, params, data } = setup();
-				await filesStorageUC.patchFilename(userId, params, data);
+				const { params, data } = setup();
+				await filesStorageUC.patchFilename(params, data);
 
 				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(params);
 			});
 
 			it('should call authorisation with right parameters', async () => {
-				const { userId, params, data, fileRecord } = setup();
+				const { params, data, fileRecord } = setup();
 
-				await filesStorageUC.patchFilename(userId, params, data);
+				await filesStorageUC.patchFilename(params, data);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					fileRecord.parentType,
 					fileRecord.parentId,
 					FileStorageAuthorizationContext.update
@@ -174,17 +172,17 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call service method patchFilename with right parameters', async () => {
-				const { userId, params, fileRecord, data } = setup();
+				const { params, fileRecord, data } = setup();
 
-				await filesStorageUC.patchFilename(userId, params, data);
+				await filesStorageUC.patchFilename(params, data);
 
 				expect(filesStorageService.patchFilename).toHaveBeenCalledWith(fileRecord, data);
 			});
 
 			it('should return modified fileRecord', async () => {
-				const { userId, params, fileRecord, data } = setup();
+				const { params, fileRecord, data } = setup();
 
-				const result = await filesStorageUC.patchFilename(userId, params, data);
+				const result = await filesStorageUC.patchFilename(params, data);
 
 				expect(result).toEqual(fileRecord);
 			});

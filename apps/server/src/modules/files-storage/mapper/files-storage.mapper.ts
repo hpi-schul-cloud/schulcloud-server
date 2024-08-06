@@ -1,4 +1,4 @@
-import { AuthorizableReferenceType } from '@modules/authorization/domain';
+import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import {
@@ -12,20 +12,20 @@ import { FileRecord } from '../entity';
 import { FileRecordParentType, GetFileResponse } from '../interface';
 
 export class FilesStorageMapper {
-	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizableReferenceType> = new Map([
-		[FileRecordParentType.Task, AuthorizableReferenceType.Task],
-		[FileRecordParentType.Course, AuthorizableReferenceType.Course],
-		[FileRecordParentType.User, AuthorizableReferenceType.User],
-		[FileRecordParentType.School, AuthorizableReferenceType.School],
-		[FileRecordParentType.Lesson, AuthorizableReferenceType.Lesson],
-		[FileRecordParentType.Submission, AuthorizableReferenceType.Submission],
-		[FileRecordParentType.Grading, AuthorizableReferenceType.Submission],
-		[FileRecordParentType.BoardNode, AuthorizableReferenceType.BoardNode],
-		[FileRecordParentType.ExternalTool, AuthorizableReferenceType.ExternalTool],
+	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizationBodyParamsReferenceType> = new Map([
+		[FileRecordParentType.Task, AuthorizationBodyParamsReferenceType.TASKS],
+		[FileRecordParentType.Course, AuthorizationBodyParamsReferenceType.COURSES],
+		[FileRecordParentType.User, AuthorizationBodyParamsReferenceType.USERS],
+		[FileRecordParentType.School, AuthorizationBodyParamsReferenceType.SCHOOLS],
+		[FileRecordParentType.Lesson, AuthorizationBodyParamsReferenceType.LESSONS],
+		[FileRecordParentType.Submission, AuthorizationBodyParamsReferenceType.SUBMISSIONS],
+		[FileRecordParentType.Grading, AuthorizationBodyParamsReferenceType.SUBMISSIONS],
+		[FileRecordParentType.BoardNode, AuthorizationBodyParamsReferenceType.BOARDNODES],
+		[FileRecordParentType.ExternalTool, AuthorizationBodyParamsReferenceType.EXTERNAL_TOOLS],
 	]);
 
-	public static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {
-		const res: AuthorizableReferenceType | undefined = this.authorizationEntityMap.get(type);
+	public static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizationBodyParamsReferenceType {
+		const res: AuthorizationBodyParamsReferenceType | undefined = this.authorizationEntityMap.get(type);
 
 		if (!res) {
 			throw new NotImplementedException();
