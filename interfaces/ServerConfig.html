@@ -503,6 +503,12 @@
                                             TLDRAW__ASSETS_MAX_SIZE
                                         </a>
                                 </li>
+                                <li>
+                                        <a href="#TRAINING_URL" 
+>
+                                            TRAINING_URL
+                                        </a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -2334,6 +2340,39 @@
 
                         </tbody>
                     </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="TRAINING_URL"></a>
+                                        <span class="name "><b>TRAINING_URL</b>
+                                            <a href="#TRAINING_URL">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>TRAINING_URL:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
             </section>
     </div>
 
@@ -2440,6 +2479,7 @@ export interface ServerConfig
 	DOCUMENT_BASE_DIR: string;
 	SC_THEME: SchulcloudTheme;
 	SC_TITLE: string;
+	TRAINING_URL: string;
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
@@ -2514,6 +2554,7 @@ const config: ServerConfig &#x3D; {
 	SC_THEME: Configuration.get(&#x27;SC_THEME&#x27;) as SchulcloudTheme,
 	SC_TITLE: Configuration.get(&#x27;SC_TITLE&#x27;) as string,
 	SC_DOMAIN: Configuration.get(&#x27;SC_DOMAIN&#x27;) as string,
+	TRAINING_URL: Configuration.get(&#x27;TRAINING_URL&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;) as number,
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,

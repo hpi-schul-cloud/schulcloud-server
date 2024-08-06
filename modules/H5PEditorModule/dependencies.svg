@@ -24,203 +24,203 @@
 <title>cluster_H5PEditorModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1986,-268 1986,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_H5PEditorModule_providers</title>
-<polygon fill="none" stroke="black" points="893,-78 893,-130 1978,-130 1978,-78 893,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_H5PEditorModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 885,-130 885,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1109,-78 1109,-130 1978,-130 1978,-78 1109,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_H5PEditorModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1101,-130 1101,-78 16,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_H5PEditorModule_exports</title>
-<polygon fill="none" stroke="black" points="878,-208 878,-260 1122,-260 1122,-208 878,-208"/>
+<polygon fill="none" stroke="black" points="901,-208 901,-260 1145,-260 1145,-208 901,-208"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
 <title>AuthenticationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="877.25,-122 874.25,-126 853.25,-126 850.25,-122 734.75,-122 734.75,-86 877.25,-86 877.25,-122"/>
-<text text-anchor="middle" x="806" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1970.25,-122 1967.25,-126 1946.25,-126 1943.25,-122 1827.75,-122 1827.75,-86 1970.25,-86 1970.25,-122"/>
+<text text-anchor="middle" x="1899" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
 </g>
 <!-- H5PEditorModule -->
 <g id="node7" class="node">
 <title>H5PEditorModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1058.93,-187 1055.93,-191 1034.93,-191 1031.93,-187 939.07,-187 939.07,-151 1058.93,-151 1058.93,-187"/>
-<text text-anchor="middle" x="999" y="-164.8" font-family="Times,serif" font-size="14.00">H5PEditorModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1081.93,-187 1078.93,-191 1057.93,-191 1054.93,-187 962.07,-187 962.07,-151 1081.93,-151 1081.93,-187"/>
+<text text-anchor="middle" x="1022" y="-164.8" font-family="Times,serif" font-size="14.00">H5PEditorModule</text>
 </g>
 <!-- AuthenticationModule&#45;&gt;H5PEditorModule -->
 <g id="edge1" class="edge">
 <title>AuthenticationModule&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M806,-122.24C806,-137.57 806,-157 806,-157 806,-157 929.26,-157 929.26,-157"/>
-<polygon fill="black" stroke="black" points="929.26,-160.5 939.26,-157 929.26,-153.5 929.26,-160.5"/>
+<path fill="none" stroke="black" d="M1899,-122.09C1899,-145.13 1899,-182 1899,-182 1899,-182 1091.93,-182 1091.93,-182"/>
+<polygon fill="black" stroke="black" points="1091.93,-178.5 1081.93,-182 1091.93,-185.5 1091.93,-178.5"/>
 </g>
 <!-- AuthorizationClientModule -->
 <g id="node2" class="node">
 <title>AuthorizationClientModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="716.53,-122 713.53,-126 692.53,-126 689.53,-122 545.47,-122 545.47,-86 716.53,-86 716.53,-122"/>
-<text text-anchor="middle" x="631" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationClientModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1809.53,-122 1806.53,-126 1785.53,-126 1782.53,-122 1638.47,-122 1638.47,-86 1809.53,-86 1809.53,-122"/>
+<text text-anchor="middle" x="1724" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationClientModule</text>
 </g>
 <!-- AuthorizationClientModule&#45;&gt;H5PEditorModule -->
 <g id="edge2" class="edge">
 <title>AuthorizationClientModule&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M631,-122.03C631,-139.06 631,-162 631,-162 631,-162 929.06,-162 929.06,-162"/>
-<polygon fill="black" stroke="black" points="929.06,-165.5 939.06,-162 929.06,-158.5 929.06,-165.5"/>
+<path fill="none" stroke="black" d="M1724,-122.04C1724,-143.66 1724,-177 1724,-177 1724,-177 1091.85,-177 1091.85,-177"/>
+<polygon fill="black" stroke="black" points="1091.85,-173.5 1081.85,-177 1091.85,-180.5 1091.85,-173.5"/>
 </g>
 <!-- CoreModule -->
 <g id="node3" class="node">
 <title>CoreModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="527.26,-122 524.26,-126 503.26,-126 500.26,-122 440.74,-122 440.74,-86 527.26,-86 527.26,-122"/>
-<text text-anchor="middle" x="484" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1620.26,-122 1617.26,-126 1596.26,-126 1593.26,-122 1533.74,-122 1533.74,-86 1620.26,-86 1620.26,-122"/>
+<text text-anchor="middle" x="1577" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
 </g>
 <!-- CoreModule&#45;&gt;H5PEditorModule -->
 <g id="edge3" class="edge">
 <title>CoreModule&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M484,-122.22C484,-140.83 484,-167 484,-167 484,-167 929.17,-167 929.17,-167"/>
-<polygon fill="black" stroke="black" points="929.17,-170.5 939.17,-167 929.17,-163.5 929.17,-170.5"/>
+<path fill="none" stroke="black" d="M1577,-122.22C1577,-142.37 1577,-172 1577,-172 1577,-172 1091.92,-172 1091.92,-172"/>
+<polygon fill="black" stroke="black" points="1091.92,-168.5 1081.92,-172 1091.92,-175.5 1091.92,-168.5"/>
 </g>
 <!-- RabbitMQWrapperModule -->
 <g id="node4" class="node">
 <title>RabbitMQWrapperModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="422.4,-122 419.4,-126 398.4,-126 395.4,-122 253.6,-122 253.6,-86 422.4,-86 422.4,-122"/>
-<text text-anchor="middle" x="338" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1515.4,-122 1512.4,-126 1491.4,-126 1488.4,-122 1346.6,-122 1346.6,-86 1515.4,-86 1515.4,-122"/>
+<text text-anchor="middle" x="1431" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
 </g>
 <!-- RabbitMQWrapperModule&#45;&gt;H5PEditorModule -->
 <g id="edge4" class="edge">
 <title>RabbitMQWrapperModule&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M338,-122.22C338,-142.37 338,-172 338,-172 338,-172 929.17,-172 929.17,-172"/>
-<polygon fill="black" stroke="black" points="929.17,-175.5 939.17,-172 929.17,-168.5 929.17,-175.5"/>
+<path fill="none" stroke="black" d="M1431,-122.22C1431,-140.83 1431,-167 1431,-167 1431,-167 1091.91,-167 1091.91,-167"/>
+<polygon fill="black" stroke="black" points="1091.91,-163.5 1081.91,-167 1091.91,-170.5 1091.91,-163.5"/>
 </g>
 <!-- S3ClientModule -->
 <g id="node5" class="node">
 <title>S3ClientModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="236.06,-122 233.06,-126 212.06,-126 209.06,-122 127.94,-122 127.94,-86 236.06,-86 236.06,-122"/>
-<text text-anchor="middle" x="182" y="-99.8" font-family="Times,serif" font-size="14.00">S3ClientModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1329.06,-122 1326.06,-126 1305.06,-126 1302.06,-122 1220.94,-122 1220.94,-86 1329.06,-86 1329.06,-122"/>
+<text text-anchor="middle" x="1275" y="-99.8" font-family="Times,serif" font-size="14.00">S3ClientModule</text>
 </g>
 <!-- S3ClientModule&#45;&gt;H5PEditorModule -->
 <g id="edge5" class="edge">
 <title>S3ClientModule&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M182,-122.04C182,-143.66 182,-177 182,-177 182,-177 929.26,-177 929.26,-177"/>
-<polygon fill="black" stroke="black" points="929.26,-180.5 939.26,-177 929.26,-173.5 929.26,-180.5"/>
+<path fill="none" stroke="black" d="M1275,-122.03C1275,-139.06 1275,-162 1275,-162 1275,-162 1091.96,-162 1091.96,-162"/>
+<polygon fill="black" stroke="black" points="1091.96,-158.5 1081.96,-162 1091.96,-165.5 1091.96,-158.5"/>
 </g>
 <!-- UserModule -->
 <g id="node6" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1202.98,-122 1199.98,-126 1178.98,-126 1175.98,-122 1117.02,-122 1117.02,-86 1202.98,-86 1202.98,-122"/>
+<text text-anchor="middle" x="1160" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;H5PEditorModule -->
 <g id="edge6" class="edge">
 <title>UserModule&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M67,-122.09C67,-145.13 67,-182 67,-182 67,-182 929.28,-182 929.28,-182"/>
-<polygon fill="black" stroke="black" points="929.28,-185.5 939.28,-182 929.28,-178.5 929.28,-185.5"/>
+<path fill="none" stroke="black" d="M1127.15,-122.24C1127.15,-137.57 1127.15,-157 1127.15,-157 1127.15,-157 1091.95,-157 1091.95,-157"/>
+<polygon fill="black" stroke="black" points="1091.95,-153.5 1081.95,-157 1091.95,-160.5 1091.95,-153.5"/>
 </g>
 <!-- ContentStorage  -->
 <g id="node8" class="node">
 <title>ContentStorage </title>
-<polygon fill="#fb8072" stroke="black" points="1114.1,-252 1007.9,-252 1007.9,-216 1114.1,-216 1114.1,-252"/>
-<text text-anchor="middle" x="1061" y="-229.8" font-family="Times,serif" font-size="14.00">ContentStorage </text>
+<polygon fill="#fb8072" stroke="black" points="1137.1,-252 1030.9,-252 1030.9,-216 1137.1,-216 1137.1,-252"/>
+<text text-anchor="middle" x="1084" y="-229.8" font-family="Times,serif" font-size="14.00">ContentStorage </text>
 </g>
 <!-- H5PEditorModule&#45;&gt;ContentStorage  -->
 <g id="edge7" class="edge">
 <title>H5PEditorModule&#45;&gt;ContentStorage </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1033.21,-187.11C1033.21,-187.11 1033.21,-205.99 1033.21,-205.99"/>
-<polygon fill="black" stroke="black" points="1029.71,-205.99 1033.21,-215.99 1036.71,-205.99 1029.71,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1056.21,-187.11C1056.21,-187.11 1056.21,-205.99 1056.21,-205.99"/>
+<polygon fill="black" stroke="black" points="1052.71,-205.99 1056.21,-215.99 1059.71,-205.99 1052.71,-205.99"/>
 </g>
 <!-- LibraryStorage  -->
 <g id="node9" class="node">
 <title>LibraryStorage </title>
-<polygon fill="#fb8072" stroke="black" points="990.24,-252 885.76,-252 885.76,-216 990.24,-216 990.24,-252"/>
-<text text-anchor="middle" x="938" y="-229.8" font-family="Times,serif" font-size="14.00">LibraryStorage </text>
+<polygon fill="#fb8072" stroke="black" points="1013.24,-252 908.76,-252 908.76,-216 1013.24,-216 1013.24,-252"/>
+<text text-anchor="middle" x="961" y="-229.8" font-family="Times,serif" font-size="14.00">LibraryStorage </text>
 </g>
 <!-- H5PEditorModule&#45;&gt;LibraryStorage  -->
 <g id="edge8" class="edge">
 <title>H5PEditorModule&#45;&gt;LibraryStorage </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M964.7,-187.11C964.7,-187.11 964.7,-205.99 964.7,-205.99"/>
-<polygon fill="black" stroke="black" points="961.2,-205.99 964.7,-215.99 968.2,-205.99 961.2,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M987.7,-187.11C987.7,-187.11 987.7,-205.99 987.7,-205.99"/>
+<polygon fill="black" stroke="black" points="984.2,-205.99 987.7,-215.99 991.2,-205.99 984.2,-205.99"/>
 </g>
 <!-- ContentStorage -->
 <g id="node10" class="node">
 <title>ContentStorage</title>
-<ellipse fill="#fdb462" stroke="black" cx="1899" cy="-104" rx="71.23" ry="18"/>
-<text text-anchor="middle" x="1899" y="-99.8" font-family="Times,serif" font-size="14.00">ContentStorage</text>
+<ellipse fill="#fdb462" stroke="black" cx="1022" cy="-104" rx="71.23" ry="18"/>
+<text text-anchor="middle" x="1022" y="-99.8" font-family="Times,serif" font-size="14.00">ContentStorage</text>
 </g>
 <!-- ContentStorage&#45;&gt;H5PEditorModule -->
 <g id="edge9" class="edge">
 <title>ContentStorage&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M1899,-122.09C1899,-145.13 1899,-182 1899,-182 1899,-182 1068.75,-182 1068.75,-182"/>
-<polygon fill="black" stroke="black" points="1068.75,-178.5 1058.75,-182 1068.75,-185.5 1068.75,-178.5"/>
+<path fill="none" stroke="black" d="M1022,-122.11C1022,-122.11 1022,-140.99 1022,-140.99"/>
+<polygon fill="black" stroke="black" points="1018.5,-140.99 1022,-150.99 1025.5,-140.99 1018.5,-140.99"/>
 </g>
 <!-- H5PContentRepo -->
 <g id="node11" class="node">
 <title>H5PContentRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1731" cy="-104" rx="79.34" ry="18"/>
-<text text-anchor="middle" x="1731" y="-99.8" font-family="Times,serif" font-size="14.00">H5PContentRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="854" cy="-104" rx="79.34" ry="18"/>
+<text text-anchor="middle" x="854" y="-99.8" font-family="Times,serif" font-size="14.00">H5PContentRepo</text>
 </g>
 <!-- H5PContentRepo&#45;&gt;H5PEditorModule -->
 <g id="edge10" class="edge">
 <title>H5PContentRepo&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M1731,-122.04C1731,-143.66 1731,-177 1731,-177 1731,-177 1068.9,-177 1068.9,-177"/>
-<polygon fill="black" stroke="black" points="1068.9,-173.5 1058.9,-177 1068.9,-180.5 1068.9,-173.5"/>
+<path fill="none" stroke="black" d="M921.02,-113.72C921.02,-129.02 921.02,-157 921.02,-157 921.02,-157 952.09,-157 952.09,-157"/>
+<polygon fill="black" stroke="black" points="952.09,-160.5 962.09,-157 952.09,-153.5 952.09,-160.5"/>
 </g>
 <!-- H5PEditorUc -->
 <g id="node12" class="node">
 <title>H5PEditorUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1570" cy="-104" rx="63.7" ry="18"/>
-<text text-anchor="middle" x="1570" y="-99.8" font-family="Times,serif" font-size="14.00">H5PEditorUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="693" cy="-104" rx="63.7" ry="18"/>
+<text text-anchor="middle" x="693" y="-99.8" font-family="Times,serif" font-size="14.00">H5PEditorUc</text>
 </g>
 <!-- H5PEditorUc&#45;&gt;H5PEditorModule -->
 <g id="edge11" class="edge">
 <title>H5PEditorUc&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M1570,-122.22C1570,-142.37 1570,-172 1570,-172 1570,-172 1068.76,-172 1068.76,-172"/>
-<polygon fill="black" stroke="black" points="1068.76,-168.5 1058.76,-172 1068.76,-175.5 1068.76,-168.5"/>
+<path fill="none" stroke="black" d="M693,-122.03C693,-139.06 693,-162 693,-162 693,-162 952.04,-162 952.04,-162"/>
+<polygon fill="black" stroke="black" points="952.04,-165.5 962.04,-162 952.04,-158.5 952.04,-165.5"/>
 </g>
 <!-- LibraryRepo -->
 <g id="node13" class="node">
 <title>LibraryRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1428" cy="-104" rx="60.25" ry="18"/>
-<text text-anchor="middle" x="1428" y="-99.8" font-family="Times,serif" font-size="14.00">LibraryRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="551" cy="-104" rx="60.25" ry="18"/>
+<text text-anchor="middle" x="551" y="-99.8" font-family="Times,serif" font-size="14.00">LibraryRepo</text>
 </g>
 <!-- LibraryRepo&#45;&gt;H5PEditorModule -->
 <g id="edge12" class="edge">
 <title>LibraryRepo&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M1428,-122.22C1428,-140.83 1428,-167 1428,-167 1428,-167 1069.1,-167 1069.1,-167"/>
-<polygon fill="black" stroke="black" points="1069.1,-163.5 1059.1,-167 1069.1,-170.5 1069.1,-163.5"/>
+<path fill="none" stroke="black" d="M551,-122.22C551,-140.83 551,-167 551,-167 551,-167 951.87,-167 951.87,-167"/>
+<polygon fill="black" stroke="black" points="951.87,-170.5 961.87,-167 951.87,-163.5 951.87,-170.5"/>
 </g>
 <!-- LibraryStorage -->
 <g id="node14" class="node">
 <title>LibraryStorage</title>
-<ellipse fill="#fdb462" stroke="black" cx="1280" cy="-104" rx="69.48" ry="18"/>
-<text text-anchor="middle" x="1280" y="-99.8" font-family="Times,serif" font-size="14.00">LibraryStorage</text>
+<ellipse fill="#fdb462" stroke="black" cx="403" cy="-104" rx="69.48" ry="18"/>
+<text text-anchor="middle" x="403" y="-99.8" font-family="Times,serif" font-size="14.00">LibraryStorage</text>
 </g>
 <!-- LibraryStorage&#45;&gt;H5PEditorModule -->
 <g id="edge13" class="edge">
 <title>LibraryStorage&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M1280,-122.03C1280,-139.06 1280,-162 1280,-162 1280,-162 1068.94,-162 1068.94,-162"/>
-<polygon fill="black" stroke="black" points="1068.94,-158.5 1058.94,-162 1068.94,-165.5 1068.94,-158.5"/>
+<path fill="none" stroke="black" d="M403,-122.22C403,-142.37 403,-172 403,-172 403,-172 952.09,-172 952.09,-172"/>
+<polygon fill="black" stroke="black" points="952.09,-175.5 962.09,-172 952.09,-168.5 952.09,-175.5"/>
 </g>
 <!-- Logger -->
 <g id="node15" class="node">
 <title>Logger</title>
-<ellipse fill="#fdb462" stroke="black" cx="1154" cy="-104" rx="38.85" ry="18"/>
-<text text-anchor="middle" x="1154" y="-99.8" font-family="Times,serif" font-size="14.00">Logger</text>
+<ellipse fill="#fdb462" stroke="black" cx="277" cy="-104" rx="38.85" ry="18"/>
+<text text-anchor="middle" x="277" y="-99.8" font-family="Times,serif" font-size="14.00">Logger</text>
 </g>
 <!-- Logger&#45;&gt;H5PEditorModule -->
 <g id="edge14" class="edge">
 <title>Logger&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M1154,-122.24C1154,-137.57 1154,-157 1154,-157 1154,-157 1068.93,-157 1068.93,-157"/>
-<polygon fill="black" stroke="black" points="1068.93,-153.5 1058.93,-157 1068.93,-160.5 1068.93,-153.5"/>
+<path fill="none" stroke="black" d="M277,-122.04C277,-143.66 277,-177 277,-177 277,-177 951.98,-177 951.98,-177"/>
+<polygon fill="black" stroke="black" points="951.98,-180.5 961.98,-177 951.98,-173.5 951.98,-180.5"/>
 </g>
 <!-- TemporaryFileStorage -->
 <g id="node16" class="node">
 <title>TemporaryFileStorage</title>
-<ellipse fill="#fdb462" stroke="black" cx="999" cy="-104" rx="98.41" ry="18"/>
-<text text-anchor="middle" x="999" y="-99.8" font-family="Times,serif" font-size="14.00">TemporaryFileStorage</text>
+<ellipse fill="#fdb462" stroke="black" cx="122" cy="-104" rx="98.41" ry="18"/>
+<text text-anchor="middle" x="122" y="-99.8" font-family="Times,serif" font-size="14.00">TemporaryFileStorage</text>
 </g>
 <!-- TemporaryFileStorage&#45;&gt;H5PEditorModule -->
 <g id="edge15" class="edge">
 <title>TemporaryFileStorage&#45;&gt;H5PEditorModule</title>
-<path fill="none" stroke="black" d="M999,-122.11C999,-122.11 999,-140.99 999,-140.99"/>
-<polygon fill="black" stroke="black" points="995.5,-140.99 999,-150.99 1002.5,-140.99 995.5,-140.99"/>
+<path fill="none" stroke="black" d="M122,-122.09C122,-145.13 122,-182 122,-182 122,-182 952.25,-182 952.25,-182"/>
+<polygon fill="black" stroke="black" points="952.25,-185.5 962.25,-182 952.25,-178.5 952.25,-185.5"/>
 </g>
 </g>
 </svg>
