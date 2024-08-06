@@ -16,6 +16,7 @@ import {
 	AutoParameterStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 import { ToolLaunchStrategy } from './tool-launch-strategy.interface';
@@ -29,7 +30,8 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
 		autoContextNameStrategy: AutoContextNameStrategy,
-		autoMediumIdStrategy: AutoMediumIdStrategy
+		autoMediumIdStrategy: AutoMediumIdStrategy,
+		autoGroupExternalUuidStrategy: AutoGroupExternalUuidStrategy
 	) {
 		this.autoParameterStrategyMap = new Map<CustomParameterType, AutoParameterStrategy>([
 			[CustomParameterType.AUTO_SCHOOLID, autoSchoolIdStrategy],
@@ -37,6 +39,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 			[CustomParameterType.AUTO_CONTEXTID, autoContextIdStrategy],
 			[CustomParameterType.AUTO_CONTEXTNAME, autoContextNameStrategy],
 			[CustomParameterType.AUTO_MEDIUMID, autoMediumIdStrategy],
+			[CustomParameterType.AUTO_GROUP_EXTERNALUUID, autoGroupExternalUuidStrategy],
 		]);
 	}
 

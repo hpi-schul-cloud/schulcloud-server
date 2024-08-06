@@ -26,6 +26,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
@@ -72,6 +73,7 @@ describe(AbstractLaunchStrategy.name, () => {
 	let autoContextIdStrategy: DeepMocked<AutoContextIdStrategy>;
 	let autoContextNameStrategy: DeepMocked<AutoContextNameStrategy>;
 	let autoMediumIdStrategy: DeepMocked<AutoMediumIdStrategy>;
+	let autoGroupExternalUuidStrategy: DeepMocked<AutoGroupExternalUuidStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -97,6 +99,10 @@ describe(AbstractLaunchStrategy.name, () => {
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
+				{
+					provide: AutoGroupExternalUuidStrategy,
+					useValue: createMock<AutoGroupExternalUuidStrategy>(),
+				},
 			],
 		}).compile();
 
@@ -107,6 +113,7 @@ describe(AbstractLaunchStrategy.name, () => {
 		autoContextIdStrategy = module.get(AutoContextIdStrategy);
 		autoContextNameStrategy = module.get(AutoContextNameStrategy);
 		autoMediumIdStrategy = module.get(AutoMediumIdStrategy);
+		autoGroupExternalUuidStrategy = module.get(AutoGroupExternalUuidStrategy);
 	});
 
 	afterAll(async () => {
@@ -154,13 +161,13 @@ describe(AbstractLaunchStrategy.name, () => {
 				const autoContextIdCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
-					name: 'autoSchoolNumberParam',
+					name: 'autoContextIdParam',
 					type: CustomParameterType.AUTO_CONTEXTID,
 				});
 				const autoContextNameCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
-					name: 'autoSchoolNumberParam',
+					name: 'autoContextNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
 				const autoMediumIdCustomParameter = customParameterFactory.build({
@@ -168,6 +175,12 @@ describe(AbstractLaunchStrategy.name, () => {
 					location: CustomParameterLocation.QUERY,
 					name: 'autoMediumIdParam',
 					type: CustomParameterType.AUTO_MEDIUMID,
+				});
+				const autoGroupExternalUuidCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.QUERY,
+					name: 'autoGroupExternalUuidParam',
+					type: CustomParameterType.AUTO_GROUP_EXTERNALUUID,
 				});
 
 				const externalTool: ExternalTool = externalToolFactory.build({
@@ -180,6 +193,7 @@ describe(AbstractLaunchStrategy.name, () => {
 						autoContextIdCustomParameter,
 						autoContextNameCustomParameter,
 						autoMediumIdCustomParameter,
+						autoGroupExternalUuidCustomParameter,
 					],
 				});
 
@@ -217,6 +231,7 @@ describe(AbstractLaunchStrategy.name, () => {
 				autoContextIdStrategy.getValue.mockReturnValueOnce(mockedAutoValue);
 				autoContextNameStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
 				autoMediumIdStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
+				autoGroupExternalUuidStrategy.getValue.mockResolvedValueOnce(mockedAutoValue);
 
 				return {
 					globalCustomParameter,
@@ -226,6 +241,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
 					autoMediumIdCustomParameter,
+					autoGroupExternalUuidCustomParameter,
 					schoolParameterEntry,
 					contextParameterEntry,
 					externalTool,
@@ -246,6 +262,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
 					autoMediumIdCustomParameter,
+					autoGroupExternalUuidCustomParameter,
 					schoolParameterEntry,
 					externalTool,
 					schoolExternalTool,
@@ -303,6 +320,11 @@ describe(AbstractLaunchStrategy.name, () => {
 						},
 						{
 							name: autoMediumIdCustomParameter.name,
+							value: mockedAutoValue,
+							location: PropertyLocation.QUERY,
+						},
+						{
+							name: autoGroupExternalUuidCustomParameter.name,
 							value: mockedAutoValue,
 							location: PropertyLocation.QUERY,
 						},
