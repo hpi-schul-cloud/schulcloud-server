@@ -1,9 +1,10 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { H5PAjaxEndpoint } from '@lumieducation/h5p-server';
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
@@ -25,6 +26,8 @@ describe('H5PEditor Controller (api)', () => {
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PAjaxEndpoint)
 			.useValue(createMock<H5PAjaxEndpoint>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
