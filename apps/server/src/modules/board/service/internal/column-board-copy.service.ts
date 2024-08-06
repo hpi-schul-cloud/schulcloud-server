@@ -63,6 +63,7 @@ export class ColumnBoardCopyService {
 		}
 		copyStatus.copyEntity.context = props.destinationExternalReference;
 		await this.boardNodeService.addRoot(copyStatus.copyEntity);
+		copyStatus.originalEntity = originalBoard;
 
 		return copyStatus;
 	}
