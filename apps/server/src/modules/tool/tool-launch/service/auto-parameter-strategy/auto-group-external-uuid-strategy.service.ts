@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CourseService } from '@modules/learnroom';
 import { Group, GroupService } from '@modules/group';
 import { Course } from '@shared/domain/entity';
-import { CustomParameterType, ToolContextType } from '../../../common/enum';
+import { ToolContextType } from '../../../common/enum';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { MissingAutoParameterValueLoggableException } from '../../error';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
 
 @Injectable()
@@ -30,10 +29,7 @@ export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {
 
 		const groupUuid = syncedGroup.externalSource?.externalId;
 		if (!groupUuid) {
-			throw new MissingAutoParameterValueLoggableException(
-				contextExternalTool,
-				CustomParameterType.AUTO_GROUP_EXTERNALUUID
-			);
+			return undefined;
 		}
 
 		return groupUuid;

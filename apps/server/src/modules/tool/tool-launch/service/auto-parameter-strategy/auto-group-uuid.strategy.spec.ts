@@ -6,12 +6,11 @@ import { Course } from '@shared/domain/entity';
 import { Group, GroupService } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
 import { courseFactory, groupEntityFactory, groupFactory, setupEntities } from '@shared/testing';
-import { CustomParameterType, ToolContextType } from '../../../common/enum';
+import { ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
-import { MissingAutoParameterValueLoggableException } from '../../error';
 import { AutoGroupExternalUuidStrategy } from './auto-group-external-uuid-strategy.service';
 
 describe(AutoGroupExternalUuidStrategy.name, () => {
@@ -133,15 +132,12 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 					};
 				};
 
-				it('should throw an error', async () => {
+				it('should return undefined', async () => {
 					const { schoolExternalTool, contextExternalTool } = setup();
 
-					await expect(strategy.getValue(schoolExternalTool, contextExternalTool)).rejects.toThrow(
-						new MissingAutoParameterValueLoggableException(
-							contextExternalTool,
-							CustomParameterType.AUTO_GROUP_EXTERNALUUID
-						)
-					);
+					const result = await strategy.getValue(schoolExternalTool, contextExternalTool);
+
+					expect(result).toBeUndefined();
 				});
 			});
 
