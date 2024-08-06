@@ -1655,6 +1655,11 @@
 			"type": "string",
 			"default": "ws://localhost:4450",
 			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_AI_TUTOR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the AI Tutor"
 		}
 	},
 	"required": []
