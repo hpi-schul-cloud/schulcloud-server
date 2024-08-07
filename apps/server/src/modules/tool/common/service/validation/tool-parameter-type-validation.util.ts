@@ -11,6 +11,7 @@ export class ToolParameterTypeValidationUtil {
 		[CustomParameterType.AUTO_SCHOOLID]: () => false,
 		[CustomParameterType.AUTO_SCHOOLNUMBER]: () => false,
 		[CustomParameterType.AUTO_MEDIUMID]: () => false,
+		[CustomParameterType.AUTO_GROUP_EXTERNALUUID]: () => false,
 	};
 
 	public static isValueValidForType(type: CustomParameterType, val: string): boolean {
