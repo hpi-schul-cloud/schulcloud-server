@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
@@ -66,6 +67,8 @@ describe(`${baseRouteName} (api)`, () => {
 			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
