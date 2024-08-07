@@ -8,7 +8,7 @@ let config: Config.InitialOptions = {
 	preset: 'ts-jest',
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
-	testPathIgnorePatterns: ['^src', '^test', '\\.load\\.spec\\.ts$'],
+	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
 		'^.+\\.(t|j)s$': 'ts-jest',
 	},
