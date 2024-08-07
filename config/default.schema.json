@@ -708,6 +708,11 @@
 			"type": "string",
 			"description": "The Schulcloud domain."
 		},
+		"TRAINING_URL": {
+			"type": "string",
+			"default": "https://lernen.dbildungscloud.de",
+			"description": "URL for the platform training material"
+		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
 			"default": true,
@@ -1123,7 +1128,7 @@
 		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
-			"default": "lernen.cloud@dataport.de",
+			"default": "dbildungscloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
