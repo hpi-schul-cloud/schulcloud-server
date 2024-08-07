@@ -6,7 +6,7 @@ import { flatten } from 'lodash';
 import { ColumnResponse } from '../controller/dto';
 import { createLoadtestClient } from './loadtestClientFactory';
 import { createBoards, getToken } from './helper/createBoards';
-import { UserProfile, UrlConfiguration, ResponseTimeRecord, ClassDefinition } from './types';
+import { UserProfile, UrlConfiguration, ResponseTimeRecord, ClassDefinition, ClassDefinitionWithAmount } from './types';
 import { getUrlConfiguration } from './helper/getUrlConfiguration';
 import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
 import { viewersClass, createSeveralClasses, duplicateUserProfiles } from './helper/classDefinitions';
@@ -73,7 +73,7 @@ describe('Board Collaboration Load Test', () => {
 	};
 
 	const createUserColumn = async (position: number, target: string, boardId: string, userProfile: UserProfile) => {
-		await sleep(Math.ceil(Math.random() * 10000));
+		await sleep(Math.ceil(Math.random() * 60000));
 		const socket = createLoadtestClient(target, boardId, getToken());
 		let responseTimes: Array<ResponseTimeRecord> = [];
 		let errors: Array<string> = [];
@@ -138,12 +138,13 @@ describe('Board Collaboration Load Test', () => {
 	}: {
 		target?: string;
 		courseId: string;
-		configurations: ClassDefinition[];
+		configurations: ClassDefinitionWithAmount[];
 	}) => {
 		const startTime = formatDate(new Date());
 		const urls = getUrlConfiguration(target);
-		const boardIds = await createBoards(urls.api, courseId, configurations.length);
-		const promises = configurations.flatMap((conf, index) => runBoardTest(boardIds[index], conf, urls));
+		const classes = createSeveralClasses(configurations);
+		const boardIds = await createBoards(urls.api, courseId, classes.length);
+		const promises = classes.flatMap((conf, index) => runBoardTest(boardIds[index], conf, urls));
 		const results = flatten(await Promise.all(promises));
 		const { responseTimes, errors } = results.reduce(
 			(all: { responseTimes: ResponseTimeRecord[]; errors: string[] }, cur) => {
@@ -167,7 +168,7 @@ describe('Board Collaboration Load Test', () => {
 			await runConfigurations({
 				target: target ?? 'http://localhost:4450',
 				courseId,
-				configurations: [...createSeveralClasses(20, viewersClass)],
+				configurations: [{ classDefinition: viewersClass, amount: 40 }],
 			});
 		}
 	}, 600000);

@@ -8,14 +8,14 @@ export const calculateStats = (responseTimes: ResponseTimeRecord[]) => {
 	const grouped = groupBy(responseTimes, 'action');
 	const avgByAction = Object.entries(grouped).reduce((acc, [action, records]) => {
 		const avg = records.reduce((all, cur) => all + cur.responseTime, 0) / records.length;
-		return { ...acc, [action]: avg.toFixed(2) };
+		return { ...acc, [action]: avg.toFixed(2).replace('.', ',') };
 	}, {});
 
 	return avgByAction;
 };
 
 export const getStats = (responseTimes: ResponseTimeRecord[]) => {
-	const totalAvg = calculateTotalAvg(responseTimes).toFixed(2);
+	const totalAvg = calculateTotalAvg(responseTimes).toFixed(2).replace('.', ',');
 	const avgByAction = calculateStats(responseTimes);
 	return { totalAvg, avgByAction };
 };

@@ -22,6 +22,11 @@ export type ClassDefinition = {
 	users: UserProfileWithAmount[];
 };
 
+export type ClassDefinitionWithAmount = {
+	classDefinition: ClassDefinition;
+	amount: number;
+};
+
 export type Configuration = {
 	amount: number;
 	classDefinition: ClassDefinition;

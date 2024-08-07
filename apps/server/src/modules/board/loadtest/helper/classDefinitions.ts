@@ -1,4 +1,4 @@
-import { ClassDefinition, UserProfile, UserProfileWithAmount } from '../types';
+import { ClassDefinition, Configuration, UserProfile, UserProfileWithAmount } from '../types';
 
 const fastEditor: UserProfile = { name: 'fastEditor', sleepMs: 1000, maxCards: 10 };
 const slowEditor: UserProfile = { name: 'slowEditor', sleepMs: 3000, maxCards: 5 };
@@ -9,7 +9,7 @@ export const viewersClass: ClassDefinition = {
 	users: [
 		{ ...fastEditor, amount: 1 },
 		{ ...slowEditor, amount: 0 },
-		{ ...viewer, amount: 1 },
+		{ ...viewer, amount: 30 },
 	],
 };
 
@@ -33,5 +33,11 @@ export const duplicateUserProfiles = (users: UserProfileWithAmount[]) => {
 	return expandedUsers;
 };
 
-export const createSeveralClasses = (amount: number, classDefinition: ClassDefinition) =>
-	Array(amount).fill(classDefinition) as ClassDefinition[];
+export const createSeveralClasses = (configurations: Configuration[]) =>
+	configurations.reduce((all, configuration) => {
+		if (configuration.amount > 0) {
+			const additionalClasses = Array(configuration.amount).fill(configuration.classDefinition) as ClassDefinition[];
+			all = [...all, ...additionalClasses];
+		}
+		return all;
+	}, [] as ClassDefinition[]);
