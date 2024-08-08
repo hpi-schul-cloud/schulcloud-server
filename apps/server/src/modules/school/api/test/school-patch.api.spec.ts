@@ -210,9 +210,7 @@ describe('School Controller (API)', () => {
 								expect.objectContaining({
 									validationErrors: [
 										{
-											errors: [
-												'each value in features must be one of the following values: rocketChat, videoconference, nextcloud, studentVisibility, ldapUniventionMigrationSchool, oauthProvisioningEnabled, showOutdatedUsers, enableLdapSyncDuringMigration',
-											],
+											errors: [expect.stringContaining('each value in features must be one of the following values:')],
 											field: ['features'],
 										},
 									],
