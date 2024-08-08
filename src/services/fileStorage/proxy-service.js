@@ -81,7 +81,7 @@ const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
 	};
 };
 
-const prepareThumbnailGeneration = (
+const prepareThumbnailGeneration = async (
 	file,
 	strategy,
 	userId,
@@ -89,7 +89,7 @@ const prepareThumbnailGeneration = (
 	{ storageFileName, name: propName }
 ) => {
 	if (Configuration.get('ENABLE_THUMBNAIL_GENERATION') === true) {
-		const { storageProviderId, bucket } = getStorageProviderIdAndBucket(userId, file);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
 
 		Promise.all([
 			strategy.getSignedUrl({
@@ -147,7 +147,7 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 				}
 			).exec();
 		}
-		const { storageProviderId, bucket } = getStorageProviderIdAndBucket(userId, file);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
 		// create a temporary signed URL and provide it to the virus scan service
 		return strategy
 			.getSignedUrl({
@@ -472,7 +472,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const { storageProviderId, bucket } = getStorageProviderIdAndBucket(userId, file);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
 
 		if (download && fileObject.securityCheck && fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
 			throw new Forbidden('File access blocked by security check.');
@@ -504,7 +504,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const { storageProviderId, bucket } = getStorageProviderIdAndBucket(userId, file);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
 
 		return canRead(userId, id)
 			.then(() =>
