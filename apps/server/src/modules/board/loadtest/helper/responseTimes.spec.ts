@@ -22,8 +22,8 @@ describe('Response Times', () => {
 		it('should calculate the minimum, maximum, and average response time', () => {
 			const stats = calculateStats(responseTimes) as { someAction: number; otherAction: number };
 
-			expect(stats.someAction).toBe('300.00');
-			expect(stats.otherAction).toBe('600.00');
+			expect(stats.someAction).toBe('300,00');
+			expect(stats.otherAction).toBe('600,00');
 		});
 	});
 
@@ -32,10 +32,10 @@ describe('Response Times', () => {
 			const stats = getStats(responseTimes);
 			expect(stats).toEqual({
 				avgByAction: {
-					otherAction: '600.00',
-					someAction: '300.00',
+					otherAction: '600,00',
+					someAction: '300,00',
 				},
-				totalAvg: '350.00',
+				totalAvg: '350,00',
 			});
 		});
 	});
@@ -45,7 +45,7 @@ describe('Response Times', () => {
 			const summaryText = getSummaryText(responseTimes);
 
 			expect(summaryText).toBe(
-				'total avg: 350.00 ms<br /><b>someAction</b>: 300.00 ms<br><b>otherAction</b>: 600.00 ms'
+				'total avg: 350,00 ms<br /><b>someAction</b>: 300,00 ms<br><b>otherAction</b>: 600,00 ms'
 			);
 		});
 	});
