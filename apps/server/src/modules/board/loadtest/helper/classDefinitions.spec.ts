@@ -1,5 +1,5 @@
 import { viewersClass, collaborativeClass, duplicateUserProfiles, createSeveralClasses } from './classDefinitions';
-import { UserProfileWithAmount, ClassDefinition } from '../types';
+import { UserProfileWithAmount, ClassDefinition, Configuration } from '../types';
 
 describe('classDefintions', () => {
 	describe('viewersClass', () => {
@@ -67,20 +67,32 @@ describe('classDefintions', () => {
 				],
 			};
 
-			const result = createSeveralClasses(3, classDefinition);
+			const configurations: Configuration[] = [
+				{
+					classDefinition,
+					amount: 3,
+				},
+			];
+
+			const result = createSeveralClasses(configurations);
 			expect(result).toEqual([classDefinition, classDefinition, classDefinition]);
 		});
 
 		it('should return an empty array if the amount is zero', () => {
-			const classDefinition: ClassDefinition = {
-				name: 'testClass',
-				users: [
-					{ name: 'fastEditor', sleepMs: 1000, maxCards: 10, amount: 1 },
-					{ name: 'slowEditor', sleepMs: 3000, maxCards: 5, amount: 1 },
-				],
-			};
+			const configurations: Configuration[] = [
+				{
+					classDefinition: {
+						name: 'testClass',
+						users: [
+							{ name: 'fastEditor', sleepMs: 1000, maxCards: 10, amount: 1 },
+							{ name: 'slowEditor', sleepMs: 3000, maxCards: 5, amount: 1 },
+						],
+					},
+					amount: 0,
+				},
+			];
 
-			const result = createSeveralClasses(0, classDefinition);
+			const result = createSeveralClasses(configurations);
 			expect(result).toEqual([]);
 		});
 	});
