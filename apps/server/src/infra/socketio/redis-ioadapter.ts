@@ -9,6 +9,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RedisIoAdapter extends IoAdapter {
+	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
+
 	connectToRedis(): ReturnType<typeof createAdapter> | undefined {
 		console.log("Configuration.has('REDIS_URI')", Configuration.has('REDIS_URI'));
 		if (Configuration.has('REDIS_URI')) {
@@ -26,8 +28,7 @@ export class RedisIoAdapter extends IoAdapter {
 				subClient.on('error', (err) => {
 					console.error('subClient error', err);
 				});
-				const adapterConstructor = createAdapter(pubClient, subClient);
-				return adapterConstructor;
+				this.adapterConstructor = createAdapter(pubClient, subClient);
 			} catch (err) {
 				throw new Error('Redis connection failed!');
 			}
@@ -36,17 +37,16 @@ export class RedisIoAdapter extends IoAdapter {
 	}
 
 	createIOServer(port: number, options?: ServerOptions): IoAdapter {
-		const adapterConstructor = this.connectToRedis();
-		if (adapterConstructor === undefined) throw new Error('Redis adapter is not connected to Redis yet.');
+		if (this.adapterConstructor === undefined) throw new Error('Redis adapter is not connected to Redis yet.');
 		const server = super.createIOServer(port, {
-			transports: ['websocket'],
+			transports: ['websocket', 'pooling'],
 			...options,
 		});
 		if (server === undefined) {
 			throw new Error('Unable to create RedisServer');
 		}
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		server.adapter(adapterConstructor);
+		server.adapter(this.adapterConstructor);
 		return server as IoAdapter;
 	}
 }
