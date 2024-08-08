@@ -32,7 +32,7 @@ async function bootstrap() {
 	// const ioAdapter = new MongoIoAdapter(nestApp);
 	// await mongoIoAdapter.connectToMongoDb(DB_URL);
 	const ioAdapter = new RedisIoAdapter(nestApp);
-	ioAdapter.connectToRedis();
+	await ioAdapter.connectToRedis();
 	nestApp.useWebSocketAdapter(ioAdapter);
 
 	const options: SwaggerDocumentOptions = {

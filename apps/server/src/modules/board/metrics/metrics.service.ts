@@ -100,7 +100,6 @@ export class MetricsService {
 			this.executionTimesSummary.set(actionName, summary);
 			register.registerMetric(summary);
 		}
-		console.log(actionName, `executionTime: ${value.toFixed(3)} ms`);
 		summary.observe(value);
 	}
 
@@ -121,7 +120,6 @@ export class MetricsService {
 			register.registerMetric(counter);
 		}
 		counter.inc();
-		console.log(actionName, `count increased`);
 	}
 
 	public incrementActionGauge(actionName: string): void {
@@ -141,6 +139,5 @@ export class MetricsService {
 			register.registerMetric(counter);
 		}
 		counter.inc();
-		console.log(actionName, `count increased`);
 	}
 }
