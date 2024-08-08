@@ -56,45 +56,68 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		socket.emit(action, data);
 	};
 
-	const waitForSuccess = async (
-		eventName: string,
-		options: { timeoutMs?: number; startTime: number; event: unknown }
-	): Promise<unknown> => {
-		const failureEventName = eventName.replace('success', 'failure');
-		const { timeoutMs, startTime } = { timeoutMs: 5000, ...options };
-		while (performance.now() <= startTime + timeoutMs) {
-			const ownEvents = logs
-				.filter((e) => e.payload.isOwnAction === true)
-				.filter((e) => e.event === eventName || e.event === failureEventName)
-				.filter((e) => e.time >= startTime);
-			if (ownEvents.length > 0) {
-				if (ownEvents[0].event === failureEventName) {
-					throw new Error(`Failure event ${failureEventName}`);
-				}
-				return ownEvents[0].payload;
-			}
-			await sleep(20);
-		}
-		throw new Error(`Timeout waiting for ${eventName}`);
+	// const waitForSuccessWithLoop = async (
+	// 	eventName: string,
+	// 	options: { timeoutMs?: number; startTime: number; event: unknown }
+	// ): Promise<unknown> => {
+	// 	const failureEventName = eventName.replace('success', 'failure');
+	// 	const { timeoutMs, startTime } = { timeoutMs: 5000, ...options };
+	// 	while (performance.now() <= startTime + timeoutMs) {
+	// 		const ownEvents = logs
+	// 			.filter((e) => e.payload.isOwnAction === true)
+	// 			.filter((e) => e.event === eventName || e.event === failureEventName)
+	// 			.filter((e) => e.time >= startTime);
+	// 		if (ownEvents.length > 0) {
+	// 			if (ownEvents[0].event === failureEventName) {
+	// 				throw new Error(`Failure event ${failureEventName}`);
+	// 			}
+	// 			return ownEvents[0].payload;
+	// 		}
+	// 		await sleep(20);
+	// 	}
+	// 	throw new Error(`Timeout waiting for ${eventName}`);
+	// };
+
+	const mockIncommingEvent = (event: string, payload: { isOwnAction: boolean }) => {
+		logs.push({ event, payload, time: performance.now() + 30 });
 	};
 
-	// const waitForSuccess = async (eventName: string, options?: { checkIsOwnAction?: boolean; timeoutMs?: number }) =>
-	// 	new Promise((resolve, reject) => {
-	// 		const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 15000, ...options };
-	// 		const timeoutId = setTimeout(() => {
-	// 			reject(new Error(`Timeout waiting for ${eventName}`));
-	// 		}, timeoutMs);
-	// 		const listener = (data: { isOwnAction: boolean }) => {
-	// 			if (checkIsOwnAction === true && data.isOwnAction === false) {
-	// 				return;
-	// 			}
-
-	// 			clearTimeout(timeoutId);
-	// 			resolve(data);
-	// 			socket.off(eventName, listener);
-	// 		};
-	// 		socket.on(eventName, listener);
-	// 	});
+	const waitForSuccess = async (
+		successEventName: string,
+		options?: { checkIsOwnAction?: boolean; timeoutMs?: number; event: unknown; startTime: number }
+	) =>
+		new Promise((resolve, reject) => {
+			const failureEventName = successEventName.replace('success', 'failure');
+			const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 15000, ...options };
+			const timeoutId = setTimeout(() => {
+				reject(new Error(`Timeout waiting for ${successEventName}`));
+			}, timeoutMs);
+			let listeners: { eventName: string; listener: (payload: { isOwnAction: boolean }) => void }[] = [];
+			const removeListeners = () => {
+				listeners.forEach(({ eventName, listener }) => socket.off(eventName, listener));
+				listeners = [];
+			};
+			const successListener = (payload: { isOwnAction: boolean }) => {
+				if (checkIsOwnAction === true && payload.isOwnAction === false) {
+					return;
+				}
+				clearTimeout(timeoutId);
+				removeListeners();
+				resolve(payload);
+			};
+			const failureListener = (payload: { isOwnAction: boolean }) => {
+				if (checkIsOwnAction === true && payload.isOwnAction === false) {
+					return;
+				}
+				clearTimeout(timeoutId);
+				removeListeners();
+				reject(new Error(`Failure event ${failureEventName}`));
+			};
+			socket.on(successEventName, successListener);
+			socket.on(failureEventName, failureListener);
+			listeners.push({ eventName: successEventName, listener: successListener });
+			listeners.push({ eventName: failureEventName, listener: failureListener });
+		});
 
 	const responseTimes: Array<ResponseTimeRecord> = [];
 	const logResponseTime = (responseTime: ResponseTimeRecord) => {
@@ -131,7 +154,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		socket.disconnect();
 	};
 
-	socket.on('connect', () => {
+	socket.on('connect', async () => {
 		clientCount += 1;
 		console.log(clientCount);
 		// await sleep(100 + Math.ceil(Math.random() * 1000));
@@ -306,6 +329,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		waitForSuccess,
 		getCardPosition,
 		getColumnPosition,
+		mockIncommingEvent,
 		logs,
 	};
 }
