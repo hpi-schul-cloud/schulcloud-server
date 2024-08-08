@@ -3,6 +3,7 @@ import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { PseudonymModule } from '@modules/pseudonym';
 import { UserModule } from '@modules/user';
+import { GroupModule } from '@modules/group';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
@@ -15,6 +16,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoGroupExternalUuidStrategy,
 } from './service/auto-parameter-strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
 
@@ -29,6 +31,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		forwardRef(() => PseudonymModule), // i do not like this solution, the root problem is on other place but not detectable for me
 		LearnroomModule,
 		BoardModule,
+		GroupModule,
 	],
 	providers: [
 		ToolLaunchService,
@@ -41,6 +44,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		AutoSchoolIdStrategy,
 		AutoSchoolNumberStrategy,
 		AutoMediumIdStrategy,
+		AutoGroupExternalUuidStrategy,
 	],
 	exports: [ToolLaunchService],
 })
