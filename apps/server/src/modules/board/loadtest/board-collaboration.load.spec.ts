@@ -179,16 +179,14 @@ describe('Board Collaboration Load Test', () => {
 
 	it('should run a basic load test', async () => {
 		const { courseId, token, target } = process.env;
-		expect(courseId).toBeDefined();
-		expect(typeof courseId).toBe('string');
-		expect(typeof token).toBe('string');
-
-		if (courseId) {
+		if (courseId && token && target) {
 			await runConfigurations({
 				target: target ?? 'http://localhost:4450',
 				courseId,
 				configurations: [{ classDefinition: viewersClass, amount: 40 }],
 			});
+		} else {
+			expect('this should only be ran manually').toBeTruthy();
 		}
 	}, 600000);
 });
