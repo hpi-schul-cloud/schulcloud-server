@@ -7,20 +7,26 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 export class RedisIoAdapter extends IoAdapter {
-	connectToRedis(): ReturnType<typeof createAdapter> {
-		const redisUri = Configuration.has('REDIS_URI') ? Configuration.get('REDIS_URI') : 'redis://localhost:6379';
-		const pubClient = new Redis(redisUri as string);
-		const subClient = pubClient.duplicate();
+	connectToRedis(): ReturnType<typeof createAdapter> | undefined {
+		if (Configuration.has('REDIS_URI')) {
+			try {
+				// const redisUri = Configuration.has('REDIS_URI') ? Configuration.get('REDIS_URI') : 'redis://localhost:6379';
+				const pubClient = new Redis(Configuration.get('REDIS_URI') as string);
+				const subClient = pubClient.duplicate();
 
-		pubClient.on('error', (err) => {
-			console.error('pubClient error', err);
-		});
-		subClient.on('error', (err) => {
-			console.error('subClient error', err);
-		});
-
-		const adapterConstructor = createAdapter(pubClient, subClient);
-		return adapterConstructor;
+				pubClient.on('error', (err) => {
+					console.error('pubClient error', err);
+				});
+				subClient.on('error', (err) => {
+					console.error('subClient error', err);
+				});
+				const adapterConstructor = createAdapter(pubClient, subClient);
+				return adapterConstructor;
+			} catch (err) {
+				throw new Error('Redis connection failed!');
+			}
+		}
+		return undefined;
 	}
 
 	createIOServer(port: number, options?: ServerOptions): IoAdapter {
