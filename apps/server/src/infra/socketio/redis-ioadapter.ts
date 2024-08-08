@@ -22,9 +22,10 @@ export class RedisIoAdapter extends IoAdapter {
 				console.error('subClient error', err);
 			});
 
-			await Promise.all([pubClient.connect(), subClient.connect()]);
-
 			this.adapterConstructor = createAdapter(pubClient, subClient);
+
+			// maybe needs to be removed?!?
+			await Promise.all([pubClient.connect(), subClient.connect()]);
 		}
 	}
 
