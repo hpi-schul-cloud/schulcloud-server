@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { Redis } from 'ioredis';
-import { ServerOptions } from 'socket.io';
+import { ServerOptions, Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Injectable } from '@nestjs/common';
+import { Redis } from 'ioredis';
 
-@Injectable()
 export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
@@ -36,17 +34,17 @@ export class RedisIoAdapter extends IoAdapter {
 		return undefined;
 	}
 
-	createIOServer(port: number, options?: ServerOptions): IoAdapter {
-		if (this.adapterConstructor === undefined) throw new Error('Redis adapter is not connected to Redis yet.');
-		const server = super.createIOServer(port, {
-			transports: ['websocket', 'pooling'],
-			...options,
-		});
+	createIOServer(port: number, options?: ServerOptions): Server {
+		// istanbul ignore next
+		if (!this.adapterConstructor) {
+			throw new Error('Redis adapter is not connected to Redis yet.');
+		}
+		const server = super.createIOServer(port, options) as Server;
+		// istanbul ignore next
 		if (server === undefined) {
 			throw new Error('Unable to create RedisServer');
 		}
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		server.adapter(this.adapterConstructor);
-		return server as IoAdapter;
+		return server;
 	}
 }
