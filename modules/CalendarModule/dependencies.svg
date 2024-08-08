@@ -28,13 +28,13 @@
 <title>cluster_CalendarModule_imports</title>
 <polygon fill="none" stroke="black" points="362,-78 362,-130 478,-130 478,-78 362,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_CalendarModule_exports</title>
-<polygon fill="none" stroke="black" points="206,-208 206,-260 334,-260 334,-208 206,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_CalendarModule_providers</title>
 <polygon fill="none" stroke="black" points="18,-78 18,-130 354,-130 354,-78 18,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_CalendarModule_exports</title>
+<polygon fill="none" stroke="black" points="206,-208 206,-260 334,-260 334,-208 206,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
