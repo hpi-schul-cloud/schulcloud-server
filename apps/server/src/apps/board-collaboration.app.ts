@@ -25,12 +25,13 @@ async function bootstrap() {
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(BoardCollaborationModule, nestExpressAdapter);
-	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	const legacyLogger = await nestApp.resolve(LegacyLogger);
+	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
 	// const ioAdapter = new MongoIoAdapter(nestApp);
 	// await mongoIoAdapter.connectToMongoDb(DB_URL);
-	const ioAdapter = new RedisIoAdapter(nestApp);
+	const ioAdapter = new RedisIoAdapter(legacyLogger);
 	ioAdapter.connectToRedis();
 	nestApp.useWebSocketAdapter(ioAdapter);
 
