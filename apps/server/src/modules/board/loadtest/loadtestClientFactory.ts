@@ -154,7 +154,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		socket.disconnect();
 	};
 
-	socket.on('connect', async () => {
+	socket.on('connect', () => {
 		clientCount += 1;
 		console.log(clientCount);
 		// await sleep(100 + Math.ceil(Math.random() * 1000));
