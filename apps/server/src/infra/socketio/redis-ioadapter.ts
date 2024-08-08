@@ -9,29 +9,23 @@ import { Redis } from 'ioredis';
 export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
-	connectToRedis(): ReturnType<typeof createAdapter> | undefined {
-		console.log("Configuration.has('REDIS_URI')", Configuration.has('REDIS_URI'));
+	async connectToRedis(): Promise<void> {
 		if (Configuration.has('REDIS_URI')) {
-			try {
-				const redisUri = Configuration.has('REDIS_URI')
-					? (Configuration.get('REDIS_URI') as string)
-					: 'redis://localhost:6379';
-				console.log(`redisUri: ${redisUri}`);
-				const pubClient = new Redis(Configuration.get('REDIS_URI') as string);
-				const subClient = pubClient.duplicate();
+			const redisUri = Configuration.get('REDIS_URI') as string;
+			const pubClient = new Redis(redisUri);
+			const subClient = pubClient.duplicate();
 
-				pubClient.on('error', (err) => {
-					console.error('pubClient error', err);
-				});
-				subClient.on('error', (err) => {
-					console.error('subClient error', err);
-				});
-				this.adapterConstructor = createAdapter(pubClient, subClient);
-			} catch (err) {
-				throw new Error('Redis connection failed!');
-			}
+			pubClient.on('error', (err) => {
+				console.error('pubClient error', err);
+			});
+			subClient.on('error', (err) => {
+				console.error('subClient error', err);
+			});
+
+			await Promise.all([pubClient.connect(), subClient.connect()]);
+
+			this.adapterConstructor = createAdapter(pubClient, subClient);
 		}
-		return undefined;
 	}
 
 	createIOServer(port: number, options?: ServerOptions): Server {
