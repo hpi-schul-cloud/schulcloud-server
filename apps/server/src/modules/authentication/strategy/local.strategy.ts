@@ -1,3 +1,4 @@
+import { CurrentUserMapper, ICurrentUser } from '@infra/auth-guard';
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -7,8 +8,6 @@ import { TypeGuard } from '@shared/common';
 import { UserRepo } from '@shared/repo';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
-import { ICurrentUser } from '../interface';
-import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
@@ -40,6 +39,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		);
 		const user = await this.userRepo.findById(accountUserId, true);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
+
 		return currentUser;
 	}
 

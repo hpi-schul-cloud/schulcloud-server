@@ -1,14 +1,15 @@
-import { AccountService, Account } from '@modules/account';
+import { ICurrentUser } from '@infra/auth-guard';
+import { Account, AccountService } from '@modules/account';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { OauthCurrentUser } from '../interface';
 import { AccountNotFoundLoggableException, SchoolInMigrationLoggableException } from '../loggable';
-import { CurrentUserMapper } from '../mapper';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
@@ -42,6 +43,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			systemId,
 			tokenDto.idToken
 		);
+
 		return currentUser;
 	}
 }

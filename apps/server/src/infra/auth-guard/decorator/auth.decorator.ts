@@ -1,38 +1,12 @@
-import {
-	applyDecorators,
-	createParamDecorator,
-	ExecutionContext,
-	ForbiddenException,
-	UnauthorizedException,
-	UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { Request } from 'express';
+import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { extractJwtFromHeader } from '@shared/common';
-import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { Request } from 'express';
 import { ICurrentUser, isICurrentUser } from '../interface/user';
 
-const STRATEGIES = ['jwt'] as const;
-type Strategies = typeof STRATEGIES;
-
 /**
- * Authentication Decorator taking care of require authentication header to be present, setting up the user context and extending openAPI spec.
- * @param strategies accepted strategies
- * @returns
+ * Requires the user to be authenticated.
+ * @requires Authenticated
  */
-export const Authenticate = (...strategies: Strategies) => {
-	if (strategies.includes('jwt')) {
-		const decorators = [
-			// apply jwt authentication
-			UseGuards(JwtAuthGuard),
-			// add jwt authentication to openapi spec
-			ApiBearerAuth(),
-		];
-		return applyDecorators(...decorators);
-	}
-	throw new ForbiddenException('jwt strategy required');
-};
-
 /**
  * Returns the current authenticated user.
  * @requires Authenticated

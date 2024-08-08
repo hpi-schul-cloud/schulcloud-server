@@ -1,9 +1,9 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Readable } from 'stream';
 import request from 'supertest';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';

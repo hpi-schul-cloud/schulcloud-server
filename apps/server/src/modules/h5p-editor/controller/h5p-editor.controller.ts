@@ -1,5 +1,3 @@
-import { CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Authenticate } from '@modules/authentication/decorator/auth.decorator';
 import {
 	BadRequestException,
 	Body,
@@ -20,6 +18,7 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
+import { Authenticate, CurrentUser, ICurrentUser } from '@src/infra/auth-guard';
 import { Request, Response } from 'express';
 import { H5PEditorUc } from '../uc/h5p.uc';
 
