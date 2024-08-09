@@ -74,3 +74,66 @@ By typeing `export CARL_CORD_PASSWORD=realpassword` the script will not ask you 
 ## Todos
 
 - [ ] enable optional parameter course_id
+
+# New Version: Loadtesting
+
+## provide environment variables
+
+In order to run the load tests you need to provide three environment variables:
+
+### target
+
+The Url of the server.
+
+e.g. `export target=http://localhost:4450` <br>
+e.g. `export target=https://bc-7038-advanced-load-testing.brb.dbildungscloud.dev`
+
+### courseId
+
+The id of the course that the user (see next variable "token") is allowed to create boards in.<br>
+e.g. `export courseId=66ac95068c01568a51ebf224`
+
+### token
+
+A valid JWT-token of a user that is allowed to create boards in the given course. <br>
+e.g. `export token=eyJhbGciOiJIUzI1NiIsInR5cCI6Im...`
+
+## Todos
+
+Aussage treffen:
+
+- Was schafft ein Pod?
+- Was schafft ein Pod mit welcher Leistung? ()
+
+ideas for joining users of one board on the same websocket-server
+
+- how to make routing via added request attribute work over ingress
+- service for registering which room on which node
+- clients tries to reconnect until the server-response tells him he is one the right server for the board
+- ziel-pod connects himself with different websocket via websocket-connection
+
+Erkenntnis: Mehr pods schaffen auch eine schnellere Verarbeitung der Requests
+
+### hypothese 1: der load-generator ist der engpass, weil er nicht genug requests schafft
+
+- lösungsansatz 1: mehrere childprocess über cluster funktion... keine Lösung
+- lösungsansatz 2: mehrere parallele node aufrufe aus der shell heraus
+
+### hypothese 2: es gibt ein timing-problem, zwischen request und response und dabei gehen responses verloren, die aber werden aber erwartet und der verlust führt zu Timeouts
+
+- lösungsansatz: das waitSuccess schon vor dem request auf den socket verknüpfen...
+  ergebnis: hat das Problem nicht behoben
+
+### hypothese 3: das verknüpfen und entfernen von listenern auf das jeweilige event verursacht zu viel overhead
+
+lösungsansatz 3: alle hereinkommenden events werden gespeichert und waitSuccess erhält noch einen zeitstempel nachdem das event hereingekommen sein muss... das erste event das matcht wird returnt
+
+### hypothese 4: die anzahl der sockets ist reduziert und deshalb klappt das nicht
+
+nein: 900 connections = 30 \* 300 dürften kein Problem sein... frühestens ab 2048 könnte es mit soetwas zu tun haben
+
+### hypothese 5: ich müsste gezielt auf failures hören... ggf. ist auch im server ein problem
+
+das problem ist das ausbleiben von success-meldungen
+
+[ ] ausprobieren: rückschwenk auf redis-adapter ausprobieren
