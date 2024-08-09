@@ -38,7 +38,6 @@ describe('Board Collaboration Load Test', () => {
 		pauseMs = 1000
 	) => {
 		const card = await socket.createCard({ columnId: column.id });
-		await socket.fetchCard({ cardIds: [card.id] });
 		await sleep(pauseMs);
 		await socket.updateCardTitle({ cardId: card.id, newTitle: getRandomCardTitle() });
 		await sleep(pauseMs);
