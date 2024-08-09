@@ -22,13 +22,20 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiOperation,
+	ApiResponse,
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
+import { Page } from '@shared/domain/domainobject';
+import { Course } from '@shared/domain/entity';
 import { Response } from 'express';
+import { ErrorResponse } from '../../../core/error/dto';
+import { ClassInfoSearchListResponse } from '../../group/controller/dto';
+import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
+import { CourseInfoDto } from '../uc/dto/course-info.dto';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import {
 	CourseExportBodyParams,
@@ -37,7 +44,12 @@ import {
 	CourseQueryParams,
 	CourseSyncBodyParams,
 	CourseUrlParams,
+	SchoolParams,
 } from './dto';
+import { CourseCallerParams } from './dto/request/course-caller-params';
+import { CourseFilterParams } from './dto/request/course-filter-params';
+import { CourseSortParams } from './dto/request/course-sourt-params';
+import { CourseInfoListResponse } from './dto/response/course-info-list.response';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -146,5 +158,37 @@ export class CourseController {
 		@Body() bodyParams: CourseSyncBodyParams
 	): Promise<void> {
 		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
+	}
+
+	@Get('/all')
+	@ApiOperation({ summary: 'Get a list of all courses.' })
+	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
+	@ApiResponse({ status: '4XX', type: ErrorResponse })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async getAllCourses(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() schoolParams: SchoolParams,
+		@Query() pagination: PaginationParams,
+		@Query() sortingQuery: CourseSortParams,
+		@Query() filterParams: CourseFilterParams,
+		@Query() callerParams: CourseCallerParams
+	): Promise<CourseInfoListResponse> {
+		const board: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
+			currentUser.userId,
+			currentUser.schoolId,
+			filterParams.type,
+			callerParams.calledFrom,
+			pagination,
+			sortingQuery.sortBy,
+			sortingQuery.sortOrder
+		);
+
+		const response: CourseInfoListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
+			board,
+			pagination.skip,
+			pagination.limit
+		);
+
+		return response;
 	}
 }
