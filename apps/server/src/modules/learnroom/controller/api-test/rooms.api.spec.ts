@@ -2,14 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { CopyApiResponse } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoard, Course, Task } from '@shared/domain/entity';
+import { Course, LegacyBoard, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	boardFactory,
@@ -21,6 +20,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
 

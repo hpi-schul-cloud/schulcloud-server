@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
@@ -11,7 +11,7 @@ import { TeamRoleDto } from './dto/team-role.params';
  *
  */
 @ApiTags('Collaborative-Storage')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('collaborative-storage')
 export class CollaborativeStorageController {
 	constructor(private readonly teamStorageUc: CollaborativeStorageUc, private logger: LegacyLogger) {

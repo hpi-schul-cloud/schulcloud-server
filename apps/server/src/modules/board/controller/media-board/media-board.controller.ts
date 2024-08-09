@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -36,7 +36,7 @@ import {
 import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 
 @ApiTags('Media Board')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('media-boards')
 export class MediaBoardController {
 	constructor(

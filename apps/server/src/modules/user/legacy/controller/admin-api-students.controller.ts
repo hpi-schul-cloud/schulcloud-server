@@ -1,13 +1,13 @@
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { Authenticate, CurrentUser, ICurrentUser } from '../../../authentication';
 import { RequestedRoleEnum } from '../enum';
-import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from './dto';
 import { UsersAdminApiUc } from '../uc';
+import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from './dto';
 
 @ApiTags('AdminStudents')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('users/admin/students')
 export class AdminApiStudentsController {
 	constructor(private readonly uc: UsersAdminApiUc) {}

@@ -1,15 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
+import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
-import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { CardResponse } from '../dto';
 
 const baseRouteName = '/columns';

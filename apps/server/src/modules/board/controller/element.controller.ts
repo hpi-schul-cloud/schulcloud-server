@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -39,7 +39,7 @@ import {
 import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('elements')
 export class ElementController {
 	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}

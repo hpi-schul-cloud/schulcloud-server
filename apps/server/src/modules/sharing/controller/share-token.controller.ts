@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
@@ -24,7 +24,7 @@ import {
 } from './dto';
 
 @ApiTags('ShareToken')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('sharetoken')
 export class ShareTokenController {
 	constructor(private readonly shareTokenUC: ShareTokenUC) {}

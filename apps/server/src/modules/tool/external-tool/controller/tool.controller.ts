@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -52,7 +52,7 @@ import {
 } from './dto';
 
 @ApiTags('Tool')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tools/external-tools')
 export class ToolController {
 	constructor(

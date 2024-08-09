@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -41,7 +41,7 @@ import {
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
-@Authenticate('jwt')
+@JwtAuthentication()
 export class UserLoginMigrationController {
 	constructor(
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,

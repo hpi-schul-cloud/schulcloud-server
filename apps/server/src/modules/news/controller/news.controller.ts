@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
@@ -14,7 +14,7 @@ import {
 } from './dto';
 
 @ApiTags('News')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('news')
 export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}

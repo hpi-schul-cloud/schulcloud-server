@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -11,7 +11,7 @@ import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tasks')
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC, private readonly taskCopyUc: TaskCopyUC) {}

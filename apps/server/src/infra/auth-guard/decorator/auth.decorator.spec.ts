@@ -6,8 +6,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { Authenticate, CurrentUser, JWT } from './auth.decorator';
+import { JwtAuthentication } from './jwt-auth.decorator';
 
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('test_decorator_currentUser')
 export class TestDecoratorCurrentUserController {
 	@Get('test')
@@ -16,7 +17,7 @@ export class TestDecoratorCurrentUserController {
 	}
 }
 
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('test_decorator_JWT')
 export class TestDecoratorJWTController {
 	@Get('test')

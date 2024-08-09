@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { System } from '../domain';
@@ -41,7 +41,7 @@ export class SystemController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Delete(':systemId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()

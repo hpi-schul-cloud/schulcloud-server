@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -29,7 +29,7 @@ import {
 } from './dto';
 
 @ApiTags('UserImport')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('user/import')
 export class ImportUserController {
 	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}

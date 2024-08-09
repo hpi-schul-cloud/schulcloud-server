@@ -1,12 +1,12 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LessonUC } from '../uc';
-import { LessonUrlParams, LessonsUrlParams, LessonMetadataListResponse, LessonResponse } from './dto';
+import { LessonMetadataListResponse, LessonResponse, LessonUrlParams, LessonsUrlParams } from './dto';
 import { LessonMapper } from './mapper/lesson.mapper';
 
 @ApiTags('Lesson')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('lessons')
 export class LessonController {
 	constructor(private readonly lessonUC: LessonUC) {}

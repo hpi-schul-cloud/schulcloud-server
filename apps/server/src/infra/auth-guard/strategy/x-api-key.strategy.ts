@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
 import Strategy from 'passport-headerapikey';
-import { XApiKeyConfig } from '../config/x-api-key.config';
+import { XApiKeyConfig } from '../config';
 
 @Injectable()
 export class XApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {

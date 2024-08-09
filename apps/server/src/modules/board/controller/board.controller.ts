@@ -1,4 +1,5 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
 	Controller,
@@ -13,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -28,7 +28,7 @@ import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 
 @ApiTags('Board')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('boards')
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}

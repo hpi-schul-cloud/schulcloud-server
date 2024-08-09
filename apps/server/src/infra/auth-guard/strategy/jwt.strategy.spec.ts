@@ -1,17 +1,19 @@
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { WsException } from '@nestjs/websockets';
+import { UnauthorizedException } from '@nestjs/common';
 import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { WsJwtStrategy } from './ws-jwt.strategy';
+
+import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
 import { jwtPayloadFactory } from '../testing';
+import { JwtStrategy } from './jwt.strategy';
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;
-	let strategy: WsJwtStrategy;
+	let strategy: JwtStrategy;
 	let module: TestingModule;
 
 	beforeAll(async () => {
@@ -20,7 +22,7 @@ describe('jwt strategy', () => {
 		module = await Test.createTestingModule({
 			imports: [PassportModule, JwtModule.register(jwtConstants)],
 			providers: [
-				WsJwtStrategy,
+				JwtStrategy,
 				{
 					provide: JwtValidationAdapter,
 					useValue: createMock<JwtValidationAdapter>(),
@@ -28,7 +30,7 @@ describe('jwt strategy', () => {
 			],
 		}).compile();
 
-		strategy = module.get(WsJwtStrategy);
+		strategy = module.get(JwtStrategy);
 		validationAdapter = module.get(JwtValidationAdapter);
 	});
 
@@ -75,7 +77,6 @@ describe('jwt strategy', () => {
 	describe('when jwt is not whitelisted', () => {
 		const setup = () => {
 			const mockJwtPayload = jwtPayloadFactory.build();
-
 			validationAdapter.isWhitelisted.mockRejectedValueOnce(null);
 			validationAdapter.isWhitelisted.mockClear();
 			return {
@@ -85,7 +86,7 @@ describe('jwt strategy', () => {
 
 		it('should throw an UnauthorizedException', async () => {
 			const { mockJwtPayload } = setup();
-			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(WsException);
+			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(UnauthorizedException);
 		});
 	});
 });

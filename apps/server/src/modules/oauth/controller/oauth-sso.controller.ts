@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
@@ -19,7 +19,7 @@ export class OauthSSOController {
 	}
 
 	@Get('hydra/:oauthClientId')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	async getHydraOauthToken(
 		@Query() query: StatelessAuthorizationParams,
 		@Param('oauthClientId') oauthClientId: string
@@ -29,7 +29,7 @@ export class OauthSSOController {
 	}
 
 	@Get('auth/:oauthClientId')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	async requestAuthToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -32,7 +32,7 @@ import {
 import { MediaExternalToolElementResponseMapper } from './mapper';
 
 @ApiTags('Media Element')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('media-elements')
 export class MediaElementController {
 	constructor(private readonly mediaElementUc: MediaElementUc) {}

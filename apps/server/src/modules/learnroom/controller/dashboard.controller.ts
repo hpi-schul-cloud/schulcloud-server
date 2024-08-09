@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
@@ -6,7 +6,7 @@ import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardResponse, DashboardUrlParams, MoveElementParams, PatchGroupParams } from './dto';
 
 @ApiTags('Dashboard')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('dashboard')
 export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}

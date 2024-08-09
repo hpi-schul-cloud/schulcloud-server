@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SubmissionMapper } from '../mapper';
@@ -6,7 +6,7 @@ import { SubmissionUc } from '../uc';
 import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from './dto';
 
 @ApiTags('Submission')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('submissions')
 export class SubmissionController {
 	constructor(private readonly submissionUc: SubmissionUc) {}

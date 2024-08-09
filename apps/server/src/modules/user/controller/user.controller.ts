@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ResolvedUserMapper } from '../mapper';
@@ -6,7 +6,7 @@ import { UserUc } from '../uc';
 import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('user')
 export class UserController {
 	constructor(private readonly userUc: UserUc) {}

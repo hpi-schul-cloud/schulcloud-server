@@ -1,9 +1,9 @@
+import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
-import { CurrentUser } from '../decorator';
-import type { ICurrentUser, OauthCurrentUser } from '../interface';
+import type { OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
