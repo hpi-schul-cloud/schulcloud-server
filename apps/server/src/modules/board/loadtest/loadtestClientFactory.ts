@@ -70,7 +70,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		socket.emit(action, data);
 	};
 
-	const waitForSuccessLogs = async (
+	const waitForSuccess = async (
 		eventName: string,
 		options: { timeoutMs?: number; startTime: number; event: unknown }
 	): Promise<unknown> => {
@@ -98,7 +98,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		logs.push({ event, payload, time: performance.now() + 30 });
 	};
 
-	const waitForSuccess = async (
+	const waitForSuccessListeners = async (
 		successEventName: string,
 		options?: { checkIsOwnAction?: boolean; timeoutMs?: number; event: unknown; startTime: number }
 	) =>
