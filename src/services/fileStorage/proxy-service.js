@@ -322,7 +322,7 @@ const fileStorageService = {
 		}
 
 		return permissionPromise()
-			.then(() => FileModel.update({ _id }, update).exec())
+			.then(() => FileModel.updateOne({ _id }, update).exec())
 			.catch((err) => new Forbidden(err));
 	},
 };
@@ -690,7 +690,7 @@ const renameService = {
 				if (!obj) {
 					return new NotFound('The given directory/file was not found!');
 				}
-				return FileModel.update({ _id }, { name: newName }).exec();
+				return FileModel.updateOne({ _id }, { name: newName }).exec();
 			})
 			.catch((err) => new Forbidden(err));
 	},
@@ -872,7 +872,7 @@ const filePermissionService = {
 						}),
 				];
 
-				return FileModel.update(
+				return FileModel.updateOne(
 					{ _id },
 					{
 						$set: { permissions },
