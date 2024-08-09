@@ -3263,6 +3263,55 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/ToolAdminApiModule.html" data-type="entity-link" >ToolAdminApiModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#controllers-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' : 'data-bs-target="#xs-controllers-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' :
+                                            'id="xs-controllers-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' }>
+                                            <li class="link">
+                                                <a href="controllers/AdminApiContextExternalToolController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AdminApiContextExternalToolController</a>
+                                            </li>
+                                            <li class="link">
+                                                <a href="controllers/AdminApiExternalToolController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AdminApiExternalToolController</a>
+                                            </li>
+                                            <li class="link">
+                                                <a href="controllers/AdminApiSchoolExternalToolController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AdminApiSchoolExternalToolController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' : 'data-bs-target="#xs-injectables-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' :
+                                        'id="xs-injectables-links-module-ToolAdminApiModule-2083f95f67648a610a7979e5a1f6e1afe99a34627ce017f7b1baf7bcc1221b5b0575954e4ff7e7637fbb32e72c153e9477f04cf9c9cce8538508b7c93645ecf2"' }>
+                                        <li class="link">
+                                            <a href="injectables/AdminApiContextExternalToolUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AdminApiContextExternalToolUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/AdminApiExternalToolUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AdminApiExternalToolUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/AdminApiSchoolExternalToolUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AdminApiSchoolExternalToolUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/ExternalToolRequestMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolRequestMapper</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/ExternalToolResponseMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolResponseMapper</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/ToolApiModule.html" data-type="entity-link" >ToolApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -3756,6 +3805,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <span class="icon ion-ios-arrow-down"></span>
                             </div>
                             <ul class="links collapse " ${ isNormalMode ? 'id="controllers-links"' : 'id="xs-controllers-links"' }>
+                                <li class="link">
+                                    <a href="controllers/AdminApiContextExternalToolController.html" data-type="entity-link" >AdminApiContextExternalToolController</a>
+                                </li>
+                                <li class="link">
+                                    <a href="controllers/AdminApiExternalToolController.html" data-type="entity-link" >AdminApiExternalToolController</a>
+                                </li>
+                                <li class="link">
+                                    <a href="controllers/AdminApiSchoolExternalToolController.html" data-type="entity-link" >AdminApiSchoolExternalToolController</a>
+                                </li>
                                 <li class="link">
                                     <a href="controllers/AdminApiStudentsController.html" data-type="entity-link" >AdminApiStudentsController</a>
                                 </li>
@@ -7460,6 +7518,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/AccountIdmToDoMapper.html" data-type="entity-link" >AccountIdmToDoMapper</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AdminApiContextExternalToolUc.html" data-type="entity-link" >AdminApiContextExternalToolUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AdminApiExternalToolUc.html" data-type="entity-link" >AdminApiExternalToolUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/AdminApiSchoolExternalToolUc.html" data-type="entity-link" >AdminApiSchoolExternalToolUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/AdminApiUserUc.html" data-type="entity-link" >AdminApiUserUc</a>
