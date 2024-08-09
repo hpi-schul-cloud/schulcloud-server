@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain/types';
 import {
+	DataDeletionDomainOperationLoggable,
+	DeletionErrorLoggableException,
 	DeletionService,
 	DomainDeletionReport,
-	DataDeletionDomainOperationLoggable,
-	DomainName,
-	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
+	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
 } from '@modules/deletion';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
 import { RegistrationPinEntity } from '../entity';
 import { RegistrationPinRepo } from '../repo';
 
@@ -19,6 +19,12 @@ import { RegistrationPinRepo } from '../repo';
 export class RegistrationPinService implements DeletionService {
 	constructor(private readonly registrationPinRepo: RegistrationPinRepo, private readonly logger: Logger) {
 		this.logger.setContext(RegistrationPinService.name);
+	}
+
+	public async findByEmail(email: string): Promise<RegistrationPinEntity[]> {
+		const [registrationPins] = await this.registrationPinRepo.findAllByEmail(email);
+
+		return registrationPins;
 	}
 
 	public async deleteUserData(email: string): Promise<DomainDeletionReport> {

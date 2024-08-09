@@ -13,6 +13,7 @@ import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
+import { AdminApiRegistrationPinModule } from '../registration-pin/admin-api-registration-pin.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
 
@@ -21,6 +22,7 @@ const serverModules = [
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
+	AdminApiRegistrationPinModule,
 	EtherpadClientModule.register({
 		apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,
 		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
