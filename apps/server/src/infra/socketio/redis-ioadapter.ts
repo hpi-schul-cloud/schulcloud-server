@@ -13,7 +13,7 @@ export class RedisIoAdapter extends IoAdapter {
 		if (Configuration.has('REDIS_URI')) {
 			const redisUri = Configuration.get('REDIS_URI') as string;
 			const pubClient = new Redis(redisUri);
-			const subClient = pubClient.duplicate();
+			const subClient = new Redis(redisUri);
 
 			pubClient.on('error', (err) => {
 				console.error('pubClient error', err);
@@ -26,8 +26,8 @@ export class RedisIoAdapter extends IoAdapter {
 
 			// maybe needs to be removed?!?
 			// await Promise.all([pubClient.connect(), subClient.connect()]);
-			// return pubClient.connect().then(() => subClient.connect());
-			return Promise.resolve();
+			return pubClient.connect().then(() => subClient.connect());
+			// return Promise.resolve();
 		}
 		return Promise.reject(new Error('No REDIS_URI found in configuration'));
 	}
