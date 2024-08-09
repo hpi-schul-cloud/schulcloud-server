@@ -12,7 +12,7 @@ on:
 
 env:
   MONGODB_VERSION: 6.0
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 jobs:
   migration:
     runs-on: ubuntu-latest
