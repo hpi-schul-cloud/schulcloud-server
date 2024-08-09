@@ -10,8 +10,7 @@ export class CourseMetadataResponse {
 		displayColor: string,
 		startDate?: Date,
 		untilDate?: Date,
-		copyingSince?: Date,
-		syncedWithGroup?: string
+		copyingSince?: Date
 	) {
 		this.id = id;
 		this.title = title;
@@ -20,7 +19,6 @@ export class CourseMetadataResponse {
 		this.startDate = startDate;
 		this.untilDate = untilDate;
 		this.copyingSince = copyingSince;
-		this.syncedWithGroup = syncedWithGroup;
 	}
 
 	@ApiProperty({
@@ -58,11 +56,6 @@ export class CourseMetadataResponse {
 		description: 'Start of the copying process if it is still ongoing - otherwise property is not set.',
 	})
 	copyingSince?: Date;
-
-	@ApiPropertyOptional({
-		description: 'Synchronized with group',
-	})
-	syncedWithGroup?: string;
 }
 
 export class CourseMetadataListResponse extends PaginationResponse<CourseMetadataResponse[]> {
