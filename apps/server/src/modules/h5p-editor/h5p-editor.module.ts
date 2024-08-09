@@ -1,9 +1,9 @@
+import { AuthorizationClientModule } from '@infra/authorization-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AuthenticationModule } from '@modules/authentication';
-import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { UserModule } from '@modules/user';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -13,7 +13,7 @@ import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { H5PContent, InstalledLibrary } from './entity';
-import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
@@ -27,7 +27,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 const imports = [
 	AuthenticationModule,
-	AuthorizationReferenceModule,
+	AuthorizationClientModule.register(authorizationClientConfig),
 	CoreModule,
 	UserModule,
 	RabbitMQWrapperModule,

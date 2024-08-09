@@ -33,6 +33,8 @@ export class RoleNameMapper {
 		if (RoleNameMapper.isSubstitutionTeacher(user, course)) return RoleName.COURSESUBSTITUTIONTEACHER;
 		if (RoleNameMapper.isStudent(user, course)) return RoleName.STUDENT;
 
-		throw new UnprocessableEntityException('Unsupported role');
+		throw new UnprocessableEntityException(
+			`Unable to determine a valid role for user ${user.id} in course ${course.id}`
+		);
 	}
 }

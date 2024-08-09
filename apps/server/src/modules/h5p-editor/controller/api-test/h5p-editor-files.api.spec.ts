@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IFileStats, ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
@@ -92,6 +93,8 @@ describe('H5PEditor Controller (api)', () => {
 			.useValue(createMock<LibraryStorage>())
 			.overrideProvider(TemporaryFileStorage)
 			.useValue(createMock<TemporaryFileStorage>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
