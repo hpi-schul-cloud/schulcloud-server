@@ -9,7 +9,7 @@ import { Redis } from 'ioredis';
 export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
-	async connectToRedis(): Promise<void> {
+	connectToRedis(): void {
 		if (Configuration.has('REDIS_URI')) {
 			const redisUri = Configuration.get('REDIS_URI') as string;
 			const pubClient = new Redis(redisUri);
@@ -26,10 +26,7 @@ export class RedisIoAdapter extends IoAdapter {
 
 			// maybe needs to be removed?!?
 			// await Promise.all([pubClient.connect(), subClient.connect()]);
-			return pubClient.connect().then(() => subClient.connect());
-			// return Promise.resolve();
 		}
-		return Promise.reject(new Error('No REDIS_URI found in configuration'));
 	}
 
 	createIOServer(port: number, options?: ServerOptions): Server {
