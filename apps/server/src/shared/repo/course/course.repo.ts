@@ -1,4 +1,5 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { Course } from '@shared/domain/entity';
@@ -48,6 +49,11 @@ class CourseScope extends Scope<Course> {
 
 	forCourseId(courseId: EntityId): CourseScope {
 		this.addQuery({ id: courseId });
+		return this;
+	}
+
+	forSchoolId(schoolId: EntityId): CourseScope {
+		this.addQuery({ school: schoolId });
 		return this;
 	}
 }

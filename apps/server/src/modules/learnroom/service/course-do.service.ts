@@ -3,6 +3,7 @@ import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { type Course, COURSE_REPO, CourseNotSynchronizedLoggableException, CourseRepo } from '../domain';
+import { CourseAlreadySynchronizedLoggableException } from '../domain/error/course-already-synchronized.loggable-exception';
 
 @Injectable()
 export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course> {
@@ -34,5 +35,21 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 		course.syncedWithGroup = undefined;
 
 		await this.courseRepo.save(course);
+	}
+
+	public async startSynchronization(course: Course, group: Group): Promise<void> {
+		if (course.syncedWithGroup) {
+			throw new CourseAlreadySynchronizedLoggableException(course.id);
+		}
+
+		course.syncedWithGroup = group.id;
+
+		await this.courseRepo.save(course);
+	}
+
+	public async findCoursesBySchool(schoolId: EntityId): Promise<Course> {
+		const courses: Course = await this.courseRepo.findCourseById(schoolId);
+
+		return courses;
 	}
 }

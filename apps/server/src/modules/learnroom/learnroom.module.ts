@@ -1,5 +1,7 @@
 import { BoardModule } from '@modules/board';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { GroupService } from '@modules/group';
+import { GroupRepo } from '@modules/group/repo';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
@@ -67,6 +69,8 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		},
 		CourseService,
 		CourseDoService,
+		GroupRepo,
+		GroupService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
@@ -80,6 +84,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
+		GroupService,
 		RoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,

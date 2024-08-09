@@ -120,7 +120,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		if (props.features) this.features = props.features;
 		this.classes.set(props.classes || []);
 		this.groups.set(props.groups || []);
-		this.syncedWithGroup = props.syncedWithGroup;
+		if (props.syncedWithGroup) this.syncedWithGroup = props.syncedWithGroup;
 	}
 
 	public getStudentIds(): EntityId[] {
@@ -227,6 +227,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 			startDate: this.startDate,
 			copyingSince: this.copyingSince,
 			isSynchronized: !!this.syncedWithGroup,
+			syncedWithGroup: this.syncedWithGroup,
 		};
 	}
 

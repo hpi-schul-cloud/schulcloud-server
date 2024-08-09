@@ -44,4 +44,12 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 
 		return courses;
 	}
+
+	public async findBySchoolId(id: EntityId): Promise<Course[]> {
+		const entities: CourseEntity[] = await this.em.find(CourseEntity, { school: id });
+
+		const courses: Course[] = entities.map((entity: CourseEntity): Course => CourseEntityMapper.mapEntityToDo(entity));
+
+		return courses;
+	}
 }
