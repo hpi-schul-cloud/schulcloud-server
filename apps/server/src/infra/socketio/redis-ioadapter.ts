@@ -25,8 +25,11 @@ export class RedisIoAdapter extends IoAdapter {
 			this.adapterConstructor = createAdapter(pubClient, subClient);
 
 			// maybe needs to be removed?!?
-			await Promise.all([pubClient.connect(), subClient.connect()]);
+			// await Promise.all([pubClient.connect(), subClient.connect()]);
+			// return pubClient.connect().then(() => subClient.connect());
+			return Promise.resolve();
 		}
+		return Promise.reject(new Error('No REDIS_URI found in configuration'));
 	}
 
 	createIOServer(port: number, options?: ServerOptions): Server {
