@@ -119,7 +119,7 @@ const listBuckets = async (awsObject) => {
 
 const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
 
-const createAWSObject = async (schoolId) => {
+const createAWSObjectFromSchoolId = async (schoolId) => {
 	const school = await schoolModel
 		.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
 		.populate('storageProvider')
@@ -148,6 +148,33 @@ const createAWSObject = async (schoolId) => {
 	return {
 		s3: new aws.S3(config),
 		bucket: getBucketName(schoolId),
+	};
+	// end legacy
+};
+
+const createAWSObjectFromStorageProviderIdAndBucket = async (storageProviderId, bucket) => {
+	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
+		const storageProvider = await StorageProviderModel.findOne({ _id: storageProviderId }).lean().exec();
+
+		if (!storageProvider) {
+			throw new NotFound('Storage provider not found.');
+		}
+
+		const s3 = getS3(storageProvider);
+		return {
+			s3,
+			bucket,
+		};
+	}
+
+	// begin legacy
+	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
+	const config = new aws.Config(awsConfig);
+	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
+
+	return {
+		s3: new aws.S3(config),
+		bucket,
 	};
 	// end legacy
 };
@@ -305,7 +332,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			throw new BadRequest('No school id parameter given.');
 		}
 
-		const awsObject = await createAWSObject(schoolId);
+		const awsObject = await createAWSObjectFromSchoolId(schoolId);
 		const data = await createBucket(awsObject);
 		return {
 			message: 'Successfully created s3-bucket!',
@@ -358,7 +385,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					return new GeneralError('school not set');
 				}
 
-				return createAWSObject(result.schoolId).then((awsObject) => {
+				return createAWSObjectFromSchoolId(result.schoolId).then((awsObject) => {
 					const params = {
 						Bucket: awsObject.bucket,
 						Prefix: path,
@@ -384,7 +411,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					return new NotFound('User not found');
 				}
 
-				return createAWSObject(result.schoolId).then((awsObject) => {
+				return createAWSObjectFromSchoolId(result.schoolId).then((awsObject) => {
 					// files can be copied to different schools
 					const sourceBucket = `bucket-${externalSchoolId || result.schoolId}`;
 
@@ -413,7 +440,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
 				}
-				return createAWSObject(result.schoolId).then((awsObject) => {
+				return createAWSObjectFromSchoolId(result.schoolId).then((awsObject) => {
 					const params = {
 						Bucket: awsObject.bucket,
 						Delete: {
@@ -444,7 +471,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
 				}
-				return createAWSObject(result.schoolId).then((awsObject) =>
+				return createAWSObjectFromSchoolId(result.schoolId).then((awsObject) =>
 					this.createIfNotExists(awsObject).then((safeAwsObject) => {
 						const params = {
 							Bucket: safeAwsObject.bucket,
@@ -462,33 +489,25 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	getSignedUrl({ userId, flatFileName, localFileName, download, action = 'getObject', bucket = undefined }) {
-		if (!userId || !flatFileName) {
-			return Promise.reject(new BadRequest('Missing parameters by getSignedUrl.', { userId, flatFileName }));
+	getSignedUrl({ storageProviderId, bucket, flatFileName, localFileName, download, action = 'getObject' }) {
+		if (!storageProviderId || !bucket || !flatFileName) {
+			return Promise.reject(
+				new BadRequest('Missing parameters by getSignedUrl.', { storageProviderId, bucket, flatFileName })
+			);
 		}
 
-		return UserModel.userModel
-			.findById(userId)
-			.lean()
-			.exec()
-			.then((result) => {
-				if (!result || !result.schoolId) {
-					return new NotFound('User not found');
-				}
-
-				return createAWSObject(result.schoolId).then((awsObject) => {
-					const params = {
-						Bucket: bucket || awsObject.bucket,
-						Key: flatFileName,
-						Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
-					};
-					const getBoolean = (value) => value === true || value === 'true';
-					if (getBoolean(download)) {
-						params.ResponseContentDisposition = `attachment; filename = "${localFileName.replace('"', '')}"`;
-					}
-					return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)(action, params);
-				});
-			});
+		return createAWSObjectFromStorageProviderIdAndBucket(storageProviderId, bucket).then((awsObject) => {
+			const params = {
+				Bucket: bucket,
+				Key: flatFileName,
+				Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
+			};
+			const getBoolean = (value) => value === true || value === 'true';
+			if (getBoolean(download)) {
+				params.ResponseContentDisposition = `attachment; filename = "${localFileName.replace('"', '')}"`;
+			}
+			return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)(action, params);
+		});
 	}
 
 	/** ** @DEPRECATED *** */
@@ -508,7 +527,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						return new NotFound('User not found');
 					}
 
-					return createAWSObject(result.schoolId).then((awsObject) => {
+					return createAWSObjectFromSchoolId(result.schoolId).then((awsObject) => {
 						const fileStream = fs.createReadStream(pathUtil.join(__dirname, '..', 'resources', '.scfake'));
 						const params = {
 							Bucket: awsObject.bucket,
@@ -539,7 +558,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
 				}
-				return createAWSObject(result.schoolId).then((awsObject) => {
+				return createAWSObjectFromSchoolId(result.schoolId).then((awsObject) => {
 					const params = {
 						Bucket: awsObject.bucket,
 						Prefix: removeLeadingSlash(path),
