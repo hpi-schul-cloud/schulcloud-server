@@ -10,7 +10,12 @@ import { createBoards, getToken } from './helper/createBoards';
 import { UserProfile, UrlConfiguration, ResponseTimeRecord, ClassDefinition, ClassDefinitionWithAmount } from './types';
 import { getUrlConfiguration } from './helper/getUrlConfiguration';
 import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
-import { viewersClass, createSeveralClasses, duplicateUserProfiles } from './helper/classDefinitions';
+import {
+	viewersClass,
+	createSeveralClasses,
+	duplicateUserProfiles,
+	collaborativeClass,
+} from './helper/classDefinitions';
 import { getStats, getSummaryText } from './helper/responseTimes';
 import { formatDate } from './helper/formatDate';
 
@@ -203,11 +208,16 @@ describe('Board Collaboration Load Test', () => {
 
 	it('should run a basic load test', async () => {
 		const { courseId, token, target } = process.env;
+		const viewerClassesAmount = process.env.viewerClasses ? parseInt(process.env.viewerClasses, 10) : 20;
+		const collabClassesAmount = process.env.collabClasses ? parseInt(process.env.collabClasses, 10) : 0;
 		if (courseId && token && target) {
 			await runConfigurations({
 				target: target ?? 'http://localhost:4450',
 				courseId,
-				configurations: [{ classDefinition: viewersClass, amount: 30 }],
+				configurations: [
+					{ classDefinition: viewersClass, amount: viewerClassesAmount },
+					{ classDefinition: collaborativeClass, amount: collabClassesAmount },
+				],
 			});
 		} else {
 			expect('this should only be ran manually').toBeTruthy();
