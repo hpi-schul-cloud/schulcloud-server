@@ -52,14 +52,12 @@ describe('Course Controller (API)', () => {
 		const setup = () => {
 			const student = createStudent();
 			const teacher = createTeacher();
-			const group = groupEntityFactory.buildWithId();
 			const course = courseFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [student.user],
-				syncedWithGroup: group,
 			});
 
-			return { student, course, teacher, group };
+			return { student, course, teacher };
 		};
 
 		it('should find courses as student', async () => {
@@ -78,7 +76,7 @@ describe('Course Controller (API)', () => {
 		});
 
 		it('should find courses as teacher', async () => {
-			const { teacher, course, group } = setup();
+			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
 
@@ -88,7 +86,6 @@ describe('Course Controller (API)', () => {
 			const { data } = response.body as CourseMetadataListResponse;
 			expect(response.statusCode).toBe(200);
 			expect(typeof data[0].title).toBe('string');
-			expect(data[0].syncedWithGroup).toBe(group.id);
 			expect(data[0].startDate).toBe(course.startDate);
 			expect(data[0].untilDate).toBe(course.untilDate);
 		});
