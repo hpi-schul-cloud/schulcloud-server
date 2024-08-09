@@ -154,7 +154,13 @@ const createAWSObjectFromSchoolId = async (schoolId) => {
 
 const createAWSObjectFromStorageProviderIdAndBucket = async (storageProviderId, bucket) => {
 	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
-		const s3 = getS3(storageProviderId);
+		const storageProvider = await StorageProviderModel.findOne({ _id: storageProviderId }).lean().exec();
+
+		if (!storageProvider) {
+			throw new NotFound('Storage provider not found.');
+		}
+
+		const s3 = getS3(storageProvider);
 		return {
 			s3,
 			bucket,

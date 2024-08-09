@@ -89,7 +89,13 @@ const prepareThumbnailGeneration = async (
 	{ storageFileName, name: propName }
 ) => {
 	if (Configuration.get('ENABLE_THUMBNAIL_GENERATION') === true) {
-		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
+		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
+
+		if (!fileObject) {
+			throw new NotFound('File seems not to be there.');
+		}
+
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		Promise.all([
 			strategy.getSignedUrl({
@@ -472,7 +478,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		if (download && fileObject.securityCheck && fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
 			throw new Forbidden('File access blocked by security check.');
@@ -504,7 +510,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		return canRead(userId, id)
 			.then(() =>
