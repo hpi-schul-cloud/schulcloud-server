@@ -2,9 +2,10 @@
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-process-env */
 import { writeFileSync } from 'fs';
+import { performance } from 'perf_hooks';
 import { flatten } from 'lodash';
 import { ColumnResponse } from '../controller/dto';
-import { createLoadtestClient } from './loadtestClientFactory';
+import { createLoadtestClient, getClientCount, incErrorCount, getErrorCount } from './loadtestClientFactory';
 import { createBoards, getToken } from './helper/createBoards';
 import { UserProfile, UrlConfiguration, ResponseTimeRecord, ClassDefinition, ClassDefinitionWithAmount } from './types';
 import { getUrlConfiguration } from './helper/getUrlConfiguration';
@@ -52,6 +53,7 @@ describe('Board Collaboration Load Test', () => {
 			try {
 				await createRandomCard(socket, column, userProfile.sleepMs);
 			} catch (err) {
+				incErrorCount();
 				errors.push((err as Error).message);
 			}
 		}
@@ -92,6 +94,7 @@ describe('Board Collaboration Load Test', () => {
 				column = await socket.createColumn();
 				await socket.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte` });
 			} catch (err) {
+				incErrorCount();
 				errors.push((err as Error).message);
 			}
 			if (column) {
@@ -100,12 +103,14 @@ describe('Board Collaboration Load Test', () => {
 				try {
 					await socket.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte (fertig)` });
 				} catch (err) {
+					incErrorCount();
 					errors.push((err as Error).message);
 				}
 				responseTimes = socket.getResponseTimes();
 				try {
 					await createSummaryCard(socket, column, responseTimes);
 				} catch (err) {
+					incErrorCount();
 					errors.push((err as Error).message);
 				}
 			}
@@ -129,7 +134,7 @@ describe('Board Collaboration Load Test', () => {
 			const sum = responseTimes.reduce((all, cur) => all + cur.responseTime, 0);
 			await boardSocket.updateBoardTitle({
 				boardId,
-				newTitle: `${board.title ?? ''} - ${responseTimes.length} requests (avg response time: ${(
+				newTitle: `${board.title ?? ''} - ${responseTimes.length} actions (avg response time: ${(
 					sum / responseTimes.length
 				).toFixed(2)} ms)`,
 			});
@@ -140,6 +145,7 @@ describe('Board Collaboration Load Test', () => {
 
 			return results;
 		} catch (err) {
+			incErrorCount();
 			console.error(err);
 		}
 		return [];
@@ -148,6 +154,22 @@ describe('Board Collaboration Load Test', () => {
 	const writeProtocol = (json: Record<string, unknown>) => {
 		const { startTime } = json;
 		writeFileSync(`${startTime as string}_${Math.ceil(Math.random() * 1000)}.json`, JSON.stringify(json, null, 2));
+	};
+
+	let intervalHandle: NodeJS.Timeout | undefined;
+	const startRegularStats = () => {
+		const startTime = performance.now();
+		intervalHandle = setInterval(() => {
+			const seconds = Math.ceil((performance.now() - startTime) / 1000);
+			const clients = getClientCount();
+			const errors = getErrorCount();
+			console.log(`${seconds}s - ${clients} clients connected - ${errors} errors`);
+		}, 5000);
+	};
+	const stopRegularStats = () => {
+		if (intervalHandle) {
+			clearInterval(intervalHandle);
+		}
 	};
 
 	const runConfigurations = async ({
@@ -163,6 +185,7 @@ describe('Board Collaboration Load Test', () => {
 		const urls = getUrlConfiguration(target);
 		const classes = createSeveralClasses(configurations);
 		const boardIds = await createBoards(urls.api, courseId, classes.length);
+		startRegularStats();
 		const promises = classes.flatMap((conf, index) => runBoardTest(boardIds[index], conf, urls));
 		const results = flatten(await Promise.all(promises));
 		const { responseTimes, errors } = results.reduce(
@@ -175,6 +198,7 @@ describe('Board Collaboration Load Test', () => {
 		);
 		const endTime = formatDate(new Date());
 		writeProtocol({ startTime, endTime, configurations, responseTimes: getStats(responseTimes), errors });
+		stopRegularStats();
 	};
 
 	it('should run a basic load test', async () => {
@@ -183,7 +207,7 @@ describe('Board Collaboration Load Test', () => {
 			await runConfigurations({
 				target: target ?? 'http://localhost:4450',
 				courseId,
-				configurations: [{ classDefinition: viewersClass, amount: 40 }],
+				configurations: [{ classDefinition: viewersClass, amount: 30 }],
 			});
 		} else {
 			expect('this should only be ran manually').toBeTruthy();
