@@ -10,26 +10,25 @@ export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
 	connectToRedis(): void {
-		if (Configuration.has('REDIS_URI')) {
-			const redisUri = Configuration.get('REDIS_URI') as string;
-			const pubClient = new Redis(redisUri);
-			const subClient = new Redis(redisUri);
+		const redisUri = Configuration.has('REDIS_URI') ? (Configuration.get('REDIS_URI') as string) : 'localhost:6379';
+		const pubClient = new Redis(redisUri);
+		const subClient = new Redis(redisUri);
 
-			pubClient.on('error', (err) => {
-				console.error('pubClient error', err);
-			});
-			subClient.on('error', (err) => {
-				console.error('subClient error', err);
-			});
+		pubClient.on('error', (err) => {
+			console.error('pubClient error', err);
+		});
+		subClient.on('error', (err) => {
+			console.error('subClient error', err);
+		});
 
-			this.adapterConstructor = createAdapter(pubClient, subClient);
+		this.adapterConstructor = createAdapter(pubClient, subClient);
 
-			// maybe needs to be removed?!?
-			// await Promise.all([pubClient.connect(), subClient.connect()]);
-		}
+		// maybe needs to be removed?!?
+		// await Promise.all([pubClient.connect(), subClient.connect()]);
 	}
 
 	createIOServer(port: number, options?: ServerOptions): Server {
+		this.connectToRedis();
 		// istanbul ignore next
 		if (!this.adapterConstructor) {
 			throw new Error('Redis adapter is not connected to Redis yet.');

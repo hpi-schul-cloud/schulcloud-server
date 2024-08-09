@@ -90,6 +90,7 @@ describe('Board Collaboration Load Test', () => {
 	) => {
 		await sleep(waitTimeMs);
 		const socket = createLoadtestClient(target, boardId, getToken());
+		await socket.connect();
 		let responseTimes: Array<ResponseTimeRecord> = [];
 		let errors: Array<string> = [];
 		if (userProfile.maxCards > 0) {
@@ -156,8 +157,8 @@ describe('Board Collaboration Load Test', () => {
 	};
 
 	const writeProtocol = (json: Record<string, unknown>) => {
-		const { startTime } = json;
-		writeFileSync(`${startTime as string}_${Math.ceil(Math.random() * 1000)}.json`, JSON.stringify(json, null, 2));
+		const { startDateTime } = json;
+		writeFileSync(`${startDateTime as string}_${Math.ceil(Math.random() * 1000)}.json`, JSON.stringify(json, null, 2));
 	};
 
 	let intervalHandle: NodeJS.Timeout | undefined;
@@ -188,7 +189,7 @@ describe('Board Collaboration Load Test', () => {
 		courseId: string;
 		configurations: ClassDefinitionWithAmount[];
 	}) => {
-		const startTime = formatDate(new Date());
+		const startDateTime = formatDate(new Date());
 		const urls = getUrlConfiguration(target);
 		const classes = createSeveralClasses(configurations);
 		const boardIds = await createBoards(urls.api, courseId, classes.length);
@@ -203,11 +204,11 @@ describe('Board Collaboration Load Test', () => {
 			},
 			{ responseTimes: [], errors: [] } as { responseTimes: ResponseTimeRecord[]; errors: string[] }
 		);
-		const endTime = formatDate(new Date());
+		const endDateTime = formatDate(new Date());
 		stopRegularStats();
 		const protocol = {
-			startTime,
-			endTime,
+			startDateTime,
+			endDateTime,
 			configurations,
 			responseTimes: getStats(responseTimes),
 			errorCount: errors.length,

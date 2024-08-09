@@ -59,6 +59,18 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		},
 	});
 
+	const connect = async (retries = 20) => {
+		while (!socket.connected) {
+			socket.connect();
+			await sleep(100);
+
+			retries -= 1;
+			if (retries < 1) {
+				throw new Error('Could not connect to socket server');
+			}
+		}
+	};
+
 	const getCardPosition = (cardId: string) => cards.findIndex((card) => card.id === cardId);
 
 	const getColumnPosition = (columnId) => columns.findIndex((column) => column.id === columnId);
@@ -70,7 +82,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		socket.emit(action, data);
 	};
 
-	const waitForSuccess = async (
+	const waitForSuccessLogs = async (
 		eventName: string,
 		options: { timeoutMs?: number; startTime: number; event: unknown }
 	): Promise<unknown> => {
@@ -98,7 +110,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		logs.push({ event, payload, time: performance.now() + 30 });
 	};
 
-	const waitForSuccessListeners = async (
+	const waitForSuccess = async (
 		successEventName: string,
 		options?: { checkIsOwnAction?: boolean; timeoutMs?: number; event: unknown; startTime: number }
 	) =>
@@ -144,7 +156,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		const startTime = performance.now();
 		const prepareWaitForSuccess = waitForSuccess(`${actionPrefix}-success`, {
 			event: { name: `${actionPrefix}-request`, payload: data },
-			startTime: performance.now(),
+			startTime,
 		});
 		emitOnSocket(`${actionPrefix}-request`, data);
 		const result = await prepareWaitForSuccess;
@@ -321,6 +333,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 	const getResponseTimes = () => responseTimes;
 
 	return {
+		connect,
 		createColumn,
 		createCard,
 		createElement,

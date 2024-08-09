@@ -89,7 +89,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
-		// await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		const column = this.boardNodeFactory.buildColumn();
 
