@@ -1,10 +1,10 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { serverConfig } from '@modules/server';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { courseFactory, schoolEntityFactory, TestApiClient } from '@shared/testing';
-import { serverConfig } from '../../../../server';
-import { AdminApiServerTestModule } from '../../../../server/admin-api.server.module';
 import { ToolContextType } from '../../../common/enum';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
