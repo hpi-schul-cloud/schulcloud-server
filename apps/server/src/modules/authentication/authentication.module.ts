@@ -1,4 +1,4 @@
-import { JwtGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { AccountModule } from '@modules/account';
@@ -63,7 +63,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
-		JwtGuardModule,
+		AuthGuardModule,
 	],
 	providers: [
 		UserRepo,

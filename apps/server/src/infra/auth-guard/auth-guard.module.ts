@@ -6,5 +6,6 @@ import { JwtStrategy, WsJwtStrategy, XApiKeyStrategy } from './strategy';
 @Module({
 	imports: [PassportModule],
 	providers: [JwtStrategy, WsJwtStrategy, JwtValidationAdapter, XApiKeyStrategy],
+	exports: [JwtValidationAdapter],
 })
 export class AuthGuardModule {}

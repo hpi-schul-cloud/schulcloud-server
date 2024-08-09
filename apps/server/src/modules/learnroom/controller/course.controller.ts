@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -34,7 +34,7 @@ import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, 
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 
 @ApiTags('Courses')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('courses')
 export class CourseController {
 	constructor(

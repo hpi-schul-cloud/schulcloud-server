@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -14,7 +14,7 @@ import { UserIdParams } from './dto';
 
 @ApiTags('UserLoginMigration Rollback')
 @Controller('user-login-migrations')
-@Authenticate('jwt')
+@JwtAuthentication()
 export class UserLoginMigrationRollbackController {
 	constructor(private readonly userLoginMigrationRollbackUc: UserLoginMigrationRollbackUc) {}
 

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -14,7 +14,7 @@ import { PseudonymResponse } from './dto';
 import { PseudonymParams } from './dto/pseudonym-params';
 
 @ApiTags('Pseudonym')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('pseudonyms')
 export class PseudonymController {
 	constructor(private readonly pseudonymUc: PseudonymUc) {}

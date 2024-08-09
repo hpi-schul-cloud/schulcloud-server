@@ -1,5 +1,4 @@
-import { ICurrentUser } from '../interface';
-import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
+import { CreateJwtPayload, ICurrentUser, JwtPayload } from '../interface';
 
 export class CurrentUserMapper {
 	static mapCurrentUserToCreateJwtPayload(currentUser: ICurrentUser): CreateJwtPayload {

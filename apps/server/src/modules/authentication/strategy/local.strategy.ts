@@ -1,4 +1,4 @@
-import { CurrentUserMapper, ICurrentUser } from '@infra/auth-guard';
+import { ICurrentUser } from '@infra/auth-guard';
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -8,6 +8,7 @@ import { TypeGuard } from '@shared/common';
 import { UserRepo } from '@shared/repo';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
+import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()

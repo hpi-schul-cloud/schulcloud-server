@@ -1,3 +1,4 @@
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	BadRequestException,
 	Body,
@@ -18,7 +19,6 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { Authenticate, CurrentUser, ICurrentUser } from '@src/infra/auth-guard';
 import { Request, Response } from 'express';
 import { H5PEditorUc } from '../uc/h5p.uc';
 
@@ -38,7 +38,7 @@ import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.tra
 import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
 
 @ApiTags('h5p-editor')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('h5p-editor')
 export class H5PEditorController {
 	constructor(private h5pEditorUc: H5PEditorUc) {}
