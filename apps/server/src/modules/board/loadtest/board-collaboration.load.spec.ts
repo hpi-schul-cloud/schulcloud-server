@@ -162,19 +162,22 @@ describe('Board Collaboration Load Test', () => {
 	};
 
 	let intervalHandle: NodeJS.Timeout | undefined;
-	const startRegularStats = () => {
-		const startTime = performance.now();
-		intervalHandle = setInterval(() => {
-			const seconds = Math.ceil((performance.now() - startTime) / 1000);
-			const clients = getClientCount();
-			const errors = getErrorCount();
-			console.log(`${seconds}s - ${clients} clients connected - ${errors} errors`);
-		}, 5000);
+	const startTime = performance.now();
+	const showStats = () => {
+		const seconds = Math.ceil((performance.now() - startTime) / 1000);
+		const clients = getClientCount();
+		const errors = getErrorCount();
+		console.log(`${seconds}s - ${clients} clients connected - ${errors} errors`);
 	};
+	const startRegularStats = () => {
+		intervalHandle = setInterval(showStats, 5000);
+	};
+
 	const stopRegularStats = () => {
 		if (intervalHandle) {
 			clearInterval(intervalHandle);
 		}
+		showStats();
 	};
 
 	const runConfigurations = async ({
@@ -202,8 +205,17 @@ describe('Board Collaboration Load Test', () => {
 			{ responseTimes: [], errors: [] } as { responseTimes: ResponseTimeRecord[]; errors: string[] }
 		);
 		const endTime = formatDate(new Date());
-		writeProtocol({ startTime, endTime, configurations, responseTimes: getStats(responseTimes), errors });
 		stopRegularStats();
+		const protocol = {
+			startTime,
+			endTime,
+			configurations,
+			responseTimes: getStats(responseTimes),
+			errorCount: errors.length,
+			errors,
+		};
+		writeProtocol(protocol);
+		console.log(JSON.stringify(protocol, null, 2));
 	};
 
 	it('should run a basic load test', async () => {
