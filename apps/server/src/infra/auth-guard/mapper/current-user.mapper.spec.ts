@@ -1,11 +1,8 @@
-import { setupEntities } from '@shared/testing';
-import { CreateJwtPayload } from '../interface/jwt-payload';
-import { currentUserFactory, jwtPayloadFactory } from '../testing';
+import { currentUserFactory, jwtPayloadFactory, setupEntities } from '@shared/testing';
+import { CreateJwtPayload } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
-	const accountId = 'mockAccountId';
-
 	beforeAll(async () => {
 		await setupEntities();
 	});

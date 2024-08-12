@@ -4,11 +4,11 @@ import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@shared/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
+import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
-import { currentUserFactory } from '../testing';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
@@ -17,7 +17,7 @@ describe('AuthenticationService', () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 
-	let jwtValidationAdapter: DeepMocked<JwtValidationAdapter>;
+	let jwtValidationAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
@@ -33,8 +33,8 @@ describe('AuthenticationService', () => {
 			providers: [
 				AuthenticationService,
 				{
-					provide: JwtValidationAdapter,
-					useValue: createMock<JwtValidationAdapter>(),
+					provide: JwtWhitelistAdapter,
+					useValue: createMock<JwtWhitelistAdapter>(),
 				},
 				{
 					provide: JwtService,
@@ -51,7 +51,7 @@ describe('AuthenticationService', () => {
 			],
 		}).compile();
 
-		jwtValidationAdapter = module.get(JwtValidationAdapter);
+		jwtValidationAdapter = module.get(JwtWhitelistAdapter);
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);

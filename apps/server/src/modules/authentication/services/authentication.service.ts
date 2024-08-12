@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
+import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { LoginDto } from '../uc/dto';
 
@@ -15,7 +15,7 @@ import { LoginDto } from '../uc/dto';
 export class AuthenticationService {
 	constructor(
 		private readonly jwtService: JwtService,
-		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		private readonly jwtValidationAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<ServerConfig, true>
 	) {}

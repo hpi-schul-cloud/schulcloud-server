@@ -5,13 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
-import { ICurrentUser } from '@modules/authentication';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ResolvedUserResponse } from '@modules/user/controller/dto';
 import { ApiValidationError } from '@shared/common';
 import { LanguageType } from '@shared/domain/interface';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 
 const baseRouteName = '/user/me';
 

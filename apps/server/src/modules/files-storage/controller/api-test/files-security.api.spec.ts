@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';

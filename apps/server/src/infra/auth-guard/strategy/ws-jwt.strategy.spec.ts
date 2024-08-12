@@ -3,10 +3,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
-import { setupEntities } from '@shared/testing';
-import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
-import { jwtConstants } from '../constants';
-import { jwtPayloadFactory } from '../testing';
+import { jwtPayloadFactory, setupEntities } from '@shared/testing';
+import { jwtConstants } from '@src/imports-from-feathers';
+import { JwtValidationAdapter } from '../adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
 
 describe('jwt strategy', () => {

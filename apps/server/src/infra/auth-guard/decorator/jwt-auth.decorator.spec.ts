@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ICurrentUser } from '@modules/authentication';
 import { ServerTestModule } from '@modules/server/server.module';
-import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication } from '@nestjs/common';
+import { Controller, ExecutionContext, Get, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { JwtAuthGuard } from '../guard/jwt-auth.guard';
-import { Authenticate, CurrentUser, JWT } from './auth.decorator';
-import { JwtAuthentication } from './jwt-auth.decorator';
+import { JwtAuthGuard } from '../guard';
+import { ICurrentUser } from '../interface';
+import { CurrentUser, JWT, JwtAuthentication } from './jwt-auth.decorator';
 
 @JwtAuthentication()
 @Controller('test_decorator_currentUser')
@@ -85,14 +84,6 @@ describe('auth.decorator', () => {
 			const response = await request(app.getHttpServer()).get('/test_decorator_currentUser/test');
 
 			expect(response.statusCode).toEqual(401);
-		});
-	});
-
-	describe('Authenticate', () => {
-		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', () => {
-			// @ts-expect-error Testcase
-			const exec = () => Authenticate('bla');
-			expect(exec).toThrowError(new ForbiddenException('jwt strategy required'));
 		});
 	});
 });

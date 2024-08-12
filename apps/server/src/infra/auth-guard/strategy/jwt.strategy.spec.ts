@@ -4,11 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
-import { setupEntities } from '@shared/testing';
-import { jwtConstants } from '../constants';
+import { jwtPayloadFactory, setupEntities } from '@shared/testing';
 
+import { jwtConstants } from '@src/imports-from-feathers';
 import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
-import { jwtPayloadFactory } from '../testing';
 import { JwtStrategy } from './jwt.strategy';
 
 describe('jwt strategy', () => {

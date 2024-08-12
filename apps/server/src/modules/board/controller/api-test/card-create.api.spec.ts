@@ -1,5 +1,5 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

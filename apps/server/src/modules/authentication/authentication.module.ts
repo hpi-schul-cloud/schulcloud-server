@@ -12,6 +12,7 @@ import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { jwtConstants } from '@src/imports-from-feathers';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
+import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
@@ -73,6 +74,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		LdapService,
 		LdapStrategy,
 		Oauth2Strategy,
+		JwtWhitelistAdapter,
 	],
 	exports: [AuthenticationService],
 })

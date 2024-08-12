@@ -6,7 +6,7 @@ import { addTokenToWhitelist, createRedisIdentifierFromJwtData } from '@src/impo
 import { Cache } from 'cache-manager';
 
 @Injectable()
-export class JwtValidationAdapter {
+export class JwtWhitelistAdapter {
 	constructor(
 		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
 		private readonly cacheService: CacheService

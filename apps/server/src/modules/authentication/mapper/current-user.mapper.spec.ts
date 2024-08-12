@@ -1,7 +1,8 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { ValidationError } from '@shared/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { RoleName } from '@shared/domain/interface';
-import { setupEntities, userDoFactory } from '@shared/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 

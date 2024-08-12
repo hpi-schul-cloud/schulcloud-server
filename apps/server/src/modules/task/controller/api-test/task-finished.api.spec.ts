@@ -1,5 +1,5 @@
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { ServerTestModule } from '@modules/server/server.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -14,7 +14,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
 

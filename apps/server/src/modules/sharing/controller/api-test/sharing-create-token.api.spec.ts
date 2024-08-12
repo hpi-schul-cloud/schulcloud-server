@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

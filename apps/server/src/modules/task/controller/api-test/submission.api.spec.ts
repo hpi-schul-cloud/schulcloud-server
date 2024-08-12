@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.module';
 import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
@@ -18,7 +18,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
 

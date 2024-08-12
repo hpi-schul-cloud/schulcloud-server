@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
