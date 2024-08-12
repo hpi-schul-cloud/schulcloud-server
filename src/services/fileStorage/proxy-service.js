@@ -47,7 +47,6 @@ const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
 	let storageProviderId = fileObject.storageProviderId;
 	let bucket = fileObject.bucket;
 
-	// TODO: How to handle, if only one is set?
 	if (!storageProviderId) {
 		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
 		const creatorId =
