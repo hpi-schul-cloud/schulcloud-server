@@ -1,3 +1,5 @@
+import { BoardExternalReferenceType, BoardLayout } from '../../domain';
+
 export const getToken = (): string => {
 	// eslint-disable-next-line no-process-env
 	const { token } = process.env;
@@ -23,8 +25,8 @@ export const createBoard = async (apiBaseUrl: string, courseId: string) => {
 		body: JSON.stringify({
 			title: boardTitle,
 			parentId: courseId,
-			parentType: 'course',
-			layout: 'columns',
+			parentType: BoardExternalReferenceType.Course,
+			layout: BoardLayout.COLUMNS,
 		}),
 	});
 
