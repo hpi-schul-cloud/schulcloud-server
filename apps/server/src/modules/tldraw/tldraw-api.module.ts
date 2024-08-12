@@ -1,4 +1,4 @@
-import { XApiKeyStrategy } from '@infra/auth-guard/strategy';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
@@ -32,8 +32,9 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: [TldrawDrawing],
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
+		AuthGuardModule,
 	],
-	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb, XApiKeyStrategy],
+	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
 	controllers: [TldrawController],
 })
 export class TldrawApiModule {}
