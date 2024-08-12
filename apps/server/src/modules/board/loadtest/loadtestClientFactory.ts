@@ -34,6 +34,8 @@ async function sleep(ms: number) {
 
 let clientCount = 0;
 
+export type LoadtestClient = ReturnType<typeof createLoadtestClient>;
+
 export function getClientCount() {
 	return clientCount;
 }
@@ -57,19 +59,28 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		extraHeaders: {
 			cookie: ` USER_TIMEZONE=Europe/Berlin; jwt=${token}`,
 		},
+		// forceNew: true,
+		autoConnect: true,
 	});
 
-	const connect = async (retries = 20) => {
-		while (!socket.connected) {
-			socket.connect();
-			await sleep(100);
-
-			retries -= 1;
-			if (retries < 1) {
-				throw new Error('Could not connect to socket server');
+	const connect = async (timeoutMs = 60000) =>
+		new Promise((resolve, reject) => {
+			if (socket.connected) {
+				resolve(true);
 			}
-		}
-	};
+
+			let connected = false;
+			socket.once('connect', () => {
+				connected = true;
+				resolve(true);
+			});
+			socket.connect();
+			setTimeout(() => {
+				if (!connected) {
+					reject(new Error('Could not connect to socket server'));
+				}
+			}, timeoutMs);
+		});
 
 	const getCardPosition = (cardId: string) => cards.findIndex((card) => card.id === cardId);
 

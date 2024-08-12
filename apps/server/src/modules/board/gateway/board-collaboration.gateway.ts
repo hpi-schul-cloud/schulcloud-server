@@ -401,17 +401,14 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				await socket.join(room);
 			},
 			emitSuccess(data: object) {
-				console.log(`${action}-success`, { ...data, isOwnAction: true }); // WIP: remove!!!
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
 			emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId) {
 				const room = getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
-				console.log(`${action}-success`, { ...data, isOwnAction: true }); // WIP: remove!!!
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
 			emitFailure(data: object) {
-				console.log(`${action}-failure`, data); // WIP: remove!!!
 				socket.emit(`${action}-failure`, data);
 			},
 		};

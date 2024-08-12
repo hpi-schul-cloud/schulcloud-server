@@ -5,7 +5,13 @@ import { writeFileSync } from 'fs';
 import { performance } from 'perf_hooks';
 import { flatten } from 'lodash';
 import { ColumnResponse } from '../controller/dto';
-import { createLoadtestClient, getClientCount, incErrorCount, getErrorCount } from './loadtestClientFactory';
+import {
+	createLoadtestClient,
+	getClientCount,
+	incErrorCount,
+	getErrorCount,
+	LoadtestClient,
+} from './loadtestClientFactory';
 import { createBoards, getToken } from './helper/createBoards';
 import { UserProfile, UrlConfiguration, ResponseTimeRecord, ClassDefinition, ClassDefinitionWithAmount } from './types';
 import { getUrlConfiguration } from './helper/getUrlConfiguration';
@@ -13,7 +19,7 @@ import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './h
 import {
 	viewersClass,
 	createSeveralClasses,
-	duplicateUserProfiles,
+	duplicateUserProfiles as extractUserProfiles,
 	collaborativeClass,
 } from './helper/classDefinitions';
 import { getStats, getSummaryText } from './helper/responseTimes';
@@ -24,7 +30,7 @@ describe('Board Collaboration Load Test', () => {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	const createRandomElement = async (socket: ReturnType<typeof createLoadtestClient>, cardId: string) => {
+	const createRandomElement = async (socket: LoadtestClient, cardId: string) => {
 		if (Math.random() > 0.5) {
 			await socket.createAndUpdateLinkElement(cardId, getRandomLink());
 		} else {
@@ -32,11 +38,7 @@ describe('Board Collaboration Load Test', () => {
 		}
 	};
 
-	const createRandomCard = async (
-		socket: ReturnType<typeof createLoadtestClient>,
-		column: ColumnResponse,
-		pauseMs = 1000
-	) => {
+	const createRandomCard = async (socket: LoadtestClient, column: ColumnResponse, pauseMs = 1000) => {
 		const card = await socket.createCard({ columnId: column.id });
 		await sleep(pauseMs);
 		await socket.updateCardTitle({ cardId: card.id, newTitle: getRandomCardTitle() });
@@ -47,11 +49,7 @@ describe('Board Collaboration Load Test', () => {
 		}
 	};
 
-	const createCards = async (
-		socket: ReturnType<typeof createLoadtestClient>,
-		column: ColumnResponse,
-		userProfile: UserProfile
-	) => {
+	const createCards = async (socket: LoadtestClient, column: ColumnResponse, userProfile: UserProfile) => {
 		const errors: Array<string> = [];
 		for (let i = 0; i < userProfile.maxCards; i += 1) {
 			try {
@@ -65,7 +63,7 @@ describe('Board Collaboration Load Test', () => {
 	};
 
 	const createSummaryCard = async (
-		socket: ReturnType<typeof createLoadtestClient>,
+		socket: LoadtestClient,
 		column: ColumnResponse,
 		responseTimes: Array<ResponseTimeRecord>
 	) => {
@@ -82,54 +80,75 @@ describe('Board Collaboration Load Test', () => {
 	};
 
 	const createUserColumn = async (
+		client: LoadtestClient,
 		position: number,
-		target: string,
-		boardId: string,
 		userProfile: UserProfile,
 		waitTimeMs: number
 	) => {
 		await sleep(waitTimeMs);
-		const socket = createLoadtestClient(target, boardId, getToken());
-		await socket.connect();
+
 		let responseTimes: Array<ResponseTimeRecord> = [];
 		let errors: Array<string> = [];
 		if (userProfile.maxCards > 0) {
 			let column: ColumnResponse | undefined;
 			try {
-				column = await socket.createColumn();
-				await socket.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte` });
+				column = await client.createColumn();
+				await client.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte` });
 			} catch (err) {
 				incErrorCount();
 				errors.push((err as Error).message);
 			}
 			if (column) {
-				const additionalErrors = await createCards(socket, column, userProfile);
+				const additionalErrors = await createCards(client, column, userProfile);
 				errors = [...errors, ...additionalErrors];
 				try {
-					await socket.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte (fertig)` });
+					await client.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte (fertig)` });
 				} catch (err) {
 					incErrorCount();
 					errors.push((err as Error).message);
 				}
-				responseTimes = socket.getResponseTimes();
+				responseTimes = client.getResponseTimes();
 				try {
-					await createSummaryCard(socket, column, responseTimes);
+					await createSummaryCard(client, column, responseTimes);
 				} catch (err) {
 					incErrorCount();
 					errors.push((err as Error).message);
 				}
 			}
 		}
-		return { socket, responseTimes, errors };
+		return { socket: client, responseTimes, errors };
+	};
+
+	const initializeLoadtestClient = async (target: string, boardId: string): Promise<LoadtestClient> => {
+		const socket = createLoadtestClient(target, boardId, getToken());
+		await socket.connect();
+		return socket;
+	};
+
+	const initializeLoadtestClients = async (
+		amount: number,
+		target: string,
+		boardId: string
+	): Promise<LoadtestClient[]> => {
+		const promises = Array(amount)
+			.fill(1)
+			.map(() => initializeLoadtestClient(target, boardId));
+		const results = await Promise.all(promises);
+		return results;
 	};
 
 	const runBoardTest = async (boardId: string, configuration: ClassDefinition, urls: UrlConfiguration) => {
-		const userProfiles = duplicateUserProfiles(configuration.users);
-		const boardSocket = createLoadtestClient(urls.websocket, boardId, getToken());
-		const board = await boardSocket.fetchBoard();
+		const boardClient = createLoadtestClient(urls.websocket, boardId, getToken());
+		await boardClient.connect();
+		console.log(`boardClient connected ${boardId}`);
+		const board = await boardClient.fetchBoard();
+		console.log(`${board.title ?? ''} fetched`);
+
+		const userProfiles = extractUserProfiles(configuration.users);
+		const userClients = await initializeLoadtestClients(userProfiles.length, urls.websocket, boardId);
 		const promises = userProfiles.map((userProfile: UserProfile, index) => {
 			const waitTimeMs = index * 500;
-			return createUserColumn(index + 1, urls.websocket, boardId, userProfile, waitTimeMs);
+			return createUserColumn(userClients[index], index + 1, userProfile, waitTimeMs);
 		});
 
 		try {
@@ -137,13 +156,13 @@ describe('Board Collaboration Load Test', () => {
 			const sockets = results.map((res) => res.socket);
 			const responseTimes = results.flatMap((res) => res.responseTimes);
 			const sum = responseTimes.reduce((all, cur) => all + cur.responseTime, 0);
-			await boardSocket.updateBoardTitle({
+			await boardClient.updateBoardTitle({
 				boardId,
 				newTitle: `${board.title ?? ''} - ${responseTimes.length} actions (avg response time: ${(
 					sum / responseTimes.length
 				).toFixed(2)} ms)`,
 			});
-			boardSocket.disconnect();
+			boardClient.disconnect();
 			await Promise.all(sockets.map((socket) => socket.disconnect()));
 
 			await sleep(2000);
@@ -209,6 +228,8 @@ describe('Board Collaboration Load Test', () => {
 		const protocol = {
 			startDateTime,
 			endDateTime,
+			target,
+			courseId,
 			configurations,
 			responseTimes: getStats(responseTimes),
 			errorCount: errors.length,
