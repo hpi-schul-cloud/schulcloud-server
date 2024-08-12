@@ -11,7 +11,9 @@ import { CourseRepo } from '@shared/repo';
 import { ClassInfoDto } from '../../group/uc/dto';
 import { School, SchoolService } from '../../school';
 import { CourseRequestContext } from '../controller/dto/interface/course-request-context.enum';
+import { CourseSortQueryType } from '../controller/dto/interface/course-sort-query-type.enum';
 import { SchoolYearQueryType } from '../controller/dto/interface/school-year-query-type.enum';
+import { CourseInfoMapper } from '../mapper/course-info.mapper';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseDoService, CourseService } from '../service';
 import { CourseInfoDto } from './dto';
@@ -43,22 +45,25 @@ export class CourseUc {
 	public async findAllCourses(
 		userId: EntityId,
 		schoolId: EntityId,
+		sortBy: CourseSortQueryType = CourseSortQueryType.NAME,
 		schoolYearQueryType?: SchoolYearQueryType,
 		calledFrom?: CourseRequestContext,
 		pagination?: Pagination,
-		sortBy: keyof CourseInfoDto = 'name',
-		sortOrder: SortOrder = SortOrder.asc
+		sortOrder?: SortOrder
 	): Promise<Page<ClassInfoDto>> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authService.getUserWithPermissions(userId);
 		this.authService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.ADMIN_VIEW]));
 
-		const courses = await this.courseDoService.findCoursesBySchool(schoolId);
+		// const courses: Course[] = await this.courseDoService.findCoursesBySchool(schoolId);
+		const courses: Course[] = await this.courseService.findCoursesBySchool(schoolId);
 
-		const courseInfosFromCourses: CourseInfoDto[] = this.getCourseInfosFromCourses(courses, schoolYearQueryType);
+		const courseInfosFromCourses: Course[] = this.getCourseInfosFromCourses(courses, schoolYearQueryType);
 
-		courses.sort((a: CourseInfoDto, b: CourseInfoDto): number =>
+		const coursesInfo = courseInfosFromCourses.map((course) => CourseInfoMapper.mapCourseToCourseInfoDto(course));
+
+		coursesInfo.sort((a: CourseInfoDto, b: CourseInfoDto): number =>
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
 		);
 
@@ -69,7 +74,7 @@ export class CourseUc {
 		return page;
 	}
 
-	private getCourseInfosFromCourses(courses: Course[], schoolYearQueryType: SchoolYearQueryType | undefined) {
+	private getCourseInfosFromCourses(courses: Course[], schoolYearQueryType: SchoolYearQueryType | undefined): Course[] {
 		const now = new Date();
 		let untilDate;
 		const allCourses = courses;

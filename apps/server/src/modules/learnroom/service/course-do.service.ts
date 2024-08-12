@@ -47,8 +47,8 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 		await this.courseRepo.save(course);
 	}
 
-	public async findCoursesBySchool(schoolId: EntityId): Promise<Course> {
-		const courses: Course = await this.courseRepo.findCourseById(schoolId);
+	public async findCoursesBySchool(schoolId: EntityId): Promise<Course[]> {
+		const courses: Course[] = await this.courseRepo.findCoursesBySchoolId(schoolId);
 
 		return courses;
 	}

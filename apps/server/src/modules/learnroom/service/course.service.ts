@@ -17,6 +17,7 @@ import { Course as CourseEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import type { Course } from '../domain';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -96,5 +97,11 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<CourseEntity> {
 		const course = await this.repo.findOne(courseId, userId);
 		return course;
+	}
+
+	public async findCoursesBySchool(schoolId: EntityId): Promise<CourseEntity[]> {
+		const courses = await this.repo.findCoursesBySchoolId(schoolId);
+
+		return courses;
 	}
 }

@@ -14,7 +14,7 @@ export class CourseInfoDto {
 
 	studentCount: number;
 
-	syncedGroup?: ClassInfoDto;
+	syncedWithGroup?: ClassInfoDto;
 
 	constructor(props: CourseInfoDto) {
 		this.id = props.id;
@@ -23,6 +23,6 @@ export class CourseInfoDto {
 		this.teacherNames = props.teacherNames;
 		this.schoolYear = props.schoolYear;
 		this.studentCount = props.studentCount;
-		this.syncedGroup = props.syncedGroup;
+		this.syncedWithGroup = props.syncedWithGroup;
 	}
 }

@@ -173,7 +173,7 @@ export class CourseController {
 		@Query() filterParams: CourseFilterParams,
 		@Query() callerParams: CourseCallerParams
 	): Promise<CourseInfoListResponse> {
-		const board: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
+		const courses: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
@@ -184,7 +184,7 @@ export class CourseController {
 		);
 
 		const response: CourseInfoListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
-			board,
+			courses,
 			pagination.skip,
 			pagination.limit
 		);

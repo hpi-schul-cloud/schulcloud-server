@@ -1,8 +1,9 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntityMapper } from '@modules/learnroom/repo/mikro-orm/mapper/course.entity.mapper';
 import { Injectable } from '@nestjs/common';
 
-import { Course } from '@shared/domain/entity';
+import { Course as CourseEntity, Course } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
@@ -49,11 +50,6 @@ class CourseScope extends Scope<Course> {
 
 	forCourseId(courseId: EntityId): CourseScope {
 		this.addQuery({ id: courseId });
-		return this;
-	}
-
-	forSchoolId(schoolId: EntityId): CourseScope {
-		this.addQuery({ school: schoolId });
 		return this;
 	}
 }
@@ -142,5 +138,11 @@ export class CourseRepo extends BaseRepo<Course> {
 		const course = await this._em.findOneOrFail(Course, scope.query);
 
 		return course;
+	}
+
+	public async findCoursesBySchoolId(id: EntityId): Promise<Course[]> {
+		const courses: Course[] = await this._em.find(Course, { school: id });
+
+		return courses;
 	}
 }
