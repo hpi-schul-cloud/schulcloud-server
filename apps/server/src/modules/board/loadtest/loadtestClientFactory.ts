@@ -163,11 +163,12 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		responseTimes.push(responseTime);
 	};
 
-	const emitAndWait = async (actionPrefix: string, data: unknown) => {
+	const emitAndWait = async (actionPrefix: string, data: unknown, timeoutMs = 15000) => {
 		const startTime = performance.now();
 		const prepareWaitForSuccess = waitForSuccess(`${actionPrefix}-success`, {
 			event: { name: `${actionPrefix}-request`, payload: data },
 			startTime,
+			timeoutMs,
 		});
 		emitOnSocket(`${actionPrefix}-request`, data);
 		const result = await prepareWaitForSuccess;
@@ -217,7 +218,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 	);
 
 	const createColumn = async () => {
-		const { newColumn } = (await emitAndWait('create-column', { boardId })) as { newColumn: ColumnResponse };
+		const { newColumn } = (await emitAndWait('create-column', { boardId }, 30000)) as { newColumn: ColumnResponse };
 		return newColumn;
 	};
 
@@ -336,7 +337,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 			});
 
 			// eslint-disable-next-line no-await-in-loop
-			await sleep(200);
+			await sleep(500);
 		}
 		return result as UpdateContentElementMessageParams;
 	};
