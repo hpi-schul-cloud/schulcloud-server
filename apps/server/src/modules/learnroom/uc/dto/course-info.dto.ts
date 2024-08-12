@@ -1,4 +1,5 @@
 import { EntityId } from '@shared/domain/types';
+import { UserDto } from '../../../user/uc/dto/user.dto';
 import { ClassInfoDto } from './class-info.dto';
 
 export class CourseInfoDto {
@@ -6,9 +7,9 @@ export class CourseInfoDto {
 
 	name: string;
 
-	teacherNames: string[];
+	teachers: UserDto[];
 
-	classes: string[];
+	classes: ClassInfoDto[];
 
 	schoolYear?: string;
 
@@ -20,7 +21,7 @@ export class CourseInfoDto {
 		this.id = props.id;
 		this.name = props.name;
 		this.classes = props.classes;
-		this.teacherNames = props.teacherNames;
+		this.teachers = props.teachers;
 		this.schoolYear = props.schoolYear;
 		this.studentCount = props.studentCount;
 		this.syncedWithGroup = props.syncedWithGroup;

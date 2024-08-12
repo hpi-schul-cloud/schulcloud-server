@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { SortHelper } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
-import { Course, User } from '@shared/domain/entity';
+import { Course as CourseEntity, User } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
@@ -13,6 +13,7 @@ import { School, SchoolService } from '../../school';
 import { CourseRequestContext } from '../controller/dto/interface/course-request-context.enum';
 import { CourseSortQueryType } from '../controller/dto/interface/course-sort-query-type.enum';
 import { SchoolYearQueryType } from '../controller/dto/interface/school-year-query-type.enum';
+import { Course } from '../domain';
 import { CourseInfoMapper } from '../mapper/course-info.mapper';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseDoService, CourseService } from '../service';
@@ -29,7 +30,7 @@ export class CourseUc {
 		private readonly courseDoService: CourseDoService
 	) {}
 
-	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {
+	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<CourseEntity[]>> {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
 	}
 
@@ -57,7 +58,7 @@ export class CourseUc {
 		this.authService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.ADMIN_VIEW]));
 
 		// const courses: Course[] = await this.courseDoService.findCoursesBySchool(schoolId);
-		const courses: Course[] = await this.courseService.findCoursesBySchool(schoolId);
+		const courses: Course[] = await this.courseDoService.findCoursesBySchool(schoolId);
 
 		const courseInfosFromCourses: Course[] = this.getCourseInfosFromCourses(courses, schoolYearQueryType);
 
