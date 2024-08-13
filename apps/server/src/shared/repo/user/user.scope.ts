@@ -51,7 +51,7 @@ export class UserScope extends Scope<User> {
 
 	withDeleted(deleted?: boolean): UserScope {
 		if (!deleted) {
-			this.addQuery({ deletedAt: { $exists: false } });
+			this.addQuery({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] });
 		}
 		return this;
 	}
