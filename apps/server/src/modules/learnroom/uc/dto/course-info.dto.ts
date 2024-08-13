@@ -1,29 +1,24 @@
 import { EntityId } from '@shared/domain/types';
-import { UserDto } from '../../../user/uc/dto/user.dto';
-import { ClassInfoDto } from './class-info.dto';
 
 export class CourseInfoDto {
 	id: EntityId;
 
 	name: string;
 
-	teachers: UserDto[];
+	teachers: string[];
 
-	classes: ClassInfoDto[];
+	classes: string[];
 
-	schoolYear?: string;
+	courseStatus?: string;
 
-	studentCount: number;
-
-	syncedWithGroup?: ClassInfoDto;
+	syncedWithGroup?: string;
 
 	constructor(props: CourseInfoDto) {
 		this.id = props.id;
 		this.name = props.name;
 		this.classes = props.classes;
 		this.teachers = props.teachers;
-		this.schoolYear = props.schoolYear;
-		this.studentCount = props.studentCount;
+		this.courseStatus = props.courseStatus;
 		this.syncedWithGroup = props.syncedWithGroup;
 	}
 }

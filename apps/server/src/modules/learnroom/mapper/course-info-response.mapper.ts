@@ -1,6 +1,6 @@
 import { Page } from '@shared/domain/domainobject';
-import { ClassInfoResponse, CourseInfoListResponse, CourseInfoResponse } from '../controller/dto/response';
-import { ClassInfoDto, CourseInfoDto } from '../uc/dto';
+import { CourseInfoListResponse, CourseInfoResponse } from '../controller/dto/response';
+import { CourseInfoDto } from '../uc/dto';
 
 export class CourseInfoResponseMapper {
 	public static mapToCourseInfoListResponse(
@@ -27,21 +27,11 @@ export class CourseInfoResponseMapper {
 			id: courseInfo.id,
 			name: courseInfo.name,
 			classes: courseInfo.classes,
-			teacherNames: courseInfo.teacherNames,
-			schoolYear: courseInfo.schoolYear,
-			studentCount: courseInfo.studentCount,
-			syncedGroup: courseInfo.syncedGroup ? this.mapToClassInfoResponse(courseInfo.syncedGroup) : undefined,
+			teacherNames: courseInfo.teachers,
+			courseStatus: courseInfo.courseStatus,
+			syncedGroup: courseInfo.syncedWithGroup ? courseInfo.syncedWithGroup : undefined,
 		});
 
 		return courseInfoResponse;
-	}
-
-	private static mapToClassInfoResponse(classInfoDto: ClassInfoDto): ClassInfoResponse {
-		const classInfoResponse: ClassInfoResponse = new ClassInfoResponse({
-			id: classInfoDto.id,
-			name: classInfoDto.name,
-		});
-
-		return classInfoResponse;
 	}
 }

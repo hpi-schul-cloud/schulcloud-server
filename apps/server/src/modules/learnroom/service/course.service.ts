@@ -17,7 +17,6 @@ import { Course as CourseEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import type { Course } from '../domain';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

@@ -28,7 +28,6 @@ import {
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
-import { Course } from '@shared/domain/entity';
 import { Response } from 'express';
 import { ErrorResponse } from '../../../core/error/dto';
 import { ClassInfoSearchListResponse } from '../../group/controller/dto';
@@ -46,9 +45,8 @@ import {
 	CourseUrlParams,
 	SchoolParams,
 } from './dto';
-import { CourseCallerParams } from './dto/request/course-caller-params';
 import { CourseFilterParams } from './dto/request/course-filter-params';
-import { CourseSortParams } from './dto/request/course-sourt-params';
+import { CourseSortParams } from './dto/request/course-sort-params';
 import { CourseInfoListResponse } from './dto/response/course-info-list.response';
 
 @ApiTags('Courses')
@@ -162,7 +160,7 @@ export class CourseController {
 
 	@Get('/all')
 	@ApiOperation({ summary: 'Get a list of all courses.' })
-	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
+	@ApiResponse({ status: HttpStatus.OK, type: CourseInfoListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getAllCourses(
@@ -170,16 +168,14 @@ export class CourseController {
 		@Query() schoolParams: SchoolParams,
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
-		@Query() filterParams: CourseFilterParams,
-		@Query() callerParams: CourseCallerParams
+		@Query() filterParams: CourseFilterParams
 	): Promise<CourseInfoListResponse> {
 		const courses: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
 			currentUser.userId,
 			currentUser.schoolId,
-			filterParams.type,
-			callerParams.calledFrom,
-			pagination,
 			sortingQuery.sortBy,
+			filterParams.type,
+			pagination,
 			sortingQuery.sortOrder
 		);
 

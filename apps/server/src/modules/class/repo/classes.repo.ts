@@ -55,4 +55,16 @@ export class ClassesRepo {
 
 		await this.em.persistAndFlush(existingEntities);
 	}
+
+	public async findClassById(id: EntityId): Promise<Class | null> {
+		const clazz = await this.em.findOne(ClassEntity, { id });
+
+		if (!clazz) {
+			return null;
+		}
+
+		const domainObject: Class = ClassMapper.mapToDO(clazz);
+
+		return domainObject;
+	}
 }
