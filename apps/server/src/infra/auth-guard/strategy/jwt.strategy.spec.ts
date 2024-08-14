@@ -9,7 +9,7 @@ import { jwtPayloadFactory, setupEntities } from '@shared/testing';
 import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
 import { JwtStrategy } from './jwt.strategy';
 
-jest.mock('../auth-config', () => {
+jest.mock('../config', () => {
 	const authConfig = {
 		secret: 'mysecret',
 		jwtOptions: {
