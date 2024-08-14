@@ -32,13 +32,7 @@ async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-let clientCount = 0;
-
 export type LoadtestClient = ReturnType<typeof createLoadtestClient>;
-
-export function getClientCount() {
-	return clientCount;
-}
 
 let errorCount = 0;
 
@@ -53,34 +47,6 @@ export function incErrorCount() {
 export function createLoadtestClient(socket: SocketConnection, boardId: string) {
 	const logs: Array<{ event: string; payload: { isOwnAction: boolean }; time: number }> = [];
 	const cards: Array<CardResponse> = [];
-	// const socket = io(baseUrl, {
-	// 	path: '/board-collaboration',
-	// 	withCredentials: true,
-	// 	extraHeaders: {
-	// 		cookie: ` USER_TIMEZONE=Europe/Berlin; jwt=${token}`,
-	// 	},
-	// 	// forceNew: true,
-	// 	autoConnect: true,
-	// });
-
-	// const connect = async (timeoutMs = 120000) =>
-	// 	new Promise((resolve, reject) => {
-	// 		if (socket.connected) {
-	// 			resolve(true);
-	// 		}
-
-	// 		let connected = false;
-	// 		socket.once('connect', () => {
-	// 			connected = true;
-	// 			resolve(true);
-	// 		});
-	// 		socket.connect();
-	// 		setTimeout(() => {
-	// 			if (!connected) {
-	// 				reject(new Error('Could not connect to socket server'));
-	// 			}
-	// 		}, timeoutMs);
-	// 	});
 
 	const getCardPosition = (cardId: string) => cards.findIndex((card) => card.id === cardId);
 
@@ -120,9 +86,9 @@ export function createLoadtestClient(socket: SocketConnection, boardId: string) 
 	) =>
 		new Promise((resolve, reject) => {
 			const failureEventName = successEventName.replace('success', 'failure');
-			const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 15000, ...options };
+			const { checkIsOwnAction, timeoutMs } = { checkIsOwnAction: true, timeoutMs: 5000, ...options };
 			const timeoutId = setTimeout(() => {
-				reject(new Error(`Timeout waiting for ${successEventName}`));
+				reject(new Error(`Timeout waiting for ${successEventName} (${timeoutMs}ms)`));
 			}, timeoutMs);
 			let listeners: { eventName: string; listener: (payload: { isOwnAction: boolean }) => void }[] = [];
 			const removeListeners = () => {
@@ -156,7 +122,7 @@ export function createLoadtestClient(socket: SocketConnection, boardId: string) 
 		responseTimes.push(responseTime);
 	};
 
-	const emitAndWait = async (actionPrefix: string, data: unknown, timeoutMs = 15000) => {
+	const emitAndWait = async (actionPrefix: string, data: unknown, timeoutMs = 5000) => {
 		const startTime = performance.now();
 		const prepareWaitForSuccess = waitForSuccess(`${actionPrefix}-success`, {
 			event: { name: `${actionPrefix}-request`, payload: data },
@@ -186,16 +152,6 @@ export function createLoadtestClient(socket: SocketConnection, boardId: string) 
 	const disconnect = () => {
 		socket.disconnect();
 	};
-
-	socket.on('connect', () => {
-		clientCount += 1;
-		// await sleep(100 + Math.ceil(Math.random() * 1000));
-		// await fetchBoard();
-	});
-
-	socket.on('disconnect', () => {
-		clientCount -= 1;
-	});
 
 	socket.onAny(
 		(event: string, payload: { isOwnAction: boolean; newCard?: CardResponse; newColumn?: ColumnResponse }) => {
@@ -361,7 +317,6 @@ export function createLoadtestClient(socket: SocketConnection, boardId: string) 
 		getColumnPosition,
 		mockIncommingEvent,
 		getResponseTimes,
-		getClientCount,
 		logs,
 	};
 }
