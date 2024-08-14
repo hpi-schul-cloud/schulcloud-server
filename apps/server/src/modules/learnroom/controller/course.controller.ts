@@ -137,6 +137,7 @@ export class CourseController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async getCourseById(@Param() param: CourseUrlParams): Promise<Course> {
 		const course: Course = await this.courseUc.findCourseById(param.courseId);
+
 		return course;
 	}
 }
