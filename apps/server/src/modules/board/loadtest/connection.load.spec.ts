@@ -4,6 +4,8 @@
 import { SocketConnectionManager } from './SocketConnectionManager';
 import { SocketConfiguration } from './types';
 
+const CONNECTION_AMOUNT = parseInt(process.env.CONNECTION_AMOUNT ?? '640', 10);
+
 describe('Board Collaboration - Connection Load Test', () => {
 	async function sleep(ms: number) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
@@ -19,11 +21,10 @@ describe('Board Collaboration - Connection Load Test', () => {
 				connectTimeout: 50000,
 			};
 			const manager = new SocketConnectionManager(socketConfiguration);
-			const sockets = await manager.createConnections(150);
+			const sockets = await manager.createConnections(CONNECTION_AMOUNT);
 			await sleep(3000);
-			expect(sockets).toHaveLength(150);
+			expect(sockets).toHaveLength(CONNECTION_AMOUNT);
 			await manager.destroySocketConnections(sockets);
-			expect('super').toBeTruthy();
 		} else {
 			expect('this should only be ran manually').toBeTruthy();
 		}
