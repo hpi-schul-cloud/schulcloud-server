@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { extractJwtFromHeader } from '@shared/common';
 import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
-import { authConfig } from '../auth-config';
+import { authConfig } from '../config';
 import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 

@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@modules/news/controller/dto';
@@ -7,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { News } from '@shared/domain/entity';
 import { EntityId, NewsTargetModel } from '@shared/domain/types';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Request } from 'express';
 import moment from 'moment';
 import request from 'supertest';

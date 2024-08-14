@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -13,7 +13,6 @@ import {
 	schoolEntityFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';

@@ -4,7 +4,7 @@ import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
-import { authConfig } from '../auth-config';
+import { authConfig } from '../config';
 import { ICurrentUser, JwtPayload, StrategyType } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 

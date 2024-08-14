@@ -1,9 +1,9 @@
+import { StrategyType } from '@infra/auth-guard';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@shared/testing';
-import { StrategyType } from '@src/infra/auth-guard';
 
 const baseRouteName = '/deletionExecutions';
 

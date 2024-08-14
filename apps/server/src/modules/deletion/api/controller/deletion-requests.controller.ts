@@ -1,7 +1,7 @@
+import { StrategyType } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { StrategyType } from '@src/infra/auth-guard';
 import { DeletionRequestUc } from '../uc';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from './dto';
 

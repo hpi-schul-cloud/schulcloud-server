@@ -1,5 +1,5 @@
+import { CreateJwtPayload, CurrentUserMapper, ICurrentUser } from '@infra/auth-guard';
 import { Injectable } from '@nestjs/common';
-import { CreateJwtPayload, CurrentUserMapper, ICurrentUser } from '@src/infra/auth-guard';
 import { AuthenticationService } from '../services';
 import { LoginDto } from './dto';
 

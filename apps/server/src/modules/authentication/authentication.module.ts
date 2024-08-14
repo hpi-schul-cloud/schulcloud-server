@@ -1,4 +1,4 @@
-import { AuthGuardModule } from '@infra/auth-guard';
+import { authConfig, AuthGuardModule } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { AccountModule } from '@modules/account';
@@ -10,7 +10,6 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { authConfig } from '@src/infra/auth-guard/auth-config';
 import { SignOptions } from 'jsonwebtoken';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { AuthenticationService } from './services/authentication.service';

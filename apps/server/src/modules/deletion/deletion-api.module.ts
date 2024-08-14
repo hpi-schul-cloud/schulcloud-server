@@ -1,3 +1,4 @@
+import { CalendarModule } from '@infra/calendar';
 import { ClassModule } from '@modules/class';
 import { FilesModule } from '@modules/files';
 import { NewsModule } from '@modules/news';
@@ -7,7 +8,6 @@ import { TeamsModule } from '@modules/teams';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from '@src/core/logger';
-import { CalendarModule } from '@src/infra/calendar';
 import { DeletionModule } from '.';
 import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
 import { DeletionRequestsController } from './api/controller/deletion-requests.controller';
