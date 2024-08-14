@@ -20,6 +20,14 @@ import { LoginResponseMapper } from './mapper/login-response.mapper';
 export class LoginController {
 	constructor(private readonly loginUc: LoginUc) {}
 
+	private async login(user: ICurrentUser): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
+
+		return mapped;
+	}
+
 	@UseGuards(AuthGuard(StrategyType.LDAP))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
@@ -30,11 +38,9 @@ export class LoginController {
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+		const response = this.login(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
-
-		return mapped;
+		return response;
 	}
 
 	@UseGuards(AuthGuard(StrategyType.LOCAL))
@@ -47,11 +53,9 @@ export class LoginController {
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+		const response = this.login(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
-
-		return mapped;
+		return response;
 	}
 
 	@UseGuards(AuthGuard(StrategyType.OAUTH2))
