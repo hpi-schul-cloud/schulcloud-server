@@ -27,6 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
+import { Course } from '@shared/domain/entity';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
@@ -128,5 +129,14 @@ export class CourseController {
 		return {
 			[currentUser.userId]: permissions,
 		};
+	}
+
+	@Get(':courseId')
+	@ApiOperation({ summary: 'Get a course by Id.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async getCourseById(@Param() param: CourseUrlParams): Promise<Course> {
+		const course: Course = await this.courseUc.findCourseById(param.courseId);
+		return course;
 	}
 }
