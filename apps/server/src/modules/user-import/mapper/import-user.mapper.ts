@@ -40,6 +40,7 @@ export class ImportUserMapper {
 			roleNames: importUser.roleNames?.map((role) => RoleNameMapper.mapToResponse(role)),
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
+			externalRole: importUser.externalRole,
 		});
 		if (importUser.user != null && importUser.matchedBy) {
 			const { user } = importUser;

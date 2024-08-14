@@ -12,6 +12,7 @@ export class ImportUserResponse {
 		this.lastName = props.lastName;
 		this.roleNames = props.roleNames;
 		this.classNames = props.classNames;
+		this.externalRole = props.externalRole;
 		if (props.match != null) this.match = props.match;
 		if (props.flagged === true) this.flagged = true;
 	}
@@ -59,6 +60,9 @@ export class ImportUserResponse {
 	// eslint-disable-next-line @typescript-eslint/no-inferrable-types
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
 	flagged: boolean = false;
+
+	@ApiProperty({ description: 'exact user roles from the external system', isArray: true })
+	externalRole: string[] = [];
 }
 
 export class ImportUserListResponse extends PaginationResponse<ImportUserResponse[]> {
