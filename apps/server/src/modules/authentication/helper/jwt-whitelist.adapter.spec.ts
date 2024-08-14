@@ -1,6 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtValidationAdapter } from '@infra/auth-guard/';
 import { CacheService } from '@infra/cache';
 import { CacheStoreType } from '@infra/cache/interface/cache-store-type.enum';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
 import { feathersRedis } from '@src/imports-from-feathers';
@@ -10,7 +12,8 @@ import RedisMock = require('../../../../../../test/utils/redis/redisMock');
 
 describe('jwt strategy', () => {
 	let module: TestingModule;
-	let adapter: JwtWhitelistAdapter;
+	let jwtWhitelistAdapter: JwtWhitelistAdapter;
+	let jwtValidationAdapter: JwtValidationAdapter;
 
 	let cacheManager: DeepMocked<Cache>;
 	let cacheService: DeepMocked<CacheService>;
@@ -18,6 +21,7 @@ describe('jwt strategy', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
+				JwtValidationAdapter,
 				JwtWhitelistAdapter,
 				{
 					provide: CACHE_MANAGER,
@@ -36,7 +40,8 @@ describe('jwt strategy', () => {
 
 		cacheManager = module.get(CACHE_MANAGER);
 		cacheService = module.get(CacheService);
-		adapter = module.get(JwtWhitelistAdapter);
+		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
+		jwtValidationAdapter = module.get(JwtValidationAdapter);
 	});
 
 	afterAll(async () => {
@@ -47,12 +52,29 @@ describe('jwt strategy', () => {
 		jest.resetAllMocks();
 	});
 
+	describe('when authenticate a user with jwt', () => {
+		it('should fail without whitelisted jwt', async () => {
+			const accountId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+			await expect(jwtValidationAdapter.isWhitelisted(accountId, jti)).rejects.toThrow(
+				'Session was expired due to inactivity - autologout.'
+			);
+		});
+		it('should pass when jwt has been whitelisted', async () => {
+			const accountId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+			await jwtWhitelistAdapter.addToWhitelist(accountId, jti);
+			// might fail when we would wait more than JWT_TIMEOUT_SECONDS
+			await jwtValidationAdapter.isWhitelisted(accountId, jti);
+		});
+	});
+
 	describe('removeFromWhitelist is called', () => {
 		describe('when redis is used as cache store', () => {
 			it('should call the cache manager to delete the entry from the cache', async () => {
 				cacheService.getStoreType.mockReturnValue(CacheStoreType.REDIS);
 
-				await adapter.removeFromWhitelist('accountId', 'jti');
+				await jwtWhitelistAdapter.removeFromWhitelist('accountId', 'jti');
 
 				expect(cacheManager.del).toHaveBeenCalledWith('jwt:accountId:jti');
 			});
@@ -62,7 +84,7 @@ describe('jwt strategy', () => {
 			it('should do nothing', async () => {
 				cacheService.getStoreType.mockReturnValue(CacheStoreType.MEMORY);
 
-				await adapter.removeFromWhitelist('accountId', 'jti');
+				await jwtWhitelistAdapter.removeFromWhitelist('accountId', 'jti');
 
 				expect(cacheManager.del).not.toHaveBeenCalled();
 			});
