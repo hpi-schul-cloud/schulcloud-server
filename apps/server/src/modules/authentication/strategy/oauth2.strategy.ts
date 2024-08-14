@@ -6,13 +6,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { OauthCurrentUser } from '../interface';
+import { OauthCurrentUser, StrategyType } from '../interface';
 import { AccountNotFoundLoggableException, SchoolInMigrationLoggableException } from '../loggable';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
-export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
+export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUTH2) {
 	constructor(private readonly oauthService: OAuthService, private readonly accountService: AccountService) {
 		super();
 	}

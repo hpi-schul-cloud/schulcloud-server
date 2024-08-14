@@ -1,12 +1,13 @@
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
-import { AuthGuard } from '@nestjs/passport';
-import { TestApiClient, cleanupCollections } from '@shared/testing';
+import { StrategyType } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
-import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TestApiClient, cleanupCollections } from '@shared/testing';
+import { Request } from 'express';
 import { DeletionRequestEntity } from '../../../repo/entity';
+import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletionRequests';
 
@@ -20,7 +21,7 @@ describe(`deletionRequest delete (api)`, () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
-			.overrideGuard(AuthGuard('api-key'))
+			.overrideGuard(AuthGuard(StrategyType.API_KEY))
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();

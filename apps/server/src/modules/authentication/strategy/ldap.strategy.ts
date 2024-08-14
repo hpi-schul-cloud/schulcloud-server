@@ -10,12 +10,13 @@ import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
+import { StrategyType } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 
 @Injectable()
-export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
+export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) {
 	constructor(
 		private readonly systemService: SystemService,
 		private readonly schoolRepo: LegacySchoolRepo,

@@ -3,9 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import Strategy from 'passport-headerapikey';
 import { XApiKeyConfig } from '../config';
+import { StrategyType } from '../interface';
 
 @Injectable()
-export class XApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
+export class XApiKeyStrategy extends PassportStrategy(Strategy, StrategyType.API_KEY) {
 	private readonly allowedApiKeys: string[];
 
 	constructor(private readonly configService: ConfigService<XApiKeyConfig, true>) {

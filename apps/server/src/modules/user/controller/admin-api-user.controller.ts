@@ -1,3 +1,4 @@
+import { StrategyType } from '@infra/auth-guard';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -6,7 +7,7 @@ import { AdminApiUserCreateBodyParams } from './dto/admin-api-user-create.body.p
 import { AdminApiUserCreateResponse } from './dto/admin-api-user-create.response.dto';
 
 @ApiTags('AdminApiUsers')
-@UseGuards(AuthGuard('api-key'))
+@UseGuards(AuthGuard(StrategyType.API_KEY))
 @Controller('/admin/users')
 export class AdminApiUsersController {
 	constructor(private readonly uc: AdminApiUserUc) {}

@@ -1,3 +1,4 @@
+import { StrategyType } from '@infra/auth-guard';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -8,7 +9,7 @@ import { AdminApiExternalToolUc, ExternalToolCreate } from '../uc';
 import { ExternalToolCreateParams, ExternalToolResponse } from './dto';
 
 @ApiTags('AdminApi: External Tools')
-@UseGuards(AuthGuard('api-key'))
+@UseGuards(AuthGuard(StrategyType.API_KEY))
 @Controller('admin/tools/external-tools')
 export class AdminApiExternalToolController {
 	constructor(

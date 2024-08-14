@@ -3,7 +3,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
-import type { OauthCurrentUser } from '../interface';
+import { StrategyType, type OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -20,7 +20,7 @@ import { LoginResponseMapper } from './mapper/login-response.mapper';
 export class LoginController {
 	constructor(private readonly loginUc: LoginUc) {}
 
-	@UseGuards(AuthGuard('ldap'))
+	@UseGuards(AuthGuard(StrategyType.LDAP))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
 	@ApiOperation({ summary: 'Starts the login process for users which are authenticated via LDAP' })
@@ -37,7 +37,7 @@ export class LoginController {
 		return mapped;
 	}
 
-	@UseGuards(AuthGuard('local'))
+	@UseGuards(AuthGuard(StrategyType.LOCAL))
 	@HttpCode(HttpStatus.OK)
 	@Post('local')
 	@ApiOperation({ summary: 'Starts the login process for users which are locally managed.' })
@@ -54,7 +54,7 @@ export class LoginController {
 		return mapped;
 	}
 
-	@UseGuards(AuthGuard('oauth2'))
+	@UseGuards(AuthGuard(StrategyType.OAUTH2))
 	@HttpCode(HttpStatus.OK)
 	@Post('oauth2')
 	@ApiOperation({ summary: 'Starts the login process for users which are authenticated via OAuth 2.' })

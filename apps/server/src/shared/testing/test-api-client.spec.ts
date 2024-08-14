@@ -15,6 +15,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
 
+import { StrategyType } from '@infra/auth-guard';
 import { accountFactory } from '@src/modules/account/testing';
 import { TestApiClient } from './test-api-client';
 
@@ -262,7 +263,7 @@ describe(TestApiClient.name, () => {
 			const moduleFixture = await Test.createTestingModule({
 				controllers: [TestXApiKeyController],
 			})
-				.overrideGuard(AuthGuard('api-key'))
+				.overrideGuard(AuthGuard(StrategyType.API_KEY))
 				.useValue({
 					canActivate(context: ExecutionContext) {
 						const req: Request = context.switchToHttp().getRequest();

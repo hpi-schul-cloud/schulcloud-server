@@ -1,5 +1,7 @@
+import { StrategyType } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
@@ -7,7 +9,6 @@ import { TestApiClient, schoolEntityFactory } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { nanoid } from 'nanoid';
-import { AuthGuard } from '@nestjs/passport';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
@@ -22,7 +23,7 @@ describe('Admin API - Users (API)', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
-			.overrideGuard(AuthGuard('api-key'))
+			.overrideGuard(AuthGuard(StrategyType.API_KEY))
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();

@@ -1,3 +1,4 @@
+import { StrategyType } from '@infra/auth-guard';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -7,7 +8,7 @@ import { AdminApiSchoolCreateBodyParams } from './dto/request/admin-api-school-c
 import { AdminApiSchoolCreateResponseDto } from './dto/response/admin-api-school-create.response.dto';
 
 @ApiTags('AdminSchool')
-@UseGuards(AuthGuard('api-key'))
+@UseGuards(AuthGuard(StrategyType.API_KEY))
 @Controller('admin/schools')
 export class AdminApiSchoolsController {
 	constructor(private readonly uc: AdminApiSchoolUc) {}
