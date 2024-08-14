@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common';
-import { jwtConstants } from '@src/imports-from-feathers';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
+import { authConfig } from '../auth-config';
 import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 
@@ -14,8 +14,8 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, 'wsjwt') {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([JwtExtractor.fromCookie('jwt')]),
 			ignoreExpiration: false,
-			secretOrKey: jwtConstants.secret,
-			...jwtConstants.jwtOptions,
+			secretOrKey: authConfig.secret,
+			...authConfig.jwtOptions,
 		});
 	}
 

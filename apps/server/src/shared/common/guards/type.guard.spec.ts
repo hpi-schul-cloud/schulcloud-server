@@ -215,6 +215,95 @@ describe('TypeGuard', () => {
 		});
 	});
 
+	describe('isStringOfValues', () => {
+		describe('when value is in values', () => {
+			it('should return string', () => {
+				const value = 'string';
+
+				expect(TypeGuard.isStringOfStrings(value, [value])).toBe(true);
+			});
+
+			it('should return true', () => {
+				expect(TypeGuard.isStringOfStrings('string', ['string', ''])).toBe(true);
+			});
+		});
+
+		describe('when value is NOT invalues', () => {
+			it('should be return false', () => {
+				expect(TypeGuard.isStringOfStrings(undefined, ['string'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isStringOfStrings(null, ['string'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isStringOfStrings({}, ['string'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isStringOfStrings(1, ['string'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isStringOfStrings('string', [''])).toBe(false);
+			});
+		});
+	});
+
+	describe('checkStringOfValues', () => {
+		describe('when value is in values', () => {
+			it('should return string', () => {
+				const value = 'string';
+
+				const result = TypeGuard.checkStringOfStrings(value, [value]);
+
+				expect(result).toBe(value);
+			});
+
+			it('should return string', () => {
+				const value = 'string';
+
+				const result = TypeGuard.checkStringOfStrings(value, [value, ' ']);
+
+				expect(result).toBe(value);
+			});
+		});
+
+		describe('when value is NOT in values', () => {
+			const buildError = () => new Error('Value is not in strings');
+
+			it('should throw an error', () => {
+				const error = buildError();
+
+				expect(() => TypeGuard.checkStringOfStrings(undefined, ['string'])).toThrowError(error);
+			});
+
+			it('should throw an error', () => {
+				const error = buildError();
+
+				expect(() => TypeGuard.checkStringOfStrings(null, ['string'])).toThrowError(error);
+			});
+
+			it('should throw an error', () => {
+				const error = buildError();
+
+				expect(() => TypeGuard.checkStringOfStrings({}, ['string'])).toThrowError(error);
+			});
+
+			it('should throw an error', () => {
+				const error = buildError();
+				expect(() => TypeGuard.checkStringOfStrings(1, ['string'])).toThrowError(error);
+			});
+
+			it('should throw an error', () => {
+				const error = buildError();
+
+				expect(() => TypeGuard.checkStringOfStrings('string', [''])).toThrowError(error);
+			});
+		});
+	});
+
 	describe('isArray', () => {
 		describe('when passing type of value is an array', () => {
 			it('should be return true', () => {

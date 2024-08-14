@@ -10,8 +10,8 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { jwtConstants } from '@src/imports-from-feathers';
-import { Algorithm, SignOptions } from 'jsonwebtoken';
+import { authConfig } from '@src/infra/auth-guard/auth-config';
+import { SignOptions } from 'jsonwebtoken';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -19,37 +19,16 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
-// values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
-const algorithms = [
-	'HS256',
-	'HS384',
-	'HS512',
-	'RS256',
-	'RS384',
-	'RS512',
-	'ES256',
-	'ES384',
-	'ES512',
-	'PS256',
-	'PS384',
-	'PS512',
-	'none',
-];
-
-if (!algorithms.includes(jwtConstants.jwtOptions.algorithm)) {
-	throw new Error(`${jwtConstants.jwtOptions.algorithm} is not a valid JWT signing algorithm`);
-}
-const signAlgorithm = jwtConstants.jwtOptions.algorithm as Algorithm;
-
+const { algorithm, audience, expiresIn, issuer, header } = authConfig.jwtOptions;
 const signOptions: SignOptions = {
-	algorithm: signAlgorithm,
-	audience: jwtConstants.jwtOptions.audience,
-	expiresIn: jwtConstants.jwtOptions.expiresIn,
-	issuer: jwtConstants.jwtOptions.issuer,
-	header: { ...jwtConstants.jwtOptions.header, alg: signAlgorithm },
+	algorithm,
+	audience,
+	expiresIn,
+	issuer,
+	header: { ...header, alg: algorithm },
 };
 const jwtModuleOptions: JwtModuleOptions = {
-	secret: jwtConstants.secret,
+	secret: authConfig.secret,
 	signOptions,
 	verifyOptions: signOptions,
 };
