@@ -3,7 +3,6 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { AuthenticationModule } from '@modules/authentication';
 import { UserModule } from '@modules/user';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -26,7 +25,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 
 const imports = [
-	AuthenticationModule,
 	AuthorizationClientModule.register(authorizationClientConfig),
 	CoreModule,
 	UserModule,

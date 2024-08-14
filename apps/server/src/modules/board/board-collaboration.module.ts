@@ -10,7 +10,6 @@ import { AuthorizationModule } from '../authorization';
 import { config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
-import { AuthenticationModule } from '../authentication';
 
 @Module({
 	imports: [
@@ -27,7 +26,6 @@ import { AuthenticationModule } from '../authentication';
 		}),
 		BoardModule,
 		AuthorizationModule,
-		AuthenticationModule,
 		BoardWsApiModule,
 	],
 	providers: [],

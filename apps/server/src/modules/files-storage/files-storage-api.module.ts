@@ -1,5 +1,4 @@
 import { AuthorizationClientModule } from '@infra/authorization-client';
-import { AuthenticationModule } from '@modules/authentication';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -13,7 +12,6 @@ import { FilesStorageUC } from './uc';
 @Module({
 	imports: [
 		FilesStorageModule,
-		AuthenticationModule,
 		AuthorizationClientModule.register(authorizationClientConfig),
 		CoreModule,
 		HttpModule,
