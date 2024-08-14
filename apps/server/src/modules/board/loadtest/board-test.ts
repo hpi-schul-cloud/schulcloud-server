@@ -25,6 +25,7 @@ export class BoardTest {
 		try {
 			const userProfiles = duplicateUserProfiles(configuration.users);
 			const userClients = await this.initializeLoadtestClients(userProfiles.length, boardId);
+			console.log(userClients.length);
 			await this.simulateUsersActions(userClients, userProfiles);
 
 			// const results = await Promise.all([...promises]);

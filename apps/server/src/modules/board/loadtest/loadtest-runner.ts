@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { flatten } from 'lodash';
 import { createSeveralClasses } from './helper/classDefinitions';
-import { createBoards } from './helper/createBoards';
+import { createBoard, createBoards } from './helper/createBoards';
 import { formatDate } from './helper/formatDate';
 import { getUrlConfiguration } from './helper/getUrlConfiguration';
 // import { getStats } from './helper/responseTimes';
@@ -56,12 +56,11 @@ export class LoadtestRunner {
 	}) {
 		const urls = getUrlConfiguration(socketConfiguration.baseUrl);
 		const classes = createSeveralClasses(configurations);
-		const boardIds = await createBoards(urls.api, socketConfiguration.token, courseId, classes.length);
 		this.startRegularStats();
-		console.log(boardIds);
-		const promises: Promise<unknown>[] = classes.flatMap((conf, index) => {
+		const promises: Promise<unknown>[] = classes.flatMap(async (conf) => {
 			const boardTest = new BoardTest(this.socketConnectionManager);
-			return boardTest.runBoardTest(boardIds[index], conf);
+			const boardId = await createBoard(urls.api, socketConfiguration.token, courseId);
+			return boardTest.runBoardTest(boardId, conf);
 		});
 		const results = flatten(await Promise.all(promises));
 		// const { responseTimes, errors } = results.reduce(
