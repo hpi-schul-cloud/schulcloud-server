@@ -1,3 +1,5 @@
+import { ManagerOptions, SocketOptions } from 'socket.io-client';
+
 export type UrlConfiguration = {
 	websocket: string;
 	api: string;
@@ -35,4 +37,12 @@ export type Configuration = {
 export type ResponseTimeRecord = {
 	action: string;
 	responseTime: number;
+};
+
+export type SocketConfiguration = {
+	path: string;
+	baseUrl: string;
+	token: string;
+	connectTimeout?: number;
+	options?: Partial<ManagerOptions & SocketOptions>;
 };

@@ -2,7 +2,6 @@
 import { chunk } from 'lodash';
 import { performance } from 'perf_hooks';
 import { InputFormat } from '@shared/domain/types';
-import { io } from 'socket.io-client';
 import {
 	AnyContentElementResponse,
 	BoardResponse,
@@ -24,6 +23,7 @@ import {
 	UpdateContentElementMessageParams,
 } from '../gateway/dto';
 import { ResponseTimeRecord } from './types';
+import { SocketConnection } from './SocketConnection';
 
 let columns: Array<ColumnResponse> = [];
 
@@ -50,72 +50,65 @@ export function incErrorCount() {
 	errorCount += 1;
 }
 
-export function createLoadtestClient(baseUrl: string, boardId: string, token: string) {
+export function createLoadtestClient(socket: SocketConnection, boardId: string) {
 	const logs: Array<{ event: string; payload: { isOwnAction: boolean }; time: number }> = [];
 	const cards: Array<CardResponse> = [];
-	const socket = io(baseUrl, {
-		path: '/board-collaboration',
-		withCredentials: true,
-		extraHeaders: {
-			cookie: ` USER_TIMEZONE=Europe/Berlin; jwt=${token}`,
-		},
-		// forceNew: true,
-		autoConnect: true,
-	});
+	// const socket = io(baseUrl, {
+	// 	path: '/board-collaboration',
+	// 	withCredentials: true,
+	// 	extraHeaders: {
+	// 		cookie: ` USER_TIMEZONE=Europe/Berlin; jwt=${token}`,
+	// 	},
+	// 	// forceNew: true,
+	// 	autoConnect: true,
+	// });
 
-	const connect = async (timeoutMs = 60000) =>
-		new Promise((resolve, reject) => {
-			if (socket.connected) {
-				resolve(true);
-			}
+	// const connect = async (timeoutMs = 120000) =>
+	// 	new Promise((resolve, reject) => {
+	// 		if (socket.connected) {
+	// 			resolve(true);
+	// 		}
 
-			let connected = false;
-			socket.once('connect', () => {
-				connected = true;
-				resolve(true);
-			});
-			socket.connect();
-			setTimeout(() => {
-				if (!connected) {
-					reject(new Error('Could not connect to socket server'));
-				}
-			}, timeoutMs);
-		});
+	// 		let connected = false;
+	// 		socket.once('connect', () => {
+	// 			connected = true;
+	// 			resolve(true);
+	// 		});
+	// 		socket.connect();
+	// 		setTimeout(() => {
+	// 			if (!connected) {
+	// 				reject(new Error('Could not connect to socket server'));
+	// 			}
+	// 		}, timeoutMs);
+	// 	});
 
 	const getCardPosition = (cardId: string) => cards.findIndex((card) => card.id === cardId);
 
 	const getColumnPosition = (columnId) => columns.findIndex((column) => column.id === columnId);
 
-	const emitOnSocket = (action, data) => {
-		if (!socket.connected) {
-			socket.connect();
-		}
-		socket.emit(action, data);
-	};
-
-	const waitForSuccessLogs = async (
-		eventName: string,
-		options: { timeoutMs?: number; startTime: number; event: unknown }
-	): Promise<unknown> => {
-		const failureEventName = eventName.replace('success', 'failure');
-		const { timeoutMs, startTime } = { timeoutMs: 5000, ...options };
-		while (performance.now() <= startTime + timeoutMs) {
-			const ownEvents = logs
-				.filter((e) => e.payload.isOwnAction === true)
-				.filter((e) => e.event === eventName || e.event === failureEventName)
-				.filter((e) => e.time >= startTime);
-			if (ownEvents.length > 0) {
-				if (ownEvents[0].event === failureEventName) {
-					errorCount += 1;
-					throw new Error(`Failure event ${failureEventName}`);
-				}
-				return ownEvents[0].payload;
-			}
-			await sleep(20);
-		}
-		errorCount += 1;
-		throw new Error(`Timeout waiting for ${eventName}`);
-	};
+	// const waitForSuccessLogs = async (
+	// 	eventName: string,
+	// 	options: { timeoutMs?: number; startTime: number; event: unknown }
+	// ): Promise<unknown> => {
+	// 	const failureEventName = eventName.replace('success', 'failure');
+	// 	const { timeoutMs, startTime } = { timeoutMs: 5000, ...options };
+	// 	while (performance.now() <= startTime + timeoutMs) {
+	// 		const ownEvents = logs
+	// 			.filter((e) => e.payload.isOwnAction === true)
+	// 			.filter((e) => e.event === eventName || e.event === failureEventName)
+	// 			.filter((e) => e.time >= startTime);
+	// 		if (ownEvents.length > 0) {
+	// 			if (ownEvents[0].event === failureEventName) {
+	// 				errorCount += 1;
+	// 				throw new Error(`Failure event ${failureEventName}`);
+	// 			}
+	// 			return ownEvents[0].payload;
+	// 		}
+	// 		await sleep(20);
+	// 	}
+	// 	errorCount += 1;
+	// 	throw new Error(`Timeout waiting for ${eventName}`);
+	// };
 
 	const mockIncommingEvent = (event: string, payload: { isOwnAction: boolean }) => {
 		logs.push({ event, payload, time: performance.now() + 30 });
@@ -170,7 +163,7 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 			startTime,
 			timeoutMs,
 		});
-		emitOnSocket(`${actionPrefix}-request`, data);
+		socket.emit(`${actionPrefix}-request`, data);
 		const result = await prepareWaitForSuccess;
 		const responseTime = performance.now() - startTime;
 		logResponseTime({ action: actionPrefix, responseTime });
@@ -345,7 +338,6 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 	const getResponseTimes = () => responseTimes;
 
 	return {
-		connect,
 		createColumn,
 		createCard,
 		createElement,
@@ -364,7 +356,6 @@ export function createLoadtestClient(baseUrl: string, boardId: string, token: st
 		updateColumnTitle,
 		updateCardTitle,
 		updateElement,
-		emitOnSocket,
 		waitForSuccess,
 		getCardPosition,
 		getColumnPosition,

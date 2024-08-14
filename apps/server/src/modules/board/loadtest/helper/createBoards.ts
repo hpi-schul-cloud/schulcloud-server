@@ -1,15 +1,8 @@
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 
-export const getToken = (): string => {
-	// eslint-disable-next-line no-process-env
-	const { token } = process.env;
-	if (token === undefined) {
-		throw new Error('No token found in environment');
-	}
-	return token;
-};
-
-export const createBoard = async (apiBaseUrl: string, courseId: string) => {
+export const createBoard = async (apiBaseUrl: string, courseId: string, token: string) => {
+	console.log('apiBaseUrl', apiBaseUrl);
+	console.log('courseId', courseId);
 	const boardTitle = `${new Date().toISOString().substring(0, 10)} ${new Date().toLocaleTimeString(
 		'de-DE'
 	)} - Lasttest`;
@@ -20,7 +13,7 @@ export const createBoard = async (apiBaseUrl: string, courseId: string) => {
 		headers: {
 			'Content-Type': 'application/json',
 			accept: 'application/json',
-			Authorization: `Bearer ${getToken()}`,
+			Authorization: `Bearer ${token}`,
 		},
 		body: JSON.stringify({
 			title: boardTitle,
@@ -37,10 +30,10 @@ export const createBoard = async (apiBaseUrl: string, courseId: string) => {
 	return body.id;
 };
 
-export const createBoards = async (apiBaseUrl: string, courseId: string, amount: number) => {
+export const createBoards = async (apiBaseUrl: string, token: string, courseId: string, amount: number) => {
 	const promises = Array(amount)
 		.fill(1)
-		.map(() => createBoard(apiBaseUrl, courseId));
+		.map(() => createBoard(apiBaseUrl, courseId, token));
 	const results = await Promise.all(promises);
 	return results;
 };
