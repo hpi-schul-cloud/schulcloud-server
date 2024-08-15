@@ -1,5 +1,4 @@
-import { ICurrentUser } from '@infra/auth-guard';
-import { JwtAuthGuard } from '@infra/auth-guard/guard/jwt-auth.guard';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
