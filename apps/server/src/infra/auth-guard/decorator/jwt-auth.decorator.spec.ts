@@ -25,7 +25,7 @@ export class TestDecoratorJWTController {
 	}
 }
 
-describe('auth.decorator', () => {
+describe('Jwt auth decorator', () => {
 	let app: INestApplication;
 	let currentUser: ICurrentUser;
 	let module: TestingModule;
@@ -59,7 +59,7 @@ describe('auth.decorator', () => {
 		await module.close();
 	});
 
-	describe('JWT', () => {
+	describe('JwtAuthentication', () => {
 		it('should throw with UnauthorizedException if no jwt can be extracted from request context', async () => {
 			const response = await request(app.getHttpServer()).get('/test_decorator_JWT/test');
 
