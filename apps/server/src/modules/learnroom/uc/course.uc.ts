@@ -87,14 +87,14 @@ export class CourseUc {
 	): Promise<CourseInfoDto[]> {
 		const now = new Date();
 		let untilDate;
-		const allCourses = courses;
+		let allCourses: Course[];
 		if (!courseStatusQueryType || courseStatusQueryType === CourseStatusQueryType.CURRENT) {
-			allCourses.filter((course: Course) => {
+			allCourses = courses.filter((course: Course) => {
 				untilDate = course.untilDate ?? now.getDate() + 1;
 				return now < untilDate;
 			});
 		} else {
-			allCourses.filter((course) => {
+			allCourses = courses.filter((course) => {
 				untilDate = course.untilDate ?? now.getDate() + 1;
 				return now > untilDate;
 			});
