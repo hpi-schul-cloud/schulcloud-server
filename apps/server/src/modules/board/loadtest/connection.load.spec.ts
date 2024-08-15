@@ -1,7 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-process-env */
-import { SocketConnectionManager } from './SocketConnectionManager';
+import { SocketConnectionManager } from './socket-connection-manager';
 import { SocketConfiguration } from './types';
 
 const CONNECTION_AMOUNT = parseInt(process.env.CONNECTION_AMOUNT ?? '640', 10);

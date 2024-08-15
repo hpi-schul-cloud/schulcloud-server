@@ -1,11 +1,13 @@
 import { sleep } from './helper/sleep';
-import { SocketConnection } from './SocketConnection';
-import { SocketConfiguration } from './types';
+import { SocketConnection } from './socket-connection';
+import { Callback, SocketConfiguration } from './types';
 
 export class SocketConnectionManager {
 	private connections: SocketConnection[];
 
 	private socketConfiguration: SocketConfiguration;
+
+	private onErrorHandler: Callback = console.log;
 
 	constructor(socketConfiguration: SocketConfiguration) {
 		this.connections = [];
@@ -13,8 +15,12 @@ export class SocketConnectionManager {
 	}
 
 	async createConnection(): Promise<SocketConnection> {
-		const socket = new SocketConnection(this.socketConfiguration);
+		const socket = new SocketConnection(this.socketConfiguration, (errorMessage: unknown) =>
+			this.onErrorHandler(errorMessage)
+		);
 		await socket.connect();
+
+		this.connections.push(socket);
 		return socket;
 	}
 
@@ -32,7 +38,8 @@ export class SocketConnectionManager {
 			allSettled.forEach((res) => {
 				if (res.status === 'fulfilled') {
 					connections.push(res.value);
-					this.connections.push(res.value);
+				} else {
+					this.onErrorHandler('failed to create connection');
 				}
 			});
 			console.log(`created ${connections.length} connections`);
@@ -44,6 +51,10 @@ export class SocketConnectionManager {
 
 	getClientCount() {
 		return this.connections.length;
+	}
+
+	setOnErrorHandler(onErrorHandler: Callback) {
+		this.onErrorHandler = onErrorHandler;
 	}
 
 	async destroySocketConnections(sockets: SocketConnection[]) {

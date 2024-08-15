@@ -1,4 +1,4 @@
-import { getUrlConfiguration } from './getUrlConfiguration';
+import { getUrlConfiguration } from './get-url-configuration';
 
 describe('getUrlConfiguration', () => {
 	it('should return the correct configuration for localhost', () => {

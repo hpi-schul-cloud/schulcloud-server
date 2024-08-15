@@ -46,3 +46,5 @@ export type SocketConfiguration = {
 	connectTimeout?: number;
 	options?: Partial<ManagerOptions & SocketOptions>;
 };
+
+export type Callback = (...args: unknown[]) => void;

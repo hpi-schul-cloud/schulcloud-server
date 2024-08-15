@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env */
 import { SocketConfiguration } from './types';
-import { viewersClass, collaborativeClass } from './helper/classDefinitions';
-import { SocketConnectionManager } from './SocketConnectionManager';
+import { viewersClass, collaborativeClass } from './helper/class-definitions';
+import { SocketConnectionManager } from './socket-connection-manager';
 import { LoadtestRunner } from './loadtest-runner';
 
 describe('Board Collaboration Load Test', () => {

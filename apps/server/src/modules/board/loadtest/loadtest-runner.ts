@@ -1,15 +1,15 @@
 /* eslint-disable no-await-in-loop */
-import { flatten } from 'lodash';
-import { createSeveralClasses } from './helper/classDefinitions';
-import { createBoard, createBoards } from './helper/createBoards';
-import { formatDate } from './helper/formatDate';
-import { getUrlConfiguration } from './helper/getUrlConfiguration';
-// import { getStats } from './helper/responseTimes';
-// import { SocketConnection } from './SocketConnection';
-import { SocketConnectionManager } from './SocketConnectionManager';
-import { ClassDefinitionWithAmount, SocketConfiguration } from './types';
+import { writeFileSync } from 'fs';
 import { BoardTest } from './board-test';
+import { createSeveralClasses } from './helper/class-definitions';
+import { createBoard } from './helper/create-board';
+import { formatDate } from './helper/format-date';
+import { getUrlConfiguration } from './helper/get-url-configuration';
+import { useResponseTimes } from './helper/responseTimes.composable';
+import { SocketConnectionManager } from './socket-connection-manager';
+import { Callback, ClassDefinitionWithAmount, ResponseTimeRecord, SocketConfiguration } from './types';
 
+const { getAvgByAction, getTotalAvg } = useResponseTimes();
 export class LoadtestRunner {
 	private socketConnectionManager: SocketConnectionManager;
 
@@ -19,23 +19,31 @@ export class LoadtestRunner {
 
 	private startDate: Date;
 
+	private errors: string[] = [];
+
+	private responseTimes: ResponseTimeRecord[] = [];
+
 	constructor(socketConnectionManager: SocketConnectionManager) {
 		this.socketConnectionManager = socketConnectionManager;
 		this.startTime = performance.now();
 		this.startDate = new Date();
 	}
 
-	init() {}
-
 	showStats() {
 		const seconds = Math.ceil((performance.now() - this.startTime) / 1000);
 		const clients = this.socketConnectionManager.getClientCount();
-		const errors = 1000; // getErrorCount();
-		console.log(`${seconds}s - ${clients} clients connected - ${errors} errors`);
+		const errors = this.getErrorCount();
+		const time = process.hrtime();
+		process.nextTick(() => {
+			const diff = process.hrtime(time);
+			const ms = diff[0] * 1e9 + diff[1] / 1000000;
+			const eventloopBlockMs = ms.toFixed(2);
+			console.log(`${seconds}s - ${clients} clients connected - ${errors} errors | blocking: ${eventloopBlockMs}ms`);
+		});
 	}
 
 	startRegularStats = () => {
-		this.intervalHandle = setInterval(() => this.showStats(), 5000);
+		this.intervalHandle = setInterval(() => this.showStats(), 10000);
 	};
 
 	stopRegularStats = () => {
@@ -44,6 +52,62 @@ export class LoadtestRunner {
 		}
 		this.showStats();
 	};
+
+	onError: Callback = (message: unknown) => {
+		this.errors.push(message as string);
+	};
+
+	onResponseTime: Callback = (action: unknown, responseTime: unknown) => {
+		if (typeof responseTime === 'number' && typeof action === 'string') {
+			this.responseTimes.push({ action, responseTime });
+		} else {
+			throw new Error('Invalid response time');
+		}
+	};
+
+	private createProtocol(
+		courseId: string,
+		socketConfiguration: SocketConfiguration,
+		configurations: ClassDefinitionWithAmount[]
+	) {
+		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.json`;
+		const protocol = {
+			protocolFilename,
+			startDateTime: formatDate(this.startDate),
+			endDateTime: formatDate(new Date()),
+			courseId,
+			socketConfiguration,
+			configurations,
+			responseTimes: {
+				...getAvgByAction(),
+				totalAvg: getTotalAvg(),
+			},
+			errorCount: this.errors.length,
+			errors: this.errors,
+		};
+
+		return protocol;
+	}
+
+	private showProtocol(protocol: { protocolFilename: string }) {
+		console.log(JSON.stringify(protocol, null, 2));
+	}
+
+	private writeProtocol(json: { protocolFilename: string }) {
+		writeFileSync(json.protocolFilename, JSON.stringify(json, null, 2));
+	}
+
+	private handleProtocol = (
+		courseId: string,
+		socketConfiguration: SocketConfiguration,
+		configurations: ClassDefinitionWithAmount[]
+	) => {
+		const protocol = this.createProtocol(courseId, socketConfiguration, configurations);
+		this.writeProtocol(protocol);
+		this.showProtocol(protocol);
+	};
+
+	getErrorCount = () => this.errors.length;
 
 	async runLoadtest({
 		socketConfiguration,
@@ -56,38 +120,19 @@ export class LoadtestRunner {
 	}) {
 		const urls = getUrlConfiguration(socketConfiguration.baseUrl);
 		const classes = createSeveralClasses(configurations);
+
 		this.startRegularStats();
+
 		const promises: Promise<unknown>[] = classes.flatMap(async (conf) => {
-			const boardTest = new BoardTest(this.socketConnectionManager);
+			const boardTest = new BoardTest(this.socketConnectionManager, this.onError);
 			const boardId = await createBoard(urls.api, socketConfiguration.token, courseId);
 			return boardTest.runBoardTest(boardId, conf);
 		});
-		const results = flatten(await Promise.all(promises));
-		// const { responseTimes, errors } = results.reduce(
-		// 	(all: { responseTimes: ResponseTimeRecord[]; errors: string[] }, cur: ResponseTimeRecord) => {
-		// 		all.responseTimes.push(...cur.responseTimes);
-		// 		all.errors.push(...cur.errors);
-		// 		return all;
-		// 	},
-		// 	{ responseTimes: [] as ResponseTimeRecord[], errors: [] } as {
-		// 		responseTimes: ResponseTimeRecord[];
-		// 		errors: string[];
-		// 	}
-		// );
-		console.log(results);
+
+		await Promise.all(promises);
+
 		this.stopRegularStats();
 
-		const protocol = {
-			startDateTime: formatDate(this.startDate),
-			endDateTime: formatDate(new Date()),
-			courseId,
-			socketConfiguration,
-			configurations,
-			// responseTimes: getStats(responseTimes),
-			// errorCount: errors.length,
-			// errors,
-		};
-		// writeProtocol(protocol);
-		console.log(JSON.stringify(protocol, null, 2));
+		this.handleProtocol(courseId, socketConfiguration, configurations);
 	}
 }

@@ -1,8 +1,6 @@
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 
 export const createBoard = async (apiBaseUrl: string, token: string, courseId: string) => {
-	console.log('apiBaseUrl', apiBaseUrl);
-	console.log('courseId', courseId);
 	const boardTitle = `${new Date().toISOString().substring(0, 10)} ${new Date().toLocaleTimeString(
 		'de-DE'
 	)} - Lasttest`;
@@ -28,12 +26,4 @@ export const createBoard = async (apiBaseUrl: string, token: string, courseId: s
 	}
 	const body = (await response.json()) as unknown as { id: string };
 	return body.id;
-};
-
-export const createBoards = async (apiBaseUrl: string, token: string, courseId: string, amount: number) => {
-	const promises = Array(amount)
-		.fill(1)
-		.map(() => createBoard(apiBaseUrl, token, courseId));
-	const results = await Promise.all(promises);
-	return results;
 };

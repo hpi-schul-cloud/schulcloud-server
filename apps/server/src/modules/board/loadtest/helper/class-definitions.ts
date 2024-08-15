@@ -7,9 +7,10 @@ const viewer: UserProfile = { name: 'viewer', sleepMs: 1000, maxCards: 0 };
 export const viewersClass: ClassDefinition = {
 	name: 'viewersClass',
 	users: [
-		{ ...fastEditor, amount: 1 },
+		{ ...fastEditor, amount: 30 },
 		{ ...slowEditor, amount: 0 },
-		{ ...viewer, amount: 30 },
+		// { ...viewer, amount: 0.1 * 30 },
+		{ ...viewer, amount: 0 },
 	],
 };
 
