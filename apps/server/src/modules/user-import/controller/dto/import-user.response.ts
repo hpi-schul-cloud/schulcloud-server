@@ -61,7 +61,7 @@ export class ImportUserResponse {
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
 	flagged: boolean = false;
 
-	@ApiProperty({ description: 'exact user roles from the external system', isArray: true })
+	@ApiProperty({ description: 'exact user roles from the external system' })
 	externalRoleNames: string[] = [];
 }
 
