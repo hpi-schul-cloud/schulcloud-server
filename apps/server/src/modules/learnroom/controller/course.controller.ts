@@ -29,12 +29,11 @@ import {
 import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
 import { Response } from 'express';
-import { ErrorResponse } from '../../../core/error/dto';
-import { ClassInfoSearchListResponse } from '../../group/controller/dto';
+import { ErrorResponse } from '@src/core/error/dto';
 import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
-import { CourseInfoDto } from '../uc/dto/course-info.dto';
+import { CourseInfoDto } from '../uc/dto';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import {
 	CourseExportBodyParams,
@@ -47,7 +46,7 @@ import {
 } from './dto';
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
-import { CourseInfoListResponse } from './dto/response/course-info-list.response';
+import { CourseInfoListResponse } from './dto/response';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -165,7 +164,6 @@ export class CourseController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getAllCourses(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() schoolParams: SchoolParams,
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
 		@Query() filterParams: CourseFilterParams

@@ -65,6 +65,10 @@ export class Course extends DomainObject<CourseProps> {
 		return this.props.substitutionTeacherIds;
 	}
 
+	get classes(): EntityId[] {
+		return this.props.classIds;
+	}
+
 	set startDate(value: Date | undefined) {
 		this.props.startDate = value;
 	}
