@@ -26,6 +26,7 @@ export class CourseMapper {
 			teachers,
 			courseMetadata.startDate
 		);
+
 		return courseCCMetadataResopne;
 	}
 }

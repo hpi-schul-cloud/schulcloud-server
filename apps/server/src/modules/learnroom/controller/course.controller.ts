@@ -133,7 +133,7 @@ export class CourseController {
 	}
 
 	@Get(':courseId')
-	@ApiOperation({ summary: 'Get a course by Id.' })
+	@ApiOperation({ summary: 'Get common cartridge metadata of a course by Id.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async getCourseById(@Param() param: CourseUrlParams): Promise<CourseCommonCartridgeMetadataResponse> {
