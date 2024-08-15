@@ -58,6 +58,7 @@ export class AdminApiServerModule {}
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
+		AuthGuardModule,
 	],
 })
 export class AdminApiServerTestModule {
