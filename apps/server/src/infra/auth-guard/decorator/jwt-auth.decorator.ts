@@ -13,10 +13,6 @@ import { ICurrentUser, isICurrentUser } from '../interface';
 
 /**
  * Authentication Decorator taking care of require authentication header to be present, setting up the user context and extending openAPI spec.
- * @param strategies accepted strategies
- * @returns
- * Requires the user to be authenticated.
- * @requires Authenticated
  */
 export const JwtAuthentication = () => {
 	const decorators = [
@@ -29,10 +25,6 @@ export const JwtAuthentication = () => {
 	return applyDecorators(...decorators);
 };
 
-/**
- * Requires the user to be authenticated.
- * @requires Authenticated
- */
 /**
  * Returns the current authenticated user.
  * @requires Authenticated
