@@ -23,7 +23,7 @@ export interface ImportUserProperties {
 	user?: User;
 	matchedBy?: MatchCreator;
 	flagged?: boolean;
-	externalRole?: string[];
+	externalRoleNames?: string[];
 }
 
 export enum MatchCreator {
@@ -49,8 +49,8 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		if (Array.isArray(props.classNames) && props.classNames.length > 0) this.classNames.push(...props.classNames);
 		if (props.user && props.matchedBy) this.setMatch(props.user, props.matchedBy);
 		if (props.flagged && props.flagged === true) this.flagged = true;
-		if (Array.isArray(props.externalRole) && props.externalRole.length > 0)
-			this.externalRole.push(...props.externalRole);
+		if (Array.isArray(props.externalRoleNames) && props.externalRoleNames.length > 0)
+			this.externalRoleNames.push(...props.externalRoleNames);
 	}
 
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', wrappedReference: true, eager: true })
@@ -115,7 +115,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 	flagged = false;
 
 	@Property()
-	externalRole: string[] = [];
+	externalRoleNames: string[] = [];
 
 	setMatch(user: User, matchedBy: MatchCreator) {
 		if (this.school.id !== user.school.id) {

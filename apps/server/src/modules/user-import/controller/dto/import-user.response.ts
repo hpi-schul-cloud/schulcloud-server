@@ -12,7 +12,7 @@ export class ImportUserResponse {
 		this.lastName = props.lastName;
 		this.roleNames = props.roleNames;
 		this.classNames = props.classNames;
-		this.externalRole = props.externalRole;
+		this.externalRoleNames = props.externalRoleNames;
 		if (props.match != null) this.match = props.match;
 		if (props.flagged === true) this.flagged = true;
 	}
@@ -62,7 +62,7 @@ export class ImportUserResponse {
 	flagged: boolean = false;
 
 	@ApiProperty({ description: 'exact user roles from the external system', isArray: true })
-	externalRole: string[] = [];
+	externalRoleNames: string[] = [];
 }
 
 export class ImportUserListResponse extends PaginationResponse<ImportUserResponse[]> {
