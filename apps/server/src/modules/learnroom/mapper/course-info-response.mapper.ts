@@ -26,7 +26,7 @@ export class CourseInfoResponseMapper {
 		const courseInfoResponse: CourseInfoResponse = new CourseInfoResponse({
 			id: courseInfo.id,
 			name: courseInfo.name,
-			classes: courseInfo.classes,
+			classNames: courseInfo.classes,
 			teacherNames: courseInfo.teachers,
 			courseStatus: courseInfo.courseStatus,
 			syncedGroup: courseInfo.syncedWithGroup ? courseInfo.syncedWithGroup : undefined,

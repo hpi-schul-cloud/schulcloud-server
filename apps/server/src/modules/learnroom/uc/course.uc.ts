@@ -159,6 +159,7 @@ export class CourseUc {
 					teachers,
 					syncedWithGroup: groupName,
 				});
+
 				return mapped;
 			})
 		);

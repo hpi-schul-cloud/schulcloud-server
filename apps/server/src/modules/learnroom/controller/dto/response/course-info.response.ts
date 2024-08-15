@@ -12,7 +12,7 @@ export class CourseInfoResponse {
 	teacherNames: string[];
 
 	@ApiProperty()
-	classes: string[];
+	classNames: string[];
 
 	@ApiPropertyOptional()
 	courseStatus?: string;
@@ -23,7 +23,7 @@ export class CourseInfoResponse {
 	constructor(props: CourseInfoResponse) {
 		this.id = props.id;
 		this.name = props.name;
-		this.classes = props.classes;
+		this.classNames = props.classNames;
 		this.teacherNames = props.teacherNames;
 		this.courseStatus = props.courseStatus;
 		this.syncedGroup = props.syncedGroup;
