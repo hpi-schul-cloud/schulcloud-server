@@ -127,7 +127,7 @@ export class CourseUc {
 		const teacherNames: string[] = await Promise.all(
 			teacherIds.map(async (teacherId): Promise<string> => {
 				const teacher: UserDO = await this.userService.findById(teacherId);
-				const fullName = teacher.firstName.concat('').concat(teacher.lastName);
+				const fullName = teacher.firstName.concat(' ').concat(teacher.lastName);
 
 				return fullName;
 			})
