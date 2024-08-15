@@ -1,3 +1,4 @@
+import { AuthGuardModule } from '@infra/auth-guard';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
@@ -42,6 +43,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		S3ClientModule.register([s3Config]),
+		AuthGuardModule,
 	],
 	controllers: [FwuLearningContentsController],
 	providers: [FwuLearningContentsUc],

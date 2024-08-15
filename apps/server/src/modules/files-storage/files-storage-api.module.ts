@@ -1,3 +1,4 @@
+import { AuthGuardModule } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { FilesStorageUC } from './uc';
 		CoreModule,
 		HttpModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
+		AuthGuardModule,
 	],
 	controllers: [FilesStorageController, FilesStorageConfigController, FileSecurityController],
 	providers: [FilesStorageUC],

@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { FileEntity } from '@modules/files/entity';
@@ -46,6 +47,7 @@ const serverModules = [
 		}),
 		CqrsModule,
 		LoggerModule,
+		AuthGuardModule,
 	],
 })
 export class AdminApiServerModule {}
