@@ -211,24 +211,16 @@ describe('SchoolExternalToolUc', () => {
 
 				return {
 					userId: user.id,
-					schoolExternalToolId: tool.id,
+					tool,
 				};
 			};
 
-			it('should call the courseExternalToolService', async () => {
-				const { userId, schoolExternalToolId } = setup();
+			it('should delete the tool', async () => {
+				const { userId, tool } = setup();
 
-				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
+				await uc.deleteSchoolExternalTool(userId, tool.id);
 
-				expect(contextExternalToolService.deleteBySchoolExternalToolId).toHaveBeenCalledWith(schoolExternalToolId);
-			});
-
-			it('should call the schoolExternalToolService', async () => {
-				const { userId, schoolExternalToolId } = setup();
-
-				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
-
-				expect(schoolExternalToolService.deleteSchoolExternalToolById).toHaveBeenCalledWith(schoolExternalToolId);
+				expect(schoolExternalToolService.deleteSchoolExternalTool).toHaveBeenCalledWith(tool);
 			});
 		});
 	});

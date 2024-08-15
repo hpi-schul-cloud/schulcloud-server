@@ -22,6 +22,7 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
+	DeletedElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
@@ -121,7 +122,9 @@ export class CardController {
 		FileElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
-		SubmissionContainerElementResponse
+		SubmissionContainerElementResponse,
+		DrawingElementResponse,
+		DeletedElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -133,6 +136,7 @@ export class CardController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(DeletedElementResponse) },
 			],
 		},
 	})

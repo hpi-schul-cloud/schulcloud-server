@@ -9,7 +9,7 @@ import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } fro
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
@@ -22,7 +22,8 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		private readonly legacyLogger: LegacyLogger
+		private readonly legacyLogger: LegacyLogger,
+		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -108,17 +109,8 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
-	public async deleteExternalTool(toolId: EntityId): Promise<void> {
-		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
-		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
-		);
-
-		await Promise.all([
-			this.contextExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
-			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
-			this.externalToolRepo.deleteById(toolId),
-		]);
+	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
+		await this.commonToolDeleteService.deleteExternalTool(externalTool);
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
