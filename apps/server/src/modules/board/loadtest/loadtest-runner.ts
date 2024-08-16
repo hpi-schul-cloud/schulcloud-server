@@ -1,15 +1,15 @@
 /* eslint-disable no-await-in-loop */
 import { writeFileSync } from 'fs';
-import { BoardLoadTest } from './board-load-test';
 import { createSeveralClasses } from './helper/class-definitions';
 import { createBoard } from './helper/create-board';
 import { formatDate } from './helper/format-date';
 import { getUrlConfiguration } from './helper/get-url-configuration';
 import { useResponseTimes } from './helper/responseTimes.composable';
 import { SocketConnectionManager } from './socket-connection-manager';
-import { Callback, ClassDefinitionWithAmount, ResponseTimeRecord, SocketConfiguration } from './types';
+import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfiguration } from './types';
 
 const { getAvgByAction, getTotalAvg } = useResponseTimes();
+
 export class LoadtestRunner {
 	private socketConnectionManager: SocketConnectionManager;
 
@@ -21,10 +21,11 @@ export class LoadtestRunner {
 
 	private errors: string[] = [];
 
-	private responseTimes: ResponseTimeRecord[] = [];
+	private readonly createBoardLoadTest: CreateBoardLoadTest;
 
-	constructor(socketConnectionManager: SocketConnectionManager) {
+	constructor(socketConnectionManager: SocketConnectionManager, createBoardLoadTest: CreateBoardLoadTest) {
 		this.socketConnectionManager = socketConnectionManager;
+		this.createBoardLoadTest = createBoardLoadTest;
 		this.startTime = performance.now();
 		this.startDate = new Date();
 	}
@@ -33,11 +34,15 @@ export class LoadtestRunner {
 		const seconds = Math.ceil((performance.now() - this.startTime) / 1000);
 		const clients = this.socketConnectionManager.getClientCount();
 		const errors = this.getErrorCount();
+
+		// check how much the event loop is blocked
 		const time = process.hrtime();
 		process.nextTick(() => {
 			const diff = process.hrtime(time);
 			const ms = diff[0] * 1e9 + diff[1] / 1000000;
 			const eventloopBlockMs = ms.toFixed(2);
+
+			// output the stats (after determining the event loop block time)
 			console.log(`${seconds}s - ${clients} clients connected - ${errors} errors | blocking: ${eventloopBlockMs}ms`);
 		});
 	}
@@ -55,14 +60,6 @@ export class LoadtestRunner {
 
 	onError: Callback = (message: unknown) => {
 		this.errors.push(message as string);
-	};
-
-	onResponseTime: Callback = (action: unknown, responseTime: unknown) => {
-		if (typeof responseTime === 'number' && typeof action === 'string') {
-			this.responseTimes.push({ action, responseTime });
-		} else {
-			throw new Error('Invalid response time');
-		}
 	};
 
 	private createProtocol(
@@ -85,27 +82,10 @@ export class LoadtestRunner {
 			errorCount: this.errors.length,
 			errors: this.errors,
 		};
-
+		writeFileSync(protocolFilename, JSON.stringify(protocol, null, 2));
+		console.log(JSON.stringify(protocol, null, 2));
 		return protocol;
 	}
-
-	private showProtocol(protocol: { protocolFilename: string }) {
-		console.log(JSON.stringify(protocol, null, 2));
-	}
-
-	private writeProtocol(json: { protocolFilename: string }) {
-		writeFileSync(json.protocolFilename, JSON.stringify(json, null, 2));
-	}
-
-	private handleProtocol = (
-		courseId: string,
-		socketConfiguration: SocketConfiguration,
-		configurations: ClassDefinitionWithAmount[]
-	) => {
-		const protocol = this.createProtocol(courseId, socketConfiguration, configurations);
-		this.writeProtocol(protocol);
-		this.showProtocol(protocol);
-	};
 
 	getErrorCount = () => this.errors.length;
 
@@ -124,7 +104,7 @@ export class LoadtestRunner {
 		this.startRegularStats();
 
 		const promises: Promise<unknown>[] = classes.flatMap(async (conf) => {
-			const boardLoadTest = new BoardLoadTest(this.socketConnectionManager, this.onError);
+			const boardLoadTest = this.createBoardLoadTest(this.socketConnectionManager, this.onError);
 			const boardId = await createBoard(urls.api, socketConfiguration.token, courseId);
 			return boardLoadTest.runBoardTest(boardId, conf);
 		});
@@ -133,6 +113,6 @@ export class LoadtestRunner {
 
 		this.stopRegularStats();
 
-		this.handleProtocol(courseId, socketConfiguration, configurations);
+		this.createProtocol(courseId, socketConfiguration, configurations);
 	}
 }
