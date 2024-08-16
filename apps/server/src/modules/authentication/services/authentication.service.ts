@@ -15,7 +15,7 @@ import { LoginDto } from '../uc/dto';
 export class AuthenticationService {
 	constructor(
 		private readonly jwtService: JwtService,
-		private readonly jwtValidationAdapter: JwtWhitelistAdapter,
+		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
@@ -50,7 +50,7 @@ export class AuthenticationService {
 			}),
 		});
 
-		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
+		await this.jwtWhitelistAdapter.addToWhitelist(user.accountId, jti);
 
 		return result;
 	}
@@ -59,7 +59,7 @@ export class AuthenticationService {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
 
 		if (this.isValidJwt(decodedJwt)) {
-			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
+			await this.jwtWhitelistAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
 	}
 

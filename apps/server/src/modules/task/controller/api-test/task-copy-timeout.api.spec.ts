@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { ICurrentUser } from '@infra/auth-guard';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -14,7 +14,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
 

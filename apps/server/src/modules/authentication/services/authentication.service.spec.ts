@@ -17,7 +17,7 @@ describe('AuthenticationService', () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 
-	let jwtValidationAdapter: DeepMocked<JwtWhitelistAdapter>;
+	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
@@ -51,7 +51,7 @@ describe('AuthenticationService', () => {
 			],
 		}).compile();
 
-		jwtValidationAdapter = module.get(JwtWhitelistAdapter);
+		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
@@ -135,7 +135,7 @@ describe('AuthenticationService', () => {
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
-				expect(jwtValidationAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
+				expect(jwtWhitelistAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
 			});
 		});
 
@@ -145,7 +145,7 @@ describe('AuthenticationService', () => {
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
-				expect(jwtValidationAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+				expect(jwtWhitelistAdapter.removeFromWhitelist).not.toHaveBeenCalled();
 			});
 		});
 	});
