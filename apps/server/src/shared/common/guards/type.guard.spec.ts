@@ -217,7 +217,7 @@ describe('TypeGuard', () => {
 
 	describe('isStringOfValues', () => {
 		describe('when value is in values', () => {
-			it('should return string', () => {
+			it('should return true', () => {
 				const value = 'string';
 
 				expect(TypeGuard.isStringOfStrings(value, [value])).toBe(true);
@@ -228,7 +228,7 @@ describe('TypeGuard', () => {
 			});
 		});
 
-		describe('when value is NOT invalues', () => {
+		describe('when value is NOT in values', () => {
 			it('should be return false', () => {
 				expect(TypeGuard.isStringOfStrings(undefined, ['string'])).toBe(false);
 			});
