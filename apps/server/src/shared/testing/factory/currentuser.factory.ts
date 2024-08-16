@@ -1,6 +1,6 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { BaseFactory } from './base.factory';
 
 class CurrentUser implements ICurrentUser {
 	userId: string;
