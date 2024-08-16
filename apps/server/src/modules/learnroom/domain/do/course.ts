@@ -77,6 +77,10 @@ export class Course extends DomainObject<CourseProps> {
 		this.props.untilDate = value;
 	}
 
+	get untilDate(): Date | undefined {
+		return this.props.untilDate;
+	}
+
 	set syncedWithGroup(value: EntityId | undefined) {
 		this.props.syncedWithGroup = value;
 	}
