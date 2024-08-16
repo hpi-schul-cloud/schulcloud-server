@@ -246,20 +246,21 @@ describe('Course Controller (API)', () => {
 	});
 
 	describe('[GET] /courses/:courseId', () => {
-		const setup = () => {
+		const setup = async () => {
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [],
 			});
 
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+
 			return { course, teacher };
 		};
 
 		it('should return common cartridge metadata of a course', async () => {
-			const { course, teacher } = setup();
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
-			em.clear();
+			const { course, teacher } = await setup();
 
 			const loggedInClient = await testApiClient.login(teacher.account);
 			const response = await loggedInClient.get(`${course.id}`);

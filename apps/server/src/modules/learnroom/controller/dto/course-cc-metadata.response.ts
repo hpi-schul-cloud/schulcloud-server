@@ -10,13 +10,13 @@ export class CourseCommonCartridgeMetadataResponse {
 	}
 
 	@ApiProperty({
-		description: 'The id of the Grid element',
+		description: 'The id of the course',
 		pattern: '[a-f0-9]{24}',
 	})
 	id: string;
 
 	@ApiProperty({
-		description: 'Title of the Grid element',
+		description: 'Title of the course',
 	})
 	title: string;
 

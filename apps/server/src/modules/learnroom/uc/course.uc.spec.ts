@@ -107,11 +107,12 @@ describe('CourseUc', () => {
 	describe('findCourseById', () => {
 		const setup = () => {
 			const course = courseFactory.buildWithId();
+			courseService.findById.mockResolvedValue(course);
 			return { course };
 		};
+
 		it('should return course by id', async () => {
 			const { course } = setup();
-			courseService.findById.mockResolvedValue(course);
 			const result = await uc.findCourseById(course.id);
 
 			expect(result).toEqual(course);

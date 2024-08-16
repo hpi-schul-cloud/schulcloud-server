@@ -27,7 +27,6 @@ import {
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
-import { Course } from '@shared/domain/entity';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
@@ -137,7 +136,7 @@ export class CourseController {
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async getCourseById(@Param() param: CourseUrlParams): Promise<CourseCommonCartridgeMetadataResponse> {
-		const course: Course = await this.courseUc.findCourseById(param.courseId);
+		const course = await this.courseUc.findCourseById(param.courseId);
 
 		return CourseMapper.mapToCommonCartridgeMetadataResponse(course);
 	}
