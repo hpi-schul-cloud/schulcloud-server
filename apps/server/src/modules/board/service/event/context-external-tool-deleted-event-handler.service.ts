@@ -2,16 +2,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ContextExternalToolDeletedEvent } from '@modules/tool/context-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { Logger } from '@src/core/logger';
 import { AnyBoardNode, ContentElementType, DeletedElement, ROOT_PATH } from '../../domain';
 import { BoardNodeService } from '../board-node.service';
 
 @Injectable()
 @EventsHandler(ContextExternalToolDeletedEvent)
 export class ContextExternalToolDeletedEventHandlerService implements IEventHandler<ContextExternalToolDeletedEvent> {
-	constructor(private readonly boardNodeService: BoardNodeService, private readonly logger: Logger) {
-		this.logger.setContext(ContextExternalToolDeletedEventHandlerService.name);
-	}
+	constructor(private readonly boardNodeService: BoardNodeService) {}
 
 	public async handle(event: ContextExternalToolDeletedEvent) {
 		const elements: AnyBoardNode[] = await this.boardNodeService.findElementsByContextExternalToolId(event.id);

@@ -8,7 +8,6 @@ import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
 import { School, SchoolService } from '@src/modules/school';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ContextExternalToolService } from '../../context-external-tool';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
@@ -20,7 +19,6 @@ describe('SchoolExternalToolUc', () => {
 	let uc: SchoolExternalToolUc;
 
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
-	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -34,10 +32,6 @@ describe('SchoolExternalToolUc', () => {
 				{
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
-				},
-				{
-					provide: ContextExternalToolService,
-					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
 					provide: SchoolExternalToolValidationService,
@@ -60,7 +54,6 @@ describe('SchoolExternalToolUc', () => {
 
 		uc = module.get(SchoolExternalToolUc);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
-		contextExternalToolService = module.get(ContextExternalToolService);
 		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
 		commonToolMetadataService = module.get(CommonToolMetadataService);
 		authorizationService = module.get(AuthorizationService);

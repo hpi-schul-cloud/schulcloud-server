@@ -877,14 +877,17 @@ describe(ExternalToolUc.name, () => {
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const user: User = userFactory.buildWithId();
 			const jwt = 'jwt';
+			const externalTool = externalToolFactory.build();
 
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+			externalToolService.findById.mockResolvedValueOnce(externalTool);
 
 			return {
 				toolId,
 				currentUser,
 				user,
 				jwt,
+				externalTool,
 			};
 		};
 
@@ -898,11 +901,11 @@ describe(ExternalToolUc.name, () => {
 		});
 
 		it('should call ExternalToolService', async () => {
-			const { toolId, currentUser } = setup();
+			const { toolId, currentUser, externalTool } = setup();
 
 			await uc.deleteExternalTool(currentUser.userId, toolId, 'jwt');
 
-			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(externalTool);
 		});
 
 		it('should call ExternalToolImageService', async () => {

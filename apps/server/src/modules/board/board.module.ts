@@ -16,10 +16,10 @@ import {
 	BoardNodeAuthorizableService,
 	BoardNodeService,
 	ColumnBoardService,
+	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
-import { ContextExternalToolDeletedEventHandlerService } from './service/event/context-external-tool-deleted-event-handler.service';
 import {
 	BoardContextService,
 	BoardNodeCopyService,

@@ -1,9 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Card, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { columnBoardFactory, richTextElementFactory } from '../testing';
+import {
+	cardFactory,
+	columnBoardFactory,
+	deletedElementFactory,
+	externalToolElementFactory,
+	richTextElementFactory,
+} from '../testing';
 import { BoardNodeService } from './board-node.service';
 import { BoardNodeDeleteHooksService, ContentElementUpdateService } from './internal';
 
@@ -144,6 +152,95 @@ describe(BoardNodeService.name, () => {
 				const { boardNode } = setupNoneElement();
 
 				await expect(service.findContentElementById(boardNode.id)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('replace', () => {
+		describe('when replacing a node', () => {
+			const setup = () => {
+				const oldNode = externalToolElementFactory.build();
+				const newNode = deletedElementFactory.build();
+				const parentNode = cardFactory.build();
+				parentNode.addChild(oldNode);
+
+				boardNodeRepo.findById.mockResolvedValueOnce(new Card({ ...parentNode.getTrueProps() }));
+
+				return {
+					parentNode,
+					oldNode,
+					newNode,
+				};
+			};
+
+			it('should add the new node', async () => {
+				const { parentNode, oldNode, newNode } = setup();
+
+				await service.replace(oldNode, newNode);
+
+				expect(boardNodeRepo.save).toHaveBeenCalledWith(
+					new Card({ ...parentNode.getTrueProps(), children: [oldNode, newNode] })
+				);
+			});
+
+			it('should delete the old node', async () => {
+				const { oldNode, newNode } = setup();
+
+				await service.replace(oldNode, newNode);
+
+				expect(boardNodeRepo.delete).toHaveBeenCalledWith(oldNode);
+			});
+		});
+
+		describe('when the node has no parent', () => {
+			const setup = () => {
+				const oldNode = externalToolElementFactory.build();
+				const newNode = deletedElementFactory.build();
+
+				return {
+					oldNode,
+					newNode,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { oldNode, newNode } = setup();
+
+				await expect(service.replace(oldNode, newNode)).rejects.toThrow(NotFoundException);
+			});
+		});
+	});
+
+	describe('findElementsByContextExternalToolId', () => {
+		describe('when finding a node by its ', () => {
+			const setup = () => {
+				const contextExternalToolId = new ObjectId().toHexString();
+				const node = externalToolElementFactory.build({
+					contextExternalToolId,
+				});
+
+				boardNodeRepo.findByContextExternalToolIds.mockResolvedValueOnce([node]);
+
+				return {
+					node,
+					contextExternalToolId,
+				};
+			};
+
+			it('should search by the context external tool id', async () => {
+				const { contextExternalToolId } = setup();
+
+				await service.findElementsByContextExternalToolId(contextExternalToolId);
+
+				expect(boardNodeRepo.findByContextExternalToolIds).toHaveBeenCalledWith([contextExternalToolId]);
+			});
+
+			it('should return the node', async () => {
+				const { node, contextExternalToolId } = setup();
+
+				const result = await service.findElementsByContextExternalToolId(contextExternalToolId);
+
+				expect(result).toEqual([node]);
 			});
 		});
 	});
