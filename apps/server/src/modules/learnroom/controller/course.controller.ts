@@ -32,6 +32,7 @@ import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
+import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -128,5 +129,15 @@ export class CourseController {
 		return {
 			[currentUser.userId]: permissions,
 		};
+	}
+
+	@Get(':courseId')
+	@ApiOperation({ summary: 'Get common cartridge metadata of a course by Id.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async getCourseById(@Param() param: CourseUrlParams): Promise<CourseCommonCartridgeMetadataResponse> {
+		const course = await this.courseUc.findCourseById(param.courseId);
+
+		return CourseMapper.mapToCommonCartridgeMetadataResponse(course);
 	}
 }

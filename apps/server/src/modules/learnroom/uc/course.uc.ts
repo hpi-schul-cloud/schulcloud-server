@@ -30,4 +30,8 @@ export class CourseUc {
 
 		return role.permissions ?? [];
 	}
+
+	public async findCourseById(courseId: EntityId): Promise<Course> {
+		return this.courseService.findById(courseId);
+	}
 }
