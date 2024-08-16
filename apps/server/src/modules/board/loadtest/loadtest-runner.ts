@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { writeFileSync } from 'fs';
-import { BoardTest } from './board-test';
+import { BoardLoadTest } from './board-load-test';
 import { createSeveralClasses } from './helper/class-definitions';
 import { createBoard } from './helper/create-board';
 import { formatDate } from './helper/format-date';
@@ -124,9 +124,9 @@ export class LoadtestRunner {
 		this.startRegularStats();
 
 		const promises: Promise<unknown>[] = classes.flatMap(async (conf) => {
-			const boardTest = new BoardTest(this.socketConnectionManager, this.onError);
+			const boardLoadTest = new BoardLoadTest(this.socketConnectionManager, this.onError);
 			const boardId = await createBoard(urls.api, socketConfiguration.token, courseId);
-			return boardTest.runBoardTest(boardId, conf);
+			return boardLoadTest.runBoardTest(boardId, conf);
 		});
 
 		await Promise.all(promises);
