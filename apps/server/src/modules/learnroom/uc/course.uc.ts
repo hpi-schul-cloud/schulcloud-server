@@ -136,26 +136,39 @@ export class CourseUc {
 	}
 
 	private async getCourseClasses(classIds: EntityId[]): Promise<string[]> {
-		const classNames: string[] = await Promise.all<Promise<string>[]>(
+		const classes: string[] = await Promise.all<Promise<string>[]>(
 			classIds.map(async (classId): Promise<string> => {
 				const clazz = await this.classService.findById(classId);
-				return clazz.name;
+
+				return clazz.gradeLevel ? clazz.gradeLevel?.toString().concat(clazz.name) : clazz.name;
 			})
 		);
-		return classNames;
+		return classes;
+	}
+
+	private async getCourseGroups(groupIds: EntityId[]): Promise<string[]> {
+		const groups: string[] = await Promise.all<Promise<string>[]>(
+			groupIds.map(async (groupId): Promise<string> => {
+				const group = await this.groupService.findById(groupId);
+
+				return group.name;
+			})
+		);
+		return groups;
 	}
 
 	private async getCourseData(courses: Course[]) {
 		const courseInfos: CourseInfoDto[] = await Promise.all(
 			courses.map(async (course) => {
 				const groupName = course.syncedWithGroup ? await this.getSyncedGroupName(course.syncedWithGroup) : undefined;
-				const teachers = await this.getCourseTeachers(course.teachers);
-				const classes = await this.getCourseClasses(course.classes);
+				const teachers: string[] = await this.getCourseTeachers(course.teachers);
+				const classes: string[] = await this.getCourseClasses(course.classes);
+				const groups: string[] = await this.getCourseGroups(course.groups);
 
 				const mapped = new CourseInfoDto({
 					id: course.id,
 					name: course.name,
-					classes,
+					classes: [...classes, ...groups],
 					teachers,
 					syncedWithGroup: groupName,
 				});

@@ -38,17 +38,13 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 	}
 
 	public async startSynchronization(course: Course, group: Group): Promise<void> {
-		if (course.syncedWithGroup) {
-			throw new CourseAlreadySynchronizedLoggableException(course.id);
-		}
-
 		course.syncedWithGroup = group.id;
 
 		await this.courseRepo.save(course);
 	}
 
 	public async findCoursesBySchool(schoolId: EntityId): Promise<Course[]> {
-		const courses: Course[] = await this.courseRepo.findCoursesBySchoolId(schoolId);
+		const courses: Course[] = await this.courseRepo.findBySchoolId(schoolId);
 
 		return courses;
 	}

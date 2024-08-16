@@ -1,9 +1,9 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Group, GroupService } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { type User as UserEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupService } from '@modules/group';
 import { Course } from '../domain';
 import { CourseDoService } from '../service';
 
@@ -35,7 +35,7 @@ export class CourseSyncUc {
 		this.authorizationService.checkPermission(
 			user,
 			course,
-			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
+			AuthorizationContextBuilder.write([Permission.COURSE_EDIT, Permission.COURSE_LIST])
 		);
 
 		await this.courseService.startSynchronization(course, group);

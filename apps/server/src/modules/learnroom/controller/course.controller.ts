@@ -42,7 +42,6 @@ import {
 	CourseQueryParams,
 	CourseSyncBodyParams,
 	CourseUrlParams,
-	SchoolParams,
 } from './dto';
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
