@@ -11,7 +11,6 @@ import { TldrawController } from './controller';
 import { TldrawDrawing } from './entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawService } from './service';
-// TODO must be fixed, direct import of a file from another module in not allowed
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
