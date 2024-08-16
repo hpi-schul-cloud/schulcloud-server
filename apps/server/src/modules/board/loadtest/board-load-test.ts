@@ -6,7 +6,7 @@ import { LoadtestClient } from './loadtest-client';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinition, ResponseTimeRecord, UserProfile } from './types';
 
-export class BoardTest {
+export class BoardLoadTest {
 	private columns: { id: string; cards: { id: string }[] }[] = [];
 
 	constructor(private socketConnectionManager: SocketConnectionManager, private onError: Callback) {}
@@ -15,8 +15,7 @@ export class BoardTest {
 		boardId: string,
 		configuration: ClassDefinition
 	): Promise<{ responseTimes: ResponseTimeRecord[] }[]> {
-		// const board = await this.socketConnectionRenaming!.fetchBoard();
-		// console.log(`${board.title ?? ''} fetched`);
+		// WIP: fetch board
 
 		try {
 			const userProfiles = duplicateUserProfiles(configuration.users);

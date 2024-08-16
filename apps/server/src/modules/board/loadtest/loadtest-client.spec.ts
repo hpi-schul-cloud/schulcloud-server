@@ -203,5 +203,23 @@ describe('LoadtestClient', () => {
 			);
 			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-element', expect.any(Object));
 		});
+
+		it('should send multiple updates if text is long', async () => {
+			const cardId = 'card123';
+			const text = 'Lorem ipsum dolor sit amet consectetur';
+			const simulateTyping = true;
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+
+			await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
+
+			expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+				'create-element',
+				expect.objectContaining({
+					cardId,
+					type: ContentElementType.RICH_TEXT,
+				})
+			);
+			expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+		});
 	});
 });
