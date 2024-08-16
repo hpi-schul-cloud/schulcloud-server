@@ -5,7 +5,7 @@ import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
@@ -19,8 +19,6 @@ export class ExternalToolService {
 		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
-		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly legacyLogger: LegacyLogger,
 		private readonly commonToolDeleteService: CommonToolDeleteService

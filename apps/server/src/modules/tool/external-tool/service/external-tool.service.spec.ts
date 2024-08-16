@@ -5,7 +5,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthProviderService } from '../../../oauth-provider/domain/service/oauth-provider.service';
 import { providerOauthClientFactory } from '../../../oauth-provider/testing';
@@ -21,8 +21,6 @@ describe(ExternalToolService.name, () => {
 	let service: ExternalToolService;
 
 	let externalToolRepo: DeepMocked<ExternalToolRepo>;
-	let schoolToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let courseToolRepo: DeepMocked<ContextExternalToolRepo>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let commonToolDeleteService: DeepMocked<CommonToolDeleteService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
@@ -49,14 +47,6 @@ describe(ExternalToolService.name, () => {
 					useValue: createMock<EncryptionService>(),
 				},
 				{
-					provide: SchoolExternalToolRepo,
-					useValue: createMock<SchoolExternalToolRepo>(),
-				},
-				{
-					provide: ContextExternalToolRepo,
-					useValue: createMock<ContextExternalToolRepo>(),
-				},
-				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -69,8 +59,6 @@ describe(ExternalToolService.name, () => {
 
 		service = module.get(ExternalToolService);
 		externalToolRepo = module.get(ExternalToolRepo);
-		schoolToolRepo = module.get(SchoolExternalToolRepo);
-		courseToolRepo = module.get(ContextExternalToolRepo);
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
 		commonToolDeleteService = module.get(CommonToolDeleteService);
