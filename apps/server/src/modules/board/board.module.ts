@@ -19,6 +19,7 @@ import {
 	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
+import { ContextExternalToolDeletedEventHandlerService } from './service/event/context-external-tool-deleted-event-handler.service';
 import {
 	BoardContextService,
 	BoardNodeCopyService,
@@ -60,6 +61,7 @@ import {
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
 		UserDeletedEventHandlerService,
+		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
 	],
