@@ -1,8 +1,9 @@
 /* eslint-disable no-process-env */
-import { SocketConfiguration } from './types';
+import { CreateBoardLoadTest, SocketConfiguration } from './types';
 import { viewersClass, collaborativeClass } from './helper/class-definitions';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { LoadtestRunner } from './loadtest-runner';
+import { BoardLoadTest } from './board-load-test';
 
 describe('Board Collaboration Load Test', () => {
 	it('should run a basic load test', async () => {
@@ -18,7 +19,8 @@ describe('Board Collaboration Load Test', () => {
 			};
 
 			const socketConnectionManager = new SocketConnectionManager(socketConfiguration);
-			const runner = new LoadtestRunner(socketConnectionManager);
+			const createBoardLoadTest: CreateBoardLoadTest = (...args) => new BoardLoadTest(...args);
+			const runner = new LoadtestRunner(socketConnectionManager, createBoardLoadTest);
 			await runner.runLoadtest({
 				socketConfiguration,
 				courseId: COURSE_ID,

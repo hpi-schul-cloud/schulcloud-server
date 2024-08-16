@@ -1,4 +1,6 @@
 import { ManagerOptions, SocketOptions } from 'socket.io-client';
+import type { SocketConnectionManager } from './socket-connection-manager';
+import type { BoardLoadTest } from './board-load-test';
 
 export type UrlConfiguration = {
 	websocket: string;
@@ -48,3 +50,7 @@ export type SocketConfiguration = {
 };
 
 export type Callback = (...args: unknown[]) => void;
+
+export interface CreateBoardLoadTest {
+	(socketConnectionManager: SocketConnectionManager, onError: Callback): BoardLoadTest;
+}

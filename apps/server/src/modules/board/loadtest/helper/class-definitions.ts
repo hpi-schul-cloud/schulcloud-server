@@ -1,16 +1,15 @@
 import { ClassDefinition, Configuration, UserProfile, UserProfileWithAmount } from '../types';
 
-const fastEditor: UserProfile = { name: 'fastEditor', sleepMs: 1000, maxCards: 10 };
-const slowEditor: UserProfile = { name: 'slowEditor', sleepMs: 3000, maxCards: 5 };
-const viewer: UserProfile = { name: 'viewer', sleepMs: 1000, maxCards: 0 };
+export const fastEditor: UserProfile = { name: 'fastEditor', sleepMs: 1000, maxCards: 10 };
+export const slowEditor: UserProfile = { name: 'slowEditor', sleepMs: 3000, maxCards: 5 };
+export const viewer: UserProfile = { name: 'viewer', sleepMs: 1000, maxCards: 0 };
 
 export const viewersClass: ClassDefinition = {
 	name: 'viewersClass',
 	users: [
-		{ ...fastEditor, amount: 30 },
+		{ ...fastEditor, amount: 1 },
 		{ ...slowEditor, amount: 0 },
-		// { ...viewer, amount: 0.1 * 30 },
-		{ ...viewer, amount: 0 },
+		{ ...viewer, amount: 30 },
 	],
 };
 
