@@ -1,4 +1,4 @@
-import { ICurrentUser } from '@infra/auth-guard';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -12,7 +12,6 @@ import {
 	schoolYearFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/infra/auth-guard/guard/jwt-auth.guard';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
