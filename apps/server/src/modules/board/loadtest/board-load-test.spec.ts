@@ -48,7 +48,7 @@ describe('BoardLoadTest', () => {
 
 				const response = await boarLoadTest.runBoardTest(boardId, configuration);
 
-				expect(response).toEqual([]);
+				expect(response).toBeUndefined();
 			});
 		});
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { sleep } from './helper/sleep';
 import { SocketConnection } from './socket-connection';
 import { Callback, SocketConfiguration } from './types';
@@ -33,7 +34,6 @@ export class SocketConnectionManager {
 				.fill(1)
 				.map(() => this.createConnection());
 
-			// eslint-disable-next-line no-await-in-loop
 			const allSettled = await Promise.allSettled(promises);
 			allSettled.forEach((res) => {
 				if (res.status === 'fulfilled') {
@@ -42,8 +42,6 @@ export class SocketConnectionManager {
 					this.onErrorHandler('failed to create connection');
 				}
 			});
-			console.log(`created ${connections.length} connections`);
-			// eslint-disable-next-line no-await-in-loop
 			await sleep(1000);
 		}
 		return connections;
