@@ -99,6 +99,7 @@ export interface ServerConfig
 	DOCUMENT_BASE_DIR: string;
 	SC_THEME: SchulcloudTheme;
 	SC_TITLE: string;
+	TRAINING_URL: string;
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
@@ -119,6 +120,7 @@ export interface ServerConfig
 	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
+	FEATURE_AI_TUTOR_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -172,6 +174,7 @@ const config: ServerConfig = {
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
+	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
@@ -283,6 +286,7 @@ const config: ServerConfig = {
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
+	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

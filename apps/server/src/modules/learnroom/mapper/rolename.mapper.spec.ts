@@ -21,7 +21,7 @@ describe('rolename mapper', () => {
 	const setup = () => {
 		const teacherUser = userFactory.asTeacher().buildWithId();
 		const studentUser = userFactory.asStudent().buildWithId();
-		const course = courseFactory.build({
+		const course = courseFactory.buildWithId({
 			teachers: [teacherUser],
 			students: [studentUser],
 		});
@@ -48,6 +48,8 @@ describe('rolename mapper', () => {
 		const role = roleFactory.build({ name: RoleName.EXPERT });
 		const user = userFactory.buildWithId({ roles: [role] });
 
-		expect(() => RoleNameMapper.mapToRoleName(user, course)).toThrowError('Unsupported role');
+		expect(() => RoleNameMapper.mapToRoleName(user, course)).toThrowError(
+			`Unable to determine a valid role for user ${user.id} in course ${course.id}`
+		);
 	});
 });

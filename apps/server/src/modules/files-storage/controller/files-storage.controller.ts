@@ -108,7 +108,7 @@ export class FilesStorageController {
 		@Res({ passthrough: true }) response: Response,
 		@Headers('Range') bytesRange?: string
 	): Promise<StreamableFile> {
-		const fileResponse = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
+		const fileResponse = await this.filesStorageUC.download(params, bytesRange);
 
 		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
@@ -190,10 +190,9 @@ export class FilesStorageController {
 	@Get('/list/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async list(
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(currentUser.userId, params);
+		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(params);
 		const { skip, limit } = pagination;
 		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
 
@@ -214,10 +213,9 @@ export class FilesStorageController {
 	@UseInterceptors(RequestLoggingInterceptor)
 	async patchFilename(
 		@Param() params: SingleFileParams,
-		@Body() renameFileParam: RenameFileParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@Body() renameFileParam: RenameFileParams
 	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.patchFilename(currentUser.userId, params, renameFileParam);
+		const fileRecord = await this.filesStorageUC.patchFilename(params, renameFileParam);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
@@ -234,11 +232,8 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:storageLocation/:storageLocationId/:parentType/:parentId')
 	@UseInterceptors(RequestLoggingInterceptor)
-	async deleteByParent(
-		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
+	async deleteByParent(@Param() params: FileRecordParams): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(params);
 		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
@@ -251,11 +246,8 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:fileRecordId')
 	@UseInterceptors(RequestLoggingInterceptor)
-	async deleteFile(
-		@Param() params: SingleFileParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
+	async deleteFile(@Param() params: SingleFileParams): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.deleteOneFile(params);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
@@ -267,11 +259,8 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post('/restore/:storageLocation/:storageLocationId/:parentType/:parentId')
-	async restore(
-		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
+	async restore(@Param() params: FileRecordParams): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(params);
 
 		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
@@ -283,11 +272,8 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post('/restore/:fileRecordId')
-	async restoreFile(
-		@Param() params: SingleFileParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
+	async restoreFile(@Param() params: SingleFileParams): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.restoreOneFile(params);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
