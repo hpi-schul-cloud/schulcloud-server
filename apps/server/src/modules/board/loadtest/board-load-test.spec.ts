@@ -36,7 +36,7 @@ describe('BoardLoadTest', () => {
 		const socketConnection = new SocketConnection(socketConfiguration, console.log);
 
 		const boarLoadTest = new BoardLoadTest(socketConnectionManager, console.log);
-		return { boarLoadTest, socketConnectionManager, socketConnection, loadtestClient };
+		return { boarLoadTest, socketConnectionManager, socketConnection };
 	};
 
 	describe('runBoardTest', () => {

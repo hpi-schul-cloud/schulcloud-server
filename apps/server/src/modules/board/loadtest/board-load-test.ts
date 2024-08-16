@@ -4,17 +4,14 @@ import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './h
 import { sleep } from './helper/sleep';
 import { LoadtestClient } from './loadtest-client';
 import { SocketConnectionManager } from './socket-connection-manager';
-import { Callback, ClassDefinition, ResponseTimeRecord, UserProfile } from './types';
+import { Callback, ClassDefinition, UserProfile } from './types';
 
 export class BoardLoadTest {
 	private columns: { id: string; cards: { id: string }[] }[] = [];
 
 	constructor(private socketConnectionManager: SocketConnectionManager, private onError: Callback) {}
 
-	async runBoardTest(
-		boardId: string,
-		configuration: ClassDefinition
-	): Promise<{ responseTimes: ResponseTimeRecord[] }[]> {
+	async runBoardTest(boardId: string, configuration: ClassDefinition): Promise<void> {
 		// WIP: fetch board
 
 		try {
@@ -24,7 +21,6 @@ export class BoardLoadTest {
 		} catch (err) {
 			this.onError((err as Error).message);
 		}
-		return [];
 	}
 
 	async initializeLoadtestClients(amount: number, boardId: string): Promise<LoadtestClient[]> {
