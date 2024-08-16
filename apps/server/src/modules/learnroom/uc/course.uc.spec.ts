@@ -103,4 +103,20 @@ describe('CourseUc', () => {
 			expect(roleService.findByName).toHaveBeenCalledWith(RoleName.TEACHER);
 		});
 	});
+
+	describe('findCourseById', () => {
+		const setup = () => {
+			const course = courseFactory.buildWithId();
+			courseService.findById.mockResolvedValue(course);
+			return { course };
+		};
+
+		it('should return course by id', async () => {
+			const { course } = setup();
+			const result = await uc.findCourseById(course.id);
+
+			expect(result).toEqual(course);
+			expect(courseService.findById).toHaveBeenCalledWith(course.id);
+		});
+	});
 });
