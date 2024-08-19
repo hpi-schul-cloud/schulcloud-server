@@ -150,4 +150,17 @@ export class ImportUserController {
 	async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.cancelMigration(currentUser.userId);
 	}
+
+	@Patch('clear-all-auto-matches')
+	@ApiOperation({
+		summary: 'Clear all auto matches',
+		description: 'Clear all auto matches from imported users of a school',
+	})
+	@ApiNoContentResponse()
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async clearAllAutoMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.clearAllAutoMatches(currentUser.userId);
+	}
 }
