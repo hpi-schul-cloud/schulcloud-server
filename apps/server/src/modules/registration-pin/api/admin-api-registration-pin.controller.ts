@@ -1,12 +1,11 @@
-import { StrategyType } from '@infra/auth-guard';
+import { ApiKeyGuard } from '@infra/auth-guard';
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { GetRegistrationPinResponse } from './dto';
 import { RegistrationPinUc } from './registration-pin.uc';
 
 @ApiTags('AdminRegistrationPin')
-@UseGuards(AuthGuard(StrategyType.API_KEY))
+@UseGuards(ApiKeyGuard)
 @Controller('registration-pin')
 export class AdminApiRegistrationPinController {
 	constructor(private readonly uc: RegistrationPinUc) {}

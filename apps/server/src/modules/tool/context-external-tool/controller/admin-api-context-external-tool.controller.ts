@@ -1,6 +1,5 @@
-import { StrategyType } from '@infra/auth-guard';
+import { ApiKeyGuard } from '@infra/auth-guard';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
@@ -9,7 +8,7 @@ import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from './dto';
 
 @ApiTags('AdminApi: Context External Tool')
-@UseGuards(AuthGuard(StrategyType.API_KEY))
+@UseGuards(ApiKeyGuard)
 @Controller('admin/tools/context-external-tools')
 export class AdminApiContextExternalToolController {
 	constructor(private readonly adminApiContextExternalToolUc: AdminApiContextExternalToolUc) {}

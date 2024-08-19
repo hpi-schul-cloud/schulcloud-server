@@ -1,12 +1,11 @@
-import { StrategyType } from '@infra/auth-guard';
+import { ApiKeyGuard } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestUc } from '../uc';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from './dto';
 
 @ApiTags('DeletionRequests')
-@UseGuards(AuthGuard(StrategyType.API_KEY))
+@UseGuards(ApiKeyGuard)
 @Controller('deletionRequests')
 export class DeletionRequestsController {
 	constructor(private readonly deletionRequestUc: DeletionRequestUc) {}
