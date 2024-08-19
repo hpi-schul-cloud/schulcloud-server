@@ -1,6 +1,7 @@
 import { Course } from '@modules/learnroom/domain';
 import { Injectable } from '@nestjs/common';
 import { Course as CourseEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 
@@ -16,14 +17,20 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 
 	public hasPermission(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
-		const hasPermission =
-			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &&
-			this.authorizationHelper.hasAccessToEntity(
-				user,
-				object,
-				action === Action.read ? ['teachers', 'substitutionTeachers', 'students'] : ['teachers', 'substitutionTeachers']
-			);
 
-		return hasPermission;
+		const hasRequiredPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.COURSE_ADMINISTRATION]);
+
+		const hasAccessToEntity = hasAdminPermission
+			? true
+			: this.authorizationHelper.hasAccessToEntity(
+					user,
+					object,
+					action === Action.read
+						? ['teachers', 'substitutionTeachers', 'students']
+						: ['teachers', 'substitutionTeachers']
+			  );
+
+		return hasAccessToEntity && hasRequiredPermission;
 	}
 }
