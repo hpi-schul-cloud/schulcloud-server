@@ -6,17 +6,23 @@ const onMock = (action: string, listener: Callback) => {
 	onListeners[action] = onListeners[action] || [];
 	onListeners[action].push(listener);
 };
+
 const onceListeners: Record<string, Callback[]> = {};
 const onceMock = (action: string, listener: Callback) => {
 	onceListeners[action] = onceListeners[action] || [];
 	onceListeners[action].push(listener);
 };
 
+const onAnyListeners: Callback[] = [];
+const onAnyMock = (listener: Callback) => {
+	onAnyListeners.push(listener);
+};
+
 let doesConnectWork = true;
 
 const ioMock = {
 	on: onMock,
-	onAny: jest.fn(),
+	onAny: onAnyMock,
 	once: onceMock,
 	connect: jest.fn().mockImplementation(() => {
 		if (doesConnectWork && onListeners.connect) {
@@ -36,7 +42,7 @@ jest.mock('socket.io-client', () => {
 
 describe('SocketConnection', () => {
 	const setup = () => {
-		const socketConfiguration = { baseUrl: 'http://localhost:6450', path: '/board-collaboration', token: 'abc' };
+		const socketConfiguration = { baseUrl: 'http://localhost:4650', path: '/board-collaboration', token: 'abc' };
 		const socketConnection = new SocketConnection(socketConfiguration, console.log);
 
 		return { socketConnection };
@@ -62,6 +68,22 @@ describe('SocketConnection', () => {
 			setTimeout(triggerError, 10);
 
 			await expect(socketConnection.connect()).rejects.toThrow('Could not connect to socket server: connection failed');
+		});
+	});
+
+	describe('registerPromise', () => {
+		it("should register a promise and execute it's listener", async () => {
+			const { socketConnection } = setup();
+			const action = 'some-action-success';
+			const data = { isOwnAction: true };
+
+			await socketConnection.connect();
+			const mockResolve = jest.fn();
+			const mockReject = jest.fn();
+			socketConnection.registerPromise(action, mockResolve, mockReject);
+			onAnyListeners.forEach((l) => l(action, data));
+
+			expect(mockResolve).toHaveBeenCalledWith(data);
 		});
 	});
 });
