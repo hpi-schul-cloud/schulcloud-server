@@ -4,6 +4,8 @@
       namespace: "{{ NAMESPACE }}"
       template: svc.yml.j2
       state: "{{ 'present' if WITH_MIGRATION_SYSTEMS else 'absent'}}"
+    tags:
+      - service
 
   - name: Deployment
     kubernetes.core.k8s:
@@ -11,6 +13,8 @@
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
       state: "{{ 'present' if WITH_MIGRATION_SYSTEMS else 'absent'}}"
+    tags:
+      - deployment
 
   - name: Ingress
     kubernetes.core.k8s:
@@ -19,4 +23,6 @@
       template: ingress.yml.j2
       apply: yes
       state: "{{ 'present' if WITH_MIGRATION_SYSTEMS else 'absent'}}"
+    tags:
+      - ingress
 
