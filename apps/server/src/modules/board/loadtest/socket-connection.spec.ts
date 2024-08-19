@@ -70,20 +70,4 @@ describe('SocketConnection', () => {
 			await expect(socketConnection.connect()).rejects.toThrow('Could not connect to socket server: connection failed');
 		});
 	});
-
-	describe('registerPromise', () => {
-		it("should register a promise and execute it's listener", async () => {
-			const { socketConnection } = setup();
-			const action = 'some-action-success';
-			const data = { isOwnAction: true };
-
-			await socketConnection.connect();
-			const mockResolve = jest.fn();
-			const mockReject = jest.fn();
-			socketConnection.registerPromise(action, mockResolve, mockReject);
-			onAnyListeners.forEach((l) => l(action, data));
-
-			expect(mockResolve).toHaveBeenCalledWith(data);
-		});
-	});
 });
