@@ -1,7 +1,6 @@
-import { StrategyType } from '@infra/auth-guard';
+import { ApiKeyGuard } from '@infra/auth-guard';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@shared/testing';
 
@@ -16,7 +15,7 @@ describe(`deletionExecution (api)`, () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
-			.overrideGuard(AuthGuard(StrategyType.API_KEY))
+			.overrideGuard(ApiKeyGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
