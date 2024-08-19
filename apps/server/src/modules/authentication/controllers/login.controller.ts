@@ -20,14 +20,6 @@ import { LoginResponseMapper } from './mapper/login-response.mapper';
 export class LoginController {
 	constructor(private readonly loginUc: LoginUc) {}
 
-	private async login(user: ICurrentUser): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
-
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
-
-		return mapped;
-	}
-
 	@UseGuards(AuthGuard(StrategyType.LDAP))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
@@ -74,6 +66,14 @@ export class LoginController {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: OauthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(loginDto, user.externalIdToken);
+
+		return mapped;
+	}
+
+	private async login(user: ICurrentUser): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
 
 		return mapped;
 	}
