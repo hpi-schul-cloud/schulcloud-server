@@ -46,6 +46,7 @@ import {
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
 import { CourseInfoListResponse } from './dto/response';
+import { CourseCallerParams } from './dto/request/course-caller-params';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -151,9 +152,15 @@ export class CourseController {
 	public async startSynchronization(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: CourseUrlParams,
-		@Body() bodyParams: CourseSyncBodyParams
+		@Body() bodyParams: CourseSyncBodyParams,
+		@Query() callerParams: CourseCallerParams
 	): Promise<void> {
-		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
+		await this.courseSyncUc.startSynchronization(
+			currentUser.userId,
+			params.courseId,
+			bodyParams.groupId,
+			callerParams.calledFrom
+		);
 	}
 
 	@Get('/all')
