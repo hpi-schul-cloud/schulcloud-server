@@ -131,7 +131,7 @@ export class CourseController {
 		};
 	}
 
-	@Get(':courseId')
+	@Get(':courseId/cc-metadata')
 	@ApiOperation({ summary: 'Get common cartridge metadata of a course by Id.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })

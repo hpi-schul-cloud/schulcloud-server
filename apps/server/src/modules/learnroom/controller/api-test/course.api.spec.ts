@@ -245,7 +245,7 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	describe('[GET] /courses/:courseId', () => {
+	describe('[GET] /courses/:courseId/cc-metadata', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
