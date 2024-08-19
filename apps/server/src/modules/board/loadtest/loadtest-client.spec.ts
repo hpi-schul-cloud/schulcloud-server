@@ -186,40 +186,72 @@ describe('LoadtestClient', () => {
 	});
 
 	describe('createAndUpdateTextElement', () => {
-		it('should create and update a text element', async () => {
-			const cardId = 'card123';
-			const text = 'Lorem ipsum dolor sit amet';
-			const simulateTyping = true;
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+		describe('when text is shorter than 20 characters', () => {
+			it('should create and update a text element', async () => {
+				const cardId = 'card123';
+				const text = 'Lorem ipsum';
+				const simulateTyping = true;
+				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
-			await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
+				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
-				'create-element',
-				expect.objectContaining({
-					cardId,
-					type: ContentElementType.RICH_TEXT,
-				})
-			);
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-element', expect.any(Object));
+				expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+					'create-element',
+					expect.objectContaining({
+						cardId,
+						type: ContentElementType.RICH_TEXT,
+					})
+				);
+				expect(socketConnection.emitAndWait).toHaveBeenCalledTimes(2);
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+			});
 		});
 
-		it('should send multiple updates if text is long', async () => {
-			const cardId = 'card123';
-			const text = 'Lorem ipsum dolor sit amet consectetur';
-			const simulateTyping = true;
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+		describe('when text is longer than 20 characters', () => {
+			it('should send multiple updates', async () => {
+				const cardId = 'card123';
+				const text = 'Lorem ipsum dolor sit amet consectetur';
+				const simulateTyping = true;
+				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
-			await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
+				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
-				'create-element',
-				expect.objectContaining({
-					cardId,
-					type: ContentElementType.RICH_TEXT,
-				})
-			);
-			expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+				expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+					'create-element',
+					expect.objectContaining({
+						cardId,
+						type: ContentElementType.RICH_TEXT,
+					})
+				);
+				expect(socketConnection.emitAndWait).toHaveBeenCalledTimes(3);
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(3, 'update-element', expect.any(Object));
+			});
+		});
+
+		describe('when slicing is deactivated', () => {
+			it('should send one update', async () => {
+				const cardId = 'card123';
+				const text = 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt.';
+				const simulateTyping = false;
+				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+
+				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
+
+				expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+					'create-element',
+					expect.objectContaining({
+						cardId,
+						type: ContentElementType.RICH_TEXT,
+					})
+				);
+
+				expect(socketConnection.emitAndWait).toHaveBeenCalledTimes(2);
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
+				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+			});
 		});
 	});
 });
