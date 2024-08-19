@@ -6,6 +6,8 @@ import { LoadtestClient } from './loadtest-client';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinition, UserProfile } from './types';
 
+const SIMULATE_USER_TIME_MS = 60000;
+
 export class BoardLoadTest {
 	private columns: { id: string; cards: { id: string }[] }[] = [];
 
@@ -44,9 +46,10 @@ export class BoardLoadTest {
 		await Promise.all(promises);
 	}
 
-	async simulateUserActions(loadtestClient: LoadtestClient, userProfile: UserProfile) {
+	async simulateUserActions(loadtestClient: LoadtestClient, userProfile: UserProfile, actionsMax = 1000000) {
 		const startTime = performance.now();
-		while (performance.now() - startTime < 1 * 60000) {
+		let actionCount = 0;
+		while (performance.now() - startTime < SIMULATE_USER_TIME_MS && actionCount < actionsMax) {
 			try {
 				if (this.columnCount() === 0) {
 					await this.createColumn(loadtestClient);
@@ -57,6 +60,7 @@ export class BoardLoadTest {
 				} else {
 					await this.createRandomCard(loadtestClient, userProfile.sleepMs);
 				}
+				actionCount += 1;
 			} catch (err) {
 				this.onError((err as Error).message);
 			}
