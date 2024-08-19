@@ -1,0 +1,14 @@
+.gitignore
+.npmignore
+api.ts
+api/courses-api.ts
+base.ts
+common.ts
+configuration.ts
+git_push.sh
+index.ts
+models/course-common-cartridge-metadata-response.ts
+models/course-export-body-params.ts
+models/course-metadata-list-response.ts
+models/course-metadata-response.ts
+models/index.ts
