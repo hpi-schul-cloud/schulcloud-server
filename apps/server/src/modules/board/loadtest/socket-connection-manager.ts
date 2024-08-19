@@ -58,5 +58,6 @@ export class SocketConnectionManager {
 	async destroySocketConnections(sockets: SocketConnection[]) {
 		const promises = sockets.map((socket) => socket.close());
 		await Promise.all(promises);
+		this.connections = this.connections.filter((connection) => !sockets.includes(connection));
 	}
 }

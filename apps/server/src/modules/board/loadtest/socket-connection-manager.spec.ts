@@ -18,4 +18,15 @@ describe('SocketConnectionManager', () => {
 			expect(socketConnectionManager.getClientCount()).toBe(5);
 		});
 	});
+
+	describe('destroySocketConnections', () => {
+		it('should destroy the connections', async () => {
+			const { socketConnectionManager } = setup();
+			const connections = await socketConnectionManager.createConnections(5);
+
+			await socketConnectionManager.destroySocketConnections(connections);
+
+			expect(socketConnectionManager.getClientCount()).toBe(0);
+		});
+	});
 });
