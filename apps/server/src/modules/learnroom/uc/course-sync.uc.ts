@@ -1,6 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Group, GroupService } from '@modules/group';
-import { School, SchoolService } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { type User as UserEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
@@ -13,8 +12,7 @@ export class CourseSyncUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseService: CourseDoService,
-		private readonly groupService: GroupService,
-		private readonly schoolService: SchoolService
+		private readonly groupService: GroupService
 	) {}
 
 	public async stopSynchronization(userId: EntityId, courseId: EntityId): Promise<void> {
@@ -34,11 +32,10 @@ export class CourseSyncUc {
 		const course: Course = await this.courseService.findById(courseId);
 		const group: Group = await this.groupService.findById(groupId);
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const school: School = await this.schoolService.getSchoolById(user.school.id);
 
 		this.authorizationService.checkPermission(
 			user,
-			school,
+			course,
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
 
