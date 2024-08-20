@@ -57,6 +57,7 @@ export class BoardLoadTest {
 				if (this.columnCount() === 0) {
 					await this.createColumn(loadtestClient);
 				} else if (this.columnCount() > 20) {
+					/* istanbul ignore next */
 					await this.createRandomCard(loadtestClient, userProfile.sleepMs);
 				} else if (Math.random() > 0.8) {
 					await this.createColumn(loadtestClient);
@@ -65,6 +66,7 @@ export class BoardLoadTest {
 				}
 				actionCount += 1;
 			} catch (err) {
+				/* istanbul ignore next */
 				this.onError((err as Error).message);
 			}
 		}

@@ -16,10 +16,11 @@ export class SocketConnectionManager {
 	}
 
 	async createConnection(): Promise<SocketConnection> {
-		const socket = new SocketConnection(this.socketConfiguration, (errorMessage: unknown) =>
+		// eslint-disable-next-line arrow-body-style
+		const socket = new SocketConnection(this.socketConfiguration, (errorMessage: unknown) => {
 			/* istanbul ignore next */
-			this.onErrorHandler(errorMessage)
-		);
+			return this.onErrorHandler(errorMessage);
+		});
 		await socket.connect();
 
 		this.connections.push(socket);
