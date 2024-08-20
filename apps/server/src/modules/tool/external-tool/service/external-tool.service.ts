@@ -63,8 +63,8 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.legacyLogger.debug(
-							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+						this.legacyLogger.warn(
+							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId} and name ${tool.name}. It will be filtered out.`
 						);
 						return undefined;
 					}
