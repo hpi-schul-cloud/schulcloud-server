@@ -25,7 +25,7 @@ describe(TokenRequestLoggableException.name, () => {
 
 			expect(logMessage).toStrictEqual({
 				type: 'OAUTH_TOKEN_REQUEST_ERROR',
-				message: axiosError.message,
+				message: 'message: Bad Request code: 400',
 				data: JSON.stringify(error),
 				stack: axiosError.stack,
 			});

@@ -5,6 +5,8 @@
       namespace: "{{ NAMESPACE }}"
       template: configmap_file_init.yml.j2
     when: WITH_SCHULCLOUD_INIT
+    tags:
+      - configmap
 
   - name: Remove Init Configmap File
     kubernetes.core.k8s:
@@ -15,6 +17,8 @@
       kind: ConfigMap
       name: api-init-file
     when: not WITH_SCHULCLOUD_INIT
+    tags:
+      - configmap
 
   - name: Management Deployment
     kubernetes.core.k8s:
@@ -22,6 +26,8 @@
       namespace: "{{ NAMESPACE }}"
       template: management-deployment.yml.j2
     when: WITH_SCHULCLOUD_INIT
+    tags:
+      - deployment
 
   - name: Remove management Deployment
     kubernetes.core.k8s:
@@ -32,6 +38,8 @@
       kind: Deployment
       name: management-deployment
     when: not WITH_SCHULCLOUD_INIT
+    tags:
+      - deployment
 
   - name: Management Service
     kubernetes.core.k8s:
@@ -39,6 +47,8 @@
       namespace: "{{ NAMESPACE }}"
       template: management-svc.yml.j2
     when: WITH_SCHULCLOUD_INIT
+    tags:
+      - service
 
   - name: Remove management Service
     kubernetes.core.k8s:
@@ -49,6 +59,8 @@
       kind: Service
       name: mgmt-svc
     when: not WITH_SCHULCLOUD_INIT
+    tags:
+      - service
 
   - name: Check Init Job
     kubernetes.core.k8s_info:
@@ -59,6 +71,8 @@
       name: api-init-job
     register: init_job_exists
     ignore_errors: yes
+    tags:
+      - job
 
   - name: Init Job
     kubernetes.core.k8s:
@@ -66,6 +80,8 @@
       namespace: "{{ NAMESPACE }}"
       template: job_init.yml.j2
     when: WITH_SCHULCLOUD_INIT and init_job_exists.resources|length == 0
+    tags:
+      - job
 
   - name: Remove Init Job
     kubernetes.core.k8s:
@@ -76,3 +92,5 @@
       kind: Job
       name: api-init-job
     when: not WITH_SCHULCLOUD_INIT
+    tags:
+      - job
