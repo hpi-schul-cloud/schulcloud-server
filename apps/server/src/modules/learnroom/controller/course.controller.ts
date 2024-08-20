@@ -28,8 +28,8 @@ import {
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
-import { Response } from 'express';
 import { ErrorResponse } from '@src/core/error/dto';
+import { Response } from 'express';
 import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
@@ -46,7 +46,6 @@ import {
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
 import { CourseInfoListResponse } from './dto/response';
-import { CourseCallerParams } from './dto/request/course-caller-params';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -152,15 +151,9 @@ export class CourseController {
 	public async startSynchronization(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: CourseUrlParams,
-		@Body() bodyParams: CourseSyncBodyParams,
-		@Query() callerParams: CourseCallerParams
+		@Body() bodyParams: CourseSyncBodyParams
 	): Promise<void> {
-		await this.courseSyncUc.startSynchronization(
-			currentUser.userId,
-			params.courseId,
-			bodyParams.groupId,
-			callerParams.calledFrom
-		);
+		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
 	}
 
 	@Get('/all')
