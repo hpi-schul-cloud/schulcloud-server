@@ -14,6 +14,10 @@ export class DeletedElement extends BoardNode<DeletedElementProps> {
 		return this.props.deletedElementType;
 	}
 
+	set deletedElementType(value: ContentElementType) {
+		this.props.deletedElementType = value;
+	}
+
 	canHaveChild(): boolean {
 		return false;
 	}
