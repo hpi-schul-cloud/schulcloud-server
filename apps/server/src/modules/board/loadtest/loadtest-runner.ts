@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 import { writeFileSync } from 'fs';
-import { LegacyLogger } from '@src/core/logger';
 import { Injectable } from '@nestjs/common';
 import { createSeveralClasses } from './helper/class-definitions';
 import { createBoard } from './helper/create-board';
@@ -26,16 +25,11 @@ export class LoadtestRunner {
 
 	private readonly createBoardLoadTest: CreateBoardLoadTest;
 
-	constructor(
-		socketConnectionManager: SocketConnectionManager,
-		createBoardLoadTest: CreateBoardLoadTest,
-		private readonly logger: LegacyLogger
-	) {
+	constructor(socketConnectionManager: SocketConnectionManager, createBoardLoadTest: CreateBoardLoadTest) {
 		this.socketConnectionManager = socketConnectionManager;
 		this.createBoardLoadTest = createBoardLoadTest;
 		this.startTime = performance.now();
 		this.startDate = new Date();
-		this.logger.setContext(LoadtestRunner.name);
 	}
 
 	showStats() {
@@ -55,7 +49,7 @@ export class LoadtestRunner {
 
 			// output the stats (after determining the event loop block time)
 			/* istanbul ignore next */
-			this.logger.log(
+			process.stdout.write(
 				`${seconds}s - ${clients} clients connected - ${errors} errors | blocking: ${eventloopBlockMs}ms`
 			);
 		});
@@ -97,7 +91,7 @@ export class LoadtestRunner {
 			errors: this.errors,
 		};
 		writeFileSync(protocolFilename, JSON.stringify(protocol, null, 2));
-		console.log(JSON.stringify(protocol, null, 2));
+		process.stdout.write(JSON.stringify(protocol, null, 2));
 		return protocol;
 	}
 
