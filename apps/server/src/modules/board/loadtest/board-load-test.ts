@@ -15,7 +15,6 @@ export class BoardLoadTest {
 
 	async runBoardTest(boardId: string, configuration: ClassDefinition): Promise<void> {
 		// WIP: fetch board
-
 		try {
 			const userProfiles = duplicateUserProfiles(configuration.users);
 			const userClients = await this.initializeLoadtestClients(userProfiles.length, boardId);
@@ -53,22 +52,25 @@ export class BoardLoadTest {
 		const startTime = performance.now();
 		let actionCount = 0;
 		while (performance.now() - startTime < SIMULATE_USER_TIME_MS && actionCount < actionsMax) {
-			try {
-				if (this.columnCount() === 0) {
-					await this.createColumn(loadtestClient);
-				} else if (this.columnCount() > 20) {
+			if (userProfile.isActive) {
+				try {
+					if (this.columnCount() === 0) {
+						await this.createColumn(loadtestClient);
+					} else if (this.columnCount() > 20) {
+						/* istanbul ignore next */
+						await this.createRandomCard(loadtestClient, userProfile.sleepMs);
+					} else if (Math.random() > 0.8) {
+						await this.createColumn(loadtestClient);
+					} else {
+						await this.createRandomCard(loadtestClient, userProfile.sleepMs);
+					}
+					actionCount += 1;
+				} catch (err) {
 					/* istanbul ignore next */
-					await this.createRandomCard(loadtestClient, userProfile.sleepMs);
-				} else if (Math.random() > 0.8) {
-					await this.createColumn(loadtestClient);
-				} else {
-					await this.createRandomCard(loadtestClient, userProfile.sleepMs);
+					this.onError((err as Error).message);
 				}
-				actionCount += 1;
-			} catch (err) {
-				/* istanbul ignore next */
-				this.onError((err as Error).message);
 			}
+			await sleep(userProfile.sleepMs);
 		}
 	}
 

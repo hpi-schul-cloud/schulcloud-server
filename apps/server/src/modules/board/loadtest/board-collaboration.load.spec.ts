@@ -8,8 +8,8 @@ import { BoardLoadTest } from './board-load-test';
 describe('Board Collaboration Load Test', () => {
 	it('should run a basic load test', async () => {
 		const { COURSE_ID, TOKEN, TARGET_URL } = process.env;
-		const viewerClassesAmount = process.env.viewerClasses ? parseInt(process.env.viewerClasses, 10) : 20;
-		const collabClassesAmount = process.env.collabClasses ? parseInt(process.env.collabClasses, 10) : 0;
+		const viewerClassesAmount = process.env.VIEWER_CLASSES ? parseInt(process.env.VIEWER_CLASSES, 10) : 20;
+		const collabClassesAmount = process.env.COLLAB_CLASSES ? parseInt(process.env.COLLAB_CLASSES, 10) : 0;
 		if (COURSE_ID && TOKEN && TARGET_URL) {
 			const socketConfiguration: SocketConfiguration = {
 				baseUrl: TARGET_URL,

@@ -11,13 +11,13 @@ export type UrlConfiguration = {
 export type UserProfile = {
 	name: string;
 	sleepMs: number;
-	maxCards: number;
+	isActive: boolean;
 };
 
 export type UserProfileWithAmount = {
 	name: string;
 	sleepMs: number;
-	maxCards: number;
+	isActive: boolean;
 	amount: number;
 };
 

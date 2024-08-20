@@ -1,8 +1,8 @@
 import { ClassDefinition, Configuration, UserProfile, UserProfileWithAmount } from '../types';
 
-export const fastEditor: UserProfile = { name: 'fastEditor', sleepMs: 1000, maxCards: 10 };
-export const slowEditor: UserProfile = { name: 'slowEditor', sleepMs: 3000, maxCards: 5 };
-export const viewer: UserProfile = { name: 'viewer', sleepMs: 1000, maxCards: 0 };
+export const fastEditor: UserProfile = { name: 'fastEditor', sleepMs: 1000, isActive: true };
+export const slowEditor: UserProfile = { name: 'slowEditor', sleepMs: 3000, isActive: true };
+export const viewer: UserProfile = { name: 'viewer', sleepMs: 3000, isActive: false };
 
 export const viewersClass: ClassDefinition = {
 	name: 'viewersClass',
