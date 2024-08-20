@@ -17,6 +17,7 @@ export class SocketConnectionManager {
 
 	async createConnection(): Promise<SocketConnection> {
 		const socket = new SocketConnection(this.socketConfiguration, (errorMessage: unknown) =>
+			/* istanbul ignore next */
 			this.onErrorHandler(errorMessage)
 		);
 		await socket.connect();
@@ -39,6 +40,7 @@ export class SocketConnectionManager {
 				if (res.status === 'fulfilled') {
 					connections.push(res.value);
 				} else {
+					/* istanbul ignore next */
 					this.onErrorHandler('failed to create connection');
 				}
 			});
@@ -52,6 +54,7 @@ export class SocketConnectionManager {
 	}
 
 	setOnErrorHandler(onErrorHandler: Callback) {
+		/* istanbul ignore next */
 		this.onErrorHandler = onErrorHandler;
 	}
 

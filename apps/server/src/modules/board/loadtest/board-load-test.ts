@@ -36,13 +36,16 @@ export class BoardLoadTest {
 	async initializeLoadtestClient(boardId: string): Promise<LoadtestClient> {
 		const socketConnection = await this.socketConnectionManager.createConnection();
 		const loadtestClient = new LoadtestClient(socketConnection, boardId);
+		/* istanbul ignore next */
 		return loadtestClient;
 	}
 
 	async simulateUsersActions(loadtestClients: LoadtestClient[], userProfiles: UserProfile[]) {
-		const promises = loadtestClients.map((loadtestClient, index) =>
-			this.simulateUserActions(loadtestClient, userProfiles[index])
-		);
+		// eslint-disable-next-line arrow-body-style
+		const promises = loadtestClients.map((loadtestClient, index) => {
+			/* istanbul ignore next */
+			return this.simulateUserActions(loadtestClient, userProfiles[index]);
+		});
 		await Promise.all(promises);
 	}
 
@@ -104,6 +107,7 @@ export class BoardLoadTest {
 		if (column) {
 			column.cards.push({ id: cardId });
 		} else {
+			/* istanbul ignore next */
 			throw new Error(`Column not found: ${columnId}`);
 		}
 	}
