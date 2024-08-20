@@ -15,6 +15,7 @@ export class ImportUserResponse {
 		this.externalRoleNames = props.externalRoleNames;
 		if (props.match != null) this.match = props.match;
 		if (props.flagged === true) this.flagged = true;
+		if (props.externalRoleNames) this.externalRoleNames = props.externalRoleNames;
 	}
 
 	@IsMongoId()
@@ -61,8 +62,8 @@ export class ImportUserResponse {
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
 	flagged: boolean = false;
 
-	@ApiProperty({ description: 'exact user roles from the external system' })
-	externalRoleNames: string[] = [];
+	@ApiPropertyOptional({ description: 'exact user roles from the external system' })
+	externalRoleNames?: string[];
 }
 
 export class ImportUserListResponse extends PaginationResponse<ImportUserResponse[]> {

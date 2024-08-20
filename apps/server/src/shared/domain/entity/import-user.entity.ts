@@ -50,7 +50,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		if (props.user && props.matchedBy) this.setMatch(props.user, props.matchedBy);
 		if (props.flagged && props.flagged === true) this.flagged = true;
 		if (Array.isArray(props.externalRoleNames) && props.externalRoleNames.length > 0)
-			this.externalRoleNames.push(...props.externalRoleNames);
+			this.externalRoleNames = props.externalRoleNames;
 	}
 
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', wrappedReference: true, eager: true })
@@ -114,8 +114,8 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 	@Property({ type: Boolean })
 	flagged = false;
 
-	@Property()
-	externalRoleNames: string[] = [];
+	@Property({ nullable: true })
+	externalRoleNames?: string[];
 
 	setMatch(user: User, matchedBy: MatchCreator) {
 		if (this.school.id !== user.school.id) {

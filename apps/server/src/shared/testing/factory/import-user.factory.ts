@@ -26,6 +26,5 @@ export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequenc
 		roleNames: [RoleName.STUDENT as IImportUserRoleName],
 		classNames: ['firstClass'],
 		flagged: false,
-		externalRoleNames: ['student'],
 	};
 });
