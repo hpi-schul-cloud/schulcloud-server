@@ -17,13 +17,13 @@ describe(AxiosErrorLoggable.name, () => {
 		};
 
 		it('should return error log message', () => {
-			const { axiosErrorLoggable, error, axiosError } = setup();
+			const { axiosErrorLoggable, error } = setup();
 
 			const result = axiosErrorLoggable.getLogMessage();
 
 			expect(result).toEqual({
 				type: 'mockType',
-				message: axiosError.message,
+				message: 'message: Bad Request code: 400',
 				data: JSON.stringify(error),
 				stack: 'mockStack',
 			});
