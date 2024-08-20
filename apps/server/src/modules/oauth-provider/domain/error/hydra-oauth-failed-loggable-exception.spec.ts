@@ -26,7 +26,7 @@ describe(HydraOauthFailedLoggableException.name, () => {
 
 			expect(message).toEqual({
 				type: 'HYDRA_OAUTH_FAILED',
-				message: axiosError.message,
+				message: 'message: Bad Request code: 400',
 				stack: axiosError.stack,
 				data: JSON.stringify(error),
 			});
