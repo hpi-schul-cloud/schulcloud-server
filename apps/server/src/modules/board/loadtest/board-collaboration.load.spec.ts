@@ -21,6 +21,7 @@ describe('Board Collaboration Load Test', () => {
 			const socketConnectionManager = new SocketConnectionManager(socketConfiguration);
 			const createBoardLoadTest: CreateBoardLoadTest = (...args) => new BoardLoadTest(...args);
 			const runner = new LoadtestRunner(socketConnectionManager, createBoardLoadTest);
+
 			await runner.runLoadtest({
 				socketConfiguration,
 				courseId: COURSE_ID,
