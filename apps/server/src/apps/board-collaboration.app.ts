@@ -19,7 +19,6 @@ import {
 } from '@src/apps/helpers/prometheus-metrics';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { DB_URL } from '@src/config';
-import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -31,15 +30,9 @@ async function bootstrap() {
 	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	let ioAdapter: IoAdapter;
-	// eslint-disable-next-line no-process-env
-	if (process.env.COLLABORATION_WEBSOCKET_ADAPTER === 'redis') {
-		ioAdapter = new RedisIoAdapter(nestApp);
-	} else {
-		const mongoAdapter = new MongoIoAdapter(nestApp);
-		await mongoAdapter.connectToMongoDb(DB_URL);
-		ioAdapter = mongoAdapter;
-	}
+	const mongoAdapter = new MongoIoAdapter(nestApp);
+	await mongoAdapter.connectToMongoDb(DB_URL);
+	const ioAdapter = mongoAdapter;
 	nestApp.useWebSocketAdapter(ioAdapter);
 
 	const options: SwaggerDocumentOptions = {
