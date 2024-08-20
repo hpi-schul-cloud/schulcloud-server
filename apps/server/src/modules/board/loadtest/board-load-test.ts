@@ -14,7 +14,6 @@ export class BoardLoadTest {
 	constructor(private socketConnectionManager: SocketConnectionManager, private onError: Callback) {}
 
 	async runBoardTest(boardId: string, configuration: ClassDefinition): Promise<void> {
-		// WIP: fetch board
 		try {
 			const userProfiles = duplicateUserProfiles(configuration.users);
 			const userClients = await this.initializeLoadtestClients(userProfiles.length, boardId);
@@ -35,6 +34,7 @@ export class BoardLoadTest {
 	async initializeLoadtestClient(boardId: string): Promise<LoadtestClient> {
 		const socketConnection = await this.socketConnectionManager.createConnection();
 		const loadtestClient = new LoadtestClient(socketConnection, boardId);
+		await loadtestClient.fetchBoard();
 		/* istanbul ignore next */
 		return loadtestClient;
 	}
