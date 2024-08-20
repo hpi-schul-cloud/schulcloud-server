@@ -34,6 +34,8 @@ export class BoardLoadTest {
 	async initializeLoadtestClient(boardId: string): Promise<LoadtestClient> {
 		const socketConnection = await this.socketConnectionManager.createConnection();
 		const loadtestClient = new LoadtestClient(socketConnection, boardId);
+
+		await sleep(Math.ceil(Math.random() * 3000));
 		await loadtestClient.fetchBoard();
 		/* istanbul ignore next */
 		return loadtestClient;
@@ -50,6 +52,9 @@ export class BoardLoadTest {
 
 	async simulateUserActions(loadtestClient: LoadtestClient, userProfile: UserProfile, actionsMax = 1000000) {
 		const startTime = performance.now();
+
+		await sleep(Math.ceil(Math.random() * 3000));
+
 		let actionCount = 0;
 		while (performance.now() - startTime < SIMULATE_USER_TIME_MS && actionCount < actionsMax) {
 			if (userProfile.isActive) {
