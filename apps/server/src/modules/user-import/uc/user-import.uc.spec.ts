@@ -1209,5 +1209,31 @@ describe('[ImportUserModule]', () => {
 				});
 			});
 		});
+
+		describe('clearAllAutoMatches', () => {
+			describe('when user is given', () => {
+				const setup = () => {
+					const school = legacySchoolDoFactory.buildWithId({
+						inMaintenanceSince: new Date(2024, 1, 1),
+						inUserMigration: true,
+					});
+					const user = userFactory.buildWithId();
+
+					userRepo.findById.mockResolvedValueOnce(user);
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
+
+					return {
+						user,
+						school,
+					};
+				};
+
+				it('should clear all auto matches', () => {
+					const { user, school } = setup();
+					// 	TODO: implement test
+				});
+			});
+		});
 	});
 });
