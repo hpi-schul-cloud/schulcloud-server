@@ -1,5 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { writeFileSync } from 'fs';
+import { LegacyLogger } from '@src/core/logger';
+import { Injectable } from '@nestjs/common';
 import { createSeveralClasses } from './helper/class-definitions';
 import { createBoard } from './helper/create-board';
 import { formatDate } from './helper/format-date';
@@ -10,6 +12,7 @@ import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfigu
 
 const { getAvgByAction, getTotalAvg } = useResponseTimes();
 
+@Injectable()
 export class LoadtestRunner {
 	private socketConnectionManager: SocketConnectionManager;
 
@@ -23,11 +26,16 @@ export class LoadtestRunner {
 
 	private readonly createBoardLoadTest: CreateBoardLoadTest;
 
-	constructor(socketConnectionManager: SocketConnectionManager, createBoardLoadTest: CreateBoardLoadTest) {
+	constructor(
+		socketConnectionManager: SocketConnectionManager,
+		createBoardLoadTest: CreateBoardLoadTest,
+		private readonly logger: LegacyLogger
+	) {
 		this.socketConnectionManager = socketConnectionManager;
 		this.createBoardLoadTest = createBoardLoadTest;
 		this.startTime = performance.now();
 		this.startDate = new Date();
+		this.logger.setContext(LoadtestRunner.name);
 	}
 
 	showStats() {
@@ -38,12 +46,18 @@ export class LoadtestRunner {
 		// check how much the event loop is blocked
 		const time = process.hrtime();
 		process.nextTick(() => {
+			/* istanbul ignore next */
 			const diff = process.hrtime(time);
+			/* istanbul ignore next */
 			const ms = diff[0] * 1e9 + diff[1] / 1000000;
+			/* istanbul ignore next */
 			const eventloopBlockMs = ms.toFixed(2);
 
 			// output the stats (after determining the event loop block time)
-			console.log(`${seconds}s - ${clients} clients connected - ${errors} errors | blocking: ${eventloopBlockMs}ms`);
+			/* istanbul ignore next */
+			this.logger.log(
+				`${seconds}s - ${clients} clients connected - ${errors} errors | blocking: ${eventloopBlockMs}ms`
+			);
 		});
 	}
 
@@ -103,10 +117,10 @@ export class LoadtestRunner {
 
 		this.startRegularStats();
 
-		const promises: Promise<unknown>[] = classes.flatMap(async (conf) => {
+		const promises: Promise<unknown>[] = classes.flatMap(async (classDefinition) => {
 			const boardLoadTest = this.createBoardLoadTest(this.socketConnectionManager, this.onError);
 			const boardId = await createBoard(urls.api, socketConfiguration.token, courseId);
-			return boardLoadTest.runBoardTest(boardId, conf);
+			return boardLoadTest.runBoardTest(boardId, classDefinition);
 		});
 
 		await Promise.all(promises);
