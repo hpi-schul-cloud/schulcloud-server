@@ -90,13 +90,13 @@ export class CourseUc {
 		let allCourses: Course[];
 		if (!courseStatusQueryType || courseStatusQueryType === CourseStatusQueryType.CURRENT) {
 			allCourses = courses.filter((course: Course) => {
-				untilDate = course.untilDate ?? now.getDate() + 1;
-				return now < untilDate;
+				untilDate = course.untilDate;
+				return now < untilDate || untilDate === undefined;
 			});
 		} else {
 			allCourses = courses.filter((course) => {
-				untilDate = course.untilDate ?? now.getDate() + 1;
-				return now > untilDate;
+				untilDate = course.untilDate;
+				return now > untilDate && untilDate !== undefined;
 			});
 		}
 
