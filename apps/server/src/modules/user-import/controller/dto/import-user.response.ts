@@ -15,7 +15,6 @@ export class ImportUserResponse {
 		this.externalRoleNames = props.externalRoleNames;
 		if (props.match != null) this.match = props.match;
 		if (props.flagged === true) this.flagged = true;
-		if (props.externalRoleNames) this.externalRoleNames = props.externalRoleNames;
 	}
 
 	@IsMongoId()
