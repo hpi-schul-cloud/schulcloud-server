@@ -108,5 +108,5 @@ axios
 	});
 
 /** use this command to generate the client and delete the filtered spec file
- * npx openapi-generator-cli generate -i './scripts/filtered-spec.json' -g typescript-axios -o "apps/server/src/modules/common-cartridge/common-cartridge-client/courses-api-client" --skip-validate-spec -c 'openapitools-config.json'; rm .\scripts\filtered-spec.json && rm .\scripts\filtered-spec.json
+ * npx openapi-generator-cli generate -i './scripts/filtered-spec.json' -g typescript-axios -o "apps/server/src/modules/common-cartridge/common-cartridge-client/courses-api-client" --skip-validate-spec -c 'openapitools-config.json'; rm .\scripts\filtered-spec.json
  */
