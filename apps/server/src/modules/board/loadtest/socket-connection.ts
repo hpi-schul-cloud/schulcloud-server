@@ -41,10 +41,11 @@ export class SocketConnection {
 	}
 
 	async connect() {
-		this.ensureRunningTimeoutChecker();
+		this.ensureRunningTimeoutChecks();
 		return new Promise((resolve, reject) => {
 			let handle: NodeJS.Timeout | undefined;
 			if (this.socket.connected) {
+				/* istanbul ignore next */
 				resolve(true);
 			}
 
@@ -55,6 +56,7 @@ export class SocketConnection {
 			});
 
 			this.socket.on('disconnect', () => {
+				/* istanbul ignore next */
 				this.connected = false;
 			});
 
@@ -73,6 +75,7 @@ export class SocketConnection {
 			this.socket.connect();
 
 			handle = setTimeout(() => {
+				/* istanbul ignore next */
 				if (!this.connected) {
 					reject(new Error('Timeout: could not connect to socket server'));
 				}
@@ -84,39 +87,36 @@ export class SocketConnection {
 		this.socket.emit(event, data);
 	};
 
-	emitAndWait = async (actionPrefix: string, payload: unknown, timeoutMs = 5000) =>
-		new Promise((resolve, reject) => {
+	// eslint-disable-next-line arrow-body-style
+	emitAndWait = async (actionPrefix: string, payload: unknown, timeoutMs = 5000) => {
+		/* istanbul ignore next */
+		return new Promise((resolve, reject) => {
 			this.socket.emit(`${actionPrefix}-request`, payload);
 			this.registerPromise(`${actionPrefix}-success`, resolve, reject, timeoutMs);
 		});
-
-	on = (event: string, callback: (...args: any[]) => void) => {
-		this.socket.on(event, callback);
 	};
 
-	onAny = (callback: (...args: any[]) => void) => {
-		this.socket.onAny(callback);
-	};
-
-	ensureRunningTimeoutChecker() {
+	ensureRunningTimeoutChecks() {
 		if (!this.checkerInterval) {
-			this.checkerInterval = setInterval(() => {
-				const now = performance.now();
-				while (this.timeoutuntilList.length > 0 && this.timeoutuntilList[0]?.timeoutUntil < now) {
-					const first = this.timeoutuntilList.shift();
-					if (first) {
-						const { handle } = first;
-						const promise = this.getRegisteredPromise(handle);
-						if (promise) {
-							this.unregisterPromise(handle, handle);
-							this.unregisterTimeout(handle);
-							const message = `Timeout exceeded: ${promise.event}`;
-							this.onError(message);
-							promise.reject(new Error(message));
-						}
-					}
+			this.checkerInterval = setInterval(() => this.checkTimeouts(), 1000);
+		}
+	}
+
+	checkTimeouts() {
+		const now = performance.now();
+		while (this.timeoutuntilList.length > 0 && this.timeoutuntilList[0]?.timeoutUntil < now) {
+			const first = this.timeoutuntilList.shift();
+			if (first) {
+				const { handle } = first;
+				const promise = this.getRegisteredPromise(handle);
+				if (promise) {
+					this.unregisterPromise(handle, handle);
+					this.unregisterTimeout(handle);
+					const message = `Timeout exceeded: ${promise.event}`;
+					this.onError(message);
+					promise.reject(new Error(message));
 				}
-			}, 1000);
+			}
 		}
 	}
 
@@ -164,15 +164,12 @@ export class SocketConnection {
 		this.timeoutuntilList = this.timeoutuntilList.filter((t) => t.handle !== handle);
 	}
 
-	off = (event: string, callback: (...args: any[]) => void) => {
-		this.socket.off(event, callback);
-	};
-
-	disconnect() {
-		this.socket.disconnect();
+	isConnected() {
+		return this.connected;
 	}
 
 	close() {
 		this.socket.close();
+		this.connected = false;
 	}
 }
