@@ -32,24 +32,24 @@ describe('classDefintions', () => {
 	describe('duplicateUserProfiles', () => {
 		it('should correctly duplicate user profiles based on the amount property', () => {
 			const users: UserProfileWithAmount[] = [
-				{ name: 'fastEditor', sleepMs: 1000, maxCards: 10, amount: 2 },
-				{ name: 'slowEditor', sleepMs: 3000, maxCards: 5, amount: 1 },
-				{ name: 'viewer', sleepMs: 1000, maxCards: 0, amount: 0 },
+				{ name: 'fastEditor', sleepMs: 1000, isActive: true, amount: 2 },
+				{ name: 'slowEditor', sleepMs: 3000, isActive: true, amount: 1 },
+				{ name: 'viewer', sleepMs: 1000, isActive: false, amount: 0 },
 			];
 
 			const result = duplicateUserProfiles(users);
 			expect(result).toEqual([
-				{ name: 'fastEditor', sleepMs: 1000, maxCards: 10 },
-				{ name: 'fastEditor', sleepMs: 1000, maxCards: 10 },
-				{ name: 'slowEditor', sleepMs: 3000, maxCards: 5 },
+				{ name: 'fastEditor', sleepMs: 1000, isActive: true },
+				{ name: 'fastEditor', sleepMs: 1000, isActive: true },
+				{ name: 'slowEditor', sleepMs: 3000, isActive: true },
 			]);
 		});
 
 		it('should return an empty array if all amounts are zero', () => {
 			const users: UserProfileWithAmount[] = [
-				{ name: 'fastEditor', sleepMs: 1000, maxCards: 10, amount: 0 },
-				{ name: 'slowEditor', sleepMs: 3000, maxCards: 5, amount: 0 },
-				{ name: 'viewer', sleepMs: 1000, maxCards: 0, amount: 0 },
+				{ name: 'fastEditor', sleepMs: 1000, isActive: true, amount: 0 },
+				{ name: 'slowEditor', sleepMs: 3000, isActive: true, amount: 0 },
+				{ name: 'viewer', sleepMs: 1000, isActive: true, amount: 0 },
 			];
 
 			const result = duplicateUserProfiles(users);
@@ -62,8 +62,8 @@ describe('classDefintions', () => {
 			const classDefinition: ClassDefinition = {
 				name: 'testClass',
 				users: [
-					{ name: 'fastEditor', sleepMs: 1000, maxCards: 10, amount: 1 },
-					{ name: 'slowEditor', sleepMs: 3000, maxCards: 5, amount: 1 },
+					{ name: 'fastEditor', sleepMs: 1000, isActive: true, amount: 1 },
+					{ name: 'slowEditor', sleepMs: 3000, isActive: true, amount: 1 },
 				],
 			};
 
@@ -84,8 +84,8 @@ describe('classDefintions', () => {
 					classDefinition: {
 						name: 'testClass',
 						users: [
-							{ name: 'fastEditor', sleepMs: 1000, maxCards: 10, amount: 1 },
-							{ name: 'slowEditor', sleepMs: 3000, maxCards: 5, amount: 1 },
+							{ name: 'fastEditor', sleepMs: 1000, isActive: true, amount: 1 },
+							{ name: 'slowEditor', sleepMs: 3000, isActive: true, amount: 1 },
 						],
 					},
 					amount: 0,
