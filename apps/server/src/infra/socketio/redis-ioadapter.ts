@@ -5,14 +5,9 @@ import { ServerOptions, Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Redis } from 'ioredis';
-import { LegacyLogger } from '@src/core/logger';
 
 export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
-
-	constructor(private readonly legacyLogger: LegacyLogger) {
-		super();
-	}
 
 	connectToRedis(): void {
 		const redisUri = Configuration.has('REDIS_URI') ? (Configuration.get('REDIS_URI') as string) : 'localhost:6379';
@@ -21,12 +16,12 @@ export class RedisIoAdapter extends IoAdapter {
 
 		pubClient.on('error', (err) => {
 			// istanbul ignore next
-			this.legacyLogger.error('pubClient error', err);
+			process.stdout.write(`pubClient error: ${err.message}`);
 		});
 
 		subClient.on('error', (err) => {
 			// istanbul ignore next
-			this.legacyLogger.error('subClient error', err);
+			process.stdout.write(`subClient error: ${err.message}`);
 		});
 
 		this.adapterConstructor = createAdapter(pubClient, subClient);
