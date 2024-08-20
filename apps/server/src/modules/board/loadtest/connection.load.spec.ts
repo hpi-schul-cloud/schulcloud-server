@@ -11,7 +11,7 @@ describe('Board Collaboration - Connection Load Test', () => {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	it('should run a connection load test', async () => {
+	it(`should run a connection load test: ${CONNECTION_AMOUNT} connections`, async () => {
 		const { COURSE_ID, TOKEN, TARGET_URL } = process.env;
 		if (COURSE_ID && TOKEN && TARGET_URL) {
 			const socketConfiguration: SocketConfiguration = {
