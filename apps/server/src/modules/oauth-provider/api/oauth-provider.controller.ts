@@ -17,10 +17,10 @@ import {
 	IdParams,
 	ListOauthClientsParams,
 	LoginRequestBody,
-	LoginResponse,
 	OauthClientCreateBody,
 	OauthClientResponse,
 	OauthClientUpdateBody,
+	OauthProviderLoginResponse,
 	RedirectResponse,
 	RevokeConsentParams,
 } from './dto';
@@ -113,10 +113,10 @@ export class OauthProviderController {
 	}
 
 	@Get('loginRequest/:challenge')
-	public async getLoginRequest(@Param() params: ChallengeParams): Promise<LoginResponse> {
+	public async getLoginRequest(@Param() params: ChallengeParams): Promise<OauthProviderLoginResponse> {
 		const loginResponse: ProviderLoginResponse = await this.oauthProviderLoginFlowUc.getLoginRequest(params.challenge);
 
-		const mapped: LoginResponse = OauthProviderResponseMapper.mapLoginResponse(loginResponse);
+		const mapped: OauthProviderLoginResponse = OauthProviderResponseMapper.mapLoginResponse(loginResponse);
 
 		return mapped;
 	}
