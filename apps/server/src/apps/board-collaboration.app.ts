@@ -7,9 +7,8 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-// import { DB_URL } from '@src/config';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { MongoIoAdapter, RedisIoAdapter } from '@src/infra/socketio';
+import { MongoIoAdapter } from '@src/infra/socketio';
 import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 import express from 'express';
