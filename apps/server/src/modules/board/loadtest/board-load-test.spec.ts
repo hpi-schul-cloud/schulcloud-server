@@ -82,6 +82,7 @@ describe('BoardLoadTest', () => {
 				createElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
 				createAndUpdateLinkElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
 				createAndUpdateTextElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				fetchBoard: jest.fn().mockResolvedValue({ id: 'some-id' }),
 				updateCardTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
 				updateColumnTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
 			} as unknown as LoadtestClient;

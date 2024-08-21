@@ -35,7 +35,9 @@ export class BoardLoadTest {
 		const socketConnection = await this.socketConnectionManager.createConnection();
 		const loadtestClient = new LoadtestClient(socketConnection, boardId);
 
+		/* istanbul ignore next */
 		await sleep(Math.ceil(Math.random() * 3000));
+		/* istanbul ignore next */
 		await loadtestClient.fetchBoard();
 		/* istanbul ignore next */
 		return loadtestClient;
