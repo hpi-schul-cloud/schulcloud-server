@@ -212,7 +212,7 @@ describe(BoardNodeService.name, () => {
 	});
 
 	describe('findElementsByContextExternalToolId', () => {
-		describe('when finding a node by its ', () => {
+		describe('when finding a node by its context external tool id', () => {
 			const setup = () => {
 				const contextExternalToolId = new ObjectId().toHexString();
 				const node = externalToolElementFactory.build({
