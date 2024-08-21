@@ -197,6 +197,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				...data,
 				newColumn,
 			};
+			await emitter.joinRoom(column);
 			emitter.emitToClientAndRoom(responsePayload, column);
 
 			// payload needs to be returned to allow the client to do sequential operation
