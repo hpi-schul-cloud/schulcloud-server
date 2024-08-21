@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ICurrentUser } from '@modules/authentication';
 import { ServerTestModule } from '@modules/server/server.module';
-import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication } from '@nestjs/common';
+import { Controller, ExecutionContext, Get, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { JwtAuthGuard } from '../guard/jwt-auth.guard';
-import { Authenticate, CurrentUser, JWT } from './auth.decorator';
+import { JwtAuthGuard } from '../guard';
+import { ICurrentUser } from '../interface';
+import { CurrentUser, JWT, JwtAuthentication } from './jwt-auth.decorator';
 
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('test_decorator_currentUser')
 export class TestDecoratorCurrentUserController {
 	@Get('test')
@@ -16,7 +16,7 @@ export class TestDecoratorCurrentUserController {
 	}
 }
 
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('test_decorator_JWT')
 export class TestDecoratorJWTController {
 	@Get('test')
@@ -25,7 +25,7 @@ export class TestDecoratorJWTController {
 	}
 }
 
-describe('auth.decorator', () => {
+describe('Jwt auth decorator', () => {
 	let app: INestApplication;
 	let currentUser: ICurrentUser;
 	let module: TestingModule;
@@ -59,7 +59,7 @@ describe('auth.decorator', () => {
 		await module.close();
 	});
 
-	describe('JWT', () => {
+	describe('JwtAuthentication', () => {
 		it('should throw with UnauthorizedException if no jwt can be extracted from request context', async () => {
 			const response = await request(app.getHttpServer()).get('/test_decorator_JWT/test');
 
@@ -84,14 +84,6 @@ describe('auth.decorator', () => {
 			const response = await request(app.getHttpServer()).get('/test_decorator_currentUser/test');
 
 			expect(response.statusCode).toEqual(401);
-		});
-	});
-
-	describe('Authenticate', () => {
-		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', () => {
-			// @ts-expect-error Testcase
-			const exec = () => Authenticate('bla');
-			expect(exec).toThrowError(new ForbiddenException('jwt strategy required'));
 		});
 	});
 });

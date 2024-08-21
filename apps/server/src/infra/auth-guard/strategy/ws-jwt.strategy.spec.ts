@@ -1,28 +1,54 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
+import { WsException } from '@nestjs/websockets';
+import { jwtPayloadFactory, setupEntities } from '@shared/testing';
+import { JwtValidationAdapter } from '../adapter';
+import { WsJwtStrategy } from './ws-jwt.strategy';
 
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
-import { setupEntities } from '@shared/testing';
-import { jwtConstants } from '../constants';
+jest.mock('../config', () => {
+	const authConfig = {
+		secret: 'mysecret',
+		jwtOptions: {
+			header: { typ: 'JWT' },
+			audience: 'myaudience',
+			issuer: 'myissuer',
+			algorithm: 'HS256',
+			expiresIn: '1h',
+		},
+	};
 
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { jwtPayloadFactory } from '../testing';
-import { JwtStrategy } from './jwt.strategy';
+	return {
+		authConfig,
+	};
+});
+
+const buildAuthConfig = () => {
+	return {
+		secret: 'mysecret',
+		jwtOptions: {
+			header: { typ: 'JWT' },
+			audience: 'myaudience',
+			issuer: 'myissuer',
+			algorithm: 'HS256',
+			expiresIn: '1h',
+		},
+	};
+};
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;
-	let strategy: JwtStrategy;
+	let strategy: WsJwtStrategy;
 	let module: TestingModule;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			imports: [PassportModule, JwtModule.register(jwtConstants)],
+			imports: [PassportModule, JwtModule.register(buildAuthConfig())],
 			providers: [
-				JwtStrategy,
+				WsJwtStrategy,
 				{
 					provide: JwtValidationAdapter,
 					useValue: createMock<JwtValidationAdapter>(),
@@ -30,7 +56,7 @@ describe('jwt strategy', () => {
 			],
 		}).compile();
 
-		strategy = module.get(JwtStrategy);
+		strategy = module.get(WsJwtStrategy);
 		validationAdapter = module.get(JwtValidationAdapter);
 	});
 
@@ -77,6 +103,7 @@ describe('jwt strategy', () => {
 	describe('when jwt is not whitelisted', () => {
 		const setup = () => {
 			const mockJwtPayload = jwtPayloadFactory.build();
+
 			validationAdapter.isWhitelisted.mockRejectedValueOnce(null);
 			validationAdapter.isWhitelisted.mockClear();
 			return {
@@ -86,7 +113,7 @@ describe('jwt strategy', () => {
 
 		it('should throw an UnauthorizedException', async () => {
 			const { mockJwtPayload } = setup();
-			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(UnauthorizedException);
+			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(WsException);
 		});
 	});
 });

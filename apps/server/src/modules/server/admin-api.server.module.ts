@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { FileEntity } from '@modules/files/entity';
@@ -29,6 +30,7 @@ const serverModules = [
 		apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,
 		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
 	}),
+	AuthGuardModule,
 ];
 
 @Module({

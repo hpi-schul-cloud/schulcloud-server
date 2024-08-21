@@ -1,4 +1,4 @@
-import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { OauthModule } from '@modules/oauth';

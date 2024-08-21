@@ -1,22 +1,21 @@
-import { AccountService, Account } from '@modules/account';
+import { CreateJwtPayload } from '@infra/auth-guard';
+import { Account, AccountService } from '@modules/account';
+import type { ServerConfig } from '@modules/server';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-// invalid import, can produce dependency cycles
-import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
-import { CreateJwtPayload } from '../interface/jwt-payload';
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { LoginDto } from '../uc/dto';
+import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { LoginDto } from '../uc/dto';
 
 @Injectable()
 export class AuthenticationService {
 	constructor(
 		private readonly jwtService: JwtService,
-		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
@@ -51,7 +50,7 @@ export class AuthenticationService {
 			}),
 		});
 
-		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
+		await this.jwtWhitelistAdapter.addToWhitelist(user.accountId, jti);
 
 		return result;
 	}
@@ -60,7 +59,7 @@ export class AuthenticationService {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
 
 		if (this.isValidJwt(decodedJwt)) {
-			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
+			await this.jwtWhitelistAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
 	}
 

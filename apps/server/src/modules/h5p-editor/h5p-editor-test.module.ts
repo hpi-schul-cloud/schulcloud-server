@@ -2,7 +2,6 @@ import { AuthorizationClientModule } from '@infra/authorization-client';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { AuthenticationModule } from '@modules/authentication';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
@@ -23,7 +22,6 @@ const imports = [
 	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
 	AuthenticationApiModule,
 	AuthorizationClientModule.register(authorizationClientConfig),
-	AuthenticationModule,
 	UserModule,
 	CoreModule,
 	LoggerModule,
