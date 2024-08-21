@@ -5,16 +5,16 @@ import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { SortHelper } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { Course as CourseEntity, User } from '@shared/domain/entity';
-import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { CourseSortQueryType } from '../controller/dto/interface/course-sort-query-type.enum';
-import { CourseStatusQueryType } from '../controller/dto/interface/course-status-query-type.enum';
-import { Course } from '../domain';
+import { Course as CourseDO } from '../domain';
+import { CourseFilter } from '../domain/interface/course-filter';
+import { CourseSortQueryType } from '../domain/interface/course-sort-query-type.enum';
+import { CourseStatusQueryType } from '../domain/interface/course-status-query-type.enum';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseDoService, CourseService } from '../service';
 import { CourseInfoDto } from './dto';
@@ -52,69 +52,46 @@ export class CourseUc {
 		sortBy: CourseSortQueryType = CourseSortQueryType.NAME,
 		courseStatusQueryType?: CourseStatusQueryType,
 		pagination?: Pagination,
-		sortOrder?: SortOrder
+		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<CourseInfoDto>> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authService.getUserWithPermissions(userId);
 		this.authService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.ADMIN_VIEW]));
 
-		const courses: Course[] = await this.courseDoService.findCoursesBySchool(schoolId);
+		const order = { [sortBy]: sortOrder };
+		const filter: CourseFilter = { schoolId, courseStatusQueryType };
+		const options: IFindOptions<CourseDO> = { pagination, order };
+		const courses: Page<CourseDO> = await this.courseDoService.findCourses(filter, options);
 
-		const courseInfosFromCourses: CourseInfoDto[] = await this.getCourseInfosFromCourses(
-			courses,
-			courseStatusQueryType
-		);
+		const resolvedCourses: CourseInfoDto[] = await this.getCourseData(courses.data);
 
-		courseInfosFromCourses.sort((a: CourseInfoDto, b: CourseInfoDto): number =>
-			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
-		);
-
-		const pageContent: CourseInfoDto[] = this.applyPagination(
-			courseInfosFromCourses,
-			pagination?.skip,
-			pagination?.limit
-		);
-
-		const page: Page<CourseInfoDto> = new Page<CourseInfoDto>(pageContent, courseInfosFromCourses.length);
+		const page: Page<CourseInfoDto> = new Page<CourseInfoDto>(resolvedCourses, courses.total);
 
 		return page;
 	}
 
-	private async getCourseInfosFromCourses(
-		courses: Course[],
-		courseStatusQueryType: CourseStatusQueryType | undefined
-	): Promise<CourseInfoDto[]> {
-		const now = new Date();
-		let untilDate;
-		let allCourses: Course[];
-		if (!courseStatusQueryType || courseStatusQueryType === CourseStatusQueryType.CURRENT) {
-			allCourses = courses.filter((course: Course) => {
-				untilDate = course.untilDate;
-				return now < untilDate || untilDate === undefined;
-			});
-		} else {
-			allCourses = courses.filter((course) => {
-				untilDate = course.untilDate;
-				return now > untilDate && untilDate !== undefined;
-			});
-		}
+	private async getCourseData(courses: CourseDO[]): Promise<CourseInfoDto[]> {
+		const courseInfos: CourseInfoDto[] = await Promise.all(
+			courses.map(async (course) => {
+				const groupName = course.syncedWithGroup ? await this.getSyncedGroupName(course.syncedWithGroup) : undefined;
+				const teachers: string[] = await this.getCourseTeachers(course.teachers);
+				const classes: string[] = await this.getCourseClasses(course.classes);
+				const groups: string[] = await this.getCourseGroups(course.groups);
 
-		const resolvedCourses = await this.getCourseData(allCourses);
+				const mapped = new CourseInfoDto({
+					id: course.id,
+					name: course.name,
+					classes: [...classes, ...groups],
+					teachers,
+					syncedWithGroup: groupName,
+				});
 
-		return resolvedCourses;
-	}
+				return mapped;
+			})
+		);
 
-	private applyPagination(courseInfo: CourseInfoDto[], skip = 0, limit?: number): CourseInfoDto[] {
-		let page: CourseInfoDto[];
-
-		if (limit === -1) {
-			page = courseInfo.slice(skip);
-		} else {
-			page = courseInfo.slice(skip, limit ? skip + limit : courseInfo.length);
-		}
-
-		return page;
+		return courseInfos;
 	}
 
 	private async getSyncedGroupName(groupId: EntityId): Promise<string> {
@@ -155,28 +132,5 @@ export class CourseUc {
 			})
 		);
 		return groups;
-	}
-
-	private async getCourseData(courses: Course[]) {
-		const courseInfos: CourseInfoDto[] = await Promise.all(
-			courses.map(async (course) => {
-				const groupName = course.syncedWithGroup ? await this.getSyncedGroupName(course.syncedWithGroup) : undefined;
-				const teachers: string[] = await this.getCourseTeachers(course.teachers);
-				const classes: string[] = await this.getCourseClasses(course.classes);
-				const groups: string[] = await this.getCourseGroups(course.groups);
-
-				const mapped = new CourseInfoDto({
-					id: course.id,
-					name: course.name,
-					classes: [...classes, ...groups],
-					teachers,
-					syncedWithGroup: groupName,
-				});
-
-				return mapped;
-			})
-		);
-
-		return courseInfos;
 	}
 }

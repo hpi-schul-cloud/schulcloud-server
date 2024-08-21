@@ -1,10 +1,15 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
 import { Group } from '@modules/group';
+import { Page } from '@shared/domain/domainobject/page';
 import { Course as CourseEntity } from '@shared/domain/entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { CourseScope } from '@shared/repo/course/course.repo';
 import { Course, CourseRepo } from '../../domain';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
+import { CourseFilter } from '../../domain/interface/course-filter';
+import { CourseStatusQueryType } from '../../domain/interface/course-status-query-type.enum';
 
 export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntity> implements CourseRepo {
 	protected get entityName(): EntityName<CourseEntity> {
@@ -45,8 +50,18 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		return courses;
 	}
 
-	public async findBySchoolId(id: EntityId): Promise<Course[]> {
-		const entities: CourseEntity[] = await this.em.find(CourseEntity, { school: id });
+	public async findCourses(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
+		const scope: CourseScope = new CourseScope();
+		scope.bySchoolId(filter.schoolId);
+		if (filter.courseStatusQueryType === CourseStatusQueryType.CURRENT) {
+			scope.forActiveCourses();
+		} else {
+			scope.forArchivedCourses();
+		}
+
+		const findOptions = this.mapToMikroOrmOptions(options);
+
+		const [entities, total] = await this.em.findAndCount(CourseEntity, scope.query, findOptions);
 
 		await Promise.all(
 			entities.map(async (entity: CourseEntity): Promise<void> => {
@@ -58,6 +73,25 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 
 		const courses: Course[] = entities.map((entity: CourseEntity): Course => CourseEntityMapper.mapEntityToDo(entity));
 
-		return courses;
+		const page: Page<Course> = new Page<Course>(courses, total);
+
+		return page;
+	}
+
+	private mapToMikroOrmOptions<P extends string = never>(options?: IFindOptions<Course>): FindOptions<CourseEntity, P> {
+		const findOptions: FindOptions<CourseEntity, P> = {
+			offset: options?.pagination?.skip,
+			limit: options?.pagination?.limit,
+			orderBy: options?.order,
+		};
+
+		// If no order is specified, a default order is applied here, because pagination can be messed up without order.
+		if (!findOptions.orderBy) {
+			findOptions.orderBy = {
+				_id: SortOrder.asc,
+			};
+		}
+
+		return findOptions;
 	}
 }
