@@ -28,7 +28,7 @@ describe('multple S3 AWS file storage strategy', () => {
 		});
 
 		// mock aws functions
-		mockery.registerMock('aws-sdk', mockAws);
+		mockery.registerMock('@aws-sdk/client-s3', mockAws);
 		mockery.registerMock('../../../../config/secrets.json', {
 			aws: {
 				endpointUrl: 'test.url/',

@@ -55,7 +55,7 @@ describe('wopi service', function test() {
 			warnOnUnregistered: false,
 		});
 
-		mockery.registerMock('aws-sdk', mockAws);
+		mockery.registerMock('@aws-sdk/client-s3', mockAws);
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 

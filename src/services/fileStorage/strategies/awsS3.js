@@ -2,7 +2,7 @@ const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const aws = require('aws-sdk');
+const { S3 } = require('@aws-sdk/client-s3');
 const pathUtil = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
@@ -30,7 +30,7 @@ const getCorsRules = () => [
 ];
 
 const getConfig = (provider) => {
-	const awsConfig = new aws.Config({
+	const awsConfig = {
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,
 		sslEnabled: true,
@@ -38,11 +38,11 @@ const getConfig = (provider) => {
 		secretAccessKey: provider.secretAccessKey,
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
-	});
+	};
 	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 		awsConfig.cors_rules = getCorsRules();
 	}
-	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
+	awsConfig.endpoint = new URL(provider.endpointUrl);
 	return awsConfig;
 };
 
@@ -104,12 +104,12 @@ const getS3 = (storageProvider) => {
 	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
 		CryptoJS.enc.Utf8
 	);
-	return new aws.S3(getConfig(storageProvider));
+	return new S3(getConfig(storageProvider));
 };
 
 const listBuckets = async (awsObject) => {
 	try {
-		const response = await awsObject.s3.listBuckets().promise();
+		const response = await awsObject.s3.listBuckets();
 		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
 	} catch (e) {
 		logger.warning('Could not retrieve buckets for provider', e);
@@ -142,11 +142,11 @@ const createAWSObjectFromSchoolId = async (schoolId) => {
 
 	// begin legacy
 	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
-	const config = new aws.Config(awsConfig);
-	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
+	const config = awsConfig;
+	config.endpoint = new URL(awsConfig.endpointUrl);
 
 	return {
-		s3: new aws.S3(config),
+		s3: new S3(config),
 		bucket: getBucketName(schoolId),
 	};
 	// end legacy
@@ -169,11 +169,11 @@ const createAWSObjectFromStorageProviderIdAndBucket = async (storageProviderId, 
 
 	// begin legacy
 	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
-	const config = new aws.Config(awsConfig);
-	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
+	const config = awsConfig;
+	config.endpoint = new URL(awsConfig.endpointUrl);
 
 	return {
-		s3: new aws.S3(config),
+		s3: new S3(config),
 		bucket,
 	};
 	// end legacy
@@ -286,14 +286,12 @@ const reassignProviderForSchool = async (awsObject) => {
 };
 
 const putBucketCors = async (awsObject) =>
-	awsObject.s3
-		.putBucketCors({
-			Bucket: awsObject.bucket,
-			CORSConfiguration: {
-				CORSRules: getCorsRules(),
-			},
-		})
-		.promise();
+	awsObject.s3.putBucketCors({
+		Bucket: awsObject.bucket,
+		CORSConfiguration: {
+			CORSRules: getCorsRules(),
+		},
+	});
 
 /**
  * Creates bucket. If s3 create bucket returns 409 (Conflict)
@@ -305,7 +303,7 @@ const putBucketCors = async (awsObject) =>
 const createBucket = async (awsObject) => {
 	try {
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
-		await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
+		await awsObject.s3.createBucket({ Bucket: awsObject.bucket });
 		if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 			await putBucketCors(awsObject);
 		}
@@ -354,7 +352,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			Bucket: awsObject.bucket,
 		};
 		try {
-			await awsObject.s3.headBucket(params).promise();
+			await awsObject.s3.headBucket(params);
 			logger.info(`Bucket ${awsObject.bucket} does exist`);
 			return awsObject;
 		} catch (err) {
