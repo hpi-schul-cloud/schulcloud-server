@@ -5,6 +5,8 @@
     namespace: "{{ NAMESPACE }}"
     template: configmap.yml.j2
   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+  tags:
+    - configmap
 
 - name: 1Password
   kubernetes.core.k8s:
@@ -14,6 +16,8 @@
   when: 
       - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
       - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+  tags:
+    - 1password
 
 - name: Deployment
   kubernetes.core.k8s:
@@ -21,6 +25,8 @@
     namespace: "{{ NAMESPACE }}"
     template: deployment.yml.j2
   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+  tags:
+    - deployment
 
 - name: Service
   kubernetes.core.k8s:
@@ -28,6 +34,8 @@
     namespace: "{{ NAMESPACE }}"
     template: svc.yml.j2
   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+  tags:
+    - service
 
 # This is a testing route and will not be deployed
 # - name: Ingress
@@ -36,3 +44,5 @@
 #     namespace: "{{ NAMESPACE }}"
 #     template: ingress.yml.j2
 #   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+#   tags:
+#     - ingress

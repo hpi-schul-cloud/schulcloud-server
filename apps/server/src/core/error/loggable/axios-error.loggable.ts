@@ -11,7 +11,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: this.axiosError.message,
+			message: `message: ${this.axiosError.message} code: ${this.axiosError.code || 'Unknown code'}`,
 			type: this.type,
 			data: JSON.stringify(this.axiosError.response?.data),
 			stack: this.axiosError.stack,

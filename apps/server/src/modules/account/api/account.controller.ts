@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { AccountUc } from './account.uc';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -16,10 +17,9 @@ import {
 	UpdateMyAccountDto,
 } from './dto';
 import { AccountResponseMapper } from './mapper/account-response.mapper';
-import { AccountUc } from './account.uc';
 
 @ApiTags('Account')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}

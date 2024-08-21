@@ -1,11 +1,11 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeResponse } from './dto';
 import { MeUc } from './me.uc';
 
 @ApiTags('Me')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('me')
 export class MeController {
 	constructor(private readonly meUc: MeUc) {}

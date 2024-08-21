@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -43,12 +43,13 @@ import {
 	CourseSyncBodyParams,
 	CourseUrlParams,
 } from './dto';
+import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
 import { CourseInfoListResponse } from './dto/response';
 
 @ApiTags('Courses')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('courses')
 export class CourseController {
 	constructor(
@@ -124,6 +125,18 @@ export class CourseController {
 		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
 	}
 
+	@Post(':courseId/start-sync/')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
+	@ApiNoContentResponse({ description: 'The course was successfully connected to a group.' })
+	public async startSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams,
+		@Body() bodyParams: CourseSyncBodyParams
+	): Promise<void> {
+		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
+	}
+
 	@Get(':courseId/user-permissions')
 	@ApiOperation({ summary: 'Get permissions for a user in a course.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
@@ -144,16 +157,16 @@ export class CourseController {
 		};
 	}
 
-	@Post(':courseId/start-sync/')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
-	@ApiNoContentResponse({ description: 'The course was successfully connected to a group.' })
-	public async startSynchronization(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: CourseUrlParams,
-		@Body() bodyParams: CourseSyncBodyParams
-	): Promise<void> {
-		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
+	@Get(':courseId/cc-metadata')
+	@ApiOperation({ summary: 'Get common cartridge metadata of a course by Id.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async getCourseCcMetadataById(
+		@Param() param: CourseUrlParams
+	): Promise<CourseCommonCartridgeMetadataResponse> {
+		const course = await this.courseUc.findCourseById(param.courseId);
+
+		return CourseMapper.mapToCommonCartridgeMetadataResponse(course);
 	}
 
 	@Get('/all')

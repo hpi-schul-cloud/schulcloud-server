@@ -46,6 +46,10 @@ export class CourseUc {
 		return role.permissions ?? [];
 	}
 
+	public async findCourseById(courseId: EntityId): Promise<CourseEntity> {
+		return this.courseService.findById(courseId);
+	}
+
 	public async findAllCourses(
 		userId: EntityId,
 		schoolId: EntityId,
