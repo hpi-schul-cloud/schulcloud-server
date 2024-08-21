@@ -1,5 +1,4 @@
 import WebSocket from 'ws';
-import { HttpHeaders } from 'aws-sdk/clients/iot';
 
 export class TestConnection {
 	public static getWsUrl = (gatewayPort: number): string => {
@@ -7,7 +6,11 @@ export class TestConnection {
 		return wsUrl;
 	};
 
-	public static setupWs = async (wsUrl: string, docName?: string, headers?: HttpHeaders): Promise<WebSocket> => {
+	public static setupWs = async (
+		wsUrl: string,
+		docName?: string,
+		headers?: Record<string, string>
+	): Promise<WebSocket> => {
 		let ws: WebSocket;
 		if (docName) {
 			ws = new WebSocket(`${wsUrl}/${docName}`, { headers });
