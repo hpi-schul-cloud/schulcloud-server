@@ -1221,14 +1221,9 @@ describe('ImportUser Controller (API)', () => {
 			});
 		});
 
-		describe('when all auto matches are cleared', () => {
+		describe('when user has permission and all auto matches were successfully cleared', () => {
 			const setup = async () => {
-				const { school, system, account } = await authenticatedUser(
-					[Permission.IMPORT_USER_MIGRATE],
-					[],
-					true,
-					'00100'
-				);
+				const { school, system, account } = await authenticatedUser([Permission.IMPORT_USER_UPDATE], [], true, '00100');
 				setConfig(system._id.toString());
 
 				const importusers = importUserFactory.buildList(10, { school });
@@ -1244,8 +1239,7 @@ describe('ImportUser Controller (API)', () => {
 			it('should return no content', async () => {
 				const { loggedInClient } = await setup();
 
-				// TODO: fix
-				// await loggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.NO_CONTENT);
+				await loggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.NO_CONTENT);
 			});
 		});
 	});

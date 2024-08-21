@@ -221,10 +221,7 @@ export class UserImportUc {
 	}
 
 	public async clearAllAutoMatches(currentUserId: EntityId) {
-		const currentUser: User = await this.userRepo.findById(currentUserId, true);
-
-		const requiredPermissions: Permission[] = [Permission.IMPORT_USER_VIEW, Permission.IMPORT_USER_UPDATE];
-		this.authorizationService.checkAllPermissions(currentUser, requiredPermissions);
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.userImportService.checkFeatureEnabled(school);
@@ -240,7 +237,7 @@ export class UserImportUc {
 			autoMatchedUser.revokeMatch();
 		}
 
-		await this.importUserRepo.saveImportUsers(autoMatchedUsers);
+		await this.userImportService.saveImportUsers(autoMatchedUsers);
 	}
 
 	private async endSchoolInUserMigration(school: LegacySchoolDo): Promise<void> {

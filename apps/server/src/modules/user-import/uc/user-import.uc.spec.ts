@@ -16,7 +16,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
+import { Counted, MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, UserRepo } from '@shared/repo';
 import {
 	federalStateFactory,
@@ -1211,27 +1211,69 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('clearAllAutoMatches', () => {
-			describe('when user is given', () => {
+			describe('when user id is given', () => {
 				const setup = () => {
-					const school = legacySchoolDoFactory.buildWithId({
+					const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school: LegacySchoolDo = legacySchoolDoFactory.build({
+						id: schoolEntity.id,
 						inMaintenanceSince: new Date(2024, 1, 1),
 						inUserMigration: true,
 					});
-					const user = userFactory.buildWithId();
+					const currentUser: User = userFactory.buildWithId({ school: schoolEntity });
 
-					userRepo.findById.mockResolvedValueOnce(user);
+					const importUsers: ImportUser[] = [
+						importUserFactory.buildWithId({
+							school: schoolEntity,
+							matchedBy: MatchCreator.AUTO,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+						}),
+						importUserFactory.buildWithId({
+							school: schoolEntity,
+							matchedBy: MatchCreator.AUTO,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+						}),
+					];
+					const countedImportUsers: Counted<ImportUser[]> = [importUsers, importUsers.length];
+
+					userRepo.findById.mockResolvedValueOnce(currentUser);
 					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					importUserRepo.findImportUsers.mockResolvedValueOnce(countedImportUsers);
 					config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
 
 					return {
-						user,
+						currentUser,
 						school,
 					};
 				};
 
-				it('should clear all auto matches', () => {
-					const { user, school } = setup();
-					// 	TODO: implement test
+				it('should check users permissions', async () => {
+					const { currentUser } = setup();
+
+					await uc.clearAllAutoMatches(currentUser.id);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(currentUser, [
+						Permission.IMPORT_USER_UPDATE,
+					]);
+				});
+
+				it('should check if feature is enabled', async () => {
+					const { currentUser } = setup();
+
+					await uc.clearAllAutoMatches(currentUser.id);
+
+					expect(userImportService.checkFeatureEnabled).toHaveBeenCalled();
+				});
+
+				it('should clear auto matches and save the updated import users', async () => {
+					const { currentUser } = setup();
+
+					await uc.clearAllAutoMatches(currentUser.id);
+
+					expect(userImportService.saveImportUsers).toBeCalled();
 				});
 			});
 		});
