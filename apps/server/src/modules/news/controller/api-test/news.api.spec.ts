@@ -1,5 +1,5 @@
+import { JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@modules/news/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';

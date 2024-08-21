@@ -1,17 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtValidationAdapter } from '@infra/auth-guard/';
+import { CacheService } from '@infra/cache';
+import { CacheStoreType } from '@infra/cache/interface/cache-store-type.enum';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CacheService } from '@infra/cache';
-import { CacheStoreType } from '@infra/cache/interface/cache-store-type.enum';
 import { feathersRedis } from '@src/imports-from-feathers';
 import { Cache } from 'cache-manager';
-import { JwtValidationAdapter } from './jwt-validation.adapter';
+import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 import RedisMock = require('../../../../../../test/utils/redis/redisMock');
 
 describe('jwt strategy', () => {
 	let module: TestingModule;
-	let adapter: JwtValidationAdapter;
+	let jwtWhitelistAdapter: JwtWhitelistAdapter;
+	let jwtValidationAdapter: JwtValidationAdapter;
 
 	let cacheManager: DeepMocked<Cache>;
 	let cacheService: DeepMocked<CacheService>;
@@ -20,6 +22,7 @@ describe('jwt strategy', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				JwtValidationAdapter,
+				JwtWhitelistAdapter,
 				{
 					provide: CACHE_MANAGER,
 					useValue: createMock<Cache>(),
@@ -37,7 +40,8 @@ describe('jwt strategy', () => {
 
 		cacheManager = module.get(CACHE_MANAGER);
 		cacheService = module.get(CacheService);
-		adapter = module.get(JwtValidationAdapter);
+		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
+		jwtValidationAdapter = module.get(JwtValidationAdapter);
 	});
 
 	afterAll(async () => {
@@ -52,16 +56,16 @@ describe('jwt strategy', () => {
 		it('should fail without whitelisted jwt', async () => {
 			const accountId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			await expect(adapter.isWhitelisted(accountId, jti)).rejects.toThrow(
+			await expect(jwtValidationAdapter.isWhitelisted(accountId, jti)).rejects.toThrow(
 				'Session was expired due to inactivity - autologout.'
 			);
 		});
 		it('should pass when jwt has been whitelisted', async () => {
 			const accountId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			await adapter.addToWhitelist(accountId, jti);
+			await jwtWhitelistAdapter.addToWhitelist(accountId, jti);
 			// might fail when we would wait more than JWT_TIMEOUT_SECONDS
-			await adapter.isWhitelisted(accountId, jti);
+			await jwtValidationAdapter.isWhitelisted(accountId, jti);
 		});
 	});
 
@@ -70,7 +74,7 @@ describe('jwt strategy', () => {
 			it('should call the cache manager to delete the entry from the cache', async () => {
 				cacheService.getStoreType.mockReturnValue(CacheStoreType.REDIS);
 
-				await adapter.removeFromWhitelist('accountId', 'jti');
+				await jwtWhitelistAdapter.removeFromWhitelist('accountId', 'jti');
 
 				expect(cacheManager.del).toHaveBeenCalledWith('jwt:accountId:jti');
 			});
@@ -80,7 +84,7 @@ describe('jwt strategy', () => {
 			it('should do nothing', async () => {
 				cacheService.getStoreType.mockReturnValue(CacheStoreType.MEMORY);
 
-				await adapter.removeFromWhitelist('accountId', 'jti');
+				await jwtWhitelistAdapter.removeFromWhitelist('accountId', 'jti');
 
 				expect(cacheManager.del).not.toHaveBeenCalled();
 			});

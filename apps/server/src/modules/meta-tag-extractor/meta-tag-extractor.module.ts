@@ -1,5 +1,4 @@
 import { ConsoleWriterModule } from '@infra/console';
-import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LessonModule } from '@modules/lesson';
@@ -17,7 +16,6 @@ import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } f
 
 @Module({
 	imports: [
-		AuthenticationModule,
 		BoardModule,
 		ConsoleWriterModule,
 		HttpModule,

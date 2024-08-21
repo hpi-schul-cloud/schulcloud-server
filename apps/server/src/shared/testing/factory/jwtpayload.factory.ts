@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { BaseFactory } from '@shared/testing';
+import { JwtPayload } from '@infra/auth-guard';
 import { ObjectId } from 'bson';
-import { JwtPayload } from '../interface/jwt-payload';
+import { BaseFactory } from './base.factory';
 
 class JwtPayloadImpl implements JwtPayload {
 	accountId: string;
