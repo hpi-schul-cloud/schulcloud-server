@@ -1,6 +1,5 @@
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,8 +7,8 @@ import { ApiValidationError } from '@shared/common';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
+import { columnBoardEntityFactory } from '../../testing';
 import { ColumnResponse } from '../dto';
 
 const baseRouteName = '/boards';

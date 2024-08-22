@@ -2,7 +2,6 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { AuthorizationModule } from '@modules/authorization';
 import { SystemEntity } from '@modules/system/entity';
 import { HttpModule } from '@nestjs/axios';
@@ -22,7 +21,6 @@ const imports = [
 		entities: [User, AccountEntity, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
 	}),
 	AuthorizationModule,
-	AuthenticationModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	HttpModule,
 	CoreModule,

@@ -5,13 +5,12 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthProviderService } from '../../../oauth-provider/domain/service/oauth-provider.service';
 import { providerOauthClientFactory } from '../../../oauth-provider/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '../testing';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
@@ -22,9 +21,8 @@ describe(ExternalToolService.name, () => {
 	let service: ExternalToolService;
 
 	let externalToolRepo: DeepMocked<ExternalToolRepo>;
-	let schoolToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let courseToolRepo: DeepMocked<ContextExternalToolRepo>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
+	let commonToolDeleteService: DeepMocked<CommonToolDeleteService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
 	let encryptionService: DeepMocked<EncryptionService>;
 
@@ -49,26 +47,21 @@ describe(ExternalToolService.name, () => {
 					useValue: createMock<EncryptionService>(),
 				},
 				{
-					provide: SchoolExternalToolRepo,
-					useValue: createMock<SchoolExternalToolRepo>(),
-				},
-				{
-					provide: ContextExternalToolRepo,
-					useValue: createMock<ContextExternalToolRepo>(),
-				},
-				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: CommonToolDeleteService,
+					useValue: createMock<CommonToolDeleteService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolService);
 		externalToolRepo = module.get(ExternalToolRepo);
-		schoolToolRepo = module.get(SchoolExternalToolRepo);
-		courseToolRepo = module.get(ContextExternalToolRepo);
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
+		commonToolDeleteService = module.get(CommonToolDeleteService);
 		encryptionService = module.get(DefaultEncryptionService);
 	});
 
@@ -375,40 +368,20 @@ describe(ExternalToolService.name, () => {
 
 	describe('deleteExternalTool', () => {
 		const setup = () => {
-			createTools();
-
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-
-			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool]);
+			const externalTool = externalToolFactory.build();
 
 			return {
-				schoolExternalTool,
+				externalTool,
 			};
 		};
 
-		describe('when tool id is set', () => {
-			it('should delete all related CourseExternalTools', async () => {
-				const { schoolExternalTool } = setup();
+		describe('when deleting an external tool', () => {
+			it('should delete the external tool', async () => {
+				const { externalTool } = setup();
 
-				await service.deleteExternalTool(schoolExternalTool.toolId);
+				await service.deleteExternalTool(externalTool);
 
-				expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalTool.id]);
-			});
-
-			it('should delete all related SchoolExternalTools', async () => {
-				const { schoolExternalTool } = setup();
-
-				await service.deleteExternalTool(schoolExternalTool.toolId);
-
-				expect(schoolToolRepo.deleteByExternalToolId).toHaveBeenCalledWith(schoolExternalTool.toolId);
-			});
-
-			it('should delete the ExternalTool', async () => {
-				const { schoolExternalTool } = setup();
-
-				await service.deleteExternalTool(schoolExternalTool.toolId);
-
-				expect(externalToolRepo.deleteById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+				expect(commonToolDeleteService.deleteExternalTool).toHaveBeenCalledWith(externalTool);
 			});
 		});
 	});

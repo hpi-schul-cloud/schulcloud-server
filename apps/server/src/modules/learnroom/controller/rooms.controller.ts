@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,7 +18,7 @@ import {
 } from './dto';
 
 @ApiTags('Rooms')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('rooms')
 export class RoomsController {
 	constructor(

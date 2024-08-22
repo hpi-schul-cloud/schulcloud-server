@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { CommonToolValidationService } from '../../common/service';
+import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../domain';
@@ -13,7 +13,8 @@ export class SchoolExternalToolService {
 	constructor(
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService
+		private readonly commonToolValidationService: CommonToolValidationService,
+		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
@@ -79,8 +80,8 @@ export class SchoolExternalToolService {
 		return status;
 	}
 
-	public deleteSchoolExternalToolById(schoolExternalToolId: EntityId): void {
-		this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
+	public async deleteSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<void> {
+		await this.commonToolDeleteService.deleteSchoolExternalTool(schoolExternalTool);
 	}
 
 	public async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
