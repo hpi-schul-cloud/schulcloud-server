@@ -12,7 +12,9 @@ import { CoursesClientModule } from './common-cartridge-client/courses-client-mo
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		CoursesClientModule.register({}),
+		CoursesClientModule.register({
+			basePath: 'http://localhost:3000/api/v3',
+		}),
 		FilesStorageClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
