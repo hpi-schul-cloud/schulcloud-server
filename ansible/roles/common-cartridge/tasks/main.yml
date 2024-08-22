@@ -17,6 +17,8 @@
   when:
     - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
     - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+  tags:
+    - 1password
 
 - name: 1Password
   kubernetes.core.k8s:
@@ -38,6 +40,8 @@
     - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
     - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+  tags:
+    - 1password
 
 - name: Deployment
   kubernetes.core.k8s:

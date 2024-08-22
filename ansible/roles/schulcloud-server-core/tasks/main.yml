@@ -49,6 +49,8 @@
     when: 
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
 
   - name: Secret by 1Password
     kubernetes.core.k8s:
@@ -67,6 +69,8 @@
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
 
   - name: File Storage Secret by 1Password
     kubernetes.core.k8s:
@@ -106,6 +110,8 @@
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
 
   - name: Admin API server Secret (from 1Password)
     kubernetes.core.k8s:
@@ -127,6 +133,8 @@
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
       - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+    tags:
+      - 1password
 
   - name: Admin API client secret (from 1Password)
     kubernetes.core.k8s:
@@ -274,6 +282,8 @@
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
 
   - name: amqp files storage Secret by 1Password
     kubernetes.core.k8s:
@@ -292,6 +302,8 @@
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
 
   - name: Preview Generator Deployment
     kubernetes.core.k8s:
@@ -366,6 +378,8 @@
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
 
   - name: TlDraw server Secret (from 1Password)
     kubernetes.core.k8s:
@@ -387,6 +401,8 @@
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
       - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
       - WITH_TLDRAW is defined and WITH_TLDRAW|bool
+    tags:
+      - 1password
 
   - name: TlDraw server deployment
     kubernetes.core.k8s:
