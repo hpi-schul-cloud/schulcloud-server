@@ -7,7 +7,7 @@ import { AxiosResponse } from 'axios';
 import { CoursesClientAdapter } from './courses-client.adapter';
 import { CourseCommonCartridgeMetadataResponse, CoursesApi } from './courses-api-client';
 
-const jwtToken = 'someJwtToken';
+const jwtToken = 'dummyJwtToken';
 
 describe(CoursesClientAdapter.name, () => {
 	let module: TestingModule;
@@ -52,7 +52,7 @@ describe(CoursesClientAdapter.name, () => {
 	describe('getCourseCommonCartridgeMetadata', () => {
 		describe('when getCourseCommonCartridgeMetadata is called', () => {
 			const setup = () => {
-				const courseId = 'someCourseId';
+				const courseId = faker.string.uuid();
 				const response = createMock<AxiosResponse<CourseCommonCartridgeMetadataResponse>>({
 					data: {
 						id: faker.string.uuid(),
