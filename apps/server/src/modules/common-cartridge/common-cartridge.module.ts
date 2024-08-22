@@ -7,10 +7,12 @@ import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { defaultMikroOrmOptions } from '../server';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
+import { CoursesClientModule } from './common-cartridge-client/courses-client-module';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
+		CoursesClientModule.register({}),
 		FilesStorageClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,

@@ -31,7 +31,7 @@ export class CoursesClientAdapter {
 	}
 
 	private getJwt(): string {
-		const jwt = extractJwtFromHeader(this.request) ?? this.request.headers.authorization;
+		const jwt = extractJwtFromHeader(this.request) || this.request.headers.authorization;
 
 		if (!jwt) {
 			throw new Error('Authentication is required.');
