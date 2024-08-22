@@ -1,9 +1,32 @@
+- name: Remove External Secret (moin-schule-sync)
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: external-secret.yml.j2
+    state: absent
+  when: 
+    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+    - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+  tags:
+    - 1password
+
 - name: moin-schule-sync secret provisioned by 1Password
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-sync-onepassword.yml.j2
+  tags:
+    - 1password
+
+- name: External Secret for moin-schule-sync (namespace specific)
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: external-secret.yml.j2
+  when:
+    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+    - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
   tags:
     - 1password
 
