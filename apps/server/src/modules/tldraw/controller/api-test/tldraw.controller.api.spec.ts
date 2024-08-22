@@ -1,14 +1,14 @@
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { ApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@modules/server';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { TldrawService } from '../../service';
 import { TldrawController } from '..';
 import { TldrawRepo } from '../../repo';
+import { TldrawService } from '../../service';
 import { tldrawEntityFactory } from '../../testing';
 
 const baseRouteName = '/tldraw-document';
@@ -24,7 +24,7 @@ describe('tldraw controller (api)', () => {
 			controllers: [TldrawController],
 			providers: [Logger, TldrawService, TldrawRepo],
 		})
-			.overrideGuard(AuthGuard('api-key'))
+			.overrideGuard(ApiKeyGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();

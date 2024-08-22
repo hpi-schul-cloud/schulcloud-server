@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '@shared/domain/interface';
+import { currentUserFactory } from '@shared/testing';
 import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceDeprecatedUc } from '../uc';
@@ -18,7 +17,7 @@ describe('VideoConferenceDeprecatedController', () => {
 	let controller: VideoConferenceDeprecatedController;
 	let videoConferenceUc: DeepMocked<VideoConferenceDeprecatedUc>;
 
-	const currentUser: ICurrentUser = { userId: new ObjectId().toHexString() } as ICurrentUser;
+	const currentUser = currentUserFactory.build();
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

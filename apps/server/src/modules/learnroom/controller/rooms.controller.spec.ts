@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
+import { currentUserFactory } from '@shared/testing';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -73,7 +73,7 @@ describe('rooms controller', () => {
 	describe('getRoomBoard', () => {
 		describe('when simple room is fetched', () => {
 			const setup = () => {
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				const ucResult = {
 					roomId: 'id',
@@ -125,7 +125,7 @@ describe('rooms controller', () => {
 
 	describe('patchVisibility', () => {
 		it('should call uc', async () => {
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfLegacyBoardElement').mockImplementation(() => Promise.resolve());
 			await controller.patchElementVisibility(
 				{ roomId: 'roomid', elementId: 'elementId' },
@@ -138,17 +138,17 @@ describe('rooms controller', () => {
 
 	describe('patchOrder', () => {
 		it('should call uc', async () => {
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const ucSpy = jest.spyOn(uc, 'reorderBoardElements').mockImplementation(() => Promise.resolve());
 			await controller.patchOrderingOfElements({ roomId: 'roomid' }, { elements: ['id', 'id', 'id'] }, currentUser);
-			expect(ucSpy).toHaveBeenCalledWith('roomid', 'userId', ['id', 'id', 'id']);
+			expect(ucSpy).toHaveBeenCalledWith('roomid', currentUser.userId, ['id', 'id', 'id']);
 		});
 	});
 
 	describe('copyCourse', () => {
 		describe('when course should be copied via API call', () => {
 			const setup = () => {
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 				const ucResult = {
 					title: 'example title',
 					type: 'COURSE' as CopyElementType,
@@ -162,7 +162,7 @@ describe('rooms controller', () => {
 				const { currentUser, ucSpy } = setup();
 
 				await controller.copyCourse(currentUser, { roomId: 'roomId' });
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'roomId');
+				expect(ucSpy).toHaveBeenCalledWith(currentUser.userId, 'roomId');
 			});
 
 			it('should return result of correct type', async () => {
@@ -177,7 +177,7 @@ describe('rooms controller', () => {
 	describe('copyLesson', () => {
 		describe('when lesson should be copied via API call', () => {
 			const setup = () => {
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 				const ucResult = {
 					title: 'example title',
 					type: 'LESSON' as CopyElementType,
@@ -192,7 +192,10 @@ describe('rooms controller', () => {
 				const { currentUser, ucSpy } = setup();
 
 				await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, { courseId: 'id' });
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'lessonId', { courseId: 'id', userId: 'userId' });
+				expect(ucSpy).toHaveBeenCalledWith(currentUser.userId, 'lessonId', {
+					courseId: 'id',
+					userId: currentUser.userId,
+				});
 			});
 
 			it('should return result of correct type', async () => {

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -28,7 +28,7 @@ import { SubmissionsResponse } from './dto/submission-item/submissions.response'
 import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Submission')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('board-submissions')
 export class BoardSubmissionController {
 	constructor(

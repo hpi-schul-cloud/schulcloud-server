@@ -1,76 +1,53 @@
 # Loadtesting the boards
 
-The socket.io documentation suggests to use the tool artillery in order to load test a socket-io tool like our board-collaboration service.
+The tests can be run from your local environment or from any other place that has the code and installed dependencies.
 
-For defining scenarios you need to use/create Yaml-files that define which operations with which parameters need to be executed in which order.
+## provide environment variables
 
-Some sceneraios were already prepared and are stored in the subfolder scenarios.
+In order to run the load tests you need to provide three environment variables:
 
-## install artillery
+### target
 
-To run artillery from your local environment you need to install it first including an adapter that supports socketio-v3-websocket communication:
+The Url of the server.
 
-```sh
-npm install -g artillery artillery-engine-socketio-v3
-```
+e.g. `export TARGET_URL=http://localhost:4450` <br>
+e.g. `export TARGET_URL=https://bc-7830-board-loadtests-merge.brb.dbildungscloud.dev`
 
-## manual execution
+### courseId
 
-To execute a scenario you can run artillery from the shell / commandline...:
+The id of the course that the user (see next variable "token") is allowed to create boards in.<br>
+e.g. `export COURSE_ID=66c493f577499cc64bf9aab4`
 
-Using the `--variables` parameter it is possible to define several variables and there values that can be used in the scenerio-yaml-file:
+### token
 
-- **target**: defines the base url for all requests (REST and WebSocket)
-  e.g. `https://main.dbc.dbildungscloud.dev`
-- **token**: a valid JWT for the targeted system
-- **board_id**: id of an existing board the tests should be executed on
+A valid JWT-token of a user that is allowed to create boards in the given course. <br>
+e.g. `export TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6...`
 
-```bash
-npx artillery run --variables "{'target': 'https://main.dbc.dbildungscloud.dev', 'token': 'eJ....', 'board_id': '668d0e03bf3689d12e1e86fb' }" './scenarios/3users.yml' --output artilleryreport.json
-```
+## run connection test
 
-On Windows Powershell, the variables value needs to be wrapped in singlequotes, and inside the json you need to use backslash-escaped doublequotes:
+This test is only trying to establish the defined amount of connections. It is useful to find out about any problems with larger amounts of connections.
 
-```powershell
-npx artillery run --variables '{\"target\": \"https://main.dbc.dbildungscloud.dev\", \"token\": \"eJ....\", \"board_id\": \"668d0e03bf3689d12e1e86fb\" }' './scenarios/3users.yml' --output artilleryreport.json
-```
-
-## visualizing the recorded results
-
-It is possible to generate a HTML-report based on the recorded data.
-
-```powershell
-npx artillery report --output=$board_title.html artilleryreport.json
-```
-
-## automatic execution
-
-You can run one of the existing scenarios by executing:
+To run the test:
 
 ```bash
-bash runScenario.sh
+npx jest apps/server/src/modules/board/loadtest/connection.load.spec.ts
 ```
 
-This will:
+## run board-collaboration test
 
-1. let you choose from scenario-files
-2. create a fresh JWT-webtoken
-3. create a fresh board (in one of the courses) the user has access to
-4. name the board by a combination of datetime and the scenario name.
-5. output a link to the generated board (in order open and see the test live)
-6. start the execution of the scenario against this newly created board
-7. generate a html report in the end
+This test emulates multiple class settings (defined here: class-definitions.ts).
+By default there are 20 viewer classes emulated (consisting of one fastEditor (teacher) and thirty viewers (students)).
+There is also the definition of a collaboration class (constisting of 30 fastEditors). By default no collaboration-class is emulated.
+The editors create columns, cards, texts, links etc. For each class we have a separate board that is automatically created at the beginning of the testrun.
+At the end of the test you will see a summary in the bash - which is also written into a json file. This is helpful when comparing execution times (visible in grafana) with response times and the actual setting that was run.
 
-You can also provide the target as the first and the name of the scenario as the second parameter - to avoid the need to select those. Here is an example:
+**Hint 1**: the amount of classes can be overruled via two environment variables:
+VIEWER_CLASSES and COLLAB_CLASSES).
+
+**Hint 2**: to modifiy what a viewerClass is - you can also manipulate the settings in class-definition.ts.
+
+To run the test:
 
 ```bash
-bash runScenario.sh https://bc-6854-basic-load-tests.nbc.dbildungscloud.dev 3users
+npx jest apps/server/src/modules/board/loadtest/board-collaboration.load.spec.ts
 ```
-
-## password
-
-By typeing `export CARL_CORD_PASSWORD=realpassword` the script will not ask you anymore for the password to create a token.
-
-## Todos
-
-- [ ] enable optional parameter course_id

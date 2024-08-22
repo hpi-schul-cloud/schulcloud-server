@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -35,7 +35,7 @@ import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('cards')
 export class CardController {
 	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}

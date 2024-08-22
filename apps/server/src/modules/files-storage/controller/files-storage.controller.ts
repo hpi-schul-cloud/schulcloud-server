@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	BadRequestException,
 	Body,
@@ -46,7 +46,7 @@ import {
 } from './dto';
 
 @ApiTags('file')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('file')
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC) {}

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	BadRequestException,
 	Body,
@@ -27,7 +27,7 @@ import {
  * This controller is deprecated. Please use {@link VideoConferenceController} instead.
  */
 @ApiTags('VideoConference')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('videoconference')
 export class VideoConferenceDeprecatedController {
 	constructor(private readonly videoConferenceUc: VideoConferenceDeprecatedUc) {}
