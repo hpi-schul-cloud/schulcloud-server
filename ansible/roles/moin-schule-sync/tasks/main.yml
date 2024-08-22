@@ -2,9 +2,9 @@
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
-    template: external-secret.yml.j2
+    template: moin-schule-sync-external-secret.yml.j2
     state: absent
-  when: 
+  when:
     - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
     - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
   tags:
@@ -23,7 +23,7 @@
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
-    template: external-secret.yml.j2
+    template: moin-schule-sync-external-secret.yml.j2
   when:
     - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
     - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
