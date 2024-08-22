@@ -3,11 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { faker } from '@faker-js/faker';
-import { AxiosPromise, AxiosResponse } from 'axios';
-import { CourseCommonCartridgeMetadataResponse } from '@src/modules/learnroom/controller/dto/course-cc-metadata.response';
+import { AxiosResponse } from 'axios';
 import { CoursesClientAdapter } from './courses-client.adapter';
-import { CoursesApi } from './courses-api-client';
-import { CourseCommonCartridgeMetadataDto } from './dto/course-common-cartridge-metadata.dto';
+import { CourseCommonCartridgeMetadataResponse, CoursesApi } from './courses-api-client';
 
 const jwtToken = 'someJwtToken';
 
@@ -55,11 +53,11 @@ describe(CoursesClientAdapter.name, () => {
 		describe('when getCourseCommonCartridgeMetadata is called', () => {
 			const setup = () => {
 				const courseId = 'someCourseId';
-				const response = createMock<AxiosResponse<CourseCommonCartridgeMetadataResponse, any>>({
+				const response = createMock<AxiosResponse<CourseCommonCartridgeMetadataResponse>>({
 					data: {
 						id: faker.string.uuid(),
 						title: faker.lorem.word(),
-						creationDate: faker.date.recent(),
+						creationDate: faker.date.recent().toString(),
 						copyRightOwners: [faker.lorem.word(), faker.lorem.word()],
 					},
 				});
@@ -69,9 +67,12 @@ describe(CoursesClientAdapter.name, () => {
 			};
 			it('should return course common cartridge metadata', async () => {
 				const { courseId } = setup();
-				const result: CourseCommonCartridgeMetadataDto = await this.service.getCourseCommonCartridgeMetadata(courseId);
 
-				expect(result).toBeDefined();
+				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
+
+				const result = await service.getCourseCommonCartridgeMetadata(courseId);
+
+				expect(coursesApi.courseControllerGetCourseCcMetadataById).toHaveBeenCalledWith(courseId, expectedOptions);
 				expect(result.id).toBeDefined();
 				expect(result.title).toBeDefined();
 				expect(result.creationDate).toBeDefined();
