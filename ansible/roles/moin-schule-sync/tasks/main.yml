@@ -4,6 +4,8 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-sync-onepassword.yml.j2
+  tags:
+    - 1password
 
 - name: moin.schule users sync CronJob
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
@@ -11,6 +13,8 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-users-sync-cronjob.yml.j2
+  tags:
+    - cronjob
 
 - name: moin.schule users sync CronJob ConfigMap
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
@@ -18,6 +22,8 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-users-sync-cronjob-configmap.yml.j2
+  tags:
+    - configmap
 
 - name: unsynced moin.schule users deletion queueing CronJob
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true and WITH_UNSYNCED_ENTITIES_DELETION is defined and WITH_UNSYNCED_ENTITIES_DELETION|bool == true
@@ -25,6 +31,8 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-users-deletion-queueing-cronjob.yml.j2
+  tags:
+    - cronjob
 
 - name: unsynced moin.schule users deletion queueing CronJob ConfigMap
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true and WITH_UNSYNCED_ENTITIES_DELETION is defined and WITH_UNSYNCED_ENTITIES_DELETION|bool == true
@@ -32,3 +40,5 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-users-deletion-queueing-cronjob-configmap.yml.j2
+  tags:
+    - configmap

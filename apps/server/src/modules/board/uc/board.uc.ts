@@ -88,7 +88,7 @@ export class BoardUc {
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
-		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		const column = this.boardNodeFactory.buildColumn();

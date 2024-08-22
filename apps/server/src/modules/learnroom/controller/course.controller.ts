@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -35,7 +35,7 @@ import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
 @ApiTags('Courses')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('courses')
 export class CourseController {
 	constructor(
@@ -131,11 +131,13 @@ export class CourseController {
 		};
 	}
 
-	@Get(':courseId')
+	@Get(':courseId/cc-metadata')
 	@ApiOperation({ summary: 'Get common cartridge metadata of a course by Id.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-	public async getCourseById(@Param() param: CourseUrlParams): Promise<CourseCommonCartridgeMetadataResponse> {
+	public async getCourseCcMetadataById(
+		@Param() param: CourseUrlParams
+	): Promise<CourseCommonCartridgeMetadataResponse> {
 		const course = await this.courseUc.findCourseById(param.courseId);
 
 		return CourseMapper.mapToCommonCartridgeMetadataResponse(course);

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
@@ -14,7 +14,7 @@ export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
 	@Get('/id/:schoolId')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async getSchoolById(
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
@@ -25,7 +25,7 @@ export class SchoolController {
 	}
 
 	@Get('/list-for-external-invite')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
@@ -54,7 +54,7 @@ export class SchoolController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Get('/:schoolId/systems')
 	public async getSchoolSystems(
 		@Param() urlParams: SchoolUrlParams,
@@ -72,7 +72,7 @@ export class SchoolController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Patch('/:schoolId')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async updateSchool(
 		@Param() urlParams: SchoolUrlParams,
 		@Body() body: SchoolUpdateBodyParams,
@@ -84,7 +84,7 @@ export class SchoolController {
 	}
 
 	@Patch('/:schoolId/system/:systemId/remove')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async removeSystemFromSchool(
 		@Param() urlParams: SchoolRemoveSystemUrlParams,
 		@CurrentUser() user: ICurrentUser
