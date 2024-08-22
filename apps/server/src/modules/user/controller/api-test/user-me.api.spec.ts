@@ -5,8 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ResolvedUserResponse } from '@modules/user/controller/dto';
 import { ApiValidationError } from '@shared/common';

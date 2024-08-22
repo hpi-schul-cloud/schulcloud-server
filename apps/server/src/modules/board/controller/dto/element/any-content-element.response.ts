@@ -1,4 +1,5 @@
 import { CollaborativeTextEditorElementResponse } from './collaborative-text-editor-element.response';
+import { DeletedElementResponse } from './deleted-element.response';
 import { DrawingElementResponse } from './drawing-element.response';
 import { ExternalToolElementResponse } from './external-tool-element.response';
 import { FileElementResponse } from './file-element.response';
@@ -13,7 +14,8 @@ export type AnyContentElementResponse =
 	| SubmissionContainerElementResponse
 	| ExternalToolElementResponse
 	| DrawingElementResponse
-	| CollaborativeTextEditorElementResponse;
+	| CollaborativeTextEditorElementResponse
+	| DeletedElementResponse;
 
 export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
 	element instanceof FileElementResponse;

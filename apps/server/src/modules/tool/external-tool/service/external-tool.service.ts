@@ -5,11 +5,11 @@ import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
@@ -19,10 +19,9 @@ export class ExternalToolService {
 		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
-		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		private readonly legacyLogger: LegacyLogger
+		private readonly legacyLogger: LegacyLogger,
+		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -63,8 +62,8 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.legacyLogger.debug(
-							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+						this.legacyLogger.warn(
+							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId} and name ${tool.name}. It will be filtered out.`
 						);
 						return undefined;
 					}
@@ -108,17 +107,8 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
-	public async deleteExternalTool(toolId: EntityId): Promise<void> {
-		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
-		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
-		);
-
-		await Promise.all([
-			this.contextExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
-			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
-			this.externalToolRepo.deleteById(toolId),
-		]);
+	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
+		await this.commonToolDeleteService.deleteExternalTool(externalTool);
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

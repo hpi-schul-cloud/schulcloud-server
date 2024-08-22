@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -42,7 +42,7 @@ export class OauthProviderController {
 		private readonly oauthProviderLoginFlowUc: OauthProviderLoginFlowUc
 	) {}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Get('clients/:id')
 	public async getOAuth2Client(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -55,7 +55,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Get('clients')
 	public async listOAuth2Clients(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -76,7 +76,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Post('clients')
 	public async createOAuth2Client(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -89,7 +89,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Put('clients/:id')
 	public async updateOAuth2Client(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -104,7 +104,7 @@ export class OauthProviderController {
 	}
 
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Delete('clients/:id')
 	public deleteOAuth2Client(@CurrentUser() currentUser: ICurrentUser, @Param() params: IdParams): Promise<void> {
 		const promise: Promise<void> = this.crudUc.deleteOAuth2Client(currentUser.userId, params.id);
@@ -121,7 +121,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Patch('loginRequest/:challenge')
 	public async patchLoginRequest(
 		@Param() params: ChallengeParams,
@@ -141,7 +141,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Patch('logoutRequest/:challenge')
 	public async acceptLogoutRequest(@Param() params: ChallengeParams): Promise<RedirectResponse> {
 		const redirect: ProviderRedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
@@ -151,7 +151,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Get('consentRequest/:challenge')
 	public async getConsentRequest(@Param() params: ChallengeParams): Promise<ConsentResponse> {
 		const consentRequest: ProviderConsentResponse = await this.consentFlowUc.getConsentRequest(params.challenge);
@@ -161,7 +161,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Patch('consentRequest/:challenge')
 	public async patchConsentRequest(
 		@Param() params: ChallengeParams,
@@ -181,7 +181,7 @@ export class OauthProviderController {
 		return response;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Get('auth/sessions/consent')
 	public async listConsentSessions(@CurrentUser() currentUser: ICurrentUser): Promise<ConsentSessionResponse[]> {
 		const sessions: ProviderConsentSessionResponse[] = await this.oauthProviderUc.listConsentSessions(
@@ -196,7 +196,7 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Delete('auth/sessions/consent')
 	public revokeConsentSession(
 		@CurrentUser() currentUser: ICurrentUser,

@@ -1,8 +1,9 @@
 import type { EntityId, InputFormat } from '@shared/domain/types';
+import type { MediaBoardColors } from '../media-board';
 import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
 import { BoardLayout } from './board-layout.enum';
-import type { MediaBoardColors } from '../media-board';
+import { ContentElementType } from './content-element-type.enum';
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -63,6 +64,11 @@ export interface SubmissionContainerElementProps extends BoardNodeProps {
 export interface SubmissionItemProps extends BoardNodeProps {
 	completed: boolean;
 	userId: EntityId;
+}
+
+export interface DeletedElementProps extends BoardNodeProps {
+	title: string;
+	deletedElementType: ContentElementType;
 }
 
 export interface MediaBoardProps extends BoardNodeProps {

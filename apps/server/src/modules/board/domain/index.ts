@@ -16,3 +16,4 @@ export * from './submission-item.do';
 export * from './path-utils';
 export * from './types';
 export * from './type-mapping';
+export * from './deleted-element.do';
