@@ -319,6 +319,15 @@
     tags:
       - deployment
 
+  - name: TlDraw remove resources
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: ""
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool == false 
+    tags:
+      - deployment
+
   - name: TlDraw server service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
