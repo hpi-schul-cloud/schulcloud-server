@@ -45,6 +45,20 @@ export class TypeGuard {
 		return value;
 	}
 
+	static isStringOfStrings<T>(value: unknown, values: T[]): value is T {
+		const isStringOfValue = TypeGuard.isString(value) && values.includes(value as T);
+
+		return isStringOfValue;
+	}
+
+	static checkStringOfStrings<T>(value: unknown, values: T[]): T {
+		if (!TypeGuard.isStringOfStrings(value, values)) {
+			throw new Error('Value is not in strings');
+		}
+
+		return value;
+	}
+
 	static isArray(value: unknown): value is [] {
 		const isArray = Array.isArray(value);
 

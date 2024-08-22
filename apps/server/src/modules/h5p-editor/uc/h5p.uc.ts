@@ -1,3 +1,4 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import {
 	AuthorizationClientAdapter,
 	AuthorizationContextBuilder,
@@ -28,7 +29,6 @@ import {
 } from '@nestjs/common';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ICurrentUser } from '@src/modules/authentication';
 import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
