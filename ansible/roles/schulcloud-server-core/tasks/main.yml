@@ -136,6 +136,18 @@
     tags:
       - 1password
 
+  - name: Remove External Secret for Admin API Client
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret-admin-api-client.yml.j2
+      state: absent
+    when:
+      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+      - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
+    tags:
+      - 1password
+
   - name: Admin API client secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -143,6 +155,18 @@
       template: onepassword-admin-api-client.yml.j2
     when:
       - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+    tags:
+      - 1password
+
+  - name: External Secret (namespace specific) for Admin API Client
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret-admin-api-client.yml.j2
+    when: 
+      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+      - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
       - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
     tags:
       - 1password
