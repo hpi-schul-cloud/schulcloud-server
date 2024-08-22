@@ -50,7 +50,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		return courses;
 	}
 
-	public async findCourses(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
+	public async findCourses(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Course[]> {
 		const scope: CourseScope = new CourseScope();
 		scope.bySchoolId(filter.schoolId);
 		if (filter.courseStatusQueryType === CourseStatusQueryType.CURRENT) {
@@ -61,7 +61,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 
 		const findOptions = this.mapToMikroOrmOptions(options);
 
-		const [entities, total] = await this.em.findAndCount(CourseEntity, scope.query, findOptions);
+		const entities = await this.em.find(CourseEntity, scope.query, findOptions);
 
 		await Promise.all(
 			entities.map(async (entity: CourseEntity): Promise<void> => {
@@ -73,9 +73,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 
 		const courses: Course[] = entities.map((entity: CourseEntity): Course => CourseEntityMapper.mapEntityToDo(entity));
 
-		const page: Page<Course> = new Page<Course>(courses, total);
-
-		return page;
+		return courses;
 	}
 
 	private mapToMikroOrmOptions<P extends string = never>(options?: IFindOptions<Course>): FindOptions<CourseEntity, P> {

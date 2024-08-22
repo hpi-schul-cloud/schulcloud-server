@@ -8,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { Course as CourseEntity, User } from '@shared/domain/entity';
-import { IFindOptions, Pagination, Permission, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, Pagination, Permission, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { Course as CourseDO } from '../domain';
@@ -53,7 +53,7 @@ export class CourseUc {
 	public async findAllCourses(
 		userId: EntityId,
 		schoolId: EntityId,
-		sortBy: CourseSortQueryType = CourseSortQueryType.NAME,
+		sortByField: CourseSortQueryType = CourseSortQueryType.NAME,
 		courseStatusQueryType?: CourseStatusQueryType,
 		pagination?: Pagination,
 		sortOrder: SortOrder = SortOrder.asc
@@ -63,14 +63,14 @@ export class CourseUc {
 		const user: User = await this.authService.getUserWithPermissions(userId);
 		this.authService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.ADMIN_VIEW]));
 
-		const order = { [sortBy]: sortOrder };
+		const order: SortOrderMap<CourseDO> = { [sortByField]: sortOrder };
 		const filter: CourseFilter = { schoolId, courseStatusQueryType };
 		const options: IFindOptions<CourseDO> = { pagination, order };
-		const courses: Page<CourseDO> = await this.courseDoService.findCourses(filter, options);
+		const courses: CourseDO[] = await this.courseDoService.findCourses(filter, options);
 
-		const resolvedCourses: CourseInfoDto[] = await this.getCourseData(courses.data);
+		const resolvedCourses: CourseInfoDto[] = await this.getCourseData(courses);
 
-		const page: Page<CourseInfoDto> = new Page<CourseInfoDto>(resolvedCourses, courses.total);
+		const page: Page<CourseInfoDto> = new Page<CourseInfoDto>(resolvedCourses, courses.length);
 
 		return page;
 	}
