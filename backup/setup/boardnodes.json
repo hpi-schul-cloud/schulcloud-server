@@ -1,0 +1,74 @@
+[
+	{
+		"_id": {
+			"$oid": "649452a81fef6fd796117f7f"
+		},
+		"context": {
+			"$oid": "5fa3a2f3a9c31a26f4d1d309"
+		},
+		"contextType": "course",
+		"createdAt": {
+			"$date": "2023-06-22T13:54:48.996Z"
+		},
+		"isVisible": true,
+		"layout": "columns",
+		"level": 0,
+		"path": ",",
+		"position": 0,
+		"title": "CY Kurs-Board",
+		"type": "column-board",
+		"updatedAt": {
+			"$date": "2023-06-22T13:54:48.996Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "649452a91fef6fd796117f80"
+		},
+		"createdAt": {
+			"$date": "2024-05-31T09:01:06.497Z"
+		},
+		"level": 1,
+		"path": ",649452a81fef6fd796117f7f,",
+		"position": 0,
+		"title": "CY Column",
+		"type": "column",
+		"updatedAt": {
+			"$date": "2024-05-31T09:01:06.508Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "649452a91fef6fd796117f81"
+		},
+		"createdAt": {
+			"$date": "2024-05-31T09:01:06.500Z"
+		},
+		"level": 2,
+		"path": ",649452a81fef6fd796117f7f,649452a91fef6fd796117f80,",
+		"position": 0,
+		"title": "CY Card",
+		"type": "card",
+		"updatedAt": {
+			"$date": "2024-05-31T09:01:06.508Z"
+		},
+		"height": 254.203125
+	},
+	{
+		"_id": {
+			"$oid": "649457451fef6fd796117f8a"
+		},
+		"createdAt": {
+			"$date": "2023-06-22T14:14:29.082Z"
+		},
+		"level": 3,
+		"path": ",649452a81fef6fd796117f7f,649452a91fef6fd796117f80,649452a91fef6fd796117f81,",
+		"position": 0,
+		"type": "deleted-element",
+		"updatedAt": {
+			"$date": "2023-06-22T14:14:29.083Z"
+		},
+		"title": "CY Deleted Tool",
+		"deletedElementType": "externalTool"
+	}
+]

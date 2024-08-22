@@ -1,4 +1,4 @@
-import { ICurrentUser } from '@modules/authentication/interface/user';
+import { ICurrentUser } from '@infra/auth-guard';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { LegacyLogger, RequestLoggingBody } from '@src/core/logger';
 import { Request } from 'express';

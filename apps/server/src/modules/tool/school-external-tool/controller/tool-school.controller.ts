@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -32,7 +32,7 @@ import {
 } from './dto';
 
 @ApiTags('Tool')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tools/school-external-tools')
 export class ToolSchoolController {
 	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc, private readonly logger: LegacyLogger) {}

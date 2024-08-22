@@ -72,6 +72,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 			email: `${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname}.${externalUserData.pid}@schul-cloud.org`,
 			roleNames: [RoleName.ADMINISTRATOR],
 			classNames: undefined,
+			externalRoleNames: ['admin'],
 		});
 
 	describe('getData', () => {

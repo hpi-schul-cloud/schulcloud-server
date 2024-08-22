@@ -1,6 +1,5 @@
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
 import { ExecutionContext, INestApplication } from '@nestjs/common';

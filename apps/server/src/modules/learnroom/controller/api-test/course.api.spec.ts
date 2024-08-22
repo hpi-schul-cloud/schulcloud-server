@@ -245,7 +245,7 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	describe('[GET] /courses/:courseId', () => {
+	describe('[GET] /courses/:courseId/cc-metadata', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
@@ -263,7 +263,7 @@ describe('Course Controller (API)', () => {
 			const { course, teacher } = await setup();
 
 			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}`);
+			const response = await loggedInClient.get(`${course.id}/cc-metadata`);
 			const data = response.body as CourseCommonCartridgeMetadataResponse;
 
 			expect(response.statusCode).toBe(200);

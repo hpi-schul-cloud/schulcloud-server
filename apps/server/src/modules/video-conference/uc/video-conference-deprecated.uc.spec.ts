@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
-import { ICurrentUser } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
