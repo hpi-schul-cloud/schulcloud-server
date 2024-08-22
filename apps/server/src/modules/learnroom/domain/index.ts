@@ -1,5 +1,4 @@
 export { Course, CourseProps } from './do';
-export { CourseRepo, COURSE_REPO } from './interface';
-export { CourseNotSynchronizedLoggableException } from './error';
-export { CourseAlreadySynchronizedLoggableException } from './error';
+export { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from './error';
+export { COURSE_REPO, CourseFilter, CourseRepo, CourseSortQueryType, CourseStatusQueryType } from './interface';
 export { CourseSynchronizationStoppedLoggable } from './loggable';

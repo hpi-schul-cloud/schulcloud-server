@@ -12,9 +12,7 @@ import { IFindOptions, Pagination, Permission, SortOrder, SortOrderMap } from '@
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { Course as CourseDO } from '../domain';
-import { CourseFilter } from '../domain/interface/course-filter';
-import { CourseSortQueryType } from '../domain/interface/course-sort-query-type.enum';
-import { CourseStatusQueryType } from '../domain/interface/course-status-query-type.enum';
+import { CourseFilter, CourseSortQueryType, CourseStatusQueryType } from '../domain/interface';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseDoService, CourseService } from '../service';
 import { CourseInfoDto } from './dto';

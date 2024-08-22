@@ -3,11 +3,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { groupFactory } from '@shared/testing';
 import {
 	Course,
 	COURSE_REPO,
 	CourseAlreadySynchronizedLoggableException,
+	CourseFilter,
 	CourseNotSynchronizedLoggableException,
 	CourseRepo,
 } from '../domain';
@@ -218,6 +221,41 @@ describe(CourseDoService.name, () => {
 				await expect(service.startSynchronization(course, group)).rejects.toThrow(
 					CourseAlreadySynchronizedLoggableException
 				);
+			});
+		});
+	});
+
+	describe('findCourses', () => {
+		describe('when course are found', () => {
+			const setup = () => {
+				const courses: Course[] = courseFactory.buildList(5);
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const filter: CourseFilter = { schoolId };
+				const options: IFindOptions<Course> = {
+					order: {
+						name: SortOrder.asc,
+					},
+					pagination: {
+						limit: 2,
+						skip: 1,
+					},
+				};
+
+				courseRepo.findCourses.mockResolvedValueOnce(courses);
+
+				return {
+					courses,
+					schoolId,
+					filter,
+					options,
+				};
+			};
+
+			it('should return the courses by passing filter and options', async () => {
+				const { courses, filter, options } = setup();
+				const result: Course[] = await service.findCourses(filter, options);
+
+				expect(result).toEqual(courses);
 			});
 		});
 	});

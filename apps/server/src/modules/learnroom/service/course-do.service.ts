@@ -3,9 +3,14 @@ import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { type Course, COURSE_REPO, CourseNotSynchronizedLoggableException, CourseRepo } from '../domain';
-import { CourseAlreadySynchronizedLoggableException } from '../domain/error/course-already-synchronized.loggable-exception';
-import { CourseFilter } from '../domain/interface/course-filter';
+import {
+	type Course,
+	COURSE_REPO,
+	CourseAlreadySynchronizedLoggableException,
+	CourseFilter,
+	CourseNotSynchronizedLoggableException,
+	CourseRepo,
+} from '../domain';
 
 @Injectable()
 export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course> {

@@ -1,15 +1,12 @@
 import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
 import { Group } from '@modules/group';
-import { Page } from '@shared/domain/domainobject/page';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { CourseScope } from '@shared/repo/course/course.repo';
-import { Course, CourseRepo } from '../../domain';
+import { Course, CourseFilter, CourseRepo, CourseStatusQueryType } from '../../domain';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
-import { CourseFilter } from '../../domain/interface/course-filter';
-import { CourseStatusQueryType } from '../../domain/interface/course-status-query-type.enum';
 
 export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntity> implements CourseRepo {
 	protected get entityName(): EntityName<CourseEntity> {
