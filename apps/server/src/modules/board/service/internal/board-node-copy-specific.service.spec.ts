@@ -15,6 +15,7 @@ import {
 	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
+	DeletedElement,
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
@@ -27,6 +28,7 @@ import {
 	collaborativeTextEditorFactory,
 	columnBoardFactory,
 	columnFactory,
+	deletedElementFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
@@ -602,6 +604,26 @@ describe(BoardNodeCopyService.name, () => {
 					status: CopyStatusEnum.NOT_DOING,
 				})
 			);
+		});
+	});
+
+	describe('copy deleted element', () => {
+		const setup = () => {
+			const { copyContext } = setupContext();
+			const deletedElement = deletedElementFactory.build();
+
+			return {
+				copyContext,
+				deletedElement,
+			};
+		};
+
+		it('should copy the node', async () => {
+			const { copyContext, deletedElement } = setup();
+
+			const result = await service.copyDeletedElement(deletedElement, copyContext);
+
+			expect(result.copyEntity).toBeInstanceOf(DeletedElement);
 		});
 	});
 });

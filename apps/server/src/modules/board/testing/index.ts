@@ -16,3 +16,4 @@ export * from './media-line.factory';
 export * from './rich-text-element.factory';
 export * from './submission-container-element.factory';
 export * from './submission-item.factory';
+export * from './deleted-element.factory';
