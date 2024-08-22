@@ -2,7 +2,6 @@ import { EncryptionModule } from '@infra/encryption';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
@@ -29,7 +28,6 @@ import {
 		ExternalToolValidationService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
-		ExternalToolRepo,
 		ExternalToolMetadataMapper,
 		ToolContextMapper,
 		DatasheetPdfService,

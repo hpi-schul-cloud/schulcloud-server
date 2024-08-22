@@ -10,6 +10,7 @@ export enum BoardNodeType {
 	SUBMISSION_ITEM = 'submission-item',
 	EXTERNAL_TOOL = 'external-tool',
 	COLLABORATIVE_TEXT_EDITOR = 'collaborative-text-editor',
+	DELETED_ELEMENT = 'deleted-element',
 
 	MEDIA_BOARD = 'media-board',
 	MEDIA_LINE = 'media-line',

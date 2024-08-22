@@ -52,6 +52,19 @@ export class BoardNodeService {
 		await this.contentElementUpdateService.updateContent(element, content);
 	}
 
+	async replace(oldNode: AnyBoardNode, newNode: AnyBoardNode): Promise<void> {
+		const parent: AnyBoardNode | undefined = await this.findParent(oldNode);
+
+		if (!parent) {
+			throw new NotFoundException(`Unable to find a parent node for ${oldNode.id}`);
+		}
+
+		parent.addChild(newNode);
+		await this.boardNodeRepo.save(parent);
+
+		await this.delete(oldNode);
+	}
+
 	async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
 		const saveList: AnyBoardNode[] = [];
 
@@ -126,6 +139,12 @@ export class BoardNodeService {
 		const rootNode = await this.boardNodeRepo.findById(child.rootId, depth);
 
 		return rootNode;
+	}
+
+	public async findElementsByContextExternalToolId(contextExternalToolId: EntityId): Promise<AnyBoardNode[]> {
+		const elements: AnyBoardNode[] = await this.boardNodeRepo.findByContextExternalToolIds([contextExternalToolId]);
+
+		return elements;
 	}
 
 	async delete(boardNode: AnyBoardNode): Promise<void> {

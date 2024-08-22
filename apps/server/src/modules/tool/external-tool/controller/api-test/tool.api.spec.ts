@@ -714,21 +714,21 @@ describe('ToolController (API)', () => {
 
 		describe('when permission is missing', () => {
 			const setup = async () => {
-				const toolId: string = new ObjectId().toHexString();
+				const externalTool = externalToolEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persistAndFlush([adminAccount, adminUser, externalTool]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, toolId };
+				return { loggedInClient, externalTool };
 			};
 
 			it('should return unauthorized', async () => {
-				const { loggedInClient, toolId } = await setup();
+				const { loggedInClient, externalTool } = await setup();
 
-				const response: Response = await loggedInClient.delete(`${toolId}`);
+				const response: Response = await loggedInClient.delete(externalTool.id);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});

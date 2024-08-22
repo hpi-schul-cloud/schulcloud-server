@@ -299,7 +299,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		it('should delete a SchoolExternalTool', async () => {
 			const { schoolExternalTool1 } = await setup();
 
-			repo.deleteById(schoolExternalTool1.id);
+			await repo.deleteById(schoolExternalTool1.id);
 
 			const result: SchoolExternalTool[] = await repo.find({ schoolId: schoolExternalTool1.school.id });
 
