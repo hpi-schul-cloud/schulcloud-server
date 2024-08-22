@@ -1,9 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { XApiKeyConfig } from '@infra/auth-guard';
 import type { IdentityManagementConfig } from '@infra/identity-management';
+import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
-import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
+import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
 import type { MediaBoardConfig } from '@modules/board/media-board.config';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
@@ -24,7 +26,6 @@ import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
@@ -121,6 +122,7 @@ export interface ServerConfig
 	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
+	FEATURE_ROOMS_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -287,6 +289,7 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
+	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

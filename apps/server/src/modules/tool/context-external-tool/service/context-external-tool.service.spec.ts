@@ -8,11 +8,10 @@ import { ContextExternalToolRepo } from '@shared/repo';
 import { legacySchoolDoFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
+import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
-import { externalToolFactory } from '../../external-tool/testing';
-import { customParameterFactory } from '../../external-tool/testing/external-tool.factory';
+import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
@@ -28,10 +27,11 @@ import { ContextExternalToolService } from './context-external-tool.service';
 describe(ContextExternalToolService.name, () => {
 	let module: TestingModule;
 	let service: ContextExternalToolService;
+
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let commonToolService: DeepMocked<CommonToolService>;
-
+	let commonToolDeleteService: DeepMocked<CommonToolDeleteService>;
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
 
 	beforeAll(async () => {
@@ -58,6 +58,10 @@ describe(ContextExternalToolService.name, () => {
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
 				},
+				{
+					provide: CommonToolDeleteService,
+					useValue: createMock<CommonToolDeleteService>(),
+				},
 			],
 		}).compile();
 
@@ -66,6 +70,7 @@ describe(ContextExternalToolService.name, () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		commonToolService = module.get(CommonToolService);
+		commonToolDeleteService = module.get(CommonToolDeleteService);
 	});
 
 	afterAll(async () => {
@@ -98,43 +103,22 @@ describe(ContextExternalToolService.name, () => {
 		});
 	});
 
-	describe('deleteBySchoolExternalToolId', () => {
-		describe('when schoolExternalToolId is given', () => {
+	describe('deleteContextExternalTool', () => {
+		describe('when deleting a context external tool', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const schoolExternalToolId = schoolExternalTool.id;
-				const contextExternalTool1: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalToolId)
-					.buildWithId();
-				const contextExternalTool2: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalToolId)
-					.buildWithId();
-				contextExternalToolRepo.find.mockResolvedValueOnce([contextExternalTool1, contextExternalTool2]);
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				return {
-					schoolExternalTool,
-					schoolExternalToolId,
-					contextExternalTool1,
-					contextExternalTool2,
+					contextExternalTool,
 				};
 			};
 
-			it('should call find()', async () => {
-				const { schoolExternalToolId } = setup();
+			it('should delete the context external tool', async () => {
+				const { contextExternalTool } = setup();
 
-				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
+				await service.deleteContextExternalTool(contextExternalTool);
 
-				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({
-					schoolToolRef: { schoolToolId: schoolExternalToolId },
-				});
-			});
-
-			it('should call deleteBySchoolExternalToolIds()', async () => {
-				const { schoolExternalToolId, contextExternalTool1, contextExternalTool2 } = setup();
-
-				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
-
-				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1, contextExternalTool2]);
+				expect(commonToolDeleteService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
 			});
 		});
 	});
@@ -240,26 +224,6 @@ describe(ContextExternalToolService.name, () => {
 				const result: ContextExternalTool | null = await service.findById('unknownContextExternalToolId');
 
 				expect(result).toBeNull();
-			});
-		});
-	});
-
-	describe('deleteContextExternalTool', () => {
-		describe('when contextExternalToolId is given', () => {
-			const setup = () => {
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
-
-				return {
-					contextExternalTool,
-				};
-			};
-
-			it('should call delete on repo', async () => {
-				const { contextExternalTool } = setup();
-
-				await service.deleteContextExternalTool(contextExternalTool);
-
-				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith(contextExternalTool);
 			});
 		});
 	});

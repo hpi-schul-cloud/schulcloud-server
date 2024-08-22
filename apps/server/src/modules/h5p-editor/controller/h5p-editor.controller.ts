@@ -1,5 +1,4 @@
-import { CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Authenticate } from '@modules/authentication/decorator/auth.decorator';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	BadRequestException,
 	Body,
@@ -39,7 +38,7 @@ import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.tra
 import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
 
 @ApiTags('h5p-editor')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('h5p-editor')
 export class H5PEditorController {
 	constructor(private h5pEditorUc: H5PEditorUc) {}

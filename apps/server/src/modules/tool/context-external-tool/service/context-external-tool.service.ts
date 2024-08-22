@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
-import { CommonToolService } from '../../common/service';
+import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -22,7 +22,8 @@ export class ContextExternalToolService {
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly commonToolService: CommonToolService
+		private readonly commonToolService: CommonToolService,
+		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
@@ -49,18 +50,8 @@ export class ContextExternalToolService {
 		return savedContextExternalTool;
 	}
 
-	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
-			schoolToolRef: {
-				schoolToolId: schoolExternalToolId,
-			},
-		});
-
-		await this.contextExternalToolRepo.delete(contextExternalTools);
-	}
-
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
-		await this.contextExternalToolRepo.delete(contextExternalTool);
+		await this.commonToolDeleteService.deleteContextExternalTool(contextExternalTool);
 	}
 
 	public async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {

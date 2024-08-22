@@ -3,6 +3,7 @@ import { DecodeHtmlEntities } from '@shared/controller';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,
+	DeletedElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
@@ -20,7 +21,8 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	RichTextElementResponse,
 	DrawingElementResponse,
 	SubmissionContainerElementResponse,
-	CollaborativeTextEditorElementResponse
+	CollaborativeTextEditorElementResponse,
+	DeletedElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -55,6 +57,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
+				{ $ref: getSchemaPath(DeletedElementResponse) },
 			],
 		},
 	})

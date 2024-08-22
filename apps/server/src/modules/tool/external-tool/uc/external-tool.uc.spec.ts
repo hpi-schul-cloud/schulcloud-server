@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
@@ -12,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { currentUserFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
@@ -125,7 +124,7 @@ describe(ExternalToolUc.name, () => {
 
 	const setupAuthorization = () => {
 		const user: User = userFactory.buildWithId();
-		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+		const currentUser = currentUserFactory.build();
 
 		authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
@@ -262,7 +261,7 @@ describe(ExternalToolUc.name, () => {
 		describe('when fetching logo', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -288,7 +287,7 @@ describe(ExternalToolUc.name, () => {
 		describe('when thumbnail url is given', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				const externalTool: ExternalToolCreate = {
 					...externalToolFactory.buildWithId().getProps(),
@@ -748,7 +747,7 @@ describe(ExternalToolUc.name, () => {
 		describe('when fetching logo', () => {
 			const setupLogo = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				externalToolService.findById.mockResolvedValue(externalTool);
@@ -775,7 +774,7 @@ describe(ExternalToolUc.name, () => {
 		describe('when no thumbnail url is given and previous is existing', () => {
 			const setupThumbnail = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				const externalTool: ExternalToolUpdate = {
 					...externalToolFactory.buildWithId().getProps(),
@@ -810,7 +809,7 @@ describe(ExternalToolUc.name, () => {
 		describe('when thumbnail url is given', () => {
 			const setupThumbnail = () => {
 				const user: User = userFactory.buildWithId();
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				const externalTool: ExternalToolUpdate = {
 					...externalToolFactory.buildWithId().getProps(),
@@ -874,17 +873,20 @@ describe(ExternalToolUc.name, () => {
 	describe('deleteExternalTool', () => {
 		const setup = () => {
 			const toolId = 'toolId';
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const user: User = userFactory.buildWithId();
 			const jwt = 'jwt';
+			const externalTool = externalToolFactory.build();
 
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+			externalToolService.findById.mockResolvedValueOnce(externalTool);
 
 			return {
 				toolId,
 				currentUser,
 				user,
 				jwt,
+				externalTool,
 			};
 		};
 
@@ -898,11 +900,11 @@ describe(ExternalToolUc.name, () => {
 		});
 
 		it('should call ExternalToolService', async () => {
-			const { toolId, currentUser } = setup();
+			const { toolId, currentUser, externalTool } = setup();
 
 			await uc.deleteExternalTool(currentUser.userId, toolId, 'jwt');
 
-			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(externalTool);
 		});
 
 		it('should call ExternalToolImageService', async () => {
@@ -922,7 +924,7 @@ describe(ExternalToolUc.name, () => {
 
 				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
 				const user: User = userFactory.buildWithId({ roles: [role] });
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 				const context = { action: Action.read, requiredPermissions: [Permission.TOOL_ADMIN] };
 
 				externalToolService.findById.mockResolvedValue(tool);
@@ -989,7 +991,7 @@ describe(ExternalToolUc.name, () => {
 				commonToolMetadataService.getMetadataForExternalTool.mockResolvedValue(externalToolMetadata);
 
 				const user: User = userFactory.buildWithId();
-				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 

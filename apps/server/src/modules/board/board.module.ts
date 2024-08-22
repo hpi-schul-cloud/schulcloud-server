@@ -16,6 +16,7 @@ import {
 	BoardNodeAuthorizableService,
 	BoardNodeService,
 	ColumnBoardService,
+	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
@@ -60,6 +61,7 @@ import {
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
 		UserDeletedEventHandlerService,
+		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
 	],

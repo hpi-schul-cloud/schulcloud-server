@@ -3,6 +3,7 @@ import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
 import { Column } from './column.do';
+import { DeletedElement } from './deleted-element.do';
 import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
@@ -30,6 +31,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.RICH_TEXT_ELEMENT]: RichTextElement,
 	[BoardNodeType.SUBMISSION_CONTAINER_ELEMENT]: SubmissionContainerElement,
 	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
+	[BoardNodeType.DELETED_ELEMENT]: DeletedElement,
 } as const;
 
 export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>
