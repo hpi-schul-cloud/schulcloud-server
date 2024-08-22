@@ -1660,6 +1660,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the AI Tutor"
+		},
+		"FEATURE_ROOMS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the rooms feature"
 		}
 	},
 	"required": []

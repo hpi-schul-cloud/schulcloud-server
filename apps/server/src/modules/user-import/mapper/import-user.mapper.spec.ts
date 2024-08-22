@@ -70,6 +70,7 @@ describe('[ImportUserMapper]', () => {
 				roleNames: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMINISTRATOR],
 				ldapDn: 'uid=Eva_Rak123,foo=bar,...',
 				flagged: true,
+				externalRoleNames: ['ext-student', 'ext-teacher', 'ext-admin'],
 			});
 			const result = ImportUserMapper.mapToResponse(importUser);
 			const expected = {
@@ -80,6 +81,7 @@ describe('[ImportUserMapper]', () => {
 				lastName: 'Rakäthe',
 				roleNames: ['student', 'teacher', 'admin'],
 				classNames: ['firstClass'],
+				externalRoleNames: ['ext-student', 'ext-teacher', 'ext-admin'],
 			};
 			expect(result).toEqual(expected);
 		});

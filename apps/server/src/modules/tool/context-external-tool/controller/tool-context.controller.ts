@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -26,7 +26,7 @@ import {
 } from './dto';
 
 @ApiTags('Tool')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tools/context-external-tools')
 export class ToolContextController {
 	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
