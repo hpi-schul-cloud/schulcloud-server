@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardClientAdapter } from '../common-cartridge-client/board-api-client/board-client/board-client.adapter';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 
 describe('CommonCartridgeExportService', () => {
@@ -16,6 +17,10 @@ describe('CommonCartridgeExportService', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: BoardClientAdapter,
+					useValue: createMock<BoardClientAdapter>(),
 				},
 			],
 		}).compile();
