@@ -35,6 +35,10 @@ import {
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
+/**
+ * @deprecated - the learnroom module is deprecated and will be removed in the future
+ * it will be replaced by the new rooms module
+ */
 @Module({
 	imports: [
 		forwardRef(() => BoardModule),

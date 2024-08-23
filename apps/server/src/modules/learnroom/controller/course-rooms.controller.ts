@@ -17,6 +17,9 @@ import {
 	SingleColumnBoardResponse,
 } from './dto';
 
+/**
+ * @deprecated - the learnroom module is deprecated and will be removed in the future
+ */
 @ApiTags('Course-Rooms')
 @JwtAuthentication()
 @Controller('course-rooms')
