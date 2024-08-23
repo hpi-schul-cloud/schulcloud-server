@@ -72,7 +72,7 @@ describe('Course Rooms Controller (API)', () => {
 
 		currentUser = mapUserToCurrentUser(student);
 
-		const response = await request(app.getHttpServer()).get(`/rooms/${course.id}/board`);
+		const response = await request(app.getHttpServer()).get(`/course-rooms/${course.id}/board`);
 
 		expect(response.status).toEqual(200);
 		const body = response.body as SingleColumnBoardResponse;
@@ -95,7 +95,7 @@ describe('Course Rooms Controller (API)', () => {
 			const params = { visibility: true };
 
 			const response = await request(app.getHttpServer())
-				.patch(`/rooms/${course.id}/elements/${task.id}/visibility`)
+				.patch(`/course-rooms/${course.id}/elements/${task.id}/visibility`)
 				.send(params);
 
 			expect(response.status).toEqual(200);
@@ -115,7 +115,9 @@ describe('Course Rooms Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 			const params = { visibility: true };
 
-			await request(app.getHttpServer()).patch(`/rooms/${course.id}/elements/${task.id}/visibility`).send(params);
+			await request(app.getHttpServer())
+				.patch(`/course-rooms/${course.id}/elements/${task.id}/visibility`)
+				.send(params);
 			const updatedTask = await em.findOneOrFail(Task, task.id);
 
 			expect(updatedTask.isDraft()).toEqual(false);
@@ -135,7 +137,9 @@ describe('Course Rooms Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 			const params = { visibility: false };
 
-			await request(app.getHttpServer()).patch(`/rooms/${course.id}/elements/${task.id}/visibility`).send(params);
+			await request(app.getHttpServer())
+				.patch(`/course-rooms/${course.id}/elements/${task.id}/visibility`)
+				.send(params);
 			const updatedTask = await em.findOneOrFail(Task, task.id);
 
 			expect(updatedTask.isDraft()).toEqual(true);
@@ -161,7 +165,7 @@ describe('Course Rooms Controller (API)', () => {
 			};
 
 			const response = await request(app.getHttpServer())
-				.patch(`/rooms/${course.id}/board/order`)
+				.patch(`/course-rooms/${course.id}/board/order`)
 				.set('Authorization', 'jwt')
 				.send(params);
 
@@ -181,7 +185,7 @@ describe('Course Rooms Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer())
-				.post(`/rooms/${course.id}/copy`)
+				.post(`/course-rooms/${course.id}/copy`)
 				.set('Authorization', 'jwt')
 				.send();
 
@@ -199,7 +203,7 @@ describe('Course Rooms Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer())
-				.post(`/rooms/${course.id}/copy`)
+				.post(`/course-rooms/${course.id}/copy`)
 				.set('Authorization', 'jwt')
 				.send();
 			const body = response.body as CopyApiResponse;
@@ -220,7 +224,7 @@ describe('Course Rooms Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer())
-				.post(`/rooms/${course.id}/copy`)
+				.post(`/course-rooms/${course.id}/copy`)
 				.set('Authorization', 'jwt')
 				.send();
 			const body = response.body as CopyApiResponse;
@@ -247,7 +251,7 @@ describe('Course Rooms Controller (API)', () => {
 			filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue([]);
 
 			const response = await request(app.getHttpServer())
-				.post(`/rooms/${course.id}/copy`)
+				.post(`/course-rooms/${course.id}/copy`)
 				.set('Authorization', 'jwt')
 				.send();
 
@@ -268,7 +272,7 @@ describe('Course Rooms Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer())
-				.post(`/rooms/lessons/${lesson.id}/copy`)
+				.post(`/course-rooms/lessons/${lesson.id}/copy`)
 				.set('Authorization', 'jwt')
 				.send({ courseId: course.id });
 

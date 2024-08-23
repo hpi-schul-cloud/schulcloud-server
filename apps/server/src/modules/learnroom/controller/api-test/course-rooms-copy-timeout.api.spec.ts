@@ -74,7 +74,7 @@ describe('Course Rooms copy (API)', () => {
 		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
-			.post(`/rooms/${course.id}/copy`)
+			.post(`/course-rooms/${course.id}/copy`)
 			.set('Authorization', 'jwt')
 			.send();
 
@@ -91,7 +91,7 @@ describe('Course Rooms copy (API)', () => {
 		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
-			.post(`/rooms/lessons/${lesson.id}/copy`)
+			.post(`/course-rooms/lessons/${lesson.id}/copy`)
 			.set('Authorization', 'jwt')
 			.send();
 
