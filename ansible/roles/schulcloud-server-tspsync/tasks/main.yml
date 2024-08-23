@@ -4,6 +4,8 @@
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-svc.yml.j2
     when: WITH_TSP
+    tags:
+      - service
 
   - name: remove API TSP Sync Service
     kubernetes.core.k8s:
@@ -14,6 +16,8 @@
       kind: Service
       name: api-tsp-sync-svc
     when: not WITH_TSP
+    tags:
+      - service
 
   - name: API TSP Sync Deployment
     kubernetes.core.k8s:
@@ -21,6 +25,8 @@
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-deployment.yml.j2
     when: WITH_TSP
+    tags:
+      - deployment
 
   - name: remove API TSP Sync Deployment
     kubernetes.core.k8s:
@@ -31,6 +37,8 @@
       namespace: "{{ NAMESPACE }}"
       name: api-tsp-sync-deployment
     when: not WITH_TSP
+    tags:
+      - deployment
 
   - name: API TSP Sync Base CronJob
     kubernetes.core.k8s:
@@ -38,6 +46,8 @@
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-base-cronjob.yml.j2
     when: WITH_TSP
+    tags:
+      - cronjob
 
   - name: remove API TSP Sync Base CronJob
     kubernetes.core.k8s:
@@ -48,6 +58,8 @@
       namespace: "{{ NAMESPACE }}"
       name: api-tsp-sync-base-cronjob
     when: not WITH_TSP
+    tags:
+      - cronjob
 
   - name: API TSP Sync School CronJob
     kubernetes.core.k8s:
@@ -55,6 +67,8 @@
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-school-cronjob.yml.j2
     when: WITH_TSP
+    tags:
+      - cronjob
 
   - name: remove API TSP Sync School CronJob
     kubernetes.core.k8s:
@@ -65,3 +79,5 @@
       namespace: "{{ NAMESPACE }}"
       name: api-tsp-sync-school-cronjob
     when: not WITH_TSP
+    tags:
+      - cronjob

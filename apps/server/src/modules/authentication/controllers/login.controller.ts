@@ -1,9 +1,9 @@
+import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
-import { CurrentUser } from '../decorator';
-import type { ICurrentUser, OauthCurrentUser } from '../interface';
+import { StrategyType, type OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -20,7 +20,7 @@ import { LoginResponseMapper } from './mapper/login-response.mapper';
 export class LoginController {
 	constructor(private readonly loginUc: LoginUc) {}
 
-	@UseGuards(AuthGuard('ldap'))
+	@UseGuards(AuthGuard(StrategyType.LDAP))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
 	@ApiOperation({ summary: 'Starts the login process for users which are authenticated via LDAP' })
@@ -30,14 +30,12 @@ export class LoginController {
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+		const response = this.login(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
-
-		return mapped;
+		return response;
 	}
 
-	@UseGuards(AuthGuard('local'))
+	@UseGuards(AuthGuard(StrategyType.LOCAL))
 	@HttpCode(HttpStatus.OK)
 	@Post('local')
 	@ApiOperation({ summary: 'Starts the login process for users which are locally managed.' })
@@ -47,14 +45,12 @@ export class LoginController {
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+		const response = this.login(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
-
-		return mapped;
+		return response;
 	}
 
-	@UseGuards(AuthGuard('oauth2'))
+	@UseGuards(AuthGuard(StrategyType.OAUTH2))
 	@HttpCode(HttpStatus.OK)
 	@Post('oauth2')
 	@ApiOperation({ summary: 'Starts the login process for users which are authenticated via OAuth 2.' })
@@ -70,6 +66,14 @@ export class LoginController {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: OauthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(loginDto, user.externalIdToken);
+
+		return mapped;
+	}
+
+	private async login(user: ICurrentUser): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
 
 		return mapped;
 	}

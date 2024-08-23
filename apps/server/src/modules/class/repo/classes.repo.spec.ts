@@ -177,4 +177,35 @@ describe(ClassesRepo.name, () => {
 			});
 		});
 	});
+
+	describe('findClassById', () => {
+		describe('when class is not found in classes', () => {
+			it('should return null', async () => {
+				const result = await repo.findClassById(new ObjectId().toHexString());
+
+				expect(result).toEqual(null);
+			});
+		});
+
+		describe('when class is in classes', () => {
+			const setup = async () => {
+				const class1: ClassEntity = classEntityFactory.buildWithId();
+				console.log(class1.id);
+				await em.persistAndFlush([class1]);
+				em.clear();
+
+				return {
+					class1,
+				};
+			};
+
+			it('should find class with particular classId', async () => {
+				const { class1 } = await setup();
+
+				const result = await repo.findClassById(class1.id);
+
+				expect(result?.id).toEqual(class1.id);
+			});
+		});
+	});
 });

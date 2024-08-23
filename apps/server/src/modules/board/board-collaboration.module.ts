@@ -1,3 +1,4 @@
+import { AuthGuardModule } from '@infra/auth-guard';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { defaultMikroOrmOptions } from '@modules/server';
 import { Module } from '@nestjs/common';
@@ -10,7 +11,6 @@ import { AuthorizationModule } from '../authorization';
 import { config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
-import { AuthenticationModule } from '../authentication';
 
 @Module({
 	imports: [
@@ -27,8 +27,8 @@ import { AuthenticationModule } from '../authentication';
 		}),
 		BoardModule,
 		AuthorizationModule,
-		AuthenticationModule,
 		BoardWsApiModule,
+		AuthGuardModule,
 	],
 	providers: [],
 	exports: [],

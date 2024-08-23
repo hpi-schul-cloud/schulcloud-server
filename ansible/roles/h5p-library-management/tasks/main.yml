@@ -4,6 +4,8 @@
       namespace: "{{ NAMESPACE }}"
       template: api-h5p-library-management-onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool and WITH_H5P_LIBRARY_MANAGEMENT is defined and WITH_H5P_LIBRARY_MANAGEMENT|bool == true
+    tags:
+      - 1password
 
   - name: H5pLibraryManagement ConfigMap
     when: WITH_H5P_LIBRARY_MANAGEMENT is defined and WITH_H5P_LIBRARY_MANAGEMENT|bool == true
@@ -11,6 +13,8 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-h5p-library-management-configmap.yml.j2
+    tags:
+      - configmap
 
   - name: H5pLibraryManagement CronJob
     when: WITH_H5P_LIBRARY_MANAGEMENT is defined and WITH_H5P_LIBRARY_MANAGEMENT|bool == true
@@ -18,3 +22,5 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-h5p-library-management-cronjob.yml.j2
+    tags:
+      - cronjob

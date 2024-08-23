@@ -9,8 +9,6 @@ export class CourseInfoDto {
 
 	classes: string[];
 
-	courseStatus?: string;
-
 	syncedWithGroup?: string;
 
 	constructor(props: CourseInfoDto) {
@@ -18,7 +16,6 @@ export class CourseInfoDto {
 		this.name = props.name;
 		this.classes = props.classes;
 		this.teachers = props.teachers;
-		this.courseStatus = props.courseStatus;
 		this.syncedWithGroup = props.syncedWithGroup;
 	}
 }

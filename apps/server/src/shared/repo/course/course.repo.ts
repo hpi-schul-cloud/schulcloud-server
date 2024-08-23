@@ -7,7 +7,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 import { Scope } from '../scope';
 
-class CourseScope extends Scope<Course> {
+export class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
 		const isStudent = { students: userId };
 		const isTeacher = { teachers: userId };
@@ -48,6 +48,23 @@ class CourseScope extends Scope<Course> {
 
 	forCourseId(courseId: EntityId): CourseScope {
 		this.addQuery({ id: courseId });
+		return this;
+	}
+
+	bySchoolId(schoolId: EntityId | undefined): CourseScope {
+		if (schoolId) {
+			this.addQuery({ school: schoolId });
+		}
+		return this;
+	}
+
+	forArchivedCourses(): CourseScope {
+		const now = new Date();
+		const untilDateExists = { untilDate: { $exists: true } } as FilterQuery<Course>;
+		const untilDateInPast = { untilDate: { $lt: now } };
+
+		this.addQuery({ $and: [untilDateExists, untilDateInPast] });
+
 		return this;
 	}
 }

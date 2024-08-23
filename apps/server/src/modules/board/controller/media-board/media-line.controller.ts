@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -25,7 +25,7 @@ import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import { CollapsableBodyParams, ColorBodyParams, LineUrlParams } from './dto';
 
 @ApiTags('Media Line')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('media-lines')
 export class MediaLineController {
 	constructor(private readonly mediaLineUc: MediaLineUc) {}

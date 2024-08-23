@@ -1,9 +1,11 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
 import { Group } from '@modules/group';
 import { Course as CourseEntity } from '@shared/domain/entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { Course, CourseRepo } from '../../domain';
+import { CourseScope } from '@shared/repo/course/course.repo';
+import { Course, CourseFilter, CourseRepo, CourseStatusQueryType } from '../../domain';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
 
 export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntity> implements CourseRepo {
@@ -45,8 +47,18 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		return courses;
 	}
 
-	public async findBySchoolId(id: EntityId): Promise<Course[]> {
-		const entities: CourseEntity[] = await this.em.find(CourseEntity, { school: id });
+	public async findCourses(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Course[]> {
+		const scope: CourseScope = new CourseScope();
+		scope.bySchoolId(filter.schoolId);
+		if (filter.courseStatusQueryType === CourseStatusQueryType.CURRENT) {
+			scope.forActiveCourses();
+		} else {
+			scope.forArchivedCourses();
+		}
+
+		const findOptions = this.mapToMikroOrmOptions(options);
+
+		const entities = await this.em.find(CourseEntity, scope.query, findOptions);
 
 		await Promise.all(
 			entities.map(async (entity: CourseEntity): Promise<void> => {
@@ -59,5 +71,22 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		const courses: Course[] = entities.map((entity: CourseEntity): Course => CourseEntityMapper.mapEntityToDo(entity));
 
 		return courses;
+	}
+
+	private mapToMikroOrmOptions<P extends string = never>(options?: IFindOptions<Course>): FindOptions<CourseEntity, P> {
+		const findOptions: FindOptions<CourseEntity, P> = {
+			offset: options?.pagination?.skip,
+			limit: options?.pagination?.limit,
+			orderBy: options?.order,
+		};
+
+		// If no order is specified, a default order is applied here, because pagination can be messed up without order.
+		if (!findOptions.orderBy) {
+			findOptions.orderBy = {
+				_id: SortOrder.asc,
+			};
+		}
+
+		return findOptions;
 	}
 }
