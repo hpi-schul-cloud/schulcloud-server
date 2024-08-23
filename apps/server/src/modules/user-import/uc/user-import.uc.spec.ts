@@ -16,7 +16,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { Counted, MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
+import { Counted, IImportUserScope, MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, UserRepo } from '@shared/repo';
 import {
 	federalStateFactory,
@@ -1246,7 +1246,7 @@ describe('[ImportUserModule]', () => {
 
 					return {
 						currentUser,
-						school,
+						importUsers,
 					};
 				};
 
@@ -1268,12 +1268,14 @@ describe('[ImportUserModule]', () => {
 					expect(userImportService.checkFeatureEnabled).toHaveBeenCalled();
 				});
 
-				it('should clear auto matches and save the updated import users', async () => {
-					const { currentUser } = setup();
+				it('should call the relevant functions for removing auto matches and saving the result', async () => {
+					const { currentUser, importUsers } = setup();
 
 					await uc.clearAllAutoMatches(currentUser.id);
 
-					expect(userImportService.saveImportUsers).toBeCalled();
+					const autoMatchFilter: IImportUserScope = { matches: [MatchCreatorScope.AUTO] };
+					expect(importUserRepo.findImportUsers).toBeCalledWith(currentUser.school, autoMatchFilter);
+					expect(userImportService.saveImportUsers).toBeCalledWith(importUsers);
 				});
 			});
 		});

@@ -220,26 +220,6 @@ export class UserImportUc {
 		await this.endSchoolInUserMigration(school);
 	}
 
-	public async clearAllAutoMatches(currentUserId: EntityId) {
-		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
-
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
-		this.userImportService.checkFeatureEnabled(school);
-
-		const [importUsers] = await this.importUserRepo.findImportUsers(currentUser.school);
-		const autoMatchedUsers: ImportUser[] = importUsers.filter(
-			(importUser) => importUser.matchedBy === MatchCreator.AUTO
-		);
-
-		for (const autoMatchedUser of autoMatchedUsers) {
-			// TODO: clarify what happens if an error occurs
-			this.checkImportUserSameSchool(school, autoMatchedUser);
-			autoMatchedUser.revokeMatch();
-		}
-
-		await this.userImportService.saveImportUsers(autoMatchedUsers);
-	}
-
 	private async endSchoolInUserMigration(school: LegacySchoolDo): Promise<void> {
 		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
 			this.logger.warning(new MigrationMayBeCompleted(school.inUserMigration));
@@ -351,6 +331,25 @@ export class UserImportUc {
 		this.userImportService.checkFeatureEnabled(school);
 
 		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
+	}
+
+	public async clearAllAutoMatches(currentUserId: EntityId): Promise<void> {
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
+
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.userImportService.checkFeatureEnabled(school);
+
+		const filters: IImportUserScope = { matches: [MatchCreatorScope.AUTO] };
+		const [autoMatchedUsers]: Counted<ImportUser[]> = await this.importUserRepo.findImportUsers(
+			currentUser.school,
+			filters
+		);
+
+		for (const autoMatchedUser of autoMatchedUsers) {
+			autoMatchedUser.revokeMatch();
+		}
+
+		await this.userImportService.saveImportUsers(autoMatchedUsers);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
