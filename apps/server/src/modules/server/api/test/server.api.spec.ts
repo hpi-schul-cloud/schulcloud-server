@@ -103,6 +103,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED',
 				'FEATURE_AI_TUTOR_ENABLED',
 				'FEATURE_ROOMS_ENABLED',
+				'FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);
