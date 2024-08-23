@@ -13,6 +13,7 @@ import {
 	collaborativeTextEditorFactory,
 	columnBoardFactory,
 	columnFactory,
+	deletedElementFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
@@ -94,6 +95,7 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyMediaBoard').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaLine').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaExternalToolElement').mockResolvedValue(mockStatus);
+		jest.spyOn(service, 'copyDeletedElement').mockResolvedValue(mockStatus);
 
 		return { copyContext, mockStatus };
 	};
@@ -262,6 +264,18 @@ describe(BoardNodeCopyService.name, () => {
 					const result = await service.copy(node, copyContext);
 
 					expect(service.copyMediaExternalToolElement).toHaveBeenCalledWith(node, copyContext);
+					expect(result).toEqual(mockStatus);
+				});
+			});
+
+			describe('when called with deleted element', () => {
+				it('should copy deleted element', async () => {
+					const { copyContext, mockStatus } = setup();
+					const node = deletedElementFactory.build();
+
+					const result = await service.copy(node, copyContext);
+
+					expect(service.copyDeletedElement).toHaveBeenCalledWith(node, copyContext);
 					expect(result).toEqual(mockStatus);
 				});
 			});

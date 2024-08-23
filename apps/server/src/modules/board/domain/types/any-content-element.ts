@@ -1,4 +1,5 @@
 import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from '../collaborative-text-editor.do';
+import { type DeletedElement, isDeletedElement } from '../deleted-element.do';
 import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
 import { type ExternalToolElement, isExternalToolElement } from '../external-tool-element.do';
 import { type FileElement, isFileElement } from '../file-element.do';
@@ -14,7 +15,8 @@ export type AnyContentElement =
 	| FileElement
 	| LinkElement
 	| RichTextElement
-	| SubmissionContainerElement;
+	| SubmissionContainerElement
+	| DeletedElement;
 
 export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
 	const result =
@@ -24,7 +26,8 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 		isFileElement(boardNode) ||
 		isLinkElement(boardNode) ||
 		isRichTextElement(boardNode) ||
-		isSubmissionContainerElement(boardNode);
+		isSubmissionContainerElement(boardNode) ||
+		isDeletedElement(boardNode);
 
 	return result;
 };
