@@ -388,36 +388,40 @@ describe('Course Controller (API)', () => {
 	});
 
 	describe('[GET] /courses/all', () => {
-		describe('when classes are found', () => {
+		describe('when logged in as admin', () => {
 			const setup = async () => {
 				const student = createStudent();
 				const teacher = createTeacher();
 				const admin = createAdmin();
 				const school = schoolEntityFactory.buildWithId({});
 
-				const courses: CourseEntity[] = courseFactory.buildList(5, {
+				const currentCourses: CourseEntity[] = courseFactory.buildList(5, {
 					school,
 				});
-				const query = { skip: 0, limit: 5, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
+				const archivedCourses: CourseEntity[] = courseFactory.buildList(10, {
+					school,
+					untilDate: new Date('2024-07-31T23:59:59'),
+				});
 
 				admin.user.school = school;
 				await em.persistAndFlush(school);
-				await em.persistAndFlush(courses);
+				await em.persistAndFlush([...currentCourses, ...archivedCourses]);
 				await em.persistAndFlush([admin.account, admin.user]);
 				em.clear();
 
 				return {
 					student,
-					courses,
+					currentCourses,
+					archivedCourses,
 					teacher,
 					admin,
-					query,
 					school,
 				};
 			};
 
 			it('should return the correct response structure', async () => {
-				const { admin, query } = await setup();
+				const { admin } = await setup();
+				const query = {};
 
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get('/all').query(query);
@@ -429,12 +433,9 @@ describe('Course Controller (API)', () => {
 				expect(response.body).toHaveProperty('total');
 			});
 
-			it('should find all courses as an admin by passing all query parameters', async () => {
-				const { courses, admin, school, query } = await setup();
-				admin.user.school = school;
-				await em.persistAndFlush(courses);
-				await em.persistAndFlush([admin.account, admin.user, school]);
-				em.clear();
+			it('should return archived courses in pages', async () => {
+				const { admin } = await setup();
+				const query = { skip: 0, limit: 10, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.ARCHIVE };
 
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get('/all').query(query);
@@ -442,9 +443,68 @@ describe('Course Controller (API)', () => {
 				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(0);
-				expect(limit).toBe(5);
-				expect(total).toBe(5);
-				expect(data[0].id).toBe(courses[0].id);
+				expect(limit).toBe(10);
+				expect(total).toBe(10);
+				expect(data.length).toBe(10);
+			});
+
+			it('should return current courses in pages', async () => {
+				const { admin, currentCourses } = await setup();
+				const query = { skip: 4, limit: 2, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
+
+				const loggedInClient = await testApiClient.login(admin.account);
+				const response = await loggedInClient.get('/all').query(query);
+
+				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(skip).toBe(4);
+				expect(limit).toBe(2);
+				expect(total).toBe(1);
+				expect(data.length).toBe(1);
+				expect(data[0].id).toBe(currentCourses[4].id);
+			});
+		});
+
+		describe('when logged in not authenticated/authorized', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+
+				await em.persistAndFlush([teacher.account, teacher.user]);
+				em.clear();
+
+				return {
+					teacher,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const query = { skip: 4, limit: 2, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
+
+				const response = await testApiClient.get('/all').query(query);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+
+			it('should return forbidden', async () => {
+				const { teacher } = await setup();
+				const query = { skip: 4, limit: 2, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
+
+				const loggedInClient = await testApiClient.login(teacher.account);
+				const response = await loggedInClient.get('/all').query(query);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
 			});
 		});
 	});
