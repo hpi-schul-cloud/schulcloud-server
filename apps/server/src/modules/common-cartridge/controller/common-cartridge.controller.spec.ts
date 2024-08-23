@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { CourseFileIdsResponse, ExportCourseParams } from './dto';
+import { CourseExportBodyResponse } from './dto/course-export-body.response';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;
@@ -37,7 +38,13 @@ describe('CommonCartridgeController', () => {
 		const setup = () => {
 			const courseId = faker.string.uuid();
 			const request = new ExportCourseParams();
-			const expected = new CourseFileIdsResponse([]);
+			const expected = new CourseExportBodyResponse({
+				courseFileIds: new CourseFileIdsResponse([]),
+				courseCommonCartridgeMetadata: {
+					id: courseId,
+					title: faker.lorem.sentence(),
+				},
+			});
 
 			Reflect.set(request, 'parentId', courseId);
 			commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);

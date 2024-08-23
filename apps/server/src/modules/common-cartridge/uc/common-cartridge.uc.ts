@@ -12,21 +12,14 @@ export class CommonCartridgeUc {
 	public async exportCourse(courseId: EntityId): Promise<CourseExportBodyResponse> {
 		const files = await this.exportService.findCourseFileRecords(courseId);
 		const courseFileIds = new CourseFileIdsResponse(files.map((file) => file.id));
-
-		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto = await this.getCourseCommonCartridgeMetadata(
-			courseId
-		);
+		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
+			await this.exportService.findCourseCcMetadata(courseId);
 
 		const response = new CourseExportBodyResponse({
 			courseFileIds,
 			courseCommonCartridgeMetadata,
 		});
+
 		return response;
-	}
-
-	private async getCourseCommonCartridgeMetadata(courseId: EntityId): Promise<CourseCommonCartridgeMetadataDto> {
-		const courseMetadata = await this.exportService.findCourseCcMetadata(courseId);
-
-		return courseMetadata;
 	}
 }
