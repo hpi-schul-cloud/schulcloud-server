@@ -6,7 +6,7 @@ import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory,
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { CourseRoomsUc } from './course-rooms.uc';
 
 describe('rooms usecase', () => {
@@ -16,7 +16,7 @@ describe('rooms usecase', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let factory: DeepMocked<RoomBoardDTOFactory>;
-	let authorisation: DeepMocked<RoomsAuthorisationService>;
+	let authorisation: DeepMocked<CourseRoomsAuthorisationService>;
 	let roomsService: DeepMocked<CourseRoomsService>;
 	let module: TestingModule;
 
@@ -50,8 +50,8 @@ describe('rooms usecase', () => {
 					useValue: createMock<RoomBoardDTOFactory>(),
 				},
 				{
-					provide: RoomsAuthorisationService,
-					useValue: createMock<RoomsAuthorisationService>(),
+					provide: CourseRoomsAuthorisationService,
+					useValue: createMock<CourseRoomsAuthorisationService>(),
 				},
 				{
 					provide: CourseRoomsService,
@@ -66,7 +66,7 @@ describe('rooms usecase', () => {
 		userRepo = module.get(UserRepo);
 		legacyBoardRepo = module.get(LegacyBoardRepo);
 		factory = module.get(RoomBoardDTOFactory);
-		authorisation = module.get(RoomsAuthorisationService);
+		authorisation = module.get(CourseRoomsAuthorisationService);
 		roomsService = module.get(CourseRoomsService);
 		await setupEntities();
 	});

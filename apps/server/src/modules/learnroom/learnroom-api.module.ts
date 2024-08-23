@@ -19,7 +19,7 @@ import {
 	DashboardUc,
 	LessonCopyUC,
 	RoomBoardDTOFactory,
-	RoomsAuthorisationService,
+	CourseRoomsAuthorisationService,
 	CourseRoomsUc,
 } from './uc';
 
@@ -41,7 +41,7 @@ import {
 		RoomBoardDTOFactory,
 		LessonCopyUC,
 		CourseCopyUC,
-		RoomsAuthorisationService,
+		CourseRoomsAuthorisationService,
 		CourseExportUc,
 		CourseImportUc,
 		CourseSyncUc,

@@ -4,7 +4,7 @@ import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 @Injectable()
 export class CourseRoomsUc {
@@ -13,7 +13,7 @@ export class CourseRoomsUc {
 		private readonly userRepo: UserRepo,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
-		private readonly authorisationService: RoomsAuthorisationService,
+		private readonly authorisationService: CourseRoomsAuthorisationService,
 		private readonly roomsService: CourseRoomsService
 	) {}
 
