@@ -9,12 +9,15 @@ import {
 	cleanupCollections,
 	courseFactory,
 	groupEntityFactory,
+	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { readFile } from 'node:fs/promises';
 import { CourseMetadataListResponse } from '../dto';
 import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
+import { CourseInfoListResponse } from '../dto/response';
+import { CourseSortQueryType, CourseStatusQueryType } from '../../domain';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -26,6 +29,11 @@ const createTeacher = () => {
 		Permission.COURSE_EDIT,
 	]);
 	return { account: teacherAccount, user: teacherUser };
+};
+
+const createAdmin = () => {
+	const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({}, [Permission.COURSE_ADMINISTRATION]);
+	return { account: adminAccount, user: adminUser };
 };
 
 describe('Course Controller (API)', () => {
@@ -352,6 +360,7 @@ describe('Course Controller (API)', () => {
 			});
 		});
 	});
+
 	describe('[GET] /courses/:courseId/cc-metadata', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
@@ -375,6 +384,68 @@ describe('Course Controller (API)', () => {
 
 			expect(response.statusCode).toBe(200);
 			expect(data.id).toBe(course.id);
+		});
+	});
+
+	describe('[GET] /courses/all', () => {
+		describe('when classes are found', () => {
+			const setup = async () => {
+				const student = createStudent();
+				const teacher = createTeacher();
+				const admin = createAdmin();
+				const school = schoolEntityFactory.buildWithId({});
+
+				const courses: CourseEntity[] = courseFactory.buildList(5, {
+					school,
+				});
+				const query = { skip: 0, limit: 5, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
+
+				admin.user.school = school;
+				await em.persistAndFlush(school);
+				await em.persistAndFlush(courses);
+				await em.persistAndFlush([admin.account, admin.user]);
+				em.clear();
+
+				return {
+					student,
+					courses,
+					teacher,
+					admin,
+					query,
+					school,
+				};
+			};
+
+			it('should return the correct response structure', async () => {
+				const { admin, query } = await setup();
+
+				const loggedInClient = await testApiClient.login(admin.account);
+				const response = await loggedInClient.get('/all').query(query);
+
+				expect(response.statusCode).toBe(200);
+				expect(response.body).toHaveProperty('data');
+				expect(response.body).toHaveProperty('skip');
+				expect(response.body).toHaveProperty('limit');
+				expect(response.body).toHaveProperty('total');
+			});
+
+			it('should find all courses as an admin by passing all query parameters', async () => {
+				const { courses, admin, school, query } = await setup();
+				admin.user.school = school;
+				await em.persistAndFlush(courses);
+				await em.persistAndFlush([admin.account, admin.user, school]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(admin.account);
+				const response = await loggedInClient.get('/all').query(query);
+
+				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(skip).toBe(0);
+				expect(limit).toBe(5);
+				expect(total).toBe(5);
+				expect(data[0].id).toBe(courses[0].id);
+			});
 		});
 	});
 });

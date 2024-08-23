@@ -15,9 +15,6 @@ export class CourseInfoResponse {
 	classNames: string[];
 
 	@ApiPropertyOptional()
-	courseStatus?: string;
-
-	@ApiPropertyOptional()
 	syncedGroup?: string;
 
 	constructor(props: CourseInfoResponse) {
@@ -25,7 +22,6 @@ export class CourseInfoResponse {
 		this.name = props.name;
 		this.classNames = props.classNames;
 		this.teacherNames = props.teacherNames;
-		this.courseStatus = props.courseStatus;
 		this.syncedGroup = props.syncedGroup;
 	}
 }
