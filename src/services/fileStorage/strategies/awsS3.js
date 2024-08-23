@@ -31,18 +31,20 @@ const getCorsRules = () => [
 
 const getConfig = (provider) => {
 	const awsConfig = {
-		signatureVersion: 'v4',
-		s3ForcePathStyle: true,
-		sslEnabled: true,
-		accessKeyId: provider.accessKeyId,
-		secretAccessKey: provider.secretAccessKey,
+		forcePathStyle: true,
+		tls: true,
+		credentials: {
+			accessKeyId: provider.accessKeyId,
+			secretAccessKey: provider.secretAccessKey,
+		},
 		region: provider.region,
-		endpointUrl: provider.endpointUrl,
+		endpoint: new URL(provider.endpointUrl),
+		// endpointUrl: provider.endpointUrl,
 	};
 	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 		awsConfig.cors_rules = getCorsRules();
 	}
-	awsConfig.endpoint = new URL(provider.endpointUrl);
+	// awsConfig.endpoint = new URL(provider.endpointUrl);
 	return awsConfig;
 };
 
