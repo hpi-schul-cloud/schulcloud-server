@@ -11,7 +11,7 @@ import { BoardSkeletonDto } from './dto';
 export class BoardClientAdapter {
 	constructor(private readonly boardApi: BoardApi, @Inject(REQUEST) private request: Request) {}
 
-	public async getBoard(boardId: string): Promise<BoardSkeletonDto> {
+	public async getBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
 		const options = this.createOptionParams();
 		const boardResponse = await this.boardApi
 			.boardControllerGetBoardSkeleton(boardId, options)
