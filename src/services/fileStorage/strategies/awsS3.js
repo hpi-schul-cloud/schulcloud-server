@@ -38,8 +38,8 @@ const getConfig = (provider) => {
 			secretAccessKey: provider.secretAccessKey,
 		},
 		region: provider.region,
+		endpointUrl: provider.endpointUrl,
 		endpoint: new URL(provider.endpointUrl),
-		// endpointUrl: provider.endpointUrl,
 	};
 	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 		awsConfig.cors_rules = getCorsRules();
