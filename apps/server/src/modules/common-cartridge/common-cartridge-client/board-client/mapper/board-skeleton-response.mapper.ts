@@ -1,4 +1,4 @@
-import { BoardResponse, ColumnResponse, CardSkeletonResponse } from '../board-client/board-api-client';
+import { BoardResponse, ColumnResponse, CardSkeletonResponse } from '../board-api-client';
 import { BoardSkeletonDto, ColumnSkeletonDto, CardSkeletonDto } from '../dto';
 
 export class BoardSkeletonDtoMapper {

@@ -4,8 +4,8 @@ import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import { BoardApi } from './board-api-client';
-import { BoardSkeletonDtoMapper } from '../mapper';
-import { BoardSkeletonDto } from '../dto';
+import { BoardSkeletonDtoMapper } from './mapper';
+import { BoardSkeletonDto } from './dto';
 
 @Injectable()
 export class BoardClientAdapter {
