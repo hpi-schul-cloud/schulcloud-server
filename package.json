@@ -175,7 +175,6 @@
 		"aws-sdk": "^2.1659.0",
 		"axios": "^1.7.2",
 		"axios-mock-adapter": "^1.21.2",
-		"bbb-promise": "^1.2.0",
 		"bcryptjs": "*",
 		"body-parser": "^1.15.2",
 		"bson": "^4.6.0",
