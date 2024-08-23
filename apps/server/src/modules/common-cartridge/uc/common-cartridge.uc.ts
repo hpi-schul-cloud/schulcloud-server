@@ -3,19 +3,28 @@ import { EntityId } from '@shared/domain/types';
 import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/dto/course-common-cartridge-metadata.dto';
+import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
 
 @Injectable()
 export class CommonCartridgeUc {
 	constructor(private readonly exportService: CommonCartridgeExportService) {}
 
-	public async exportCourse(courseId: EntityId): Promise<CourseFileIdsResponse> {
+	public async exportCourse(courseId: EntityId): Promise<CourseExportBodyResponse> {
 		const files = await this.exportService.findCourseFileRecords(courseId);
-		const response = new CourseFileIdsResponse(files.map((file) => file.id));
+		const courseFileIds = new CourseFileIdsResponse(files.map((file) => file.id));
 
+		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto = await this.getCourseCommonCartridgeMetadata(
+			courseId
+		);
+
+		const response = new CourseExportBodyResponse({
+			courseFileIds,
+			courseCommonCartridgeMetadata,
+		});
 		return response;
 	}
 
-	public async getCourseCommonCartridgeMetadata(courseId: EntityId): Promise<CourseCommonCartridgeMetadataDto> {
+	private async getCourseCommonCartridgeMetadata(courseId: EntityId): Promise<CourseCommonCartridgeMetadataDto> {
 		const courseMetadata = await this.exportService.findCourseCcMetadata(courseId);
 
 		return courseMetadata;
