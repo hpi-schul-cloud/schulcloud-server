@@ -124,6 +124,7 @@ export interface ServerConfig
 	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
 	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
+	FEATURE_ROOMS_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -292,6 +293,7 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
+	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

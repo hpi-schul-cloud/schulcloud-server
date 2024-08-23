@@ -177,11 +177,13 @@ export class ExternalToolUc {
 	}
 
 	public async deleteExternalTool(userId: EntityId, externalToolId: EntityId, jwt: string): Promise<void> {
+		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
+
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		await this.externalToolImageService.deleteAllFiles(externalToolId, jwt);
 
-		await this.externalToolService.deleteExternalTool(externalToolId);
+		await this.externalToolService.deleteExternalTool(externalTool);
 	}
 
 	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
