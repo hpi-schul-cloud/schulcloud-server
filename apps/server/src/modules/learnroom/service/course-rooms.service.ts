@@ -8,7 +8,7 @@ import { LegacyBoardRepo } from '@shared/repo';
 import { ColumnBoardNodeRepo } from '../repo';
 
 @Injectable()
-export class RoomsService {
+export class CourseRoomsService {
 	constructor(
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,

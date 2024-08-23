@@ -31,7 +31,7 @@ import {
 	CourseService,
 	DashboardService,
 	GroupDeletedHandlerService,
-	RoomsService,
+	CourseRoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
@@ -71,7 +71,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		DashboardModelMapper,
 		DashboardService,
 		LegacyBoardRepo,
-		RoomsService,
+		CourseRoomsService,
 		UserRepo,
 		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
@@ -80,7 +80,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
-		RoomsService,
+		CourseRoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
 		CourseGroupService,

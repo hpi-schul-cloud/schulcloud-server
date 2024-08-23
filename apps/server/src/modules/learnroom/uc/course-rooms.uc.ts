@@ -1,20 +1,20 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
-import { RoomsService } from '../service/rooms.service';
+import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 @Injectable()
-export class RoomsUc {
+export class CourseRoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly userRepo: UserRepo,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: RoomsAuthorisationService,
-		private readonly roomsService: RoomsService
+		private readonly roomsService: CourseRoomsService
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {

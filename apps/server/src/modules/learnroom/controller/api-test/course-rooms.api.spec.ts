@@ -23,7 +23,7 @@ import {
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('Rooms Controller (API)', () => {
+describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;

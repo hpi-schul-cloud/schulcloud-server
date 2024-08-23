@@ -3,21 +3,21 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo, LegacyBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { RoomsService } from '../service/rooms.service';
+import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomsUc } from './rooms.uc';
+import { CourseRoomsUc } from './course-rooms.uc';
 
 describe('rooms usecase', () => {
-	let uc: RoomsUc;
+	let uc: CourseRoomsUc;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let factory: DeepMocked<RoomBoardDTOFactory>;
 	let authorisation: DeepMocked<RoomsAuthorisationService>;
-	let roomsService: DeepMocked<RoomsService>;
+	let roomsService: DeepMocked<CourseRoomsService>;
 	let module: TestingModule;
 
 	afterAll(async () => {
@@ -28,7 +28,7 @@ describe('rooms usecase', () => {
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
-				RoomsUc,
+				CourseRoomsUc,
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
@@ -54,20 +54,20 @@ describe('rooms usecase', () => {
 					useValue: createMock<RoomsAuthorisationService>(),
 				},
 				{
-					provide: RoomsService,
-					useValue: createMock<RoomsService>(),
+					provide: CourseRoomsService,
+					useValue: createMock<CourseRoomsService>(),
 				},
 			],
 		}).compile();
 
-		uc = module.get(RoomsUc);
+		uc = module.get(CourseRoomsUc);
 		courseRepo = module.get(CourseRepo);
 		taskRepo = module.get(TaskRepo);
 		userRepo = module.get(UserRepo);
 		legacyBoardRepo = module.get(LegacyBoardRepo);
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(RoomsAuthorisationService);
-		roomsService = module.get(RoomsService);
+		roomsService = module.get(CourseRoomsService);
 		await setupEntities();
 	});
 
