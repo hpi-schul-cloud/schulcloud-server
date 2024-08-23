@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
-export class Migration20240819123013 extends Migration {
+export class Migration20240823151836 extends Migration {
 	async up(): Promise<void> {
 		const adminRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'administrator' },
@@ -14,7 +14,7 @@ export class Migration20240819123013 extends Migration {
 		);
 
 		if (adminRoleUpdate.modifiedCount > 0) {
-			console.info('Permission COURSE_ADMINISTRATION was added to role administrator.');
+			console.info('Permission COURSE_ADMINISTRATION added to role administrator.');
 		}
 	}
 
@@ -31,7 +31,7 @@ export class Migration20240819123013 extends Migration {
 		);
 
 		if (adminRoleUpdate.modifiedCount > 0) {
-			console.info('Rollback: Removed permission COURSE_ADMINISTRATION from role administrator.');
+			console.info('Rollback: Permission COURSE_ADMINISTRATION added to role administrator.');
 		}
 	}
 }
