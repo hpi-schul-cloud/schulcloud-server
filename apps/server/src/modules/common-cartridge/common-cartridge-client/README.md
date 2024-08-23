@@ -21,6 +21,14 @@ The input file in this command is the file genreated by the filter-spec.js scrip
 
 ***make sure*** to delete the filtered-spec.json file after generating the client code, before commiting the changes.
 
+# add the generated client code to the sonar-project.properties file
+to avoid sonarqube errors, you need to add the generated client code to the sonar-project.properties file.
+for example:
+```properties
+sonar.exclusions=**/courses-api-client/**/*.ts
+sonar.exclusions.coverage=**/courses-api-client/**/*.ts
+```
+you can add several exclusions and separate them with a comma.
 
 
 
