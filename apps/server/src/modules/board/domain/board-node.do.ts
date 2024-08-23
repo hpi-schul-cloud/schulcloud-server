@@ -28,6 +28,10 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return copyProps;
 	}
 
+	public getTrueProps(): T {
+		return this.props;
+	}
+
 	get level(): number {
 		return this.ancestorIds.length;
 	}

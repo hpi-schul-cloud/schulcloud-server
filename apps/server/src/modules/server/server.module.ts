@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
@@ -50,6 +51,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AuthGuardModule,
 	AuthorizationReferenceApiModule,
 	AccountApiModule,
 	CollaborativeStorageModule,

@@ -1,5 +1,6 @@
 /* eslint-disable import/extensions */
 export { BruteForcePrevention } from '../../../src/errors/index.js';
+export { authConfig } from '../../../src/services/authentication/configuration';
 export {
 	addTokenToWhitelist,
 	createRedisIdentifierFromJwtData,
