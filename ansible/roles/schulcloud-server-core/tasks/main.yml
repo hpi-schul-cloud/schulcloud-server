@@ -189,6 +189,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-delete-files-cronjob.yml.j2
       state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - cronjob
 
@@ -316,6 +317,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
       state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - deployment
 
@@ -325,6 +327,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-svc.yml.j2
       state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - service
 
@@ -335,6 +338,7 @@
       template: tldraw-ingress.yml.j2
       apply: yes
       state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - ingress
 
@@ -344,6 +348,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc-monitor.yml.j2
       state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - prometheus
 
