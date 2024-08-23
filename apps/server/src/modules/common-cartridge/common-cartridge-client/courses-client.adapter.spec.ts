@@ -80,4 +80,24 @@ describe(CoursesClientAdapter.name, () => {
 			});
 		});
 	});
+
+	describe('when no JWT token is found', () => {
+		const setup = () => {
+			const courseId = faker.string.uuid();
+			const error = new Error('Authentication is required.');
+			const request = createMock<Request>({
+				headers: {},
+			});
+
+			const adapter: CoursesClientAdapter = new CoursesClientAdapter(coursesApi, request);
+
+			return { error, courseId, adapter };
+		};
+
+		it('should throw an Error', async () => {
+			const { error, courseId, adapter } = setup();
+
+			await expect(adapter.getCourseCommonCartridgeMetadata(courseId)).rejects.toThrowError(error);
+		});
+	});
 });
