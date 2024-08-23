@@ -90,5 +90,6 @@
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
 	},
-	"TRAINING_URL": "https://lernen.dbildungscloud.de"
+	"TRAINING_URL": "https://lernen.dbildungscloud.de",
+	"FEATURE_ROOMS_ENABLED": true
 }
