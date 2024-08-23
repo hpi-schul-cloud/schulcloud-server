@@ -8,15 +8,17 @@
   tags:
     - configmap
 
-- name: Remove External Secret
+- name: External Secret
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: external-secret.yml.j2
-    state: absent
+    state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+               else 'absent'}}"
   when:
     - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-    - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
   tags:
     - 1password
 
@@ -27,18 +29,6 @@
     template: onepassword.yml.j2
   when: 
     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-    - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
-  tags:
-    - 1password
-
-- name: External Secret (namespace specific)
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: external-secret.yml.j2
-  when:
-    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-    - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
   tags:
     - 1password

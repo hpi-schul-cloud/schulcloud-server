@@ -89,15 +89,17 @@
     tags:
       - configmap
 
-  - name: Remove External Secret for Admin API Server
+  - name: External Secret for Admin API Server
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-external-secret.yml.j2
-      state: absent
+      state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+               else 'absent'}}"
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     tags:
       - 1password
 
@@ -111,28 +113,18 @@
       - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
     tags:
       - 1password
-  
-  - name: External Secret (namespace specific) for Admin API Server
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: admin-api-server-external-secret.yml.j2
-    when: 
-      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
-      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
-    tags:
-      - 1password
 
-  - name: Remove External Secret for Admin API Client
+  - name: External Secret for Admin API Client
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: external-secret-admin-api-client.yml.j2
-      state: absent
+      state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+               else 'absent'}}"
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     tags:
       - 1password
 
@@ -143,18 +135,6 @@
       template: onepassword-admin-api-client.yml.j2
     when:
       - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
-    tags:
-      - 1password
-
-  - name: External Secret (namespace specific) for Admin API Client
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: external-secret-admin-api-client.yml.j2
-    when: 
-      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
       - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
     tags:
       - 1password
@@ -285,15 +265,14 @@
     tags:
       - configmap
 
-  - name: Remove External Secret for amqp files
+  - name: External Secret for amqp files
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-external-secret.yml.j2
-      state: absent
+      state: "{{ 'present' if WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool else 'absent' }}"
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     tags:
       - 1password
 
@@ -303,17 +282,6 @@
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-    tags:
-      - 1password
-
-  - name: External Secret (namespace specific) for amqp files
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: amqp-files-external-secret.yml.j2
-    when:
-      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     tags:
       - 1password
 
@@ -381,15 +349,17 @@
     tags:
       - prometheus
 
-  - name: Remove External Secret for TlDraw Server
+  - name: External Secret for TlDraw Server
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-external-secret.yml.j2
-      state: absent
+      state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_TLDRAW is defined and WITH_TLDRAW|bool
+               else 'absent'}}"
     when:
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is undefined or not WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
     tags:
       - 1password
 
@@ -401,18 +371,6 @@
     when:
      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
-    tags:
-      - 1password
-
-  - name: External Secret (namespace specific) TlDraw Server
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-server-external-secret.yml.j2
-    when: 
-      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-      - WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool
-      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - 1password
 
