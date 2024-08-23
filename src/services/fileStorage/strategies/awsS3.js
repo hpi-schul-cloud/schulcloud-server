@@ -39,7 +39,7 @@ const getConfig = (provider) => {
 		},
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
-		endpoint: provider.endpointUrl,
+		endpoint: new URL(provider.endpointUrl).toString(),
 	};
 	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 		awsConfig.cors_rules = getCorsRules();
@@ -145,7 +145,7 @@ const createAWSObjectFromSchoolId = async (schoolId) => {
 	// begin legacy
 	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
 	const config = awsConfig;
-	config.endpoint = awsConfig.endpointUrl;
+	config.endpoint = new URL(awsConfig.endpointUrl).toString();
 
 	return {
 		s3: new S3(config),
@@ -172,7 +172,7 @@ const createAWSObjectFromStorageProviderIdAndBucket = async (storageProviderId, 
 	// begin legacy
 	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
 	const config = awsConfig;
-	config.endpoint = awsConfig.endpointUrl;
+	config.endpoint = new URL(awsConfig.endpointUrl).toString();
 
 	return {
 		s3: new S3(config),
