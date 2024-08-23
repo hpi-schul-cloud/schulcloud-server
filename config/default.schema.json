@@ -1665,6 +1665,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the AI Tutor"
+		},
+		"CALENDAR_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables calender service"
 		}
 	},
 	"required": []
