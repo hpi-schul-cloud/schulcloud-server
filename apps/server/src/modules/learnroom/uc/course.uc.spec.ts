@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
+import { ClassesRepo } from '@modules/class/repo';
 import { GroupService } from '@modules/group';
 import { GroupRepo } from '@modules/group/repo/';
 import { RoleDto, RoleService } from '@modules/role';
@@ -9,6 +10,8 @@ import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Page, UserDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo';
 import {
@@ -19,13 +22,11 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-import { ClassesRepo } from '@modules/class/repo';
-import { UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { COURSE_REPO, CourseRepo as CourseDORepo, CourseSortQueryType, CourseStatusQueryType } from '../domain';
 import { CourseDoService, CourseService } from '../service';
 import { courseFactory as courseDoFactory } from '../testing';
 import { CourseUc } from './course.uc';
+import { CourseInfoDto } from './dto';
 
 describe('CourseUc', () => {
 	let module: TestingModule;
@@ -250,7 +251,7 @@ describe('CourseUc', () => {
 				user,
 			} = setup();
 
-			const result = await uc.findAllCourses(
+			const result: Page<CourseInfoDto> = await uc.findAllCourses(
 				adminUser.id,
 				school.id,
 				sortByField,

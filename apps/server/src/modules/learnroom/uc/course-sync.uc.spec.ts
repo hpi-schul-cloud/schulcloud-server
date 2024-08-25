@@ -109,7 +109,7 @@ describe(CourseSyncUc.name, () => {
 				const { user, course, group } = setup();
 
 				await uc.startSynchronization(user.id, course.id, group.id);
-				
+
 				expect(courseService.findById).toHaveBeenCalledWith(course.id);
 				expect(groupService.findById).toHaveBeenCalledWith(group.id);
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
