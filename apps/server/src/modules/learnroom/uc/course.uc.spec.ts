@@ -6,7 +6,6 @@ import { GroupService } from '@modules/group';
 import { GroupRepo } from '@modules/group/repo/';
 import { RoleDto, RoleService } from '@modules/role';
 import { SchoolService } from '@modules/school';
-import { SCHOOL_REPO, SchoolRepo } from '@modules/school/domain/interface';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,7 +19,6 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-
 import { ClassesRepo } from '@modules/class/repo';
 import { UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
@@ -34,7 +32,6 @@ describe('CourseUc', () => {
 	let uc: CourseUc;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let courseDORepo: DeepMocked<CourseDORepo>;
-	let schoolRepo: DeepMocked<SchoolRepo>;
 	let groupRepo: DeepMocked<GroupRepo>;
 	let classesRepo: DeepMocked<ClassesRepo>;
 
@@ -72,10 +69,7 @@ describe('CourseUc', () => {
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
-				{
-					provide: 'SCHOOL_REPO',
-					useValue: createMock<SchoolRepo>(),
-				},
+
 				{
 					provide: CourseDoService,
 					useValue: createMock<CourseDoService>(),
@@ -118,7 +112,6 @@ describe('CourseUc', () => {
 		userService = module.get(UserService);
 		classService = module.get(ClassService);
 		courseDORepo = module.get(COURSE_REPO);
-		schoolRepo = module.get(SCHOOL_REPO);
 		groupRepo = module.get(GroupRepo);
 		classesRepo = module.get(ClassesRepo);
 	});
