@@ -1,5 +1,6 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { CoursesClientModule } from './courses-client.module';
+import { CoursesClientAdapter } from './courses-client.adapter';
 
 describe('CommonCartridgeClientModule', () => {
 	let module: TestingModule;
@@ -19,6 +20,8 @@ describe('CommonCartridgeClientModule', () => {
 	});
 
 	it('should be defined', () => {
-		expect(module).toBeDefined();
+		const coursesClientAdapter = module.get(CoursesClientAdapter);
+
+		expect(coursesClientAdapter).toBeDefined();
 	});
 });
