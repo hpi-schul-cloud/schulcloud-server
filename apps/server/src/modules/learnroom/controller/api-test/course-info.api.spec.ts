@@ -52,7 +52,7 @@ describe('Course Info Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('[GET] /course-infos', () => {
+	describe('[GET] /course-info', () => {
 		describe('when logged in as admin', () => {
 			const setup = async () => {
 				const student = createStudent();
@@ -89,7 +89,7 @@ describe('Course Info Controller (API)', () => {
 				const query = {};
 
 				const loggedInClient = await testApiClient.login(admin.account);
-				const response = await loggedInClient.get('/all').query(query);
+				const response = await loggedInClient.get().query(query);
 
 				expect(response.statusCode).toBe(200);
 				expect(response.body).toHaveProperty('data');
@@ -103,7 +103,7 @@ describe('Course Info Controller (API)', () => {
 				const query = { skip: 0, limit: 10, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.ARCHIVE };
 
 				const loggedInClient = await testApiClient.login(admin.account);
-				const response = await loggedInClient.get('/all').query(query);
+				const response = await loggedInClient.get().query(query);
 
 				const { total, skip, limit, data } = response.body as CourseListResponse;
 				expect(response.statusCode).toBe(200);
@@ -118,7 +118,7 @@ describe('Course Info Controller (API)', () => {
 				const query = { skip: 4, limit: 2, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
 
 				const loggedInClient = await testApiClient.login(admin.account);
-				const response = await loggedInClient.get('/all').query(query);
+				const response = await loggedInClient.get().query(query);
 
 				const { total, skip, limit, data } = response.body as CourseListResponse;
 				expect(response.statusCode).toBe(200);
@@ -145,7 +145,7 @@ describe('Course Info Controller (API)', () => {
 			it('should return unauthorized', async () => {
 				const query = { skip: 4, limit: 2, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
 
-				const response = await testApiClient.get('/all').query(query);
+				const response = await testApiClient.get().query(query);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -161,7 +161,7 @@ describe('Course Info Controller (API)', () => {
 				const query = { skip: 4, limit: 2, sortBy: CourseSortQueryType.NAME, type: CourseStatusQueryType.CURRENT };
 
 				const loggedInClient = await testApiClient.login(teacher.account);
-				const response = await loggedInClient.get('/all').query(query);
+				const response = await loggedInClient.get().query(query);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				expect(response.body).toEqual({
