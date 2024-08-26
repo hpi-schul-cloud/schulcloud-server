@@ -3,7 +3,7 @@ import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo } from '@shared/repo';
@@ -44,7 +44,7 @@ export class UserImportService {
 		}
 	}
 
-	public async matchUsers(importUsers: ImportUser[]): Promise<ImportUser[]> {
+	public async matchUsers(importUsers: ImportUser[], userLoginMigration: UserLoginMigrationDO): Promise<ImportUser[]> {
 		const importUserMap: Map<string, number> = new Map();
 
 		importUsers.forEach((importUser) => {
@@ -55,16 +55,20 @@ export class UserImportService {
 
 		const matchedImportUsers: ImportUser[] = await Promise.all(
 			importUsers.map(async (importUser: ImportUser): Promise<ImportUser> => {
-				const user: User[] = await this.userService.findUserBySchoolAndName(
+				const users: User[] = await this.userService.findUserBySchoolAndName(
 					importUser.school.id,
 					importUser.firstName,
 					importUser.lastName
 				);
 
+				const unmigratedUsers: User[] = users.filter(
+					(user: User) => !user.lastLoginSystemChange || user.lastLoginSystemChange < userLoginMigration.startedAt
+				);
+
 				const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
 
-				if (user.length === 1 && importUserMap.get(key) === 1) {
-					importUser.user = user[0];
+				if (users.length === 1 && unmigratedUsers.length === 1 && importUserMap.get(key) === 1) {
+					importUser.user = unmigratedUsers[0];
 					importUser.matchedBy = MatchCreator.AUTO;
 				}
 
