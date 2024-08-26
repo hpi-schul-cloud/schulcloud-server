@@ -79,7 +79,7 @@ export class SocketConnection {
 				if (!this.connected) {
 					reject(new Error('Timeout: could not connect to socket server'));
 				}
-			}, this.socketConfiguration.connectTimeout ?? 5000);
+			}, this.socketConfiguration.connectTimeout ?? 10000);
 		});
 	}
 
@@ -88,7 +88,7 @@ export class SocketConnection {
 	};
 
 	// eslint-disable-next-line arrow-body-style
-	emitAndWait = async (actionPrefix: string, payload: unknown, timeoutMs = 5000) => {
+	emitAndWait = async (actionPrefix: string, payload: unknown, timeoutMs = 10000) => {
 		/* istanbul ignore next */
 		return new Promise((resolve, reject) => {
 			this.socket.emit(`${actionPrefix}-request`, payload);
@@ -133,7 +133,7 @@ export class SocketConnection {
 		}
 	}
 
-	registerPromise(successEvent: string, resolve: Callback, reject: Callback, timeoutMs = 5000) {
+	registerPromise(successEvent: string, resolve: Callback, reject: Callback, timeoutMs = 10000) {
 		const startTime = performance.now();
 		const handle = uuid();
 		const failureEvent = successEvent.replace('-success', '-failure');

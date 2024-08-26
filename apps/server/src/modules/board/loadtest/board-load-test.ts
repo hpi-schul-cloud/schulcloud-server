@@ -3,10 +3,11 @@ import { duplicateUserProfiles } from './helper/class-definitions';
 import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
 import { sleep } from './helper/sleep';
 import { LoadtestClient } from './loadtest-client';
+import { SocketConnection } from './socket-connection';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinition, UserProfile } from './types';
 
-const SIMULATE_USER_TIME_MS = 60000;
+const SIMULATE_USER_TIME_MS = 120000;
 
 export class BoardLoadTest {
 	private columns: { id: string; cards: { id: string }[] }[] = [];
@@ -24,19 +25,19 @@ export class BoardLoadTest {
 	}
 
 	async initializeLoadtestClients(amount: number, boardId: string): Promise<LoadtestClient[]> {
-		const promises = Array(amount)
-			.fill(1)
-			.map(() => this.initializeLoadtestClient(boardId));
+		const connections = await this.socketConnectionManager.createConnections(amount);
+		const promises = connections.map((socketConnection: SocketConnection) =>
+			this.initializeLoadtestClient(socketConnection, boardId)
+		);
 		const results = await Promise.all(promises);
 		return results;
 	}
 
-	async initializeLoadtestClient(boardId: string): Promise<LoadtestClient> {
-		const socketConnection = await this.socketConnectionManager.createConnection();
+	async initializeLoadtestClient(socketConnection: SocketConnection, boardId: string): Promise<LoadtestClient> {
 		const loadtestClient = new LoadtestClient(socketConnection, boardId);
 
 		/* istanbul ignore next */
-		await sleep(Math.ceil(Math.random() * 3000));
+		await sleep(Math.ceil(Math.random() * 20000));
 		/* istanbul ignore next */
 		await loadtestClient.fetchBoard();
 		/* istanbul ignore next */

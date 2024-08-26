@@ -24,7 +24,7 @@ describe('Board Collaboration - Connection Load Test', () => {
 			const sockets = await manager.createConnections(CONNECTION_AMOUNT);
 			await sleep(3000);
 			expect(sockets).toHaveLength(CONNECTION_AMOUNT);
-			await manager.destroySocketConnections(sockets);
+			await manager.destroySocketConnections();
 		} else {
 			expect('this should only be ran manually').toBeTruthy();
 		}
