@@ -30,7 +30,7 @@ import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
 import { Response } from 'express';
-import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
+import { CourseResponseMapper } from '../mapper/course-response.mapper';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CourseInfoDto } from '../uc/dto';
@@ -170,11 +170,11 @@ export class CourseController {
 	}
 
 	@Get('/all')
-	@ApiOperation({ summary: 'Get a list of all courses.' })
+	@ApiOperation({ summary: 'Get a list of courses for school.' })
 	@ApiResponse({ status: HttpStatus.OK, type: CourseListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getAllCourses(
+	async getCoursesForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
@@ -189,7 +189,7 @@ export class CourseController {
 			sortingQuery.sortOrder
 		);
 
-		const response: CourseListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
+		const response: CourseListResponse = CourseResponseMapper.mapToCourseInfoListResponse(
 			courses,
 			pagination.skip,
 			pagination.limit

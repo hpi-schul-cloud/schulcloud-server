@@ -2,7 +2,7 @@ import { Page } from '@shared/domain/domainobject';
 import { CourseListResponse, CourseResponse } from '../controller/dto/response';
 import { CourseInfoDto } from '../uc/dto';
 
-export class CourseInfoResponseMapper {
+export class CourseResponseMapper {
 	public static mapToCourseInfoListResponse(
 		courseInfos: Page<CourseInfoDto>,
 		skip?: number,
