@@ -122,11 +122,8 @@ export class UserImportUc {
 		this.userImportService.checkFeatureEnabled(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
-		// check same school
-		if (school.id !== importUser.school.id) {
-			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
-			throw new ForbiddenException('not same school');
-		}
+
+		this.checkImportUserSameSchool(school, importUser);
 
 		importUser.revokeMatch();
 		await this.importUserRepo.save(importUser);
@@ -142,11 +139,7 @@ export class UserImportUc {
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 
-		// check same school
-		if (school.id !== importUser.school.id) {
-			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
-			throw new ForbiddenException('not same school');
-		}
+		this.checkImportUserSameSchool(school, importUser);
 
 		importUser.flagged = flagged === true;
 		await this.importUserRepo.save(importUser);
@@ -340,6 +333,25 @@ export class UserImportUc {
 		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
 	}
 
+	public async clearAllAutoMatches(currentUserId: EntityId): Promise<void> {
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
+
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.userImportService.checkFeatureEnabled(school);
+
+		const filters: IImportUserScope = { matches: [MatchCreatorScope.AUTO] };
+		const [autoMatchedUsers]: Counted<ImportUser[]> = await this.importUserRepo.findImportUsers(
+			currentUser.school,
+			filters
+		);
+
+		for (const autoMatchedUser of autoMatchedUsers) {
+			autoMatchedUser.revokeMatch();
+		}
+
+		await this.userImportService.saveImportUsers(autoMatchedUsers);
+	}
+
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.authorizationService.checkAllPermissions(currentUser, [permission]);
@@ -433,6 +445,13 @@ export class UserImportUc {
 	private checkSchoolNotInMigration(school: LegacySchoolDo): void {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
+		}
+	}
+
+	private checkImportUserSameSchool(school: LegacySchoolDo, importUser: ImportUser) {
+		if (school.id !== importUser.school.id) {
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
+			throw new ForbiddenException('not same school');
 		}
 	}
 }
