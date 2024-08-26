@@ -324,7 +324,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-svc.yml.j2
-      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - service
 
@@ -334,7 +334,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-ingress.yml.j2
       apply: yes
-      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
     tags:
       - ingress
 
