@@ -8,7 +8,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { defaultMikroOrmOptions } from '../server';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
-import { CoursesClientModule } from './common-cartridge-client/courses-client-module';
+import { CoursesClientModule } from './common-cartridge-client/courses-client.module';
 
 @Module({
 	imports: [
