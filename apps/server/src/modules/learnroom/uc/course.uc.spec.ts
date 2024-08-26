@@ -260,9 +260,6 @@ describe('CourseUc', () => {
 				sortOrder
 			);
 
-			expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
-			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(adminUser.id);
-			expect(authorizationService.checkPermission).toHaveBeenCalled();
 			const filter = { schoolId: school.id, courseStatusQueryType: statusTypeQuery };
 			const options = {
 				pagination,
@@ -270,6 +267,10 @@ describe('CourseUc', () => {
 					[sortByField]: sortOrder,
 				},
 			};
+
+			expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
+			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(adminUser.id);
+			expect(authorizationService.checkPermission).toHaveBeenCalled();
 			expect(courseDoService.findCourses).toHaveBeenCalledWith(filter, options);
 			expect(userService.findById).toHaveBeenCalledWith(user.id);
 			expect(classService.findById).toHaveBeenCalledWith(clazz.id);

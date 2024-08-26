@@ -22,18 +22,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiOperation,
-	ApiResponse,
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
-import { Page } from '@shared/domain/domainobject';
-import { ErrorResponse } from '@src/core/error/dto';
 import { Response } from 'express';
-import { CourseResponseMapper } from '../mapper/course-response.mapper';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
-import { CourseInfoDto } from '../uc/dto';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import {
 	CourseExportBodyParams,
@@ -44,9 +39,6 @@ import {
 	CourseUrlParams,
 } from './dto';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
-import { CourseFilterParams } from './dto/request/course-filter-params';
-import { CourseSortParams } from './dto/request/course-sort-params';
-import { CourseListResponse } from './dto/response';
 
 @ApiTags('Courses')
 @JwtAuthentication()
@@ -167,34 +159,5 @@ export class CourseController {
 		const course = await this.courseUc.findCourseById(param.courseId);
 
 		return CourseMapper.mapToCommonCartridgeMetadataResponse(course);
-	}
-
-	@Get('/all')
-	@ApiOperation({ summary: 'Get a list of courses for school.' })
-	@ApiResponse({ status: HttpStatus.OK, type: CourseListResponse })
-	@ApiResponse({ status: '4XX', type: ErrorResponse })
-	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getCoursesForSchool(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationParams,
-		@Query() sortingQuery: CourseSortParams,
-		@Query() filterParams: CourseFilterParams
-	): Promise<CourseListResponse> {
-		const courses: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
-			currentUser.userId,
-			currentUser.schoolId,
-			sortingQuery.sortBy,
-			filterParams.type,
-			pagination,
-			sortingQuery.sortOrder
-		);
-
-		const response: CourseListResponse = CourseResponseMapper.mapToCourseInfoListResponse(
-			courses,
-			pagination.skip,
-			pagination.limit
-		);
-
-		return response;
 	}
 }
