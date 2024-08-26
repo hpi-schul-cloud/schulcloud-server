@@ -14,7 +14,7 @@ import { CourseListResponse } from './dto/response';
 @ApiTags('Course Info')
 @JwtAuthentication()
 @Controller('course-info')
-export class CourseController {
+export class CourseInfoController {
 	constructor(private readonly courseUc: CourseUc) {}
 
 	@Get()

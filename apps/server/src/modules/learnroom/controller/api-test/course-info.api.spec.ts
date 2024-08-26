@@ -44,7 +44,7 @@ describe('Course Info Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'courses');
+		testApiClient = new TestApiClient(app, 'course-info');
 	});
 
 	afterAll(async () => {
@@ -62,6 +62,7 @@ describe('Course Info Controller (API)', () => {
 
 				const currentCourses: CourseEntity[] = courseFactory.buildList(5, {
 					school,
+					untilDate: new Date('2045-07-31T23:59:59'),
 				});
 				const archivedCourses: CourseEntity[] = courseFactory.buildList(10, {
 					school,
@@ -70,7 +71,8 @@ describe('Course Info Controller (API)', () => {
 
 				admin.user.school = school;
 				await em.persistAndFlush(school);
-				await em.persistAndFlush([...currentCourses, ...archivedCourses]);
+				await em.persistAndFlush(currentCourses);
+				await em.persistAndFlush(archivedCourses);
 				await em.persistAndFlush([admin.account, admin.user]);
 				em.clear();
 

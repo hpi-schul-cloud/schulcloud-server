@@ -1,8 +1,8 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { GroupModule } from '@modules/group';
-import { ClassModule } from '@modules/class';
 
 import { LessonModule } from '@modules/lesson';
 import { RoleModule } from '@modules/role';
@@ -16,6 +16,7 @@ import { RoomsController } from './controller/rooms.controller';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 
+import { CourseInfoController } from './controller/course-info.controller';
 import {
 	CourseCopyUC,
 	CourseExportUc,
@@ -42,7 +43,7 @@ import {
 		UserModule,
 		ClassModule,
 	],
-	controllers: [DashboardController, CourseController, RoomsController],
+	controllers: [DashboardController, CourseController, CourseInfoController, RoomsController],
 	providers: [
 		DashboardUc,
 		CourseUc,
