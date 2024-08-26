@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { OauthClientResponse } from './oauth-client.response';
 import { OidcContextResponse } from './oidc-context.response';
 
-export class LoginResponse {
-	constructor(props: LoginResponse) {
+export class OauthProviderLoginResponse {
+	constructor(props: OauthProviderLoginResponse) {
 		this.client = props.client;
 		this.client_id = props.client_id;
 		this.challenge = props.challenge;
