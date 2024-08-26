@@ -75,7 +75,7 @@ describe(GroupScope.name, () => {
 
 				scope.bySystemId(id);
 
-				expect(scope.query).toEqual({ externalSource: { system: id } });
+				expect(scope.query).toEqual({ externalSource: { system: new ObjectId(id) } });
 			});
 		});
 	});

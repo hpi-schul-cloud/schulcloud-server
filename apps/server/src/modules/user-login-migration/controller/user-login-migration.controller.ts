@@ -1,6 +1,7 @@
-import { Authenticate, CurrentUser, ICurrentUser, JWT } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
@@ -29,17 +30,18 @@ import {
 	UserLoginMigrationUc,
 } from '../uc';
 import {
+	ForceMigrationParams,
+	Oauth2MigrationParams,
 	SchoolIdParams,
 	UserLoginMigrationMandatoryParams,
 	UserLoginMigrationResponse,
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from './dto';
-import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
-@Authenticate('jwt')
+@JwtAuthentication()
 export class UserLoginMigrationController {
 	constructor(
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
@@ -219,12 +221,35 @@ export class UserLoginMigrationController {
 
 	@Post('migrate-to-oauth2')
 	@ApiOkResponse({ description: 'The User has been successfully migrated.', status: 200 })
-	@ApiInternalServerErrorResponse({ description: 'The migration of the User was not possible.' })
+	@ApiUnprocessableEntityResponse({ description: 'The migration of the User was not possible.' })
 	async migrateUserLogin(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2MigrationParams
 	): Promise<void> {
 		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);
+	}
+
+	@Post('force-migration')
+	@ApiOperation({ summary: 'Force migrate an administrator account and its school' })
+	@ApiCreatedResponse({ description: 'The user and their school were successfully migrated' })
+	@ApiUnprocessableEntityResponse({
+		description:
+			'There are multiple users with the email,' +
+			'or the user is not an administrator,' +
+			'or the school is already migrated,' +
+			'or the external user id is already assigned',
+	})
+	@ApiNotFoundResponse({ description: 'There is no user with the email' })
+	public async forceMigration(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() forceMigrationParams: ForceMigrationParams
+	): Promise<void> {
+		await this.userLoginMigrationUc.forceMigration(
+			currentUser.userId,
+			forceMigrationParams.email,
+			forceMigrationParams.externalUserId,
+			forceMigrationParams.externalSchoolId
+		);
 	}
 }

@@ -1,16 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
 	countyEmbeddableFactory,
 	federalStateFactory,
 	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 import { SchoolErrorEnum } from '../../domain/error';
@@ -209,9 +210,7 @@ describe('School Controller (API)', () => {
 								expect.objectContaining({
 									validationErrors: [
 										{
-											errors: [
-												'each value in features must be one of the following values: rocketChat, videoconference, nextcloud, studentVisibility, ldapUniventionMigrationSchool, oauthProvisioningEnabled, showOutdatedUsers, enableLdapSyncDuringMigration',
-											],
+											errors: [expect.stringContaining('each value in features must be one of the following values:')],
 											field: ['features'],
 										},
 									],

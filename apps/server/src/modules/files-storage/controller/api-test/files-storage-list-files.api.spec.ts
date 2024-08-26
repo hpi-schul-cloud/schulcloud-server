@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -16,8 +16,9 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus, StorageLocation } from '../../entity';
+import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordParentType, StorageLocation } from '../../interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
@@ -65,6 +66,8 @@ describe(`${baseRouteName} (api)`, () => {
 			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();

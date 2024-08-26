@@ -30,6 +30,11 @@ spec:
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            runAsNonRoot: true
           volumes:
             - name: libraries-list
               configMap:
@@ -65,7 +70,7 @@ spec:
           affinity:
             podAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
+              - weight: 20
                 podAffinityTerm:
                   labelSelector:
                     matchExpressions:
@@ -73,6 +78,36 @@ spec:
                       operator: In
                       values:
                       - schulcloud-verbund
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: git.repo
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_REPO_NAME }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: git.branch
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/version
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
 {% endif %}

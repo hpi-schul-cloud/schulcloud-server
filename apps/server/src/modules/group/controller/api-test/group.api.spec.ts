@@ -4,14 +4,7 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course as CourseEntity,
-	Role,
-	SchoolEntity,
-	SchoolYearEntity,
-	SystemEntity,
-	User,
-} from '@shared/domain/entity';
+import { Course as CourseEntity, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
 	courseFactory as courseEntityFactory,
@@ -27,7 +20,7 @@ import {
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
 import { ClassInfoSearchListResponse } from '../dto';
-import { ClassSortBy } from '../dto/interface';
+import { ClassSortQueryType } from '../dto/interface';
 
 const baseRouteName = '/groups';
 
@@ -62,8 +55,8 @@ describe('Group (API)', () => {
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-				const system: SystemEntity = systemEntityFactory.buildWithId();
-				const clazz: ClassEntity = classEntityFactory.buildWithId({
+				const system = systemEntityFactory.buildWithId();
+				const classEntity: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,
 					teacherIds: [teacherUser._id],
@@ -94,7 +87,7 @@ describe('Group (API)', () => {
 					teacherRole,
 					teacherUser,
 					system,
-					clazz,
+					classEntity,
 					group,
 					schoolYear,
 					course,
@@ -106,7 +99,7 @@ describe('Group (API)', () => {
 				return {
 					adminClient,
 					group,
-					clazz,
+					classEntity,
 					system,
 					adminUser,
 					teacherUser,
@@ -116,12 +109,12 @@ describe('Group (API)', () => {
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, clazz, system, schoolYear, course } = await setup();
+				const { adminClient, group, classEntity, system, schoolYear, course } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
 					limit: 2,
-					sortBy: ClassSortBy.NAME,
+					sortBy: ClassSortQueryType.NAME,
 					sortOrder: SortOrder.desc,
 				});
 
@@ -138,9 +131,9 @@ describe('Group (API)', () => {
 							synchronizedCourses: [{ id: course.id, name: course.name }],
 						},
 						{
-							id: clazz.id,
+							id: classEntity.id,
 							type: ClassRootType.CLASS,
-							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
+							name: classEntity.gradeLevel ? `${classEntity.gradeLevel}${classEntity.name}` : classEntity.name,
 							teacherNames: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
@@ -285,6 +278,7 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0],
 						},
 					],
+					type: GroupEntityTypes.COURSE,
 				});
 				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({
 					organization: school,
@@ -294,6 +288,7 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0],
 						},
 					],
+					type: GroupEntityTypes.COURSE,
 				});
 				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({
 					organization: otherSchool,
@@ -303,6 +298,7 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0],
 						},
 					],
+					type: GroupEntityTypes.COURSE,
 				});
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
@@ -466,12 +462,17 @@ describe('Group (API)', () => {
 				const teachersGroup: GroupEntity = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+					type: GroupEntityTypes.COURSE,
 				});
 				const availableTeachersGroup: GroupEntity = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+					type: GroupEntityTypes.COURSE,
 				});
-				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
+				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					type: GroupEntityTypes.COURSE,
+				});
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
 					school,

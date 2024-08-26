@@ -10,3 +10,4 @@ export * from './link-element-response.mapper';
 export * from './rich-text-element-response.mapper';
 export * from './submission-container-element-response.mapper';
 export * from './submission-item-response.mapper';
+export * from './deleted-element-response.mapper';

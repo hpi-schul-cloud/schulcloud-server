@@ -1,11 +1,11 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
+import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
-import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { SchoolYearService } from '@modules/legacy-school';
 import { ProvisioningConfig } from '@modules/provisioning';
-import { School, SchoolService } from '@modules/school/domain';
+import { School, SchoolService, SchoolYear } from '@modules/school/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
@@ -13,7 +13,7 @@ import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LegacySystemService, SystemDto } from '@src/modules/system';
+import { System, SystemService } from '@src/modules/system';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupFilter } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -26,7 +26,7 @@ export class ClassGroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
-		private readonly systemService: LegacySystemService,
+		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
@@ -138,7 +138,8 @@ export class ClassGroupUc {
 		classes: Class[],
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
-		const currentYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
+		const currentYear: SchoolYear | undefined =
+			classes.length > 0 ? await this.schoolService.getCurrentYear(classes[0].schoolId) : undefined;
 
 		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
 			classes
@@ -172,7 +173,7 @@ export class ClassGroupUc {
 	}
 
 	private isClassOfQueryType(
-		currentYear: SchoolYearEntity,
+		currentYear: SchoolYear | undefined,
 		schoolYear?: SchoolYearEntity,
 		schoolYearQueryType?: SchoolYearQueryType
 	): boolean {
@@ -180,7 +181,7 @@ export class ClassGroupUc {
 			return true;
 		}
 
-		if (schoolYear === undefined) {
+		if (schoolYear === undefined || currentYear === undefined) {
 			return schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR;
 		}
 
@@ -236,7 +237,7 @@ export class ClassGroupUc {
 	}
 
 	private async getClassInfosFromGroups(groups: Group[]): Promise<ClassInfoDto[]> {
-		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groups);
+		const systemMap: Map<EntityId, System> = await this.findSystemNamesForGroups(groups);
 
 		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
 			groups.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
@@ -245,8 +246,8 @@ export class ClassGroupUc {
 		return classInfosFromGroups;
 	}
 
-	private async getClassInfoFromGroup(group: Group, systemMap: Map<EntityId, SystemDto>): Promise<ClassInfoDto> {
-		let system: SystemDto | undefined;
+	private async getClassInfoFromGroup(group: Group, systemMap: Map<EntityId, System>): Promise<ClassInfoDto> {
+		let system: System | undefined;
 		if (group.externalSource) {
 			system = systemMap.get(group.externalSource.systemId);
 		}
@@ -268,20 +269,22 @@ export class ClassGroupUc {
 		return mapped;
 	}
 
-	private async findSystemNamesForGroups(groups: Group[]): Promise<Map<EntityId, SystemDto>> {
+	private async findSystemNamesForGroups(groups: Group[]): Promise<Map<EntityId, System>> {
 		const systemIds: EntityId[] = groups
 			.map((group: Group): string | undefined => group.externalSource?.systemId)
 			.filter((systemId: string | undefined): systemId is EntityId => systemId !== undefined);
 
 		const uniqueSystemIds: EntityId[] = Array.from(new Set(systemIds));
 
-		const systems: Map<EntityId, SystemDto> = new Map<EntityId, SystemDto>();
+		const systems: Map<EntityId, System> = new Map<EntityId, System>();
 
 		await Promise.all(
 			uniqueSystemIds.map(async (systemId: string): Promise<void> => {
-				const system: SystemDto = await this.systemService.findById(systemId);
+				const system: System | null = await this.systemService.findById(systemId);
 
-				systems.set(systemId, system);
+				if (system) {
+					systems.set(systemId, system);
+				}
 			})
 		);
 

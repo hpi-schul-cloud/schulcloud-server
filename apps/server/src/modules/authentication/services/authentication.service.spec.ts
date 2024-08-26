@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService, Account } from '@modules/account';
-import { ICurrentUser } from '@modules/authentication';
+import { Account, AccountService } from '@modules/account';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@shared/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { AuthenticationService } from './authentication.service';
+import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
 
@@ -17,7 +17,7 @@ describe('AuthenticationService', () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 
-	let jwtValidationAdapter: DeepMocked<JwtValidationAdapter>;
+	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
@@ -33,8 +33,8 @@ describe('AuthenticationService', () => {
 			providers: [
 				AuthenticationService,
 				{
-					provide: JwtValidationAdapter,
-					useValue: createMock<JwtValidationAdapter>(),
+					provide: JwtWhitelistAdapter,
+					useValue: createMock<JwtWhitelistAdapter>(),
 				},
 				{
 					provide: JwtService,
@@ -51,7 +51,7 @@ describe('AuthenticationService', () => {
 			],
 		}).compile();
 
-		jwtValidationAdapter = module.get(JwtValidationAdapter);
+		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
@@ -114,13 +114,8 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
-				const mockCurrentUser: ICurrentUser = {
-					accountId: 'mockAccountId',
-					roles: ['student'],
-					schoolId: 'mockSchoolId',
-					userId: 'mockUserId',
-					isExternalUser: false,
-				};
+				const mockCurrentUser = currentUserFactory.withRole('random role').build();
+
 				await authenticationService.generateJwt(mockCurrentUser);
 				expect(jwtService.sign).toBeCalledWith(
 					mockCurrentUser,
@@ -140,7 +135,7 @@ describe('AuthenticationService', () => {
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
-				expect(jwtValidationAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
+				expect(jwtWhitelistAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
 			});
 		});
 
@@ -150,7 +145,7 @@ describe('AuthenticationService', () => {
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
-				expect(jwtValidationAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+				expect(jwtWhitelistAdapter.removeFromWhitelist).not.toHaveBeenCalled();
 			});
 		});
 	});

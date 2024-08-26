@@ -3,8 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller';
 import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { FileRecordParentType, StorageLocation } from '../../entity';
-import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
+import { FileRecordParentType, PreviewOutputMimeTypes, PreviewWidth, StorageLocation } from '../../interface';
 
 export class FileRecordParams {
 	@ApiProperty()

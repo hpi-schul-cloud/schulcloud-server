@@ -1,9 +1,11 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/core';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
+import { SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
@@ -14,7 +16,6 @@ import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import request, { Response } from 'supertest';
-import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';

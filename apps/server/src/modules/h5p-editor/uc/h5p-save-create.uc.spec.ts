@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
+import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { H5PContentParentType } from '../entity';
 import { H5PAjaxEndpointProvider } from '../provider';
@@ -37,7 +37,7 @@ describe('save or create H5P content', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
 	let h5pEditor: DeepMocked<H5PEditor>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -61,8 +61,8 @@ describe('save or create H5P content', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: H5PContentRepo,
@@ -73,7 +73,7 @@ describe('save or create H5P content', () => {
 
 		uc = module.get(H5PEditorUc);
 		h5pEditor = module.get(H5PEditor);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		await setupEntities();
 	});
 
@@ -91,12 +91,12 @@ describe('save or create H5P content', () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
 
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce({ id: contentId, metadata });
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				return { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences', async () => {
+			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				await uc.saveH5pContentGetMetadata(
@@ -109,8 +109,7 @@ describe('save or create H5P content', () => {
 					parentId
 				);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
-					mockCurrentUser.userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					H5PContentParentType.Lesson,
 					parentId,
 					AuthorizationContextBuilder.write([])
@@ -160,7 +159,7 @@ describe('save or create H5P content', () => {
 			const setup = () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
 
-				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 				return { contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
 			};
@@ -190,7 +189,7 @@ describe('save or create H5P content', () => {
 
 				const error = new Error('test');
 
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
 
 				return { error, contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
@@ -220,12 +219,12 @@ describe('save or create H5P content', () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
 
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce({ id: contentId, metadata });
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				return { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences', async () => {
+			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				await uc.createH5pContentGetMetadata(
@@ -237,8 +236,7 @@ describe('save or create H5P content', () => {
 					parentId
 				);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
-					mockCurrentUser.userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					H5PContentParentType.Lesson,
 					parentId,
 					AuthorizationContextBuilder.write([])
@@ -286,7 +284,7 @@ describe('save or create H5P content', () => {
 			const setup = () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
 
-				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 				return { contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
 			};
@@ -315,7 +313,7 @@ describe('save or create H5P content', () => {
 
 				const error = new Error('test');
 
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
 
 				return { error, contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };

@@ -1,13 +1,17 @@
 import { SchulconnexGroupType, SchulconnexGruppenResponse, SchulconnexResponse } from '@infra/schulconnex-client';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
-import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { System } from '@modules/system';
+import { SystemEntity } from '@modules/system/entity';
+import { ImportUser, SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 
 export class SchulconnexImportUserMapper {
 	public static mapDataToUserImportEntities(
 		response: SchulconnexResponse[],
-		system: SystemEntity,
-		school: SchoolEntity
+		system: System,
+		school: SchoolEntity,
+		em: EntityManager
 	): ImportUser[] {
 		const importUsers: ImportUser[] = response.map((externalUser: SchulconnexResponse): ImportUser => {
 			const role: RoleName = SchulconnexResponseMapper.mapSanisRoleToRoleName(externalUser);
@@ -16,7 +20,7 @@ export class SchulconnexImportUserMapper {
 			);
 
 			const importUser: ImportUser = new ImportUser({
-				system,
+				system: em.getReference(SystemEntity, system.id),
 				school,
 				ldapDn: `uid=${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid},`,
 				externalId: externalUser.pid,
@@ -25,6 +29,7 @@ export class SchulconnexImportUserMapper {
 				roleNames: ImportUser.isImportUserRole(role) ? [role] : [],
 				email: `${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid}@schul-cloud.org`,
 				classNames: groups ? SchulconnexResponseMapper.mapToGroupNameList(groups) : [],
+				externalRoleNames: [externalUser.personenkontexte[0].rolle],
 			});
 
 			return importUser;

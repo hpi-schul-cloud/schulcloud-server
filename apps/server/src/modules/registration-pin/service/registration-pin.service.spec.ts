@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userDoFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
 import {
+	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DeletionErrorLoggableException,
 } from '@modules/deletion';
-import { registrationPinEntityFactory } from '../entity/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities, userDoFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { RegistrationPinService } from '.';
+import { registrationPinEntityFactory } from '../entity/testing';
 import { RegistrationPinRepo } from '../repo';
 
 describe(RegistrationPinService.name, () => {
@@ -131,6 +131,28 @@ describe(RegistrationPinService.name, () => {
 				const { expectedError, user } = setup();
 
 				await expect(service.deleteUserData(user.email)).rejects.toThrowError(expectedError);
+			});
+		});
+
+		describe('findByEmail', () => {
+			describe('when finding registration pins by email', () => {
+				const setup = () => {
+					const registrationPin = registrationPinEntityFactory.buildWithId();
+
+					registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[registrationPin], 1]);
+
+					return { registrationPin };
+				};
+
+				it('should return found registration pins', async () => {
+					const { registrationPin } = setup();
+
+					registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[registrationPin], 1]);
+
+					const result = await service.findByEmail(registrationPin.email);
+
+					expect(result).toEqual([registrationPin]);
+				});
 			});
 		});
 	});

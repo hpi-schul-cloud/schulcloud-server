@@ -4,6 +4,7 @@ import { CustomParameter } from '../../common/domain';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
 import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
 import { ExternalToolMedium } from './external-tool-medium.do';
+import { FileRecordRef } from './file-record-ref';
 
 export interface ExternalToolProps extends AuthorizableObject {
 	id: string;
@@ -17,6 +18,8 @@ export interface ExternalToolProps extends AuthorizableObject {
 	logoUrl?: string;
 
 	logo?: string;
+
+	thumbnail?: FileRecordRef;
 
 	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
@@ -74,6 +77,14 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 
 	set logo(value: string | undefined) {
 		this.props.logo = value;
+	}
+
+	get thumbnail(): FileRecordRef | undefined {
+		return this.props.thumbnail;
+	}
+
+	set thumbnail(value: FileRecordRef | undefined) {
+		this.props.thumbnail = value;
 	}
 
 	get config(): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
@@ -139,6 +150,8 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 	set createdAt(value: Date | undefined) {
 		this.props.createdAt = value;
 	}
+
+	public static readonly thumbnailNameAffix = 'thumbnail';
 
 	constructor(props: ExternalToolProps) {
 		super(props);

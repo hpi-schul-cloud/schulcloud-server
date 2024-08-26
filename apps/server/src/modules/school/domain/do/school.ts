@@ -20,6 +20,22 @@ interface SchoolInfo {
 }
 
 export class School extends DomainObject<SchoolProps> {
+	get currentYear() {
+		return this.props.currentYear;
+	}
+
+	get systems(): EntityId[] {
+		return this.props.systemIds;
+	}
+
+	set externalId(externalId: string | undefined) {
+		this.props.externalId = externalId;
+	}
+
+	set ldapLastSync(ldapLastSync: string | undefined) {
+		this.props.ldapLastSync = ldapLastSync;
+	}
+
 	public getInfo(): SchoolInfo {
 		const info = {
 			id: this.props.id,
@@ -100,15 +116,13 @@ export class School extends DomainObject<SchoolProps> {
 	public hasSystem(systemId: EntityId): boolean {
 		const { systemIds } = this.props;
 
-		const result = systemIds?.includes(systemId) ?? false;
+		const result = systemIds.includes(systemId);
 
 		return result;
 	}
 
 	public removeSystem(systemId: EntityId) {
-		if (this.props.systemIds) {
-			this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
-		}
+		this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
 	}
 }
 
@@ -127,7 +141,7 @@ export interface SchoolProps extends AuthorizableObject {
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;
 	instanceFeatures?: Set<InstanceFeature>;
-	systemIds?: EntityId[];
+	systemIds: EntityId[];
 	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;
 	language?: LanguageType;
@@ -137,4 +151,5 @@ export interface SchoolProps extends AuthorizableObject {
 	// It can't be mapped to a feature straight-forwardly,
 	// because the config value STUDENT_TEAM_CREATION has to be taken into account.
 	enableStudentTeamCreation?: boolean;
+	ldapLastSync?: string;
 }

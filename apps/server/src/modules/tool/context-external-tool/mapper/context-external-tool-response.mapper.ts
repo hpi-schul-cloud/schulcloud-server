@@ -48,6 +48,7 @@ export class ContextExternalToolResponseMapper {
 			description: toolReference.description,
 			displayName: toolReference.displayName,
 			logoUrl: toolReference.logoUrl,
+			thumbnailUrl: toolReference.thumbnailUrl,
 			openInNewTab: toolReference.openInNewTab,
 			status: ToolStatusResponseMapper.mapToResponse(toolReference.status),
 		});

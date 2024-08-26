@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -14,6 +15,7 @@ import {
 	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
+	DeletedElement,
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
@@ -26,6 +28,7 @@ import {
 	collaborativeTextEditorFactory,
 	columnBoardFactory,
 	columnFactory,
+	deletedElementFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
@@ -43,13 +46,14 @@ import { BoardNodeCopyService } from './board-node-copy.service';
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
-	const toolFeatures: IToolFeatures = {
-		ctlToolsTabEnabled: false,
-		ltiToolsTabEnabled: false,
-		maxExternalToolLogoSizeInBytes: 0,
-		backEndUrl: '',
-		ctlToolsCopyEnabled: false,
-		ctlToolsReloadTimeMs: 0,
+	const config: ToolConfig = {
+		FEATURE_CTL_TOOLS_TAB_ENABLED: false,
+		FEATURE_LTI_TOOLS_TAB_ENABLED: false,
+		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
+		CTL_TOOLS_BACKEND_URL: '',
+		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
+		CTL_TOOLS_RELOAD_TIME_MS: 0,
+		FILES_STORAGE__SERVICE_BASE_URL: '',
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -59,8 +63,10 @@ describe(BoardNodeCopyService.name, () => {
 			providers: [
 				BoardNodeCopyService,
 				{
-					provide: ToolFeatures,
-					useValue: toolFeatures,
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ToolConfig) => config[key]),
+					},
 				},
 				{
 					provide: ContextExternalToolService,
@@ -81,7 +87,7 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	afterAll(async () => {
@@ -404,7 +410,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyEnabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				toolFeatures.ctlToolsCopyEnabled = true;
+				config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
 
 				return { copyContext, externalToolElement };
 			};
@@ -474,7 +480,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyDisabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				toolFeatures.ctlToolsCopyEnabled = false;
+				config.FEATURE_CTL_TOOLS_COPY_ENABLED = false;
 
 				return { copyContext, externalToolElement };
 			};
@@ -598,6 +604,26 @@ describe(BoardNodeCopyService.name, () => {
 					status: CopyStatusEnum.NOT_DOING,
 				})
 			);
+		});
+	});
+
+	describe('copy deleted element', () => {
+		const setup = () => {
+			const { copyContext } = setupContext();
+			const deletedElement = deletedElementFactory.build();
+
+			return {
+				copyContext,
+				deletedElement,
+			};
+		};
+
+		it('should copy the node', async () => {
+			const { copyContext, deletedElement } = setup();
+
+			const result = await service.copyDeletedElement(deletedElement, copyContext);
+
+			expect(result.copyEntity).toBeInstanceOf(DeletedElement);
 		});
 	});
 });

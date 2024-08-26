@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -7,7 +9,7 @@ import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { userDoFactory } from '@shared/testing';
 
-import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { OauthCurrentUser } from '../interface';
 
 import { SchoolInMigrationLoggableException } from '../loggable';
 
@@ -56,12 +58,7 @@ describe('Oauth2Strategy', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
-				const account: Account = new Account({
-					id: 'accountId',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					username: 'username',
-				});
+				const account = accountDoFactory.build();
 
 				const idToken = 'idToken';
 				oauthService.authenticateUser.mockResolvedValue(

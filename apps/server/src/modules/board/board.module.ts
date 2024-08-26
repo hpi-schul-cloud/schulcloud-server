@@ -3,7 +3,6 @@ import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
-import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
@@ -17,18 +16,19 @@ import {
 	BoardNodeAuthorizableService,
 	BoardNodeService,
 	ColumnBoardService,
+	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
 import {
+	BoardContextService,
 	BoardNodeCopyService,
+	BoardNodeDeleteHooksService,
 	ColumnBoardCopyService,
 	ColumnBoardLinkService,
 	ColumnBoardReferenceService,
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
-	BoardNodeDeleteHooksService,
-	BoardContextService,
 } from './service/internal';
 
 @Module({
@@ -39,7 +39,6 @@ import {
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
-		ToolConfigModule,
 		TldrawClientModule,
 		CqrsModule,
 		CollaborativeTextEditorModule,
@@ -62,6 +61,7 @@ import {
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
 		UserDeletedEventHandlerService,
+		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
 	],

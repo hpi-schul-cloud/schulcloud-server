@@ -1,18 +1,18 @@
 import {
-	SchulconnexLizenzInfoResponse,
+	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexResponseValidationGroups,
 } from '@infra/schulconnex-client/response';
 import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
 import { GroupService } from '@modules/group/service/group.service';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { Logger } from '@src/core/logger';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
 	ExternalLicenseDto,
@@ -21,6 +21,7 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from '../../dto';
+import { FetchingPoliciesInfoFailedLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexProvisioningStrategy } from '../oidc';
 import {
@@ -36,7 +37,6 @@ import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 @Injectable()
 export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
 		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
@@ -46,10 +46,10 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
 		protected readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly responseMapper: SchulconnexResponseMapper,
-		private readonly schulconnexRestClient: SchulconnexRestClient
+		private readonly schulconnexRestClient: SchulconnexRestClient,
+		private readonly logger: Logger
 	) {
 		super(
-			provisioningFeatures,
 			schulconnexSchoolProvisioningService,
 			schulconnexUserProvisioningService,
 			schulconnexGroupProvisioningService,
@@ -92,7 +92,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
+		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
 			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);
@@ -100,18 +100,24 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 
 		let externalLicenses: ExternalLicenseDto[] | undefined;
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			const schulconnexLizenzInfoAxiosResponse: SchulconnexLizenzInfoResponse[] =
-				await this.schulconnexRestClient.getLizenzInfo(input.accessToken, {
-					overrideUrl: this.configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL'),
-				});
+			const policiesInfoUrl = this.configService.get<string>('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL');
+			try {
+				const schulconnexPoliciesInfoAxiosResponse = await this.schulconnexRestClient.getPoliciesInfo(
+					input.accessToken,
+					{
+						overrideUrl: policiesInfoUrl,
+					}
+				);
 
-			const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] = plainToClass(
-				SchulconnexLizenzInfoResponse,
-				schulconnexLizenzInfoAxiosResponse
-			);
-			await this.checkResponseValidation(schulconnexLizenzInfoResponses);
-
-			externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
+				const schulconnexLizenzInfoResponses = plainToClass(
+					SchulconnexPoliciesInfoResponse,
+					schulconnexPoliciesInfoAxiosResponse
+				);
+				await this.checkResponseValidation(schulconnexLizenzInfoResponses);
+				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
+			} catch (error) {
+				this.logger.warning(new FetchingPoliciesInfoFailedLoggable(externalUser, policiesInfoUrl));
+			}
 		}
 
 		const oauthData: OauthDataDto = new OauthDataDto({
@@ -126,7 +132,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	}
 
 	private async checkResponseValidation(
-		response: SchulconnexResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[],
+		response: SchulconnexResponse | SchulconnexPoliciesInfoResponse | SchulconnexPoliciesInfoResponse[],
 		groups?: SchulconnexResponseValidationGroups[]
 	): Promise<void> {
 		const responsesArray = Array.isArray(response) ? response : [response];

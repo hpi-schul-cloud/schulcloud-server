@@ -13,6 +13,25 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		});
 	}
 
+	public getProps(): T {
+		const copyProps = { ...this.props };
+		// TODO This is a Hotfix. We need to make sure that only properties of type T are returned
+		// At runtime the props are a MikroORM entity that has additional non-persisted properties
+		// see @Property({ persist: false })
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		copyProps.domainObject = undefined;
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		copyProps.children = [];
+
+		return copyProps;
+	}
+
+	public getTrueProps(): T {
+		return this.props;
+	}
+
 	get level(): number {
 		return this.ancestorIds.length;
 	}

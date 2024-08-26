@@ -3,27 +3,28 @@ import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
-	SchulconnexLizenzInfoResponse,
-	schulconnexLizenzInfoResponseFactory,
 	SchulconnexPersonenkontextResponse,
+	SchulconnexPoliciesInfoResponse,
+	schulconnexPoliciesInfoResponseFactory,
 	SchulconnexResponse,
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 describe(SchulconnexResponseMapper.name, () => {
 	let module: TestingModule;
 	let mapper: SchulconnexResponseMapper;
 
-	let provisioningFeatures: IProvisioningFeatures;
+	const config: Partial<ProvisioningConfig> = {};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,14 +35,15 @@ describe(SchulconnexResponseMapper.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ProvisioningFeatures,
-					useValue: {},
+					provide: ConfigService<ProvisioningConfig, true>,
+					useValue: {
+						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
+					},
 				},
 			],
 		}).compile();
 
 		mapper = module.get(SchulconnexResponseMapper);
-		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
 	describe('mapToExternalSchoolDto', () => {
@@ -143,9 +145,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type class is given', () => {
 			const setup = () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: true,
-				});
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 
@@ -274,9 +274,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is false', () => {
 			const setup = () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: false,
-				});
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = false;
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
@@ -296,9 +294,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is true', () => {
 			const setup = () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: true,
-				});
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
@@ -565,7 +561,7 @@ describe(SchulconnexResponseMapper.name, () => {
 	describe('mapToExternalLicenses', () => {
 		describe('when a license response has a medium id and no media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
 					target: { uid: 'bildungscloud', partOf: '' },
 				});
 
@@ -577,7 +573,8 @@ describe(SchulconnexResponseMapper.name, () => {
 			it('should map the response to an ExternalLicenseDto', () => {
 				const { licenseResponse } = setup();
 
-				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
@@ -590,7 +587,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has a medium id and a media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
 					target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
 				});
 
@@ -602,7 +599,8 @@ describe(SchulconnexResponseMapper.name, () => {
 			it('should map the response to an ExternalLicenseDto', () => {
 				const { licenseResponse } = setup();
 
-				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
@@ -615,7 +613,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has no medium id', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1, {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
 					target: { uid: '', partOf: 'bildungscloud-source' },
 				});
 
@@ -627,7 +625,8 @@ describe(SchulconnexResponseMapper.name, () => {
 			it('should should be filtered out', () => {
 				const { licenseResponse } = setup();
 
-				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
 				expect(result).toEqual<ExternalLicenseDto[]>([]);
 			});

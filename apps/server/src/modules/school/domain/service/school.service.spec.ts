@@ -510,6 +510,36 @@ describe('SchoolService', () => {
 		});
 	});
 
+	describe('save', () => {
+		describe('when saving a school', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ name: 'old name' });
+
+				schoolRepo.save.mockResolvedValueOnce(school);
+
+				return {
+					school,
+				};
+			};
+
+			it('should save the school', async () => {
+				const { school } = setup();
+
+				await service.save(school);
+
+				expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			});
+
+			it('should return the updated school', async () => {
+				const { school } = setup();
+
+				const result = await service.save(school);
+
+				expect(result).toEqual(school);
+			});
+		});
+	});
+
 	describe('getSchoolSystems', () => {
 		describe('when school has systems', () => {
 			const setup = () => {

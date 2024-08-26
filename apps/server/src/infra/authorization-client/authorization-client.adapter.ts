@@ -1,27 +1,45 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
-import cookie from 'cookie';
 import { Request } from 'express';
-import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
-import { AuthorizationApi, AuthorizationBodyParams } from './authorization-api-client';
+import {
+	AuthorizationApi,
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationContextParams,
+} from './authorization-api-client';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
 @Injectable()
 export class AuthorizationClientAdapter {
 	constructor(private readonly authorizationApi: AuthorizationApi, @Inject(REQUEST) private request: Request) {}
 
-	public async checkPermissionsByReference(params: AuthorizationBodyParams): Promise<void> {
-		const hasPermission = await this.hasPermissionsByReference(params);
+	public async checkPermissionsByReference(
+		referenceType: AuthorizationBodyParamsReferenceType,
+		referenceId: string,
+		context: AuthorizationContextParams
+	): Promise<void> {
+		const hasPermission = await this.hasPermissionsByReference(referenceType, referenceId, context);
+
 		if (!hasPermission) {
-			throw new AuthorizationForbiddenLoggableException(params);
+			throw new AuthorizationForbiddenLoggableException({ referenceType, referenceId, context });
 		}
 	}
 
-	public async hasPermissionsByReference(params: AuthorizationBodyParams): Promise<boolean> {
-		const options = this.createOptionParams(params);
+	public async hasPermissionsByReference(
+		referenceType: AuthorizationBodyParamsReferenceType,
+		referenceId: string,
+		context: AuthorizationContextParams
+	): Promise<boolean> {
+		const params = {
+			referenceType,
+			referenceId,
+			context,
+		};
 
 		try {
+			const options = this.createOptionParams();
+
 			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(
 				params,
 				options
@@ -34,34 +52,20 @@ export class AuthorizationClientAdapter {
 		}
 	}
 
-	private createOptionParams(params: AuthorizationBodyParams): RawAxiosRequestConfig<any> {
-		const jwt = this.getJWT(params);
+	private createOptionParams(): RawAxiosRequestConfig<any> {
+		const jwt = this.getJwt();
 		const options: RawAxiosRequestConfig<any> = { headers: { authorization: `Bearer ${jwt}` } };
 
 		return options;
 	}
 
-	private getJWT(params: AuthorizationBodyParams): string {
-		const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), this.fromCookie('jwt')]);
-		const jwt = getJWT(this.request) || this.request.headers.authorization;
+	private getJwt(): string {
+		const jwt = extractJwtFromHeader(this.request) || this.request.headers.authorization;
 
 		if (!jwt) {
-			const error = new Error('Authentication is required.');
-			throw new AuthorizationErrorLoggableException(error, params);
+			throw new Error('Authentication is required.');
 		}
 
 		return jwt;
-	}
-
-	private fromCookie(name: string): JwtFromRequestFunction {
-		return (request: Request) => {
-			let token: string | null = null;
-			const cookies = cookie.parse(request.headers.cookie || '');
-			if (cookies && cookies[name]) {
-				token = cookies[name];
-			}
-
-			return token;
-		};
 	}
 }

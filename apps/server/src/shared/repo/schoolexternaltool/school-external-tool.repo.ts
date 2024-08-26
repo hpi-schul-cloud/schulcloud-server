@@ -48,8 +48,8 @@ export class SchoolExternalToolRepo {
 		return domainObject;
 	}
 
-	public deleteById(id: EntityId): void {
-		this.em.remove(this.em.getReference(this.entityName, id));
+	public async deleteById(id: EntityId): Promise<void> {
+		return this.em.removeAndFlush(this.em.getReference(this.entityName, id));
 	}
 
 	async findByExternalToolId(toolId: string): Promise<SchoolExternalTool[]> {

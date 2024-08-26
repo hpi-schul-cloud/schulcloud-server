@@ -222,6 +222,7 @@ describe(ExternalToolRepo.name, () => {
 			const ltiToolC: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
 			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC];
 			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
+			em.clear();
 
 			return { queryExternalToolDO, options, ltiTools };
 		};
@@ -281,6 +282,14 @@ describe(ExternalToolRepo.name, () => {
 		});
 
 		describe('when query is given', () => {
+			it('should populate thumbnail', async () => {
+				const { queryExternalToolDO, options } = await setupFind();
+
+				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
+
+				expect(page.data[0].thumbnail?.fileName).toBeDefined();
+			});
+
 			describe('by ids', () => {
 				it('should return external tools for given ids', async () => {
 					const { options, ltiTools } = await setupFind();

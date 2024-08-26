@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ICurrentUser } from '@modules/authentication';
 import { HydraOauthUc } from '@modules/oauth/uc/hydra-oauth.uc';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Request } from 'express';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
@@ -85,7 +85,7 @@ describe('OAuthController', () => {
 	});
 
 	describe('requestAuthToken', () => {
-		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+		const currentUser = currentUserFactory.build({ userId: 'userId' });
 		const oauthClientId = 'clientId';
 
 		it('should call the hydraOauthUc', async () => {

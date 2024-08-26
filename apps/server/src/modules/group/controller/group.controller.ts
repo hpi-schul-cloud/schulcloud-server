@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Group } from '@modules/group';
 import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -22,7 +22,7 @@ import {
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('groups')
 export class GroupController {
 	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
@@ -49,7 +49,7 @@ export class GroupController {
 			sortingQuery.sortOrder
 		);
 
-		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfosToListResponse(
+		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfoSearchListResponse(
 			board,
 			pagination.skip,
 			pagination.limit

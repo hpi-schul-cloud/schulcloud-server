@@ -1,212 +1,260 @@
 [
-  {
-    "createdAt": {
-      "$date": "2023-10-17T12:15:26.458Z"
-    },
-    "updatedAt": {
-      "$date": "2023-10-17T12:15:26.461Z"
-    },
-    "name": "Cypress-Test-Group",
-    "type": "class",
-    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-    "externalSource_system": {
-      "$oid": "0000d186816abba584714c93"
-    },
-    "users": [
-      {
-        "user": {
-          "$oid": "5fa2c71bb229544f2c6966d9"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c98"
-        }
-      },
-      {
-        "user": {
-          "$oid": "5fa2cccab229544f2c696917"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      }
-    ],
-    "organization": {
-      "$oid": "5fa2c5ccb229544f2c69666c"
-    }
-  },
-  {
-    "createdAt": {
-      "$date": "2023-10-17T12:15:26.458Z"
-    },
-    "updatedAt": {
-      "$date": "2023-10-17T12:15:26.461Z"
-    },
-    "name": "Cypress-Test-Group1",
-    "type": "class",
-    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-    "externalSource_system": {
-      "$oid": "0000d186816abba584714c93"
-    },
-    "users": [
-      {
-        "user": {
-          "$oid": "5fa2c71bb229544f2c6966d9"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c98"
-        }
-      },
-      {
-        "user": {
-          "$oid": "5fa2cccab229544f2c696917"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      }
-    ],
-    "organization": {
-      "$oid": "5fa2c5ccb229544f2c69666c"
-    }
-  },
-  {
-    "createdAt": {
-      "$date": "2023-10-17T12:15:26.458Z"
-    },
-    "updatedAt": {
-      "$date": "2023-10-17T12:15:26.461Z"
-    },
-    "name": "Cypress-Test-Group2",
-    "type": "class",
-    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-    "externalSource_system": {
-      "$oid": "0000d186816abba584714c93"
-    },
-    "users": [
-      {
-        "user": {
-          "$oid": "5fa2c71bb229544f2c6966d9"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c98"
-        }
-      },
-      {
-        "user": {
-          "$oid": "5fa2cccab229544f2c696917"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      },
-      {
-        "user": {
-          "$oid": "5fa30079b229544f2c6969ff"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      }
-    ],
-    "organization": {
-      "$oid": "5fa2c5ccb229544f2c69666c"
-    }
-  },
-  {
-    "createdAt": {
-      "$date": "2023-10-17T12:15:26.458Z"
-    },
-    "updatedAt": {
-      "$date": "2023-10-17T12:15:26.461Z"
-    },
-    "name": "Cypress-Test-Group-Course-Sync",
-    "type": "class",
-    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-    "externalSource_system": {
-      "$oid": "0000d186816abba584714c93"
-    },
-    "users": [
-      {
-        "user": {
-          "$oid": "5fa2c71bb229544f2c6966d9"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c98"
-        }
-      },
-      {
-        "user": {
-          "$oid": "5fa2cccab229544f2c696917"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      }
-    ],
-    "organization": {
-      "$oid": "5fa2c5ccb229544f2c69666c"
-    }
-  },
-  {
-    "createdAt": {
-      "$date": "2023-10-17T12:15:26.458Z"
-    },
-    "updatedAt": {
-      "$date": "2023-10-17T12:15:26.461Z"
-    },
-    "name": "Cypress-Test-Group-Course-Sync2",
-    "type": "class",
-    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-    "externalSource_system": {
-      "$oid": "0000d186816abba584714c93"
-    },
-    "users": [
-      {
-        "user": {
-          "$oid": "5fa2c71bb229544f2c6966d9"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c98"
-        }
-      },
-      {
-        "user": {
-          "$oid": "5fa2cccab229544f2c696917"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      }
-    ],
-    "organization": {
-      "$oid": "5fa2c5ccb229544f2c69666c"
-    }
-  },
-  {
-    "createdAt": {
-      "$date": "2023-10-17T12:15:26.458Z"
-    },
-    "updatedAt": {
-      "$date": "2023-10-17T12:15:26.461Z"
-    },
-    "name": "Cypress-Test-Group-Course-Sync-Without-Teacher",
-    "type": "class",
-    "externalSource_externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-    "externalSource_system": {
-      "$oid": "0000d186816abba584714c93"
-    },
-    "users": [
-      {
-        "user": {
-          "$oid": "5fa2cccab229544f2c696917"
-        },
-        "role": {
-          "$oid": "0000d186816abba584714c99"
-        }
-      }
-    ],
-    "organization": {
-      "$oid": "5fa2c5ccb229544f2c69666c"
-    }
-  }
+	{
+		"_id": {
+			"$oid": "66a0e6d782d5ff057ed0da44"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group",
+		"type": "class",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c98"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		}
+	},
+	{
+		"_id": {
+			"$oid": "66a0e6d782d5ff057ed0da45"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group1",
+		"type": "class",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c98"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		}
+	},
+	{
+		"_id": {
+			"$oid": "66a0e6d782d5ff057ed0da46"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group2",
+		"type": "class",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c98"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa30079b229544f2c6969ff"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		}
+	},
+	{
+		"_id": {
+			"$oid": "66a0e6d782d5ff057ed0da47"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group-Course-Sync",
+		"type": "other",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c98"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		}
+	},
+	{
+		"_id": {
+			"$oid": "66a0e6d782d5ff057ed0da48"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group-Course-Sync2",
+		"type": "course",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c98"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		}
+	},
+	{
+		"_id": {
+			"$oid": "66a0e6d782d5ff057ed0da49"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group-Course-Sync-Without-Teacher",
+		"type": "class",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		}
+	}
 ]

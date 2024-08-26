@@ -1,7 +1,8 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/entity';
 import { ExternalSource } from '@shared/domain/domainobject';
-import { ExternalSourceEmbeddable, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ExternalSourceEmbeddable, Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from '../entity';
 
@@ -69,6 +70,7 @@ export class GroupDomainMapper {
 		const externalSourceEntity: ExternalSourceEmbeddable = new ExternalSourceEmbeddable({
 			externalId: externalSource.externalId,
 			system: em.getReference(SystemEntity, externalSource.systemId),
+			lastSyncedAt: externalSource.lastSyncedAt,
 		});
 
 		return externalSourceEntity;
@@ -78,6 +80,7 @@ export class GroupDomainMapper {
 		const externalSource: ExternalSource = new ExternalSource({
 			externalId: entity.externalId,
 			systemId: entity.system.id,
+			lastSyncedAt: entity.lastSyncedAt,
 		});
 
 		return externalSource;

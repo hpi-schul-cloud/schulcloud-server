@@ -4,7 +4,7 @@ import {
 	OidcConfigEntity,
 	SystemEntity,
 	SystemEntityProps,
-} from '@shared/domain/entity';
+} from '@modules/system/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';

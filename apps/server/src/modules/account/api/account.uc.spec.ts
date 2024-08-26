@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
@@ -10,15 +9,15 @@ import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.ex
 import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { currentUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../domain/entity/account.entity';
 import { AccountService } from '../domain/services';
 import { AccountEntityToDoMapper } from '../repo/micro-orm/mapper';
+import { accountFactory } from '../testing';
 import { AccountUc } from './account.uc';
 import { AccountSearchDto, AccountSearchType, UpdateAccountDto } from './dto';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
-import { accountFactory } from '../testing';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -290,10 +289,10 @@ describe('AccountUc', () => {
 			};
 			it('should return one account', async () => {
 				const { mockSuperheroUser, mockStudentUser, mockStudentAccount } = setup();
-				const accounts = await accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto
-				);
+				const accounts = await accountUc.searchAccounts(currentUserFactory.build({ userId: mockSuperheroUser.id }), {
+					type: AccountSearchType.USER_ID,
+					value: mockStudentUser.id,
+				} as AccountSearchDto);
 				const expected = new ResolvedSearchListAccountDto(
 					[
 						new ResolvedAccountDto({
@@ -348,10 +347,10 @@ describe('AccountUc', () => {
 			};
 			it('should return empty list', async () => {
 				const { mockSuperheroUser, mockUserWithoutAccount } = setup();
-				const accounts = await accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchDto
-				);
+				const accounts = await accountUc.searchAccounts(currentUserFactory.build({ userId: mockSuperheroUser.id }), {
+					type: AccountSearchType.USER_ID,
+					value: mockUserWithoutAccount.id,
+				} as AccountSearchDto);
 				const expected = new ResolvedSearchListAccountDto([], 0, 0, 0);
 				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
 			});
@@ -391,10 +390,10 @@ describe('AccountUc', () => {
 			};
 			it('should return one or more accounts, ', async () => {
 				const { mockSuperheroUser } = setup();
-				const accounts = await accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchDto
-				);
+				const accounts = await accountUc.searchAccounts(currentUserFactory.build({ userId: mockSuperheroUser.id }), {
+					type: AccountSearchType.USERNAME,
+					value: '',
+				} as AccountSearchDto);
 				expect(accounts.skip).toEqual(0);
 				expect(accounts.limit).toEqual(10);
 				expect(accounts.total).toBeGreaterThan(1);
@@ -458,24 +457,24 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockAdminUser, mockStudentUser, mockOtherStudentUser } = setup();
 				await expect(
-					accountUc.searchAccounts(
-						{ userId: mockTeacherUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto
-					)
+					accountUc.searchAccounts(currentUserFactory.build({ userId: mockTeacherUser.id }), {
+						type: AccountSearchType.USER_ID,
+						value: mockAdminUser.id,
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
-					accountUc.searchAccounts(
-						{ userId: mockStudentUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USER_ID, value: mockOtherStudentUser.id } as AccountSearchDto
-					)
+					accountUc.searchAccounts(currentUserFactory.build({ userId: mockStudentUser.id }), {
+						type: AccountSearchType.USER_ID,
+						value: mockOtherStudentUser.id,
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
-					accountUc.searchAccounts(
-						{ userId: mockStudentUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto
-					)
+					accountUc.searchAccounts(currentUserFactory.build({ userId: mockStudentUser.id }), {
+						type: AccountSearchType.USER_ID,
+						value: mockTeacherUser.id,
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -501,10 +500,9 @@ describe('AccountUc', () => {
 			it('should throw Invalid search type', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.searchAccounts(
-						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ type: '' as AccountSearchType } as AccountSearchDto
-					)
+					accountUc.searchAccounts(currentUserFactory.build({ userId: mockSuperheroUser.id }), {
+						type: '' as AccountSearchType,
+					} as AccountSearchDto)
 				).rejects.toThrow('Invalid search type.');
 			});
 		});
@@ -539,10 +537,10 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockStudentUser } = setup();
 				await expect(
-					accountUc.searchAccounts(
-						{ userId: mockTeacherUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchDto
-					)
+					accountUc.searchAccounts(currentUserFactory.build({ userId: mockTeacherUser.id }), {
+						type: AccountSearchType.USERNAME,
+						value: mockStudentUser.id,
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -589,7 +587,7 @@ describe('AccountUc', () => {
 				};
 				it('should be able to access teacher of the same school via user id', async () => {
 					const { mockAdminUser, mockTeacherUser } = setup();
-					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
@@ -632,7 +630,7 @@ describe('AccountUc', () => {
 				};
 				it('should be able to access student of the same school via user id', async () => {
 					const { mockAdminUser, mockStudentUser } = setup();
-					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
@@ -671,7 +669,7 @@ describe('AccountUc', () => {
 
 				it('should not be able to access admin of the same school via user id', async () => {
 					const { mockAdminUser } = setup();
-					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
@@ -730,7 +728,7 @@ describe('AccountUc', () => {
 				};
 				it('should not be able to access any account of a foreign school via user id', async () => {
 					const { mockDifferentSchoolAdminUser, mockTeacherUser, mockStudentUser } = setup();
-					const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockDifferentSchoolAdminUser.id });
 
 					let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
@@ -773,7 +771,7 @@ describe('AccountUc', () => {
 				};
 				it('should be able to access teacher of the same school via user id', async () => {
 					const { mockTeacherUser, mockOtherTeacherUser } = setup();
-					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherUser.id });
 					const params = {
 						type: AccountSearchType.USER_ID,
 						value: mockOtherTeacherUser.id,
@@ -810,7 +808,7 @@ describe('AccountUc', () => {
 				};
 				it('should be able to access student of the same school via user id', async () => {
 					const { mockTeacherUser, mockStudentUser } = setup();
-					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
@@ -857,7 +855,7 @@ describe('AccountUc', () => {
 				};
 				it('should not be able to access admin of the same school via user id', async () => {
 					const { mockTeacherUser, mockAdminUser } = setup();
-					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
@@ -898,7 +896,7 @@ describe('AccountUc', () => {
 				};
 				it('should not be able to access any account of a foreign school via user id', async () => {
 					const { mockDifferentSchoolTeacherUser, mockTeacherUser, mockStudentUser } = setup();
-					const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockDifferentSchoolTeacherUser.id });
 
 					let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
@@ -941,7 +939,7 @@ describe('AccountUc', () => {
 				it('should be able to access student of the same school via user id if school has global permission', async () => {
 					const { mockTeacherNoUserPermissionUser, mockStudentSchoolPermissionUser } = setup();
 
-					const currentUser = { userId: mockTeacherNoUserPermissionUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherNoUserPermissionUser.id });
 					const params = {
 						type: AccountSearchType.USER_ID,
 						value: mockStudentSchoolPermissionUser.id,
@@ -978,7 +976,7 @@ describe('AccountUc', () => {
 				it('should not be able to access student of the same school if school has no global permission', async () => {
 					const { mockTeacherNoUserNoSchoolPermissionUser, mockStudentUser } = setup();
 					configService.get.mockReturnValue(true);
-					const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherNoUserNoSchoolPermissionUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(UnauthorizedException);
 				});
@@ -1013,7 +1011,7 @@ describe('AccountUc', () => {
 				it('should not be able to access student of the same school if school has global permission', async () => {
 					const { mockStudentSchoolPermissionUser, mockOtherStudentSchoolPermissionUser } = setup();
 					configService.get.mockReturnValue(true);
-					const currentUser = { userId: mockStudentSchoolPermissionUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockStudentSchoolPermissionUser.id });
 					const params = {
 						type: AccountSearchType.USER_ID,
 						value: mockOtherStudentSchoolPermissionUser.id,
@@ -1073,7 +1071,7 @@ describe('AccountUc', () => {
 				};
 				it('should not be able to access any other account via user id', async () => {
 					const { mockStudentUser, mockAdminUser, mockTeacherUser } = setup();
-					const currentUser = { userId: mockStudentUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockStudentUser.id });
 
 					let params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
@@ -1195,7 +1193,7 @@ describe('AccountUc', () => {
 						mockDifferentSchoolStudentAccount,
 					} = setup();
 
-					const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockSuperheroUser.id });
 
 					let params = {
 						type: AccountSearchType.USERNAME,
@@ -1262,7 +1260,7 @@ describe('AccountUc', () => {
 			it('should return an account', async () => {
 				const { mockSuperheroUser, mockStudentUser, mockStudentAccount } = setup();
 				const account = await accountUc.findAccountById(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					currentUserFactory.build({ userId: mockSuperheroUser.id }),
 					mockStudentAccount.id
 				);
 				expect(account).toStrictEqual(
@@ -1308,7 +1306,7 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.findAccountById({ userId: mockTeacherUser.id } as ICurrentUser, mockStudentAccount.id)
+					accountUc.findAccountById(currentUserFactory.build({ userId: mockTeacherUser.id }), mockStudentAccount.id)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -1337,7 +1335,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, 'xxx')
+					accountUc.findAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1366,7 +1364,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, 'xxx')
+					accountUc.findAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1419,7 +1417,7 @@ describe('AccountUc', () => {
 			};
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
-				const currentUser = { userId: '000000000000000' } as ICurrentUser;
+				const currentUser = currentUserFactory.build({ userId: '00000000000' });
 				const body = {} as UpdateAccountDto;
 				await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).rejects.toThrow(
 					EntityNotFoundError
@@ -1463,7 +1461,7 @@ describe('AccountUc', () => {
 			};
 			it('should throw EntityNotFoundError', async () => {
 				const { mockAdminUser } = setup();
-				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 				const body = {} as UpdateAccountDto;
 				await expect(accountUc.updateAccountById(currentUser, '000000000000000', body)).rejects.toThrow(
 					EntityNotFoundError
@@ -1499,9 +1497,13 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser, mockAccountWithoutUser } = setup();
 				await expect(
-					accountUc.updateAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, mockAccountWithoutUser.id, {
-						username: 'user-fail@to.update',
-					} as UpdateAccountDto)
+					accountUc.updateAccountById(
+						currentUserFactory.build({ userId: mockSuperheroUser.id }),
+						mockAccountWithoutUser.id,
+						{
+							username: 'user-fail@to.update',
+						} as UpdateAccountDto
+					)
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1554,7 +1556,7 @@ describe('AccountUc', () => {
 				};
 				it('should not throw error when editing a teacher', async () => {
 					const { mockAdminUser, mockTeacherAccount } = setup();
-					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockTeacherAccount.id, body)).resolves.not.toThrow();
 				});
@@ -1593,7 +1595,7 @@ describe('AccountUc', () => {
 				};
 				it('should not throw error when editing a student', async () => {
 					const { mockTeacherUser, mockStudentAccount } = setup();
-					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).resolves.not.toThrow();
 				});
@@ -1640,7 +1642,7 @@ describe('AccountUc', () => {
 				};
 				it('should not throw error when editing a student', async () => {
 					const { mockAdminUser, mockStudentAccount } = setup();
-					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).resolves.not.toThrow();
 				});
@@ -1682,7 +1684,7 @@ describe('AccountUc', () => {
 				};
 				it('should throw UnauthorizedException', async () => {
 					const { mockTeacherUser, mockOtherTeacherAccount } = setup();
-					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockTeacherUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockOtherTeacherAccount.id, body)).rejects.toThrow(
 						UnauthorizedException
@@ -1741,7 +1743,7 @@ describe('AccountUc', () => {
 				};
 				it('should throw UnauthorizedException', async () => {
 					const { mockDifferentSchoolAdminUser, mockTeacherAccount } = setup();
-					const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockDifferentSchoolAdminUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockTeacherAccount.id, body)).rejects.toThrow(
 						UnauthorizedException
@@ -1796,7 +1798,7 @@ describe('AccountUc', () => {
 				};
 				it('should not throw error when editing a admin', async () => {
 					const { mockSuperheroUser, mockAdminAccount } = setup();
-					const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockSuperheroUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockAdminAccount.id, body)).resolves.not.toThrow();
 				});
@@ -1828,7 +1830,7 @@ describe('AccountUc', () => {
 				};
 				it('should fail by default', async () => {
 					const { mockUnknownRoleUser, mockAccountWithoutRole } = setup();
-					const currentUser = { userId: mockUnknownRoleUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockUnknownRoleUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockAccountWithoutRole.id, body)).rejects.toThrow(
 						UnauthorizedException
@@ -1876,7 +1878,7 @@ describe('AccountUc', () => {
 				};
 				it('should throw UnauthorizedException', async () => {
 					const { mockAdminUser, mockUnknownRoleUserAccount } = setup();
-					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockUnknownRoleUserAccount.id, body)).rejects.toThrow(
 						UnauthorizedException
@@ -1918,7 +1920,7 @@ describe('AccountUc', () => {
 			it('should delete an account', async () => {
 				const { mockSuperheroUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.deleteAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, mockStudentAccount.id)
+					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), mockStudentAccount.id)
 				).resolves.not.toThrow();
 			});
 		});
@@ -1971,7 +1973,7 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockAdminUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.deleteAccountById({ userId: mockAdminUser.id } as ICurrentUser, mockStudentAccount.id)
+					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockAdminUser.id }), mockStudentAccount.id)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -2009,7 +2011,7 @@ describe('AccountUc', () => {
 			it('should throw, if no account matches the search term', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.deleteAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, 'xxx')
+					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});

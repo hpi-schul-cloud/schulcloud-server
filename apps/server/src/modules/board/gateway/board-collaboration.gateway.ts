@@ -1,6 +1,6 @@
+import { WsJwtAuthGuard } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { WsJwtAuthGuard } from '@modules/authentication';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import {
 	OnGatewayDisconnect,
@@ -9,24 +9,26 @@ import {
 	WebSocketServer,
 	WsException,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
 import { EntityId } from '@shared/domain/types';
+import { Server } from 'socket.io';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
 	ColumnResponseMapper,
 	ContentElementResponseFactory,
 } from '../controller/mapper';
+import { AnyBoardNode } from '../domain';
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
+import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 import { CreateCardMessageParams } from './dto/create-card.message.param';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { DeleteCardMessageParams } from './dto/delete-card.message.param';
-import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
 import { DeleteColumnMessageParams } from './dto/delete-column.message.param';
+import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { FetchCardsMessageParams } from './dto/fetch-cards.message.param';
 import { MoveCardMessageParams } from './dto/move-card.message.param';
@@ -38,8 +40,6 @@ import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateColumnTitleMessageParams } from './dto/update-column-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import BoardCollaborationConfiguration from './dto/board-collaboration-config';
-import { AnyBoardNode } from '../domain';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -61,6 +61,10 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	trackExecutionTime(methodName: string, executionTimeMs: number) {
 		if (this.metricsService) {
 			this.metricsService.setExecutionTime(methodName, executionTimeMs);
+			this.metricsService.incrementActionCount(methodName);
+			this.metricsService.incrementActionGauge(methodName);
+			this.metricsService.incrementActionCount('all');
+			this.metricsService.incrementActionGauge('all');
 		}
 	}
 
@@ -128,6 +132,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('update-card-height-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-height' });
@@ -142,6 +147,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-card' });
@@ -178,6 +184,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('create-column-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-column' });
@@ -190,6 +197,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 				...data,
 				newColumn,
 			};
+			await emitter.joinRoom(column);
 			emitter.emitToClientAndRoom(responsePayload, column);
 
 			// payload needs to be returned to allow the client to do sequential operation
@@ -219,6 +227,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async moveCard(socket: Socket, data: MoveCardMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
@@ -233,6 +242,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move-column-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-column' });
@@ -267,6 +277,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-visibility' });
@@ -281,6 +292,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-column-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-column' });
@@ -312,6 +324,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('create-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-element' });
@@ -346,6 +359,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-element' });
@@ -361,6 +375,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-element' });

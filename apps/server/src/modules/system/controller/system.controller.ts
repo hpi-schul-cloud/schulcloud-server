@@ -1,7 +1,7 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { SystemDto } from '../service';
+import { System } from '../domain';
 import { SystemUc } from '../uc/system.uc';
 import { PublicSystemListResponse, PublicSystemResponse, SystemFilterParams, SystemIdParams } from './dto';
 import { SystemResponseMapper } from './mapper/system-response.mapper';
@@ -19,9 +19,9 @@ export class SystemController {
 	@ApiOperation({ summary: 'Finds all publicly available systems.' })
 	@ApiResponse({ status: 200, type: PublicSystemListResponse, description: 'Returns a list of systems.' })
 	async find(@Query() filterParams: SystemFilterParams): Promise<PublicSystemListResponse> {
-		const systemDtos: SystemDto[] = await this.systemUc.findByFilter(filterParams.type, filterParams.onlyOauth);
+		const systems: System[] = await this.systemUc.find(filterParams.types);
 
-		const mapped: PublicSystemListResponse = SystemResponseMapper.mapFromDtoToListResponse(systemDtos);
+		const mapped: PublicSystemListResponse = SystemResponseMapper.mapFromDtoToListResponse(systems);
 
 		return mapped;
 	}
@@ -34,14 +34,14 @@ export class SystemController {
 	@ApiOperation({ summary: 'Finds a publicly available system.' })
 	@ApiResponse({ status: 200, type: PublicSystemResponse, description: 'Returns a system.' })
 	async getSystem(@Param() params: SystemIdParams): Promise<PublicSystemResponse> {
-		const systemDto: SystemDto = await this.systemUc.findById(params.systemId);
+		const system: System = await this.systemUc.findById(params.systemId);
 
-		const mapped: PublicSystemResponse = SystemResponseMapper.mapFromDtoToResponse(systemDto);
+		const mapped: PublicSystemResponse = SystemResponseMapper.mapFromDtoToResponse(system);
 
 		return mapped;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Delete(':systemId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()

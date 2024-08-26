@@ -6,16 +6,16 @@ import {
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexLaufzeitResponse,
-	SchulconnexLizenzInfoResponse,
+	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client/response';
 import { GroupTypes } from '@modules/group';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import {
 	ExternalGroupDto,
@@ -25,6 +25,7 @@ import {
 	ExternalUserDto,
 } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
+import { ProvisioningConfig } from '../../provisioning.config';
 
 const RoleMapping: Record<SchulconnexRole, RoleName> = {
 	[SchulconnexRole.LEHR]: RoleName.TEACHER,
@@ -54,7 +55,7 @@ export class SchulconnexResponseMapper {
 	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
 	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
 
@@ -141,11 +142,11 @@ export class SchulconnexResponseMapper {
 		}
 
 		let otherUsers: ExternalGroupUserDto[] | undefined;
-		if (this.provisioningFeatures.schulconnexOtherGroupusersEnabled) {
+		if (this.configService.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED')) {
 			otherUsers = group.sonstige_gruppenzugehoerige
-				? (group.sonstige_gruppenzugehoerige
+				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
-						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null) as ExternalGroupUserDto[])
+						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null)
 				: [];
 		}
 
@@ -239,9 +240,9 @@ export class SchulconnexResponseMapper {
 		};
 	}
 
-	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
+	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
-			.map((license: SchulconnexLizenzInfoResponse) => {
+			.map((license: SchulconnexPoliciesInfoResponse) => {
 				if (license.target.partOf === '') {
 					license.target.partOf = undefined;
 				}

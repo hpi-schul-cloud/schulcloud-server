@@ -40,7 +40,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, {
 			externalSource: {
 				externalId,
-				system: systemId,
+				system: new ObjectId(systemId),
 			},
 		});
 
@@ -109,7 +109,11 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 					as: 'syncedCourses',
 				},
 			},
-			{ $match: { syncedCourses: { $size: 0 } } },
+			{
+				$match: {
+					$or: [{ syncedCourses: { $size: 0 } }, { type: { $eq: GroupTypes.CLASS } }],
+				},
+			},
 			{ $sort: { name: 1 } }
 		);
 

@@ -6,6 +6,7 @@ import { ToolContextType } from '../../common/enum';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
 import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolMediumEntity } from './external-tool-medium.entity';
+import { FileRecordRefEmbeddable } from './file-record-ref.embeddable';
 
 export interface ExternalToolEntityProps {
 	id?: EntityId;
@@ -19,6 +20,8 @@ export interface ExternalToolEntityProps {
 	logoUrl?: string;
 
 	logoBase64?: string;
+
+	thumbnail?: FileRecordRefEmbeddable;
 
 	config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 
@@ -53,6 +56,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	logoBase64?: string;
 
+	@Embedded(() => FileRecordRefEmbeddable, { nullable: true, object: true })
+	thumbnail?: FileRecordRefEmbeddable;
+
 	@Embedded(() => [BasicToolConfigEntity, Oauth2ToolConfigEntity, Lti11ToolConfigEntity])
 	config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 
@@ -84,6 +90,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
 		this.logoBase64 = props.logoBase64;
+		this.thumbnail = props.thumbnail;
 		this.config = props.config;
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;

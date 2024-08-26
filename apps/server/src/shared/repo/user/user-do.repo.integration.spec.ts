@@ -3,12 +3,14 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
+import { SystemEntity } from '@modules/system/entity';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
+import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
@@ -248,6 +250,29 @@ describe('UserRepo', () => {
 
 			result = await repo.findByEmail('.*');
 			expect(result).toHaveLength(0);
+		});
+
+		it('should populate the roles', async () => {
+			const email = 'USER@EXAMPLE.COM';
+			const role = roleFactory.buildWithId();
+			const user = userFactory.build({ email, roles: [role] });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findByEmail(email);
+
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(
+				expect.objectContaining({
+					email,
+					roles: [
+						new RoleReference({
+							id: role.id,
+							name: role.name,
+						}),
+					],
+				})
+			);
 		});
 	});
 

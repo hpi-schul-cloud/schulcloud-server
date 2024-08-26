@@ -1,5 +1,7 @@
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { FileRecordResponse } from '@modules/files-storage/controller/dto';
+import { instanceEntityFactory } from '@modules/instance/testing';
 import { ServerTestModule } from '@modules/server';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -88,23 +90,28 @@ describe('ToolController (API)', () => {
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
+			thumbnailUrl: 'https://link.to-my-thumbnail.com',
 		};
 
 		describe('when valid data is given', () => {
 			const setup = async () => {
 				const params: ExternalToolCreateParams = { ...postParams };
+				const instance = instanceEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persistAndFlush([adminAccount, adminUser, instance]);
 				em.clear();
 
 				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
+				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
+
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, params };
+				return { loggedInClient, params, fileRecordResponse };
 			};
 
 			it('should create a tool', async () => {
@@ -153,6 +160,7 @@ describe('ToolController (API)', () => {
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
+					thumbnailUrl: postParams.thumbnailUrl,
 				});
 			});
 		});
@@ -250,19 +258,25 @@ describe('ToolController (API)', () => {
 				mediumId: 'medium:1',
 				mediaSourceId: 'source:1',
 			},
+			thumbnailUrl: 'https://link.to-my-thumbnail.com',
 		};
 
 		describe('when valid data is given', () => {
 			const setup = async () => {
 				const params: ExternalToolBulkCreateParams = { data: [{ ...postParams }] };
 
+				const instance = instanceEntityFactory.build();
+
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persistAndFlush([adminAccount, adminUser, instance]);
 				em.clear();
 
 				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer);
+
+				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
@@ -486,6 +500,7 @@ describe('ToolController (API)', () => {
 			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
+			thumbnailUrl: 'https://link.to-my-thumbnail2.com',
 			openNewTab: true,
 			medium: {
 				mediumId: 'mediumId',
@@ -506,8 +521,14 @@ describe('ToolController (API)', () => {
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
+				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				axiosMock.onDelete(/api\/v3\/file\/delete/).reply(HttpStatus.OK);
+				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
+
+				const instance = instanceEntityFactory.build();
+
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity, instance]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -565,6 +586,7 @@ describe('ToolController (API)', () => {
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
 					},
+					thumbnailUrl: 'https://link.to-my-thumbnail2.com',
 				});
 			});
 		});
@@ -640,10 +662,13 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				const instance = instanceEntityFactory.build();
+				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity, instance]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				axiosMock.onDelete(/api\/v3\/file\/delete/).reply(HttpStatus.OK);
 
 				return { loggedInClient, toolId: externalToolEntity.id };
 			};
@@ -689,21 +714,21 @@ describe('ToolController (API)', () => {
 
 		describe('when permission is missing', () => {
 			const setup = async () => {
-				const toolId: string = new ObjectId().toHexString();
+				const externalTool = externalToolEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persistAndFlush([adminAccount, adminUser, externalTool]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, toolId };
+				return { loggedInClient, externalTool };
 			};
 
 			it('should return unauthorized', async () => {
-				const { loggedInClient, toolId } = await setup();
+				const { loggedInClient, externalTool } = await setup();
 
-				const response: Response = await loggedInClient.delete(`${toolId}`);
+				const response: Response = await loggedInClient.delete(externalTool.id);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});

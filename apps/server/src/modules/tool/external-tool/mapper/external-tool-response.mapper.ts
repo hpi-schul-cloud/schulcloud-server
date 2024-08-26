@@ -42,6 +42,7 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
 	[CustomParameterType.AUTO_MEDIUMID]: CustomParameterTypeParams.AUTO_MEDIUMID,
+	[CustomParameterType.AUTO_GROUP_EXTERNALUUID]: CustomParameterTypeParams.AUTO_GROUP_EXTERNALUUID,
 };
 
 @Injectable()
@@ -66,6 +67,7 @@ export class ExternalToolResponseMapper {
 			description: externalTool.description,
 			url: externalTool.url,
 			logoUrl: externalTool.logoUrl,
+			thumbnailUrl: externalTool.thumbnail?.uploadUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalTool.isHidden,

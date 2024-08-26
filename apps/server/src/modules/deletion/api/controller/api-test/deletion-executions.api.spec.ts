@@ -1,6 +1,6 @@
+import { ApiKeyGuard } from '@infra/auth-guard';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@shared/testing';
 
@@ -15,7 +15,7 @@ describe(`deletionExecution (api)`, () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
-			.overrideGuard(AuthGuard('api-key'))
+			.overrideGuard(ApiKeyGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
@@ -35,11 +35,10 @@ describe(`deletionExecution (api)`, () => {
 
 	describe('executeDeletions', () => {
 		describe('when execute deletionRequests with default limit', () => {
-			jest.setTimeout(20000);
 			it('should return status 204', async () => {
 				const response = await testApiClient.post('');
 				expect(response.status).toEqual(204);
-			});
+			}, 20000);
 		});
 
 		describe('without token', () => {

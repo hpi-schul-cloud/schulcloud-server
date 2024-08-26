@@ -1,17 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
+import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -40,7 +41,7 @@ describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -69,8 +70,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: HttpService,
@@ -88,7 +89,7 @@ describe('FilesStorageUC', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		filesStorageService = module.get(FilesStorageService);
 	});
 
@@ -107,22 +108,20 @@ describe('FilesStorageUC', () => {
 	describe('getFileRecordsOfParent is called', () => {
 		describe('when user is authorised and valid files exist', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
 				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
-				return { userId, params, fileRecords };
+				return { params, fileRecords };
 			};
 
 			it('should call authorisation with right parameters', async () => {
-				const { userId, params } = setup();
+				const { params } = setup();
 
-				await filesStorageUC.getFileRecordsOfParent(userId, params);
+				await filesStorageUC.getFileRecordsOfParent(params);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					params.parentType,
 					params.parentId,
 					FileStorageAuthorizationContext.read
@@ -130,17 +129,17 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call service method getFilesOfParent with right parameters', async () => {
-				const { userId, params } = setup();
+				const { params } = setup();
 
-				await filesStorageUC.getFileRecordsOfParent(userId, params);
+				await filesStorageUC.getFileRecordsOfParent(params);
 
 				expect(filesStorageService.getFileRecordsOfParent).toHaveBeenCalledWith(params.parentId);
 			});
 
 			it('should return counted file records', async () => {
-				const { userId, params, fileRecords } = setup();
+				const { params, fileRecords } = setup();
 
-				const result = await filesStorageUC.getFileRecordsOfParent(userId, params);
+				const result = await filesStorageUC.getFileRecordsOfParent(params);
 
 				expect(result).toEqual([fileRecords, fileRecords.length]);
 			});
@@ -148,38 +147,36 @@ describe('FilesStorageUC', () => {
 
 		describe('when user is not authorised', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
 				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(new Error('Bla'));
 
-				return { userId, params, fileRecords };
+				return { params, fileRecords };
 			};
 
 			it('should pass the error', async () => {
-				const { userId, params } = setup();
+				const { params } = setup();
 
-				await expect(filesStorageUC.getFileRecordsOfParent(userId, params)).rejects.toThrowError(new Error('Bla'));
+				await expect(filesStorageUC.getFileRecordsOfParent(params)).rejects.toThrowError(new Error('Bla'));
 			});
 		});
 
 		describe('when user is authorised but no files exist', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
 				const { params } = buildFileRecordsWithParams();
 				const fileRecords = [];
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
-				return { userId, params, fileRecords };
+				return { params, fileRecords };
 			};
 
 			it('should return empty counted file records', async () => {
-				const { userId, params } = setup();
+				const { params } = setup();
 
-				const result = await filesStorageUC.getFileRecordsOfParent(userId, params);
+				const result = await filesStorageUC.getFileRecordsOfParent(params);
 
 				expect(result).toEqual([[], 0]);
 			});

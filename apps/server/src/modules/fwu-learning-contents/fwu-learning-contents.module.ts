@@ -1,17 +1,18 @@
+import { AuthGuardModule } from '@infra/auth-guard';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AuthorizationModule } from '@modules/authorization';
+import { SystemEntity } from '@modules/system/entity';
 import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
@@ -25,7 +26,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 @Module({
 	imports: [
 		AuthorizationModule,
-		AuthenticationModule,
 		CoreModule,
 		LoggerModule,
 		HttpModule,
@@ -43,6 +43,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		S3ClientModule.register([s3Config]),
+		AuthGuardModule,
 	],
 	controllers: [FwuLearningContentsController],
 	providers: [FwuLearningContentsUc],

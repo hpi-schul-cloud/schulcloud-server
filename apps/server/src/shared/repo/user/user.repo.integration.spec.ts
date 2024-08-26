@@ -1,8 +1,9 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { type SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { UserParentsEntityProps } from '@shared/domain/entity/user-parents.entity';
 import { SortOrder } from '@shared/domain/interface';
 import {
@@ -369,6 +370,31 @@ describe('user repo', () => {
 			const school = schoolEntityFactory.build();
 			// id do not exist
 			await expect(repo.findForImportUser(school)).rejects.toThrowError();
+		});
+
+		describe('when the first or lastname of the user contains "ß"', () => {
+			describe('when the name filter query is exactly the first or lastname of the user', () => {
+				const setup = async () => {
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ school, firstName: 'Martin', lastName: 'Beißner' });
+					await em.persistAndFlush([user]);
+					em.clear();
+
+					return {
+						school,
+						user,
+					};
+				};
+
+				it('should return the searched user', async () => {
+					const { school, user } = await setup();
+
+					const [result, count] = await repo.findForImportUser(school, { name: user.lastName });
+
+					expect(count).toEqual(1);
+					expect(result.map((u) => u.id)).toContain(user.id);
+				});
+			});
 		});
 	});
 

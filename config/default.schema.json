@@ -459,12 +459,25 @@
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
-			"required": ["URI", "TENANT", "CLIENTID", "ADMIN_CLIENTID", "ADMIN_USER", "ADMIN_PASSWORD"],
+			"required": [
+				"INTERNAL_URI",
+				"EXTERNAL_URI",
+				"TENANT",
+				"CLIENTID",
+				"ADMIN_CLIENTID",
+				"ADMIN_USER",
+				"ADMIN_PASSWORD"
+			],
 			"properties": {
-				"URI": {
+				"INTERNAL_URI": {
 					"type": "string",
 					"default": null,
-					"description": "The ErWIn IDM base URI."
+					"description": "The ErWIn IDM base URI for Kubernetes cluster internal use."
+				},
+				"EXTERNAL_URI": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM base URI for Kubernetes cluster external use."
 				},
 				"TENANT": {
 					"type": "string",
@@ -681,6 +694,11 @@
 			"default": "default",
 			"description": "The used theming."
 		},
+		"SC_SHORTNAME": {
+			"type": "string",
+			"default": "dbc",
+			"description": "The sort name of the instance (dbc, nbc, brb, thr)."
+		},
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
@@ -714,6 +732,11 @@
 		"SC_DOMAIN": {
 			"type": "string",
 			"description": "The Schulcloud domain."
+		},
+		"TRAINING_URL": {
+			"type": "string",
+			"default": "https://lernen.dbildungscloud.de",
+			"description": "URL for the platform training material"
 		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
@@ -1130,7 +1153,7 @@
 		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
-			"default": "lernen.cloud@dataport.de",
+			"default": "dbildungscloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
@@ -1281,71 +1304,6 @@
 			"allOf": [
 				{
 					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
-				}
-			],
-			"definitions": {
-				"SAME_SITE_SECURE_VALID": {
-					"if": {
-						"properties": {
-							"SECURE": {
-								"const": false
-							}
-						}
-					},
-					"then": {
-						"properties": {
-							"SAME_SITE": {
-								"enum": ["lax", "strict"]
-							}
-						}
-					}
-				}
-			}
-		},
-		"SESSION": {
-			"type": "object",
-			"description": "Cookie properties, required always to be defined",
-			"properties": {
-				"SAME_SITE": {
-					"type": "string",
-					"default": "lax",
-					"enum": ["none", "lax", "strict"],
-					"description": "Value for session cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
-				},
-				"SECURE": {
-					"type": "boolean",
-					"default": true,
-					"description": "Value for session cookies httpOnly property"
-				},
-				"HTTP_ONLY": {
-					"type": "boolean",
-					"default": true,
-					"description": "Value for session cookies httpOnly property"
-				},
-				"EXPIRES_SECONDS": {
-					"type": "integer",
-					"default": 300,
-					"description": "Expiration in seconds from now"
-				},
-				"NAME": {
-					"type": "string",
-					"default": "nest.sid",
-					"description": "Value for session cookies name"
-				},
-				"PROXY": {
-					"type": "boolean",
-					"default": true,
-					"description": "Trust the reverse proxy when setting secure cookies (via the X-Forwarded-Proto header)"
-				},
-				"SECRET": {
-					"type": "string",
-					"description": "This is the secret used to sign the session cookie."
-				}
-			},
-			"required": ["SAME_SITE", "HTTP_ONLY", "SECURE", "EXPIRES_SECONDS"],
-			"allOf": [
-				{
-					"$ref": "#/properties/SESSION/definitions/SAME_SITE_SECURE_VALID"
 				}
 			],
 			"definitions": {
@@ -1675,7 +1633,7 @@
 		},
 		"HOSTNAME": {
 			"type": "string",
-			"description": "Hostname. Should not be usually defined as it's expected to be taken from the process env."
+			"description": "Hostname. Should usually not be defined as it's expected to be taken from the process env."
 		},
 		"HEALTH_CHECKS_EXCLUDE_MONGODB": {
 			"type": "boolean",
@@ -1712,21 +1670,26 @@
 			"default": false,
 			"description": "Enables the storing and checking media license of users"
 		},
-		"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": {
+		"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": {
 			"type": "string",
 			"default": "",
-			"description": "URL for fetching lizenz info from moin.schule schulconnex",
-			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
+			"description": "URL for fetching policies info from moin.schule schulconnex",
+			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
 			"default": "ws://localhost:4450",
 			"description": "URL for connecting to the WebSocketServer"
 		},
-		"FEATURE_NEW_LAYOUT_ENABLED": {
+		"FEATURE_AI_TUTOR_ENABLED": {
 			"type": "boolean",
-			"default": true,
-			"description": "Enables the new layout feature"
+			"default": false,
+			"description": "Enables the AI Tutor"
+		},
+		"FEATURE_ROOMS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the rooms feature"
 		}
 	},
 	"required": []

@@ -1,1 +1,1 @@
-export { InstanceRepo } from './instance-repo.service';
+export { InstanceRepo } from './instance.repo';

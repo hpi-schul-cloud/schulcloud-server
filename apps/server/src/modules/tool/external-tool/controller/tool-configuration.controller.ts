@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -8,6 +8,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ToolContextType } from '../../common/enum';
 import { ExternalTool } from '../domain';
 import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
 import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from '../uc';
@@ -22,10 +23,9 @@ import {
 	SchoolIdParams,
 	ToolContextTypesListResponse,
 } from './dto';
-import { ToolContextType } from '../../common/enum';
 
 @ApiTags('Tool')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tools')
 export class ToolConfigurationController {
 	constructor(private readonly externalToolConfigurationUc: ExternalToolConfigurationUc) {}

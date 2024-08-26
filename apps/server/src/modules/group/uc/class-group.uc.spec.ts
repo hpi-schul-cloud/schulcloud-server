@@ -13,8 +13,8 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { School, SchoolService } from '@modules/school/domain';
-import { schoolFactory } from '@modules/school/testing';
-import { LegacySystemService, SystemDto } from '@modules/system';
+import { schoolFactory, schoolYearFactory } from '@modules/school/testing';
+import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -25,8 +25,9 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import {
 	groupFactory,
 	roleDtoFactory,
-	schoolYearFactory,
+	schoolYearFactory as schoolYearEntityFactory,
 	setupEntities,
+	systemFactory,
 	UserAndAccountTestFactory,
 	userDoFactory,
 	userFactory,
@@ -46,7 +47,7 @@ describe('ClassGroupUc', () => {
 	let userService: DeepMocked<UserService>;
 	let roleService: DeepMocked<RoleService>;
 	let classService: DeepMocked<ClassService>;
-	let systemService: DeepMocked<LegacySystemService>;
+	let systemService: DeepMocked<SystemService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -74,8 +75,8 @@ describe('ClassGroupUc', () => {
 					useValue: createMock<ClassService>(),
 				},
 				{
-					provide: LegacySystemService,
-					useValue: createMock<LegacySystemService>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: SchoolService,
@@ -105,7 +106,7 @@ describe('ClassGroupUc', () => {
 		userService = module.get(UserService);
 		roleService = module.get(RoleService);
 		classService = module.get(ClassService);
-		systemService = module.get(LegacySystemService);
+		systemService = module.get(SystemService);
 		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
@@ -154,7 +155,12 @@ describe('ClassGroupUc', () => {
 
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build({ permissions: { teacher: { STUDENT_LIST: true } } });
+				const schoolYearDo = schoolYearFactory.build();
+				const school: School = schoolFactory.build({
+					permissions: { teacher: { STUDENT_LIST: true } },
+					currentYear: schoolYearDo,
+				});
+
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
@@ -175,10 +181,13 @@ describe('ClassGroupUc', () => {
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
-				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
-				const nextSchoolYear: SchoolYearEntity = schoolYearFactory.buildWithId({
+
+				const startDate = schoolYearDo.getProps().startDate;
+				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({ startDate });
+				const nextSchoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({
 					startDate: schoolYear.endDate,
 				});
+
 				const clazz: Class = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
@@ -196,10 +205,8 @@ describe('ClassGroupUc', () => {
 					year: undefined,
 				});
 
-				const system: SystemDto = new SystemDto({
-					id: new ObjectId().toHexString(),
+				const system: System = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
-					type: 'oauth2',
 				});
 				const group: Group = groupFactory.build({
 					name: 'B',
@@ -217,6 +224,7 @@ describe('ClassGroupUc', () => {
 				const synchronizedCourse: Course = courseFactory.build({ syncedWithGroup: group.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getCurrentYear.mockResolvedValueOnce(schoolYearDo);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
@@ -595,7 +603,7 @@ describe('ClassGroupUc', () => {
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
-				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
 				let clazzes: Class[] = [];
 				if (generateClasses) {
 					clazzes = classFactory.buildList(11, {
@@ -611,10 +619,8 @@ describe('ClassGroupUc', () => {
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: SystemDto = new SystemDto({
-					id: new ObjectId().toHexString(),
+				const system: System = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
-					type: 'oauth2',
 				});
 				const group: Group = groupFactory.build({
 					name: 'B',
@@ -895,17 +901,15 @@ describe('ClassGroupUc', () => {
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
 
-				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
 				const clazz: Class = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id, notFoundReferenceId],
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: SystemDto = new SystemDto({
-					id: new ObjectId().toHexString(),
+				const system: System = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
-					type: 'oauth2',
 				});
 				const group: Group = groupFactory.build({
 					name: 'B',

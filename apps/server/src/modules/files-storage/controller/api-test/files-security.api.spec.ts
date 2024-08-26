@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -15,8 +14,9 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType, StorageLocation } from '../../entity';
+import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FileRecordParentType, StorageLocation } from '../../interface';
 import { FileRecordListResponse, ScanResultParams } from '../dto';
 
 const baseRouteName = '/file-security';

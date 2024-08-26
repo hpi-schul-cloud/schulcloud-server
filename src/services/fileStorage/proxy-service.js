@@ -34,7 +34,6 @@ const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const {
 	FILE_PREVIEW_SERVICE_URI,
 	FILE_PREVIEW_CALLBACK_URI,
-	ENABLE_THUMBNAIL_GENERATION,
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
 	SECURITY_CHECK_SERVICE_PATH,
 } = require('../../../config/globals');
@@ -44,40 +43,94 @@ const sanitizeObj = (obj) => {
 	return obj;
 };
 
-const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName }, { storageFileName, name: propName }) =>
-	ENABLE_THUMBNAIL_GENERATION
-		? Promise.all([
-				strategy.getSignedUrl({
-					userId,
-					flatFileName: storageFileName,
-					localFileName: storageFileName,
-					download: true,
-					Expires: 3600 * 24,
-				}),
-				strategy.generateSignedUrl({
-					userId,
-					flatFileName: storageFileName.replace(/(\..+)$/, '-thumbnail.png'),
-					fileType: returnFileType(dataName || propName), // data.type
-				}),
-		  ]).then(([downloadUrl, signedS3Url]) =>
-				rp
-					.post({
-						url: FILE_PREVIEW_SERVICE_URI,
-						body: {
-							downloadUrl,
-							signedS3Url,
-							callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
-							options: {
-								width: 120,
-							},
+const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
+	let storageProviderId = fileObject.storageProviderId;
+	let bucket = fileObject.bucket;
+
+	if (!storageProviderId) {
+		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
+		const creatorId =
+			fileObject.creator ||
+			(fileObject.permissions[0]?.refPermModel !== 'user' ? userId : fileObject.permissions[0]?.refId);
+
+		const creator = await userModel.findById(creatorId).exec();
+		if (!creator || !creator.schoolId) {
+			throw new NotFound('User not found');
+		}
+
+		const { schoolId } = creator;
+
+		const school = await schoolModel
+			.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
+			.populate('storageProvider')
+			.select(['storageProvider'])
+			.lean()
+			.exec();
+		if (school === null) {
+			throw new NotFound('School not found.');
+		}
+
+		storageProviderId = school.storageProvider;
+		bucket = strategy.getBucket(schoolId);
+	}
+
+	return {
+		storageProviderId,
+		bucket,
+	};
+};
+
+const prepareThumbnailGeneration = async (
+	file,
+	strategy,
+	userId,
+	{ name: dataName },
+	{ storageFileName, name: propName }
+) => {
+	if (Configuration.get('ENABLE_THUMBNAIL_GENERATION') === true) {
+		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
+
+		if (!fileObject) {
+			throw new NotFound('File seems not to be there.');
+		}
+
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
+
+		Promise.all([
+			strategy.getSignedUrl({
+				storageProviderId,
+				bucket,
+				flatFileName: storageFileName,
+				localFileName: storageFileName,
+				download: true,
+				Expires: 3600 * 24,
+			}),
+			strategy.generateSignedUrl({
+				userId,
+				flatFileName: storageFileName.replace(/(\..+)$/, '-thumbnail.png'),
+				fileType: returnFileType(dataName || propName), // data.type
+			}),
+		]).then(([downloadUrl, signedS3Url]) =>
+			rp
+				.post({
+					url: FILE_PREVIEW_SERVICE_URI,
+					body: {
+						downloadUrl,
+						signedS3Url,
+						callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
+						options: {
+							width: 120,
 						},
-						json: true,
-					})
-					.catch((err) => {
-						logger.warning(new Error('Can not create tumbnail', err)); // todo err message is lost and throw error
-					})
-		  )
-		: Promise.resolve();
+					},
+					json: true,
+				})
+				.catch((err) => {
+					logger.warning(new Error('Can not create tumbnail', err)); // todo err message is lost and throw error
+				})
+		);
+	}
+	return Promise.resolve();
+};
 
 /**
  *
@@ -86,7 +139,7 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName }, 
  * @param {FileStorageStrategy} strategy the file storage strategy used
  * @returns {Promise} Promise that rejects with errors or resolves with no data otherwise
  */
-const prepareSecurityCheck = (file, userId, strategy) => {
+const prepareSecurityCheck = async (file, userId, strategy) => {
 	if (Configuration.get('ENABLE_FILE_SECURITY_CHECK') === true) {
 		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
 			return FileModel.updateOne(
@@ -99,10 +152,12 @@ const prepareSecurityCheck = (file, userId, strategy) => {
 				}
 			).exec();
 		}
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
 		// create a temporary signed URL and provide it to the virus scan service
 		return strategy
 			.getSignedUrl({
-				userId,
+				storageProviderId,
+				bucket,
 				flatFileName: file.storageFileName,
 				localFileName: file.storageFileName,
 				download: true,
@@ -422,10 +477,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
-		const creatorId =
-			fileObject.creator ||
-			(fileObject.permissions[0]?.refPermModel !== 'user' ? userId : fileObject.permissions[0]?.refId);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		if (download && fileObject.securityCheck && fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
 			throw new Forbidden('File access blocked by security check.');
@@ -434,11 +486,11 @@ const signedUrlService = {
 		return canRead(userId, file)
 			.then(() =>
 				strategy.getSignedUrl({
-					userId: creatorId,
+					storageProviderId,
+					bucket,
 					flatFileName: fileObject.storageFileName,
 					localFileName: query.name || fileObject.name,
-					download,
-					bucket: fileObject.bucket,
+					download: true,
 				})
 			)
 			.then((res) => ({
@@ -457,16 +509,13 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
-		const creatorId =
-			fileObject.creator || fileObject.permissions[0]?.refPermModel !== 'user'
-				? userId
-				: fileObject.permissions[0]?.refId;
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		return canRead(userId, id)
 			.then(() =>
 				strategy.getSignedUrl({
-					userId: creatorId,
+					storageProviderId,
+					bucket,
 					flatFileName: fileObject.storageFileName,
 					action: 'putObject',
 				})

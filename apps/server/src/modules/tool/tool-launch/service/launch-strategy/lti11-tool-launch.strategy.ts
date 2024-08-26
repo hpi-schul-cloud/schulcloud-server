@@ -16,6 +16,7 @@ import {
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
@@ -31,14 +32,16 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
 		autoContextNameStrategy: AutoContextNameStrategy,
-		autoMediumIdStrategy: AutoMediumIdStrategy
+		autoMediumIdStrategy: AutoMediumIdStrategy,
+		autoGroupExternalUuidStrategy: AutoGroupExternalUuidStrategy
 	) {
 		super(
 			autoSchoolIdStrategy,
 			autoSchoolNumberStrategy,
 			autoContextIdStrategy,
 			autoContextNameStrategy,
-			autoMediumIdStrategy
+			autoMediumIdStrategy,
+			autoGroupExternalUuidStrategy
 		);
 	}
 
@@ -62,6 +65,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 		const additionalProperties: PropertyData[] = [
 			new PropertyData({ name: 'key', value: config.key }),
+			// TODO N21-2097 use decryption for secret
 			new PropertyData({ name: 'secret', value: config.secret }),
 
 			new PropertyData({ name: 'lti_message_type', value: config.lti_message_type, location: PropertyLocation.BODY }),

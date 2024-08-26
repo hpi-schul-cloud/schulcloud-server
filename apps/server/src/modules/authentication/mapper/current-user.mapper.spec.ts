@@ -1,9 +1,9 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { ValidationError } from '@shared/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
+import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
@@ -214,129 +214,6 @@ describe('CurrentUserMapper', () => {
 					schoolId: user.schoolId,
 					userId: user.id,
 				});
-			});
-		});
-	});
-
-	describe('jwtToICurrentUser', () => {
-		describe('when JWT is provided with all claims', () => {
-			const setup = () => {
-				const jwtPayload: JwtPayload = {
-					accountId: 'dummyAccountId',
-					systemId: 'dummySystemId',
-					roles: ['mockRoleId'],
-					schoolId: 'dummySchoolId',
-					userId: 'dummyUserId',
-					support: true,
-					isExternalUser: true,
-					sub: 'dummyAccountId',
-					jti: 'random string',
-					aud: 'some audience',
-					iss: 'feathers',
-					iat: Math.floor(new Date().getTime() / 1000),
-					exp: Math.floor(new Date().getTime() / 1000) + 3600,
-				};
-
-				return {
-					jwtPayload,
-				};
-			};
-
-			it('should return current user', () => {
-				const { jwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
-
-				expect(currentUser).toMatchObject({
-					accountId: jwtPayload.accountId,
-					systemId: jwtPayload.systemId,
-					roles: [jwtPayload.roles[0]],
-					schoolId: jwtPayload.schoolId,
-					userId: jwtPayload.userId,
-					impersonated: jwtPayload.support,
-				});
-			});
-
-			it('should return current user with default for isExternalUser', () => {
-				const { jwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
-
-				expect(currentUser).toMatchObject({
-					isExternalUser: jwtPayload.isExternalUser,
-				});
-			});
-		});
-
-		describe('when JWT is provided without optional claims', () => {
-			const setup = () => {
-				const jwtPayload: JwtPayload = {
-					accountId: 'dummyAccountId',
-					roles: ['mockRoleId'],
-					schoolId: 'dummySchoolId',
-					userId: 'dummyUserId',
-					isExternalUser: false,
-					sub: 'dummyAccountId',
-					jti: 'random string',
-					aud: 'some audience',
-					iss: 'feathers',
-					iat: Math.floor(new Date().getTime() / 1000),
-					exp: Math.floor(new Date().getTime() / 1000) + 3600,
-				};
-
-				return {
-					jwtPayload,
-				};
-			};
-
-			it('should return current user', () => {
-				const { jwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
-
-				expect(currentUser).toMatchObject({
-					accountId: jwtPayload.accountId,
-					roles: [jwtPayload.roles[0]],
-					schoolId: jwtPayload.schoolId,
-					userId: jwtPayload.userId,
-					isExternalUser: false,
-				});
-			});
-
-			it('should return current user with default for isExternalUser', () => {
-				const { jwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
-
-				expect(currentUser).toMatchObject({
-					isExternalUser: false,
-				});
-			});
-		});
-	});
-
-	describe('mapCurrentUserToCreateJwtPayload', () => {
-		it('should map current user to create jwt payload', () => {
-			const currentUser: ICurrentUser = {
-				accountId: 'dummyAccountId',
-				systemId: 'dummySystemId',
-				roles: ['mockRoleId'],
-				schoolId: 'dummySchoolId',
-				userId: 'dummyUserId',
-				impersonated: true,
-				isExternalUser: false,
-			};
-
-			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
-
-			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
-				accountId: currentUser.accountId,
-				systemId: currentUser.systemId,
-				roles: currentUser.roles,
-				schoolId: currentUser.schoolId,
-				userId: currentUser.userId,
-				support: currentUser.impersonated,
-				isExternalUser: false,
 			});
 		});
 	});

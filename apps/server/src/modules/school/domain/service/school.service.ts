@@ -1,14 +1,17 @@
+import { System, SystemService } from '@modules/system';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeGuard } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
-import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
-import { SchoolHasNoSystemLoggableException, SystemCanNotBeDeletedLoggableException } from '../error';
-import { SystemNotFoundLoggableException } from '../error/system-not-found.loggable-exception';
+import {
+	SchoolHasNoSystemLoggableException,
+	SystemCanNotBeDeletedLoggableException,
+	SystemNotFoundLoggableException,
+} from '../error';
 import { SchoolFactory } from '../factory';
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import { SchoolQuery } from '../query';
@@ -50,6 +53,11 @@ export class SchoolService {
 		return schoolsForExternalInvite;
 	}
 
+	public async getCurrentYear(schoolId: EntityId) {
+		const school = await this.getSchoolById(schoolId);
+		return school.currentYear;
+	}
+
 	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {
 		try {
 			await this.schoolRepo.getSchoolById(schoolId);
@@ -89,11 +97,17 @@ export class SchoolService {
 		return schoolsForLdapLogin;
 	}
 
-	public async updateSchool(school: School, body: SchoolUpdateBody) {
+	public async updateSchool(school: School, body: SchoolUpdateBody): Promise<School> {
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
 
 		let updatedSchool = await this.schoolRepo.save(fullSchoolObject);
 		updatedSchool = this.addInstanceFeatures(updatedSchool);
+
+		return updatedSchool;
+	}
+
+	public async save(school: School): Promise<School> {
+		const updatedSchool: School = await this.schoolRepo.save(school);
 
 		return updatedSchool;
 	}
@@ -110,7 +124,7 @@ export class SchoolService {
 		await this.schoolRepo.save(school);
 	}
 
-	private async tryFindAndRemoveSystem(systemId: string) {
+	private async tryFindAndRemoveSystem(systemId: string): Promise<System> {
 		const system = await this.systemService.findById(systemId);
 		if (!system) {
 			throw new SystemNotFoundLoggableException(systemId);

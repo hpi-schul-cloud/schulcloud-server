@@ -158,6 +158,26 @@ describe('UserScope', () => {
 				expect(scope.query).toEqual({});
 			});
 		});
+
+		describe('when a name contains "ß"', () => {
+			const setup = () => {
+				const name = 'Beißner';
+
+				return {
+					name,
+				};
+			};
+
+			it('should return scope with added query where first or lastname is given without removing the "ß"', () => {
+				const { name } = setup();
+
+				scope.byName(name);
+
+				expect(scope.query).toEqual({
+					$or: [{ firstName: new RegExp(name, 'i') }, { lastName: new RegExp(name, 'i') }],
+				});
+			});
+		});
 	});
 
 	describe('withDeleted', () => {
@@ -173,7 +193,7 @@ describe('UserScope', () => {
 			it('should add a query that removes deleted users', () => {
 				scope.withDeleted(false);
 
-				expect(scope.query).toEqual({ deletedAt: { $exists: false } });
+				expect(scope.query).toEqual({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] });
 			});
 		});
 	});

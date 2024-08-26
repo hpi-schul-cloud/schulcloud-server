@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 env:
-  MONGODB_VERSION: 5.0
-  NODE_VERSION: '18'
+  MONGODB_VERSION: 6.0
+  NODE_VERSION: '20'
 jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest

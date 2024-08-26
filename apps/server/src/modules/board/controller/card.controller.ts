@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -22,6 +22,7 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
+	DeletedElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
@@ -35,7 +36,7 @@ import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('cards')
 export class CardController {
 	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
@@ -121,7 +122,9 @@ export class CardController {
 		FileElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
-		SubmissionContainerElementResponse
+		SubmissionContainerElementResponse,
+		DrawingElementResponse,
+		DeletedElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -133,6 +136,7 @@ export class CardController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(DeletedElementResponse) },
 			],
 		},
 	})

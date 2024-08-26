@@ -1,9 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { StorageLocation } from '@modules/files-storage/entity';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
+import { ToolConfig } from '@modules/tool/tool-config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -12,6 +13,7 @@ import {
 	collaborativeTextEditorFactory,
 	columnBoardFactory,
 	columnFactory,
+	deletedElementFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
@@ -35,8 +37,8 @@ describe(BoardNodeCopyService.name, () => {
 			providers: [
 				BoardNodeCopyService,
 				{
-					provide: ToolFeatures,
-					useValue: createMock<IToolFeatures>(),
+					provide: ConfigService,
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: ContextExternalToolService,
@@ -93,6 +95,7 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyMediaBoard').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaLine').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaExternalToolElement').mockResolvedValue(mockStatus);
+		jest.spyOn(service, 'copyDeletedElement').mockResolvedValue(mockStatus);
 
 		return { copyContext, mockStatus };
 	};
@@ -261,6 +264,18 @@ describe(BoardNodeCopyService.name, () => {
 					const result = await service.copy(node, copyContext);
 
 					expect(service.copyMediaExternalToolElement).toHaveBeenCalledWith(node, copyContext);
+					expect(result).toEqual(mockStatus);
+				});
+			});
+
+			describe('when called with deleted element', () => {
+				it('should copy deleted element', async () => {
+					const { copyContext, mockStatus } = setup();
+					const node = deletedElementFactory.build();
+
+					const result = await service.copy(node, copyContext);
+
+					expect(service.copyDeletedElement).toHaveBeenCalledWith(node, copyContext);
 					expect(result).toEqual(mockStatus);
 				});
 			});
