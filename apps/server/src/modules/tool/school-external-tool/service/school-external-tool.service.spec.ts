@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { CommonToolValidationService } from '../../common/service';
+import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
 import { externalToolFactory } from '../../external-tool/testing';
@@ -18,6 +18,7 @@ describe(SchoolExternalToolService.name, () => {
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
+	let commonToolDeleteService: DeepMocked<CommonToolDeleteService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,6 +36,10 @@ describe(SchoolExternalToolService.name, () => {
 					provide: CommonToolValidationService,
 					useValue: createMock<CommonToolValidationService>(),
 				},
+				{
+					provide: CommonToolDeleteService,
+					useValue: createMock<CommonToolDeleteService>(),
+				},
 			],
 		}).compile();
 
@@ -42,6 +47,7 @@ describe(SchoolExternalToolService.name, () => {
 		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(CommonToolValidationService);
+		commonToolDeleteService = module.get(CommonToolDeleteService);
 	});
 
 	describe('findSchoolExternalTools', () => {
@@ -101,26 +107,22 @@ describe(SchoolExternalToolService.name, () => {
 		});
 	});
 
-	describe('deleteSchoolExternalToolById', () => {
-		describe('when schoolExternalToolId is given', () => {
+	describe('deleteSchoolExternalTool', () => {
+		describe('when schoolExternalTool is given', () => {
 			const setup = () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
-				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					schoolExternalToolId: schoolExternalTool.id,
+					schoolExternalTool,
 				};
 			};
 
-			it('should call the schoolExternalToolRepo', () => {
-				const { schoolExternalToolId } = setup();
+			it('should call the schoolExternalToolRepo', async () => {
+				const { schoolExternalTool } = setup();
 
-				service.deleteSchoolExternalToolById(schoolExternalToolId);
+				await service.deleteSchoolExternalTool(schoolExternalTool);
 
-				expect(schoolExternalToolRepo.deleteById).toHaveBeenCalledWith(schoolExternalToolId);
+				expect(commonToolDeleteService.deleteSchoolExternalTool).toHaveBeenCalledWith(schoolExternalTool);
 			});
 		});
 	});
