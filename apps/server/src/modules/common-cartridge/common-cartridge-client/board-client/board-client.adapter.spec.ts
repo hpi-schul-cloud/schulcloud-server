@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
@@ -11,7 +12,7 @@ const jwtToken = 'someJwtToken';
 
 describe(BoardClientAdapter.name, () => {
 	let module: TestingModule;
-	let adapter: BoardClientAdapter;
+	let sut: BoardClientAdapter;
 	let boardApiMock: DeepMocked<BoardApi>;
 
 	beforeAll(async () => {
@@ -33,7 +34,7 @@ describe(BoardClientAdapter.name, () => {
 			],
 		}).compile();
 
-		adapter = module.get(BoardClientAdapter);
+		sut = module.get(BoardClientAdapter);
 		boardApiMock = module.get(BoardApi);
 	});
 
@@ -46,7 +47,7 @@ describe(BoardClientAdapter.name, () => {
 	});
 
 	it('should be defined', () => {
-		expect(adapter).toBeDefined();
+		expect(sut).toBeDefined();
 	});
 
 	describe('getBoardSkeletonById', () => {
@@ -74,9 +75,28 @@ describe(BoardClientAdapter.name, () => {
 			it('it should return a board skeleton dto', async () => {
 				const { boardId } = setup();
 
-				await adapter.getBoardSkeletonById(boardId);
+				await sut.getBoardSkeletonById(boardId);
 
 				expect(boardApiMock.boardControllerGetBoardSkeleton).toHaveBeenCalled();
+			});
+		});
+
+		describe('When no JWT token is found', () => {
+			const setup = () => {
+				const boardId = faker.string.uuid();
+				const request = createMock<Request>({
+					headers: {},
+				});
+
+				const adapter: BoardClientAdapter = new BoardClientAdapter(boardApiMock, request);
+
+				return { boardId, adapter };
+			};
+
+			it('should throw an UnauthorizedError', async () => {
+				const { boardId, adapter } = setup();
+
+				await expect(adapter.getBoardSkeletonById(boardId)).rejects.toThrowError(UnauthorizedException);
 			});
 		});
 	});
