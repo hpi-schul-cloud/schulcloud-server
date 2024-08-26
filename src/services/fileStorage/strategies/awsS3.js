@@ -1,8 +1,10 @@
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+
 const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { S3 } = require('@aws-sdk/client-s3');
+const { S3, PutObjectCommand } = require('@aws-sdk/client-s3');
 const pathUtil = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
@@ -30,6 +32,7 @@ const getCorsRules = () => [
 ];
 
 const getConfig = (provider) => {
+	console.log('provider', provider.endpointUrl);
 	const awsConfig = {
 		forcePathStyle: true,
 		tls: true,
@@ -38,7 +41,6 @@ const getConfig = (provider) => {
 			secretAccessKey: provider.secretAccessKey,
 		},
 		region: provider.region,
-		endpointUrl: provider.endpointUrl,
 		endpoint: provider.endpointUrl,
 	};
 	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
@@ -476,14 +478,14 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						const params = {
 							Bucket: safeAwsObject.bucket,
 							Key: flatFileName,
-							Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 							ContentType: fileType,
 							Metadata: header,
 						};
-						return promisify(safeAwsObject.s3.getSignedUrl.bind(safeAwsObject.s3), safeAwsObject.s3)(
-							'putObject',
-							params
-						);
+
+						const command = new PutObjectCommand(params);
+						return getSignedUrl(safeAwsObject.s3, command, {
+							expiresIn: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
+						});
 					})
 				);
 			});

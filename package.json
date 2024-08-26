@@ -126,6 +126,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
+		"@aws-sdk/s3-request-presigner": "^3.637.0",
 		"@feathersjs/adapter-commons": "^5.0.29",
 		"@feathersjs/authentication": "^5.0.29",
 		"@feathersjs/authentication-local": "^5.0.29",
