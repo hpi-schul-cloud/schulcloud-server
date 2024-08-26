@@ -16,7 +16,7 @@ import {
 import { readFile } from 'node:fs/promises';
 import { CourseMetadataListResponse } from '../dto';
 import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
-import { CourseInfoListResponse } from '../dto/response';
+import { CourseListResponse } from '../dto/response';
 import { CourseSortQueryType, CourseStatusQueryType } from '../../domain';
 
 const createStudent = () => {
@@ -440,7 +440,7 @@ describe('Course Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get('/all').query(query);
 
-				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
+				const { total, skip, limit, data } = response.body as CourseListResponse;
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(0);
 				expect(limit).toBe(10);
@@ -455,7 +455,7 @@ describe('Course Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get('/all').query(query);
 
-				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
+				const { total, skip, limit, data } = response.body as CourseListResponse;
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(4);
 				expect(limit).toBe(2);

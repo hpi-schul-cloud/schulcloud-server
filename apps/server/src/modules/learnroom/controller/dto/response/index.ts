@@ -1,2 +1,2 @@
-export { CourseInfoListResponse } from './course-info-list.response';
-export { CourseInfoResponse } from './course-info.response';
+export { CourseListResponse } from './course-list.response';
+export { CourseResponse } from './course.response';

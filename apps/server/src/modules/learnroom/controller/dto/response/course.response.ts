@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 
-export class CourseInfoResponse {
+export class CourseResponse {
 	@ApiProperty()
 	id: EntityId;
 
@@ -17,7 +17,7 @@ export class CourseInfoResponse {
 	@ApiPropertyOptional()
 	syncedGroup?: string;
 
-	constructor(props: CourseInfoResponse) {
+	constructor(props: CourseResponse) {
 		this.id = props.id;
 		this.name = props.name;
 		this.classNames = props.classNames;

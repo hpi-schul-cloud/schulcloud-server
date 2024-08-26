@@ -46,7 +46,7 @@ import {
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
-import { CourseInfoListResponse } from './dto/response';
+import { CourseListResponse } from './dto/response';
 
 @ApiTags('Courses')
 @JwtAuthentication()
@@ -171,7 +171,7 @@ export class CourseController {
 
 	@Get('/all')
 	@ApiOperation({ summary: 'Get a list of all courses.' })
-	@ApiResponse({ status: HttpStatus.OK, type: CourseInfoListResponse })
+	@ApiResponse({ status: HttpStatus.OK, type: CourseListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getAllCourses(
@@ -179,7 +179,7 @@ export class CourseController {
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
 		@Query() filterParams: CourseFilterParams
-	): Promise<CourseInfoListResponse> {
+	): Promise<CourseListResponse> {
 		const courses: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
 			currentUser.userId,
 			currentUser.schoolId,
@@ -189,7 +189,7 @@ export class CourseController {
 			sortingQuery.sortOrder
 		);
 
-		const response: CourseInfoListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
+		const response: CourseListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
 			courses,
 			pagination.skip,
 			pagination.limit
