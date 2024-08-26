@@ -72,14 +72,15 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 			email: `${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname}.${externalUserData.pid}@schul-cloud.org`,
 			roleNames: [RoleName.ADMINISTRATOR],
 			classNames: undefined,
+			externalRoleNames: ['admin'],
 		});
 
 	describe('getData', () => {
 		describe('when fetching the data', () => {
 			const setup = () => {
 				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
-				const system: System = systemFactory.build();
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build({ id: systemEntity.id });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 					externalId: 'externalSchoolId',
@@ -142,26 +143,27 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		describe('when the user was not migrated yet', () => {
 			const setup = () => {
 				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
-				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build({ id: systemEntity.id });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [system],
+					systems: [systemEntity],
 					externalId: 'externalSchoolId',
 				});
-				const importUser: ImportUser = createImportUser(externalUserData, school, system);
+				const importUser: ImportUser = createImportUser(externalUserData, school, systemEntity);
 				const migratedUser: UserDO = userDoFactory.build({ externalId: externalUserData.pid });
 				userService.findByExternalId.mockResolvedValueOnce(null);
 
 				return {
-					systemId: system.id,
+					system,
 					importUsers: [importUser],
 					migratedUser,
 				};
 			};
 
 			it('should return the import users', async () => {
-				const { systemId, importUsers } = setup();
+				const { system, importUsers } = setup();
 
-				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, systemId);
+				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, system);
 
 				expect(result).toHaveLength(1);
 			});
@@ -170,25 +172,26 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		describe('when the user already was migrated', () => {
 			const setup = () => {
 				const externalUserData: SchulconnexResponse = schulconnexResponseFactory.build();
-				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build({ id: systemEntity.id });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [system],
+					systems: [systemEntity],
 					externalId: 'externalSchoolId',
 				});
-				const importUser: ImportUser = createImportUser(externalUserData, school, system);
+				const importUser: ImportUser = createImportUser(externalUserData, school, systemEntity);
 				const migratedUser: UserDO = userDoFactory.build({ externalId: externalUserData.pid });
 				userService.findByExternalId.mockResolvedValueOnce(migratedUser);
 
 				return {
-					systemId: system.id,
+					system,
 					importUsers: [importUser],
 				};
 			};
 
 			it('should return an empty array', async () => {
-				const { systemId, importUsers } = setup();
+				const { system, importUsers } = setup();
 
-				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, systemId);
+				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, system);
 
 				expect(result).toHaveLength(0);
 			});

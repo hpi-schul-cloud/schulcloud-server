@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { PreviewProducer } from '@infra/preview-generator';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -137,6 +137,8 @@ describe('File Controller (API) - preview', () => {
 			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();

@@ -14,6 +14,7 @@ import {
 } from '@shared/testing';
 import { readFile } from 'node:fs/promises';
 import { CourseMetadataListResponse } from '../dto';
+import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -241,6 +242,32 @@ describe('Course Controller (API)', () => {
 			expect(data instanceof Object).toBe(true);
 			expect(Array.isArray(data[teacher.user.id])).toBe(true);
 			expect(data[teacher.user.id].length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('[GET] /courses/:courseId/cc-metadata', () => {
+		const setup = async () => {
+			const teacher = createTeacher();
+			const course = courseFactory.buildWithId({
+				teachers: [teacher.user],
+				students: [],
+			});
+
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+
+			return { course, teacher };
+		};
+
+		it('should return common cartridge metadata of a course', async () => {
+			const { course, teacher } = await setup();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/cc-metadata`);
+			const data = response.body as CourseCommonCartridgeMetadataResponse;
+
+			expect(response.statusCode).toBe(200);
+			expect(data.id).toBe(course.id);
 		});
 	});
 });

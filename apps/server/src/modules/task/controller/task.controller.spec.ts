@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@modules/authentication';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyApiResponse } from '@modules/copy-helper/dto/copy.response';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@shared/testing';
 import { TaskCopyUC, TaskUC } from '../uc';
 import { TaskController } from './task.controller';
 
@@ -42,7 +42,7 @@ describe('TaskController', () => {
 		describe('when task should be copied via API call', () => {
 			const setup = () => {
 				// todo: why not use builder instead of as
-				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const currentUser = currentUserFactory.build();
 				const ucResult = {
 					title: 'example title',
 					type: 'TASK' as CopyElementType,
@@ -52,10 +52,11 @@ describe('TaskController', () => {
 				const ucSpy = jest.spyOn(uc, 'copyTask').mockImplementation(() => Promise.resolve(ucResult));
 				return { currentUser, ucSpy };
 			};
+
 			it('should call uc with two parentIds', async () => {
 				const { currentUser, ucSpy } = setup();
 				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id', lessonId: 'anotherId' });
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', {
+				expect(ucSpy).toHaveBeenCalledWith(currentUser.userId, 'taskId', {
 					courseId: 'id',
 					lessonId: 'anotherId',
 					userId: currentUser.userId,
@@ -65,7 +66,10 @@ describe('TaskController', () => {
 			it('should call uc with one parentId', async () => {
 				const { currentUser, ucSpy } = setup();
 				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' });
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', { courseId: 'id', userId: 'userId' });
+				expect(ucSpy).toHaveBeenCalledWith(currentUser.userId, 'taskId', {
+					courseId: 'id',
+					userId: currentUser.userId,
+				});
 			});
 
 			it('should return result of correct type', async () => {

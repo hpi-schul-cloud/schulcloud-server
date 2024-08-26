@@ -6,12 +6,11 @@ import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
-import { AuthenticationModule } from '../authentication';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { AuthorizationModule } from '../authorization';
+import { config as boardCollaborationConfig } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
-import { config as boardCollaborationConfig } from './board-collaboration.config';
 
 const config = () => {
 	return { ...serverConfig(), ...boardCollaborationConfig() };
@@ -28,7 +27,6 @@ const config = () => {
 		}),
 		BoardModule,
 		AuthorizationModule,
-		AuthenticationModule,
 		AuthenticationApiModule,
 		BoardWsApiModule,
 	],

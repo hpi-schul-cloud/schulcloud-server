@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
+import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer, IPlayerModel } from '@lumieducation/h5p-server';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
@@ -34,7 +34,7 @@ describe('get H5P player', () => {
 	let uc: H5PEditorUc;
 	let h5pPlayer: DeepMocked<H5PPlayer>;
 	let h5pContentRepo: DeepMocked<H5PContentRepo>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -58,8 +58,8 @@ describe('get H5P player', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: H5PContentRepo,
@@ -71,7 +71,7 @@ describe('get H5P player', () => {
 		uc = module.get(H5PEditorUc);
 		h5pPlayer = module.get(H5PPlayer);
 		h5pContentRepo = module.get(H5PContentRepo);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		await setupEntities();
 	});
 
@@ -92,18 +92,17 @@ describe('get H5P player', () => {
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
 				h5pPlayer.render.mockResolvedValueOnce(expectedResult);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				return { content, mockCurrentUser, expectedResult };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences', async () => {
+			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { content, mockCurrentUser } = setup();
 
 				await uc.getH5pPlayer(mockCurrentUser, content.id);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
-					mockCurrentUser.userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
 					content.parentId,
 					AuthorizationContextBuilder.read([])
@@ -158,7 +157,7 @@ describe('get H5P player', () => {
 			const { content, mockCurrentUser, playerResponseMock } = createParams();
 
 			h5pContentRepo.findById.mockResolvedValueOnce(content);
-			authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+			authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 			return { content, mockCurrentUser, playerResponseMock };
 		};
@@ -181,7 +180,7 @@ describe('get H5P player', () => {
 			const error = new Error('test');
 
 			h5pContentRepo.findById.mockResolvedValueOnce(content);
-			authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+			authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 			h5pPlayer.render.mockRejectedValueOnce(error);
 
 			return { error, content, mockCurrentUser, playerResponseMock };

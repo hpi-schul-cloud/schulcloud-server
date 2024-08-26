@@ -89,5 +89,7 @@
 	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
-	}
+	},
+	"TRAINING_URL": "https://lernen.dbildungscloud.de",
+	"FEATURE_ROOMS_ENABLED": true
 }

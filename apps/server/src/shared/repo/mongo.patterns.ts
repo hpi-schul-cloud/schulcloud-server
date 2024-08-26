@@ -4,5 +4,5 @@ export class MongoPatterns {
 	 * Used to remove all non-language characters except numbers, whitespace or minus.
 	 */
 	static REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST =
-		/[^\-_\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]/gi;
+		/[^\-_\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒß]/gi;
 }

@@ -14,6 +14,7 @@ import {
 	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
+	DeletedElement,
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
@@ -78,6 +79,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.COLLABORATIVE_TEXT_EDITOR:
 				result = await this.copyCollaborativeTextEditorElement(boardNode as CollaborativeTextEditorElement, context);
+				break;
+			case BoardNodeType.DELETED_ELEMENT:
+				result = await this.copyDeletedElement(boardNode as DeletedElement, context);
 				break;
 			case BoardNodeType.MEDIA_BOARD:
 				result = await this.copyMediaBoard(boardNode as MediaBoard, context);
@@ -242,7 +246,7 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 		};
 
 		return Promise.resolve(result);
@@ -360,6 +364,22 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
 			status: CopyStatusEnum.NOT_DOING,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyDeletedElement(original: DeletedElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new DeletedElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.DELETED_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
 		};
 
 		return Promise.resolve(result);

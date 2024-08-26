@@ -371,6 +371,31 @@ describe('user repo', () => {
 			// id do not exist
 			await expect(repo.findForImportUser(school)).rejects.toThrowError();
 		});
+
+		describe('when the first or lastname of the user contains "ß"', () => {
+			describe('when the name filter query is exactly the first or lastname of the user', () => {
+				const setup = async () => {
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ school, firstName: 'Martin', lastName: 'Beißner' });
+					await em.persistAndFlush([user]);
+					em.clear();
+
+					return {
+						school,
+						user,
+					};
+				};
+
+				it('should return the searched user', async () => {
+					const { school, user } = await setup();
+
+					const [result, count] = await repo.findForImportUser(school, { name: user.lastName });
+
+					expect(count).toEqual(1);
+					expect(result.map((u) => u.id)).toContain(user.id);
+				});
+			});
+		});
 	});
 
 	describe('findByEmail', () => {

@@ -204,6 +204,9 @@ export class ConfigResponse {
 	SC_TITLE: string;
 
 	@ApiProperty()
+	TRAINING_URL: string;
+
+	@ApiProperty()
 	FEATURE_MEDIA_SHELF_ENABLED: boolean;
 
 	@ApiProperty()
@@ -211,6 +214,12 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_AI_TUTOR_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_ROOMS_ENABLED: boolean;
 
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -260,6 +269,7 @@ export class ConfigResponse {
 		this.DOCUMENT_BASE_DIR = config.DOCUMENT_BASE_DIR;
 		this.SC_THEME = config.SC_THEME;
 		this.SC_TITLE = config.SC_TITLE;
+		this.TRAINING_URL = config.TRAINING_URL;
 		this.FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED =
 			config.FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED;
 		this.MIGRATION_END_GRACE_PERIOD_MS = config.MIGRATION_END_GRACE_PERIOD_MS;
@@ -281,5 +291,7 @@ export class ConfigResponse {
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED;
+		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
+		this.FEATURE_ROOMS_ENABLED = config.FEATURE_ROOMS_ENABLED;
 	}
 }

@@ -1,3 +1,4 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/core';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -15,7 +16,6 @@ import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import request, { Response } from 'supertest';
-import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';

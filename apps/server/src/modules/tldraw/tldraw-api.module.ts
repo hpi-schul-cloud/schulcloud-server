@@ -1,17 +1,16 @@
+import { AuthGuardModule } from '@infra/auth-guard';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
-import { LoggerModule } from '@src/core/logger';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { CoreModule } from '@src/core';
+import { LoggerModule } from '@src/core/logger';
 import { config, TLDRAW_DB_URL } from './config';
-import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller';
-import { TldrawService } from './service';
+import { TldrawDrawing } from './entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-// TODO must be fixed, direct import of a file from another module in not allowed
-import { XApiKeyStrategy } from '../authentication/strategy/x-api-key.strategy';
+import { TldrawService } from './service';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -32,8 +31,9 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: [TldrawDrawing],
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
+		AuthGuardModule,
 	],
-	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb, XApiKeyStrategy],
+	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
 	controllers: [TldrawController],
 })
 export class TldrawApiModule {}

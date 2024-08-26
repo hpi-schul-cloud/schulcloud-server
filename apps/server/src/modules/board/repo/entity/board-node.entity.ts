@@ -2,8 +2,14 @@ import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
-import { AnyBoardNode, BoardLayout, BoardNodeType, ROOT_PATH } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
+import {
+	AnyBoardNode,
+	BoardLayout,
+	BoardNodeType,
+	ContentElementType,
+	MediaBoardColors,
+	ROOT_PATH,
+} from '../../domain';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
 
@@ -31,7 +37,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ persist: false })
 	domainObject: AnyBoardNode | undefined;
 
-	// Card, Column, ColumnBoard, LinkElement, MedialLine
+	// Card, Column, ColumnBoard, LinkElement, MedialLine, DeletedElement
 	// --------------------------------------------------------------------------
 	@Property({ nullable: true })
 	title: string | undefined;
@@ -107,4 +113,9 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 
 	@Property({ type: 'MediaBoardColors', nullable: true })
 	backgroundColor: MediaBoardColors | undefined;
+
+	// DeletedElement
+	// --------------------------------------------------------------------------
+	@Enum({ type: 'ContentElementType', nullable: true })
+	deletedElementType: ContentElementType | undefined;
 }
