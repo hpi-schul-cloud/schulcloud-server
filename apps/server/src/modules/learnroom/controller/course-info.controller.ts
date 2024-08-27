@@ -4,12 +4,12 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
-import { CourseResponseMapper } from '../mapper/course-response.mapper';
+import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
 import { CourseUc } from '../uc';
 import { CourseInfoDto } from '../uc/dto';
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
-import { CourseListResponse } from './dto/response';
+import { CourseInfoListResponse } from './dto/response';
 
 @ApiTags('Course Info')
 @JwtAuthentication()
@@ -19,7 +19,7 @@ export class CourseInfoController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of courses for school.' })
-	@ApiResponse({ status: HttpStatus.OK, type: CourseListResponse })
+	@ApiResponse({ status: HttpStatus.OK, type: CourseInfoListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getCoursesForSchool(
@@ -27,7 +27,7 @@ export class CourseInfoController {
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
 		@Query() filterParams: CourseFilterParams
-	): Promise<CourseListResponse> {
+	): Promise<CourseInfoListResponse> {
 		const courses: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
 			currentUser.userId,
 			currentUser.schoolId,
@@ -37,7 +37,7 @@ export class CourseInfoController {
 			sortingQuery.sortOrder
 		);
 
-		const response: CourseListResponse = CourseResponseMapper.mapToCourseInfoListResponse(
+		const response: CourseInfoListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
 			courses,
 			pagination.skip,
 			pagination.limit

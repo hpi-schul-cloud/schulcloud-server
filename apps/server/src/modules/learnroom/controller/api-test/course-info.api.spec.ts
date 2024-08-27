@@ -12,7 +12,7 @@ import {
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { CourseSortQueryType, CourseStatusQueryType } from '../../domain';
-import { CourseListResponse } from '../dto/response';
+import { CourseInfoListResponse } from '../dto/response';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -107,7 +107,7 @@ describe('Course Info Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get().query(query);
 
-				const { total, skip, limit, data } = response.body as CourseListResponse;
+				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(0);
 				expect(limit).toBe(10);
@@ -122,7 +122,7 @@ describe('Course Info Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get().query(query);
 
-				const { total, skip, limit, data } = response.body as CourseListResponse;
+				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(4);
 				expect(limit).toBe(2);
