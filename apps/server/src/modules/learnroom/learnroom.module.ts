@@ -116,7 +116,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseDoService,
 		CourseRoomsService,
 		GroupService,
-		RoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
 		CourseGroupService,

@@ -47,7 +47,7 @@ import {
 		UserModule,
 		ClassModule,
 	],
-	controllers: [DashboardController, CourseController, CourseInfoController, RoomsController, CourseRoomsController],
+	controllers: [DashboardController, CourseController, CourseInfoController, CourseRoomsController],
 	providers: [
 		DashboardUc,
 		CourseUc,
