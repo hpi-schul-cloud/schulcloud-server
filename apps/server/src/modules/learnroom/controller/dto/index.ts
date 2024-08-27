@@ -9,6 +9,6 @@ export * from './move-element.body.params';
 export * from './patch-group.params';
 export * from './patch-order.params';
 export * from './patch-visibility.params';
-export * from './room-element.url.params';
-export * from './room.url.params';
+export * from './course-room-element.url.params';
+export * from './course-room.url.params';
 export * from './single-column-board';

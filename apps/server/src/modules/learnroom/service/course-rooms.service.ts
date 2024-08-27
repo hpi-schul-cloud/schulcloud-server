@@ -7,8 +7,11 @@ import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { ColumnBoardNodeRepo } from '../repo';
 
+/**
+ * @deprecated - the learnroom module is deprecated and will be removed in the future
+ */
 @Injectable()
-export class RoomsService {
+export class CourseRoomsService {
 	constructor(
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,

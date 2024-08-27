@@ -6,5 +6,5 @@ export * from './course.uc';
 export * from './dashboard.uc';
 export * from './lesson-copy.uc';
 export * from './room-board-dto.factory';
-export * from './rooms.authorisation.service';
-export * from './rooms.uc';
+export * from './course-rooms.authorisation.service';
+export * from './course-rooms.uc';

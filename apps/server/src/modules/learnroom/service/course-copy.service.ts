@@ -9,7 +9,7 @@ import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
 import { BoardCopyService } from './board-copy.service';
-import { RoomsService } from './rooms.service';
+import { CourseRoomsService } from './course-rooms.service';
 
 type CourseCopyParams = {
 	originalCourse: Course;
@@ -23,7 +23,7 @@ export class CourseCopyService {
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly courseRepo: CourseRepo,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
-		private readonly roomsService: RoomsService,
+		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
