@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
 
-export class RoomElementUrlParams {
+export class CourseRoomElementUrlParams {
 	@IsMongoId()
 	@ApiProperty({
 		description: 'The id of the room.',

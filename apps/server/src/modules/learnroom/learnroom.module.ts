@@ -31,10 +31,14 @@ import {
 	CourseService,
 	DashboardService,
 	GroupDeletedHandlerService,
-	RoomsService,
+	CourseRoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
+/**
+ * @deprecated - the learnroom module is deprecated and will be removed in the future
+ * it will be replaced by the new rooms module
+ */
 @Module({
 	imports: [
 		forwardRef(() => BoardModule),
@@ -71,7 +75,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		DashboardModelMapper,
 		DashboardService,
 		LegacyBoardRepo,
-		RoomsService,
+		CourseRoomsService,
 		UserRepo,
 		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
@@ -80,7 +84,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
-		RoomsService,
+		CourseRoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
 		CourseGroupService,

@@ -7,7 +7,7 @@ export enum TaskParentPermission {
 }
 
 @Injectable()
-export class RoomsAuthorisationService {
+export class CourseRoomsAuthorisationService {
 	hasCourseWritePermission(user: User, course: Course): boolean {
 		const hasPermission = course.substitutionTeachers.contains(user) || course.teachers.contains(user);
 
