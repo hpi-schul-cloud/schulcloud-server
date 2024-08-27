@@ -7,8 +7,7 @@ import { Group } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity, CourseFeatures, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { CourseScope } from '@shared/repo';
+import { SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory as courseEntityFactory,
@@ -18,7 +17,7 @@ import {
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { Course, COURSE_REPO, CourseProps, CourseSortQueryType, CourseStatusQueryType } from '../../domain';
+import { Course, COURSE_REPO, CourseProps, CourseStatusQueryType } from '../../domain';
 import { courseFactory } from '../../testing';
 import { CourseMikroOrmRepo } from './course.repo';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
@@ -178,58 +177,79 @@ describe(CourseMikroOrmRepo.name, () => {
 	});
 
 	describe('findCourses', () => {
-		describe('when entity is not found', () => {
+		describe('when entitys are not found', () => {
 			const setup = async () => {
-				const courseEntity: CourseEntity = courseEntityFactory.buildWithId();
-				const userEntity: User = userFactory.buildWithId();
 				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
-				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-				const classEntity: ClassEntity = classEntityFactory.buildWithId();
-				const courseScope = new CourseScope();
-				const emSPy = jest.spyOn(em, 'find');
+				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(2, {
+					school: schoolEntity,
+					untilDate: new Date('2050-04-24'),
+				});
 
-				const expectedProps = {
-					name: `course 1`,
-					features: new Set<CourseFeatures>([CourseFeatures.VIDEOCONFERENCE]),
-					schoolId: schoolEntity.id,
-					studentIds: [userEntity.id],
-					groupIds: [groupEntity.id],
-					classIds: [classEntity.id],
-					copyingSince: new Date(),
-					syncedWithGroup: groupEntity.id,
-					untilDate: new Date(new Date().getTime() + 3600000),
-					startDate: new Date(),
-				};
-				const courseDOs: Course[] = courseFactory.buildList(5, expectedProps);
-				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(5);
-
-				await em.persistAndFlush(courseEntities);
-				await em.persistAndFlush([courseEntity, userEntity, schoolEntity, groupEntity, classEntity]);
+				await em.persistAndFlush([schoolEntity, ...courseEntities]);
 				em.clear();
 
-				const pagination = { skip: 1, limit: 2 };
+				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: CourseStatusQueryType.ARCHIVE };
+
+				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
+				return { courseDOs, filter };
+			};
+
+			it('should return empty array', async () => {
+				const { filter } = await setup();
+
+				const result = await repo.findCourses(filter);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when entitys are found for school', () => {
+			const setup = async () => {
+				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(5, {
+					school: schoolEntity,
+					untilDate: new Date('1995-04-24'),
+				});
+
+				courseEntities.push(
+					...courseEntityFactory.buildList(3, {
+						school: schoolEntity,
+						untilDate: new Date('2050-04-24'),
+					})
+				);
+
+				await em.persistAndFlush([schoolEntity, ...courseEntities]);
+				em.clear();
+
+				const pagination = { skip: 0, limit: 10 };
 				const options = {
 					pagination,
 					order: {
-						name: SortOrder.asc,
+						name: SortOrder.desc,
 					},
 				};
+				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: CourseStatusQueryType.ARCHIVE };
 
-				return { emSPy, schoolEntity, courseEntities, courseDOs, options, courseScope };
+				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
+
+				return { courseDOs, options, filter };
 			};
 
-			it('should apply archived courses scope when filter is ARCHIVE', async () => {
-				const { schoolEntity, options, courseScope } = await setup();
-				const statusQuery: CourseStatusQueryType = CourseStatusQueryType.ARCHIVE;
-				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: statusQuery };
+			it('should return archived courses', async () => {
+				const { options, filter } = await setup();
 
-				jest.spyOn(CourseScope.prototype, 'bySchoolId').mockReturnThis();
-				jest.spyOn(CourseScope.prototype, 'forArchivedCourses').mockReturnThis();
+				const result = await repo.findCourses(filter, options);
 
-				await repo.findCourses(filter, options);
+				expect(result.length).toEqual(5);
+			});
 
-				expect(courseScope.bySchoolId).toHaveBeenCalledWith(filter.schoolId);
-				expect(courseScope.forArchivedCourses).toHaveBeenCalled();
+			it('should return current courses', async () => {
+				const { options, filter } = await setup();
+
+				filter.courseStatusQueryType = CourseStatusQueryType.CURRENT;
+				const result = await repo.findCourses(filter, options);
+
+				expect(result.length).toEqual(3);
 			});
 		});
 	});
