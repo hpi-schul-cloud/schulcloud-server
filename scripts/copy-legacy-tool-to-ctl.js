@@ -120,6 +120,7 @@ const ExternalTool = mongoose.model(
 							enum: ['string', 'number', 'boolean', 'auto_contextid', 'auto_contextname', 'auto_schoolid'],
 						},
 						isOptional: Boolean,
+						isProtected: Boolean,
 					},
 				},
 			],
@@ -127,12 +128,14 @@ const ExternalTool = mongoose.model(
 			isHidden: Boolean,
 			openNewTab: Boolean,
 			version: Number,
+			isDeactivated: Boolean,
+			restrictToContexts: [],
 		},
 		{
 			timestamps: true,
 		}
 	),
-	'external_tools'
+	'external-tools'
 );
 
 const SchoolExternalTool = mongoose.model(
@@ -143,12 +146,13 @@ const SchoolExternalTool = mongoose.model(
 			school: { type: Schema.Types.ObjectId },
 			schoolParameters: [customParameterEntrySchema],
 			toolVersion: Number,
+			isDeactivated: Boolean,
 		},
 		{
 			timestamps: true,
 		}
 	),
-	'school_external_tools'
+	'school-external-tools'
 );
 
 const ContextExternalTool = mongoose.model(
@@ -166,7 +170,7 @@ const ContextExternalTool = mongoose.model(
 			timestamps: true,
 		}
 	),
-	'context_external_tools'
+	'context-external-tools'
 );
 
 const Course = mongoose.model(
@@ -259,6 +263,8 @@ function mapToExternalTool(ltiToolTemplate) {
 		isHidden: ltiToolTemplate.isHidden,
 		openNewTab: ltiToolTemplate.openNewTab,
 		version: 1,
+		restrictToContexts: [],
+		isDeactivated: false,
 		...toolConfigMapper(ltiToolTemplate),
 	};
 }
@@ -269,6 +275,7 @@ function mapToSchoolExternalTool(externalTool, course) {
 		school: course.schoolId,
 		schoolParameters: [],
 		toolVersion: externalTool.version,
+		isDeactivated: false,
 	};
 }
 
