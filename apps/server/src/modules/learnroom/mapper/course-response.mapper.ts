@@ -1,5 +1,5 @@
 import { Page } from '@shared/domain/domainobject';
-import { CourseListResponse, CourseResponse } from '../controller/dto/response';
+import { CourseListResponse, CourseInfoDataResponse } from '../controller/dto/response';
 import { CourseInfoDto } from '../uc/dto';
 
 export class CourseResponseMapper {
@@ -8,7 +8,7 @@ export class CourseResponseMapper {
 		skip?: number,
 		limit?: number
 	): CourseListResponse {
-		const courseInfoResponses: CourseResponse[] = courseInfos.data.map((courseInfo) =>
+		const courseInfoResponses: CourseInfoDataResponse[] = courseInfos.data.map((courseInfo) =>
 			this.mapToCourseInfoResponse(courseInfo)
 		);
 
@@ -17,8 +17,8 @@ export class CourseResponseMapper {
 		return response;
 	}
 
-	private static mapToCourseInfoResponse(courseInfo: CourseInfoDto): CourseResponse {
-		const courseInfoResponse: CourseResponse = new CourseResponse({
+	private static mapToCourseInfoResponse(courseInfo: CourseInfoDto): CourseInfoDataResponse {
+		const courseInfoResponse: CourseInfoDataResponse = new CourseInfoDataResponse({
 			id: courseInfo.id,
 			name: courseInfo.name,
 			classNames: courseInfo.classes,
