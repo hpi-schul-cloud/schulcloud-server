@@ -113,12 +113,15 @@ export class LoadtestRunner {
 
 		const boardIds = await createBoardsResilient(urls.api, socketConfiguration.token, courseId, classes.length).catch(
 			(err) => {
+				/* istanbul ignore next */
 				this.stopRegularStats();
+				/* istanbul ignore next */
 				throw err;
 			}
 		);
 
 		if (boardIds.length !== classes.length) {
+			/* istanbul ignore next */
 			throw new Error('Failed to create all boards');
 		}
 
