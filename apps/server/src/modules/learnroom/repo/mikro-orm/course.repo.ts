@@ -1,7 +1,7 @@
 import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
 import { Group } from '@modules/group';
 import { Course as CourseEntity } from '@shared/domain/entity';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { CourseScope } from '@shared/repo/course/course.repo';
@@ -79,13 +79,6 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,
 		};
-
-		// If no order is specified, a default order is applied here, because pagination can be messed up without order.
-		if (!findOptions.orderBy) {
-			findOptions.orderBy = {
-				_id: SortOrder.asc,
-			};
-		}
 
 		return findOptions;
 	}

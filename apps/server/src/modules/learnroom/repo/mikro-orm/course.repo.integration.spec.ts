@@ -188,8 +188,6 @@ describe(CourseMikroOrmRepo.name, () => {
 				await em.persistAndFlush([schoolEntity, ...courseEntities]);
 				em.clear();
 
-				const pagination = { skip: 1, limit: 2 };
-
 				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: CourseStatusQueryType.ARCHIVE };
 
 				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
@@ -238,7 +236,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			};
 
 			it('should return archived courses', async () => {
-				const { options, filter, courseDOs } = await setup();
+				const { options, filter } = await setup();
 
 				const result = await repo.findCourses(filter, options);
 
