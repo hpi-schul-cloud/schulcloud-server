@@ -68,7 +68,7 @@ describe('BoardLoadTest', () => {
 
 				await boarLoadTest.runBoardTest(boardId, testClass);
 
-				expect(socketConnectionManager.createConnection).toHaveBeenCalledTimes(5);
+				expect(socketConnectionManager.createConnections).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
