@@ -26,11 +26,15 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 			: this.authorizationHelper.hasAccessToEntity(
 					user,
 					object,
-					action === Action.read
+					this.isReadAction(action)
 						? ['teachers', 'substitutionTeachers', 'students']
 						: ['teachers', 'substitutionTeachers']
 			  );
 
 		return hasAccessToEntity && hasRequiredPermission;
+	}
+
+	isReadAction(action: Action) {
+		return action === Action.read;
 	}
 }
