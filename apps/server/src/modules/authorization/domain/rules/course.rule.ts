@@ -35,6 +35,9 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 	}
 
 	isReadAction(action: Action) {
-		return action === Action.read;
+		if (action === Action.read) {
+			return true;
+		}
+		return false;
 	}
 }
