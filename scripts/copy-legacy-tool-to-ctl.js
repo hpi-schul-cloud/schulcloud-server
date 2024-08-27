@@ -277,13 +277,14 @@ function mapToSchoolExternalTool(externalTool, course) {
 	};
 }
 
-function mapToContextExternalTool(schoolExternalTool, course) {
+function mapToContextExternalTool(schoolExternalTool, course, externalToolName) {
 	return {
 		schoolTool: schoolExternalTool._id,
 		contextId: course._id,
 		contextType: 'course',
 		parameters: [],
 		toolVersion: schoolExternalTool.toolVersion,
+		displayName: externalToolName,
 	};
 }
 
@@ -355,7 +356,7 @@ async function createSchoolExternalTool(externalTool, course) {
 	return schoolExternalTool;
 }
 
-async function createContextExternalTool(schoolExternalTool, course) {
+async function createContextExternalTool(schoolExternalTool, course, externalToolName) {
 	const contextExternalTools = await ContextExternalTool.find({
 		schoolTool: schoolExternalTool._id,
 		contextId: course._id,
@@ -366,7 +367,7 @@ async function createContextExternalTool(schoolExternalTool, course) {
 
 	// CHECK IF CONTEXTEXTERNALTOOL EXISTS
 	if ((contextExternalTools || []).length === 0) {
-		const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
+		const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course, externalToolName);
 		await ContextExternalTool.insertMany(contextExternalTool);
 	}
 }
@@ -433,7 +434,7 @@ const up = async () => {
 		const schoolExternalTool = await createSchoolExternalTool(externalTool, course);
 
 		// CREATE CONTEXTEXTERNALTOOL
-		await createContextExternalTool(schoolExternalTool, course);
+		await createContextExternalTool(schoolExternalTool, course, externalTool.name);
 	}
 
 	await close();
