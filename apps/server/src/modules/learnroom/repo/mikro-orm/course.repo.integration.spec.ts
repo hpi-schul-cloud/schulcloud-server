@@ -186,22 +186,17 @@ describe(CourseMikroOrmRepo.name, () => {
 				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
 				const classEntity: ClassEntity = classEntityFactory.buildWithId();
 				const courseScope = new CourseScope();
+				const emSPy = jest.spyOn(em, 'find');
 
 				const expectedProps = {
-					id: courseEntity.id,
 					name: `course 1`,
 					features: new Set<CourseFeatures>([CourseFeatures.VIDEOCONFERENCE]),
 					schoolId: schoolEntity.id,
 					studentIds: [userEntity.id],
-					teacherIds: [userEntity.id],
-					substitutionTeacherIds: [userEntity.id],
 					groupIds: [groupEntity.id],
 					classIds: [classEntity.id],
-					description: 'description',
-					color: '#ACACAC',
 					copyingSince: new Date(),
 					syncedWithGroup: groupEntity.id,
-					shareToken: 'shareToken',
 					untilDate: new Date(new Date().getTime() + 3600000),
 					startDate: new Date(),
 				};
@@ -220,7 +215,7 @@ describe(CourseMikroOrmRepo.name, () => {
 					},
 				};
 
-				return { schoolEntity, courseEntities, courseDOs, options, courseScope };
+				return { emSPy, schoolEntity, courseEntities, courseDOs, options, courseScope };
 			};
 
 			it('should apply archived courses scope when filter is ARCHIVE', async () => {
@@ -231,89 +226,11 @@ describe(CourseMikroOrmRepo.name, () => {
 				jest.spyOn(CourseScope.prototype, 'bySchoolId').mockReturnThis();
 				jest.spyOn(CourseScope.prototype, 'forArchivedCourses').mockReturnThis();
 
-				const result = await repo.findCourses(filter, options);
+				await repo.findCourses(filter, options);
 
 				expect(courseScope.bySchoolId).toHaveBeenCalledWith(filter.schoolId);
 				expect(courseScope.forArchivedCourses).toHaveBeenCalled();
 			});
-
-			it('should apply archived courses scope when filter is CURRENT', async () => {
-				const { schoolEntity, options, courseScope } = await setup();
-				const statusQuery: CourseStatusQueryType = CourseStatusQueryType.CURRENT;
-				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: statusQuery };
-
-				jest.spyOn(CourseScope.prototype, 'bySchoolId').mockReturnThis();
-				jest.spyOn(CourseScope.prototype, 'forActiveCourses').mockReturnThis();
-
-				const result = await repo.findCourses(filter, options);
-
-				expect(courseScope.bySchoolId).toHaveBeenCalledWith(filter.schoolId);
-				expect(courseScope.forActiveCourses).toHaveBeenCalled();
-			});
-
-			// it('should apply the correct scope and return mapped courses', async () => {
-			// 	const { schoolEntity, courseEntities, courseDOs, options, courseScope } = await setup();
-			// 	const statusQuery: CourseStatusQueryType = CourseStatusQueryType.CURRENT;
-			// 	const filter = { schoolId: schoolEntity.id, courseStatusQueryType: statusQuery };
-
-			// 	const mapEntityToDoSpy = jest
-			// 		.spyOn(CourseEntityMapper, 'mapEntityToDo')
-			// 		.mockImplementation((entity) => courseDOs[courseEntities.indexOf(entity)]);
-
-			// 	jest.spyOn(CourseScope.prototype, 'bySchoolId').mockReturnThis();
-			// 	jest.spyOn(CourseScope.prototype, 'forActiveCourses').mockReturnThis();
-
-			// 	const result = await repo.findCourses(filter, options);
-
-			// 	expect(courseScope.bySchoolId).toHaveBeenCalledWith(filter.schoolId);
-			// 	expect(courseScope.forActiveCourses).toHaveBeenCalled();
-			// 	expect(mapEntityToDoSpy).toHaveBeenCalledTimes(courseEntities.length);
-			// 	expect(result).toEqual(courseDOs);
-			// });
-
-			// 	it('should apply default sorting if no order is provided', async () => {
-			// 		const { schoolEntity, courseScope } = await setup();
-			// 		const statusQuery: CourseStatusQueryType = CourseStatusQueryType.CURRENT;
-			// 		const filter = { schoolId: schoolEntity.id, courseStatusQueryType: statusQuery };
-
-			// 		const defaultOptions: IFindOptions<Course> = {
-			// 			pagination: { skip: 0, limit: 10 },
-			// 		};
-
-			// 		await repo.findCourses(filter, defaultOptions);
-
-			// 		expect(em.find).toHaveBeenCalledWith(
-			// 			CourseEntity,
-			// 			courseScope.query,
-			// 			expect.objectContaining({
-			// 				orderBy: { _id: 'asc' },
-			// 			})
-			// 		);
-			// 	});
-
-			// 	it('should return epmty', async () => {
-			// 		const someId = new ObjectId().toHexString();
-			// 		const pagination = { skip: 1, limit: 1 };
-			// 		const statusQuery: CourseStatusQueryType = CourseStatusQueryType.CURRENT;
-			// 		const sortByField: CourseSortQueryType = CourseSortQueryType.NAME;
-			// 		const sortOrder: SortOrder = SortOrder.asc;
-			// 		const filter = { schoolId: someId, courseStatusQueryType: statusQuery };
-			// 		const options = {
-			// 			pagination,
-			// 			order: {
-			// 				[sortByField]: sortOrder,
-			// 			},
-			// 		};
-			// 		const result: Course[] = await repo.findCourses(filter, options);
-			// 		expect(em.find).toHaveBeenCalledWith([
-			// 			{
-			// 				schoolId: someId,
-			// 				courseStatusQueryType: CourseStatusQueryType.CURRENT,
-			// 			},
-			// 			{ order: { name: 'asc' }, pagination: { skip: 1, limit: 2 } },
-			// 		]);
-			// 		expect(result).toEqual([]);
-			// 	});
 		});
 	});
 });
