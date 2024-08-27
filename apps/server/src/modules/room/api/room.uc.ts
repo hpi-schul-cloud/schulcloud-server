@@ -1,14 +1,15 @@
+import { ConfigService } from '@nestjs/config';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
-import { ConfigService } from '@nestjs/config';
-import { RoomService } from '../domain/service';
-import { Room } from '../domain/do/room.do';
-import { AuthorizationContextBuilder, AuthorizationService } from '../../authorization';
+import { IFindOptions, Permission } from '@shared/domain/interface';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { AuthorizationService } from '@modules/authorization';
+import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
-import {FeatureDisabledLoggableException} from "@shared/common/loggable-exception";
 
+@Injectable()
 export class RoomUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
@@ -16,15 +17,19 @@ export class RoomUc {
 		private readonly roomService: RoomService
 	) {}
 
-	async getRooms(userId: EntityId, pagination: , names?: string): Promise<Page<Room>> {
+	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		if (!this.configService.get('FEATURE_ROOMS_ENABLED')) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
 		}
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, room, AuthorizationContextBuilder.read([Permission.GROUP_VIEW]));
+		// TODO check authorization via authorizationService & room-group-service
+		// this.authorizationService.checkPermission(user, room, AuthorizationContextBuilder.read([Permission.ROOM_VIEW]));
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.ROOM_VIEW])) {
+			throw new UnauthorizedException();
+		}
 
-		const rooms = await this.roomService.getRooms();
+		const rooms = await this.roomService.getRooms(findOptions);
 		return rooms;
 	}
 }

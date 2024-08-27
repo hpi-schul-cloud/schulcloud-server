@@ -15,6 +15,7 @@ import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { ProvisioningConfig } from '@modules/provisioning';
+import { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
@@ -62,6 +63,7 @@ export interface ServerConfig
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
+		RoomConfig,
 		UserImportConfig,
 		VideoConferenceConfig,
 		BbbConfig,

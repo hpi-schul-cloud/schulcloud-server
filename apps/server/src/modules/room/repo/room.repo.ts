@@ -8,10 +8,6 @@ import { Room } from '../domain/do/room.do';
 import { RoomDomainMapper } from './room-domain.mapper';
 import { RoomScope } from './room.scope';
 
-export interface RoomFilter {
-	name?: string;
-}
-
 @Injectable()
 export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 	protected get entityName(): EntityName<RoomEntity> {
@@ -24,13 +20,19 @@ export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 		return entityProps;
 	}
 
-	public async getRooms(filter?: RoomFilter, options?: IFindOptions<Room>): Promise<Page<Room>> {
+	public async getRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		const scope = new RoomScope();
-		const [entities, total] = await this.em.findAndCount(RoomEntity, scope.query, {
-			offset: options?.pagination?.skip,
-			limit: options?.pagination?.limit,
+		scope.byName('test');
+
+		// scope.byOrganizationId(filter.schoolId);
+
+		const options = {
+			offset: findOptions?.pagination?.skip,
+			limit: findOptions?.pagination?.limit,
 			orderBy: { name: QueryOrder.ASC },
-		});
+		};
+
+		const [entities, total] = await this.em.findAndCount(RoomEntity, scope.query, options);
 
 		const domainObjects: Room[] = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
 		entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));

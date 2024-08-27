@@ -9,6 +9,7 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
+import { RoomEntity } from '@modules/room/repo/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
@@ -73,6 +74,7 @@ export const ALL_ENTITIES = [
 	ExternalToolPseudonymEntity,
 	RocketChatUserEntity,
 	Role,
+	RoomEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,
