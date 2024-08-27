@@ -61,6 +61,7 @@ export class SocketConnectionManager {
 
 	async destroySocketConnections() {
 		const promises = this.connections.map((connection) => connection.close());
+		this.connections = [];
 		await Promise.all(promises);
 	}
 }

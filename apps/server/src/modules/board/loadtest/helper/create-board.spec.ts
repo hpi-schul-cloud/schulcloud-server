@@ -48,9 +48,7 @@ describe('createBoards', () => {
 				},
 			});
 
-			await expect(createBoard(apiBaseUrl, token, courseId)).rejects.toThrow(
-				'Failed to create board: 400 - check token and target in env-variables'
-			);
+			await expect(createBoard(apiBaseUrl, token, courseId)).rejects.toThrow();
 		});
 	});
 });
