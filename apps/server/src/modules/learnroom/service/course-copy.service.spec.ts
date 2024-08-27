@@ -20,14 +20,14 @@ import {
 import { contextExternalToolFactory } from '../../tool/context-external-tool/testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
-import { RoomsService } from './rooms.service';
+import { CourseRoomsService } from './course-rooms.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
 	let service: CourseCopyService;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
-	let roomsService: DeepMocked<RoomsService>;
+	let roomsService: DeepMocked<CourseRoomsService>;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -57,8 +57,8 @@ describe('course copy service', () => {
 					useValue: createMock<LegacyBoardRepo>(),
 				},
 				{
-					provide: RoomsService,
-					useValue: createMock<RoomsService>(),
+					provide: CourseRoomsService,
+					useValue: createMock<CourseRoomsService>(),
 				},
 				{
 					provide: BoardCopyService,
@@ -90,7 +90,7 @@ describe('course copy service', () => {
 		service = module.get(CourseCopyService);
 		courseRepo = module.get(CourseRepo);
 		boardRepo = module.get(LegacyBoardRepo);
-		roomsService = module.get(RoomsService);
+		roomsService = module.get(CourseRoomsService);
 		boardCopyService = module.get(BoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);

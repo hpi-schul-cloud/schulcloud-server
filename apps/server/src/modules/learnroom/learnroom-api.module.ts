@@ -12,7 +12,7 @@ import { Module } from '@nestjs/common';
 import { CourseRepo, DashboardModelMapper, DashboardRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
-import { RoomsController } from './controller/rooms.controller';
+import { CourseRoomsController } from './controller/course-rooms.controller';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 
@@ -26,10 +26,14 @@ import {
 	DashboardUc,
 	LessonCopyUC,
 	RoomBoardDTOFactory,
-	RoomsAuthorisationService,
-	RoomsUc,
+	CourseRoomsAuthorisationService,
+	CourseRoomsUc,
 } from './uc';
 
+/**
+ * @deprecated - the learnroom module is deprecated and will be removed in the future
+ * it will be replaced by the new rooms module
+ */
 @Module({
 	imports: [
 		AuthorizationModule,
@@ -43,16 +47,16 @@ import {
 		UserModule,
 		ClassModule,
 	],
-	controllers: [DashboardController, CourseController, CourseInfoController, RoomsController],
+	controllers: [DashboardController, CourseController, CourseInfoController, RoomsController, CourseRoomsController],
 	providers: [
 		DashboardUc,
 		CourseUc,
-		RoomsUc,
+		CourseRoomsUc,
 		RoomBoardResponseMapper,
 		RoomBoardDTOFactory,
 		LessonCopyUC,
 		CourseCopyUC,
-		RoomsAuthorisationService,
+		CourseRoomsAuthorisationService,
 		CourseExportUc,
 		CourseImportUc,
 		CourseSyncUc,

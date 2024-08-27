@@ -22,7 +22,7 @@ import {
 	RoomBoardElementDTO,
 	RoomBoardElementTypes,
 } from '../types/room-board.types';
-import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 class DtoCreator {
 	room: Course;
@@ -33,7 +33,7 @@ class DtoCreator {
 
 	authorisationService: AuthorizationService;
 
-	roomsAuthorisationService: RoomsAuthorisationService;
+	roomsAuthorisationService: CourseRoomsAuthorisationService;
 
 	constructor({
 		room,
@@ -46,7 +46,7 @@ class DtoCreator {
 		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
-		roomsAuthorisationService: RoomsAuthorisationService;
+		roomsAuthorisationService: CourseRoomsAuthorisationService;
 	}) {
 		this.room = room;
 		this.board = board;
@@ -188,7 +188,7 @@ class DtoCreator {
 export class RoomBoardDTOFactory {
 	constructor(
 		private readonly authorisationService: AuthorizationService,
-		private readonly roomsAuthorisationService: RoomsAuthorisationService
+		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService
 	) {}
 
 	createDTO({ room, board, user }: { room: Course; board: LegacyBoard; user: User }): RoomBoardDTO {
