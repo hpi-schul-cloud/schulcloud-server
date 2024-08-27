@@ -75,7 +75,7 @@ export class LoadtestRunner {
 		socketConfiguration: SocketConfiguration,
 		configurations: ClassDefinitionWithAmount[]
 	) {
-		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.json`;
+		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.loadtest.json`;
 		const protocol = {
 			protocolFilename,
 			startDateTime: formatDate(this.startDate),
