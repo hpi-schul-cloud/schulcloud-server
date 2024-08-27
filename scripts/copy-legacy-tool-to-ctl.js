@@ -16,8 +16,6 @@ const close = async () => mongoose.connection.close();
 const connect = async () => {
 	const mongooseOptions = {
 		useNewUrlParser: true,
-		useFindAndModify: false,
-		useCreateIndex: true,
 		useUnifiedTopology: true,
 	};
 
