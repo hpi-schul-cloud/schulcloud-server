@@ -18,7 +18,7 @@ export class CourseInfoController {
 	constructor(private readonly courseInfoUc: CourseInfoUc) {}
 
 	@Get()
-	@ApiOperation({ summary: 'Get a list of courses for school.' })
+	@ApiOperation({ summary: 'Get course information.' })
 	@ApiResponse({ status: HttpStatus.OK, type: CourseInfoListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
