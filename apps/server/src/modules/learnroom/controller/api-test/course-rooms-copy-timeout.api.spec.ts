@@ -26,7 +26,7 @@ import { ServerTestModule } from '@modules/server';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.
-describe('Rooms copy (API)', () => {
+describe('Course Rooms copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -74,7 +74,7 @@ describe('Rooms copy (API)', () => {
 		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
-			.post(`/rooms/${course.id}/copy`)
+			.post(`/course-rooms/${course.id}/copy`)
 			.set('Authorization', 'jwt')
 			.send();
 
@@ -91,7 +91,7 @@ describe('Rooms copy (API)', () => {
 		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
-			.post(`/rooms/lessons/${lesson.id}/copy`)
+			.post(`/course-rooms/lessons/${lesson.id}/copy`)
 			.set('Authorization', 'jwt')
 			.send();
 

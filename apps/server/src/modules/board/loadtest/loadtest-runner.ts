@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
 import { createSeveralClasses } from './helper/class-definitions';
-import { createBoard } from './helper/create-board';
+import { createBoardsResilient } from './helper/create-board';
 import { formatDate } from './helper/format-date';
 import { getUrlConfiguration } from './helper/get-url-configuration';
 import { useResponseTimes } from './helper/responseTimes.composable';
@@ -56,7 +56,7 @@ export class LoadtestRunner {
 	}
 
 	startRegularStats = () => {
-		this.intervalHandle = setInterval(() => this.showStats(), 10000);
+		this.intervalHandle = setInterval(() => this.showStats(), 2000);
 	};
 
 	stopRegularStats = () => {
@@ -75,7 +75,7 @@ export class LoadtestRunner {
 		socketConfiguration: SocketConfiguration,
 		configurations: ClassDefinitionWithAmount[]
 	) {
-		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.json`;
+		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.loadtest.json`;
 		const protocol = {
 			protocolFilename,
 			startDateTime: formatDate(this.startDate),
@@ -111,9 +111,23 @@ export class LoadtestRunner {
 
 		this.startRegularStats();
 
-		const promises: Promise<unknown>[] = classes.flatMap(async (classDefinition) => {
+		const boardIds = await createBoardsResilient(urls.api, socketConfiguration.token, courseId, classes.length).catch(
+			(err) => {
+				/* istanbul ignore next */
+				this.stopRegularStats();
+				/* istanbul ignore next */
+				throw err;
+			}
+		);
+
+		if (boardIds.length !== classes.length) {
+			/* istanbul ignore next */
+			throw new Error('Failed to create all boards');
+		}
+
+		const promises: Promise<unknown>[] = classes.flatMap(async (classDefinition, index) => {
 			const boardLoadTest = this.createBoardLoadTest(this.socketConnectionManager, this.onError);
-			const boardId = await createBoard(urls.api, socketConfiguration.token, courseId);
+			const boardId = boardIds[index];
 			return boardLoadTest.runBoardTest(boardId, classDefinition);
 		});
 
