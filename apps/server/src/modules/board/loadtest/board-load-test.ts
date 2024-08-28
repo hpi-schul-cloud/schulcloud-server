@@ -1,9 +1,8 @@
-/* istanbul ignore file */
 /* eslint-disable no-await-in-loop */
 import { duplicateUserProfiles } from './helper/class-definitions';
 import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
 import { sleep } from './helper/sleep';
-import { LoadtestClient } from './loadtest-client';
+import { createLoadtestClient, LoadtestClient } from './loadtest-client';
 import { SocketConnection } from './socket-connection';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinition, UserProfile } from './types';
@@ -35,16 +34,20 @@ export class BoardLoadTest {
 	}
 
 	async initializeLoadtestClient(socketConnection: SocketConnection, boardId: string): Promise<LoadtestClient> {
-		const loadtestClient = new LoadtestClient(socketConnection, boardId);
+		/* istanbul ignore next */
+		const loadtestClient = createLoadtestClient(socketConnection, boardId);
 
 		await sleep(Math.ceil(Math.random() * 20000));
+		/* istanbul ignore next */
 		await loadtestClient.fetchBoard();
+		/* istanbul ignore next */
 		return loadtestClient;
 	}
 
 	async simulateUsersActions(loadtestClients: LoadtestClient[], userProfiles: UserProfile[]) {
 		// eslint-disable-next-line arrow-body-style
 		const promises = loadtestClients.map((loadtestClient, index) => {
+			/* istanbul ignore next */
 			return this.simulateUserActions(loadtestClient, userProfiles[index]);
 		});
 		await Promise.all(promises);
@@ -62,6 +65,7 @@ export class BoardLoadTest {
 					if (this.columnCount() === 0) {
 						await this.createColumn(loadtestClient);
 					} else if (this.columnCount() > 20) {
+						/* istanbul ignore next */
 						await this.createRandomCard(loadtestClient, userProfile.sleepMs);
 					} else if (Math.random() > 0.8) {
 						await this.createColumn(loadtestClient);
@@ -70,6 +74,7 @@ export class BoardLoadTest {
 					}
 					actionCount += 1;
 				} catch (err) {
+					/* istanbul ignore next */
 					this.onError((err as Error).message);
 				}
 			}
@@ -114,6 +119,7 @@ export class BoardLoadTest {
 		if (column) {
 			column.cards.push({ id: cardId });
 		} else {
+			/* istanbul ignore next */
 			throw new Error(`Column not found: ${columnId}`);
 		}
 	}
