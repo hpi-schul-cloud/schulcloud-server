@@ -23,6 +23,7 @@ import {
 } from '../rules';
 import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 @Injectable()
 export class RuleManager {
@@ -46,7 +47,8 @@ export class RuleManager {
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
 		private readonly userRule: UserRule,
 		private readonly externalToolRule: ExternalToolRule,
-		private readonly instanceRule: InstanceRule
+		private readonly instanceRule: InstanceRule,
+		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
 		this.rules = [
 			this.boardNodeRule,
@@ -71,7 +73,8 @@ export class RuleManager {
 	}
 
 	public selectRule(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): Rule {
-		const selectedRules = this.rules.filter((rule) => rule.isApplicable(user, object, context));
+		const rules = [...this.rules, ...this.authorizationInjectionService.getAuthorizationRules()];
+		const selectedRules = rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 
 		return rule;

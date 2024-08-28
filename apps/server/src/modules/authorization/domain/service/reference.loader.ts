@@ -20,32 +20,11 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { InstanceService } from '../../../instance';
-import { AuthorizableReferenceType } from '../type';
-
-type RepoType =
-	| BoardNodeAuthorizableService
-	| ContextExternalToolAuthorizableService
-	| CourseGroupRepo
-	| CourseRepo
-	| LegacySchoolRepo
-	| LessonService
-	| SchoolExternalToolRepo
-	| SubmissionRepo
-	| TaskRepo
-	| TeamsRepo
-	| UserRepo
-	| ExternalToolAuthorizableService
-	| InstanceService;
-
-interface RepoLoader {
-	repo: RepoType;
-	populate?: boolean;
-}
+import { AuthorizableReferenceType, AuthorizationLoaderService } from '../type';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map<AuthorizableReferenceType, RepoLoader> = new Map();
-
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
@@ -59,27 +38,30 @@ export class ReferenceLoader {
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
 		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
-		private readonly instanceService: InstanceService
+		private readonly instanceService: InstanceService,
+		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
-		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
-		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
-		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
-		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo });
-		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
-		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonService });
-		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
-		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
-		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
-		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
-		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
-			repo: this.contextExternalToolAuthorizableService,
-		});
-		this.repos.set(AuthorizableReferenceType.ExternalTool, { repo: this.externalToolAuthorizableService });
-		this.repos.set(AuthorizableReferenceType.Instance, { repo: this.instanceService });
+		const service = this.authorizationInjectionService;
+		service.injectReferenceLoader(AuthorizableReferenceType.Task, this.taskRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.Course, this.courseRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.CourseGroup, this.courseGroupRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.User, this.userRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.School, this.schoolRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.Lesson, this.lessonService);
+		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamsRepo, true);
+		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this.schoolExternalToolRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, this.boardNodeAuthorizableService);
+		service.injectReferenceLoader(
+			AuthorizableReferenceType.ContextExternalToolEntity,
+			this.contextExternalToolAuthorizableService
+		);
+		service.injectReferenceLoader(AuthorizableReferenceType.ExternalTool, this.externalToolAuthorizableService);
+		service.injectReferenceLoader(AuthorizableReferenceType.Instance, this.instanceService);
 	}
 
-	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {
-		const repo = this.repos.get(type);
+	private resolveLoader(type: AuthorizableReferenceType): AuthorizationLoaderService {
+		const repo = this.authorizationInjectionService.getReferenceLoader(type);
 		if (repo) {
 			return repo;
 		}
@@ -90,14 +72,9 @@ export class ReferenceLoader {
 		objectName: AuthorizableReferenceType,
 		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
-		const repoLoader: RepoLoader = this.resolveRepo(objectName);
-
-		let object: AuthorizableObject | BaseDO;
-		if (repoLoader.populate) {
-			object = await repoLoader.repo.findById(objectId, true);
-		} else {
-			object = await repoLoader.repo.findById(objectId);
-		}
+		const populate = this.authorizationInjectionService.shouldPopulate(objectName);
+		const referenceLoader: AuthorizationLoaderService = this.resolveLoader(objectName);
+		const object = await referenceLoader.findById(objectId, populate);
 
 		return object;
 	}
