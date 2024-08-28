@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { groupFactory } from '@shared/testing';
@@ -241,7 +242,7 @@ describe(CourseDoService.name, () => {
 					},
 				};
 
-				courseRepo.findCourses.mockResolvedValueOnce(courses);
+				courseRepo.getCourseInfo.mockResolvedValueOnce(new Page<Course>(courses, 5));
 
 				return {
 					courses,
@@ -253,9 +254,9 @@ describe(CourseDoService.name, () => {
 
 			it('should return the courses by passing filter and options', async () => {
 				const { courses, filter, options } = setup();
-				const result: Course[] = await service.findCourses(filter, options);
+				const result: Page<Course> = await service.getCourseInfo(filter, options);
 
-				expect(result).toEqual(courses);
+				expect(result.data).toEqual(courses);
 			});
 		});
 	});

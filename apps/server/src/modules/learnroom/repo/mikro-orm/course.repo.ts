@@ -1,5 +1,6 @@
 import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
 import { Group } from '@modules/group';
+import { Page } from '@shared/domain/domainobject';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -47,7 +48,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		return courses;
 	}
 
-	public async findCourses(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Course[]> {
+	public async getCourseInfo(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
 		const scope: CourseScope = new CourseScope();
 		scope.bySchoolId(filter.schoolId);
 		if (filter.courseStatusQueryType === CourseStatusQueryType.CURRENT) {
@@ -58,8 +59,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 
 		const findOptions = this.mapToMikroOrmOptions(options);
 
-		const entities = await this.em.find(CourseEntity, scope.query, findOptions);
-
+		const [entities, total] = await this.em.findAndCount(CourseEntity, scope.query, findOptions);
 		await Promise.all(
 			entities.map(async (entity: CourseEntity): Promise<void> => {
 				if (!entity.courseGroups.isInitialized()) {
@@ -69,8 +69,9 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		);
 
 		const courses: Course[] = entities.map((entity: CourseEntity): Course => CourseEntityMapper.mapEntityToDo(entity));
+		const page: Page<Course> = new Page<Course>(courses, total);
 
-		return courses;
+		return page;
 	}
 
 	private mapToMikroOrmOptions<P extends string = never>(options?: IFindOptions<Course>): FindOptions<CourseEntity, P> {

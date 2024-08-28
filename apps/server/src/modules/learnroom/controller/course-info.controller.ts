@@ -5,17 +5,17 @@ import { PaginationParams } from '@shared/controller/';
 import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
 import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
-import { CourseUc } from '../uc';
 import { CourseInfoDto } from '../uc/dto';
 import { CourseFilterParams } from './dto/request/course-filter-params';
 import { CourseSortParams } from './dto/request/course-sort-params';
 import { CourseInfoListResponse } from './dto/response';
+import { CourseInfoUc } from '../uc/course-info.uc';
 
 @ApiTags('Course Info')
 @JwtAuthentication()
 @Controller('course-info')
 export class CourseInfoController {
-	constructor(private readonly courseUc: CourseUc) {}
+	constructor(private readonly courseInfoUc: CourseInfoUc) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of courses for school.' })
@@ -28,7 +28,7 @@ export class CourseInfoController {
 		@Query() sortingQuery: CourseSortParams,
 		@Query() filterParams: CourseFilterParams
 	): Promise<CourseInfoListResponse> {
-		const courses: Page<CourseInfoDto> = await this.courseUc.findAllCourses(
+		const courses: Page<CourseInfoDto> = await this.courseInfoUc.getCourseInfo(
 			currentUser.userId,
 			currentUser.schoolId,
 			sortingQuery.sortBy,

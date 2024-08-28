@@ -126,7 +126,7 @@ describe('Course Info Controller (API)', () => {
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(4);
 				expect(limit).toBe(2);
-				expect(total).toBe(1);
+				expect(total).toBe(5);
 				expect(data.length).toBe(1);
 				expect(data[0].id).toBe(currentCourses[4].id);
 			});

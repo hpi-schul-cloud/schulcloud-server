@@ -197,9 +197,9 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should return empty array', async () => {
 				const { filter } = await setup();
 
-				const result = await repo.findCourses(filter);
+				const result = await repo.getCourseInfo(filter);
 
-				expect(result).toEqual([]);
+				expect(result.data).toEqual([]);
 			});
 		});
 
@@ -238,18 +238,20 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should return archived courses', async () => {
 				const { options, filter } = await setup();
 
-				const result = await repo.findCourses(filter, options);
+				const result = await repo.getCourseInfo(filter, options);
 
-				expect(result.length).toEqual(5);
+				expect(result.data.length).toEqual(5);
+				expect(result.total).toEqual(5);
 			});
 
 			it('should return current courses', async () => {
 				const { options, filter } = await setup();
 
 				filter.courseStatusQueryType = CourseStatusQueryType.CURRENT;
-				const result = await repo.findCourses(filter, options);
+				const result = await repo.getCourseInfo(filter, options);
 
-				expect(result.length).toEqual(3);
+				expect(result.data.length).toEqual(3);
+				expect(result.total).toEqual(3);
 			});
 		});
 	});

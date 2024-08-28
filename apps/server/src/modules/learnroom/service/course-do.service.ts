@@ -1,6 +1,7 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -54,8 +55,8 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 		await this.courseRepo.save(course);
 	}
 
-	public async findCourses(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Course[]> {
-		const courses = await this.courseRepo.findCourses(filter, options);
+	public async getCourseInfo(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
+		const courses = await this.courseRepo.getCourseInfo(filter, options);
 
 		return courses;
 	}

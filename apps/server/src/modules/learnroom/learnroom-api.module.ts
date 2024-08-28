@@ -10,9 +10,9 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRepo, DashboardModelMapper, DashboardRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { CourseRoomsController } from './controller/course-rooms.controller';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
-import { CourseRoomsController } from './controller/course-rooms.controller';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 
@@ -21,13 +21,14 @@ import {
 	CourseCopyUC,
 	CourseExportUc,
 	CourseImportUc,
+	CourseInfoUc,
+	CourseRoomsAuthorisationService,
+	CourseRoomsUc,
 	CourseSyncUc,
 	CourseUc,
 	DashboardUc,
 	LessonCopyUC,
 	RoomBoardDTOFactory,
-	CourseRoomsAuthorisationService,
-	CourseRoomsUc,
 } from './uc';
 
 /**
@@ -51,6 +52,7 @@ import {
 	providers: [
 		DashboardUc,
 		CourseUc,
+		CourseInfoUc,
 		CourseRoomsUc,
 		RoomBoardResponseMapper,
 		RoomBoardDTOFactory,
