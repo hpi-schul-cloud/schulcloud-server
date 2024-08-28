@@ -15,11 +15,11 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ColumnBoardNodeRepo } from '../repo';
-import { RoomsService } from './rooms.service';
+import { CourseRoomsService } from './course-rooms.service';
 
 describe('rooms service', () => {
 	let module: TestingModule;
-	let roomsService: RoomsService;
+	let roomsService: CourseRoomsService;
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
@@ -35,7 +35,7 @@ describe('rooms service', () => {
 		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
-				RoomsService,
+				CourseRoomsService,
 				{
 					provide: LessonService,
 					useValue: createMock<LessonService>(),
@@ -54,7 +54,7 @@ describe('rooms service', () => {
 				},
 			],
 		}).compile();
-		roomsService = module.get(RoomsService);
+		roomsService = module.get(CourseRoomsService);
 		lessonService = module.get(LessonService);
 		taskService = module.get(TaskService);
 		legacyBoardRepo = module.get(LegacyBoardRepo);

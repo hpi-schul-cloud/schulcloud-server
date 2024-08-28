@@ -1,11 +1,11 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 describe('rooms authorisation service', () => {
 	let module: TestingModule;
-	let service: RoomsAuthorisationService;
+	let service: CourseRoomsAuthorisationService;
 
 	afterAll(async () => {
 		await module.close();
@@ -13,10 +13,10 @@ describe('rooms authorisation service', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [RoomsAuthorisationService],
+			providers: [CourseRoomsAuthorisationService],
 		}).compile();
 
-		service = module.get(RoomsAuthorisationService);
+		service = module.get(CourseRoomsAuthorisationService);
 		await setupEntities();
 	});
 

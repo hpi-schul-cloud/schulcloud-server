@@ -7,14 +7,14 @@ import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';
-import { RoomsUc } from '../uc/rooms.uc';
+import { CourseRoomsUc } from '../uc/course-rooms.uc';
 import { SingleColumnBoardResponse } from './dto';
-import { RoomsController } from './rooms.controller';
+import { CourseRoomsController } from './course-rooms.controller';
 
-describe('rooms controller', () => {
-	let controller: RoomsController;
+describe('course-rooms controller', () => {
+	let controller: CourseRoomsController;
 	let mapper: RoomBoardResponseMapper;
-	let uc: RoomsUc;
+	let uc: CourseRoomsUc;
 	let courseCopyUc: CourseCopyUC;
 	let lessonCopyUc: LessonCopyUC;
 
@@ -22,9 +22,9 @@ describe('rooms controller', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [],
 			providers: [
-				RoomsController,
+				CourseRoomsController,
 				{
-					provide: RoomsUc,
+					provide: CourseRoomsUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
@@ -63,9 +63,9 @@ describe('rooms controller', () => {
 				},
 			],
 		}).compile();
-		controller = module.get(RoomsController);
+		controller = module.get(CourseRoomsController);
 		mapper = module.get(RoomBoardResponseMapper);
-		uc = module.get(RoomsUc);
+		uc = module.get(CourseRoomsUc);
 		courseCopyUc = module.get(CourseCopyUC);
 		lessonCopyUc = module.get(LessonCopyUC);
 	});
