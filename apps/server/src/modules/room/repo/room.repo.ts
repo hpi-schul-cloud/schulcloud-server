@@ -22,8 +22,8 @@ export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 
 	public async getRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		const scope = new RoomScope();
-		scope.byName('test');
-
+		scope.allowEmptyQuery(true);
+		// scope.byName('room');
 		// scope.byOrganizationId(filter.schoolId);
 
 		const options = {
@@ -35,7 +35,7 @@ export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 		const [entities, total] = await this.em.findAndCount(RoomEntity, scope.query, options);
 
 		const domainObjects: Room[] = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
-		entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
+
 		const page = new Page<Room>(domainObjects, total);
 
 		return page;

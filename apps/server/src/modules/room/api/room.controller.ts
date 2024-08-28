@@ -8,7 +8,7 @@ import { RoomUc } from './room.uc';
 import { Room } from '../domain';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMapper } from './mapper/room.mapper';
-import { RoomPaginationParams } from './dto/response/room-pagination.params';
+import { RoomPaginationParams } from './dto/request/room-pagination.params';
 
 @ApiTags('Room')
 @JwtAuthentication()

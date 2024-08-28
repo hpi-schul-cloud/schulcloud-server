@@ -13,7 +13,7 @@ export class RoomResponse {
 	@ApiPropertyOptional({ type: Date })
 	startDate?: Date;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: Date })
 	untilDate?: Date;
 
 	constructor(room: RoomResponse) {

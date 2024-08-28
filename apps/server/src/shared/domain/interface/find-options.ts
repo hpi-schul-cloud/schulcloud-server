@@ -1,5 +1,5 @@
 export interface Pagination {
-	skip?: number; // TODO rename to offset
+	skip?: number;
 	limit?: number;
 }
 
