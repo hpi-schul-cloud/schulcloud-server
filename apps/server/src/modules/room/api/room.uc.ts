@@ -5,14 +5,12 @@ import { EntityId } from '@shared/domain/types';
 // import { User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { AuthorizationService } from '@modules/authorization';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
 
 @Injectable()
 export class RoomUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomService: RoomService
 	) {}
