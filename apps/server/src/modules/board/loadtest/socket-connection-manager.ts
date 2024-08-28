@@ -31,7 +31,7 @@ export class SocketConnectionManager {
 		const connections: SocketConnection[] = [];
 
 		while (connections.length < amount) {
-			const batchAmount = Math.min(100, amount - connections.length);
+			const batchAmount = Math.min(10, amount - connections.length);
 			const promises = Array(batchAmount)
 				.fill(1)
 				.map(() => this.createConnection());
@@ -59,9 +59,9 @@ export class SocketConnectionManager {
 		this.onErrorHandler = onErrorHandler;
 	}
 
-	async destroySocketConnections(sockets: SocketConnection[]) {
-		const promises = sockets.map((socket) => socket.close());
+	async destroySocketConnections() {
+		const promises = this.connections.map((connection) => connection.close());
+		this.connections = [];
 		await Promise.all(promises);
-		this.connections = this.connections.filter((connection) => !sockets.includes(connection));
 	}
 }

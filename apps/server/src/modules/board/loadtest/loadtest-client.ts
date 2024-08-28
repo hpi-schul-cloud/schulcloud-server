@@ -136,3 +136,5 @@ export class LoadtestClient {
 		return result as UpdateContentElementMessageParams;
 	}
 }
+
+export const createLoadtestClient = (socket: SocketConnection, boardId: string) => new LoadtestClient(socket, boardId);
