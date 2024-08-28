@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { env } from 'process';
 
 export interface TldrawConfig {
 	TLDRAW_DB_URL: string;
@@ -22,6 +23,17 @@ export interface TldrawConfig {
 
 export const TLDRAW_DB_URL: string = Configuration.get('TLDRAW_DB_URL') as string;
 export const TLDRAW_SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;
+
+export const S3_CONNECTION_NAME = 'tldraw-s3';
+// There are temporary configurations for S3 it should read directly from env
+export const tldrawS3Config = {
+	connectionName: S3_CONNECTION_NAME,
+	endpoint: env.S3_ENDPOINT as string,
+	region: env.S3_REGION as string,
+	bucket: env.S3_BUCKET as string,
+	accessKeyId: env.S3_ACCESS_KEY as string,
+	secretAccessKey: env.S3_SECRET_KEY as string,
+};
 
 const tldrawConfig = {
 	TLDRAW_DB_URL,
