@@ -35,6 +35,12 @@ export class UserMigrationService {
 		}
 	}
 
+	async updateExternalUserId(userId: string, newExternalUserId: string): Promise<void> {
+		const userDO: UserDO = await this.userService.findById(userId);
+		userDO.externalId = newExternalUserId;
+		await this.userService.save(userDO);
+	}
+
 	private async doMigration(
 		userDO: UserDO,
 		externalUserId: string,
