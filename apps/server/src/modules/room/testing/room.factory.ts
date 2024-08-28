@@ -1,6 +1,6 @@
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Room, RoomProps } from '../domain';
+import { Room, RoomProps } from '../domain/do/room.do';
 
 export const roomFactory = BaseFactory.define<Room, RoomProps>(Room, ({ sequence }) => {
 	const props: RoomProps = {

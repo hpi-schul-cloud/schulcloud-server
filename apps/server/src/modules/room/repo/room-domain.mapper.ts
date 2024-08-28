@@ -1,10 +1,9 @@
 import { EntityData } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomEntity } from './entity';
 import { Room } from '../domain/do/room.do';
 
 export class RoomDomainMapper {
-	static mapDoToEntityData(room: Room, em: EntityManager): EntityData<RoomEntity> {
+	static mapDoToEntityData(room: Room): EntityData<RoomEntity> {
 		const props = room.getProps();
 
 		const roomEntityData: EntityData<RoomEntity> = {

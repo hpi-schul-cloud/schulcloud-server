@@ -14,8 +14,8 @@ export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 		return RoomEntity;
 	}
 
-	protected mapDOToEntityProperties(entityDO: Room): EntityData<RoomEntity> {
-		const entityProps: EntityData<RoomEntity> = RoomDomainMapper.mapDoToEntityData(entityDO, this.em);
+	protected mapDOToEntityProperties(room: Room): EntityData<RoomEntity> {
+		const entityProps: EntityData<RoomEntity> = RoomDomainMapper.mapDoToEntityData(room);
 
 		return entityProps;
 	}

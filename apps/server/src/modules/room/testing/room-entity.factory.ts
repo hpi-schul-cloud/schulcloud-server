@@ -1,5 +1,5 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { RoomEntity, RoomEntityProps } from '../repo/entity';
+import { RoomEntity, RoomEntityProps } from '../repo/entity/room.entity';
 
 export const roomEntityFactory = BaseFactory.define<RoomEntity, RoomEntityProps>(RoomEntity, ({ sequence }) => {
 	return {
