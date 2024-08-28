@@ -63,7 +63,6 @@ export const studentPermissions = [
 	Permission.TEAM_CREATE,
 	Permission.JOIN_MEETING,
 	Permission.TOOL_CREATE_ETHERPAD,
-	Permission.ROOM_VIEW,
 ];
 
 const sharedAdminPermissions = [
@@ -104,8 +103,6 @@ export const teacherPermissions = [
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
 	Permission.CONTEXT_TOOL_ADMIN,
-	Permission.ROOM_VIEW,
-	Permission.ROOM_EDIT,
 ];
 
 export const adminPermissions = [

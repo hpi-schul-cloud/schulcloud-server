@@ -1,9 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@src/modules/server';
-import { SchoolEntity } from '@shared/domain/entity';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomListResponse } from '../dto';
 
@@ -60,34 +59,6 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient } = await setup();
 				const response = await loggedInClient.get();
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the user does not have the required permissions', () => {
-			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const room = roomEntityFactory.build();
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([room, adminAccount, adminUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-
-				const response = await loggedInClient.get();
-
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
-				expect(response.body).toEqual({
-					code: HttpStatus.UNAUTHORIZED,
-					message: 'Unauthorized',
-					title: 'Unauthorized',
-					type: 'UNAUTHORIZED',
-				});
 			});
 		});
 
