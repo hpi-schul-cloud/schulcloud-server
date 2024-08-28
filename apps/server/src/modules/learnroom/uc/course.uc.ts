@@ -2,7 +2,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
-import { Course as CourseEntity } from '@shared/domain/entity';
+import { Course } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
@@ -18,7 +18,7 @@ export class CourseUc {
 		private readonly roleService: RoleService
 	) {}
 
-	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<CourseEntity[]>> {
+	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
 	}
 
@@ -31,7 +31,7 @@ export class CourseUc {
 		return role.permissions ?? [];
 	}
 
-	public async findCourseById(courseId: EntityId): Promise<CourseEntity> {
+	public async findCourseById(courseId: EntityId): Promise<Course> {
 		return this.courseService.findById(courseId);
 	}
 }
