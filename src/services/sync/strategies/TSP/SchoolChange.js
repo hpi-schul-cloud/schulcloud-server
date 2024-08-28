@@ -78,9 +78,6 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 	try {
 		await invalidateUser(app, currentUser);
 		const newUser = await createUserMethod();
-		if (!newUser || !newUser._id) {
-			throw new Error('User has not been created');
-		}
 		await Promise.all([
 			grantAccessToPrivateFiles(app, currentUser, newUser),
 			grantAccessToSharedFiles(app, currentUser, newUser),
