@@ -22,7 +22,7 @@ export class CourseInfoController {
 	@ApiResponse({ status: HttpStatus.OK, type: CourseInfoListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getCoursesForSchool(
+	async getCourseInfo(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
