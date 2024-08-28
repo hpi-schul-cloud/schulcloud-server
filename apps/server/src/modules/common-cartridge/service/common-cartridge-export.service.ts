@@ -1,6 +1,6 @@
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { BoardClientAdapter } from '../common-cartridge-client/board-client/board-client.adapter';
+import { BoardClientAdapter } from '../common-cartridge-client';
 
 @Injectable()
 export class CommonCartridgeExportService {
