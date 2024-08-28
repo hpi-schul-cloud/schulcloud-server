@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tldraw-migration-job
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: tldraw-migration
+spec:
+  template:
+    metadata:
+      labels:
+        app: tldraw-migration
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: tldraw-migration-job
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        - secretRef:
+            name: api-files-secret
+        - secretRef:
+            name: tldraw-server-secret
+        command: ['/bin/sh','-c']
+        args: ['npm run nest:start:tldraw-console -- migration run']
+        resources:
+          limits:
+            cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+          requests:
+            cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+      restartPolicy: Never
+  backoffLimit: 5
