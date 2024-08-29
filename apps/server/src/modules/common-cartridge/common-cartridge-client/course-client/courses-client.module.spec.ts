@@ -19,9 +19,11 @@ describe('CommonCartridgeClientModule', () => {
 		await module.close();
 	});
 
-	it('should be defined', () => {
-		const coursesClientAdapter = module.get(CoursesClientAdapter);
+	describe('when module is initialized', () => {
+		it('should be defined', () => {
+			const coursesClientAdapter = module.get(CoursesClientAdapter);
 
-		expect(coursesClientAdapter).toBeDefined();
+			expect(coursesClientAdapter).toBeDefined();
+		});
 	});
 });
