@@ -34,10 +34,10 @@ spec:
         args: ['npm run nest:start:tldraw-console -- migration run']
         resources:
           limits:
-            cpu: {{ default("2000m", true) }}
-            memory: {{ default("2Gi", true) }}
+            cpu: {{ TLDRAW_MIGRATION_CPU_REQUESTS|default("2000m", true) }}
+            memory: {{ TLDRAW_MIGRATION_MEMORY_REQUESTS|default("2Gi", true) }}
           requests:
-            cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+            cpu: {{ TLDRAW_MIGRATION_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ TLDRAW_MIGRATION_MEMORY_REQUESTS|default("150Mi", true) }}
       restartPolicy: Never
   backoffLimit: 5
