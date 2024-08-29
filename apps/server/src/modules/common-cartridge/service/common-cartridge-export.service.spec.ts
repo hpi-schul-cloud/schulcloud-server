@@ -3,7 +3,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CoursesClientAdapter } from '../common-cartridge-client/courses-api-client/courses-client.adapter';
+import { CoursesClientAdapter } from '../common-cartridge-client/course-client';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
