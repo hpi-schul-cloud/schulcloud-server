@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import {
 	UserMigrationDatabaseOperationFailedLoggableException,
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
@@ -39,6 +40,13 @@ export class UserMigrationService {
 		const userDO: UserDO = await this.userService.findById(userId);
 		userDO.externalId = newExternalUserId;
 		await this.userService.save(userDO);
+	}
+
+	hasUserMigratedInMigrationPhase(userDO: UserDO, userLoginMigrationDO: UserLoginMigrationDO): boolean {
+		if (!userDO.externalId || !userDO.lastLoginSystemChange || userLoginMigrationDO.closedAt) {
+			return false;
+		}
+		return userDO.lastLoginSystemChange >= userLoginMigrationDO.startedAt;
 	}
 
 	private async doMigration(

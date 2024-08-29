@@ -6,16 +6,15 @@ import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	SchoolMigrationSuccessfulLoggable,
-	UserLoginMigrationInvalidAdminLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
 	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 	UserMigrationStartedLoggable,
@@ -141,7 +140,6 @@ export class UserLoginMigrationUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
 
 		const users: UserDO[] = await this.userService.findByEmail(email);
-
 		if (users.length === 0) {
 			throw new NotFoundLoggableException('User', { email });
 		}
@@ -154,104 +152,63 @@ export class UserLoginMigrationUc {
 		if (!userToMigrate.id) {
 			throw new NotFoundLoggableException('User', { email });
 		}
-		// TODO: seperate parts for 3 logics: 1. unmigrated school, migrated school, migrated school + migrated user
 
-		const activeUserLoginMigration: UserLoginMigrationDO | null =
+		let activeUserLoginMigration: UserLoginMigrationDO | null =
 			await this.userLoginMigrationService.findMigrationBySchool(userToMigrate.schoolId);
-		if (activeUserLoginMigration) {
-			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(activeUserLoginMigration.schoolId);
-		}
-
-		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(
-			userToMigrate.schoolId
-		);
 
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
 
-		// FIXME: this only checks if the given external school id is the same as the user in svs
-		// that also means it checks if a wrong school external id is given
-		const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
-			school.externalId,
-			externalSchoolId
-		);
+		if (!activeUserLoginMigration) {
+			const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
+				school.externalId,
+				externalSchoolId
+			);
 
-		if (hasSchoolMigrated) {
-			const validSchoolExternalId: boolean = school.externalId === externalSchoolId;
-			if (!validSchoolExternalId) {
-				throw new Error('Invalid School External ID');
+			// TODO requires renaming; this will only happen if school had "finished" migration, but endpoint was called
+			if (hasSchoolMigrated) {
+				throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(userToMigrate.schoolId);
 			}
+
+			activeUserLoginMigration = await this.userLoginMigrationService.startMigration(userToMigrate.schoolId);
 		}
 
-		if (!hasSchoolMigrated) {
-			await this.schoolMigrationService.migrateSchool(school, externalSchoolId, userLoginMigration.targetSystemId);
-
-			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, userLoginMigration));
-		}
-
-		await this.userMigrationService.migrateUser(userToMigrate.id, externalUserId, userLoginMigration.targetSystemId);
-
-		this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, userLoginMigration));
-	}
-
-	private async migrateUserInNonMigratedSchool(
-		userToMigrate: UserDO,
-		externalSchoolId: string,
-		externalUserId: string,
-		email: string
-	): Promise<void> {
-		if (!userToMigrate.id) {
-			throw new NotFoundLoggableException('User', { email });
-		}
-
-		const activeUserLoginMigration: UserLoginMigrationDO | null =
-			await this.userLoginMigrationService.findMigrationBySchool(userToMigrate.schoolId);
-		if (activeUserLoginMigration) {
-			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(activeUserLoginMigration.schoolId);
-		}
-
-		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(
-			userToMigrate.schoolId
-		);
-
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
-
-		// FIXME: this only checks if the given external school id is the same as the user in svs
-		// that also means it checks if a wrong school external id is given
-		const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
-			school.externalId,
-			externalSchoolId
-		);
-
-		await this.schoolMigrationService.migrateSchool(school, externalSchoolId, userLoginMigration.targetSystemId);
-
-		this.logger.info(new SchoolMigrationSuccessfulLoggable(school, userLoginMigration));
-
-		await this.userMigrationService.migrateUser(userToMigrate.id, externalUserId, userLoginMigration.targetSystemId);
-
-		this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, userLoginMigration));
-	}
-
-	private async migrateUserInMigratedSchool(
-		userToMigrate: UserDO,
-		externalSchoolId: string,
-		externalUserId: string,
-		email: string
-	): Promise<void> {
-		if (!userToMigrate.id) {
-			throw new NotFoundLoggableException('User', { email });
-		}
-
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			userToMigrate.schoolId
-		);
-		if (!userLoginMigration) {
+		if (activeUserLoginMigration.closedAt) {
+			// TODO new error for inactive migration
 			throw new Error();
 		}
 
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
+		const hasSchoolMigrationBeenTriggered = this.schoolMigrationService.hasSchoolMigratedInMigrationPhase(
+			school,
+			activeUserLoginMigration
+		);
 
-		await this.userMigrationService.migrateUser(userToMigrate.id, externalUserId, userLoginMigration.targetSystemId);
+		if (!hasSchoolMigrationBeenTriggered) {
+			await this.schoolMigrationService.migrateSchool(
+				school,
+				externalSchoolId,
+				activeUserLoginMigration.targetSystemId
+			);
 
-		this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, userLoginMigration));
+			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, activeUserLoginMigration));
+		}
+
+		const hasUserMigrated: boolean = this.userMigrationService.hasUserMigratedInMigrationPhase(
+			userToMigrate,
+			activeUserLoginMigration
+		);
+
+		if (hasUserMigrated) {
+			await this.userMigrationService.updateExternalUserId(userToMigrate.id, externalUserId);
+
+			// 	TODO new loggable for correction
+		} else {
+			await this.userMigrationService.migrateUser(
+				userToMigrate.id,
+				externalUserId,
+				activeUserLoginMigration.targetSystemId
+			);
+
+			this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, activeUserLoginMigration));
+		}
 	}
 }
