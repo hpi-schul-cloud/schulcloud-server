@@ -3,12 +3,12 @@ import { Inject } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { Command, Console } from 'nestjs-console';
 import { Readable } from 'stream';
-import { v4 as uuid } from 'uuid';
 import { Doc, encodeStateAsUpdateV2 } from 'yjs';
 import { S3_CONNECTION_NAME } from '../config';
 import { YMongodb } from '../repo';
 
-export const encodeS3ObjectName = (room: string) => `${encodeURIComponent(room)}/index/${uuid()}`;
+export const encodeS3ObjectName = (docName: string) =>
+	`${encodeURIComponent(docName)}/index/${encodeURIComponent(docName)}`;
 
 @Console({ command: 'migration', description: 'tldraw migrate from mongodb to s3' })
 export class TldrawMigrationConsole {

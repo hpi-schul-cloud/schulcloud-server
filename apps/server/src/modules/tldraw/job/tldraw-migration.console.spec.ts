@@ -14,12 +14,6 @@ jest.mock('yjs', () => {
 	};
 });
 
-jest.mock('uuid', () => {
-	return {
-		v4: jest.fn().mockReturnValue('uuid'),
-	};
-});
-
 describe(TldrawMigrationConsole.name, () => {
 	let console: TldrawMigrationConsole;
 	let yMongodb: DeepMocked<YMongodb>;
@@ -78,7 +72,7 @@ describe(TldrawMigrationConsole.name, () => {
 
 			const result = await console.migrate();
 
-			expect(result).toEqual(['doc1/index/uuid', 'doc2/index/uuid']);
+			expect(result).toEqual(['doc1/index/doc1', 'doc2/index/doc2']);
 			expect(yMongodb.getAllDocumentNames).toBeCalledTimes(1);
 			expect(yMongodb.getDocument).toBeCalledTimes(2);
 			expect(s3Adapter.create).toBeCalledTimes(2);
