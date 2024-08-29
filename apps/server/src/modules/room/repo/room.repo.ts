@@ -40,4 +40,10 @@ export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 
 		return page;
 	}
+
+	/*
+	public async saveRoom(room: Room): Promise<Room> {
+		return this.save(room);
+	}
+	 */
 }
