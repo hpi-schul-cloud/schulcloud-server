@@ -3,7 +3,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { ExportCourseParams } from './dto';
 import { CourseExportBodyResponse } from './dto/course-export-body.response';
-import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
 
 @ApiTags('common-cartridge')
 @Controller('common-cartridge')
@@ -13,12 +12,5 @@ export class CommonCartridgeController {
 	@Get('export/:parentId')
 	public async exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseExportBodyResponse> {
 		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
-	}
-
-	@Get(':parentId/cc-metadata')
-	public async exportMetadata(
-		@Param() exportCourseParams: ExportCourseParams
-	): Promise<CourseCommonCartridgeMetadataDto> {
-		return this.commonCartridgeUC.exportMetadata(exportCourseParams.parentId);
 	}
 }

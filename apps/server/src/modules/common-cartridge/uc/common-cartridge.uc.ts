@@ -22,8 +22,4 @@ export class CommonCartridgeUc {
 
 		return response;
 	}
-
-	public async exportMetadata(courseId: EntityId): Promise<CourseCommonCartridgeMetadataDto> {
-		return this.exportService.findCourseCommonCartridgeMetadata(courseId);
-	}
 }
