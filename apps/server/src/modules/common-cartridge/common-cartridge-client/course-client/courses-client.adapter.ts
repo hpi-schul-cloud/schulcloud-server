@@ -3,8 +3,8 @@ import { REQUEST } from '@nestjs/core';
 import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
-import { CoursesApi } from './courses-api-client';
 import { CourseCommonCartridgeMetadataDto } from './dto/course-common-cartridge-metadata.dto';
+import { CoursesApi } from './course-api-client';
 
 @Injectable()
 export class CoursesClientAdapter {

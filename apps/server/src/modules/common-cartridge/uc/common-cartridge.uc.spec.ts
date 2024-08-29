@@ -46,9 +46,9 @@ describe('CommonCartridgeUc', () => {
 			});
 
 			commonCartridgeExportServiceMock.findCourseFileRecords.mockResolvedValue([]);
-			commonCartridgeExportServiceMock.findCourseCcMetadata.mockResolvedValue({
-				id: expected.courseCommonCartridgeMetadata.id,
-				title: expected.courseCommonCartridgeMetadata.title,
+			commonCartridgeExportServiceMock.findCourseCommonCartridgeMetadata.mockResolvedValue({
+				id: expected.courseCommonCartridgeMetadata?.id,
+				title: expected.courseCommonCartridgeMetadata?.title,
 			});
 
 			return { courseId, expected };

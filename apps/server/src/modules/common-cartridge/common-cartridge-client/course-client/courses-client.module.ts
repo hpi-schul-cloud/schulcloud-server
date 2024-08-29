@@ -1,10 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { CoursesClientAdapter } from './courses-client.adapter';
-import { Configuration, ConfigurationParameters, CoursesApi } from './courses-api-client';
-
-export interface CoursesClientConfig extends ConfigurationParameters {
-	basePath?: string;
-}
+import { Configuration, CoursesApi } from './course-api-client';
+import { CoursesClientConfig } from './courses-client.config';
 
 @Module({})
 export class CoursesClientModule {

@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { faker } from '@faker-js/faker';
 import { AxiosResponse } from 'axios';
 import { CoursesClientAdapter } from './courses-client.adapter';
-import { CourseCommonCartridgeMetadataResponse, CoursesApi } from './courses-api-client';
+import { CourseCommonCartridgeMetadataResponse, CoursesApi } from './course-api-client';
 
 const jwtToken = 'dummyJwtToken';
 

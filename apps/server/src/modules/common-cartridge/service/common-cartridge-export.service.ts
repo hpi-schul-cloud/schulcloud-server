@@ -1,7 +1,6 @@
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { CoursesClientAdapter } from '../common-cartridge-client/courses-client.adapter';
-import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/dto/course-common-cartridge-metadata.dto';
+import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -16,9 +15,9 @@ export class CommonCartridgeExportService {
 		return courseFiles;
 	}
 
-	public async findCourseCcMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
-		const courseCcMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
+		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
-		return courseCcMetadata;
+		return courseCommonCartridgeMetadata;
 	}
 }

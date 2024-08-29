@@ -8,6 +8,9 @@ export class CourseCommonCartridgeMetadataDto {
 	copyRightOwners?: Array<string>;
 
 	constructor(props: CourseCommonCartridgeMetadataDto) {
-		Object.assign(this, props);
+		this.id = props.id;
+		this.title = props.title;
+		this.creationDate = props.creationDate;
+		this.copyRightOwners = props.copyRightOwners;
 	}
 }

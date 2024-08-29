@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
-import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/dto/course-common-cartridge-metadata.dto';
 import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
+import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -13,7 +13,7 @@ export class CommonCartridgeUc {
 		const files = await this.exportService.findCourseFileRecords(courseId);
 		const courseFileIds = new CourseFileIdsResponse(files.map((file) => file.id));
 		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
-			await this.exportService.findCourseCcMetadata(courseId);
+			await this.exportService.findCourseCommonCartridgeMetadata(courseId);
 
 		const response = new CourseExportBodyResponse({
 			courseFileIds,
@@ -21,5 +21,9 @@ export class CommonCartridgeUc {
 		});
 
 		return response;
+	}
+
+	public async exportMetadata(courseId: EntityId): Promise<CourseCommonCartridgeMetadataDto> {
+		return this.exportService.findCourseCommonCartridgeMetadata(courseId);
 	}
 }
