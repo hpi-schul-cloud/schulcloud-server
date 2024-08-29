@@ -20,6 +20,7 @@ spec:
       - name: tldraw-migration-job
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
+ # this is just for this job and should not be an example for anyone else
         envFrom:
         - configMapRef:
             name: api-configmap
@@ -33,8 +34,8 @@ spec:
         args: ['npm run nest:start:tldraw-console -- migration run']
         resources:
           limits:
-            cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+            cpu: {{ default("2000m", true) }}
+            memory: {{ default("2Gi", true) }}
           requests:
             cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
             memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
