@@ -4,9 +4,9 @@ import { Page } from '@shared/domain/domainobject';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { CourseScope } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { CourseScope } from '@shared/repo/course/course.repo';
-import { Course, CourseFilter, CourseRepo, CourseStatusQueryType } from '../../domain';
+import { Course, CourseFilter, CourseRepo, CourseStatus } from '../../domain';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
 
 export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntity> implements CourseRepo {
@@ -51,7 +51,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 	public async getCourseInfo(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
 		const scope: CourseScope = new CourseScope();
 		scope.bySchoolId(filter.schoolId);
-		if (filter.courseStatusQueryType === CourseStatusQueryType.CURRENT) {
+		if (filter.status === CourseStatus.CURRENT) {
 			scope.forActiveCourses();
 		} else {
 			scope.forArchivedCourses();

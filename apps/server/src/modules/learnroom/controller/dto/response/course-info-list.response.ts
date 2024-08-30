@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
-import { CourseInfoDataResponse } from './courseInfoDataResponse';
+import { CourseInfoDataResponse } from './course-info-data-response';
 
 export class CourseInfoListResponse extends PaginationResponse<CourseInfoDataResponse[]> {
 	constructor(data: CourseInfoDataResponse[], total: number, skip?: number, limit?: number) {

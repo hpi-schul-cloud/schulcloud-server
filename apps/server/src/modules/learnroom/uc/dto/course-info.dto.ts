@@ -9,13 +9,13 @@ export class CourseInfoDto {
 
 	classes: string[];
 
-	syncedWithGroup?: string;
+	syncedGroupName?: string;
 
 	constructor(props: CourseInfoDto) {
 		this.id = props.id;
 		this.name = props.name;
 		this.classes = props.classes;
 		this.teachers = props.teachers;
-		this.syncedWithGroup = props.syncedWithGroup;
+		this.syncedGroupName = props.syncedGroupName;
 	}
 }
