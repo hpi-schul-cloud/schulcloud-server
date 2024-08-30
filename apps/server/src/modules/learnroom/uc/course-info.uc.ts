@@ -42,11 +42,10 @@ export class CourseInfoUc {
 		const filter: CourseFilter = { schoolId, status: courseStatusQueryType };
 		const options: IFindOptions<CourseDO> = { pagination, order };
 		const courses: Page<CourseDO> = await this.courseDoService.getCourseInfo(filter, options);
-		let page: Page<CourseInfoDto> = new Page<CourseInfoDto>([], courses.total);
 
 		const resolvedCourses: CourseInfoDto[] = await this.getCourseData(courses.data);
 
-		page = new Page<CourseInfoDto>(resolvedCourses, courses.total);
+		const page = new Page<CourseInfoDto>(resolvedCourses, courses.total);
 
 		return page;
 	}
