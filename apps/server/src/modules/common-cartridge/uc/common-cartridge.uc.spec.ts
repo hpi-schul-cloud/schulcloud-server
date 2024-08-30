@@ -42,13 +42,15 @@ describe('CommonCartridgeUc', () => {
 				courseCommonCartridgeMetadata: {
 					id: courseId,
 					title: faker.lorem.sentence(),
+					copyRightOwners: [],
 				},
 			});
 
 			commonCartridgeExportServiceMock.findCourseFileRecords.mockResolvedValue([]);
 			commonCartridgeExportServiceMock.findCourseCommonCartridgeMetadata.mockResolvedValue({
-				id: expected.courseCommonCartridgeMetadata?.id,
-				title: expected.courseCommonCartridgeMetadata?.title,
+				id: expected.courseCommonCartridgeMetadata?.id ?? '',
+				title: expected.courseCommonCartridgeMetadata?.title ?? '',
+				copyRightOwners: expected.courseCommonCartridgeMetadata?.copyRightOwners ?? [],
 			});
 
 			return { courseId, expected };
