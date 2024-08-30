@@ -1,12 +1,12 @@
 # How to filter the swagger specification of the schulcloud using filter-spec.js script? 
 
-You can run the script with a parameter that is the path to the controller you want to filter. 
+You can run the script with a parameter, which is the path to the controller you want to filter. 
 
 For example:
 ```bash
 node ./scripts/filter-spec.js /courses 
 ```
-The execution of the script will generate in scripts folder a new file called **filtered-spec.json** with the filtered specification to the controller you passed as a parameter. This file should be used to generate the client code for the controller you want to use and **deleted** after that.
+The execution of the script will generate a new file in the script folder called **filtered-spec.json** with the filtered specification to the controller, you have passed as a parameter. This file should be used to generate the client code for the controller you want to use and should be **deleted** after that.
 This script is also able to just select used models and operations from the swagger specification. Unused models will be ignored.
 
 # How to generate the Api client code using openapi-generator-cli?
