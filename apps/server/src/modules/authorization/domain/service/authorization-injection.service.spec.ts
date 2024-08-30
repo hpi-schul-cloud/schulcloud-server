@@ -44,7 +44,7 @@ describe(AuthorizationInjectionService.name, () => {
 
 				service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, createReferenceLoaderMock(), true);
 
-				expect(service.shouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(true);
+				expect(service.getShouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(true);
 			});
 		});
 
@@ -54,7 +54,7 @@ describe(AuthorizationInjectionService.name, () => {
 
 				service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, createReferenceLoaderMock(), false);
 
-				expect(service.shouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(false);
+				expect(service.getShouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(false);
 			});
 		});
 
@@ -62,7 +62,7 @@ describe(AuthorizationInjectionService.name, () => {
 			it('should return false', () => {
 				const service = new AuthorizationInjectionService();
 
-				expect(service.shouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(false);
+				expect(service.getShouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(false);
 			});
 		});
 	});

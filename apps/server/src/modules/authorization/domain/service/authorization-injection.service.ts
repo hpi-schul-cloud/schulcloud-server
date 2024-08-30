@@ -7,9 +7,7 @@ export class AuthorizationInjectionService {
 
 	private readonly referenceLoaders: Map<AuthorizableReferenceType, AuthorizationLoaderService> = new Map();
 
-	private readonly doPopulate: Map<AuthorizableReferenceType, boolean> = new Map();
-
-	// constructor() {}
+	private readonly shouldPopulate: Map<AuthorizableReferenceType, boolean> = new Map();
 
 	injectAuthorizationRule(rule: Rule) {
 		this.authorizationRules.push(rule);
@@ -22,17 +20,17 @@ export class AuthorizationInjectionService {
 	injectReferenceLoader(
 		referenceType: AuthorizableReferenceType,
 		referenceLoader: AuthorizationLoaderService,
-		doPopulate = false
+		shouldPopulate = false
 	) {
 		this.referenceLoaders.set(referenceType, referenceLoader);
-		this.doPopulate.set(referenceType, doPopulate);
+		this.shouldPopulate.set(referenceType, shouldPopulate);
 	}
 
 	getReferenceLoader(referenceType: AuthorizableReferenceType): AuthorizationLoaderService | undefined {
 		return this.referenceLoaders.get(referenceType);
 	}
 
-	shouldPopulate(referenceType: AuthorizableReferenceType): boolean {
-		return this.doPopulate.get(referenceType) ?? false;
+	getShouldPopulate(referenceType: AuthorizableReferenceType): boolean {
+		return this.shouldPopulate.get(referenceType) ?? false;
 	}
 }
