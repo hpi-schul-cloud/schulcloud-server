@@ -97,9 +97,13 @@ export class SchoolMigrationService {
 		schoolDO: LegacySchoolDo,
 		userLoginMigrationDO: UserLoginMigrationDO
 	): boolean {
-		const isSchoolMigrationTriggered = schoolDO.externalId === userLoginMigrationDO.targetSystemId;
+		if (!schoolDO.systems) {
+			return false;
+		}
 
-		return isSchoolMigrationTriggered;
+		const hasSchoolMigratedToTargetSystem = schoolDO.systems.includes(userLoginMigrationDO.targetSystemId);
+
+		return hasSchoolMigratedToTargetSystem;
 	}
 
 	public async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {

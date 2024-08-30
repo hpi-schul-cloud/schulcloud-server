@@ -15,10 +15,12 @@ import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	SchoolMigrationSuccessfulLoggable,
+	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
 	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
+	UserMigrationCorrectionSuccessfulLoggable,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationQuery } from './dto';
@@ -140,9 +142,11 @@ export class UserLoginMigrationUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
 
 		const users: UserDO[] = await this.userService.findByEmail(email);
+
 		if (users.length === 0) {
 			throw new NotFoundLoggableException('User', { email });
 		}
+
 		if (users.length > 1) {
 			throw new UserLoginMigrationMultipleEmailUsersLoggableException(email);
 		}
@@ -159,30 +163,22 @@ export class UserLoginMigrationUc {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
 
 		if (!activeUserLoginMigration) {
-			const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
-				school.externalId,
-				externalSchoolId
-			);
-
-			// TODO requires renaming; this will only happen if school had "finished" migration, but endpoint was called
-			if (hasSchoolMigrated) {
-				throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(userToMigrate.schoolId);
-			}
-
-			activeUserLoginMigration = await this.userLoginMigrationService.startMigration(userToMigrate.schoolId);
+			activeUserLoginMigration = await this.startMigrationForSchool(school, userToMigrate.schoolId, externalSchoolId);
 		}
 
 		if (activeUserLoginMigration.closedAt) {
-			// TODO new error for inactive migration
-			throw new Error();
+			throw new UserLoginMigrationAlreadyClosedLoggableException(
+				activeUserLoginMigration.closedAt,
+				activeUserLoginMigration.id
+			);
 		}
 
-		const hasSchoolMigrationBeenTriggered = this.schoolMigrationService.hasSchoolMigratedInMigrationPhase(
+		const hasSchoolMigratedInCurrentMigration: boolean = this.schoolMigrationService.hasSchoolMigratedInMigrationPhase(
 			school,
 			activeUserLoginMigration
 		);
 
-		if (!hasSchoolMigrationBeenTriggered) {
+		if (!hasSchoolMigratedInCurrentMigration) {
 			await this.schoolMigrationService.migrateSchool(
 				school,
 				externalSchoolId,
@@ -200,7 +196,7 @@ export class UserLoginMigrationUc {
 		if (hasUserMigrated) {
 			await this.userMigrationService.updateExternalUserId(userToMigrate.id, externalUserId);
 
-			// 	TODO new loggable for correction
+			this.logger.info(new UserMigrationCorrectionSuccessfulLoggable(userToMigrate.id, activeUserLoginMigration));
 		} else {
 			await this.userMigrationService.migrateUser(
 				userToMigrate.id,
@@ -210,5 +206,20 @@ export class UserLoginMigrationUc {
 
 			this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, activeUserLoginMigration));
 		}
+	}
+
+	private async startMigrationForSchool(school: LegacySchoolDo, schoolId: string, externalSchoolId: string) {
+		const hasSchoolMigratedToTargetSystem: boolean = this.schoolMigrationService.hasSchoolMigrated(
+			school.externalId,
+			externalSchoolId
+		);
+
+		if (hasSchoolMigratedToTargetSystem) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(schoolId);
+		}
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
+
+		return userLoginMigration;
 	}
 }
