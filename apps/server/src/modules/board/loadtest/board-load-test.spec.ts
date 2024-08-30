@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest';
 import { BoardLoadTest } from './board-load-test';
 import { fastEditor } from './helper/class-definitions';
 import { SocketConnectionManager } from './socket-connection-manager';
@@ -11,17 +12,20 @@ jest.mock('./helper/sleep', () => {
 
 jest.mock('./loadtest-client', () => {
 	return {
-		createColumn: jest.fn().mockResolvedValue({ id: 'some-id' }),
-		createCard: jest.fn().mockResolvedValue({ id: 'some-id' }),
-		createElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
-		createAndUpdateLinkElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
-		createAndUpdateTextElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
-		updateCardTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
-		updateColumnTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
+		createLoadtestClient: () => {
+			return {
+				createColumn: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createCard: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createAndUpdateLinkElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createAndUpdateTextElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				fetchBoard: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				updateCardTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				updateColumnTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
+			};
+		},
 	};
 });
-
-jest.mock('./socket-connection-manager');
 
 const testClass: ClassDefinition = {
 	name: 'viewersClass',
@@ -41,7 +45,10 @@ afterEach(() => {
 describe('BoardLoadTest', () => {
 	const setup = () => {
 		const socketConfiguration = { baseUrl: '', path: '', token: '' };
-		const socketConnectionManager = new SocketConnectionManager(socketConfiguration);
+		const socketConnectionManager = createMock<SocketConnectionManager>();
+		socketConnectionManager.createConnections = jest
+			.fn()
+			.mockResolvedValue([new SocketConnection(socketConfiguration, console.log)]);
 		const socketConnection = new SocketConnection(socketConfiguration, console.log);
 
 		const boarLoadTest = new BoardLoadTest(socketConnectionManager, console.log);
@@ -53,7 +60,11 @@ describe('BoardLoadTest', () => {
 			it('should do nothing', async () => {
 				const { boarLoadTest } = setup();
 				const boardId = 'board-id';
-				const configuration = { name: 'my-configuration', users: [], simulateUsersTimeMs: 2000 };
+				const configuration = {
+					name: 'my-configuration',
+					users: [{ name: 'tempuserprofile', isActive: true, sleepMs: 100, amount: 1 }],
+					simulateUsersTimeMs: 2000,
+				};
 
 				const response = await boarLoadTest.runBoardTest(boardId, configuration);
 
@@ -68,8 +79,30 @@ describe('BoardLoadTest', () => {
 
 				await boarLoadTest.runBoardTest(boardId, testClass);
 
-				expect(socketConnectionManager.createConnection).toHaveBeenCalledTimes(5);
+				expect(socketConnectionManager.createConnections).toHaveBeenCalledTimes(1);
 			});
+		});
+	});
+
+	describe('simulateUsersActions', () => {
+		it('should simulate actions for all users', async () => {
+			const { boarLoadTest } = setup();
+			const loadtestClient = {
+				createColumn: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createCard: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createAndUpdateLinkElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				createAndUpdateTextElement: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				updateCardTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				updateColumnTitle: jest.fn().mockResolvedValue({ id: 'some-id' }),
+				fetchBoard: jest.fn().mockResolvedValue({ id: 'some-id' }),
+			} as unknown as LoadtestClient;
+			const userProfile = fastEditor;
+
+			await boarLoadTest.simulateUsersActions([loadtestClient], [userProfile]);
+
+			expect(loadtestClient.createColumn).toHaveBeenCalled();
+			expect(loadtestClient.createCard).toHaveBeenCalled();
 		});
 	});
 
