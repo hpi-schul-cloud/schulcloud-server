@@ -25,9 +25,11 @@ import {
 	UserRule,
 } from '../rules';
 import { ExternalToolRule } from '../rules/external-tool.rule';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 describe('RuleManager', () => {
 	let service: RuleManager;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let courseRule: DeepMocked<CourseRule>;
 	let courseGroupRule: DeepMocked<CourseGroupRule>;
 	let lessonRule: DeepMocked<LessonRule>;
@@ -53,6 +55,7 @@ describe('RuleManager', () => {
 		const module = await Test.createTestingModule({
 			providers: [
 				RuleManager,
+				{ provide: AuthorizationInjectionService, useValue: createMock<AuthorizationInjectionService>() },
 				{ provide: CourseRule, useValue: createMock<CourseRule>() },
 				{ provide: CourseGroupRule, useValue: createMock<CourseGroupRule>() },
 				{ provide: GroupRule, useValue: createMock<GroupRule>() },
@@ -75,6 +78,7 @@ describe('RuleManager', () => {
 		}).compile();
 
 		service = await module.get(RuleManager);
+		injectionService = module.get(AuthorizationInjectionService);
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
 		lessonRule = await module.get(LessonRule);
@@ -110,6 +114,8 @@ describe('RuleManager', () => {
 				const user = userFactory.build();
 				const object = courseFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
+
+				injectionService.getAuthorizationRules.mockReturnValueOnce([]);
 
 				courseRule.isApplicable.mockReturnValueOnce(true);
 				courseGroupRule.isApplicable.mockReturnValueOnce(false);
@@ -173,6 +179,8 @@ describe('RuleManager', () => {
 				const object = courseFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
+				injectionService.getAuthorizationRules.mockReturnValueOnce([]);
+
 				courseRule.isApplicable.mockReturnValueOnce(false);
 				courseGroupRule.isApplicable.mockReturnValueOnce(false);
 				lessonRule.isApplicable.mockReturnValueOnce(false);
@@ -207,6 +215,8 @@ describe('RuleManager', () => {
 				const user = userFactory.build();
 				const object = courseFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
+
+				injectionService.getAuthorizationRules.mockReturnValueOnce([]);
 
 				courseRule.isApplicable.mockReturnValueOnce(true);
 				courseGroupRule.isApplicable.mockReturnValueOnce(true);
