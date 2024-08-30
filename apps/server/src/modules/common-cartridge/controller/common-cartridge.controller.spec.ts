@@ -43,6 +43,7 @@ describe('CommonCartridgeController', () => {
 				courseCommonCartridgeMetadata: {
 					id: courseId,
 					title: faker.lorem.sentence(),
+					copyRightOwners: [faker.lorem.words()],
 				},
 			});
 

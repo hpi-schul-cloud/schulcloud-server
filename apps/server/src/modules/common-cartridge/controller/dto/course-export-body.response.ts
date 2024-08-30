@@ -4,9 +4,9 @@ import { CourseFileIdsResponse } from './common-cartridge.response';
 export class CourseExportBodyResponse {
 	courseFileIds?: CourseFileIdsResponse;
 
-	courseCommonCartridgeMetadata?: CourseCommonCartridgeMetadataDto;
+	courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto;
 
-	constructor(courseExportBodyResponse: Partial<CourseExportBodyResponse>) {
+	constructor(courseExportBodyResponse: CourseExportBodyResponse) {
 		this.courseFileIds = courseExportBodyResponse.courseFileIds;
 		this.courseCommonCartridgeMetadata = courseExportBodyResponse.courseCommonCartridgeMetadata;
 	}
