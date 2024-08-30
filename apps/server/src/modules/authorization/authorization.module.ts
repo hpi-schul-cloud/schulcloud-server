@@ -2,7 +2,7 @@ import { FeathersModule } from '@infra/feathers';
 import { Module } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
+import { AuthorizationHelper, AuthorizationService, RuleManager, AuthorizationInjectionService } from './domain';
 import {
 	BoardNodeRule,
 	ContextExternalToolRule,
@@ -29,6 +29,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,
+		AuthorizationInjectionService,
 		FeathersAuthProvider,
 		AuthorizationService,
 		UserRepo,
