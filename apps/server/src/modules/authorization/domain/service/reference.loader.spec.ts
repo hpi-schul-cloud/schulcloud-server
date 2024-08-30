@@ -20,6 +20,7 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { BoardNodeAuthorizableService } from '@src/modules/board';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -44,6 +45,7 @@ describe('reference.loader', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				ReferenceLoader,
+				AuthorizationInjectionService,
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -127,37 +129,37 @@ describe('reference.loader', () => {
 		it('should call taskRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.Task, entityId);
 
-			expect(taskRepo.findById).toBeCalledWith(entityId);
+			expect(taskRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call courseRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.Course, entityId);
 
-			expect(courseRepo.findById).toBeCalledWith(entityId);
+			expect(courseRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call courseGroupRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.CourseGroup, entityId);
 
-			expect(courseGroupRepo.findById).toBeCalledWith(entityId);
+			expect(courseGroupRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call schoolRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.School, entityId);
 
-			expect(schoolRepo.findById).toBeCalledWith(entityId);
+			expect(schoolRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call userRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(userRepo.findById).toBeCalledWith(entityId);
+			expect(userRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call lessonRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.Lesson, entityId);
 
-			expect(lessonService.findById).toBeCalledWith(entityId);
+			expect(lessonService.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call teamsRepo.findById', async () => {
@@ -169,37 +171,37 @@ describe('reference.loader', () => {
 		it('should call contextExternalToolService.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalToolEntity, entityId);
 
-			expect(contextExternalToolAuthorizableService.findById).toBeCalledWith(entityId);
+			expect(contextExternalToolAuthorizableService.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call submissionRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.Submission, entityId);
 
-			expect(submissionRepo.findById).toBeCalledWith(entityId);
+			expect(submissionRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call schoolExternalToolRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalToolEntity, entityId);
 
-			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
+			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call externalToolAuthorizableService.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.ExternalTool, entityId);
 
-			expect(externalToolAuthorizableService.findById).toBeCalledWith(entityId);
+			expect(externalToolAuthorizableService.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call findNodeService.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
 
-			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId);
+			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should call instanceService.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.Instance, entityId);
 
-			expect(instanceService.findById).toBeCalledWith(entityId);
+			expect(instanceService.findById).toBeCalledWith(entityId, false);
 		});
 
 		it('should return authorizable object', async () => {
