@@ -64,6 +64,7 @@ describe('CommonCartridgeExportService', () => {
 			const expected = {
 				id: courseId,
 				title: faker.lorem.sentence(),
+				copyRightOwners: [faker.lorem.word()],
 			};
 
 			coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(expected);
