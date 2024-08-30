@@ -70,7 +70,7 @@ describe(TldrawMigrationConsole.name, () => {
 			});
 			s3Adapter.create.mockImplementation((key) => Promise.resolve({ Key: key } as any));
 
-			const result = await console.migrate();
+			const result = await console.migrate(1);
 
 			expect(result).toEqual(['doc1/index/doc1', 'doc2/index/doc2']);
 			expect(yMongodb.getAllDocumentNames).toBeCalledTimes(1);
