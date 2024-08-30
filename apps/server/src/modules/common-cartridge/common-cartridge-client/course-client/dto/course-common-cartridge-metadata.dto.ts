@@ -1,11 +1,11 @@
 export class CourseCommonCartridgeMetadataDto {
-	id?: string;
+	id: string;
 
-	title?: string;
+	title: string;
 
 	creationDate?: string;
 
-	copyRightOwners?: Array<string>;
+	copyRightOwners: Array<string>;
 
 	constructor(props: CourseCommonCartridgeMetadataDto) {
 		this.id = props.id;

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
@@ -34,7 +34,7 @@ export class CoursesClientAdapter {
 		const jwt = extractJwtFromHeader(this.request) || this.request.headers.authorization;
 
 		if (!jwt) {
-			throw new Error('Authentication is required.');
+			throw new UnauthorizedException('Authentication is required.');
 		}
 
 		return jwt;
