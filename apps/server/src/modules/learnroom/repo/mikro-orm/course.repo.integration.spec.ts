@@ -17,7 +17,7 @@ import {
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { Course, COURSE_REPO, CourseProps, CourseStatusQueryType } from '../../domain';
+import { Course, COURSE_REPO, CourseProps, CourseStatus } from '../../domain';
 import { courseFactory } from '../../testing';
 import { CourseMikroOrmRepo } from './course.repo';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
@@ -188,7 +188,7 @@ describe(CourseMikroOrmRepo.name, () => {
 				await em.persistAndFlush([schoolEntity, ...courseEntities]);
 				em.clear();
 
-				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: CourseStatusQueryType.ARCHIVE };
+				const filter = { schoolId: schoolEntity.id, status: CourseStatus.ARCHIVE };
 
 				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
 				return { courseDOs, filter };
@@ -228,7 +228,7 @@ describe(CourseMikroOrmRepo.name, () => {
 						name: SortOrder.desc,
 					},
 				};
-				const filter = { schoolId: schoolEntity.id, courseStatusQueryType: CourseStatusQueryType.ARCHIVE };
+				const filter = { schoolId: schoolEntity.id, status: CourseStatus.ARCHIVE };
 
 				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
 
@@ -247,7 +247,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should return current courses', async () => {
 				const { options, filter } = await setup();
 
-				filter.courseStatusQueryType = CourseStatusQueryType.CURRENT;
+				filter.status = CourseStatus.CURRENT;
 				const result = await repo.getCourseInfo(filter, options);
 
 				expect(result.data.length).toEqual(3);

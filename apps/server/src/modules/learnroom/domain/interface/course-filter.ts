@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
-import { CourseStatusQueryType } from './course-status-query-type.enum';
+import { CourseStatus } from './course-status.enum';
 
 export interface CourseFilter {
 	schoolId?: EntityId;
-	courseStatusQueryType?: CourseStatusQueryType;
+	status?: CourseStatus;
 }

@@ -1,18 +1,12 @@
-import { AccountModule } from '@modules/account';
 import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
-import { GroupService } from '@modules/group';
-import { GroupRepo } from '@modules/group/repo';
+import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
-import { RegistrationPinModule } from '@modules/registration-pin';
-import { RoleModule } from '@modules/role';
-import { SchoolService } from '@modules/school';
-import { SCHOOL_REPO } from '@modules/school/domain/interface';
-import { SystemModule } from '@modules/system';
+import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
-import { UserModule, UserService } from '@modules/user';
+import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import {
@@ -24,11 +18,8 @@ import {
 	LegacyBoardRepo,
 	UserRepo,
 } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
-import { CalendarModule } from '../../infra/calendar';
 import { BoardNodeRepo } from '../board/repo';
-import { SchoolMikroOrmRepo } from '../school/repo/mikro-orm/school.repo';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
@@ -41,10 +32,10 @@ import {
 	CourseCopyService,
 	CourseDoService,
 	CourseGroupService,
+	CourseRoomsService,
 	CourseService,
 	DashboardService,
 	GroupDeletedHandlerService,
-	CourseRoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
@@ -61,13 +52,10 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LoggerModule,
 		TaskModule,
 		CqrsModule,
-		SystemModule,
 		UserModule,
-		RoleModule,
 		ClassModule,
-		AccountModule,
-		RegistrationPinModule,
-		CalendarModule,
+		SchoolModule,
+		GroupModule,
 	],
 	providers: [
 		{
@@ -91,8 +79,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		},
 		CourseService,
 		CourseDoService,
-		GroupRepo,
-		GroupService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
@@ -101,14 +87,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		UserRepo,
 		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
-		SchoolService,
-		{
-			provide: SCHOOL_REPO,
-			useClass: SchoolMikroOrmRepo,
-		},
-		UserService,
-		UserRepo,
-		UserDORepo,
 	],
 	exports: [
 		CourseCopyService,

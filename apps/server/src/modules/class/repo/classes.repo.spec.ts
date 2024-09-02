@@ -190,7 +190,6 @@ describe(ClassesRepo.name, () => {
 		describe('when class is in classes', () => {
 			const setup = async () => {
 				const class1: ClassEntity = classEntityFactory.buildWithId();
-				console.log(class1.id);
 				await em.persistAndFlush([class1]);
 				em.clear();
 

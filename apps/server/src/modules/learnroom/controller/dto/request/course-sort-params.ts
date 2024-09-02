@@ -1,11 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SortingParams } from '@shared/controller';
 import { IsEnum, IsOptional } from 'class-validator';
-import { CourseSortQueryType } from '../../../domain';
+import { CourseSortProps } from '../../../domain/interface/course-sort-props.enum';
 
-export class CourseSortParams extends SortingParams<CourseSortQueryType> {
+export class CourseSortParams extends SortingParams<CourseSortProps> {
 	@IsOptional()
-	@IsEnum(CourseSortQueryType)
-	@ApiPropertyOptional({ enum: CourseSortQueryType, enumName: 'CourseSortQueryType' })
-	sortBy?: CourseSortQueryType;
+	@IsEnum(CourseSortProps)
+	@ApiPropertyOptional({ enum: CourseSortProps, enumName: 'CourseSortProps' })
+	sortBy?: CourseSortProps;
 }

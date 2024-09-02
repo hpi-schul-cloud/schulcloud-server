@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
@@ -10,9 +11,9 @@ import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { groupFactory, setupEntities, UserAndAccountTestFactory, userDoFactory, userFactory } from '@shared/testing';
-import { Course, COURSE_REPO, CourseRepo as CourseDORepo, CourseSortQueryType, CourseStatusQueryType } from '../domain';
+import { Course, CourseFilter, CourseSortProps, CourseStatus } from '../domain';
 import { CourseDoService } from '../service';
 import { courseFactory as courseDoFactory } from '../testing';
 import { CourseInfoUc } from './course-info.uc';
@@ -44,14 +45,9 @@ describe('CourseInfoUc', () => {
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
-
 				{
 					provide: CourseDoService,
 					useValue: createMock<CourseDoService>(),
-				},
-				{
-					provide: COURSE_REPO,
-					useValue: createMock<CourseDORepo>(),
 				},
 				{
 					provide: GroupService,
@@ -92,124 +88,123 @@ describe('CourseInfoUc', () => {
 	});
 
 	describe('getCourseInfo', () => {
-		const setup = () => {
-			const user = userFactory.withRoleByName(RoleName.TEACHER).buildWithId();
-			const teacher = userDoFactory.build({ id: user.id, firstName: 'firstName', lastName: 'lastName' });
-			const { adminUser } = UserAndAccountTestFactory.buildAdmin({}, [
-				Permission.COURSE_ADMINISTRATION,
-				Permission.ADMIN_VIEW,
-			]);
-			const group = groupFactory.build({ name: 'groupName' });
-			const clazz = classFactory.build({ name: 'A', gradeLevel: 1 });
+		describe('when courses are found', () => {
+			const setup = () => {
+				const user = userFactory.withRoleByName(RoleName.TEACHER).buildWithId();
+				const teacher = userDoFactory.build({ id: user.id, firstName: 'firstName', lastName: 'lastName' });
+				const { adminUser } = UserAndAccountTestFactory.buildAdmin({}, [
+					Permission.COURSE_ADMINISTRATION,
+					Permission.ADMIN_VIEW,
+				]);
+				const group = groupFactory.build({ name: 'groupName' });
+				const clazz = classFactory.build({ name: 'A', gradeLevel: 1 });
+				const courses = courseDoFactory.buildList(5, {
+					syncedWithGroup: group.id,
+					teacherIds: [user.id],
+					groupIds: [group.id],
+					classIds: [clazz.id],
+				});
+				const pagination = { skip: 1, limit: 2 };
+				const courseStatus: CourseStatus = CourseStatus.CURRENT;
+				const sortByField: CourseSortProps = CourseSortProps.NAME;
+				const sortOrder: SortOrder = SortOrder.asc;
+				const school = schoolFactory.build();
 
-			const courses = courseDoFactory.buildList(5, {
-				syncedWithGroup: group.id,
-				teacherIds: [user.id],
-				groupIds: [group.id],
-				classIds: [clazz.id],
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
+				authorizationService.checkPermission.mockReturnValueOnce(undefined);
+				groupRepo.findGroupById.mockResolvedValue(group);
+				groupService.findById.mockResolvedValue(group);
+				userService.findById.mockResolvedValue(teacher);
+				classService.findById.mockResolvedValue(clazz);
+				classesRepo.findClassById.mockResolvedValue(clazz);
+				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>(courses, 5));
+
+				return {
+					user,
+					courses,
+					pagination,
+					school,
+					adminUser,
+					group,
+					courseStatus,
+					sortByField,
+					sortOrder,
+					clazz,
+				};
+			};
+			it('should return courses with sorted and filtered results', async () => {
+				const { clazz, group, school, adminUser, sortByField, courseStatus, pagination, sortOrder, user } = setup();
+
+				const result: Page<CourseInfoDto> = await uc.getCourseInfo(
+					adminUser.id,
+					school.id,
+					sortByField,
+					courseStatus,
+					pagination,
+					sortOrder
+				);
+
+				const filter: CourseFilter = { schoolId: school.id, status: courseStatus };
+				const options = {
+					pagination,
+					order: {
+						[sortByField]: sortOrder,
+					},
+				};
+
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(adminUser.id);
+				expect(authorizationService.checkPermission).toHaveBeenCalled();
+				expect(courseDoService.getCourseInfo).toHaveBeenCalledWith(filter, options);
+				expect(userService.findById).toHaveBeenCalledWith(user.id);
+				expect(classService.findById).toHaveBeenCalledWith(clazz.id);
+				expect(groupService.findById).toHaveBeenCalledWith(group.id);
+				expect(result.total).toBe(5);
+				expect(result.data.length).toBe(5);
+				expect(result.data[0].classes).toStrictEqual(['1A', 'groupName']);
+				expect(result.data[0].teachers).toStrictEqual(['firstName lastName']);
 			});
-			const pagination = { skip: 1, limit: 2 };
-			const courseStatusQueryType: CourseStatusQueryType = CourseStatusQueryType.CURRENT;
-			const sortByField: CourseSortQueryType = CourseSortQueryType.NAME;
-			const sortOrder: SortOrder = SortOrder.asc;
 
-			const school = schoolFactory.build();
-			schoolService.getSchoolById.mockResolvedValueOnce(school);
-			authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
-			authorizationService.checkPermission.mockReturnValueOnce(undefined);
-			groupRepo.findGroupById.mockResolvedValue(group);
-			groupService.findById.mockResolvedValue(group);
-			userService.findById.mockResolvedValue(teacher);
-			classService.findById.mockResolvedValue(clazz);
-			classesRepo.findClassById.mockResolvedValue(clazz);
+			it('should handle empty options gracefully', async () => {
+				const { adminUser, school } = setup();
+				const filter: CourseFilter = { schoolId: school.id, status: undefined };
+				const options: IFindOptions<Course> = {
+					order: {
+						name: SortOrder.asc,
+					},
+					pagination: undefined,
+				};
 
-			return {
-				user,
-				courses,
-				pagination,
-				school,
-				adminUser,
-				group,
-				courseStatusQueryType,
-				sortByField,
-				sortOrder,
-				clazz,
-			};
-		};
+				await uc.getCourseInfo(adminUser.id, school.id, undefined, undefined, undefined, undefined);
 
-		it('should return courses with sorted and filtered results', async () => {
-			const {
-				courses,
-				clazz,
-				group,
-				school,
-				adminUser,
-				sortByField,
-				courseStatusQueryType: statusTypeQuery,
-				pagination,
-				sortOrder,
-				user,
-			} = setup();
-			courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>(courses, 5));
-
-			const result: Page<CourseInfoDto> = await uc.getCourseInfo(
-				adminUser.id,
-				school.id,
-				sortByField,
-				statusTypeQuery,
-				pagination,
-				sortOrder
-			);
-
-			const filter = { schoolId: school.id, courseStatusQueryType: statusTypeQuery };
-			const options = {
-				pagination,
-				order: {
-					[sortByField]: sortOrder,
-				},
-			};
-
-			expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
-			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(adminUser.id);
-			expect(authorizationService.checkPermission).toHaveBeenCalled();
-			expect(courseDoService.getCourseInfo).toHaveBeenCalledWith(filter, options);
-			expect(userService.findById).toHaveBeenCalledWith(user.id);
-			expect(classService.findById).toHaveBeenCalledWith(clazz.id);
-			expect(groupService.findById).toHaveBeenCalledWith(group.id);
-			expect(result.total).toBe(5);
-			expect(result.data.length).toBe(5);
-			expect(result.data[0].classes).toStrictEqual(['1A', 'groupName']);
-			expect(result.data[0].teachers).toStrictEqual(['firstName lastName']);
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(adminUser.id);
+				expect(authorizationService.checkPermission).toHaveBeenCalled();
+				expect(courseDoService.getCourseInfo).toHaveBeenCalledWith(filter, options);
+			});
 		});
 
-		it('should return an empty page if no courses are found', async () => {
-			const { adminUser, school, courseStatusQueryType: statusTypeQuery, sortByField, pagination, sortOrder } = setup();
+		describe('when courses are not found', () => {
+			const setup = () => {
+				const adminUserId = new ObjectId().toHexString();
+				const schoolId = new ObjectId().toHexString();
+				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([], 0));
 
-			courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([], 0));
+				return {
+					adminUserId,
+					schoolId,
+				};
+			};
 
-			const result = await uc.getCourseInfo(
-				adminUser.id,
-				school.id,
-				sortByField,
-				statusTypeQuery,
-				pagination,
-				sortOrder
-			);
+			it('should return an empty page if no courses are found', async () => {
+				const { adminUserId, schoolId } = setup();
 
-			expect(result.total).toBe(0);
-			expect(result.data.length).toBe(0);
-		});
+				const result = await uc.getCourseInfo(adminUserId, schoolId);
 
-		it('should handle empty data inputs', async () => {
-			const { adminUser, school } = setup();
-
-			courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([], 0));
-
-			const result = await uc.getCourseInfo(adminUser.id, school.id, undefined, undefined, undefined, undefined);
-
-			expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
-			expect(result.total).toBe(0);
-			expect(result.data.length).toBe(0);
+				expect(result.total).toBe(0);
+				expect(result.data.length).toBe(0);
+			});
 		});
 	});
 });

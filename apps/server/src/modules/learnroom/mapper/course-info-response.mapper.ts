@@ -28,7 +28,7 @@ export class CourseInfoResponseMapper {
 			name: courseInfo.name,
 			classNames: courseInfo.classes,
 			teacherNames: courseInfo.teachers,
-			syncedGroup: courseInfo.syncedWithGroup ? courseInfo.syncedWithGroup : undefined,
+			syncedGroup: courseInfo.syncedGroupName,
 		});
 
 		return courseInfoResponse;

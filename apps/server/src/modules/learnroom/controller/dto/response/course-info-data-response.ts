@@ -11,7 +11,7 @@ export class CourseInfoDataResponse {
 	@ApiProperty({ type: [String] })
 	teacherNames: string[];
 
-	@ApiProperty()
+	@ApiProperty({ type: [String] })
 	classNames: string[];
 
 	@ApiPropertyOptional()

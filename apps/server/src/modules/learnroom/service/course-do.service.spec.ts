@@ -181,7 +181,7 @@ describe(CourseDoService.name, () => {
 	});
 
 	describe('startSynchronization', () => {
-		describe('when a course is нот synchronized with a group', () => {
+		describe('when a course is not synchronized with a group', () => {
 			const setup = () => {
 				const course: Course = courseFactory.build();
 				const group: Group = groupFactory.build();
