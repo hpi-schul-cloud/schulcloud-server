@@ -34,10 +34,7 @@ export class TldrawMigrationConsole {
 		for await (const docNameChunk of docNameChunks) {
 			const promises = docNameChunk.map(async (docName) => {
 				const result = await this.tldrawBoardRepo.getDocument(docName);
-				if (!result) {
-					this.logger.error(`Document not found: ${docName}`);
-					return;
-				}
+
 				const { name, connections, awareness, awarenessChannel, isFinalizing, ...doc } = result;
 
 				if (result.store.pendingStructs) {
