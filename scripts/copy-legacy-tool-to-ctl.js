@@ -16,8 +16,6 @@ const close = async () => mongoose.connection.close();
 const connect = async () => {
 	const mongooseOptions = {
 		useNewUrlParser: true,
-		useFindAndModify: false,
-		useCreateIndex: true,
 		useUnifiedTopology: true,
 	};
 
@@ -120,6 +118,7 @@ const ExternalTool = mongoose.model(
 							enum: ['string', 'number', 'boolean', 'auto_contextid', 'auto_contextname', 'auto_schoolid'],
 						},
 						isOptional: Boolean,
+						isProtected: Boolean,
 					},
 				},
 			],
@@ -127,12 +126,14 @@ const ExternalTool = mongoose.model(
 			isHidden: Boolean,
 			openNewTab: Boolean,
 			version: Number,
+			isDeactivated: Boolean,
+			restrictToContexts: [],
 		},
 		{
 			timestamps: true,
 		}
 	),
-	'external_tools'
+	'external-tools'
 );
 
 const SchoolExternalTool = mongoose.model(
@@ -143,12 +144,13 @@ const SchoolExternalTool = mongoose.model(
 			school: { type: Schema.Types.ObjectId },
 			schoolParameters: [customParameterEntrySchema],
 			toolVersion: Number,
+			isDeactivated: Boolean,
 		},
 		{
 			timestamps: true,
 		}
 	),
-	'school_external_tools'
+	'school-external-tools'
 );
 
 const ContextExternalTool = mongoose.model(
@@ -166,7 +168,7 @@ const ContextExternalTool = mongoose.model(
 			timestamps: true,
 		}
 	),
-	'context_external_tools'
+	'context-external-tools'
 );
 
 const Course = mongoose.model(
@@ -259,6 +261,8 @@ function mapToExternalTool(ltiToolTemplate) {
 		isHidden: ltiToolTemplate.isHidden,
 		openNewTab: ltiToolTemplate.openNewTab,
 		version: 1,
+		restrictToContexts: [],
+		isDeactivated: false,
 		...toolConfigMapper(ltiToolTemplate),
 	};
 }
@@ -269,16 +273,18 @@ function mapToSchoolExternalTool(externalTool, course) {
 		school: course.schoolId,
 		schoolParameters: [],
 		toolVersion: externalTool.version,
+		isDeactivated: false,
 	};
 }
 
-function mapToContextExternalTool(schoolExternalTool, course) {
+function mapToContextExternalTool(schoolExternalTool, course, externalToolName) {
 	return {
 		schoolTool: schoolExternalTool._id,
 		contextId: course._id,
 		contextType: 'course',
 		parameters: [],
 		toolVersion: schoolExternalTool.toolVersion,
+		displayName: externalToolName,
 	};
 }
 
@@ -350,7 +356,7 @@ async function createSchoolExternalTool(externalTool, course) {
 	return schoolExternalTool;
 }
 
-async function createContextExternalTool(schoolExternalTool, course) {
+async function createContextExternalTool(schoolExternalTool, course, externalToolName) {
 	const contextExternalTools = await ContextExternalTool.find({
 		schoolTool: schoolExternalTool._id,
 		contextId: course._id,
@@ -361,7 +367,7 @@ async function createContextExternalTool(schoolExternalTool, course) {
 
 	// CHECK IF CONTEXTEXTERNALTOOL EXISTS
 	if ((contextExternalTools || []).length === 0) {
-		const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
+		const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course, externalToolName);
 		await ContextExternalTool.insertMany(contextExternalTool);
 	}
 }
@@ -428,7 +434,7 @@ const up = async () => {
 		const schoolExternalTool = await createSchoolExternalTool(externalTool, course);
 
 		// CREATE CONTEXTEXTERNALTOOL
-		await createContextExternalTool(schoolExternalTool, course);
+		await createContextExternalTool(schoolExternalTool, course, externalTool.name);
 	}
 
 	await close();
