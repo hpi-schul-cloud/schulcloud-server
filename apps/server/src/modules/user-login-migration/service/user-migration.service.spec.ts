@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService, Account } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { roleFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	UserMigrationDatabaseOperationFailedLoggableException,
@@ -288,6 +288,31 @@ describe(UserMigrationService.name, () => {
 				const { userId, targetExternalId, targetSystemId, err } = setup();
 
 				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(err);
+			});
+		});
+	});
+
+	describe('hasUserMigratedInMigrationPhase', () => {
+		describe('when user has no external id', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					externalId: undefined,
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(false);
 			});
 		});
 	});
