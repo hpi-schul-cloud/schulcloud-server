@@ -5,15 +5,20 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
 ## NestJS application
 
-> Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html) of this repository at GitHub pages. It contains information about
+Based on [NestJS](https://docs.nestjs.com/)
 
-- setup & preconditions
-- starting the application
-- testing
-- tools setup (VSCode, Git)
+> Find the [documentation](https://documentation.dbildungscloud.dev/docs/schulcloud-server/architecture) of this repository at GitHub pages. It contains information about
+
+- api design
+- code guidelines
+- development
+- migrations
 - architecture
 
-Based on [NestJS](https://docs.nestjs.com/)
+There is also some old documentation in the server code /apps/server/doc/*.md.
+
+Note that not all the .md file here are up to date.
+
 
 ## Feathers application
 
@@ -44,18 +49,10 @@ It is possible (not very likely) that the server api is called with URLs that us
 
 When these paths are accessed an error with context `[DEPRECATED-PATH]` is logged.
 
-## Setup
-
-The whole application setup with all dependencies can be found in [System Architecture](https://docs.dbildungscloud.de/display/DBH/System+Architecture). It contains information about how different application components are connected to each other.
-
-## Debugger Configuration in Visual Studio Code
-
-For more details how to set up Visual Studio Code, read [this document](https://docs.dbildungscloud.de/display/DBH/Visual+Studio+Code+-+Beginners+Guide).
-
 ## How to name your branch and create a pull request (PR)
 
 1. Take the Ticket Number from JIRA (ticketsystem.dbildungscloud.de), e.g. SC-999
-2. Name the feature branch beginning with Ticket Number, all words separated by dash "-", e.g. `feature/SC-999-fantasy-problem`
+2. Name the feature branch beginning with Ticket Number, all words separated by dash "-", e.g. `SC-999-fantasy-problem`
 3. Create a PR on branch develop containing the Ticket Number in PR title
 4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically.
 
@@ -66,7 +63,7 @@ Default branch: `main`
 1. Go into project folder
 2. Checkout to develop branch (or clone for the first time)
 3. Run `git pull`
-4. Create a branch for your new feature named feature/BC-*Ticket-ID*-*Description*
+4. Create a branch for your new feature named BC-*Ticket-ID*-*Description*
 5. Run the tests (see above)
 6. Commit with a meaningful commit message(!) even at 4 a.m. and not stuff like "dfsdfsf"
 7. Start a pull request (see above) to branch develop to merge your changes
