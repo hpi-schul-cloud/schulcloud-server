@@ -8,6 +8,7 @@ import {
 	OidcMockProvisioningStrategy,
 	ProvisioningStrategy,
 	SanisProvisioningStrategy,
+	TspProvisioningStrategy,
 } from '../strategy';
 
 @Injectable()
@@ -21,11 +22,13 @@ export class ProvisioningService {
 		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly oidcMockStrategy: OidcMockProvisioningStrategy
+		private readonly oidcMockStrategy: OidcMockProvisioningStrategy,
+		private readonly tspStrategy: TspProvisioningStrategy
 	) {
 		this.registerStrategy(sanisStrategy);
 		this.registerStrategy(iservStrategy);
 		this.registerStrategy(oidcMockStrategy);
+		this.registerStrategy(tspStrategy);
 	}
 
 	protected registerStrategy(strategy: ProvisioningStrategy) {
