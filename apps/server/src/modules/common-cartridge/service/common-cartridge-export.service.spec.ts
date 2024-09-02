@@ -4,11 +4,13 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client/board-client.adapter';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { CoursesClientAdapter } from '../common-cartridge-client/course-client';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeExportService;
 	let filesStorageServiceMock: DeepMocked<FilesStorageClientAdapterService>;
+	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,11 +24,16 @@ describe('CommonCartridgeExportService', () => {
 					provide: BoardClientAdapter,
 					useValue: createMock<BoardClientAdapter>(),
 				},
+				{
+					provide: CoursesClientAdapter,
+					useValue: createMock<CoursesClientAdapter>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeExportService);
 		filesStorageServiceMock = module.get(FilesStorageClientAdapterService);
+		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 	});
 
 	afterAll(async () => {
@@ -51,6 +58,29 @@ describe('CommonCartridgeExportService', () => {
 			const { courseId, expected } = setup();
 
 			const result = await sut.findCourseFileRecords(courseId);
+
+			expect(result).toEqual(expected);
+		});
+	});
+
+	describe('findCourseCcMetadata', () => {
+		const setup = () => {
+			const courseId = faker.string.uuid();
+			const expected = {
+				id: courseId,
+				title: faker.lorem.sentence(),
+				copyRightOwners: [faker.lorem.word()],
+			};
+
+			coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(expected);
+
+			return { courseId, expected };
+		};
+
+		it('should return a CourseCommonCartridgeMetadataDto', async () => {
+			const { courseId, expected } = setup();
+
+			const result = await sut.findCourseCommonCartridgeMetadata(courseId);
 
 			expect(result).toEqual(expected);
 		});
