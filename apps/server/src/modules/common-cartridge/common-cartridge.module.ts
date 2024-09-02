@@ -5,12 +5,11 @@ import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { defaultMikroOrmOptions } from '../server';
-import { BoardClientModule } from './common-cartridge-client/board-client/board-client.module';
+import { BoardClientModule } from './common-cartridge-client/board-client';
+import { CoursesClientModule } from './common-cartridge-client/course-client';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
-import { CoursesClientModule } from './common-cartridge-client/course-client';
 
 @Module({
 	imports: [

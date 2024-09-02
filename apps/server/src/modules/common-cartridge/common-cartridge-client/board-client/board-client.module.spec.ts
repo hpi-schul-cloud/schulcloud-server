@@ -19,8 +19,10 @@ describe('BoardClientModule', () => {
 		await module.close();
 	});
 
-	it('should have the BoardClientAdapter defined', () => {
-		const boardClientAdapter = module.get(BoardClientAdapter);
-		expect(boardClientAdapter).toBeDefined();
+	describe('when module is initialized', () => {
+		it('should have the BoardClientAdapter defined', () => {
+			const boardClientAdapter = module.get(BoardClientAdapter);
+			expect(boardClientAdapter).toBeDefined();
+		});
 	});
 });
