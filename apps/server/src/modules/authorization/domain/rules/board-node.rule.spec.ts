@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import {
 	columnBoardFactory,
 	drawingElementFactory,
@@ -535,7 +535,7 @@ describe(BoardNodeRule.name, () => {
 		});
 
 		describe('when boardDoAuthorizable.board is a drawingElement', () => {
-			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW', () => {
+			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW or FILESTORAGE_REMOVE', () => {
 				describe('when user is Editor', () => {
 					const setup = () => {
 						const user = userFactory.buildWithId();
@@ -638,6 +638,16 @@ describe(BoardNodeRule.name, () => {
 						const res = service.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [Permission.FILESTORAGE_CREATE],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return true if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup();
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [Permission.FILESTORAGE_REMOVE],
 						});
 
 						expect(res).toBe(true);

@@ -977,39 +977,6 @@ paths:
       tags:
         - files
       security: []
-  '/fileStorage/thumbnail/{id}':
-    patch:
-      parameters:
-        - in: path
-          name: id
-          description: ID of thumbnail to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/thumbnail'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - fileStorage
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/thumbnail'
   '/fileStorage/securityCheck/{id}':
     put:
       parameters:
