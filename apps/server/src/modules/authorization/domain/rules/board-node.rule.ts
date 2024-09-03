@@ -1,7 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity/user.entity';
-import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
@@ -12,6 +8,10 @@ import {
 	SubmissionItem,
 	UserWithBoardRoles,
 } from '@modules/board';
+import { Injectable } from '@nestjs/common';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 
@@ -77,7 +77,8 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	): boolean {
 		const requiresFileStoragePermission =
 			context.requiredPermissions.includes(Permission.FILESTORAGE_CREATE) ||
-			context.requiredPermissions.includes(Permission.FILESTORAGE_VIEW);
+			context.requiredPermissions.includes(Permission.FILESTORAGE_VIEW) ||
+			context.requiredPermissions.includes(Permission.FILESTORAGE_REMOVE);
 
 		return isDrawingElement(boardNodeAuthorizable.boardNode) && requiresFileStoragePermission;
 	}
