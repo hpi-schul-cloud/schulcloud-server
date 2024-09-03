@@ -1,8 +1,8 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LegacyLogger } from '@src/core/logger';
 import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { TldrawClientConfig } from '../interface';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class DrawingElementAdapterService {
 
 	async deleteDrawingBinData(docName: string): Promise<void> {
 		const baseUrl = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_BASE_URL');
-		const tldrawDocumentEndpoint = new URL('/api/v3/tldraw-document', baseUrl).toString();
+		const tldrawDocumentEndpoint = new URL('tldraw-document', baseUrl).toString();
 		await firstValueFrom(this.httpService.delete(`${tldrawDocumentEndpoint}/${docName}`, this.defaultHeaders()));
 	}
 
