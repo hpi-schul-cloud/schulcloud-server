@@ -1,5 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { Room } from '../../domain/do/room.do';
 
 export interface RoomEntityProps {
 	id?: string;
@@ -22,6 +23,9 @@ export class RoomEntity extends BaseEntityWithTimestamps {
 
 	@Property()
 	untilDate?: Date;
+
+	@Property({ persist: false })
+	domainObject: Room | undefined;
 
 	constructor(props: RoomEntityProps) {
 		super();

@@ -20,10 +20,6 @@ export class RoomRepo {
 		const scope = new RoomScope();
 		scope.allowEmptyQuery(true);
 
-		// Note: once we have the options, we can add them to the scope like this:
-		// scope.byName('room');
-		// scope.byOrganizationId(filter.schoolId);
-
 		const options = {
 			offset: findOptions?.pagination?.skip,
 			limit: findOptions?.pagination?.limit,
@@ -38,11 +34,4 @@ export class RoomRepo {
 
 		return page;
 	}
-
-	/*
-	Note: this is a placeholder for the actual implementation of the saveRoom method.
-	public async saveRoom(room: Room): Promise<Room> {
-		return this.save(room);
-	}
-	 */
 }
