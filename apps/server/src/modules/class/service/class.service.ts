@@ -13,6 +13,7 @@ import {
 } from '@modules/deletion';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { Class } from '../domain';
@@ -99,5 +100,13 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 
 	private getClassesId(classes: Class[]): EntityId[] {
 		return classes.map((item) => item.id);
+	}
+
+	public async findById(id: EntityId): Promise<Class> {
+		const clazz: Class | null = await this.classesRepo.findClassById(id);
+		if (!clazz) {
+			throw new NotFoundLoggableException(Class.name, { id });
+		}
+		return clazz;
 	}
 }

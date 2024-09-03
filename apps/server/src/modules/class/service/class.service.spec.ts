@@ -12,6 +12,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -122,6 +123,34 @@ describe(ClassService.name, () => {
 				const result: Class[] = await service.findAllByUserId(userId);
 
 				expect(result).toEqual(classes);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		describe('when the user has classes', () => {
+			const setup = () => {
+				const clazz: Class = classFactory.build();
+
+				classesRepo.findClassById.mockResolvedValueOnce(clazz);
+
+				return {
+					clazz,
+				};
+			};
+
+			it('should return the class', async () => {
+				const { clazz } = setup();
+
+				const result: Class = await service.findById(clazz.id);
+
+				expect(result).toEqual(clazz);
+			});
+
+			it('should throw error', async () => {
+				classesRepo.findClassById.mockResolvedValueOnce(null);
+
+				await expect(service.findById('someId')).rejects.toThrowError(NotFoundLoggableException);
 			});
 		});
 	});
