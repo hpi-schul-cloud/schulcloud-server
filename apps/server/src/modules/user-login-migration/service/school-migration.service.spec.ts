@@ -12,7 +12,6 @@ import {
 	SchoolNumberMismatchLoggableException,
 } from '../loggable';
 import { SchoolMigrationService } from './school-migration.service';
-import { SchoolFactory } from '@modules/school/domain/factory';
 
 describe(SchoolMigrationService.name, () => {
 	let module: TestingModule;

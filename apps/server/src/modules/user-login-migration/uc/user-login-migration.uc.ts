@@ -157,23 +157,15 @@ export class UserLoginMigrationUc {
 			throw new NotFoundLoggableException('User', { email });
 		}
 
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
-
-		this.checkExternalIdNotInUseBySchool(school, externalSchoolId, userToMigrate.schoolId);
-
 		let activeUserLoginMigration: UserLoginMigrationDO | null =
 			await this.userLoginMigrationService.findMigrationBySchool(userToMigrate.schoolId);
 
 		if (!activeUserLoginMigration) {
 			activeUserLoginMigration = await this.userLoginMigrationService.startMigration(userToMigrate.schoolId);
 		}
+		this.checkMigrationClosed(activeUserLoginMigration);
 
-		if (activeUserLoginMigration.closedAt) {
-			throw new UserLoginMigrationAlreadyClosedLoggableException(
-				activeUserLoginMigration.closedAt,
-				activeUserLoginMigration.id
-			);
-		}
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
 
 		const hasSchoolMigratedInCurrentMigration: boolean = this.schoolMigrationService.hasSchoolMigratedInMigrationPhase(
 			school,
@@ -210,14 +202,10 @@ export class UserLoginMigrationUc {
 		}
 	}
 
-	private checkExternalIdNotInUseBySchool(school: LegacySchoolDo, externalSchoolId: string, schoolId: string) {
-		const isExternalIdBeingUsed: boolean = this.schoolMigrationService.hasSchoolMigrated(
-			school.externalId,
-			externalSchoolId
-		);
-
-		if (isExternalIdBeingUsed) {
-			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(schoolId);
+	private checkMigrationClosed(userLoginMigration: UserLoginMigrationDO) {
+		const now = new Date();
+		if (userLoginMigration.closedAt && now >= userLoginMigration.closedAt) {
+			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 	}
 }

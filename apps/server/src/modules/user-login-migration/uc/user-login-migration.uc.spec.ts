@@ -17,7 +17,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { Role, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
@@ -34,7 +34,6 @@ import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
-	UserLoginMigrationInvalidAdminLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
 	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 } from '../loggable';
@@ -1056,58 +1055,6 @@ describe(UserLoginMigrationUc.name, () => {
 
 					expect(userMigrationService.updateExternalUserId).toHaveBeenCalledWith(user.id, externalUserId);
 				});
-			});
-		});
-
-		describe('when the provided external school id is already being used by the school', () => {
-			const setup = () => {
-				const externalUserId = 'externalUserId';
-				const externalSchoolId = 'externalSchoolId';
-
-				const school = legacySchoolDoFactory.buildWithId({
-					externalId: externalSchoolId,
-				});
-
-				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
-					schoolId: school.id,
-				});
-
-				const caller = userFactory.buildWithId({
-					school: schoolEntityFactory.buildWithId({}, school.id),
-				});
-
-				const user = userDoFactory.buildWithId({
-					schoolId: school.id,
-				});
-
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
-
-				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
-				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(true);
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-				userService.findByEmail.mockResolvedValueOnce([user]);
-				userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
-
-				return {
-					caller,
-					user,
-					externalUserId,
-					externalSchoolId,
-					userLoginMigration,
-					school,
-				};
-			};
-
-			it('should throw an error for already migrated schools', async () => {
-				const { caller, user, externalUserId, externalSchoolId } = setup();
-
-				const forceMigrationPromise = uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-				await expect(forceMigrationPromise).rejects.toThrow(UserLoginMigrationSchoolAlreadyMigratedLoggableException);
 			});
 		});
 
