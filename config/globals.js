@@ -72,10 +72,6 @@ const globals = {
 	TEST_PW: (process.env.TEST_PW || '').trim(),
 	TEST_HASH: (process.env.TEST_HASH || '').trim(),
 
-	// files
-	FILE_PREVIEW_SERVICE_URI: process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview',
-	FILE_PREVIEW_CALLBACK_URI: process.env.FILE_PREVIEW_CALLBACK_URI || 'http://localhost:3030/fileStorage/thumbnail/',
-	ENABLE_THUMBNAIL_GENERATION: process.env.ENABLE_THUMBNAIL_GENERATION || false,
 	/** path must start and end with a slash */
 	SECURITY_CHECK_SERVICE_PATH: '/v1/fileStorage/securityCheck/',
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE:
