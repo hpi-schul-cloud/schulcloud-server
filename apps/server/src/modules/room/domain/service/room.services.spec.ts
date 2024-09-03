@@ -38,7 +38,7 @@ describe('RoomService', () => {
 		const setup = () => {
 			const rooms: Room[] = roomFactory.buildList(2);
 			const paginatedRooms: Page<Room> = new Page<Room>(rooms, rooms.length);
-			roomRepo.getRooms.mockResolvedValue(paginatedRooms);
+			roomRepo.findRooms.mockResolvedValue(paginatedRooms);
 
 			return {
 				paginatedRooms,
@@ -49,7 +49,7 @@ describe('RoomService', () => {
 
 			await service.getRooms({});
 
-			expect(roomRepo.getRooms).toHaveBeenCalledWith({});
+			expect(roomRepo.findRooms).toHaveBeenCalledWith({});
 		});
 		it('should return rooms', async () => {
 			const { paginatedRooms } = setup();

@@ -9,7 +9,7 @@ export class RoomService {
 	constructor(private readonly roomRepo: RoomRepo) {}
 
 	public async getRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
-		const rooms: Page<Room> = await this.roomRepo.getRooms(findOptions);
+		const rooms: Page<Room> = await this.roomRepo.findRooms(findOptions);
 
 		return rooms;
 	}

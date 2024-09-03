@@ -1,28 +1,26 @@
+import { EntityName, QueryOrder } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { EntityData, EntityName, QueryOrder } from '@mikro-orm/core';
-import { RoomEntity } from './entity/room.entity';
 import { Room } from '../domain/do/room.do';
+import { RoomEntity } from './entity/room.entity';
 import { RoomDomainMapper } from './room-domain.mapper';
 import { RoomScope } from './room.scope';
 
 @Injectable()
-export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
-	protected get entityName(): EntityName<RoomEntity> {
+export class RoomRepo {
+	constructor(private readonly em: EntityManager) {}
+
+	get entityName(): EntityName<RoomEntity> {
 		return RoomEntity;
 	}
 
-	protected mapDOToEntityProperties(room: Room): EntityData<RoomEntity> {
-		const entityProps: EntityData<RoomEntity> = RoomDomainMapper.mapDoToEntityData(room);
-
-		return entityProps;
-	}
-
-	public async getRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
+	public async findRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		const scope = new RoomScope();
 		scope.allowEmptyQuery(true);
+
+		// Note: once we have the options, we can add them to the scope like this:
 		// scope.byName('room');
 		// scope.byOrganizationId(filter.schoolId);
 
@@ -42,6 +40,7 @@ export class RoomRepo extends BaseDomainObjectRepo<Room, RoomEntity> {
 	}
 
 	/*
+	Note: this is a placeholder for the actual implementation of the saveRoom method.
 	public async saveRoom(room: Room): Promise<Room> {
 		return this.save(room);
 	}

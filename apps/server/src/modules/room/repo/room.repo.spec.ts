@@ -7,8 +7,7 @@ import { Room } from '../domain/do/room.do';
 import { RoomDomainMapper } from './room-domain.mapper';
 import { RoomRepo } from './room.repo';
 import { roomEntityFactory } from '../testing';
-// import { roomFactory } from '../testing';
-// import { RoomEntity } from './entity';
+import { RoomEntity } from './entity/room.entity';
 
 describe('RoomRepo', () => {
 	let module: TestingModule;
@@ -33,7 +32,7 @@ describe('RoomRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('getRooms', () => {
+	describe('findRooms', () => {
 		const setup = async () => {
 			const roomEntities = roomEntityFactory.buildWithId();
 			await em.persistAndFlush([roomEntities]);
@@ -47,16 +46,22 @@ describe('RoomRepo', () => {
 
 		it('should return rooms domain object', async () => {
 			const { room } = await setup();
-			const result = await repo.getRooms({});
+			const result = await repo.findRooms({});
 
 			expect(result.data[0]).toEqual(room);
 		});
 
 		it('should return paginated Roms', async () => {
 			const { page } = await setup();
-			const result = await repo.getRooms({ pagination: { skip: 0, limit: 10 } });
+			const result = await repo.findRooms({ pagination: { skip: 0, limit: 10 } });
 
 			expect(result).toEqual(page);
+		});
+	});
+
+	describe('entityName', () => {
+		it('should return RoomEntity', () => {
+			expect(repo.entityName).toBe(RoomEntity);
 		});
 	});
 
