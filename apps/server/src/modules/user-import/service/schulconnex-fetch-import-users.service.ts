@@ -5,7 +5,6 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { ImportUser, SchoolEntity } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexImportUserMapper } from '../mapper';
 
@@ -38,11 +37,11 @@ export class SchulconnexFetchImportUsersService {
 		return mappedImportUsers;
 	}
 
-	public async filterAlreadyMigratedUser(importUsers: ImportUser[], systemId: EntityId): Promise<ImportUser[]> {
+	public async filterAlreadyMigratedUser(importUsers: ImportUser[], system: System): Promise<ImportUser[]> {
 		const filteredUsers: ImportUser[] = (
 			await Promise.all(
 				importUsers.map(async (importUser: ImportUser): Promise<ImportUser | null> => {
-					const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, systemId);
+					const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, system.id);
 					return foundUser ? null : importUser;
 				})
 			)
