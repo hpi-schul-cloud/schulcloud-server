@@ -36,7 +36,11 @@ export class CourseInfoUc {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authService.getUserWithPermissions(userId);
-		this.authService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.COURSE_VIEW]));
+		this.authService.checkPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.read([Permission.COURSE_ADMINISTRATION])
+		);
 
 		const order: SortOrderMap<CourseDO> = { [sortByField]: sortOrder };
 		const filter: CourseFilter = { schoolId, status: courseStatusQueryType };
