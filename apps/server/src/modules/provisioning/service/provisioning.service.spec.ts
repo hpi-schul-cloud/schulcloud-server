@@ -11,7 +11,12 @@ import {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../dto';
-import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
+import {
+	IservProvisioningStrategy,
+	OidcMockProvisioningStrategy,
+	SanisProvisioningStrategy,
+	TspProvisioningStrategy,
+} from '../strategy';
 import { ProvisioningService } from './provisioning.service';
 
 describe('ProvisioningService', () => {
@@ -50,6 +55,14 @@ describe('ProvisioningService', () => {
 					useValue: createMock<OidcMockProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.OIDC;
+						},
+					}),
+				},
+				{
+					provide: TspProvisioningStrategy,
+					useValue: createMock<TspProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.TSP;
 						},
 					}),
 				},
