@@ -17,7 +17,6 @@ export class SyncService {
 
 	public async startSync(target: string): Promise<void> {
 		const targetStrategy = target as SyncStrategyTarget;
-		// implementation
 		if (!this.strategies.has(targetStrategy)) {
 			throw new Error('please provide a valid target strategy name to start its synchronization process');
 		}
