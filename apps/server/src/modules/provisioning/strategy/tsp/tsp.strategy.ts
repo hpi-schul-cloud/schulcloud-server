@@ -74,11 +74,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async getRoleReferencesForUser(externalUser: ExternalUserDto): Promise<RoleReference[]> {
-		if (!externalUser.roles) {
-			return [];
-		}
-
-		const rolesDtos = await this.roleService.findByNames(externalUser.roles);
+		const rolesDtos = await this.roleService.findByNames(externalUser.roles || []);
 		const roleRefs = rolesDtos.map((role) => new RoleReference({ id: role.id || '', name: role.name }));
 
 		return roleRefs;
@@ -131,6 +127,9 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 					activated: true,
 				})
 			);
+		} else {
+			account.username = user.email;
+			await this.accountService.saveWithValidation(account);
 		}
 	}
 }
