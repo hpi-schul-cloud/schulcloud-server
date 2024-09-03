@@ -64,30 +64,4 @@ describe('RoomRepo', () => {
 			expect(repo.entityName).toBe(RoomEntity);
 		});
 	});
-
-	/*
-	describe('saveRoom', () => {
-		const setup = () => {
-			const room = roomFactory.buildWithId();
-
-			return { room };
-		};
-
-		it('should return saved room', async () => {
-			const { room } = setup();
-			const result = await repo.saveRoom(room);
-
-			expect(result).toEqual(room);
-		});
-
-		it('should save room to database', async () => {
-			const { room } = await setup();
-			await repo.saveRoom(room);
-
-			const roomEntity = await em.findOne(RoomEntity, { id: room.id });
-
-			expect(roomEntity).toBeDefined();
-		});
-	});
-	*/
 });
