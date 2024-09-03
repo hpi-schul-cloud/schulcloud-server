@@ -170,6 +170,11 @@
 			"default": false,
 			"description": "Feature toggle for TSP features."
 		},
+		"FEATURE_TSP_SYNC_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for TSP sync."
+		},
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
 			"default": true,
