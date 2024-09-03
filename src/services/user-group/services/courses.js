@@ -64,7 +64,7 @@ class Courses {
 
 	remove(id, params) {
 		if (newRoomViewEnabled) {
-			this.app.service('courseCalendar').remove(id, prepareInternalParams(params));
+			this.app.service('/calendar/courses').remove(id, prepareInternalParams(params));
 		}
 		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
 	}
