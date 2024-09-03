@@ -185,13 +185,7 @@ describe('CourseInfoUc', () => {
 
 		describe('when user does not have permission', () => {
 			const setup = () => {
-				const user = userFactory.withRoleByName(RoleName.TEACHER).buildWithId();
 				const { adminUser } = UserAndAccountTestFactory.buildAdmin({}, []);
-
-				const pagination = { skip: 1, limit: 2 };
-				const courseStatus: CourseStatus = CourseStatus.CURRENT;
-				const sortByField: CourseSortProps = CourseSortProps.NAME;
-				const sortOrder: SortOrder = SortOrder.asc;
 				const school = schoolFactory.build();
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -201,24 +195,15 @@ describe('CourseInfoUc', () => {
 				});
 
 				return {
-					user,
-					pagination,
 					school,
 					adminUser,
-					courseStatus,
-					sortByField,
-					sortOrder,
 				};
 			};
 			it('should throw an forbidden exception', async () => {
-				const { school, adminUser, sortByField, courseStatus, pagination, sortOrder } = setup();
+				const { school, adminUser } = setup();
 
-				const getCourseInfo = async () =>
-					uc.getCourseInfo(adminUser.id, school.id, sortByField, courseStatus, pagination, sortOrder);
+				const getCourseInfo = async () => uc.getCourseInfo(adminUser.id, school.id);
 
-				expect(userService.findById).toHaveBeenCalledTimes(0);
-				expect(classService.findById).toHaveBeenCalledTimes(0);
-				expect(groupService.findById).toHaveBeenCalledTimes(0);
 				await expect(getCourseInfo()).rejects.toThrow(ForbiddenException);
 			});
 		});
