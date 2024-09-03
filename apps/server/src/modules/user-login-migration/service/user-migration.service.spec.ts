@@ -296,10 +296,13 @@ describe(UserMigrationService.name, () => {
 		describe('when user has no external id', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: new Date(),
 					externalId: undefined,
 				});
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					closedAt: undefined,
+				});
 
 				return {
 					user,
@@ -313,6 +316,89 @@ describe(UserMigrationService.name, () => {
 				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
 
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when login system of the user was never changed', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: undefined,
+					externalId: 'externalId',
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					closedAt: undefined,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the migration had been closed', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: new Date(),
+					externalId: 'externalId',
+				});
+
+				const closedAt = new Date();
+				closedAt.setMonth(closedAt.getMonth() + 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					closedAt,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the user had been migrated in the current active migration', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: new Date(),
+					externalId: 'externalId',
+				});
+
+				const startedAt = new Date();
+				startedAt.setMonth(startedAt.getMonth() - 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					startedAt,
+					closedAt: undefined,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return true', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(true);
 			});
 		});
 	});

@@ -17,7 +17,6 @@ import {
 	SchoolMigrationSuccessfulLoggable,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
-	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
 	UserMigrationCorrectionSuccessfulLoggable,
@@ -163,7 +162,13 @@ export class UserLoginMigrationUc {
 		if (!activeUserLoginMigration) {
 			activeUserLoginMigration = await this.userLoginMigrationService.startMigration(userToMigrate.schoolId);
 		}
-		this.checkMigrationClosed(activeUserLoginMigration);
+
+		if (this.userLoginMigrationService.hasMigrationClosed(activeUserLoginMigration)) {
+			throw new UserLoginMigrationAlreadyClosedLoggableException(
+				<Date>activeUserLoginMigration.closedAt,
+				activeUserLoginMigration.id
+			);
+		}
 
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
 
@@ -199,13 +204,6 @@ export class UserLoginMigrationUc {
 			);
 
 			this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, activeUserLoginMigration));
-		}
-	}
-
-	private checkMigrationClosed(userLoginMigration: UserLoginMigrationDO) {
-		const now = new Date();
-		if (userLoginMigration.closedAt && now >= userLoginMigration.closedAt) {
-			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 	}
 }

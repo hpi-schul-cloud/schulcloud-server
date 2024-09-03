@@ -27,9 +27,8 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
-import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { DeepPartial } from 'fishery';
+import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -1407,26 +1406,26 @@ describe('UserLoginMigrationController (API)', () => {
 		});
 	});
 
-	describe('[GET] /user-login-migrations/force-migration', () => {
+	describe('[POST] /user-login-migrations/force-migration', () => {
 		const expectSchoolMigrationUnchanged = (
 			school: SchoolEntity,
 			externalId: string,
 			sourceSystem: SystemEntity,
 			targetSystem: SystemEntity
 		) => {
-			const expectedSchoolPartial: Partial<SchoolEntity> = {
+			const expectedSchoolPartial: DeepPartial<SchoolEntity> = {
 				externalId,
 			};
 			expect(school).toEqual(expect.objectContaining(expectedSchoolPartial));
 
-			const systems = school?.systems.getItems();
+			const systems: SystemEntity[] = school?.systems.getItems();
 			systems?.forEach((system) => {
 				expect([sourceSystem.id, targetSystem.id]).toContainEqual(system.id);
 			});
 		};
 
 		const expectUserMigrated = (migratedUser: User, preMigratedUser: User, externalId: string) => {
-			const expectedUserPartial: Partial<User> = {
+			const expectedUserPartial: DeepPartial<User> = {
 				externalId,
 			};
 			expect(migratedUser).toEqual(expect.objectContaining(expectedUserPartial));
@@ -1492,14 +1491,14 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(userLoginMigration.sourceSystem?.id).toEqual(sourceSystem.id);
 				expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
 
-				const schoolEntity = await em.findOne(SchoolEntity, school.id);
+				const schoolEntity = await em.findOneOrFail(SchoolEntity, school.id);
 				expect(schoolEntity).toEqual(
 					expect.objectContaining({
 						externalId: requestBody.externalSchoolId,
 					})
 				);
 
-				const migratedUser: User = await em.findOneOrFail(User, adminUser.id);
+				const migratedUser = await em.findOneOrFail(User, adminUser.id);
 				expectUserMigrated(migratedUser, adminUser, requestBody.externalUserId);
 			});
 		});
@@ -1566,15 +1565,15 @@ describe('UserLoginMigrationController (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
 
-				const userLoginMigration: UserLoginMigrationEntity = await em.findOneOrFail(UserLoginMigrationEntity, {
+				const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, {
 					school: school.id,
 				});
 				expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
 
-				const migratedSchool: SchoolEntity = await em.findOneOrFail(SchoolEntity, school.id);
+				const migratedSchool = await em.findOneOrFail(SchoolEntity, school.id);
 				expectSchoolMigrationUnchanged(migratedSchool, requestBody.externalSchoolId, sourceSystem, targetSystem);
 
-				const migratedUser: User = await em.findOneOrFail(User, studentUser.id);
+				const migratedUser = await em.findOneOrFail(User, studentUser.id);
 				expectUserMigrated(migratedUser, studentUser, requestBody.externalUserId);
 			});
 		});
@@ -1647,20 +1646,18 @@ describe('UserLoginMigrationController (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
 
-				const userLoginMigration: UserLoginMigrationEntity = await em.findOneOrFail(UserLoginMigrationEntity, {
-					school: school.id,
-				});
+				const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
 				expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
 
-				const migratedSchool: SchoolEntity = await em.findOneOrFail(SchoolEntity, school.id);
+				const migratedSchool = await em.findOneOrFail(SchoolEntity, school.id);
 				expectSchoolMigrationUnchanged(migratedSchool, requestBody.externalSchoolId, sourceSystem, targetSystem);
 
-				const expectedUserPartial: Partial<User> = {
+				const expectedUserPartial: DeepPartial<User> = {
 					externalId: requestBody.externalUserId,
 					lastLoginSystemChange: teacherUser.lastLoginSystemChange,
 					previousExternalId: teacherUser.previousExternalId,
 				};
-				const correctedUser: User = await em.findOneOrFail(User, teacherUser.id);
+				const correctedUser = await em.findOneOrFail(User, teacherUser.id);
 				expect(correctedUser).toEqual(expect.objectContaining(expectedUserPartial));
 			});
 		});
@@ -1681,7 +1678,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const now = new Date();
 				const closedAt = new Date(now);
-				closedAt.setDate(now.getDate() - 1);
+				closedAt.setMonth(now.getMonth() - 1);
 				const finishedAt = new Date(closedAt);
 				finishedAt.setDate(finishedAt.getDate() + 7);
 				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
@@ -1725,7 +1722,7 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should throw an error', async () => {
+			it('should throw an UnprocessableEntityException', async () => {
 				const { requestBody, loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.post(`/force-migration`, requestBody);

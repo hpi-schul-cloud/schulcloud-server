@@ -16,7 +16,7 @@ import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -35,7 +35,6 @@ import {
 	InvalidUserLoginMigrationLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
-	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
@@ -627,11 +626,11 @@ describe(UserLoginMigrationUc.name, () => {
 	});
 
 	describe('forceMigration', () => {
-		describe('when the school is not migrated without an active user login migration', () => {
+		describe('when the school is not migrated with no active user login migration', () => {
 			const setupNonMigratedSchool = () => {
-				const school = legacySchoolDoFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
-				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -639,9 +638,9 @@ describe(UserLoginMigrationUc.name, () => {
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
 				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
 
 				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
-				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(false);
 
 				return {
 					school,
@@ -653,16 +652,16 @@ describe(UserLoginMigrationUc.name, () => {
 				const setup = () => {
 					const { school, userLoginMigration } = setupNonMigratedSchool();
 
-					const caller = userFactory.buildWithId({
+					const caller: User = userFactory.buildWithId({
 						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user: UserDO = userDoFactory.buildWithId({
+						schoolId: school.id,
 					});
 
 					const externalUserId = 'externalUserId';
 					const externalSchoolId = 'externalSchoolId';
-
-					const user = userDoFactory.buildWithId({
-						schoolId: school.id,
-					});
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
 					userService.findByEmail.mockResolvedValueOnce([user]);
@@ -724,9 +723,9 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when the school is not migrated but with an active user login migration', () => {
 			const setupMigratedSchool = () => {
-				const school = legacySchoolDoFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
-				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -734,9 +733,9 @@ describe(UserLoginMigrationUc.name, () => {
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
 
 				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
-				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(false);
 
 				return {
 					school,
@@ -748,11 +747,11 @@ describe(UserLoginMigrationUc.name, () => {
 				const setup = () => {
 					const { school, userLoginMigration } = setupMigratedSchool();
 
-					const caller = userFactory.buildWithId({
+					const caller: User = userFactory.buildWithId({
 						school: schoolEntityFactory.buildWithId({}, school.id),
 					});
 
-					const user = userDoFactory.buildWithId({
+					const user: UserDO = userDoFactory.buildWithId({
 						schoolId: school.id,
 					});
 
@@ -772,16 +771,6 @@ describe(UserLoginMigrationUc.name, () => {
 						school,
 					};
 				};
-
-				it('should check permission of the calling user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
-						Permission.USER_LOGIN_MIGRATION_FORCE,
-					]);
-				});
 
 				it('should not start migration for the school', async () => {
 					const { caller, user, externalUserId, externalSchoolId } = setup();
@@ -845,16 +834,6 @@ describe(UserLoginMigrationUc.name, () => {
 						school,
 					};
 				};
-
-				it('should check permission of the calling user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
-						Permission.USER_LOGIN_MIGRATION_FORCE,
-					]);
-				});
 
 				it('should not start migration for the school', async () => {
 					const { caller, user, externalUserId, externalSchoolId } = setup();
@@ -896,9 +875,9 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when the school is migrated', () => {
 			const setupMigratedSchool = () => {
-				const school = legacySchoolDoFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
-				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -906,9 +885,9 @@ describe(UserLoginMigrationUc.name, () => {
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
 
 				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
-				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(false);
 
 				return {
 					school,
@@ -1014,16 +993,6 @@ describe(UserLoginMigrationUc.name, () => {
 					};
 				};
 
-				it('should check permission of the calling user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
-						Permission.USER_LOGIN_MIGRATION_FORCE,
-					]);
-				});
-
 				it('should not start migration for the school', async () => {
 					const { caller, user, externalUserId, externalSchoolId } = setup();
 
@@ -1060,7 +1029,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when the school has a closed or finished migration', () => {
 			const setup = () => {
-				const school = legacySchoolDoFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				const now = new Date();
 				const later = new Date();
@@ -1071,11 +1040,11 @@ describe(UserLoginMigrationUc.name, () => {
 					finishedAt: later,
 				});
 
-				const caller = userFactory.buildWithId({
+				const caller: User = userFactory.buildWithId({
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 
-				const user = userDoFactory.buildWithId({
+				const user: UserDO = userDoFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -1086,13 +1055,10 @@ describe(UserLoginMigrationUc.name, () => {
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
-
-				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
-				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(false);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(true);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
 				userService.findByEmail.mockResolvedValueOnce([user]);
-				userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
 
 				return {
 					caller,
