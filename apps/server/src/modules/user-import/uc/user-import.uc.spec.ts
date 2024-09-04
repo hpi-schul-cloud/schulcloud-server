@@ -5,6 +5,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -25,13 +26,12 @@ import {
 	schoolEntityFactory,
 	setupEntities,
 	systemEntityFactory,
-	systemFactory,
 	userDoFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ImportUserMatchCreatorScope, ImportUserFilter } from '../domain/interface';
+import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
 import { ImportUserRepo } from '../repo';

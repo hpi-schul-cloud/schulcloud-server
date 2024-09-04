@@ -15,16 +15,16 @@ import {
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
-	systemFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { systemFactory } from '../../system/testing';
+import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { ImportUserRepo } from '../repo';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
-import { ImportUserRepo } from '../repo';
-import { ImportUser, MatchCreator } from '../entity';
 
 describe(UserImportService.name, () => {
 	let module: TestingModule;

@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
+import { systemFactory } from '@modules/system/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
@@ -12,16 +13,15 @@ import {
 	importUserFactory,
 	setupEntities,
 	systemEntityFactory,
-	systemFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { UserLoginMigrationService } from '../../user-login-migration';
+import { ImportUser } from '../entity';
 import { UserLoginMigrationNotActiveLoggableException, UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportFetchUc } from './user-import-fetch.uc';
-import { ImportUser } from '../entity';
 
 describe(UserImportFetchUc.name, () => {
 	let module: TestingModule;

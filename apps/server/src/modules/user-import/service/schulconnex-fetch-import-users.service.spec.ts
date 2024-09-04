@@ -13,12 +13,12 @@ import {
 	schoolEntityFactory,
 	setupEntities,
 	systemEntityFactory,
-	systemFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { systemFactory } from '../../system/testing';
+import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService } from './schulconnex-fetch-import-users.service';
-import { ImportUser } from '../entity';
 
 describe(SchulconnexFetchImportUsersService.name, () => {
 	let module: TestingModule;
