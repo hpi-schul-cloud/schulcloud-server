@@ -1,4 +1,4 @@
-import { CreateJwtPayload, CurrentUserMapper, ICurrentUser } from '@infra/auth-guard';
+import { CurrentUserMapper, ICurrentUser } from '@infra/auth-guard';
 import { Injectable } from '@nestjs/common';
 import { AuthenticationService } from '../services';
 import { LoginDto } from './dto';
@@ -7,14 +7,13 @@ import { LoginDto } from './dto';
 export class LoginUc {
 	constructor(private readonly authService: AuthenticationService) {}
 
-	async getLoginData(userInfo: ICurrentUser): Promise<LoginDto> {
-		const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(userInfo);
+	async getLoginData(currentUser: ICurrentUser): Promise<LoginDto> {
+		const createJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
 
-		const accessTokenDto: LoginDto = await this.authService.generateJwt(createJwtPayload);
+		const accessTokenDto = await this.authService.generateJwt(createJwtPayload);
+		await this.authService.updateLastLogin(currentUser.accountId);
 
-		await this.authService.updateLastLogin(userInfo.accountId);
-
-		const loginDto: LoginDto = new LoginDto({
+		const loginDto = new LoginDto({
 			accessToken: accessTokenDto.accessToken,
 		});
 
