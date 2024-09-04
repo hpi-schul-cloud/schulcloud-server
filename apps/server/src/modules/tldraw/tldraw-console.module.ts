@@ -1,5 +1,6 @@
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
@@ -10,9 +11,9 @@ import { CoreModule } from '@src/core';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { config, TldrawConfig, TLDRAW_DB_URL } from './config';
+import { config, TLDRAW_DB_URL, TldrawConfig, tldrawS3Config } from './config';
 import { TldrawDrawing } from './entities';
-import { TldrawFilesConsole } from './job';
+import { TldrawFilesConsole, TldrawMigrationConsole } from './job';
 import { TldrawRepo, YMongodb } from './repo';
 import { TldrawFilesStorageAdapterService } from './service';
 import { TldrawDeleteFilesUc } from './uc';
@@ -25,6 +26,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
+		S3ClientModule.register([tldrawS3Config]),
 		CoreModule,
 		ConsoleModule,
 		ConsoleWriterModule,
@@ -42,7 +44,14 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawRepo, YMongodb, TldrawFilesConsole, TldrawFilesStorageAdapterService, TldrawDeleteFilesUc],
+	providers: [
+		TldrawRepo,
+		YMongodb,
+		TldrawFilesConsole,
+		TldrawFilesStorageAdapterService,
+		TldrawDeleteFilesUc,
+		TldrawMigrationConsole,
+	],
 })
 export class TldrawConsoleModule {
 	constructor(private readonly logger: Logger, private readonly configService: ConfigService<TldrawConfig, true>) {
