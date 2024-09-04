@@ -3,8 +3,18 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { groupFactory } from '@shared/testing';
-import { Course, COURSE_REPO, CourseNotSynchronizedLoggableException, CourseRepo } from '../domain';
+import {
+	Course,
+	COURSE_REPO,
+	CourseAlreadySynchronizedLoggableException,
+	CourseFilter,
+	CourseNotSynchronizedLoggableException,
+	CourseRepo,
+} from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';
 
@@ -166,6 +176,87 @@ describe(CourseDoService.name, () => {
 				const { course } = setup();
 
 				await expect(service.stopSynchronization(course)).rejects.toThrow(CourseNotSynchronizedLoggableException);
+			});
+		});
+	});
+
+	describe('startSynchronization', () => {
+		describe('when a course is not synchronized with a group', () => {
+			const setup = () => {
+				const course: Course = courseFactory.build();
+				const group: Group = groupFactory.build();
+
+				return {
+					course,
+					group,
+				};
+			};
+
+			it('should save a course with a synchronized group', async () => {
+				const { course, group } = setup();
+
+				await service.startSynchronization(course, group);
+
+				expect(courseRepo.save).toHaveBeenCalledWith(
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: group.id,
+					})
+				);
+			});
+		});
+
+		describe('when a course is synchronized with a group', () => {
+			const setup = () => {
+				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
+				const group: Group = groupFactory.build();
+
+				return {
+					course,
+					group,
+				};
+			};
+			it('should throw an unprocessable entity exception', async () => {
+				const { course, group } = setup();
+
+				await expect(service.startSynchronization(course, group)).rejects.toThrow(
+					CourseAlreadySynchronizedLoggableException
+				);
+			});
+		});
+	});
+
+	describe('findCourses', () => {
+		describe('when course are found', () => {
+			const setup = () => {
+				const courses: Course[] = courseFactory.buildList(5);
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const filter: CourseFilter = { schoolId };
+				const options: IFindOptions<Course> = {
+					order: {
+						name: SortOrder.asc,
+					},
+					pagination: {
+						limit: 2,
+						skip: 1,
+					},
+				};
+
+				courseRepo.getCourseInfo.mockResolvedValueOnce(new Page<Course>(courses, 5));
+
+				return {
+					courses,
+					schoolId,
+					filter,
+					options,
+				};
+			};
+
+			it('should return the courses by passing filter and options', async () => {
+				const { courses, filter, options } = setup();
+				const result: Page<Course> = await service.getCourseInfo(filter, options);
+
+				expect(result.data).toEqual(courses);
 			});
 		});
 	});

@@ -175,6 +175,15 @@
     tags:
       - ingress
 
+  - name: tldaraw migration Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-migration-job.yml.j2
+      state: "{{ 'present' if WITH_TLDRAW2 else 'absent'}}"
+    tags:
+      - job
+
   - name: Delete Files CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

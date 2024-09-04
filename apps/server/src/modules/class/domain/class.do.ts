@@ -74,4 +74,12 @@ export class Class extends DomainObject<ClassProps> {
 	public removeUser(userId: string) {
 		this.props.userIds = this.props.userIds?.filter((userId1) => userId1 !== userId);
 	}
+
+	public getClassFullName(): string {
+		const classFullName = this.props.gradeLevel
+			? this.props.gradeLevel.toString().concat(this.props.name)
+			: this.props.name;
+
+		return classFullName;
+	}
 }
