@@ -8,8 +8,8 @@ import {
 	OidcMockProvisioningStrategy,
 	ProvisioningStrategy,
 	SanisProvisioningStrategy,
-	TspProvisioningStrategy,
 } from '../strategy';
+import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
 
 @Injectable()
 export class ProvisioningService {

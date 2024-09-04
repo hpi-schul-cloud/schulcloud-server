@@ -17,8 +17,8 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 	ProvisioningSystemDto,
-	TspProvisioningStrategy,
 } from '../..';
+import { TspProvisioningStrategy } from './tsp.strategy';
 
 describe('TspProvisioningStrategy', () => {
 	let module: TestingModule;
@@ -100,6 +100,8 @@ describe('TspProvisioningStrategy', () => {
 						externalId: faker.string.uuid(),
 						roles: [RoleName.TEACHER],
 						email: faker.internet.email(),
+						firstName: faker.person.firstName(),
+						lastName: faker.person.lastName(),
 					}),
 					externalSchool: new ExternalSchoolDto({ externalId: school.id, name: school.getInfo().name }),
 				});
@@ -126,7 +128,9 @@ describe('TspProvisioningStrategy', () => {
 		describe('When user for given data does exist', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const user = userDoFactory.build();
+				const user = userDoFactory.build({
+					id: faker.string.uuid(),
+				});
 				const account = accountDoFactory.build({
 					userId: user.id,
 				});
@@ -140,6 +144,8 @@ describe('TspProvisioningStrategy', () => {
 						externalId: faker.string.uuid(),
 						roles: [RoleName.TEACHER],
 						email: user.email,
+						firstName: faker.person.firstName(),
+						lastName: faker.person.lastName(),
 					}),
 					externalSchool: new ExternalSchoolDto({ externalId: school.id, name: school.getInfo().name }),
 				});
@@ -159,6 +165,136 @@ describe('TspProvisioningStrategy', () => {
 				await expect(sut.apply(data)).resolves.not.toThrow();
 				expect(userService.save).toBeCalledTimes(1);
 				expect(accountService.saveWithValidation).toBeCalledTimes(1);
+			});
+		});
+
+		describe('When external user does not have a firstName', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const data: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: faker.string.uuid(),
+						roles: [RoleName.TEACHER],
+						firstName: undefined,
+					}),
+					externalSchool: new ExternalSchoolDto({ externalId: school.id, name: school.getInfo().name }),
+				});
+
+				schoolService.getSchools.mockResolvedValue([school]);
+				roleService.findByNames.mockResolvedValue([]);
+				userService.findByExternalId.mockResolvedValue(null);
+
+				return { data };
+			};
+
+			it('should throw', async () => {
+				const { data } = setup();
+
+				await expect(sut.apply(data)).rejects.toThrow();
+			});
+		});
+
+		describe('When external user does not have a lastname', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const data: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: faker.string.uuid(),
+						roles: [RoleName.TEACHER],
+						lastName: undefined,
+					}),
+					externalSchool: new ExternalSchoolDto({ externalId: school.id, name: school.getInfo().name }),
+				});
+
+				schoolService.getSchools.mockResolvedValue([school]);
+				roleService.findByNames.mockResolvedValue([]);
+				userService.findByExternalId.mockResolvedValue(null);
+
+				return { data };
+			};
+
+			it('should throw', async () => {
+				const { data } = setup();
+
+				await expect(sut.apply(data)).rejects.toThrow();
+			});
+		});
+
+		describe('When external user does not have an email', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const data: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: faker.string.uuid(),
+						roles: [RoleName.TEACHER],
+						email: undefined,
+					}),
+					externalSchool: new ExternalSchoolDto({ externalId: school.id, name: school.getInfo().name }),
+				});
+
+				schoolService.getSchools.mockResolvedValue([school]);
+				roleService.findByNames.mockResolvedValue([]);
+				userService.findByExternalId.mockResolvedValue(null);
+
+				return { data };
+			};
+
+			it('should throw', async () => {
+				const { data } = setup();
+
+				await expect(sut.apply(data)).rejects.toThrow();
+			});
+		});
+
+		describe('When user does not have an id after creation', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const user = userDoFactory.build({
+					id: undefined,
+				});
+
+				const data: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: faker.string.uuid(),
+						roles: [RoleName.TEACHER],
+						email: user.email,
+						firstName: faker.person.firstName(),
+						lastName: faker.person.lastName(),
+					}),
+					externalSchool: new ExternalSchoolDto({ externalId: school.id, name: school.getInfo().name }),
+				});
+
+				schoolService.getSchools.mockResolvedValue([school]);
+				roleService.findByNames.mockResolvedValue([]);
+				userService.findByExternalId.mockResolvedValue(user);
+				userService.save.mockResolvedValue(user);
+
+				return { data };
+			};
+
+			it('should throw', async () => {
+				const { data } = setup();
+
+				await expect(sut.apply(data)).rejects.toThrow();
 			});
 		});
 

@@ -18,7 +18,6 @@ import {
 	OidcMockProvisioningStrategy,
 	SanisProvisioningStrategy,
 	SchulconnexResponseMapper,
-	TspProvisioningStrategy,
 } from './strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -28,6 +27,7 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
+import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
 
 @Module({
 	imports: [

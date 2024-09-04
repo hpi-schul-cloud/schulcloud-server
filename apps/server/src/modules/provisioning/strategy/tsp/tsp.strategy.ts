@@ -2,7 +2,8 @@ import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
@@ -26,7 +27,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	override getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		// TODO EW-1004
-		throw new Error('Method not implemented.');
+		throw new NotImplementedException();
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
@@ -40,7 +41,9 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 
 	private async findSchoolOrFail(data: OauthDataDto): Promise<School> {
 		if (!data.externalSchool) {
-			throw new Error('External school not given');
+			throw new UnprocessableEntityException(
+				`Unable to create new external user ${data.externalUser.externalId} without a school`
+			);
 		}
 
 		const school = await this.schoolService.getSchools({
@@ -49,7 +52,10 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		if (!school || school.length === 0) {
-			throw new Error('School not found');
+			throw new NotFoundLoggableException(School.name, {
+				systemId: data.system.systemId,
+				externalId: data.externalSchool.externalId,
+			});
 		}
 
 		return school[0];
@@ -102,12 +108,16 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		roleRefs: RoleReference[],
 		schoolId: string
 	): Promise<UserDO> {
+		if (!externalUser.firstName || !externalUser.lastName || !externalUser.email) {
+			throw new UnprocessableEntityException('Unable to create user without first name, last name or email');
+		}
+
 		const newUser = new UserDO({
 			roles: roleRefs,
 			schoolId,
-			firstName: externalUser.firstName || '',
-			lastName: externalUser.lastName || '',
-			email: externalUser.email || '',
+			firstName: externalUser.firstName,
+			lastName: externalUser.lastName,
+			email: externalUser.email,
 			birthday: externalUser.birthday,
 		});
 		const savedUser = await this.userService.save(newUser);
@@ -116,7 +126,11 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async ensureAccountExists(user: UserDO, systemId: string): Promise<void> {
-		const account = await this.accountService.findByUserId(user.id || '');
+		if (!user.id) {
+			throw new UnprocessableEntityException('Unable to create account for user which has no id');
+		}
+
+		const account = await this.accountService.findByUserId(user.id);
 
 		if (!account) {
 			await this.accountService.saveWithValidation(
