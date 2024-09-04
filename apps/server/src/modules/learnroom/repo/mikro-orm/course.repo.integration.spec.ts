@@ -7,6 +7,7 @@ import { Group } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity, CourseFeatures, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory as courseEntityFactory,
@@ -16,7 +17,7 @@ import {
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { Course, COURSE_REPO, CourseProps } from '../../domain';
+import { Course, COURSE_REPO, CourseProps, CourseStatus } from '../../domain';
 import { courseFactory } from '../../testing';
 import { CourseMikroOrmRepo } from './course.repo';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
@@ -171,6 +172,86 @@ describe(CourseMikroOrmRepo.name, () => {
 
 				const updatedCourse = await repo.findCourseById(newCourse.id);
 				expect(updatedCourse.getProps()).toEqual(expect.objectContaining(expectedProps));
+			});
+		});
+	});
+
+	describe('findCourses', () => {
+		describe('when entitys are not found', () => {
+			const setup = async () => {
+				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(2, {
+					school: schoolEntity,
+					untilDate: new Date('2050-04-24'),
+				});
+
+				await em.persistAndFlush([schoolEntity, ...courseEntities]);
+				em.clear();
+
+				const filter = { schoolId: schoolEntity.id, status: CourseStatus.ARCHIVE };
+
+				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
+				return { courseDOs, filter };
+			};
+
+			it('should return empty array', async () => {
+				const { filter } = await setup();
+
+				const result = await repo.getCourseInfo(filter);
+
+				expect(result.data).toEqual([]);
+			});
+		});
+
+		describe('when entitys are found for school', () => {
+			const setup = async () => {
+				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(5, {
+					school: schoolEntity,
+					untilDate: new Date('1995-04-24'),
+				});
+
+				courseEntities.push(
+					...courseEntityFactory.buildList(3, {
+						school: schoolEntity,
+						untilDate: new Date('2050-04-24'),
+					})
+				);
+
+				await em.persistAndFlush([schoolEntity, ...courseEntities]);
+				em.clear();
+
+				const pagination = { skip: 0, limit: 10 };
+				const options = {
+					pagination,
+					order: {
+						name: SortOrder.desc,
+					},
+				};
+				const filter = { schoolId: schoolEntity.id, status: CourseStatus.ARCHIVE };
+
+				const courseDOs = courseEntities.map((courseEntity) => CourseEntityMapper.mapEntityToDo(courseEntity));
+
+				return { courseDOs, options, filter };
+			};
+
+			it('should return archived courses', async () => {
+				const { options, filter } = await setup();
+
+				const result = await repo.getCourseInfo(filter, options);
+
+				expect(result.data.length).toEqual(5);
+				expect(result.total).toEqual(5);
+			});
+
+			it('should return current courses', async () => {
+				const { options, filter } = await setup();
+
+				filter.status = CourseStatus.CURRENT;
+				const result = await repo.getCourseInfo(filter, options);
+
+				expect(result.data.length).toEqual(3);
+				expect(result.total).toEqual(3);
 			});
 		});
 	});

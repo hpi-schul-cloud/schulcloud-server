@@ -1,56 +1,11 @@
-import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { Course } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
-import { Scope } from '../scope';
-
-class CourseScope extends Scope<Course> {
-	forAllGroupTypes(userId: EntityId): CourseScope {
-		const isStudent = { students: userId };
-		const isTeacher = { teachers: userId };
-		const isSubstitutionTeacher = { substitutionTeachers: userId };
-
-		if (userId) {
-			this.addQuery({ $or: [isStudent, isTeacher, isSubstitutionTeacher] });
-		}
-
-		return this;
-	}
-
-	forTeacherOrSubstituteTeacher(userId: EntityId): CourseScope {
-		const isTeacher = { teachers: userId };
-		const isSubstitutionTeacher = { substitutionTeachers: userId };
-
-		if (userId) {
-			this.addQuery({ $or: [isTeacher, isSubstitutionTeacher] });
-		}
-
-		return this;
-	}
-
-	forTeacher(userId: EntityId): CourseScope {
-		this.addQuery({ teachers: userId });
-		return this;
-	}
-
-	forActiveCourses(): CourseScope {
-		const now = new Date();
-		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<Course>;
-		const untilDateInFuture = { untilDate: { $gte: now } };
-
-		this.addQuery({ $or: [noUntilDate, untilDateInFuture] });
-
-		return this;
-	}
-
-	forCourseId(courseId: EntityId): CourseScope {
-		this.addQuery({ id: courseId });
-		return this;
-	}
-}
+import { CourseScope } from './course.scope';
 
 @Injectable()
 export class CourseRepo extends BaseRepo<Course> {
