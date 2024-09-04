@@ -17,6 +17,8 @@ import {
 	SingleColumnBoardResponse,
 } from './dto';
 
+// TODO: remove this file, and remove it from sonar-project.properties
+
 @ApiTags('Rooms')
 @JwtAuthentication()
 @Controller('rooms')
