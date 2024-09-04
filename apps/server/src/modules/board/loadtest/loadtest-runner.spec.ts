@@ -7,7 +7,7 @@ jest.mock('./socket-connection-manager');
 
 jest.mock('./helper/create-board', () => {
 	return {
-		createBoard: jest.fn().mockResolvedValue({ id: 'board123' }),
+		createBoardsResilient: jest.fn().mockResolvedValue([{ id: 'board123' }]),
 	};
 });
 

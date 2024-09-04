@@ -16,12 +16,12 @@ import {
 } from '@shared/testing';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 describe(RoomBoardDTOFactory.name, () => {
 	let module: TestingModule;
 	let mapper: RoomBoardDTOFactory;
-	let roomsAuthorisationService: RoomsAuthorisationService;
+	let roomsAuthorisationService: CourseRoomsAuthorisationService;
 	let authorisationService: DeepMocked<AuthorizationService>;
 	let configBefore: IConfig;
 
@@ -37,7 +37,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			providers: [
 				RoomBoardDTOFactory,
 				{
-					provide: RoomsAuthorisationService,
+					provide: CourseRoomsAuthorisationService,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						hasTaskReadPermission(user: User, task: Task): boolean {
@@ -53,7 +53,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			],
 		}).compile();
 
-		roomsAuthorisationService = module.get(RoomsAuthorisationService);
+		roomsAuthorisationService = module.get(CourseRoomsAuthorisationService);
 		authorisationService = module.get(AuthorizationService);
 		mapper = module.get(RoomBoardDTOFactory);
 		await setupEntities();

@@ -207,7 +207,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-delete-files-cronjob.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - cronjob
 
@@ -334,7 +334,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - deployment
 
@@ -362,7 +362,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc-monitor.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - prometheus
 
