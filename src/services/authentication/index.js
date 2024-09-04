@@ -36,7 +36,7 @@ class SCAuthenticationService extends AuthenticationService {
 module.exports = (app) => {
 	app.use('/authentication/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	// Configure feathers-authentication
-	app.set('authentication', authConfig);
+	app.set('authentication', authConfig); // TODO: Why? Can it be removed, i do not found it with app.get('')
 	const authentication = new SCAuthenticationService(app);
 
 	authentication.register('tsp', new TSPStrategy());

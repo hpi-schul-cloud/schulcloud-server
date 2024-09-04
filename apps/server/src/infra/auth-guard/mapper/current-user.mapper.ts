@@ -1,6 +1,7 @@
 import { CreateJwtPayload, ICurrentUser, JwtPayload } from '../interface';
 
 export class CurrentUserMapper {
+	// this make no sense, the currentUserMapper should only create CurrentUser not the jwtPayload
 	static mapCurrentUserToCreateJwtPayload(currentUser: ICurrentUser): CreateJwtPayload {
 		return {
 			accountId: currentUser.accountId,

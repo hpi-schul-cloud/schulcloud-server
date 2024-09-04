@@ -1,5 +1,6 @@
 {
 	"$schema": "./default.schema.json",
+	"JWT_AUTHENTICATION_SECRET": "secrets",
 	"SC_DOMAIN": "localhost",
 	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"FEATURE_API_VALIDATION_ENABLED": true,

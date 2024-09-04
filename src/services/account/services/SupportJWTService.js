@@ -4,15 +4,12 @@ const CryptoJS = require('crypto-js');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks/index');
-const { authenticationSecret, audience: audienceName } = require('../../authentication/logic');
 const logger = require('../../../logger');
 
 const { addTokenToWhitelistWithIdAndJti } = require('../../authentication/logic/whitelist');
-
-const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
-const DEFAULT_AUDIENCE = 'https://dbildungscloud.de'; // The organisation that create this jwt.
 
 class JWT {
 	/**
@@ -20,7 +17,7 @@ class JWT {
 	 * @param {String} [audience] Name of jwt creator.
 	 * @param {Number} [expiredOffset] The jwt expire time in ms.
 	 */
-	constructor(secret, audience = DEFAULT_AUDIENCE, expiredOffset = DEFAULT_EXPIRED) {
+	constructor(secret, audience, expiredOffset) {
 		this.secret = secret;
 		this.aud = audience;
 		this.expiredOffset = expiredOffset;
@@ -86,6 +83,7 @@ class JWT {
 		await addTokenToWhitelistWithIdAndJti(jwtData.accountId, jwtData.jti);
 
 		const jwt = `${encodedHeader}.${encodedData}.${signature}`;
+
 		return jwt;
 	}
 }
@@ -101,7 +99,7 @@ class SupportJWTService {
 	 * @param {String} [audience] Name of jwt creator.
 	 * @param {Number} [expiredOffset] The jwt expire time in ms.
 	 */
-	constructor(secret, audience = DEFAULT_AUDIENCE, expiredOffset = DEFAULT_EXPIRED) {
+	constructor(secret, audience, expiredOffset) {
 		this.err = Object.freeze({
 			missingParams: 'Missing param userId.',
 			canNotCreateJWT: 'Can not create support jwt.',
@@ -155,9 +153,15 @@ class SupportJWTService {
 	}
 }
 
+// TODO: Need to move to nest
 const supportJWTServiceSetup = (app) => {
+	const authenticationSecret = Configuration.get('JWT_AUTHENTICATION_SECRET');
+	const audienceName = Configuration.get('JWT_AUD');
+	const jwtLifetimeInMs = Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') * 1000;
+
+	const instance = new SupportJWTService(authenticationSecret, audienceName, jwtLifetimeInMs);
+
 	const path = 'accounts/supportJWT';
-	const instance = new SupportJWTService(authenticationSecret, audienceName);
 	app.use(path, instance);
 	const service = app.service(path);
 	service.hooks(SupportJWTService.getSetupHooks());
@@ -167,5 +171,4 @@ module.exports = {
 	hooks,
 	SupportJWTService,
 	supportJWTServiceSetup,
-	JWT,
 };
