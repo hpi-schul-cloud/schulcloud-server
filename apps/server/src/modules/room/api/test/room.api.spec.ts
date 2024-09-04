@@ -82,7 +82,7 @@ describe('Room Controller (API)', () => {
 				});
 				const expectedResponse = {
 					data,
-					limit: 50,
+					limit: 1000,
 					skip: 0,
 					total: rooms.length,
 				};
