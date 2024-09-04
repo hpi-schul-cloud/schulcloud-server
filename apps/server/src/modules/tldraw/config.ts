@@ -26,7 +26,8 @@ export const TLDRAW_SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as nu
 
 export const S3_CONNECTION_NAME = 'tldraw-s3';
 // we need to check if the endpoint is production or not
-const endpoint = env.NODE_ENV === 'production' ? `https://${env.S3_ENDPOINT as string}` : env.S3_ENDPOINT;
+const s3Endpoint = env.S3_ENDPOINT || '';
+const endpoint = env.NODE_ENV === 'production' ? `https://${s3Endpoint}` : s3Endpoint;
 // There are temporary configurations for S3 it should read directly from env
 export const tldrawS3Config = {
 	connectionName: S3_CONNECTION_NAME,
