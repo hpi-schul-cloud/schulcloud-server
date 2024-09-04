@@ -8,6 +8,7 @@ import { Action } from '../type';
 import { CourseRule } from './course.rule';
 
 describe('CourseRule', () => {
+	let module: TestingModule;
 	let service: CourseRule;
 	let authorizationHelper: AuthorizationHelper;
 	let user: User;
@@ -19,7 +20,7 @@ describe('CourseRule', () => {
 	beforeAll(async () => {
 		await setupEntities();
 
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [AuthorizationHelper, CourseRule],
 		}).compile();
 
@@ -32,12 +33,20 @@ describe('CourseRule', () => {
 		user = userFactory.build({ roles: [role] });
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('when validating an entity', () => {
 		it('should call hasAllPermissions on AuthorizationHelper', () => {
 			entity = courseEntityFactory.build({ teachers: [user] });
 			const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
-			expect(spy).toBeCalledWith(user, []);
+			expect(spy).toHaveBeenCalledWith(user, []);
 		});
 
 		it('should call hasAccessToEntity on AuthorizationHelper if action = "read"', () => {
@@ -70,6 +79,35 @@ describe('CourseRule', () => {
 			entity = courseEntityFactory.build();
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
+		});
+	});
+
+	describe('when validating an entity and the user has COURSE_ADMINISTRATION permission', () => {
+		const setup = () => {
+			const permissionD = Permission.COURSE_ADMINISTRATION;
+			const adminRole = roleFactory.build({ permissions: [permissionD] });
+			const adminUser = userFactory.build({ roles: [adminRole] });
+
+			return {
+				adminUser,
+				permissionD,
+			};
+		};
+
+		it('should call hasAllPermissions with admin permissions on AuthorizationHelper', () => {
+			const { permissionD, adminUser } = setup();
+			entity = courseEntityFactory.build();
+			const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
+			service.hasPermission(adminUser, entity, { action: Action.read, requiredPermissions: [] });
+			expect(spy).toHaveBeenNthCalledWith(2, adminUser, [permissionD]);
+		});
+
+		it('should not call hasAccessToEntity on AuthorizationHelper', () => {
+			const { adminUser } = setup();
+			entity = courseEntityFactory.build();
+			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
+			service.hasPermission(adminUser, entity, { action: Action.read, requiredPermissions: [] });
+			expect(spy).toHaveBeenCalledTimes(0);
 		});
 	});
 
