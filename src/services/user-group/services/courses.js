@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const {
 	ifNotLocal,
 	restrictToCurrentSchool,
@@ -34,6 +35,8 @@ const {
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
 
+const newRoomViewEnabled = Configuration.get('FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED');
+
 class Courses {
 	constructor(options) {
 		this.options = options || {};
@@ -60,6 +63,9 @@ class Courses {
 	}
 
 	remove(id, params) {
+		if (newRoomViewEnabled) {
+			this.app.service('/calendar/courses').remove(id, prepareInternalParams(params));
+		}
 		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
 	}
 
