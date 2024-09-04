@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Controller,
 	ForbiddenException,
@@ -18,7 +18,7 @@ import { TicketParams } from './dto';
 export class EduSharingController {
 	constructor(private readonly eduSharingUC: EduSharingUC) {}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@ApiOperation({
 		summary: 'Fetches the edu-sharing ticket for a given user name.',
 	})
@@ -35,7 +35,7 @@ export class EduSharingController {
 		return ticket;
 	}
 
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@ApiOperation({
 		summary:
 			'Gets detailed information about a ticket. Will throw an exception if the given ticket is not valid anymore.',
