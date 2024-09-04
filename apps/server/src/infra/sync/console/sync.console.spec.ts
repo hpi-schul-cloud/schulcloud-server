@@ -7,6 +7,7 @@ import { SyncConsole } from './sync.console';
 
 describe(SyncConsole.name, () => {
 	let syncConsole: SyncConsole;
+	let syncUc: SyncUc;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -28,11 +29,25 @@ describe(SyncConsole.name, () => {
 		}).compile();
 
 		syncConsole = module.get(SyncConsole);
+		syncUc = module.get(SyncUc);
 	});
 
 	describe('when sync console is initialized', () => {
 		it('should be defined', () => {
 			expect(syncConsole).toBeDefined();
+		});
+	});
+
+	describe('startSync', () => {
+		const setup = () => {
+			const target = 'tsp';
+			return { target };
+		};
+
+		it('should call startSync method of syncUc', async () => {
+			const { target } = setup();
+			await syncConsole.startSync(target);
+			expect(syncUc.startSync).toHaveBeenCalledWith(target);
 		});
 	});
 });
