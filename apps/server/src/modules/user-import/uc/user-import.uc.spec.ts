@@ -14,10 +14,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { Counted, IImportUserScope, MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { Counted, SchoolFeature } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
 import {
 	federalStateFactory,
 	importUserFactory,
@@ -31,7 +31,10 @@ import {
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ImportUserMatchCreatorScope, ImportUserFilter } from '../domain/interface';
+import { ImportUser, MatchCreator } from '../entity';
 import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
+import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
 import {
@@ -593,7 +596,7 @@ describe('[ImportUserModule]', () => {
 
 				await uc.saveAllUsersMatches(currentUser.id);
 
-				const filters = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+				const filters = { matches: [ImportUserMatchCreatorScope.MANUAL, ImportUserMatchCreatorScope.AUTO] };
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(school, filters, {});
 				expect(importUserRepoDeleteImportUserSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy).toHaveBeenCalledTimes(2);
@@ -1273,7 +1276,7 @@ describe('[ImportUserModule]', () => {
 
 					await uc.clearAllAutoMatches(currentUser.id);
 
-					const autoMatchFilter: IImportUserScope = { matches: [MatchCreatorScope.AUTO] };
+					const autoMatchFilter: ImportUserFilter = { matches: [ImportUserMatchCreatorScope.AUTO] };
 					expect(importUserRepo.findImportUsers).toBeCalledWith(currentUser.school, autoMatchFilter);
 					expect(userImportService.saveImportUsers).toBeCalledWith(importUsers);
 				});

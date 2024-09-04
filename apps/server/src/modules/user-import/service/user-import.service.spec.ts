@@ -8,9 +8,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo } from '@shared/repo';
 import {
 	importUserFactory,
 	legacySchoolDoFactory,
@@ -24,6 +23,8 @@ import { Logger } from '@src/core/logger';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
+import { ImportUserRepo } from '../repo';
+import { ImportUser, MatchCreator } from '../entity';
 
 describe(UserImportService.name, () => {
 	let module: TestingModule;

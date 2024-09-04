@@ -1,8 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { Injectable } from '@nestjs/common';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { Counted, EntityId, NameMatch } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { UserScope } from './user.scope';
 
@@ -49,7 +50,7 @@ export class UserRepo extends BaseRepo<User> {
 
 	async findForImportUser(
 		school: SchoolEntity,
-		filters?: NameMatch,
+		filters?: ImportUserNameMatchFilter,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { pagination, order } = options || {};

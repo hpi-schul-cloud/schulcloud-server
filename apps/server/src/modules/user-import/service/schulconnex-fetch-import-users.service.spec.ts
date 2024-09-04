@@ -6,7 +6,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { ImportUser, SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import {
 	importUserFactory,
@@ -18,6 +18,7 @@ import {
 } from '@shared/testing';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService } from './schulconnex-fetch-import-users.service';
+import { ImportUser } from '../entity';
 
 describe(SchulconnexFetchImportUsersService.name, () => {
 	let module: TestingModule;

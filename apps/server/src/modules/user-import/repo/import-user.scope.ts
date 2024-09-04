@@ -2,11 +2,12 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
-import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { MatchCreatorScope } from '@shared/domain/types';
-import { MongoPatterns } from '../mongo.patterns';
-import { Scope } from '../scope';
+import { MongoPatterns } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
+import { ImportUserMatchCreatorScope } from '../domain/interface';
+import { ImportUser } from '../entity';
 
 export class ImportUserScope extends Scope<ImportUser> {
 	bySchool(school: SchoolEntity): ImportUserScope {
@@ -99,12 +100,12 @@ export class ImportUserScope extends Scope<ImportUser> {
 		return this;
 	}
 
-	byMatches(matches: MatchCreatorScope[]) {
+	byMatches(matches: ImportUserMatchCreatorScope[]) {
 		const queries = matches
 			.map((match) => {
-				if (match === MatchCreatorScope.MANUAL) return { matchedBy: 'admin' };
-				if (match === MatchCreatorScope.AUTO) return { matchedBy: 'auto' };
-				if (match === MatchCreatorScope.NONE) return { matchedBy: null };
+				if (match === ImportUserMatchCreatorScope.MANUAL) return { matchedBy: 'admin' };
+				if (match === ImportUserMatchCreatorScope.AUTO) return { matchedBy: 'auto' };
+				if (match === ImportUserMatchCreatorScope.NONE) return { matchedBy: null };
 				return null;
 			})
 			.filter((match) => match != null);

@@ -6,7 +6,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { ImportUser, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	importUserFactory,
@@ -21,6 +21,7 @@ import { UserLoginMigrationNotActiveLoggableException, UserMigrationIsNotEnabled
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportFetchUc } from './user-import-fetch.uc';
+import { ImportUser } from '../entity';
 
 describe(UserImportFetchUc.name, () => {
 	let module: TestingModule;
