@@ -43,8 +43,8 @@ interface Header {
 	typ: string;
 }
 
-export class AuthConfigMapper {
-	static mapFeathersAuthConfigToAuthConfig(externalAuthConfig: unknown): JwtConstants {
+export class AuthConfigFactory {
+	static build(externalAuthConfig: unknown): JwtConstants {
 		TypeGuard.checkDefinedObject(externalAuthConfig);
 		TypeGuard.isDefinedObject(externalAuthConfig);
 

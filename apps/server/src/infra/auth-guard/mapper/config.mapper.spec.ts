@@ -1,4 +1,4 @@
-import { AuthConfigMapper, JwtConstants } from './config.mapper';
+import { AuthConfigFactory, JwtConstants } from './config.mapper';
 
 const buildNotAStringError = () => new Error(`Type is not a string`);
 const buildNotAnObjectError = () => new Error(`Type is not an object.`);
@@ -33,7 +33,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should map input to JwtConstants', () => {
 			const { input, expectedResult } = setup();
 
-			const result: JwtConstants = AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input);
+			const result: JwtConstants = AuthConfigFactory.build(input);
 
 			expect(result).toEqual(expectedResult);
 		});
@@ -50,7 +50,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -65,7 +65,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -90,7 +90,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -114,7 +114,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -131,7 +131,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -154,7 +154,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -178,7 +178,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -202,7 +202,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -225,7 +225,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -249,7 +249,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -272,7 +272,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -296,7 +296,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -319,7 +319,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -343,7 +343,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -367,7 +367,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -390,7 +390,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 
@@ -414,7 +414,7 @@ describe('mapFeathersAuthConfigToAuthConfig', () => {
 		it('should throw', () => {
 			const { input, error } = setup();
 
-			expect(() => AuthConfigMapper.mapFeathersAuthConfigToAuthConfig(input)).toThrow(error);
+			expect(() => AuthConfigFactory.build(input)).toThrow(error);
 		});
 	});
 });
