@@ -20,7 +20,7 @@ spec:
       - name: tldraw-migration-job
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
- # this is just for this job and should not be an example for anyone else
+        # this is just for this job and should not be an example for anyone else
         envFrom:
         - configMapRef:
             name: api-configmap
