@@ -61,4 +61,12 @@ export class Room extends DomainObject<RoomProps> {
 	public set createdAt(value: Date) {
 		this.props.createdAt = value;
 	}
+
+	public get updatedAt(): Date | undefined {
+		return this.props.updatedAt;
+	}
+
+	public set updatedAt(value: Date) {
+		this.props.updatedAt = value;
+	}
 }

@@ -57,4 +57,18 @@ describe('Room', () => {
 		room.untilDate = newUntilDate;
 		expect(room.untilDate).toEqual(newUntilDate);
 	});
+
+	it('should get and set createdAt', () => {
+		expect(room.createdAt).toBeUndefined();
+		const createdAt = new Date('2024-01-01T00:00:00Z');
+		room.createdAt = createdAt;
+		expect(room.createdAt).toEqual(createdAt);
+	});
+
+	it('should get and set updatedAt', () => {
+		expect(room.updatedAt).toBeUndefined();
+		const updatedAt = new Date('2024-01-01T00:00:00Z');
+		room.updatedAt = updatedAt;
+		expect(room.updatedAt).toEqual(updatedAt);
+	});
 });
