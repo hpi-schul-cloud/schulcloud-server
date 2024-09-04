@@ -1,5 +1,5 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Controller, ForbiddenException, Get, HttpStatus, Query } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, HttpStatus, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { ErrorResponse } from '@src/core/error/dto';
@@ -20,7 +20,7 @@ export class RoomController {
 	@ApiOperation({ summary: 'Get a list of rooms.' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Returns a list of rooms.', type: RoomListResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
-	// @ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getRooms(

@@ -46,13 +46,4 @@ describe('RoomEntity', () => {
 			expect(minimalRoom.untilDate).toBeUndefined();
 		});
 	});
-
-	describe('domainObject', () => {
-		it('should have a domainObject property that is initially undefined', () => {
-			const { roomProps } = setup();
-			const room = new RoomEntity(roomProps);
-
-			expect(room.domainObject).toBeUndefined();
-		});
-	});
 });

@@ -16,6 +16,12 @@ export class RoomResponse {
 	@ApiPropertyOptional({ type: Date })
 	untilDate?: Date;
 
+	@ApiPropertyOptional({ type: Date })
+	createdAt?: Date;
+
+	@ApiPropertyOptional({ type: Date })
+	updatedAt?: Date;
+
 	constructor(room: RoomResponse) {
 		this.id = room.id;
 		this.name = room.name;
@@ -23,5 +29,7 @@ export class RoomResponse {
 
 		this.startDate = room.startDate;
 		this.untilDate = room.untilDate;
+		this.createdAt = room.createdAt;
+		this.updatedAt = room.updatedAt;
 	}
 }

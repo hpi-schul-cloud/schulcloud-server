@@ -7,15 +7,17 @@ export interface RoomProps extends AuthorizableObject {
 	color: string;
 	startDate?: Date;
 	untilDate?: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
 }
 
 export class Room extends DomainObject<RoomProps> {
 	public getProps(): RoomProps {
-		const copyProps = { ...this.props };
 		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		copyProps.domainObject = undefined;
+		const { domainObject, ...copyProps } = this.props;
 
 		return copyProps;
 	}
@@ -50,5 +52,13 @@ export class Room extends DomainObject<RoomProps> {
 
 	public set untilDate(value: Date) {
 		this.props.untilDate = value;
+	}
+
+	public get createdAt(): Date | undefined {
+		return this.props.createdAt;
+	}
+
+	public set createdAt(value: Date) {
+		this.props.createdAt = value;
 	}
 }

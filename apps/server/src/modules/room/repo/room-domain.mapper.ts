@@ -1,22 +1,7 @@
-import { EntityData } from '@mikro-orm/core';
-import { RoomEntity } from './entity';
 import { Room } from '../domain/do/room.do';
+import { RoomEntity } from './entity';
 
 export class RoomDomainMapper {
-	static mapDoToEntityData(room: Room): EntityData<RoomEntity> {
-		const props = room.getProps();
-
-		const roomEntityData: EntityData<RoomEntity> = {
-			id: props.id,
-			name: props.name,
-			color: props.color,
-			startDate: props.startDate,
-			untilDate: props.untilDate,
-		};
-
-		return roomEntityData;
-	}
-
 	static mapEntityToDo(roomEntity: RoomEntity): Room {
 		// check identity map reference
 		if (roomEntity.domainObject) {

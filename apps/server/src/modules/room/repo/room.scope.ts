@@ -1,4 +1,3 @@
-// import { MongoPatterns } from '@shared/repo';
 import { Scope } from '@shared/repo/scope';
 import { RoomEntity } from './entity';
 

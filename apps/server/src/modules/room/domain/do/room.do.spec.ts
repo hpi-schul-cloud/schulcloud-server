@@ -1,5 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomProps } from './room.do';
+import { roomFactory } from '../../testing';
 
 describe('Room', () => {
 	let room: Room;
@@ -14,6 +15,21 @@ describe('Room', () => {
 
 	beforeEach(() => {
 		room = new Room(roomProps);
+	});
+
+	it('should props without domainObject', () => {
+		const mockDomainObject = roomFactory.build();
+		// this tests the hotfix for the mikro-orm issue
+		// eslint-disable-next-line @typescript-eslint/dot-notation
+		room['domainObject'] = mockDomainObject;
+
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { domainObject, ...props } = room.getProps();
+
+		expect(domainObject).toEqual(undefined);
+		expect(props).toEqual(roomProps);
 	});
 
 	it('should get and set name', () => {
