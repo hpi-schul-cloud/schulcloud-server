@@ -22,6 +22,7 @@ import {
 	CourseRoomsAuthorisationService,
 	CourseRoomsUc,
 } from './uc';
+import { RoomsController } from './controller/rooms.controller';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -36,7 +37,7 @@ import {
 		AuthorizationReferenceModule,
 		RoleModule,
 	],
-	controllers: [DashboardController, CourseController, CourseRoomsController],
+	controllers: [DashboardController, CourseController, CourseRoomsController, RoomsController],
 	providers: [
 		DashboardUc,
 		CourseUc,
