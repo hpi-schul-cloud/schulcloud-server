@@ -1,6 +1,6 @@
-import { ImportUserRoleName } from '@modules/user-import/entity';
 import { RoleName } from '@shared/domain/interface';
 import { FilterRoleType, UserRole } from '../controller/dto';
+import { ImportUserRoleName } from '../entity';
 import { RoleNameMapper } from './role-name.mapper';
 
 describe('[RoleNameMapper]', () => {

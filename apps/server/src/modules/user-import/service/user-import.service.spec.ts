@@ -3,6 +3,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +20,6 @@ import {
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { systemFactory } from '../../system/testing';
 import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { ImportUserRepo } from '../repo';
