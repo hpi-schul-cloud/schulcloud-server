@@ -51,18 +51,11 @@ export interface JwtConstants {
 
 // Check if it not more a jwt factory and should be renamed and moved
 export class AuthConfigFactory {
-	public static build(externalAuthConfig: unknown): JwtConstants {
-		TypeGuard.checkDefinedObject(externalAuthConfig);
-		TypeGuard.isDefinedObject(externalAuthConfig);
-
-		TypeGuard.checkKeyInObject(externalAuthConfig, 'secret');
-		const secretUnknown = TypeGuard.getValueFromObjectKey(externalAuthConfig, 'secret');
-		const secret = TypeGuard.checkString(secretUnknown);
-
+	public static build(secretInput: unknown, jwtOptionsInput: unknown): JwtConstants {
+		const secret = TypeGuard.checkString(secretInput);
 		// Should we add length check for secrets and that it is NOT secrets like for local?
 
-		const jwtOptionsUnknown = TypeGuard.checkKeyInObject(externalAuthConfig, 'jwtOptions');
-		const jwtOptions = TypeGuard.checkDefinedObject(jwtOptionsUnknown);
+		const jwtOptions = TypeGuard.checkDefinedObject(jwtOptionsInput);
 
 		const audienceUnknown = TypeGuard.checkKeyInObject(jwtOptions, 'audience');
 		const audience = TypeGuard.checkString(audienceUnknown);
