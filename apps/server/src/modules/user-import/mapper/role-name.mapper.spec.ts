@@ -1,6 +1,6 @@
-import { IImportUserRoleName } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { FilterRoleType, UserRole } from '../controller/dto';
+import { ImportUserRoleName } from '../entity';
 import { RoleNameMapper } from './role-name.mapper';
 
 describe('[RoleNameMapper]', () => {
@@ -21,7 +21,7 @@ describe('[RoleNameMapper]', () => {
 			expect(result).toEqual(UserRole.STUDENT);
 		});
 		it('should fail for invalid input', () => {
-			const roleName = 'foo' as unknown as IImportUserRoleName;
+			const roleName = 'foo' as unknown as ImportUserRoleName;
 			expect(() => RoleNameMapper.mapToResponse(roleName)).toThrowError('invalid role name from domain');
 		});
 	});

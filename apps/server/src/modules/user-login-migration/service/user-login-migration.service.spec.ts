@@ -3,12 +3,13 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { legacySchoolDoFactory, systemFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,

@@ -2,9 +2,8 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IImportUserRoleName, ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { MatchCreatorScope } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	createCollections,
@@ -12,7 +11,9 @@ import {
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { ImportUserRepo } from '.';
+import { ImportUserRoleName, ImportUser, MatchCreator } from '../entity';
+import { ImportUserMatchCreatorScope } from '../domain/interface';
+import { ImportUserRepo } from './import-user.repo';
 
 describe('ImportUserRepo', () => {
 	let module: TestingModule;
@@ -506,7 +507,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			await em.persistAndFlush(school);
 			await expect(async () =>
-				repo.findImportUsers(school, { role: 'foo' as unknown as IImportUserRoleName })
+				repo.findImportUsers(school, { role: 'foo' as unknown as ImportUserRoleName })
 			).rejects.toThrowError('unexpected role name');
 		});
 	});
@@ -590,7 +591,7 @@ describe('ImportUserRepo', () => {
 			});
 			const otherSkippedImportUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser, skippedImportUser, otherSkippedImportUser]);
-			const [results, count] = await repo.findImportUsers(school, { matches: [MatchCreatorScope.MANUAL] });
+			const [results, count] = await repo.findImportUsers(school, { matches: [ImportUserMatchCreatorScope.MANUAL] });
 			expect(results).toContain(importUser); // single match
 			expect(results).not.toContain(skippedImportUser); // other match
 			expect(results).not.toContain(otherSkippedImportUser); // no match
@@ -607,7 +608,9 @@ describe('ImportUserRepo', () => {
 			});
 			const otherSkippedImportUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser, skippedImportUser, otherSkippedImportUser]);
-			const [results, count] = await repo.findImportUsers(importUser.school, { matches: [MatchCreatorScope.AUTO] });
+			const [results, count] = await repo.findImportUsers(importUser.school, {
+				matches: [ImportUserMatchCreatorScope.AUTO],
+			});
 			expect(results).toContain(importUser); // single match
 			expect(results).not.toContain(skippedImportUser); // other match
 			expect(results).not.toContain(otherSkippedImportUser); // no match
@@ -624,7 +627,7 @@ describe('ImportUserRepo', () => {
 			const otherSkippedImportUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser, otherImportUser, otherSkippedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, {
-				matches: [MatchCreatorScope.AUTO, MatchCreatorScope.MANUAL],
+				matches: [ImportUserMatchCreatorScope.AUTO, ImportUserMatchCreatorScope.MANUAL],
 			});
 			expect(results).toContain(importUser); // manual match
 			expect(results).toContain(otherImportUser); // auto match
@@ -644,7 +647,7 @@ describe('ImportUserRepo', () => {
 				.build({ school });
 			await em.persistAndFlush([school, importUser, matchedImportUser, otherMatchedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, {
-				matches: [MatchCreatorScope.NONE],
+				matches: [ImportUserMatchCreatorScope.NONE],
 			});
 			expect(results).toContain(importUser); // no match
 			expect(results).not.toContain(matchedImportUser); // auto match
@@ -664,7 +667,11 @@ describe('ImportUserRepo', () => {
 				.build({ school });
 			await em.persistAndFlush([school, importUser, matchedImportUser, otherMatchedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, {
-				matches: [MatchCreatorScope.NONE, MatchCreatorScope.AUTO, MatchCreatorScope.MANUAL],
+				matches: [
+					ImportUserMatchCreatorScope.NONE,
+					ImportUserMatchCreatorScope.AUTO,
+					ImportUserMatchCreatorScope.MANUAL,
+				],
 			});
 			expect(results).toContain(importUser); // no match
 			expect(results).toContain(matchedImportUser); // auto match
@@ -675,7 +682,9 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser]);
-			const [results] = await repo.findImportUsers(school, { matches: ['foo'] as unknown as [MatchCreatorScope] });
+			const [results] = await repo.findImportUsers(school, {
+				matches: ['foo'] as unknown as [ImportUserMatchCreatorScope],
+			});
 			expect(results).toContain(importUser);
 		});
 	});
