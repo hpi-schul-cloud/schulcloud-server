@@ -12,7 +12,7 @@ module.exports = {
 		jwtOptions: {
 			header: { typ: 'access' },
 			audience: Configuration.get('JWT_AUD'),
-			issuer: Configuration.get('JWT_AUD'),
+			issuer: 'feathers',
 			algorithm: 'HS256',
 			expiresIn: Configuration.get('JWT_LIFETIME'),
 		},

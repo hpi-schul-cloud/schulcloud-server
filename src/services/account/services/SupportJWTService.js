@@ -65,7 +65,7 @@ class JWT {
 			iat,
 			exp,
 			aud: this.aud,
-			iss: 'feathers', // TODO: change auditer
+			iss: 'feathers',
 			sub: userData.accountId,
 			jti: `support_${ObjectId()}`,
 		};
