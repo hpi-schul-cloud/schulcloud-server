@@ -31,8 +31,9 @@ describe(TspSyncStrategy.name, () => {
 	});
 
 	describe('sync', () => {
-		it('should return a promise', async () => {
+		it('should return a promise', () => {
 			const result = strategy.sync();
+
 			expect(result).toBeInstanceOf(Promise);
 		});
 	});
