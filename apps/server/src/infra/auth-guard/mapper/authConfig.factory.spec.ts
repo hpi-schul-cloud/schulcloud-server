@@ -1,28 +1,26 @@
-import { AuthConfigFactory, JwtConstants } from './config.mapper';
+import { Algorithms, AuthConfigFactory, JwtConstants } from './authConfig.factory';
 
 const buildNotAStringError = () => new Error(`Type is not a string`);
 const buildNotAnObjectError = () => new Error(`Type is not an object.`);
 
-describe('mapFeathersAuthConfigToAuthConfig', () => {
+describe('AuthConfigFactory.build', () => {
 	describe('when input is valid', () => {
 		const setup = () => {
 			const input = {
 				secret: 'mysecret',
 				jwtOptions: {
-					header: { typ: 'JWT' },
 					audience: 'myaudience',
 					issuer: 'myissuer',
-					algorithm: 'HS256',
 					expiresIn: '1h',
 				},
 			};
 			const expectedResult: JwtConstants = {
 				secret: 'mysecret',
 				jwtOptions: {
-					header: { typ: 'JWT' },
+					header: { typ: 'access' },
 					audience: 'myaudience',
 					issuer: 'myissuer',
-					algorithm: 'HS256',
+					algorithm: Algorithms.HS256,
 					expiresIn: '1h',
 				},
 			};

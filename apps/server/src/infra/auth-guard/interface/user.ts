@@ -22,6 +22,8 @@ export interface ICurrentUser {
 
 	/** True if the user is an external user e.g. an oauth user or ldap user */
 	isExternalUser: boolean;
+
+	externalIdToken?: string;
 }
 
 export function isICurrentUser(user: any): user is ICurrentUser {

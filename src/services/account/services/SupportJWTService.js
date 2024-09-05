@@ -65,7 +65,7 @@ class JWT {
 			iat,
 			exp,
 			aud: this.aud,
-			iss: 'feathers',
+			iss: 'feathers', // TODO: change auditer
 			sub: userData.accountId,
 			jti: `support_${ObjectId()}`,
 		};
@@ -153,9 +153,8 @@ class SupportJWTService {
 	}
 }
 
-// TODO: Need to move to nest
 const supportJWTServiceSetup = (app) => {
-	const authenticationSecret = Configuration.get('JWT_AUTHENTICATION_SECRET');
+	const authenticationSecret = Configuration.get('AUTHENTICATION');
 	const audienceName = Configuration.get('JWT_AUD');
 	const jwtLifetimeInMs = Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') * 1000;
 

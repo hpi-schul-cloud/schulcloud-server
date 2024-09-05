@@ -7,7 +7,7 @@ module.exports = {
 		// entityId and service are never queried, but need to be provided otherwise the server doesn't start
 		entityId: 'id',
 		service: 'emptyService', // This service is registered in 'index.js'
-		secret: Configuration.get('JWT_AUTHENTICATION_SECRET'),
+		secret: Configuration.get('AUTHENTICATION'),
 		authStrategies: ['jwt', 'tsp', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'access' },

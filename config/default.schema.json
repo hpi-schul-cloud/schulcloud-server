@@ -119,7 +119,7 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
-		"JWT_AUTHENTICATION_SECRET": {
+		"AUTHENTICATION": {
 			"type": "string",
 			"description": "The secret that is used for create and validate the jwt."
 		},

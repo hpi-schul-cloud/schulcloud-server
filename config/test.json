@@ -1,6 +1,6 @@
 {
 	"$schema": "./default.schema.json",
-	"JWT_AUTHENTICATION_SECRET": "secrets",
+	"AUTHENTICATION": "secrets",
 	"host": "localhost",
 	"port": 3030,
 	"SC_DOMAIN": "localhost",

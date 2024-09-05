@@ -1,6 +1,5 @@
 import { CreateJwtPayload } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
-import type { ServerConfig } from '@modules/server';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -10,6 +9,7 @@ import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { LoginDto } from '../uc/dto';
+import { AuthenticationConfig } from '../authentication-config';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,7 +17,7 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<ServerConfig, true> // ServerConfig is wrong
+		private readonly configService: ConfigService<AuthenticationConfig, true>
 	) {}
 
 	public async loadAccount(username: string, systemId?: string): Promise<Account> {

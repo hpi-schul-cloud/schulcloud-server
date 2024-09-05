@@ -1,13 +1,12 @@
-import { currentUserFactory, jwtPayloadFactory, setupEntities } from '@shared/testing';
-import { CreateJwtPayload } from '../interface';
-import { CurrentUserMapper } from './current-user.mapper';
+import { jwtPayloadFactory, setupEntities } from '@shared/testing';
+import { CurrentUserFactory } from './current-user.factory';
 
-describe('CurrentUserMapper', () => {
+describe('CurrentUserFactory', () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
 
-	describe('jwtToICurrentUser', () => {
+	describe('buildFromJwt', () => {
 		describe('when JWT is provided with all claims', () => {
 			const setup = () => {
 				const mockJwtPayload = jwtPayloadFactory.build();
@@ -20,7 +19,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user', () => {
 				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
+				const currentUser = CurrentUserFactory.buildFromJwt(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
 					accountId: mockJwtPayload.accountId,
@@ -35,7 +34,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user with default for isExternalUser', () => {
 				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
+				const currentUser = CurrentUserFactory.buildFromJwt(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
 					isExternalUser: mockJwtPayload.isExternalUser,
@@ -55,7 +54,7 @@ describe('CurrentUserMapper', () => {
 			it('should return current user', () => {
 				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
+				const currentUser = CurrentUserFactory.buildFromJwt(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
 					accountId: mockJwtPayload.accountId,
@@ -69,28 +68,11 @@ describe('CurrentUserMapper', () => {
 			it('should return current user with default for isExternalUser', () => {
 				const { mockJwtPayload } = setup();
 
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
+				const currentUser = CurrentUserFactory.buildFromJwt(mockJwtPayload);
 
 				expect(currentUser).toMatchObject({
 					isExternalUser: true,
 				});
-			});
-		});
-	});
-
-	describe('mapCurrentUserToCreateJwtPayload', () => {
-		it('should map current user to create jwt payload', () => {
-			const currentUser = currentUserFactory.build();
-
-			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
-
-			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
-				accountId: currentUser.accountId,
-				systemId: currentUser.systemId,
-				roles: currentUser.roles,
-				schoolId: currentUser.schoolId,
-				userId: currentUser.userId,
-				isExternalUser: false,
 			});
 		});
 	});
