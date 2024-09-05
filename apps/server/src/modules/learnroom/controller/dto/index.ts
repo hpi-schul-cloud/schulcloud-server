@@ -12,3 +12,5 @@ export * from './patch-visibility.params';
 export * from './course-room-element.url.params';
 export * from './course-room.url.params';
 export * from './single-column-board';
+export * from './course-sync.body.params';
+export * from './course-export.body.params';
