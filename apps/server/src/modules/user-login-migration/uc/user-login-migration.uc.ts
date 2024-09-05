@@ -20,6 +20,7 @@ import {
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
 	UserMigrationCorrectionSuccessfulLoggable,
+	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationQuery } from './dto';
@@ -185,6 +186,8 @@ export class UserLoginMigrationUc {
 			);
 
 			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, activeUserLoginMigration));
+		} else if (school.externalId !== externalSchoolId) {
+			throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
 		}
 
 		const hasUserMigrated: boolean = this.userMigrationService.hasUserMigratedInMigrationPhase(

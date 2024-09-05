@@ -34,6 +34,7 @@ import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
@@ -874,8 +875,10 @@ describe(UserLoginMigrationUc.name, () => {
 		});
 
 		describe('when the school is migrated', () => {
-			const setupMigratedSchool = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+			const setupMigratedSchool = (externalId: string) => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+					externalId,
+				});
 
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
@@ -897,7 +900,10 @@ describe(UserLoginMigrationUc.name, () => {
 
 			describe('when the user found by provided email had not been migrated', () => {
 				const setup = () => {
-					const { school, userLoginMigration } = setupMigratedSchool();
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					const { school, userLoginMigration } = setupMigratedSchool(externalSchoolId);
 
 					const caller = userFactory.buildWithId({
 						school: schoolEntityFactory.buildWithId({}, school.id),
@@ -906,9 +912,6 @@ describe(UserLoginMigrationUc.name, () => {
 					const user = userDoFactory.buildWithId({
 						schoolId: school.id,
 					});
-
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
 					userService.findByEmail.mockResolvedValueOnce([user]);
@@ -965,7 +968,10 @@ describe(UserLoginMigrationUc.name, () => {
 
 			describe('when the user found by provided email had been migrated', () => {
 				const setup = () => {
-					const { school, userLoginMigration } = setupMigratedSchool();
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					const { school, userLoginMigration } = setupMigratedSchool(externalSchoolId);
 
 					const caller = userFactory.buildWithId({
 						school: schoolEntityFactory.buildWithId({}, school.id),
@@ -975,9 +981,6 @@ describe(UserLoginMigrationUc.name, () => {
 						schoolId: school.id,
 						externalId: 'otherExternalId',
 					});
-
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
 					userService.findByEmail.mockResolvedValueOnce([user]);
@@ -1023,6 +1026,47 @@ describe(UserLoginMigrationUc.name, () => {
 					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
 
 					expect(userMigrationService.updateExternalUserId).toHaveBeenCalledWith(user.id, externalUserId);
+				});
+			});
+
+			describe('when the provided external school id does not match', () => {
+				const setup = () => {
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					const { school, userLoginMigration } = setupMigratedSchool('otherExternalSchoolId');
+
+					const caller = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user = userDoFactory.buildWithId({
+						schoolId: school.id,
+						externalId: 'otherExternalId',
+					});
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should throw an exception and not migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					const promise = uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					await expect(promise).rejects.toThrow(UserLoginMigrationInvalidExternalSchoolIdLoggableException);
+					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
+					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
 				});
 			});
 		});

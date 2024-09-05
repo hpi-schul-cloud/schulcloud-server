@@ -16,4 +16,5 @@ export { UserNotMigratedLoggableException } from './user-not-migrated.loggable-e
 export { UserMigrationRollbackSuccessfulLoggable } from './user-migration-rollback-successful.loggable';
 export { UserLoginMigrationInvalidAdminLoggableException } from './user-login-migration-invalid-admin.loggable-exception';
 export { UserLoginMigrationMultipleEmailUsersLoggableException } from './user-login-migration-multiple-email-users.loggable-exception';
+export { UserLoginMigrationInvalidExternalSchoolIdLoggableException } from './user-login-migration-invalid-external-school-id.loggable-exception';
 export * from './debug';

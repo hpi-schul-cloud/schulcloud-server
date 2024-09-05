@@ -234,7 +234,10 @@ export class UserLoginMigrationController {
 	@ApiOperation({ summary: 'Force migrate an administrator account and its school' })
 	@ApiCreatedResponse({ description: 'The user and their school were successfully migrated' })
 	@ApiUnprocessableEntityResponse({
-		description: 'There are multiple users with the email or the school had closed or finished the migration',
+		description:
+			'There are multiple users with the email' +
+			'or the school had closed or finished the migration' +
+			'or the external school id does not match with the migrated school',
 	})
 	@ApiNotFoundResponse({ description: 'There is no user with the email' })
 	public async forceMigration(
