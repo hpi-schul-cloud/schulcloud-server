@@ -5,10 +5,4 @@ export * from './domain-object.factory';
 export * from './user-login-migration-do.factory';
 export * from './lti-tool.factory';
 export * from './pseudonym.factory';
-export {
-	systemFactory,
-	systemOauthConfigFactory,
-	systemLdapConfigFactory,
-	systemOidcConfigFactory,
-} from './system/system.factory';
 export { schoolSystemOptionsFactory } from './school-system-options/school-system-options.factory';
