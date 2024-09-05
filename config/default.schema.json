@@ -1576,6 +1576,11 @@
 			"default": "http://localhost:3349",
 			"description": "Address for tldraw management app"
 		},
+		"WITH_TLDRAW2": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables tldraw2 feature"
+		},
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",

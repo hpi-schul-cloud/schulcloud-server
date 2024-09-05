@@ -5,5 +5,6 @@ export const getTldrawClientConfig = (): TldrawClientConfig => {
 	return {
 		TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
 		TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
+		WITH_TLDRAW2: Configuration.get('WITH_TLDRAW2') as boolean,
 	};
 };
