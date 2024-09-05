@@ -1664,7 +1664,7 @@ describe('UserLoginMigrationController (API)', () => {
 					sourceSystem,
 				});
 
-				const email = 'student@test.com';
+				const email = 'teacher@test.com';
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({
 					email,
 					school,
@@ -1755,7 +1755,7 @@ describe('UserLoginMigrationController (API)', () => {
 					finishedAt,
 				});
 
-				const email = 'student@test.com';
+				const email = 'teacher@test.com';
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({
 					email,
 					school,
