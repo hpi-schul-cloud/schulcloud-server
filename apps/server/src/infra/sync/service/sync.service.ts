@@ -20,7 +20,6 @@ export class SyncService {
 		if (!this.strategies.has(targetStrategy)) {
 			throw new Error('please provide a valid target strategy name to start its synchronization process');
 		}
-		// Assuming there is an async operation to be awaited
 		await this.strategies.get(targetStrategy)?.sync();
 	}
 }

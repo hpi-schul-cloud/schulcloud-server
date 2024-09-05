@@ -41,25 +41,33 @@ describe(SyncService.name, () => {
 	});
 
 	describe('startSync', () => {
-		const setup = () => {
-			const error = new Error('please provide a valid target strategy name to start its synchronization process');
-			const invalidSystem = faker.lorem.word();
-			const validSystem = 'tsp';
-
-			return { error, invalidSystem, validSystem };
-		};
 		describe('when provided target is invalid', () => {
+			const setup = () => {
+				const error = new Error('please provide a valid target strategy name to start its synchronization process');
+				const invalidSystem = faker.lorem.word();
+
+				return { error, invalidSystem };
+			};
+
 			it('should throw an invalid provided target error', async () => {
 				const { error, invalidSystem } = setup();
+
 				await expect(service.startSync(invalidSystem)).rejects.toThrowError(error);
 			});
 		});
 
 		describe('when provided target is valid', () => {
+			const setup = () => {
+				const validSystem = 'tsp';
+				const syncSpy = jest.spyOn(service.strategies.get(SyncStrategyTarget.TSP)!, 'sync');
+
+				return { validSystem, syncSpy };
+			};
+
 			it('should call sync method of the provided target', async () => {
-				const { validSystem } = setup();
-				const syncSpy = jest.spyOn(service.strategies.get(validSystem as SyncStrategyTarget)!, 'sync');
+				const { validSystem, syncSpy } = setup();
 				await service.startSync(validSystem);
+
 				expect(syncSpy).toHaveBeenCalled();
 			});
 		});

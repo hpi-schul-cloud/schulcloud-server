@@ -29,16 +29,17 @@ describe(SyncUc.name, () => {
 	});
 
 	describe('startSync', () => {
-		const setup = () => {
-			const validTarget = 'tsp';
-
-			return { validTarget };
-		};
-
 		describe('when calling startSync', () => {
+			const setup = () => {
+				const validTarget = 'tsp';
+
+				return { validTarget };
+			};
+
 			it('should call sync method', async () => {
 				const { validTarget } = setup();
 				await uc.startSync(validTarget);
+
 				expect(service.startSync).toHaveBeenCalledWith(validTarget);
 			});
 		});

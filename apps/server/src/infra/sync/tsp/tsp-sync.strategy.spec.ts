@@ -25,8 +25,10 @@ describe(TspSyncStrategy.name, () => {
 	});
 
 	describe('getType', () => {
-		it('should return tsp', () => {
-			expect(strategy.getType()).toBe(SyncStrategyTarget.TSP);
+		describe('when tsp sync strategy is initialized', () => {
+			it('should return tsp', () => {
+				expect(strategy.getType()).toBe(SyncStrategyTarget.TSP);
+			});
 		});
 	});
 

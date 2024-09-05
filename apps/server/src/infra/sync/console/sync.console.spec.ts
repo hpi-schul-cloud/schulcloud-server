@@ -1,4 +1,3 @@
-import { ConsoleWriterService } from '@src/infra/console';
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
@@ -13,10 +12,6 @@ describe(SyncConsole.name, () => {
 		const module = await Test.createTestingModule({
 			providers: [
 				SyncConsole,
-				{
-					provide: ConsoleWriterService,
-					useValue: createMock<ConsoleWriterService>(),
-				},
 				{
 					provide: SyncUc,
 					useValue: createMock<SyncUc>(),
@@ -47,6 +42,7 @@ describe(SyncConsole.name, () => {
 		it('should call startSync method of syncUc', async () => {
 			const { target } = setup();
 			await syncConsole.startSync(target);
+
 			expect(syncUc.startSync).toHaveBeenCalledWith(target);
 		});
 	});
