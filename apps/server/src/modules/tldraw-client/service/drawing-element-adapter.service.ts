@@ -15,10 +15,10 @@ export class DrawingElementAdapterService {
 		this.logger.setContext(DrawingElementAdapterService.name);
 	}
 
-	async deleteDrawingBinData(docName: string): Promise<void> {
+	async deleteDrawingBinData(parentId: string): Promise<void> {
 		const baseUrl = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_BASE_URL');
 		const tldrawDocumentEndpoint = new URL('tldraw-document', baseUrl).toString();
-		await firstValueFrom(this.httpService.delete(`${tldrawDocumentEndpoint}/${docName}`, this.defaultHeaders()));
+		await firstValueFrom(this.httpService.delete(`${tldrawDocumentEndpoint}/${parentId}`, this.defaultHeaders()));
 	}
 
 	private apiKeyHeader() {
