@@ -914,12 +914,27 @@ describe(UserLoginMigrationUc.name, () => {
 
 	describe('forceExtendedMigration', () => {
 		describe('when the school is not migrated with no active user login migration', () => {
-			const setupNonMigratedSchool = () => {
+			const setup = () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
 				});
+
+				const caller: User = userFactory.buildWithId({
+					school: schoolEntityFactory.buildWithId({}, school.id),
+				});
+
+				const user: UserDO = userDoFactory.buildWithId({
+					schoolId: school.id,
+				});
+
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+				userService.findByEmail.mockResolvedValueOnce([user]);
+				userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 
@@ -930,81 +945,55 @@ describe(UserLoginMigrationUc.name, () => {
 				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
 
 				return {
-					school,
+					caller,
+					user,
+					externalUserId,
+					externalSchoolId,
 					userLoginMigration,
+					school,
 				};
 			};
 
-			describe('when the user found by provided email can be migrated', () => {
-				const setup = () => {
-					const { school, userLoginMigration } = setupNonMigratedSchool();
+			it('should check permission of the calling user', async () => {
+				const { caller, user, externalUserId, externalSchoolId } = setup();
 
-					const caller: User = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
+				await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
 
-					const user: UserDO = userDoFactory.buildWithId({
-						schoolId: school.id,
-					});
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
+					Permission.USER_LOGIN_MIGRATION_FORCE,
+				]);
+			});
 
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
+			it('should start migration for the school', async () => {
+				const { caller, user, externalUserId, externalSchoolId } = setup();
 
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
+				await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
 
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
+				expect(userLoginMigrationService.startMigration).toHaveBeenCalledWith(user.schoolId);
+			});
 
-				it('should check permission of the calling user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
+			it('should migrate the school', async () => {
+				const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
 
-					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+				await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
 
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
-						Permission.USER_LOGIN_MIGRATION_FORCE,
-					]);
-				});
+				expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+					school,
+					externalSchoolId,
+					userLoginMigration.targetSystemId
+				);
+			});
 
-				it('should start migration for the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
+			it('should migrate the user', async () => {
+				const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
 
-					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+				await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
 
-					expect(userLoginMigrationService.startMigration).toHaveBeenCalledWith(user.schoolId);
-				});
-
-				it('should migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
-
-					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-						school,
-						externalSchoolId,
-						userLoginMigration.targetSystemId
-					);
-				});
-
-				it('should migrate the user', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
-
-					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
-						user.id,
-						externalUserId,
-						userLoginMigration.targetSystemId
-					);
-				});
+				expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
+					user.id,
+					externalUserId,
+					userLoginMigration.targetSystemId
+				);
 			});
 		});
 

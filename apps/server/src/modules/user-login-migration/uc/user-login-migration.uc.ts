@@ -234,8 +234,10 @@ export class UserLoginMigrationUc {
 			);
 
 			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, activeUserLoginMigration));
-		} else if (school.externalId !== externalSchoolId) {
-			throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
+		} else {
+			if (school.externalId !== externalSchoolId) {
+				throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
+			}
 		}
 
 		const hasUserMigrated: boolean = this.userMigrationService.hasUserMigratedInMigrationPhase(
@@ -258,7 +260,7 @@ export class UserLoginMigrationUc {
 		}
 	}
 
-	private checkUserExists(users: UserDO[], email: string) {
+	private checkUserExists(users: UserDO[], email: string): void {
 		if (users.length === 0) {
 			throw new NotFoundLoggableException('User', { email });
 		}
