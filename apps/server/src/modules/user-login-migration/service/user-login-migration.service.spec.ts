@@ -759,4 +759,71 @@ describe(UserLoginMigrationService.name, () => {
 			});
 		});
 	});
+
+	describe('hasMigrationClosed', () => {
+		describe('when migration is closed', () => {
+			const setup = () => {
+				const closedAt = new Date();
+				closedAt.setMonth(closedAt.getMonth() - 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt,
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return true', () => {
+				const { userLoginMigration } = setup();
+
+				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when migration is not closed', () => {
+			const setup = () => {
+				const closedAt = undefined;
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt,
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { userLoginMigration } = setup();
+
+				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when "closedAt" exists but has not passed', () => {
+			const setup = () => {
+				const closedAt = new Date();
+				closedAt.setMonth(closedAt.getMonth() + 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt,
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { userLoginMigration } = setup();
+
+				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
 });
