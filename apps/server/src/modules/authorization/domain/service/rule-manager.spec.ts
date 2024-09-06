@@ -99,6 +99,10 @@ describe('RuleManager', () => {
 		instanceRule = await module.get(InstanceRule);
 	});
 
+	afterEach(() => {
+		injectionService.getAuthorizationRules.mockReset();
+	});
+
 	afterAll(() => {
 		jest.resetAllMocks();
 	});
@@ -124,7 +128,7 @@ describe('RuleManager', () => {
 				const applicableRule = buildApplicableRule();
 				const notApplicableRule = buildNotApplicableRule();
 
-				injectionService.getAuthorizationRules.mockReturnValue([applicableRule, notApplicableRule]);
+				injectionService.getAuthorizationRules.mockReturnValueOnce([applicableRule, notApplicableRule]);
 
 				return { user, object, context, applicableRule, notApplicableRule };
 			};
