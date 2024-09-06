@@ -13,7 +13,7 @@ import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 		SyncConsole,
 		SyncUc,
 		SyncService,
-		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED ') as boolean) ? [TspSyncStrategy] : []),
+		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean) ? [TspSyncStrategy] : []),
 	],
 	exports: [SyncConsole],
 })

@@ -1,17 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { TspSyncStrategy } from '../tsp/tsp-sync.strategy';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 
 @Injectable()
 export class SyncService {
-	strategies: Map<SyncStrategyTarget, SyncStrategy> = new Map<SyncStrategyTarget, SyncStrategy>();
+	private strategies: Map<SyncStrategyTarget, SyncStrategy> = new Map<SyncStrategyTarget, SyncStrategy>();
 
-	constructor(private readonly tspSyncStrategy: TspSyncStrategy) {
+	constructor(@Optional() private readonly tspSyncStrategy?: TspSyncStrategy) {
 		this.registerStrategy(tspSyncStrategy);
 	}
 
-	protected registerStrategy(strategy: SyncStrategy) {
+	protected registerStrategy(strategy?: SyncStrategy) {
+		if (!strategy) {
+			return;
+		}
 		this.strategies.set(strategy.getType(), strategy);
 	}
 
