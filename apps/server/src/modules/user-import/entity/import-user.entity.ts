@@ -1,11 +1,11 @@
 import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { EntityWithSchool, RoleName } from '../interface';
-import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
-import { SchoolEntity } from './school.entity';
-import type { User } from './user.entity';
+import { BaseEntityReference, BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import type { User } from '@shared/domain/entity/user.entity';
+import { EntityWithSchool, RoleName } from '@shared/domain/interface';
 
-export type IImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
+export type ImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 
 export interface ImportUserProperties {
 	// references
@@ -18,7 +18,7 @@ export interface ImportUserProperties {
 	firstName: string;
 	lastName: string;
 	email: string; // TODO VO
-	roleNames?: IImportUserRoleName[];
+	roleNames?: ImportUserRoleName[];
 	classNames?: string[];
 	user?: User;
 	matchedBy?: MatchCreator;
@@ -91,7 +91,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 	email: string;
 
 	@Enum({ fieldName: 'roles' })
-	roleNames: IImportUserRoleName[] = [];
+	roleNames: ImportUserRoleName[] = [];
 
 	@Property()
 	classNames: string[] = [];
@@ -130,7 +130,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		this.matchedBy = undefined;
 	}
 
-	static isImportUserRole(role: RoleName): role is IImportUserRoleName {
+	static isImportUserRole(role: RoleName): role is ImportUserRoleName {
 		return role === RoleName.ADMINISTRATOR || role === RoleName.STUDENT || role === RoleName.TEACHER;
 	}
 }
