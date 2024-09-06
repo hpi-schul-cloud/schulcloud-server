@@ -8,6 +8,7 @@ import { SyncStrategyTarget } from '../sync-strategy.types';
 describe(SyncService.name, () => {
 	let module: TestingModule;
 	let service: SyncService;
+	let tspSyncStrategy: TspSyncStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,6 +29,7 @@ describe(SyncService.name, () => {
 		}).compile();
 
 		service = module.get(SyncService);
+		tspSyncStrategy = module.get(TspSyncStrategy);
 	});
 
 	afterAll(async () => {
@@ -59,16 +61,16 @@ describe(SyncService.name, () => {
 		describe('when provided target is valid', () => {
 			const setup = () => {
 				const validSystem = 'tsp';
-				const syncSpy = jest.spyOn(service.strategies.get(SyncStrategyTarget.TSP)!, 'sync');
+				Reflect.set(service, 'strategies', new Map([[SyncStrategyTarget.TSP, tspSyncStrategy]]));
 
-				return { validSystem, syncSpy };
+				return { validSystem };
 			};
 
 			it('should call sync method of the provided target', async () => {
-				const { validSystem, syncSpy } = setup();
+				const { validSystem } = setup();
 				await service.startSync(validSystem);
 
-				expect(syncSpy).toHaveBeenCalled();
+				expect(tspSyncStrategy.sync).toHaveBeenCalled();
 			});
 		});
 	});

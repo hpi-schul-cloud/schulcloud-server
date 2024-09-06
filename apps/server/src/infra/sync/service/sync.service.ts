@@ -12,10 +12,9 @@ export class SyncService {
 	}
 
 	protected registerStrategy(strategy?: SyncStrategy) {
-		if (!strategy) {
-			return;
+		if (strategy) {
+			this.strategies.set(strategy.getType(), strategy);
 		}
-		this.strategies.set(strategy.getType(), strategy);
 	}
 
 	public async startSync(target: string): Promise<void> {
