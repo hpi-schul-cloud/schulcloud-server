@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
+import { Logger } from '@src/core/logger';
 import { SyncService } from './sync.service';
 import { TspSyncStrategy } from '../tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 
 describe(SyncService.name, () => {
 	let module: TestingModule;
 	let service: SyncService;
 	let tspSyncStrategy: TspSyncStrategy;
+	let logger: Logger;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -25,11 +28,16 @@ describe(SyncService.name, () => {
 						},
 					}),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(SyncService);
 		tspSyncStrategy = module.get(TspSyncStrategy);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -43,22 +51,23 @@ describe(SyncService.name, () => {
 	});
 
 	describe('startSync', () => {
-		describe('when provided target is invalid', () => {
+		describe('when provided target is invalid or the sync is deactivated', () => {
 			const setup = () => {
-				const error = new Error('please provide a valid target strategy name to start its synchronization process');
-				const invalidSystem = faker.lorem.word();
+				const invalidTarget = faker.lorem.word();
+				const output = new InvalidTargetLoggable(invalidTarget);
 
-				return { error, invalidSystem };
+				return { output, invalidTarget };
 			};
 
 			it('should throw an invalid provided target error', async () => {
-				const { error, invalidSystem } = setup();
+				const { output, invalidTarget } = setup();
+				await service.startSync(invalidTarget);
 
-				await expect(service.startSync(invalidSystem)).rejects.toThrowError(error);
+				expect(logger.info).toHaveBeenCalledWith(output);
 			});
 		});
 
-		describe('when provided target is valid', () => {
+		describe('when provided target is valid and synchronization is activated', () => {
 			const setup = () => {
 				const validSystem = 'tsp';
 				Reflect.set(service, 'strategies', new Map([[SyncStrategyTarget.TSP, tspSyncStrategy]]));
