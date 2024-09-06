@@ -4,7 +4,6 @@ import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationHelper, AuthorizationService, RuleManager, AuthorizationInjectionService } from './domain';
 import {
-	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -36,7 +35,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		RuleManager,
 		AuthorizationHelper,
 		// rules
-		BoardNodeRule,
 		ContextExternalToolRule,
 		CourseGroupRule,
 		CourseRule,
@@ -55,6 +53,12 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		ExternalToolRule,
 		InstanceRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule, AuthorizationInjectionService],
+	exports: [
+		FeathersAuthorizationService,
+		AuthorizationService,
+		SystemRule,
+		AuthorizationInjectionService,
+		AuthorizationHelper,
+	],
 })
 export class AuthorizationModule {}

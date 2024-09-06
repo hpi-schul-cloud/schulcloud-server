@@ -12,10 +12,20 @@ import {
 import { BoardModule } from './board.module';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { BoardNodeRule } from './authorisation/board-node.rule';
 
 @Module({
 	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CourseRepo],
+	providers: [
+		BoardUc,
+		BoardNodePermissionService,
+		ColumnUc,
+		CardUc,
+		ElementUc,
+		SubmissionItemUc,
+		CourseRepo,
+		BoardNodeRule,
+	],
 })
 export class BoardApiModule {}

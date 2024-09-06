@@ -3,7 +3,6 @@ import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
-	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -28,7 +27,6 @@ import { AuthorizationInjectionService } from './authorization-injection.service
 @Injectable()
 export class RuleManager {
 	constructor(
-		boardNodeRule: BoardNodeRule,
 		contextExternalToolRule: ContextExternalToolRule,
 		courseGroupRule: CourseGroupRule,
 		courseRule: CourseRule,
@@ -48,7 +46,6 @@ export class RuleManager {
 		instanceRule: InstanceRule,
 		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
-		this.authorizationInjectionService.injectAuthorizationRule(boardNodeRule);
 		this.authorizationInjectionService.injectAuthorizationRule(contextExternalToolRule);
 		this.authorizationInjectionService.injectAuthorizationRule(courseGroupRule);
 		this.authorizationInjectionService.injectAuthorizationRule(courseRule);

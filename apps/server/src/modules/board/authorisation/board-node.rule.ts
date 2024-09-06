@@ -12,12 +12,19 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity/user.entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '../type';
+// TODO: check these imports
+import { AuthorizationHelper } from '../../authorization/domain/service/authorization.helper';
+import { Action, AuthorizationContext, Rule } from '../../authorization/domain/type';
+import { AuthorizationInjectionService } from '@src/modules/authorization/domain';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof BoardNodeAuthorizable;

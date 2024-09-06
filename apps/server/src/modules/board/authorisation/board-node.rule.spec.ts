@@ -9,9 +9,11 @@ import {
 	fileElementFactory,
 	submissionItemFactory,
 } from '@src/modules/board/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action } from '../type';
+// TODO: look at imports
+import { AuthorizationHelper } from '../../authorization/domain/service/authorization.helper';
+import { Action } from '../../authorization/domain/type';
 import { BoardNodeRule } from './board-node.rule';
+import { AuthorizationInjectionService } from '@src/modules/authorization/domain';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
@@ -21,7 +23,7 @@ describe(BoardNodeRule.name, () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BoardNodeRule, AuthorizationHelper],
+			providers: [BoardNodeRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(BoardNodeRule);
