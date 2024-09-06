@@ -55,6 +55,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		ExternalToolRule,
 		InstanceRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
+	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule, AuthorizationInjectionService],
 })
 export class AuthorizationModule {}
