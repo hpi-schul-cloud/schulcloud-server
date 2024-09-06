@@ -12,8 +12,9 @@ import {
 } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ImportUser, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
+import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';
 import { UserImportFetchUc, UserImportUc } from '../uc';
 import {

@@ -8,11 +8,12 @@ import { UserModule } from '@modules/user';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ImportUserRepo, LegacySchoolRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { ImportUserController } from './controller/import-user.controller';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
 import { UserImportFetchUc, UserImportUc } from './uc';
+import { ImportUserRepo } from './repo';
 
 @Module({
 	imports: [

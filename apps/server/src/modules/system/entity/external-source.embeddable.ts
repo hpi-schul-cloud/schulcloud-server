@@ -1,5 +1,5 @@
 import { Embeddable, ManyToOne, Property } from '@mikro-orm/core';
-import { SystemEntity } from '@modules/system/entity/system.entity';
+import { SystemEntity } from './system.entity';
 
 export interface ExternalSourceEntityProps {
 	externalId: string;

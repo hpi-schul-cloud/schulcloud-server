@@ -3,19 +3,20 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { SchulconnexResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import type { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { ImportUser, SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import {
 	importUserFactory,
 	schoolEntityFactory,
 	setupEntities,
 	systemEntityFactory,
-	systemFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService } from './schulconnex-fetch-import-users.service';
 

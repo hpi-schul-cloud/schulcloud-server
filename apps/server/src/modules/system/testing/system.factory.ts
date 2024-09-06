@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { LdapConfig, OauthConfig, OidcConfig, System, SystemProps, SystemType } from '@modules/system/domain';
+import { DomainObjectFactory } from '@shared/testing/factory/domainobject/domain-object.factory';
 import { DeepPartial, Factory } from 'fishery';
-import { DomainObjectFactory } from '../domain-object.factory';
+import { LdapConfig, OauthConfig, OidcConfig, System, SystemProps, SystemType } from '../domain';
 
 export const systemOauthConfigFactory = Factory.define<OauthConfig>(
 	() =>
