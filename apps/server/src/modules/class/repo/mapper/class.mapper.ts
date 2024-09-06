@@ -4,7 +4,7 @@ import { ClassSourceOptions } from '../../domain/class-source-options.do';
 import { ClassEntity } from '../../entity';
 
 export class ClassMapper {
-	private static mapToDO(entity: ClassEntity): Class {
+	static mapToDO(entity: ClassEntity): Class {
 		return new Class({
 			id: entity.id,
 			name: entity.name,

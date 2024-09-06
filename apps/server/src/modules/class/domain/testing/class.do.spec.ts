@@ -86,4 +86,28 @@ describe(Class.name, () => {
 			});
 		});
 	});
+
+	describe('getClassFullName', () => {
+		describe('When function is called', () => {
+			it('should return full class name consisting of grade level and class name', () => {
+				const gradeLevel = 1;
+				const name = 'A';
+				const domainObject = classFactory.build({ name, gradeLevel });
+
+				const result = domainObject.getClassFullName();
+
+				expect(result).toEqual('1A');
+			});
+
+			it('should return full class name consisting of class name only', () => {
+				const gradeLevel = undefined;
+				const name = 'A';
+				const domainObject = classFactory.build({ name, gradeLevel });
+
+				const result = domainObject.getClassFullName();
+
+				expect(result).toEqual('A');
+			});
+		});
+	});
 });

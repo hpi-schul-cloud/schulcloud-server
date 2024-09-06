@@ -1,7 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { MatchCreator } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
-import { MatchCreatorScope } from '@shared/domain/types';
 import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	FilterImportUserParams,
@@ -11,6 +9,8 @@ import {
 	SortImportUserParams,
 	UserMatchResponse,
 } from '../controller/dto';
+import { ImportUserMatchCreatorScope } from '../domain/interface';
+import { MatchCreator } from '../entity';
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';
@@ -147,9 +147,9 @@ describe('[ImportUserMapper]', () => {
 			const query: FilterImportUserParams = { match: [FilterMatchType.MANUAL] };
 			const importUserMatchMapperSpy = jest
 				.spyOn(ImportUserMatchMapper, 'mapImportUserMatchScopeToDomain')
-				.mockReturnValueOnce(MatchCreatorScope.MANUAL);
+				.mockReturnValueOnce(ImportUserMatchCreatorScope.MANUAL);
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
-			expect(result.matches).toEqual([MatchCreatorScope.MANUAL]);
+			expect(result.matches).toEqual([ImportUserMatchCreatorScope.MANUAL]);
 			expect(importUserMatchMapperSpy).toBeCalledWith(FilterMatchType.MANUAL);
 			importUserMatchMapperSpy.mockRestore();
 		});

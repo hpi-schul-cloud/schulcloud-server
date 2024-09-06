@@ -1,8 +1,8 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SystemEntity } from '@modules/system/entity';
+import { ExternalSourceEmbeddable, SystemEntity } from '@modules/system/entity';
 import { ExternalSource } from '@shared/domain/domainobject';
-import { ExternalSourceEmbeddable, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from '../entity';
 
