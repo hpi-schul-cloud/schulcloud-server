@@ -14,6 +14,8 @@ export class RoomDomainMapper {
 			color: roomEntity.color,
 			startDate: roomEntity.startDate,
 			untilDate: roomEntity.untilDate,
+			createdAt: roomEntity.createdAt,
+			updatedAt: roomEntity.updatedAt,
 		});
 
 		// attach to identity map

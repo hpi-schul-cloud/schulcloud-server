@@ -32,6 +32,8 @@ describe('RoomDomainMapper', () => {
 				color: '#00FF00',
 				startDate: new Date('2023-01-01'),
 				untilDate: new Date('2023-12-31'),
+				createdAt: new Date('2023-01-01'),
+				updatedAt: new Date('2023-01-01'),
 			});
 
 			const roomEntity = {
@@ -53,6 +55,8 @@ describe('RoomDomainMapper', () => {
 				color: '#00FF00',
 				startDate: new Date('2023-01-01'),
 				untilDate: new Date('2023-12-31'),
+				createdAt: new Date('2023-01-01'),
+				updatedAt: new Date('2023-01-01'),
 			});
 			expect(result.getProps().id).toBe('1');
 			expect(result.getProps().id).not.toBe(roomEntity.id);
