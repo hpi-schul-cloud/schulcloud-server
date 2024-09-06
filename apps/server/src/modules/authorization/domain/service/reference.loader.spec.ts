@@ -13,7 +13,6 @@ import {
 	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -125,7 +124,6 @@ describe('reference.loader', () => {
 
 	afterEach(() => {
 		injectionService.getReferenceLoader.mockReset();
-		injectionService.getShouldPopulate.mockReset();
 	});
 
 	afterAll(() => {
@@ -146,7 +144,7 @@ describe('reference.loader', () => {
 
 			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(referenceLoader.findById).toBeCalledWith(entityId, undefined);
+			expect(referenceLoader.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return authorizable object', async () => {

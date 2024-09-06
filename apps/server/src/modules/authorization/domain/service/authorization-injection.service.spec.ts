@@ -36,34 +36,4 @@ describe(AuthorizationInjectionService.name, () => {
 			expect(service.getReferenceLoader(AuthorizableReferenceType.BoardNode)).toBe(referenceLoaderMock);
 		});
 	});
-
-	describe('shouldPopulate', () => {
-		describe('when referenceType is set to populate', () => {
-			it('should return true', () => {
-				const service = new AuthorizationInjectionService();
-
-				service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, createReferenceLoaderMock(), true);
-
-				expect(service.getShouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(true);
-			});
-		});
-
-		describe('when referenceType is set to not populate', () => {
-			it('should return false', () => {
-				const service = new AuthorizationInjectionService();
-
-				service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, createReferenceLoaderMock(), false);
-
-				expect(service.getShouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(false);
-			});
-		});
-
-		describe('when referenceType is not set', () => {
-			it('should return false', () => {
-				const service = new AuthorizationInjectionService();
-
-				expect(service.getShouldPopulate(AuthorizableReferenceType.BoardNode)).toBe(false);
-			});
-		});
-	});
 });

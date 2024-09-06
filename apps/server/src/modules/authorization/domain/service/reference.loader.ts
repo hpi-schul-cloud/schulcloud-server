@@ -73,9 +73,8 @@ export class ReferenceLoader {
 		objectName: AuthorizableReferenceType,
 		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
-		const populate = this.authorizationInjectionService.getShouldPopulate(objectName);
 		const referenceLoader: AuthorizationLoaderService = this.resolveLoader(objectName);
-		const object = await referenceLoader.findById(objectId, populate);
+		const object = await referenceLoader.findById(objectId);
 
 		return object;
 	}
