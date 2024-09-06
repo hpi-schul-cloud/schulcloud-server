@@ -234,10 +234,8 @@ export class UserLoginMigrationUc {
 			);
 
 			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, activeUserLoginMigration));
-		} else {
-			if (school.externalId !== externalSchoolId) {
-				throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
-			}
+		} else if (school.externalId !== externalSchoolId) {
+			throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
 		}
 
 		const hasUserMigrated: boolean = this.userMigrationService.hasUserMigratedInMigrationPhase(
