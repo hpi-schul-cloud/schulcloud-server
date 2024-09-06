@@ -2,11 +2,13 @@ import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { Counted, EntityId, IImportUserScope } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { ImportUserScope } from './importuser.scope';
+import { ImportUser } from '../entity';
+import { ImportUserScope } from './import-user.scope';
+import { ImportUserFilter } from '../domain/interface';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
@@ -35,18 +37,21 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 
 	async findImportUsers(
 		school: SchoolEntity,
-		filters: IImportUserScope = {},
+		filters?: ImportUserFilter,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
 		scope.bySchool(school);
-		if (filters.firstName != null) scope.byFirstName(filters.firstName);
-		if (filters.lastName != null) scope.byLastName(filters.lastName);
-		if (filters.loginName != null) scope.byLoginName(filters.loginName);
-		if (filters.role != null) scope.byRole(filters.role);
-		if (filters.classes != null) scope.byClasses(filters.classes);
-		if (filters.matches != null) scope.byMatches(filters.matches);
-		if (filters.flagged === true) scope.isFlagged(true);
+		if (filters) {
+			if (filters.firstName) scope.byFirstName(filters.firstName);
+			if (filters.lastName) scope.byLastName(filters.lastName);
+			if (filters.loginName) scope.byLoginName(filters.loginName);
+			if (filters.role) scope.byRole(filters.role);
+			if (filters.classes) scope.byClasses(filters.classes);
+			if (filters.matches) scope.byMatches(filters.matches);
+			if (filters.flagged) scope.isFlagged(true);
+		}
+
 		const countedImportUsers = await this.findImportUsersAndCount(scope.query, options);
 		return countedImportUsers;
 	}

@@ -1,4 +1,4 @@
-import { systemFactory } from '@shared/testing';
+import { systemFactory } from '@modules/system/testing';
 
 describe('System', () => {
 	describe('isDeletable', () => {
