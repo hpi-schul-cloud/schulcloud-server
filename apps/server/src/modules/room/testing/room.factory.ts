@@ -8,6 +8,8 @@ export const roomFactory = BaseFactory.define<Room, RoomProps>(Room, ({ sequence
 		name: `room #${sequence}`,
 		color: ['blue', 'red', 'green', 'yellow'][Math.floor(Math.random() * 4)],
 		startDate: new Date(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
 		untilDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 	};
 
