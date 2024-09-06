@@ -30,7 +30,6 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
-import { RoomsController } from './controller/rooms.controller';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -49,7 +48,7 @@ import { RoomsController } from './controller/rooms.controller';
 		UserModule,
 		ClassModule,
 	],
-	controllers: [DashboardController, CourseController, CourseInfoController, CourseRoomsController, RoomsController],
+	controllers: [DashboardController, CourseController, CourseInfoController, CourseRoomsController],
 	providers: [
 		DashboardUc,
 		CourseUc,
