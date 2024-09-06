@@ -3,6 +3,8 @@
 import { BoardNodeAuthorizableService } from '@modules/board/service';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { TeamAuthorisableService } from '@src/modules/teams/service/team-authorisable.service';
 import { ExternalToolAuthorizableService } from '@modules/tool/external-tool/service';
 import { LessonService } from '@modules/lesson';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -16,7 +18,6 @@ import {
 	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { InstanceService } from '../../../instance';
@@ -32,7 +33,7 @@ export class ReferenceLoader {
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly lessonService: LessonService,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamAuthorisableService: TeamAuthorisableService,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
@@ -48,7 +49,7 @@ export class ReferenceLoader {
 		service.injectReferenceLoader(AuthorizableReferenceType.User, this.userRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.School, this.schoolRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Lesson, this.lessonService);
-		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamsRepo, true);
+		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamAuthorisableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this.schoolExternalToolRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, this.boardNodeAuthorizableService);

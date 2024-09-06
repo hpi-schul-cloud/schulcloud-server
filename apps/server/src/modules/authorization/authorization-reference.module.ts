@@ -10,12 +10,13 @@ import {
 	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
+import { TeamAuthorisableService } from '../teams/service/team-authorisable.service';
+import { TeamsModule } from '../teams';
 
 /**
  * This module is part of an intermediate state. In the future it should be replaced by an AuthorizationApiModule.
@@ -27,6 +28,7 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 	imports: [
 		AuthorizationModule,
 		LessonModule,
+		TeamsModule,
 		forwardRef(() => ToolModule),
 		forwardRef(() => BoardModule),
 		LoggerModule,
@@ -40,7 +42,6 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 		CourseGroupRepo,
 		TaskRepo,
 		LegacySchoolRepo,
-		TeamsRepo,
 		SubmissionRepo,
 		SchoolExternalToolRepo,
 		AuthorizationReferenceService,

@@ -21,6 +21,7 @@ import { BoardNodeAuthorizableService } from '@src/modules/board';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationInjectionService } from './authorization-injection.service';
+import { TeamAuthorisableService } from '@src/modules/teams';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -31,7 +32,7 @@ describe('reference.loader', () => {
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let lessonService: DeepMocked<LessonService>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamsAuthorisableService: DeepMocked<TeamAuthorisableService>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
@@ -75,8 +76,8 @@ describe('reference.loader', () => {
 					useValue: createMock<LessonService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamAuthorisableService,
+					useValue: createMock<TeamAuthorisableService>(),
 				},
 				{
 					provide: SubmissionRepo,
@@ -113,7 +114,7 @@ describe('reference.loader', () => {
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(LegacySchoolRepo);
 		lessonService = await module.get(LessonService);
-		teamsRepo = await module.get(TeamsRepo);
+		teamsAuthorisableService = await module.get(TeamAuthorisableService);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 		boardNodeAuthorizableService = await module.get(BoardNodeAuthorizableService);
@@ -197,7 +198,10 @@ describe('reference.loader', () => {
 		});
 
 		it('should inject teams repo', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Team, teamsRepo, true);
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.Team,
+				teamsAuthorisableService
+			);
 		});
 
 		it('should inject submission repo', () => {
