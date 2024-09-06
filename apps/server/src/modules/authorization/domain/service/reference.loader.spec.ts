@@ -16,7 +16,6 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeAuthorizableService } from '@src/modules/board';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationInjectionService } from './authorization-injection.service';
@@ -34,7 +33,6 @@ describe('reference.loader', () => {
 	let teamsAuthorisableService: DeepMocked<TeamAuthorisableService>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
 	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
 	let instanceService: DeepMocked<InstanceService>;
@@ -87,10 +85,6 @@ describe('reference.loader', () => {
 					useValue: createMock<SchoolExternalToolRepo>(),
 				},
 				{
-					provide: BoardNodeAuthorizableService,
-					useValue: createMock<BoardNodeAuthorizableService>(),
-				},
-				{
 					provide: ContextExternalToolAuthorizableService,
 					useValue: createMock<ContextExternalToolAuthorizableService>(),
 				},
@@ -116,7 +110,6 @@ describe('reference.loader', () => {
 		teamsAuthorisableService = await module.get(TeamAuthorisableService);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		boardNodeAuthorizableService = await module.get(BoardNodeAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
 		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
 		instanceService = await module.get(InstanceService);
@@ -213,13 +206,6 @@ describe('reference.loader', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.SchoolExternalToolEntity,
 				schoolExternalToolRepo
-			);
-		});
-
-		it('should inject board node authorizable service', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(
-				AuthorizableReferenceType.BoardNode,
-				boardNodeAuthorizableService
 			);
 		});
 

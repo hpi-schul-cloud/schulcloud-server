@@ -1,7 +1,5 @@
 // TODO fix modules circular dependency
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { BoardNodeAuthorizableService } from '@modules/board/service';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { TeamAuthorisableService } from '@src/modules/teams/service/team-authorisable.service';
@@ -36,7 +34,6 @@ export class ReferenceLoader {
 		private readonly teamAuthorisableService: TeamAuthorisableService,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
 		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
 		private readonly instanceService: InstanceService,
@@ -52,7 +49,6 @@ export class ReferenceLoader {
 		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamAuthorisableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this.schoolExternalToolRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, this.boardNodeAuthorizableService);
 		service.injectReferenceLoader(
 			AuthorizableReferenceType.ContextExternalToolEntity,
 			this.contextExternalToolAuthorizableService

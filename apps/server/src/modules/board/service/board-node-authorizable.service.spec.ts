@@ -7,10 +7,12 @@ import { BoardNodeRepo } from '../repo';
 import { BoardContextService } from './internal/board-context.service';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeAuthorizableService;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardContextService: DeepMocked<BoardContextService>;
@@ -31,9 +33,14 @@ describe(BoardNodeAuthorizableService.name, () => {
 					provide: BoardContextService,
 					useValue: createMock<BoardContextService>(),
 				},
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
 			],
 		}).compile();
 
+		injectionService = module.get(AuthorizationInjectionService);
 		service = module.get(BoardNodeAuthorizableService);
 		boardNodeRepo = module.get(BoardNodeRepo);
 		boardNodeService = module.get(BoardNodeService);
@@ -48,6 +55,12 @@ describe(BoardNodeAuthorizableService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('injection', () => {
+		it('should inject itself into authorisation module', () => {
+			expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(AuthorizableReferenceType.BoardNode, service);
+		});
 	});
 
 	describe('findById', () => {

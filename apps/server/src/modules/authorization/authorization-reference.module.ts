@@ -1,4 +1,3 @@
-import { BoardModule } from '@modules/board';
 import { InstanceModule } from '@modules/instance';
 import { LessonModule } from '@modules/lesson';
 import { ToolModule } from '@modules/tool';
@@ -25,15 +24,7 @@ import { TeamsModule } from '../teams';
  */
 @Module({
 	// TODO: remove forwardRef
-	imports: [
-		AuthorizationModule,
-		LessonModule,
-		TeamsModule,
-		forwardRef(() => ToolModule),
-		forwardRef(() => BoardModule),
-		LoggerModule,
-		InstanceModule,
-	],
+	imports: [AuthorizationModule, LessonModule, TeamsModule, forwardRef(() => ToolModule), LoggerModule, InstanceModule],
 	providers: [
 		AuthorizationHelper,
 		ReferenceLoader,

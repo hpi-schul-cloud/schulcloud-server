@@ -9,15 +9,13 @@ import {
 	fileElementFactory,
 	submissionItemFactory,
 } from '@src/modules/board/testing';
-// TODO: look at imports
-import { AuthorizationHelper } from '../../authorization/domain/service/authorization.helper';
-import { Action } from '../../authorization/domain/type';
 import { BoardNodeRule } from './board-node.rule';
-import { AuthorizationInjectionService } from '@src/modules/authorization/domain';
+import { AuthorizationHelper, AuthorizationInjectionService, Action } from '@src/modules/authorization';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -28,6 +26,13 @@ describe(BoardNodeRule.name, () => {
 
 		service = await module.get(BoardNodeRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
+	});
+
+	describe('injection', () => {
+		it('should inject itself into authorisation module', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
 	});
 
 	describe('isApplicable', () => {
