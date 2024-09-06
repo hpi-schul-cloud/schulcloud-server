@@ -236,8 +236,13 @@ export class UserLoginMigrationController {
 	@ApiUnprocessableEntityResponse({
 		description:
 			'There are multiple users with the email' +
+			'or the external user id is already assigned' +
+			'only for the extended mode:' +
 			'or the school had closed or finished the migration' +
-			'or the external school id does not match with the migrated school',
+			'or the external school id does not match with the migrated school' +
+			'only for the non-extended mode:' +
+			'the user is not an administrator,' +
+			'or the school is already migrated',
 	})
 	@ApiNotFoundResponse({ description: 'There is no user with the email' })
 	public async forceMigration(
