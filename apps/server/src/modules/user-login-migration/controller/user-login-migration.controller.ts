@@ -235,21 +235,34 @@ export class UserLoginMigrationController {
 	@ApiCreatedResponse({ description: 'The user and their school were successfully migrated' })
 	@ApiUnprocessableEntityResponse({
 		description:
-			'There are multiple users with the email,' +
-			'or the user is not an administrator,' +
-			'or the school is already migrated,' +
-			'or the external user id is already assigned',
+			'There are multiple users with the email' +
+			'or the external user id is already assigned' +
+			'only for the extended mode:' +
+			'or the school had closed or finished the migration' +
+			'or the external school id does not match with the migrated school' +
+			'only for the non-extended mode:' +
+			'the user is not an administrator,' +
+			'or the school is already migrated',
 	})
 	@ApiNotFoundResponse({ description: 'There is no user with the email' })
 	public async forceMigration(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() forceMigrationParams: ForceMigrationParams
 	): Promise<void> {
-		await this.userLoginMigrationUc.forceMigration(
-			currentUser.userId,
-			forceMigrationParams.email,
-			forceMigrationParams.externalUserId,
-			forceMigrationParams.externalSchoolId
-		);
+		if (forceMigrationParams.forceExtendedMode) {
+			await this.userLoginMigrationUc.forceExtendedMigration(
+				currentUser.userId,
+				forceMigrationParams.email,
+				forceMigrationParams.externalUserId,
+				forceMigrationParams.externalSchoolId
+			);
+		} else {
+			await this.userLoginMigrationUc.forceMigration(
+				currentUser.userId,
+				forceMigrationParams.email,
+				forceMigrationParams.externalUserId,
+				forceMigrationParams.externalSchoolId
+			);
+		}
 	}
 }
