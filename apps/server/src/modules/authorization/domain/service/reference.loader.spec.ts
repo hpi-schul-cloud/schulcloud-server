@@ -24,6 +24,7 @@ import { AuthorizationInjectionService } from './authorization-injection.service
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
@@ -45,7 +46,10 @@ describe('reference.loader', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				ReferenceLoader,
-				AuthorizationInjectionService,
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -102,6 +106,7 @@ describe('reference.loader', () => {
 		}).compile();
 
 		service = await module.get(ReferenceLoader);
+		injectionService = await module.get(AuthorizationInjectionService);
 		userRepo = await module.get(UserRepo);
 		courseRepo = await module.get(CourseRepo);
 		courseGroupRepo = await module.get(CourseGroupRepo);
@@ -118,6 +123,11 @@ describe('reference.loader', () => {
 	});
 
 	afterEach(() => {
+		injectionService.getReferenceLoader.mockReset();
+		injectionService.getShouldPopulate.mockReset();
+	});
+
+	afterAll(() => {
 		jest.resetAllMocks();
 	});
 
@@ -126,97 +136,110 @@ describe('reference.loader', () => {
 	});
 
 	describe('loadEntity', () => {
-		it('should call taskRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Task, entityId);
+		it('should call findById on reference loader', async () => {
+			const referenceLoader = {
+				findById: jest.fn(),
+			};
 
-			expect(taskRepo.findById).toBeCalledWith(entityId, false);
-		});
+			injectionService.getReferenceLoader.mockReturnValue(referenceLoader);
 
-		it('should call courseRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Course, entityId);
-
-			expect(courseRepo.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call courseGroupRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.CourseGroup, entityId);
-
-			expect(courseGroupRepo.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call schoolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.School, entityId);
-
-			expect(schoolRepo.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call userRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(userRepo.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call lessonRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Lesson, entityId);
-
-			expect(lessonService.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call teamsRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Team, entityId);
-
-			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
-		});
-
-		it('should call contextExternalToolService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalToolEntity, entityId);
-
-			expect(contextExternalToolAuthorizableService.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call submissionRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Submission, entityId);
-
-			expect(submissionRepo.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call schoolExternalToolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalToolEntity, entityId);
-
-			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call externalToolAuthorizableService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.ExternalTool, entityId);
-
-			expect(externalToolAuthorizableService.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call findNodeService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
-
-			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId, false);
-		});
-
-		it('should call instanceService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Instance, entityId);
-
-			expect(instanceService.findById).toBeCalledWith(entityId, false);
+			expect(referenceLoader.findById).toBeCalledWith(entityId, undefined);
 		});
 
 		it('should return authorizable object', async () => {
-			const user = userFactory.build();
-			userRepo.findById.mockResolvedValue(user);
+			const expected = userFactory.build();
+			const referenceLoader = {
+				findById: jest.fn().mockResolvedValue(expected),
+			};
+
+			injectionService.getReferenceLoader.mockReturnValue(referenceLoader);
 
 			const result = await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(result).toBe(user);
+			expect(result).toEqual(expected);
 		});
 
 		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
 				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
+		});
+	});
+
+	describe('currently, the reference loader has to inject the loaders into the injection service. In the future, this part should be moved into the modules.', () => {
+		it('should inject user repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.User, userRepo);
+		});
+
+		it('should inject course repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Course, courseRepo);
+		});
+
+		it('should inject course group repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.CourseGroup,
+				courseGroupRepo
+			);
+		});
+
+		it('should inject task repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Task, taskRepo);
+		});
+
+		it('should inject school repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.School, schoolRepo);
+		});
+
+		it('should inject lesson service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Lesson, lessonService);
+		});
+
+		it('should inject teams repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Team, teamsRepo, true);
+		});
+
+		it('should inject submission repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.Submission,
+				submissionRepo
+			);
+		});
+
+		it('should inject school external tool repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.SchoolExternalToolEntity,
+				schoolExternalToolRepo
+			);
+		});
+
+		it('should inject board node authorizable service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.BoardNode,
+				boardNodeAuthorizableService
+			);
+		});
+
+		it('should inject context external tool authorizable service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.ContextExternalToolEntity,
+				contextExternalToolAuthorizableService
+			);
+		});
+
+		it('should inject external tool authorizable service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.ExternalTool,
+				externalToolAuthorizableService
+			);
+		});
+
+		it('should inject instance service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.Instance,
+				instanceService
+			);
 		});
 	});
 });

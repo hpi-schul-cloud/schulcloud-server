@@ -259,5 +259,9 @@ describe('RuleManager', () => {
 		it('should inject ExternalToolRule', () => {
 			expect(injectionService.injectAuthorizationRule).toBeCalledWith(externalToolRule);
 		});
+
+		it('should inject InstanceRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(instanceRule);
+		});
 	});
 });
