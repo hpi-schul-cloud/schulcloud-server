@@ -34,8 +34,10 @@ import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationInvalidAdminLoggableException,
 	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
+	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
@@ -627,485 +629,35 @@ describe(UserLoginMigrationUc.name, () => {
 	});
 
 	describe('forceMigration', () => {
-		describe('when the school is not migrated with no active user login migration', () => {
-			const setupNonMigratedSchool = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
-
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: school.id,
-				});
-
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
-				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
-
-				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
-
-				return {
-					school,
-					userLoginMigration,
-				};
-			};
-
-			describe('when the user found by provided email can be migrated', () => {
-				const setup = () => {
-					const { school, userLoginMigration } = setupNonMigratedSchool();
-
-					const caller: User = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
-
-					const user: UserDO = userDoFactory.buildWithId({
-						schoolId: school.id,
-					});
-
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
-
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
-
-				it('should check permission of the calling user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
-						Permission.USER_LOGIN_MIGRATION_FORCE,
-					]);
-				});
-
-				it('should start migration for the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userLoginMigrationService.startMigration).toHaveBeenCalledWith(user.schoolId);
-				});
-
-				it('should migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-						school,
-						externalSchoolId,
-						userLoginMigration.targetSystemId
-					);
-				});
-
-				it('should migrate the user', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
-						user.id,
-						externalUserId,
-						userLoginMigration.targetSystemId
-					);
-				});
-			});
-		});
-
-		describe('when the school is not migrated but with an active user login migration', () => {
-			const setupMigratedSchool = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
-
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: school.id,
-				});
-
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
-
-				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
-
-				return {
-					school,
-					userLoginMigration,
-				};
-			};
-
-			describe('when the user found by provided email had not been migrated', () => {
-				const setup = () => {
-					const { school, userLoginMigration } = setupMigratedSchool();
-
-					const caller: User = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
-
-					const user: UserDO = userDoFactory.buildWithId({
-						schoolId: school.id,
-					});
-
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
-
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
-
-				it('should not start migration for the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
-				});
-
-				it('should migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-						school,
-						externalSchoolId,
-						userLoginMigration.targetSystemId
-					);
-				});
-
-				it('should migrate the user', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
-						user.id,
-						externalUserId,
-						userLoginMigration.targetSystemId
-					);
-				});
-			});
-
-			describe('when the user found by provided email had been migrated', () => {
-				const setup = () => {
-					const { school, userLoginMigration } = setupMigratedSchool();
-
-					const caller = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
-
-					const user = userDoFactory.buildWithId({
-						schoolId: school.id,
-						externalId: 'otherExternalId',
-					});
-
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
-
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
-
-				it('should not start migration for the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
-				});
-
-				it('should migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-						school,
-						externalSchoolId,
-						userLoginMigration.targetSystemId
-					);
-				});
-
-				it('should not migrate the user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.migrateUser).not.toHaveBeenCalled();
-				});
-
-				it('should correct the migrated user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.updateExternalUserId).toHaveBeenCalledWith(user.id, externalUserId);
-				});
-			});
-		});
-
-		describe('when the school is migrated', () => {
-			const setupMigratedSchool = (externalId: string) => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					externalId,
-				});
-
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: school.id,
-				});
-
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
-
-				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
-
-				return {
-					school,
-					userLoginMigration,
-				};
-			};
-
-			describe('when the user found by provided email had not been migrated', () => {
-				const setup = () => {
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
-
-					const { school, userLoginMigration } = setupMigratedSchool(externalSchoolId);
-
-					const caller = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
-
-					const user = userDoFactory.buildWithId({
-						schoolId: school.id,
-					});
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
-
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
-
-				it('should check permission of the calling user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
-						Permission.USER_LOGIN_MIGRATION_FORCE,
-					]);
-				});
-
-				it('should not start migration for the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
-				});
-
-				it('should not migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
-				});
-
-				it('should migrate the user', async () => {
-					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
-						user.id,
-						externalUserId,
-						userLoginMigration.targetSystemId
-					);
-				});
-			});
-
-			describe('when the user found by provided email had been migrated', () => {
-				const setup = () => {
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
-
-					const { school, userLoginMigration } = setupMigratedSchool(externalSchoolId);
-
-					const caller = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
-
-					const user = userDoFactory.buildWithId({
-						schoolId: school.id,
-						externalId: 'otherExternalId',
-					});
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
-
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
-
-				it('should not start migration for the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
-				});
-
-				it('should not migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
-				});
-
-				it('should not migrate the user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.migrateUser).not.toHaveBeenCalled();
-				});
-
-				it('should correct the migrated user', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					await uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					expect(userMigrationService.updateExternalUserId).toHaveBeenCalledWith(user.id, externalUserId);
-				});
-			});
-
-			describe('when the provided external school id does not match', () => {
-				const setup = () => {
-					const externalUserId = 'externalUserId';
-					const externalSchoolId = 'externalSchoolId';
-
-					const { school, userLoginMigration } = setupMigratedSchool('otherExternalSchoolId');
-
-					const caller = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId({}, school.id),
-					});
-
-					const user = userDoFactory.buildWithId({
-						schoolId: school.id,
-						externalId: 'otherExternalId',
-					});
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-					userService.findByEmail.mockResolvedValueOnce([user]);
-					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
-
-					return {
-						caller,
-						user,
-						externalUserId,
-						externalSchoolId,
-						userLoginMigration,
-						school,
-					};
-				};
-
-				it('should throw an exception and not migrate the school', async () => {
-					const { caller, user, externalUserId, externalSchoolId } = setup();
-
-					const promise = uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
-
-					await expect(promise).rejects.toThrow(UserLoginMigrationInvalidExternalSchoolIdLoggableException);
-					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
-					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
-				});
-			});
-		});
-
-		describe('when the school has a closed or finished migration', () => {
+		describe('when the user and their school can successfully migrate', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
-
-				const now = new Date();
-				const later = new Date();
-				later.setDate(now.getDate() + 1);
-				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
-					schoolId: school.id,
-					closedAt: now,
-					finishedAt: later,
+				const user = userFactory.buildWithId();
+				const userDo = userDoFactory.build({
+					id: user.id,
+					roles: [
+						new RoleReference({
+							id: new ObjectId().toHexString(),
+							name: RoleName.ADMINISTRATOR,
+						}),
+					],
 				});
-
-				const caller: User = userFactory.buildWithId({
-					school: schoolEntityFactory.buildWithId({}, school.id),
-				});
-
-				const user: UserDO = userDoFactory.buildWithId({
-					schoolId: school.id,
-				});
-
 				const externalUserId = 'externalUserId';
 				const externalSchoolId = 'externalSchoolId';
+				const school = legacySchoolDoFactory.build({
+					id: user.school.id,
+				});
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					schoolId: user.school.id,
+				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([userDo]);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
 				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
-				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(true);
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
-				userService.findByEmail.mockResolvedValueOnce([user]);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(false);
 
 				return {
-					caller,
 					user,
 					externalUserId,
 					externalSchoolId,
@@ -1114,12 +666,38 @@ describe(UserLoginMigrationUc.name, () => {
 				};
 			};
 
-			it('should throw an error for already closed migration', async () => {
-				const { caller, user, externalUserId, externalSchoolId } = setup();
+			it('should check permission', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
 
-				const forceMigrationPromise = uc.forceMigration(caller.id, user.email, externalUserId, externalSchoolId);
+				await uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId);
 
-				await expect(forceMigrationPromise).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
+					Permission.USER_LOGIN_MIGRATION_FORCE,
+				]);
+			});
+
+			it('should migrate the school', async () => {
+				const { user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
+
+				await uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId);
+
+				expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+					school,
+					externalSchoolId,
+					userLoginMigration.targetSystemId
+				);
+			});
+
+			it('should migrate the user', async () => {
+				const { user, externalUserId, externalSchoolId, userLoginMigration } = setup();
+
+				await uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId);
+
+				expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
+					user.id,
+					externalUserId,
+					userLoginMigration.targetSystemId
+				);
 			});
 		});
 
@@ -1211,6 +789,719 @@ describe(UserLoginMigrationUc.name, () => {
 				const { user, externalUserId, externalSchoolId } = setup();
 
 				await expect(uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
+					NotFoundLoggableException
+				);
+			});
+		});
+
+		describe('when the user is not an administrator', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userDo = userDoFactory.build({
+					id: user.id,
+					roles: [
+						new RoleReference({
+							id: new ObjectId().toHexString(),
+							name: RoleName.TEACHER,
+						}),
+					],
+				});
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([userDo]);
+
+				return {
+					user,
+					externalUserId,
+					externalSchoolId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
+
+				await expect(uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
+					UserLoginMigrationInvalidAdminLoggableException
+				);
+			});
+		});
+
+		describe('when there is already a user login migration active', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userDo = userDoFactory.build({
+					id: user.id,
+					roles: [
+						new RoleReference({
+							id: new ObjectId().toHexString(),
+							name: RoleName.ADMINISTRATOR,
+						}),
+					],
+				});
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					schoolId: user.school.id,
+				});
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([userDo]);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+
+				return {
+					user,
+					externalUserId,
+					externalSchoolId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
+
+				await expect(uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
+					UserLoginMigrationSchoolAlreadyMigratedLoggableException
+				);
+			});
+		});
+
+		describe('when the school is already migrated', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userDo = userDoFactory.build({
+					id: user.id,
+					roles: [
+						new RoleReference({
+							id: new ObjectId().toHexString(),
+							name: RoleName.ADMINISTRATOR,
+						}),
+					],
+				});
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const school = legacySchoolDoFactory.build({
+					id: user.school.id,
+					externalId: externalSchoolId,
+				});
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					schoolId: user.school.id,
+				});
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([userDo]);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
+				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolMigrationService.hasSchoolMigrated.mockReturnValueOnce(true);
+
+				return {
+					user,
+					externalUserId,
+					externalSchoolId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
+
+				await expect(uc.forceMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
+					UserLoginMigrationSchoolAlreadyMigratedLoggableException
+				);
+			});
+		});
+	});
+
+	describe('forceExtendedMigration', () => {
+		describe('when the school is not migrated with no active user login migration', () => {
+			const setupNonMigratedSchool = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
+				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
+
+				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			describe('when the user found by provided email can be migrated', () => {
+				const setup = () => {
+					const { school, userLoginMigration } = setupNonMigratedSchool();
+
+					const caller: User = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user: UserDO = userDoFactory.buildWithId({
+						schoolId: school.id,
+					});
+
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should check permission of the calling user', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
+						Permission.USER_LOGIN_MIGRATION_FORCE,
+					]);
+				});
+
+				it('should start migration for the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userLoginMigrationService.startMigration).toHaveBeenCalledWith(user.schoolId);
+				});
+
+				it('should migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+						school,
+						externalSchoolId,
+						userLoginMigration.targetSystemId
+					);
+				});
+
+				it('should migrate the user', async () => {
+					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
+						user.id,
+						externalUserId,
+						userLoginMigration.targetSystemId
+					);
+				});
+			});
+		});
+
+		describe('when the school is not migrated but with an active user login migration', () => {
+			const setupMigratedSchool = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
+
+				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			describe('when the user found by provided email had not been migrated', () => {
+				const setup = () => {
+					const { school, userLoginMigration } = setupMigratedSchool();
+
+					const caller: User = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user: UserDO = userDoFactory.buildWithId({
+						schoolId: school.id,
+					});
+
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should not start migration for the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
+				});
+
+				it('should migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+						school,
+						externalSchoolId,
+						userLoginMigration.targetSystemId
+					);
+				});
+
+				it('should migrate the user', async () => {
+					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
+						user.id,
+						externalUserId,
+						userLoginMigration.targetSystemId
+					);
+				});
+			});
+
+			describe('when the user found by provided email had been migrated', () => {
+				const setup = () => {
+					const { school, userLoginMigration } = setupMigratedSchool();
+
+					const caller = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user = userDoFactory.buildWithId({
+						schoolId: school.id,
+						externalId: 'otherExternalId',
+					});
+
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should not start migration for the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
+				});
+
+				it('should migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId, userLoginMigration, school } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+						school,
+						externalSchoolId,
+						userLoginMigration.targetSystemId
+					);
+				});
+
+				it('should not migrate the user', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.migrateUser).not.toHaveBeenCalled();
+				});
+
+				it('should correct the migrated user', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.updateExternalUserId).toHaveBeenCalledWith(user.id, externalUserId);
+				});
+			});
+		});
+
+		describe('when the school is migrated', () => {
+			const setupMigratedSchool = (externalId: string) => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+					externalId,
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(false);
+
+				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			describe('when the user found by provided email had not been migrated', () => {
+				const setup = () => {
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					const { school, userLoginMigration } = setupMigratedSchool(externalSchoolId);
+
+					const caller = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user = userDoFactory.buildWithId({
+						schoolId: school.id,
+					});
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(false);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should check permission of the calling user', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(caller, [
+						Permission.USER_LOGIN_MIGRATION_FORCE,
+					]);
+				});
+
+				it('should not start migration for the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
+				});
+
+				it('should not migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
+				});
+
+				it('should migrate the user', async () => {
+					const { caller, user, externalUserId, externalSchoolId, userLoginMigration } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
+						user.id,
+						externalUserId,
+						userLoginMigration.targetSystemId
+					);
+				});
+			});
+
+			describe('when the user found by provided email had been migrated', () => {
+				const setup = () => {
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					const { school, userLoginMigration } = setupMigratedSchool(externalSchoolId);
+
+					const caller = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user = userDoFactory.buildWithId({
+						schoolId: school.id,
+						externalId: 'otherExternalId',
+					});
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should not start migration for the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
+				});
+
+				it('should not migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
+				});
+
+				it('should not migrate the user', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.migrateUser).not.toHaveBeenCalled();
+				});
+
+				it('should correct the migrated user', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					await uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					expect(userMigrationService.updateExternalUserId).toHaveBeenCalledWith(user.id, externalUserId);
+				});
+			});
+
+			describe('when the provided external school id does not match', () => {
+				const setup = () => {
+					const externalUserId = 'externalUserId';
+					const externalSchoolId = 'externalSchoolId';
+
+					const { school, userLoginMigration } = setupMigratedSchool('otherExternalSchoolId');
+
+					const caller = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId({}, school.id),
+					});
+
+					const user = userDoFactory.buildWithId({
+						schoolId: school.id,
+						externalId: 'otherExternalId',
+					});
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+					userService.findByEmail.mockResolvedValueOnce([user]);
+					userMigrationService.hasUserMigratedInMigrationPhase.mockReturnValueOnce(true);
+
+					return {
+						caller,
+						user,
+						externalUserId,
+						externalSchoolId,
+						userLoginMigration,
+						school,
+					};
+				};
+
+				it('should throw an exception and not migrate the school', async () => {
+					const { caller, user, externalUserId, externalSchoolId } = setup();
+
+					const promise = uc.forceExtendedMigration(caller.id, user.email, externalUserId, externalSchoolId);
+
+					await expect(promise).rejects.toThrow(UserLoginMigrationInvalidExternalSchoolIdLoggableException);
+					expect(userLoginMigrationService.startMigration).not.toHaveBeenCalled();
+					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
+				});
+			});
+		});
+
+		describe('when the school has a closed or finished migration', () => {
+			const setup = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+
+				const now = new Date();
+				const later = new Date();
+				later.setDate(now.getDate() + 1);
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+					closedAt: now,
+					finishedAt: later,
+				});
+
+				const caller: User = userFactory.buildWithId({
+					school: schoolEntityFactory.buildWithId({}, school.id),
+				});
+
+				const user: UserDO = userDoFactory.buildWithId({
+					schoolId: school.id,
+				});
+
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.startMigration.mockResolvedValueOnce(userLoginMigration);
+				userLoginMigrationService.hasMigrationClosed.mockReturnValueOnce(true);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(caller);
+				userService.findByEmail.mockResolvedValueOnce([user]);
+
+				return {
+					caller,
+					user,
+					externalUserId,
+					externalSchoolId,
+					userLoginMigration,
+					school,
+				};
+			};
+
+			it('should throw an error for already closed migration', async () => {
+				const { caller, user, externalUserId, externalSchoolId } = setup();
+
+				const forceMigrationPromise = uc.forceExtendedMigration(
+					caller.id,
+					user.email,
+					externalUserId,
+					externalSchoolId
+				);
+
+				await expect(forceMigrationPromise).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
+			});
+		});
+
+		describe('when there is no user with the email', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([]);
+
+				return {
+					user,
+					externalUserId,
+					externalSchoolId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
+
+				await expect(uc.forceExtendedMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
+					NotFoundLoggableException
+				);
+			});
+		});
+
+		describe('when there are multiple users with the email', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userDo = userDoFactory.build({
+					id: user.id,
+					roles: [
+						new RoleReference({
+							id: new ObjectId().toHexString(),
+							name: RoleName.ADMINISTRATOR,
+						}),
+					],
+				});
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([userDo, userDo]);
+
+				return {
+					user,
+					externalUserId,
+					externalSchoolId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
+
+				await expect(uc.forceExtendedMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
+					UserLoginMigrationMultipleEmailUsersLoggableException
+				);
+			});
+		});
+
+		describe('when there is no user id', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userDo = userDoFactory.build({
+					id: undefined,
+					roles: [
+						new RoleReference({
+							id: new ObjectId().toHexString(),
+							name: RoleName.ADMINISTRATOR,
+						}),
+					],
+				});
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userService.findByEmail.mockResolvedValueOnce([userDo]);
+
+				return {
+					user,
+					externalUserId,
+					externalSchoolId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalUserId, externalSchoolId } = setup();
+
+				await expect(uc.forceExtendedMigration(user.id, user.email, externalUserId, externalSchoolId)).rejects.toThrow(
 					NotFoundLoggableException
 				);
 			});

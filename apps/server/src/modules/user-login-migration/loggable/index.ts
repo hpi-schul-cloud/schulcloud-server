@@ -14,6 +14,7 @@ export * from './identical-user-login-migration-system.loggable-exception';
 export * from './moin-schule-system-not-found.loggable-exception';
 export { UserNotMigratedLoggableException } from './user-not-migrated.loggable-exception';
 export { UserMigrationRollbackSuccessfulLoggable } from './user-migration-rollback-successful.loggable';
+export { UserLoginMigrationSchoolAlreadyMigratedLoggableException } from './user-login-migration-school-already-migrated.loggable-exception';
 export { UserLoginMigrationInvalidAdminLoggableException } from './user-login-migration-invalid-admin.loggable-exception';
 export { UserLoginMigrationMultipleEmailUsersLoggableException } from './user-login-migration-multiple-email-users.loggable-exception';
 export { UserLoginMigrationInvalidExternalSchoolIdLoggableException } from './user-login-migration-invalid-external-school-id.loggable-exception';

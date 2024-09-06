@@ -244,11 +244,20 @@ export class UserLoginMigrationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() forceMigrationParams: ForceMigrationParams
 	): Promise<void> {
-		await this.userLoginMigrationUc.forceMigration(
-			currentUser.userId,
-			forceMigrationParams.email,
-			forceMigrationParams.externalUserId,
-			forceMigrationParams.externalSchoolId
-		);
+		if (forceMigrationParams.forceExtendedMode) {
+			await this.userLoginMigrationUc.forceExtendedMigration(
+				currentUser.userId,
+				forceMigrationParams.email,
+				forceMigrationParams.externalUserId,
+				forceMigrationParams.externalSchoolId
+			);
+		} else {
+			await this.userLoginMigrationUc.forceMigration(
+				currentUser.userId,
+				forceMigrationParams.email,
+				forceMigrationParams.externalUserId,
+				forceMigrationParams.externalSchoolId
+			);
+		}
 	}
 }

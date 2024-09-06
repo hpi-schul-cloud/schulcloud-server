@@ -6,9 +6,9 @@ import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import {
@@ -21,6 +21,8 @@ import {
 	UserMigrationSuccessfulLoggable,
 	UserMigrationCorrectionSuccessfulLoggable,
 	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
+	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
+	UserLoginMigrationInvalidAdminLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationQuery } from './dto';
@@ -141,15 +143,61 @@ export class UserLoginMigrationUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
 
-		const users: UserDO[] = await this.userService.findByEmail(email);
+		const schoolAdminUsers: UserDO[] = await this.userService.findByEmail(email);
 
-		if (users.length === 0) {
+		this.checkUserExists(schoolAdminUsers, email);
+
+		const schoolAdminUser: UserDO = schoolAdminUsers[0];
+		// TODO Use new domain object to always have an id
+		if (!schoolAdminUser.id) {
 			throw new NotFoundLoggableException('User', { email });
 		}
 
-		if (users.length > 1) {
-			throw new UserLoginMigrationMultipleEmailUsersLoggableException(email);
+		const isAdmin = !!schoolAdminUser.roles.find((value: RoleReference) => value.name === RoleName.ADMINISTRATOR);
+		if (!isAdmin) {
+			throw new UserLoginMigrationInvalidAdminLoggableException(schoolAdminUser.id);
 		}
+
+		const activeUserLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolAdminUser.schoolId);
+		if (activeUserLoginMigration) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(activeUserLoginMigration.schoolId);
+		}
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(
+			schoolAdminUser.schoolId
+		);
+
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolAdminUser.schoolId);
+
+		const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
+			school.externalId,
+			externalSchoolId
+		);
+		if (hasSchoolMigrated) {
+			throw new UserLoginMigrationSchoolAlreadyMigratedLoggableException(schoolAdminUser.schoolId);
+		}
+
+		await this.schoolMigrationService.migrateSchool(school, externalSchoolId, userLoginMigration.targetSystemId);
+
+		this.logger.info(new SchoolMigrationSuccessfulLoggable(school, userLoginMigration));
+
+		await this.userMigrationService.migrateUser(schoolAdminUser.id, externalUserId, userLoginMigration.targetSystemId);
+
+		this.logger.info(new UserMigrationSuccessfulLoggable(schoolAdminUser.id, userLoginMigration));
+	}
+
+	async forceExtendedMigration(
+		userId: EntityId,
+		email: string,
+		externalUserId: string,
+		externalSchoolId: string
+	): Promise<void> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
+
+		const users: UserDO[] = await this.userService.findByEmail(email);
+		this.checkUserExists(users, email);
 
 		const userToMigrate: UserDO = users[0];
 		// TODO Use new domain object to always have an id
@@ -207,6 +255,16 @@ export class UserLoginMigrationUc {
 			);
 
 			this.logger.info(new UserMigrationSuccessfulLoggable(userToMigrate.id, activeUserLoginMigration));
+		}
+	}
+
+	private checkUserExists(users: UserDO[], email: string) {
+		if (users.length === 0) {
+			throw new NotFoundLoggableException('User', { email });
+		}
+
+		if (users.length > 1) {
+			throw new UserLoginMigrationMultipleEmailUsersLoggableException(email);
 		}
 	}
 }

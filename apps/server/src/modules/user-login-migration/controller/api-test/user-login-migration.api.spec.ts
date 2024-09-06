@@ -28,6 +28,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
 import { DeepPartial } from 'fishery';
+import { UserLoginMigrationUc } from '../../uc';
 import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
 
 jest.mock('jwks-rsa', () => () => {
@@ -1433,78 +1434,360 @@ describe('UserLoginMigrationController (API)', () => {
 			expect(migratedUser.previousExternalId).toEqual(preMigratedUser.externalId);
 		};
 
-		describe('when forcing a school to migrate', () => {
-			const setup = async () => {
-				const targetSystem: SystemEntity = systemEntityFactory
-					.withOauthConfig()
-					.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+		const spyOnForceMigrations = () => {
+			jest.spyOn(UserLoginMigrationUc.prototype, 'forceMigration');
+			jest.spyOn(UserLoginMigrationUc.prototype, 'forceExtendedMigration');
+		};
 
-				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [sourceSystem],
-				});
+		describe('when "forceExtendedMode" is false', () => {
+			describe('when forcing a school to migrate', () => {
+				const setup = async () => {
+					const targetSystem: SystemEntity = systemEntityFactory
+						.withOauthConfig()
+						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const email = 'admin@test.com';
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
-					email,
-					school,
-				});
-				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
+					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					superheroAccount,
-					superheroUser,
-					adminAccount,
-					adminUser,
-				]);
-				em.clear();
+					const school: SchoolEntity = schoolEntityFactory.buildWithId({
+						systems: [sourceSystem],
+					});
 
-				const loggedInClient = await testApiClient.login(superheroAccount);
+					const email = 'admin@test.com';
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
+						email,
+						school,
+					});
+					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
-				const requestBody: ForceMigrationParams = new ForceMigrationParams();
-				requestBody.email = email;
-				requestBody.externalUserId = 'externalUserId';
-				requestBody.externalSchoolId = 'externalSchoolId';
+					await em.persistAndFlush([
+						sourceSystem,
+						targetSystem,
+						school,
+						superheroAccount,
+						superheroUser,
+						adminAccount,
+						adminUser,
+					]);
+					em.clear();
 
-				return {
-					requestBody,
-					loggedInClient,
-					sourceSystem,
-					targetSystem,
-					school,
-					adminUser,
+					const loggedInClient = await testApiClient.login(superheroAccount);
+
+					const requestBody: ForceMigrationParams = new ForceMigrationParams();
+					requestBody.email = email;
+					requestBody.externalUserId = 'externalUserId';
+					requestBody.externalSchoolId = 'externalSchoolId';
+					requestBody.forceExtendedMode = false;
+
+					return {
+						requestBody,
+						loggedInClient,
+						sourceSystem,
+						targetSystem,
+						school,
+						adminUser,
+						superheroUser,
+					};
 				};
-			};
 
-			it('should start the migration for the school and migrate the user and school', async () => {
-				const { requestBody, loggedInClient, school, sourceSystem, targetSystem, adminUser } = await setup();
+				it('should start the migration for the school and migrate the user and school', async () => {
+					const { requestBody, loggedInClient, school, sourceSystem, targetSystem, adminUser } = await setup();
 
-				const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+					const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
 
-				expect(response.status).toEqual(HttpStatus.CREATED);
+					expect(response.status).toEqual(HttpStatus.CREATED);
 
-				const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
-				expect(userLoginMigration.sourceSystem?.id).toEqual(sourceSystem.id);
-				expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
+					const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
+					expect(userLoginMigration.sourceSystem?.id).toEqual(sourceSystem.id);
+					expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
 
-				const schoolEntity = await em.findOneOrFail(SchoolEntity, school.id);
-				expect(schoolEntity).toEqual(
-					expect.objectContaining({
-						externalId: requestBody.externalSchoolId,
-					})
-				);
+					const schoolEntity = await em.findOneOrFail(SchoolEntity, school.id);
+					expect(schoolEntity).toEqual(
+						expect.objectContaining({
+							externalId: requestBody.externalSchoolId,
+						})
+					);
 
-				const migratedUser = await em.findOneOrFail(User, adminUser.id);
-				expectUserMigrated(migratedUser, adminUser, requestBody.externalUserId);
+					const migratedUser = await em.findOneOrFail(User, adminUser.id);
+					expectUserMigrated(migratedUser, adminUser, requestBody.externalUserId);
+				});
+
+				it('should call the correct force migration function', async () => {
+					const { requestBody, loggedInClient, superheroUser } = await setup();
+					spyOnForceMigrations();
+
+					const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+
+					expect(response.status).toEqual(HttpStatus.CREATED);
+					expect(UserLoginMigrationUc.prototype.forceExtendedMigration).not.toHaveBeenCalled();
+					expect(UserLoginMigrationUc.prototype.forceMigration).toHaveBeenCalledWith(
+						superheroUser.id,
+						requestBody.email,
+						requestBody.externalUserId,
+						requestBody.externalSchoolId
+					);
+				});
+			});
+
+			describe('when authentication of user failed', () => {
+				const setup = () => {
+					const requestBody: ForceMigrationParams = new ForceMigrationParams();
+					requestBody.email = 'fail@test.com';
+					requestBody.externalUserId = 'externalUserId';
+					requestBody.externalSchoolId = 'externalSchoolId';
+					requestBody.forceExtendedMode = false;
+
+					return {
+						requestBody,
+					};
+				};
+
+				it('should throw an UnauthorizedException', async () => {
+					const { requestBody } = setup();
+
+					const response: Response = await testApiClient.post(`/force-migration`, requestBody);
+
+					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				});
 			});
 		});
 
-		describe('when forcing a user in a migrated school to migrate', () => {
-			describe('when the provided external school id is valid', () => {
+		describe('when "forceExtendedMode" is true', () => {
+			describe('when forcing a school to migrate', () => {
+				const setup = async () => {
+					const targetSystem: SystemEntity = systemEntityFactory
+						.withOauthConfig()
+						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+
+					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+
+					const school: SchoolEntity = schoolEntityFactory.buildWithId({
+						systems: [sourceSystem],
+					});
+
+					const email = 'admin@test.com';
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
+						email,
+						school,
+					});
+					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
+
+					await em.persistAndFlush([
+						sourceSystem,
+						targetSystem,
+						school,
+						superheroAccount,
+						superheroUser,
+						adminAccount,
+						adminUser,
+					]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(superheroAccount);
+
+					const requestBody: ForceMigrationParams = new ForceMigrationParams();
+					requestBody.email = email;
+					requestBody.externalUserId = 'externalUserId';
+					requestBody.externalSchoolId = 'externalSchoolId';
+					requestBody.forceExtendedMode = true;
+
+					return {
+						requestBody,
+						loggedInClient,
+						sourceSystem,
+						targetSystem,
+						school,
+						adminUser,
+						superheroUser,
+					};
+				};
+
+				it('should start the migration for the school and migrate the user and school', async () => {
+					const { requestBody, loggedInClient, school, sourceSystem, targetSystem, adminUser } = await setup();
+
+					const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+
+					expect(response.status).toEqual(HttpStatus.CREATED);
+
+					const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
+					expect(userLoginMigration.sourceSystem?.id).toEqual(sourceSystem.id);
+					expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
+
+					const schoolEntity = await em.findOneOrFail(SchoolEntity, school.id);
+					expect(schoolEntity).toEqual(
+						expect.objectContaining({
+							externalId: requestBody.externalSchoolId,
+						})
+					);
+
+					const migratedUser = await em.findOneOrFail(User, adminUser.id);
+					expectUserMigrated(migratedUser, adminUser, requestBody.externalUserId);
+				});
+
+				it('should call the correct force migration function', async () => {
+					const { requestBody, loggedInClient, superheroUser } = await setup();
+					spyOnForceMigrations();
+
+					const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+
+					expect(response.status).toEqual(HttpStatus.CREATED);
+					expect(UserLoginMigrationUc.prototype.forceMigration).not.toHaveBeenCalled();
+					expect(UserLoginMigrationUc.prototype.forceExtendedMigration).toHaveBeenCalledWith(
+						superheroUser.id,
+						requestBody.email,
+						requestBody.externalUserId,
+						requestBody.externalSchoolId
+					);
+				});
+			});
+
+			describe('when forcing a user in a migrated school to migrate', () => {
+				describe('when the provided external school id is valid', () => {
+					const setup = async () => {
+						const targetSystem: SystemEntity = systemEntityFactory
+							.withOauthConfig()
+							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+
+						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+
+						const externalSchoolId = 'externalSchoolId';
+						const school: SchoolEntity = schoolEntityFactory.buildWithId({
+							systems: [sourceSystem, targetSystem],
+							externalId: externalSchoolId,
+						});
+
+						const email = 'student@test.com';
+						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+							email,
+							school,
+						});
+						const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
+
+						const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+							school,
+							targetSystem,
+						});
+
+						await em.persistAndFlush([
+							sourceSystem,
+							targetSystem,
+							school,
+							superheroAccount,
+							superheroUser,
+							studentAccount,
+							studentUser,
+							userLoginMigration,
+						]);
+						em.clear();
+
+						const loggedInClient = await testApiClient.login(superheroAccount);
+
+						const requestBody: ForceMigrationParams = new ForceMigrationParams();
+						requestBody.email = email;
+						requestBody.externalUserId = 'externalUserId';
+						requestBody.externalSchoolId = externalSchoolId;
+						requestBody.forceExtendedMode = true;
+
+						return {
+							requestBody,
+							loggedInClient,
+							sourceSystem,
+							targetSystem,
+							school,
+							studentUser,
+						};
+					};
+
+					it('should migrate the user without changing the school migration', async () => {
+						const { requestBody, loggedInClient, school, sourceSystem, targetSystem, studentUser } = await setup();
+
+						const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+
+						expect(response.status).toEqual(HttpStatus.CREATED);
+
+						const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, {
+							school: school.id,
+						});
+						expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
+
+						const migratedSchool = await em.findOneOrFail(SchoolEntity, school.id);
+						expectSchoolMigrationUnchanged(migratedSchool, requestBody.externalSchoolId, sourceSystem, targetSystem);
+
+						const migratedUser = await em.findOneOrFail(User, studentUser.id);
+						expectUserMigrated(migratedUser, studentUser, requestBody.externalUserId);
+					});
+				});
+
+				describe('when the provided external school id is invalid', () => {
+					const setup = async () => {
+						const targetSystem: SystemEntity = systemEntityFactory
+							.withOauthConfig()
+							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+
+						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+
+						const externalSchoolId = 'externalSchoolId';
+						const school: SchoolEntity = schoolEntityFactory.buildWithId({
+							systems: [sourceSystem, targetSystem],
+							externalId: 'otherExternalSchoolId',
+						});
+
+						const email = 'student@test.com';
+						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+							email,
+							school,
+						});
+						const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
+
+						const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+							school,
+							targetSystem,
+						});
+
+						await em.persistAndFlush([
+							sourceSystem,
+							targetSystem,
+							school,
+							superheroAccount,
+							superheroUser,
+							studentAccount,
+							studentUser,
+							userLoginMigration,
+						]);
+						em.clear();
+
+						const loggedInClient = await testApiClient.login(superheroAccount);
+
+						const requestBody: ForceMigrationParams = new ForceMigrationParams();
+						requestBody.email = email;
+						requestBody.externalUserId = 'externalUserId';
+						requestBody.externalSchoolId = externalSchoolId;
+						requestBody.forceExtendedMode = true;
+
+						return {
+							requestBody,
+							loggedInClient,
+							sourceSystem,
+							targetSystem,
+							school,
+							studentUser,
+						};
+					};
+
+					it('throw an UnprocessableEntityException', async () => {
+						const { requestBody, loggedInClient } = await setup();
+
+						const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+
+						expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+					});
+				});
+			});
+
+			describe('when forcing a correction on a migrated user', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
@@ -1518,17 +1801,23 @@ describe('UserLoginMigrationController (API)', () => {
 						externalId: externalSchoolId,
 					});
 
-					const email = 'student@test.com';
-					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
-						email,
-						school,
-					});
-					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-
 					const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 						school,
 						targetSystem,
+						sourceSystem,
 					});
+
+					const email = 'teacher@test.com';
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({
+						email,
+						school,
+					});
+					teacherUser.externalId = 'badExternalUserId';
+					const loginChange = new Date(userLoginMigration.startedAt);
+					loginChange.setDate(loginChange.getDate() + 1);
+					teacherUser.lastLoginSystemChange = loginChange;
+
+					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
 					await em.persistAndFlush([
 						sourceSystem,
@@ -1536,8 +1825,8 @@ describe('UserLoginMigrationController (API)', () => {
 						school,
 						superheroAccount,
 						superheroUser,
-						studentAccount,
-						studentUser,
+						teacherAccount,
+						teacherUser,
 						userLoginMigration,
 					]);
 					em.clear();
@@ -1546,8 +1835,9 @@ describe('UserLoginMigrationController (API)', () => {
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
-					requestBody.externalUserId = 'externalUserId';
+					requestBody.externalUserId = 'correctExternalUserId';
 					requestBody.externalSchoolId = externalSchoolId;
+					requestBody.forceExtendedMode = true;
 
 					return {
 						requestBody,
@@ -1555,31 +1845,34 @@ describe('UserLoginMigrationController (API)', () => {
 						sourceSystem,
 						targetSystem,
 						school,
-						studentUser,
+						teacherUser,
 					};
 				};
 
-				it('should migrate the user without changing the school migration', async () => {
-					const { requestBody, loggedInClient, school, sourceSystem, targetSystem, studentUser } = await setup();
+				it('should correct the user without changing the migration', async () => {
+					const { requestBody, loggedInClient, school, sourceSystem, targetSystem, teacherUser } = await setup();
 
 					const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
 
 					expect(response.status).toEqual(HttpStatus.CREATED);
 
-					const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, {
-						school: school.id,
-					});
+					const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
 					expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
 
 					const migratedSchool = await em.findOneOrFail(SchoolEntity, school.id);
 					expectSchoolMigrationUnchanged(migratedSchool, requestBody.externalSchoolId, sourceSystem, targetSystem);
 
-					const migratedUser = await em.findOneOrFail(User, studentUser.id);
-					expectUserMigrated(migratedUser, studentUser, requestBody.externalUserId);
+					const expectedUserPartial: DeepPartial<User> = {
+						externalId: requestBody.externalUserId,
+						lastLoginSystemChange: teacherUser.lastLoginSystemChange,
+						previousExternalId: teacherUser.previousExternalId,
+					};
+					const correctedUser = await em.findOneOrFail(User, teacherUser.id);
+					expect(correctedUser).toEqual(expect.objectContaining(expectedUserPartial));
 				});
 			});
 
-			describe('when the provided external school id is invalid', () => {
+			describe('when forcing a user migration after the migration is closed or finished', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
@@ -1590,20 +1883,29 @@ describe('UserLoginMigrationController (API)', () => {
 					const externalSchoolId = 'externalSchoolId';
 					const school: SchoolEntity = schoolEntityFactory.buildWithId({
 						systems: [sourceSystem, targetSystem],
-						externalId: 'otherExternalSchoolId',
+						externalId: externalSchoolId,
 					});
 
-					const email = 'student@test.com';
-					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
-						email,
-						school,
-					});
-					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-
+					const now = new Date();
+					const closedAt = new Date(now);
+					closedAt.setMonth(now.getMonth() - 1);
+					const finishedAt = new Date(closedAt);
+					finishedAt.setDate(finishedAt.getDate() + 7);
 					const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 						school,
 						targetSystem,
+						sourceSystem,
+						closedAt,
+						finishedAt,
 					});
+
+					const email = 'teacher@test.com';
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({
+						email,
+						school,
+					});
+
+					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
 					await em.persistAndFlush([
 						sourceSystem,
@@ -1611,8 +1913,8 @@ describe('UserLoginMigrationController (API)', () => {
 						school,
 						superheroAccount,
 						superheroUser,
-						studentAccount,
-						studentUser,
+						teacherAccount,
+						teacherUser,
 						userLoginMigration,
 					]);
 					em.clear();
@@ -1623,18 +1925,15 @@ describe('UserLoginMigrationController (API)', () => {
 					requestBody.email = email;
 					requestBody.externalUserId = 'externalUserId';
 					requestBody.externalSchoolId = externalSchoolId;
+					requestBody.forceExtendedMode = true;
 
 					return {
 						requestBody,
 						loggedInClient,
-						sourceSystem,
-						targetSystem,
-						school,
-						studentUser,
 					};
 				};
 
-				it('throw an UnprocessableEntityException', async () => {
+				it('should throw an UnprocessableEntityException', async () => {
 					const { requestBody, loggedInClient } = await setup();
 
 					const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
@@ -1642,179 +1941,27 @@ describe('UserLoginMigrationController (API)', () => {
 					expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 				});
 			});
-		});
 
-		describe('when forcing a correction on a migrated user', () => {
-			const setup = async () => {
-				const targetSystem: SystemEntity = systemEntityFactory
-					.withOauthConfig()
-					.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+			describe('when authentication of user failed', () => {
+				const setup = () => {
+					const requestBody: ForceMigrationParams = new ForceMigrationParams();
+					requestBody.email = 'fail@test.com';
+					requestBody.externalUserId = 'externalUserId';
+					requestBody.externalSchoolId = 'externalSchoolId';
+					requestBody.forceExtendedMode = true;
 
-				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
-
-				const externalSchoolId = 'externalSchoolId';
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [sourceSystem, targetSystem],
-					externalId: externalSchoolId,
-				});
-
-				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-				});
-
-				const email = 'teacher@test.com';
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({
-					email,
-					school,
-				});
-				teacherUser.externalId = 'badExternalUserId';
-				const loginChange = new Date(userLoginMigration.startedAt);
-				loginChange.setDate(loginChange.getDate() + 1);
-				teacherUser.lastLoginSystemChange = loginChange;
-
-				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					superheroAccount,
-					superheroUser,
-					teacherAccount,
-					teacherUser,
-					userLoginMigration,
-				]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const requestBody: ForceMigrationParams = new ForceMigrationParams();
-				requestBody.email = email;
-				requestBody.externalUserId = 'correctExternalUserId';
-				requestBody.externalSchoolId = externalSchoolId;
-
-				return {
-					requestBody,
-					loggedInClient,
-					sourceSystem,
-					targetSystem,
-					school,
-					teacherUser,
+					return {
+						requestBody,
+					};
 				};
-			};
 
-			it('should correct the user without changing the migration', async () => {
-				const { requestBody, loggedInClient, school, sourceSystem, targetSystem, teacherUser } = await setup();
+				it('should throw an UnauthorizedException', async () => {
+					const { requestBody } = setup();
 
-				const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
+					const response: Response = await testApiClient.post(`/force-migration`, requestBody);
 
-				expect(response.status).toEqual(HttpStatus.CREATED);
-
-				const userLoginMigration = await em.findOneOrFail(UserLoginMigrationEntity, { school: school.id });
-				expect(userLoginMigration.targetSystem.id).toEqual(targetSystem.id);
-
-				const migratedSchool = await em.findOneOrFail(SchoolEntity, school.id);
-				expectSchoolMigrationUnchanged(migratedSchool, requestBody.externalSchoolId, sourceSystem, targetSystem);
-
-				const expectedUserPartial: DeepPartial<User> = {
-					externalId: requestBody.externalUserId,
-					lastLoginSystemChange: teacherUser.lastLoginSystemChange,
-					previousExternalId: teacherUser.previousExternalId,
-				};
-				const correctedUser = await em.findOneOrFail(User, teacherUser.id);
-				expect(correctedUser).toEqual(expect.objectContaining(expectedUserPartial));
-			});
-		});
-
-		describe('when forcing a user migration after the migration is closed or finished', () => {
-			const setup = async () => {
-				const targetSystem: SystemEntity = systemEntityFactory
-					.withOauthConfig()
-					.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
-
-				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
-
-				const externalSchoolId = 'externalSchoolId';
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
-					systems: [sourceSystem, targetSystem],
-					externalId: externalSchoolId,
+					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				});
-
-				const now = new Date();
-				const closedAt = new Date(now);
-				closedAt.setMonth(now.getMonth() - 1);
-				const finishedAt = new Date(closedAt);
-				finishedAt.setDate(finishedAt.getDate() + 7);
-				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					closedAt,
-					finishedAt,
-				});
-
-				const email = 'teacher@test.com';
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({
-					email,
-					school,
-				});
-
-				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					superheroAccount,
-					superheroUser,
-					teacherAccount,
-					teacherUser,
-					userLoginMigration,
-				]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				const requestBody: ForceMigrationParams = new ForceMigrationParams();
-				requestBody.email = email;
-				requestBody.externalUserId = 'externalUserId';
-				requestBody.externalSchoolId = externalSchoolId;
-
-				return {
-					requestBody,
-					loggedInClient,
-				};
-			};
-
-			it('should throw an UnprocessableEntityException', async () => {
-				const { requestBody, loggedInClient } = await setup();
-
-				const response: Response = await loggedInClient.post(`/force-migration`, requestBody);
-
-				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
-			});
-		});
-
-		describe('when authentication of user failed', () => {
-			const setup = () => {
-				const requestBody: ForceMigrationParams = new ForceMigrationParams();
-				requestBody.email = 'fail@test.com';
-				requestBody.externalUserId = 'externalUserId';
-				requestBody.externalSchoolId = 'externalSchoolId';
-
-				return {
-					requestBody,
-				};
-			};
-
-			it('should throw an UnauthorizedException', async () => {
-				const { requestBody } = setup();
-
-				const response: Response = await testApiClient.post(`/force-migration`, requestBody);
-
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
