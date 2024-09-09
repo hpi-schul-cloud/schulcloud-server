@@ -3,25 +3,26 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo } from '@shared/repo';
 import {
 	importUserFactory,
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
-	systemFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { ImportUserRepo } from '../repo';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
 

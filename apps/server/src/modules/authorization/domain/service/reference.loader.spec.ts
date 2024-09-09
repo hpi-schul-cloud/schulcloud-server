@@ -13,26 +13,26 @@ import {
 	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeAuthorizableService } from '@src/modules/board';
+import { TeamAuthorisableService } from '@src/modules/teams';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let lessonService: DeepMocked<LessonService>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamsAuthorisableService: DeepMocked<TeamAuthorisableService>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
 	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
 	let instanceService: DeepMocked<InstanceService>;
@@ -44,6 +44,10 @@ describe('reference.loader', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				ReferenceLoader,
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -69,8 +73,8 @@ describe('reference.loader', () => {
 					useValue: createMock<LessonService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamAuthorisableService,
+					useValue: createMock<TeamAuthorisableService>(),
 				},
 				{
 					provide: SubmissionRepo,
@@ -79,10 +83,6 @@ describe('reference.loader', () => {
 				{
 					provide: SchoolExternalToolRepo,
 					useValue: createMock<SchoolExternalToolRepo>(),
-				},
-				{
-					provide: BoardNodeAuthorizableService,
-					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
 					provide: ContextExternalToolAuthorizableService,
@@ -100,22 +100,26 @@ describe('reference.loader', () => {
 		}).compile();
 
 		service = await module.get(ReferenceLoader);
+		injectionService = await module.get(AuthorizationInjectionService);
 		userRepo = await module.get(UserRepo);
 		courseRepo = await module.get(CourseRepo);
 		courseGroupRepo = await module.get(CourseGroupRepo);
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(LegacySchoolRepo);
 		lessonService = await module.get(LessonService);
-		teamsRepo = await module.get(TeamsRepo);
+		teamsAuthorisableService = await module.get(TeamAuthorisableService);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		boardNodeAuthorizableService = await module.get(BoardNodeAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
 		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
 		instanceService = await module.get(InstanceService);
 	});
 
 	afterEach(() => {
+		injectionService.getReferenceLoader.mockReset();
+	});
+
+	afterAll(() => {
 		jest.resetAllMocks();
 	});
 
@@ -124,97 +128,106 @@ describe('reference.loader', () => {
 	});
 
 	describe('loadEntity', () => {
-		it('should call taskRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Task, entityId);
+		it('should call findById on reference loader', async () => {
+			const referenceLoader = {
+				findById: jest.fn(),
+			};
 
-			expect(taskRepo.findById).toBeCalledWith(entityId);
-		});
+			injectionService.getReferenceLoader.mockReturnValue(referenceLoader);
 
-		it('should call courseRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Course, entityId);
-
-			expect(courseRepo.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call courseGroupRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.CourseGroup, entityId);
-
-			expect(courseGroupRepo.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call schoolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.School, entityId);
-
-			expect(schoolRepo.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call userRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(userRepo.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call lessonRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Lesson, entityId);
-
-			expect(lessonService.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call teamsRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Team, entityId);
-
-			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
-		});
-
-		it('should call contextExternalToolService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalToolEntity, entityId);
-
-			expect(contextExternalToolAuthorizableService.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call submissionRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Submission, entityId);
-
-			expect(submissionRepo.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call schoolExternalToolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalToolEntity, entityId);
-
-			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call externalToolAuthorizableService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.ExternalTool, entityId);
-
-			expect(externalToolAuthorizableService.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call findNodeService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
-
-			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call instanceService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.Instance, entityId);
-
-			expect(instanceService.findById).toBeCalledWith(entityId);
+			expect(referenceLoader.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return authorizable object', async () => {
-			const user = userFactory.build();
-			userRepo.findById.mockResolvedValue(user);
+			const expected = userFactory.build();
+			const referenceLoader = {
+				findById: jest.fn().mockResolvedValue(expected),
+			};
+
+			injectionService.getReferenceLoader.mockReturnValue(referenceLoader);
 
 			const result = await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(result).toBe(user);
+			expect(result).toEqual(expected);
 		});
 
 		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
 				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
+		});
+	});
+
+	describe('currently, the reference loader has to inject the loaders into the injection service. In the future, this part should be moved into the modules.', () => {
+		it('should inject user repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.User, userRepo);
+		});
+
+		it('should inject course repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Course, courseRepo);
+		});
+
+		it('should inject course group repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.CourseGroup,
+				courseGroupRepo
+			);
+		});
+
+		it('should inject task repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Task, taskRepo);
+		});
+
+		it('should inject school repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.School, schoolRepo);
+		});
+
+		it('should inject lesson service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Lesson, lessonService);
+		});
+
+		it('should inject teams repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.Team,
+				teamsAuthorisableService
+			);
+		});
+
+		it('should inject submission repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.Submission,
+				submissionRepo
+			);
+		});
+
+		it('should inject school external tool repo', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.SchoolExternalToolEntity,
+				schoolExternalToolRepo
+			);
+		});
+
+		it('should inject context external tool authorizable service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.ContextExternalToolEntity,
+				contextExternalToolAuthorizableService
+			);
+		});
+
+		it('should inject external tool authorizable service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.ExternalTool,
+				externalToolAuthorizableService
+			);
+		});
+
+		it('should inject instance service', () => {
+			expect(injectionService.injectReferenceLoader).toBeCalledWith(
+				AuthorizableReferenceType.Instance,
+				instanceService
+			);
 		});
 	});
 });

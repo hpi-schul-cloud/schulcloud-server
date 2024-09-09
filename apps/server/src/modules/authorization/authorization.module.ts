@@ -2,9 +2,8 @@ import { FeathersModule } from '@infra/feathers';
 import { Module } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
+import { AuthorizationHelper, AuthorizationService, RuleManager, AuthorizationInjectionService } from './domain';
 import {
-	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -29,13 +28,13 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,
+		AuthorizationInjectionService,
 		FeathersAuthProvider,
 		AuthorizationService,
 		UserRepo,
 		RuleManager,
 		AuthorizationHelper,
 		// rules
-		BoardNodeRule,
 		ContextExternalToolRule,
 		CourseGroupRule,
 		CourseRule,
@@ -54,6 +53,12 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		ExternalToolRule,
 		InstanceRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
+	exports: [
+		FeathersAuthorizationService,
+		AuthorizationService,
+		SystemRule,
+		AuthorizationInjectionService,
+		AuthorizationHelper,
+	],
 })
 export class AuthorizationModule {}

@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { systemFactory } from '@shared/testing';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -13,6 +13,7 @@ import {
 } from '../dto';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
 import { ProvisioningService } from './provisioning.service';
+import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
 
 describe('ProvisioningService', () => {
 	let module: TestingModule;
@@ -50,6 +51,14 @@ describe('ProvisioningService', () => {
 					useValue: createMock<OidcMockProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.OIDC;
+						},
+					}),
+				},
+				{
+					provide: TspProvisioningStrategy,
+					useValue: createMock<TspProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.TSP;
 						},
 					}),
 				},

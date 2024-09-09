@@ -1,24 +1,24 @@
-import { MatchCreator } from '@shared/domain/entity';
-import { MatchCreatorScope } from '@shared/domain/types';
+import { MatchCreator } from '../entity';
 import { FilterMatchType, MatchType } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
+import { ImportUserMatchCreatorScope } from '../domain/interface';
 
 describe('[ImportUserMatchMapper]', () => {
 	describe('[mapImportUserMatchScopeToDomain] from query', () => {
 		it('should map auto from query to domain', () => {
 			const match = FilterMatchType.AUTO;
 			const result = ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match);
-			expect(result).toEqual(MatchCreatorScope.AUTO);
+			expect(result).toEqual(ImportUserMatchCreatorScope.AUTO);
 		});
 		it('should map manual/admin from query to domain', () => {
 			const match = FilterMatchType.MANUAL;
 			const result = ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match);
-			expect(result).toEqual(MatchCreatorScope.MANUAL);
+			expect(result).toEqual(ImportUserMatchCreatorScope.MANUAL);
 		});
 		it('should map no match from query to domain', () => {
 			const match = FilterMatchType.NONE;
 			const result = ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match);
-			expect(result).toEqual(MatchCreatorScope.NONE);
+			expect(result).toEqual(ImportUserMatchCreatorScope.NONE);
 		});
 		it('should fail for other values', () => {
 			const match = 'foo' as unknown as FilterMatchType;
