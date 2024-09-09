@@ -43,8 +43,10 @@ export class CurrentUserBuilder {
 		return this.props;
 	}
 
-	public asSupporter(asSupporter = true) {
-		this.props.impersonated = asSupporter;
+	public asSupporter(asSupporter?: boolean) {
+		if (asSupporter === true) {
+			this.props.impersonated = asSupporter;
+		}
 
 		return this;
 	}
@@ -52,8 +54,10 @@ export class CurrentUserBuilder {
 	// I expect that external user should always bound to external system, but the existing code give no feedback about it
 	// Need to be validated add then add isExternalUser modification to system.
 	// The make this function public and allow passing param with value false can be make trouble.
-	public asExternalUser(isExternalUser = true) {
-		this.props.isExternalUser = isExternalUser;
+	public asExternalUser(isExternalUser?: boolean) {
+		if (isExternalUser === true) {
+			this.props.isExternalUser = isExternalUser;
+		}
 
 		return this;
 	}
