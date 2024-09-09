@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamAuthorisableService } from './team-authorisable.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory } from '@shared/testing';
+import { TeamAuthorisableService } from './team-authorisable.service';
 
 describe('team authorisable service', () => {
 	let module: TestingModule;
