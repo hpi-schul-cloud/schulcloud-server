@@ -292,7 +292,7 @@ describe('UserService', () => {
 			it('should return the current user', async () => {
 				const { userId, user, account, role, systemId } = setup();
 
-				const result: OauthCurrentUser = await service.getResolvedUser(userId);
+				const result = await service.getResolvedUser(userId);
 
 				expect(result).toEqual<OauthCurrentUser>({
 					userId,
@@ -301,6 +301,7 @@ describe('UserService', () => {
 					accountId: account.id,
 					roles: [role.id],
 					isExternalUser: true,
+					impersonated: true,
 				});
 			});
 		});
