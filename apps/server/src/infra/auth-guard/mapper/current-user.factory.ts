@@ -37,30 +37,34 @@ export class CurrentUserBuilder {
 		};
 	}
 
-	build(): ICurrentUser {
+	// creating a do representation of currentUser as class make sense
+	// Please add validations to this type into this method
+	public build(): ICurrentUser {
 		return this.props;
 	}
 
-	asSupporter(asSupporter = true) {
+	public asSupporter(asSupporter = true) {
 		this.props.impersonated = asSupporter;
 
 		return this;
 	}
 
 	// I expect that external user should always bound to external system, but the existing code give no feedback about it
-	asExternalUser(isExternalUser = true) {
+	// Need to be validated add then add isExternalUser modification to system.
+	// The make this function public and allow passing param with value false can be make trouble.
+	public asExternalUser(isExternalUser = true) {
 		this.props.isExternalUser = isExternalUser;
 
 		return this;
 	}
 
-	withExternalSystem(systemId?: EntityId) {
+	public withExternalSystem(systemId?: EntityId) {
 		this.props.systemId = systemId;
 
 		return this;
 	}
 
-	asExternalUserWithToken(externalIdToken: string) {
+	public asExternalUserWithToken(externalIdToken: string) {
 		this.props.externalIdToken = externalIdToken;
 		this.props.isExternalUser = true;
 

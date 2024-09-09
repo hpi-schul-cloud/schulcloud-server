@@ -27,6 +27,7 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
 			const currentUser = new CurrentUserBuilder(payload)
 				.asExternalUser(payload.isExternalUser)
+				.withExternalSystem(payload.systemId)
 				.asSupporter(payload.support)
 				.build();
 

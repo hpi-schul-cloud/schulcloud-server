@@ -365,6 +365,7 @@ describe('Login Controller (api)', () => {
 					schoolId: school.id,
 					accountId: account.id,
 					isExternalUser: true,
+					impersonated: false,
 				});
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
