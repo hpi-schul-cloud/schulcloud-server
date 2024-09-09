@@ -16,10 +16,10 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
+import { TeamAuthorisableService } from '@src/modules/teams';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationInjectionService } from './authorization-injection.service';
-import { TeamAuthorisableService } from '@src/modules/teams';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;

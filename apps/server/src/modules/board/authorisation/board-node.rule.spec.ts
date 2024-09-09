@@ -3,8 +3,8 @@ import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeRule } from './board-node.rule';
 import { AuthorizationHelper, AuthorizationInjectionService, Action } from '@src/modules/authorization';
+import { BoardNodeRule } from './board-node.rule';
 import { columnBoardFactory, drawingElementFactory, fileElementFactory, submissionItemFactory } from '../testing';
 
 describe(BoardNodeRule.name, () => {
