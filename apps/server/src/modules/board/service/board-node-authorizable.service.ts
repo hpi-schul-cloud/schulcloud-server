@@ -1,6 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
-import { type AuthorizationLoaderService } from '@modules/authorization';
+import {
+	type AuthorizationLoaderService,
+	AuthorizationInjectionService,
+	AuthorizableReferenceType,
+} from '@modules/authorization';
 import { AnyBoardNode, BoardNodeAuthorizable, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardContextService } from './internal/board-context.service';
@@ -11,8 +15,11 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 	constructor(
 		@Inject(forwardRef(() => BoardNodeRepo)) private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardContextService: BoardContextService
-	) {}
+		private readonly boardContextService: BoardContextService,
+		injectionService: AuthorizationInjectionService
+	) {
+		injectionService.injectReferenceLoader(AuthorizableReferenceType.BoardNode, this);
+	}
 
 	/**
 	 * @deprecated

@@ -1,4 +1,3 @@
-import { BoardModule } from '@modules/board';
 import { InstanceModule } from '@modules/instance';
 import { LessonModule } from '@modules/lesson';
 import { ToolModule } from '@modules/tool';
@@ -10,12 +9,12 @@ import {
 	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
+import { TeamsModule } from '../teams';
 
 /**
  * This module is part of an intermediate state. In the future it should be replaced by an AuthorizationApiModule.
@@ -24,14 +23,7 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
  */
 @Module({
 	// TODO: remove forwardRef
-	imports: [
-		AuthorizationModule,
-		LessonModule,
-		forwardRef(() => ToolModule),
-		forwardRef(() => BoardModule),
-		LoggerModule,
-		InstanceModule,
-	],
+	imports: [AuthorizationModule, LessonModule, TeamsModule, forwardRef(() => ToolModule), LoggerModule, InstanceModule],
 	providers: [
 		AuthorizationHelper,
 		ReferenceLoader,
@@ -40,7 +32,6 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 		CourseGroupRepo,
 		TaskRepo,
 		LegacySchoolRepo,
-		TeamsRepo,
 		SubmissionRepo,
 		SchoolExternalToolRepo,
 		AuthorizationReferenceService,
