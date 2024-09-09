@@ -1,13 +1,14 @@
 import { StringValidator } from '@shared/common';
-import { MatchCreator, User } from '@shared/domain/entity';
-import { NameMatch } from '@shared/domain/types';
+import { User } from '@shared/domain/entity';
 import { UserMatchResponse, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
+import { ImportUserNameMatchFilter } from '../domain/interface';
+import { MatchCreator } from '../entity';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {
-	static mapToDomain(query: FilterUserParams): NameMatch {
-		const scope: NameMatch = {};
+	static mapToDomain(query: FilterUserParams): ImportUserNameMatchFilter {
+		const scope: ImportUserNameMatchFilter = {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {
 				scope.name = query.name;

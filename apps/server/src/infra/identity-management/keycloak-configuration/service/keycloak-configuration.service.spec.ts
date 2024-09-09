@@ -11,8 +11,7 @@ import { SystemService } from '@modules/system';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { systemFactory } from '@shared/testing';
+import { systemFactory } from '@modules/system/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';

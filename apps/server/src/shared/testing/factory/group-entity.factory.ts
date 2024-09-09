@@ -1,5 +1,5 @@
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '@modules/group/entity';
-import { ExternalSourceEmbeddable } from '@shared/domain/entity';
+import { ExternalSourceEmbeddable } from '@modules/system/entity';
 import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';

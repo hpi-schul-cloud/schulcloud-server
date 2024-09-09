@@ -4,12 +4,13 @@ import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { UserImportConfig } from '../user-import-config';
+import { ImportUserRepo } from '../repo/import-user.repo';
+import { ImportUser, MatchCreator } from '../entity';
 
 @Injectable()
 export class UserImportService {
