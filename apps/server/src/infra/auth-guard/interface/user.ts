@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { EntityId } from '@shared/domain/types';
 
 export interface ICurrentUser {
@@ -18,20 +14,10 @@ export interface ICurrentUser {
 	systemId?: EntityId;
 
 	/** True if a support member impersonates the user */
-	impersonated?: boolean;
+	impersonated: boolean;
 
 	/** True if the user is an external user e.g. an oauth user or ldap user */
 	isExternalUser: boolean;
 
 	externalIdToken?: string;
-}
-
-export function isICurrentUser(user: any): user is ICurrentUser {
-	return (
-		typeof user?.userId === 'string' &&
-		Array.isArray(user?.roles) &&
-		(user?.roles as any[]).every((id: any) => typeof id === 'string') &&
-		typeof user?.schoolId === 'string' &&
-		typeof user?.accountId === 'string'
-	);
 }

@@ -1,23 +1,23 @@
-import { CurrentUserFactory, ICurrentUser } from '@infra/auth-guard';
+import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
 import { ValidationError } from '@shared/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, User } from '@shared/domain/entity';
 
-// Need to be checked with CurrentUserMapper in infa/auth-guard. Should be a factory with 3 methods, build, buildFromJwt, buildfromOauth that only return CurrentUser and not OauthCurrentUser
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
 		const roles = user.roles.getItems().map((role: Role) => role.id);
-		const currentUser = CurrentUserFactory.build(
-			{
-				accountId,
-				systemId,
-				schoolId: user.school.id,
-				userId: user.id,
-			},
-			roles,
-			isExternalUser
-		);
+		const currentUserBuilder = new CurrentUserBuilder({ accountId, userId: user.id, schoolId: user.school.id, roles });
+
+		if (isExternalUser) {
+			currentUserBuilder.asExternalUser();
+		}
+
+		if (systemId) {
+			currentUserBuilder.withExternalSystem(systemId);
+		}
+
+		const currentUser = currentUserBuilder.build();
 
 		return currentUser;
 	}
@@ -33,16 +33,18 @@ export class CurrentUserMapper {
 		}
 
 		const roles = user.roles.map((roleRef: RoleReference) => roleRef.id);
-		const currentUser = CurrentUserFactory.buildWithExternalToken(
-			{
-				accountId,
-				systemId,
-				schoolId: user.schoolId,
-				userId: user.id,
-			},
+		const currentUserBuilder = new CurrentUserBuilder({
+			accountId,
+			userId: user.id,
+			schoolId: user.schoolId,
 			roles,
-			externalIdToken
-		);
+		});
+
+		if (externalIdToken) {
+			currentUserBuilder.asExternalUserWithToken(externalIdToken);
+		}
+
+		const currentUser = currentUserBuilder.build();
 
 		return currentUser;
 	}

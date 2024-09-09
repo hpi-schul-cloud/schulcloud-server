@@ -1,56 +1,69 @@
 import { EntityId } from '@shared/domain/types';
-import { ICurrentUser, JwtPayload } from '../interface';
+import { TypeGuard } from '@shared/common';
+import { ICurrentUser } from '../interface';
 
-export interface BaseCurrentUser {
+interface RequiredCurrentUserProps {
 	userId: EntityId;
 	schoolId: EntityId;
 	accountId: EntityId;
-	systemId?: EntityId;
+	roles: EntityId[];
 }
 
-// TODO: I expect that builder pattern match better the need, let speak in review about it
-export class CurrentUserFactory {
-	public static build(
-		base: BaseCurrentUser,
-		roles: EntityId[],
-		isExternalUser = false,
-		impersonated = false,
-		externalIdToken?: string
-	): ICurrentUser {
-		const currentUser = {
-			userId: base.userId,
-			roles,
-			schoolId: base.schoolId,
-			accountId: base.accountId,
-			systemId: base.systemId,
-			impersonated,
-			isExternalUser,
-			externalIdToken,
-		};
+export function isCurrentUser(input: unknown): input is ICurrentUser {
+	const requiredInterfaceKeysMatch =
+		TypeGuard.isEachKeyInObject(input, ['userId', 'roles', 'accountId', 'schoolId']) &&
+		TypeGuard.isString(input.userId) &&
+		TypeGuard.isString(input.schoolId) &&
+		TypeGuard.isString(input.accountId) &&
+		TypeGuard.isArray(input.roles) &&
+		input.roles.every((id: unknown) => TypeGuard.isString(id));
 
-		return currentUser;
+	return requiredInterfaceKeysMatch;
+}
+
+export class CurrentUserBuilder {
+	private props!: ICurrentUser;
+
+	constructor(requiredProps: RequiredCurrentUserProps) {
+		this.props = {
+			userId: requiredProps.userId,
+			schoolId: requiredProps.schoolId,
+			accountId: requiredProps.accountId,
+			roles: requiredProps.roles,
+			impersonated: false,
+			isExternalUser: false,
+			systemId: undefined,
+			externalIdToken: undefined,
+		};
 	}
 
-	public static buildFromJwt(jwtPayload: JwtPayload): ICurrentUser {
-		const base: BaseCurrentUser = {
-			accountId: jwtPayload.accountId,
-			systemId: jwtPayload.systemId,
-			schoolId: jwtPayload.schoolId,
-			userId: jwtPayload.userId,
-		};
-
-		const currentUser = CurrentUserFactory.build(base, jwtPayload.roles, jwtPayload.isExternalUser, jwtPayload.support);
-
-		return currentUser;
+	build(): ICurrentUser {
+		return this.props;
 	}
 
-	public static buildWithExternalToken(
-		base: BaseCurrentUser,
-		roles: EntityId[],
-		externalIdToken?: string
-	): ICurrentUser {
-		const currentUser = CurrentUserFactory.build(base, roles, true, false, externalIdToken);
+	asSupporter() {
+		this.props.impersonated = true;
 
-		return currentUser;
+		return this;
+	}
+
+	// I expect that external user should always bound to external system, but the existing code give no feedback about it
+	asExternalUser() {
+		this.props.isExternalUser = true;
+
+		return this;
+	}
+
+	withExternalSystem(systemId: EntityId) {
+		this.props.systemId = systemId;
+
+		return this;
+	}
+
+	asExternalUserWithToken(externalIdToken: string) {
+		this.props.externalIdToken = externalIdToken;
+		this.props.isExternalUser = true;
+
+		return this;
 	}
 }

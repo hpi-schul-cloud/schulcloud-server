@@ -122,13 +122,27 @@ export class TypeGuard {
 		return result;
 	}
 
+	static isEachKeyInObject<T extends Record<string, unknown>>(value: unknown, keys: (keyof T)[]): value is T {
+		if (!TypeGuard.isDefinedObject(value) || !TypeGuard.isArray(keys)) {
+			return false;
+		}
+
+		for (const key of keys) {
+			if (!(key in value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	/** @return value of requested key in object. */
 	static checkKeyInObject(value: unknown, key: string): unknown {
 		TypeGuard.checkString(key);
 
 		const object = TypeGuard.checkDefinedObject(value);
 
-		if (!(key in object)) {
+		if (!TypeGuard.isEachKeyInObject(value, [key])) {
 			throw new Error(`Object has no ${key}.`);
 		}
 

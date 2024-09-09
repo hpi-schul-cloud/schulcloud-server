@@ -6,4 +6,4 @@ export { CurrentUser, JWT, JwtAuthentication } from './decorator';
 // Use JwtAuthentication decorator for request validation
 export { ApiKeyGuard, JwtAuthGuard, WsJwtAuthGuard } from './guard';
 export { CreateJwtPayload, ICurrentUser, JwtPayload, StrategyType } from './interface';
-export { CurrentUserFactory, JwtPayloadFactory } from './mapper';
+export { CurrentUserBuilder, JwtPayloadFactory } from './mapper';
