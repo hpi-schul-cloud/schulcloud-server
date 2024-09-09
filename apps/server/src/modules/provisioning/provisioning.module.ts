@@ -3,6 +3,7 @@ import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
+import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system/system.module';
 import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
@@ -26,6 +27,7 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
+import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
 
 @Module({
 	imports: [
@@ -41,6 +43,7 @@ import {
 		UserLicenseModule,
 		ExternalToolModule,
 		SchoolExternalToolModule,
+		SchoolModule,
 	],
 	providers: [
 		ProvisioningService,
@@ -54,6 +57,7 @@ import {
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
+		TspProvisioningStrategy,
 	],
 	exports: [ProvisioningService],
 })
