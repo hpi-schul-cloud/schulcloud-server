@@ -54,7 +54,7 @@ export class CurrentUserBuilder {
 		return this;
 	}
 
-	withExternalSystem(systemId: EntityId) {
+	withExternalSystem(systemId?: EntityId) {
 		this.props.systemId = systemId;
 
 		return this;

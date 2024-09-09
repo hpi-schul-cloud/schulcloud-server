@@ -156,6 +156,7 @@ describe('CurrentUserMapper', () => {
 					userId,
 					externalIdToken: idToken,
 					isExternalUser: true,
+					impersonated: false,
 				});
 			});
 		});
@@ -193,6 +194,7 @@ describe('CurrentUserMapper', () => {
 					userId,
 					externalIdToken: idToken,
 					isExternalUser: true,
+					impersonated: false,
 				});
 			});
 		});

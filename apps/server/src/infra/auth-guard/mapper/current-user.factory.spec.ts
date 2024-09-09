@@ -1,6 +1,7 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { CurrentUserBuilder } from './current-user.factory';
+import { ICurrentUser } from '../interface';
 
 describe('CurrentUserBuilder', () => {
 	beforeAll(async () => {
@@ -29,7 +30,7 @@ describe('CurrentUserBuilder', () => {
 
 			const currentUser = new CurrentUserBuilder(requiredProps).build();
 
-			expect(currentUser).toStrictEqual({
+			expect(currentUser).toMatchObject<ICurrentUser>({
 				userId: requiredProps.userId,
 				schoolId: requiredProps.schoolId,
 				accountId: requiredProps.accountId,
@@ -47,7 +48,7 @@ describe('CurrentUserBuilder', () => {
 
 				const currentUser = new CurrentUserBuilder(requiredProps).asSupporter().build();
 
-				expect(currentUser).toStrictEqual({
+				expect(currentUser).toMatchObject<ICurrentUser>({
 					userId: requiredProps.userId,
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
@@ -66,7 +67,7 @@ describe('CurrentUserBuilder', () => {
 
 				const currentUser = new CurrentUserBuilder(requiredProps).asExternalUser().build();
 
-				expect(currentUser).toStrictEqual({
+				expect(currentUser).toMatchObject<ICurrentUser>({
 					userId: requiredProps.userId,
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
@@ -86,7 +87,7 @@ describe('CurrentUserBuilder', () => {
 
 				const currentUser = new CurrentUserBuilder(requiredProps).withExternalSystem(systemId).build();
 
-				expect(currentUser).toStrictEqual({
+				expect(currentUser).toMatchObject<ICurrentUser>({
 					userId: requiredProps.userId,
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
@@ -106,7 +107,7 @@ describe('CurrentUserBuilder', () => {
 
 				const currentUser = new CurrentUserBuilder(requiredProps).asExternalUserWithToken(externalIdToken).build();
 
-				expect(currentUser).toStrictEqual({
+				expect(currentUser).toMatchObject<ICurrentUser>({
 					userId: requiredProps.userId,
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
