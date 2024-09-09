@@ -3,29 +3,31 @@ import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import {
-	columnBoardFactory,
-	drawingElementFactory,
-	fileElementFactory,
-	submissionItemFactory,
-} from '@src/modules/board/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action } from '../type';
+import { AuthorizationHelper, AuthorizationInjectionService, Action } from '@src/modules/authorization';
 import { BoardNodeRule } from './board-node.rule';
+import { columnBoardFactory, drawingElementFactory, fileElementFactory, submissionItemFactory } from '../testing';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BoardNodeRule, AuthorizationHelper],
+			providers: [BoardNodeRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(BoardNodeRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
+	});
+
+	describe('injection', () => {
+		it('should inject itself into authorisation module', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
 	});
 
 	describe('isApplicable', () => {
