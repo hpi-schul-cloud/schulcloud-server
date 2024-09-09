@@ -42,11 +42,11 @@ describe('CurrentUserBuilder', () => {
 			});
 		});
 
-		describe('when asSupporter is executed', () => {
+		describe('when asUserSupporter is executed', () => {
 			it('impersonated should be set true', () => {
 				const { requiredProps } = setup();
 
-				const currentUser = new CurrentUserBuilder(requiredProps).asSupporter().build();
+				const currentUser = new CurrentUserBuilder(requiredProps).asUserSupporter().build();
 
 				expect(currentUser).toMatchObject<ICurrentUser>({
 					userId: requiredProps.userId,

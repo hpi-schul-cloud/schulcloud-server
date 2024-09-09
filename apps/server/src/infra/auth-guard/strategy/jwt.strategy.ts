@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 			const currentUser = new CurrentUserBuilder(payload)
 				.asExternalUser(payload.isExternalUser)
 				.withExternalSystem(payload.systemId)
-				.asSupporter(payload.support)
+				.asUserSupporter(payload.support)
 				.build();
 
 			return currentUser;
