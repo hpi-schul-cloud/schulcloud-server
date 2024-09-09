@@ -168,4 +168,10 @@ export class UserLoginMigrationService {
 	public async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
+
+	public hasMigrationClosed(userLoginMigration: UserLoginMigrationDO): boolean {
+		const now: Date = new Date();
+		const hasClosed: boolean = !!userLoginMigration.closedAt && now > userLoginMigration.closedAt;
+		return hasClosed;
+	}
 }
