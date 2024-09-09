@@ -59,9 +59,6 @@ export class AuthConfigFactory {
 
 		const audienceUnknown = TypeGuard.checkKeyInObject(jwtOptions, 'audience');
 		const audience = TypeGuard.checkString(audienceUnknown);
-		// IMPORTANT every change of audience and issuer has impact of jwt validation, depend on situation.
-		// I do it in this PR, but maybe it should be changed first in Part 3 of this tickets.
-		// We must speak by review about it.
 
 		const issuerUnknown = TypeGuard.checkKeyInObject(jwtOptions, 'issuer');
 		const issuer = TypeGuard.checkString(issuerUnknown);
