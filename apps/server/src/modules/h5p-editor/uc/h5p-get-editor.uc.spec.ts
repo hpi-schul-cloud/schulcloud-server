@@ -22,7 +22,7 @@ const createParams = () => {
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
 		isExternalUser: false,
-		impersonated: false
+		impersonated: false,
 	};
 
 	const editorResponseMock = { scripts: ['test.js'] } as IEditorModel;
