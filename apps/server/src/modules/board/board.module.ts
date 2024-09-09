@@ -30,6 +30,8 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
+import { BoardNodeRule } from './authorisation/board-node.rule';
+import { AuthorizationModule } from '../authorization';
 
 @Module({
 	imports: [
@@ -42,9 +44,11 @@ import {
 		TldrawClientModule,
 		CqrsModule,
 		CollaborativeTextEditorModule,
+		AuthorizationModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
+		BoardNodeRule,
 		BoardContextService,
 		BoardNodeAuthorizableService,
 		BoardNodeRepo,
