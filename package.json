@@ -105,6 +105,7 @@
 		"nest:start:common-cartridge": "node dist/apps/server/apps/common-cartridge.app",
 		"nest:start:common-cartridge:dev": "nest start common-cartridge --watch --",
 		"nest:start:common-cartridge:debug": "nest start common-cartridge --debug --watch --",
+		"nest:start:sync":"npm run nest:start:console -- sync run",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest \"^((?!(\\.load)\\.spec\\.ts).)*\"",
 		"nest:test:unit": "jest \"^((?!(\\.api|\\.load)\\.spec\\.ts).)*\\.spec\\.ts$\"",
