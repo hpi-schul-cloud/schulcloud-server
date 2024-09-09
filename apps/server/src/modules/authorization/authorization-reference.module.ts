@@ -14,7 +14,6 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
-import { TeamAuthorisableService } from '../teams/service/team-authorisable.service';
 import { TeamsModule } from '../teams';
 
 /**
