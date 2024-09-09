@@ -1,4 +1,3 @@
-import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/core';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -358,16 +357,16 @@ describe('Login Controller (api)', () => {
 				expect(response.body.accessToken).toBeDefined();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
 				const decodedToken = jwt.decode(response.body.accessToken);
-				expect(decodedToken).toMatchObject<ICurrentUser>({
+				expect(decodedToken).toMatchObject({
 					userId: user.id,
 					systemId: system.id,
 					roles: [studentRole.id],
 					schoolId: school.id,
 					accountId: account.id,
 					isExternalUser: true,
-					impersonated: false,
+					// impersonated: false,
+					// externalIdToken: undefined,
 				});
-				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 	});

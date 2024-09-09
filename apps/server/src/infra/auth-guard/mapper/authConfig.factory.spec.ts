@@ -75,7 +75,7 @@ describe('AuthConfigFactory.build', () => {
 				issuer: 'myissuer',
 				expiresIn: '1h',
 			};
-			const error = new Error('Object has no secret.');
+			const error = new Error('Type is not a string');
 
 			return { secret, jwtOptions, error };
 		};
@@ -111,7 +111,7 @@ describe('AuthConfigFactory.build', () => {
 		const setup = () => {
 			const secret = 'mysecret';
 			const jwtOptions = undefined;
-			const error = new Error('Object has no jwtOptions.');
+			const error = new Error('Type is not an object.');
 
 			return { secret, jwtOptions, error };
 		};
@@ -167,10 +167,10 @@ describe('AuthConfigFactory.build', () => {
 			const secret = 'mysecret';
 			const jwtOptions = {
 				audience: 'myaudience',
-				issuer: 'myissuer',
+				issuer: undefined,
 				expiresIn: '1h',
 			};
-			const error = new Error('Object has no issuer.');
+			const error = new Error('Type is not a string');
 
 			return { secret, jwtOptions, error };
 		};
