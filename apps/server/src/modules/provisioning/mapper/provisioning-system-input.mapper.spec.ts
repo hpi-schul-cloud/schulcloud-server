@@ -1,5 +1,5 @@
+import { systemFactory } from '@modules/system/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { systemFactory } from '@shared/testing';
 import { ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from './provisioning-system-input.mapper';
 
