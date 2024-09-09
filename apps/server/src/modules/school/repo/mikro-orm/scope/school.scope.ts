@@ -8,4 +8,16 @@ export class SchoolScope extends Scope<SchoolEntity> {
 			this.addQuery({ federalState: federalStateId });
 		}
 	}
+
+	byExternalId(externalId?: string) {
+		if (externalId) {
+			this.addQuery({ externalId });
+		}
+	}
+
+	bySystemId(systemId?: EntityId) {
+		if (systemId) {
+			this.addQuery({ systems: { $in: [systemId] } });
+		}
+	}
 }
