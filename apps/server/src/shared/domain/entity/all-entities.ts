@@ -9,19 +9,20 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
+import { RoomEntity } from '@modules/room/repo/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { ImportUser } from '@modules/user-import/entity';
 import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { ColumnBoardNode } from './column-board-node.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
-import { ImportUser } from './import-user.entity';
 import {
 	ColumnboardBoardElement,
 	LegacyBoard,
@@ -73,6 +74,7 @@ export const ALL_ENTITIES = [
 	ExternalToolPseudonymEntity,
 	RocketChatUserEntity,
 	Role,
+	RoomEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,

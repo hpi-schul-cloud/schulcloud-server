@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { System } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { systemFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { LdapUserCouldNotBeAuthenticatedLoggableException } from '../loggable';
 import { LdapService } from './ldap.service';

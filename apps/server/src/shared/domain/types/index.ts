@@ -1,6 +1,5 @@
 export * from './counted';
 export * from './entity-id';
-export * from './importuser.types';
 export * from './input-format.types';
 export * from './learnroom.types';
 export * from './news.types';
