@@ -7,17 +7,15 @@ import { Role, User } from '@shared/domain/entity';
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
 		const roles = user.roles.getItems().map((role: Role) => role.id);
-		const currentUserBuilder = new CurrentUserBuilder({ accountId, userId: user.id, schoolId: user.school.id, roles });
-
-		if (isExternalUser) {
-			currentUserBuilder.asExternalUser();
-		}
-
-		if (systemId) {
-			currentUserBuilder.withExternalSystem(systemId);
-		}
-
-		const currentUser = currentUserBuilder.build();
+		const currentUser = new CurrentUserBuilder({
+			accountId,
+			userId: user.id,
+			schoolId: user.school.id,
+			roles,
+		})
+			.asExternalUser(isExternalUser)
+			.withExternalSystem(systemId)
+			.build();
 
 		return currentUser;
 	}
@@ -38,7 +36,7 @@ export class CurrentUserMapper {
 			userId: user.id,
 			schoolId: user.schoolId,
 			roles,
-		});
+		}).withExternalSystem(systemId);
 
 		if (externalIdToken) {
 			currentUserBuilder.asExternalUserWithToken(externalIdToken);

@@ -41,15 +41,15 @@ export class CurrentUserBuilder {
 		return this.props;
 	}
 
-	asSupporter() {
-		this.props.impersonated = true;
+	asSupporter(asSupporter = true) {
+		this.props.impersonated = asSupporter;
 
 		return this;
 	}
 
 	// I expect that external user should always bound to external system, but the existing code give no feedback about it
-	asExternalUser() {
-		this.props.isExternalUser = true;
+	asExternalUser(isExternalUser = true) {
+		this.props.isExternalUser = isExternalUser;
 
 		return this;
 	}
