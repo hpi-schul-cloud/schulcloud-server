@@ -457,4 +457,79 @@ describe(SchoolMigrationService.name, () => {
 			});
 		});
 	});
+
+	describe('hasSchoolMigratedInMigrationPhase', () => {
+		describe('when school has no systems', () => {
+			const setup = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					systems: undefined,
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { school, userLoginMigration } = setup();
+
+				const result: boolean = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when school does not have the target system', () => {
+			const setup = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					systems: ['system-1'],
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					targetSystemId: 'system-100',
+				});
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { school, userLoginMigration } = setup();
+
+				const result: boolean = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the school has the target system', () => {
+			const setup = () => {
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					systems: ['system-1'],
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					targetSystemId: 'system-1',
+				});
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			it('should return true', () => {
+				const { school, userLoginMigration } = setup();
+
+				const result: boolean = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
+
+				expect(result).toEqual(true);
+			});
+		});
+	});
 });
