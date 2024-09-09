@@ -37,7 +37,7 @@ export class CurrentUserMapper {
 			{
 				accountId,
 				systemId,
-				schoolId: user.id,
+				schoolId: user.schoolId,
 				userId: user.id,
 			},
 			roles,
