@@ -77,9 +77,11 @@ export class SocketConnection {
 			handle = setTimeout(() => {
 				/* istanbul ignore next */
 				if (!this.connected) {
+					this.stopTimeoutChecks();
 					reject(new Error('Timeout: could not connect to socket server'));
 				}
 			}, this.socketConfiguration.connectTimeout ?? 10000);
+			this.stopTimeoutChecks();
 		});
 	}
 
@@ -99,6 +101,12 @@ export class SocketConnection {
 	ensureRunningTimeoutChecks() {
 		if (!this.checkerInterval) {
 			this.checkerInterval = setInterval(() => this.checkTimeouts(), 1000);
+		}
+	}
+
+	stopTimeoutChecks() {
+		if (!this.checkerInterval) {
+			clearInterval(this.checkerInterval);
 		}
 	}
 

@@ -27,11 +27,6 @@ jest.mock('./loadtest-client', () => {
 	};
 });
 
-const testClass: ClassDefinition = {
-	name: 'viewersClass',
-	users: [{ ...fastEditor, amount: 5 }],
-};
-
 beforeEach(() => {
 	jest.resetAllMocks();
 	jest.useFakeTimers();
@@ -42,8 +37,14 @@ afterEach(() => {
 	jest.useRealTimers();
 });
 
+const classDefinitionExample = {
+	name: 'my-configuration',
+	users: [{ name: 'tempuserprofile', isActive: true, sleepMs: 100, amount: 1 }],
+	simulateUsersTimeMs: 2000,
+};
+
 describe('BoardLoadTest', () => {
-	const setup = () => {
+	const setup = (classDefinition: ClassDefinition) => {
 		const socketConfiguration = { baseUrl: '', path: '', token: '' };
 		const socketConnectionManager = createMock<SocketConnectionManager>();
 		socketConnectionManager.createConnections = jest
@@ -51,22 +52,18 @@ describe('BoardLoadTest', () => {
 			.mockResolvedValue([new SocketConnection(socketConfiguration, console.log)]);
 		const socketConnection = new SocketConnection(socketConfiguration, console.log);
 
-		const boarLoadTest = new BoardLoadTest(socketConnectionManager, console.log);
+		const boarLoadTest = new BoardLoadTest(socketConnectionManager, classDefinition, console.log);
 		return { boarLoadTest, socketConnectionManager, socketConnection };
 	};
 
 	describe('runBoardTest', () => {
 		describe('if no userProfiles are provided', () => {
 			it('should do nothing', async () => {
-				const { boarLoadTest } = setup();
+				const { boarLoadTest } = setup(classDefinitionExample);
 				const boardId = 'board-id';
-				const configuration = {
-					name: 'my-configuration',
-					users: [{ name: 'tempuserprofile', isActive: true, sleepMs: 100, amount: 1 }],
-					simulateUsersTimeMs: 2000,
-				};
 
-				const response = await boarLoadTest.runBoardTest(boardId, configuration);
+				await boarLoadTest.initializeLoadtestClients(boardId);
+				const response = await boarLoadTest.runBoardTest();
 
 				expect(response).toBeUndefined();
 			});
@@ -74,10 +71,11 @@ describe('BoardLoadTest', () => {
 
 		describe('if userProfiles are provided', () => {
 			it('should create socketConnections for all users', async () => {
-				const { boarLoadTest, socketConnectionManager } = setup();
+				const { boarLoadTest, socketConnectionManager } = setup(classDefinitionExample);
 				const boardId = 'board-id';
 
-				await boarLoadTest.runBoardTest(boardId, testClass);
+				await boarLoadTest.initializeLoadtestClients(boardId);
+				await boarLoadTest.runBoardTest();
 
 				expect(socketConnectionManager.createConnections).toHaveBeenCalledTimes(1);
 			});
@@ -86,7 +84,7 @@ describe('BoardLoadTest', () => {
 
 	describe('simulateUsersActions', () => {
 		it('should simulate actions for all users', async () => {
-			const { boarLoadTest } = setup();
+			const { boarLoadTest } = setup(classDefinitionExample);
 			const loadtestClient = {
 				createColumn: jest.fn().mockResolvedValue({ id: 'some-id' }),
 				createCard: jest.fn().mockResolvedValue({ id: 'some-id' }),
@@ -99,7 +97,8 @@ describe('BoardLoadTest', () => {
 			} as unknown as LoadtestClient;
 			const userProfile = fastEditor;
 
-			await boarLoadTest.simulateUsersActions([loadtestClient], [userProfile]);
+			// await boarLoadTest.initializeLoadtestClients(boardId);
+			await boarLoadTest.simulateUserActions(loadtestClient, userProfile);
 
 			expect(loadtestClient.createColumn).toHaveBeenCalled();
 			expect(loadtestClient.createCard).toHaveBeenCalled();
@@ -108,7 +107,7 @@ describe('BoardLoadTest', () => {
 
 	describe('simulateUserActions', () => {
 		it('should create columns and cards', async () => {
-			const { boarLoadTest } = setup();
+			const { boarLoadTest } = setup(classDefinitionExample);
 			const loadtestClient = {
 				createColumn: jest.fn().mockResolvedValue({ id: 'some-id' }),
 				createCard: jest.fn().mockResolvedValue({ id: 'some-id' }),
@@ -130,7 +129,7 @@ describe('BoardLoadTest', () => {
 
 	describe('createColumn', () => {
 		it('should create a column', async () => {
-			const { boarLoadTest } = setup();
+			const { boarLoadTest } = setup(classDefinitionExample);
 
 			const loadtestClient = {
 				createColumn: jest.fn().mockResolvedValue({ id: 'some-id' }),
@@ -144,7 +143,7 @@ describe('BoardLoadTest', () => {
 
 	describe('createRandomCard', () => {
 		it('should create a card', async () => {
-			const { boarLoadTest } = setup();
+			const { boarLoadTest } = setup(classDefinitionExample);
 			boarLoadTest.trackColumn('some-id');
 
 			const loadtestClient = {
