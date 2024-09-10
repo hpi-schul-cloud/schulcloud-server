@@ -1,8 +1,12 @@
 import { BoardModule } from '@modules/board';
+import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
+import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import {
@@ -28,10 +32,10 @@ import {
 	CourseCopyService,
 	CourseDoService,
 	CourseGroupService,
+	CourseRoomsService,
 	CourseService,
 	DashboardService,
 	GroupDeletedHandlerService,
-	CourseRoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
@@ -48,6 +52,10 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LoggerModule,
 		TaskModule,
 		CqrsModule,
+		UserModule,
+		ClassModule,
+		SchoolModule,
+		GroupModule,
 	],
 	providers: [
 		{

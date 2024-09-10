@@ -93,6 +93,19 @@ export class SchoolMigrationService {
 		return isExternalIdEquivalent;
 	}
 
+	public hasSchoolMigratedInMigrationPhase(
+		schoolDO: LegacySchoolDo,
+		userLoginMigrationDO: UserLoginMigrationDO
+	): boolean {
+		if (!schoolDO.systems) {
+			return false;
+		}
+
+		const hasSchoolMigratedToTargetSystem = schoolDO.systems.includes(userLoginMigrationDO.targetSystemId);
+
+		return hasSchoolMigratedToTargetSystem;
+	}
+
 	public async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 

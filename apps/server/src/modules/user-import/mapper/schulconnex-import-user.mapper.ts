@@ -3,8 +3,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
 import { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
-import { ImportUser, SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
+import { ImportUser } from '../entity';
 
 export class SchulconnexImportUserMapper {
 	public static mapDataToUserImportEntities(
