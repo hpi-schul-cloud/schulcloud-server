@@ -30,6 +30,7 @@ import { CalendarService } from '@src/infra/calendar';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
+import { ICurrentUser } from '@src/infra/auth-guard';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -294,14 +295,14 @@ describe('UserService', () => {
 
 				const result = await service.getResolvedUser(userId);
 
-				expect(result).toEqual<OauthCurrentUser>({
+				expect(result).toEqual<ICurrentUser>({
 					userId,
 					systemId,
 					schoolId: user.schoolId,
 					accountId: account.id,
 					roles: [role.id],
-					isExternalUser: true,
-					impersonated: true,
+					isExternalUser: false,
+					impersonated: false,
 				});
 			});
 		});
