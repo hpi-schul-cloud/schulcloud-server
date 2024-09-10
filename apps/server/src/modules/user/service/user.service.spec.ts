@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
-import { OauthCurrentUser } from '@modules/authentication/interface';
 import {
 	DataDeletedEvent,
 	DeletionErrorLoggableException,
@@ -26,11 +25,11 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { CalendarService } from '@src/infra/calendar';
+import { CalendarService } from '@infra/calendar';
+import { ICurrentUser } from '@infra/auth-guard';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
-import { ICurrentUser } from '@src/infra/auth-guard';
 
 describe('UserService', () => {
 	let service: UserService;
