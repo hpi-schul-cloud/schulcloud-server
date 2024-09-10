@@ -3,7 +3,6 @@ import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
-	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -23,55 +22,52 @@ import {
 } from '../rules';
 import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 @Injectable()
 export class RuleManager {
-	private readonly rules: Rule[];
-
 	constructor(
-		private readonly boardNodeRule: BoardNodeRule,
-		private readonly contextExternalToolRule: ContextExternalToolRule,
-		private readonly courseGroupRule: CourseGroupRule,
-		private readonly courseRule: CourseRule,
-		private readonly groupRule: GroupRule,
-		private readonly legaySchoolRule: LegacySchoolRule,
-		private readonly lessonRule: LessonRule,
-		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly schoolRule: SchoolRule,
-		private readonly schoolSystemOptionsRule: SchoolSystemOptionsRule,
-		private readonly submissionRule: SubmissionRule,
-		private readonly systemRule: SystemRule,
-		private readonly taskRule: TaskRule,
-		private readonly teamRule: TeamRule,
-		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly userRule: UserRule,
-		private readonly externalToolRule: ExternalToolRule,
-		private readonly instanceRule: InstanceRule
+		contextExternalToolRule: ContextExternalToolRule,
+		courseGroupRule: CourseGroupRule,
+		courseRule: CourseRule,
+		groupRule: GroupRule,
+		legaySchoolRule: LegacySchoolRule,
+		lessonRule: LessonRule,
+		schoolExternalToolRule: SchoolExternalToolRule,
+		schoolRule: SchoolRule,
+		schoolSystemOptionsRule: SchoolSystemOptionsRule,
+		submissionRule: SubmissionRule,
+		systemRule: SystemRule,
+		taskRule: TaskRule,
+		teamRule: TeamRule,
+		userLoginMigrationRule: UserLoginMigrationRule,
+		userRule: UserRule,
+		externalToolRule: ExternalToolRule,
+		instanceRule: InstanceRule,
+		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
-		this.rules = [
-			this.boardNodeRule,
-			this.contextExternalToolRule,
-			this.courseGroupRule,
-			this.courseRule,
-			this.groupRule,
-			this.legaySchoolRule,
-			this.lessonRule,
-			this.schoolExternalToolRule,
-			this.schoolRule,
-			this.schoolSystemOptionsRule,
-			this.submissionRule,
-			this.systemRule,
-			this.taskRule,
-			this.teamRule,
-			this.userLoginMigrationRule,
-			this.userRule,
-			this.externalToolRule,
-			this.instanceRule,
-		];
+		this.authorizationInjectionService.injectAuthorizationRule(contextExternalToolRule);
+		this.authorizationInjectionService.injectAuthorizationRule(courseGroupRule);
+		this.authorizationInjectionService.injectAuthorizationRule(courseRule);
+		this.authorizationInjectionService.injectAuthorizationRule(groupRule);
+		this.authorizationInjectionService.injectAuthorizationRule(legaySchoolRule);
+		this.authorizationInjectionService.injectAuthorizationRule(lessonRule);
+		this.authorizationInjectionService.injectAuthorizationRule(schoolExternalToolRule);
+		this.authorizationInjectionService.injectAuthorizationRule(schoolRule);
+		this.authorizationInjectionService.injectAuthorizationRule(schoolSystemOptionsRule);
+		this.authorizationInjectionService.injectAuthorizationRule(submissionRule);
+		this.authorizationInjectionService.injectAuthorizationRule(systemRule);
+		this.authorizationInjectionService.injectAuthorizationRule(taskRule);
+		this.authorizationInjectionService.injectAuthorizationRule(teamRule);
+		this.authorizationInjectionService.injectAuthorizationRule(userLoginMigrationRule);
+		this.authorizationInjectionService.injectAuthorizationRule(userRule);
+		this.authorizationInjectionService.injectAuthorizationRule(externalToolRule);
+		this.authorizationInjectionService.injectAuthorizationRule(instanceRule);
 	}
 
 	public selectRule(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): Rule {
-		const selectedRules = this.rules.filter((rule) => rule.isApplicable(user, object, context));
+		const rules = [...this.authorizationInjectionService.getAuthorizationRules()];
+		const selectedRules = rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 
 		return rule;
