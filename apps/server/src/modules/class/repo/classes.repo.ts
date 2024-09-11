@@ -18,6 +18,16 @@ export class ClassesRepo {
 		return mapped;
 	}
 
+	async findClassWithSchoolIdAndExternalId(schoolId: EntityId, externalId: string): Promise<Class | null> {
+		const result = await this.em.findOne(ClassEntity, {
+			schoolId: new ObjectId(schoolId),
+			sourceOptions: { tspUid: externalId },
+		});
+		const mapped = result ? ClassMapper.mapToDO(result) : null;
+
+		return mapped;
+	}
+
 	async findAllByUserId(userId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, {
 			$or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }],
@@ -26,6 +36,12 @@ export class ClassesRepo {
 		const mapped: Class[] = ClassMapper.mapToDOs(classes);
 
 		return mapped;
+	}
+
+	async createMany(classes: Class[]): Promise<void> {
+		const entities: ClassEntity[] = classes.map((aclass: Class): ClassEntity => ClassMapper.mapToEntity(aclass));
+
+		await this.em.persistAndFlush(entities);
 	}
 
 	async updateMany(classes: Class[]): Promise<void> {

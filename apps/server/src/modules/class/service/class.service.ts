@@ -1,4 +1,4 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -25,8 +25,7 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 	constructor(
 		private readonly classesRepo: ClassesRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(ClassService.name);
 	}
@@ -47,6 +46,16 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		const classes: Class[] = await this.classesRepo.findAllByUserId(userId);
 
 		return classes;
+	}
+
+	public async findClassWithSchoolIdAndExternalId(schoolId: EntityId, externalId: string): Promise<Class | null> {
+		const result: Class | null = await this.classesRepo.findClassWithSchoolIdAndExternalId(schoolId, externalId);
+
+		return result;
+	}
+
+	public async createMany(classes: Class[]): Promise<void> {
+		await this.classesRepo.createMany(classes);
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
