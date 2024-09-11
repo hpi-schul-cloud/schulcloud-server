@@ -4,17 +4,12 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	systemEntityFactory,
-	systemLdapConfigFactory,
-	systemOauthConfigFactory,
-	systemOidcConfigFactory,
-} from '@shared/testing';
+import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
 import { SystemEntity } from '../../entity';
 import { SystemEntityMapper } from './mapper';
 import { SystemMikroOrmRepo } from './system.repo';
+import { systemLdapConfigFactory, systemOauthConfigFactory, systemOidcConfigFactory } from '../../testing';
 
 describe(SystemMikroOrmRepo.name, () => {
 	let module: TestingModule;

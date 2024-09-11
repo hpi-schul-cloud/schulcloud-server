@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { systemFactory } from '@modules/system/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { systemFactory } from '@shared/testing';
 import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
