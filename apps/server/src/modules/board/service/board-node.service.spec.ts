@@ -164,7 +164,7 @@ describe(BoardNodeService.name, () => {
 				const parentNode = cardFactory.build();
 				parentNode.addChild(oldNode);
 
-				boardNodeRepo.findById.mockResolvedValueOnce(new Card({ ...parentNode.getTrueProps() }));
+				boardNodeRepo.findById.mockResolvedValueOnce(new Card({ ...parentNode.getProps() }));
 
 				return {
 					parentNode,
@@ -179,7 +179,7 @@ describe(BoardNodeService.name, () => {
 				await service.replace(oldNode, newNode);
 
 				expect(boardNodeRepo.save).toHaveBeenCalledWith(
-					new Card({ ...parentNode.getTrueProps(), children: [oldNode, newNode] })
+					new Card({ ...parentNode.getProps(), children: [oldNode, newNode] })
 				);
 			});
 
