@@ -73,11 +73,6 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:start:files-storage:debug` run **file storage** in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:files-storage:prod` start **file storage** in production mode, requires `nest:build` to be executed beforehand
 
-#### How to build and serve the documentation
-
-- `nest:docs:build` builds code documentation and module relations into /documentation folder
-- `nest:docs:serve` builds code documentation and module relations into /documentation folder and serves it on port :8080 with hot reload on changes
-
 #### How to start the server console
 
 The console offers management capabilities of the application.
@@ -132,9 +127,9 @@ Legacy/feathers Swagger UI documentation when running the server locally, it is 
 
 ### How to get full documentation
 
-The documentation is provided by compodoc, run `npm run nest:docs:serve`, check generated compodoc features, custom information can be found in additional information section. Your console will tell you, where it is served.
+We have an extra repository for our documentation.
 
-The updated documentation is published as [GitHub Page](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html)
+[Doc Page](https://documentation.dbildungscloud.dev/)
 
 ### Content
 

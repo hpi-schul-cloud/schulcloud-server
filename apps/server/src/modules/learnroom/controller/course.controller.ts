@@ -30,8 +30,14 @@ import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
-import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
-import { CourseExportBodyParams } from './dto/course-export.body.params';
+import {
+	CourseExportBodyParams,
+	CourseImportBodyParams,
+	CourseMetadataListResponse,
+	CourseQueryParams,
+	CourseSyncBodyParams,
+	CourseUrlParams,
+} from './dto';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
 @ApiTags('Courses')
@@ -109,6 +115,19 @@ export class CourseController {
 		@Param() params: CourseUrlParams
 	): Promise<void> {
 		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
+	}
+
+	@Post(':courseId/start-sync/')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
+	@ApiNoContentResponse({ description: 'The course was successfully synchronized to a group.' })
+	@ApiUnprocessableEntityResponse({ description: 'The course is already synchronized with a group.' })
+	public async startSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams,
+		@Body() bodyParams: CourseSyncBodyParams
+	): Promise<void> {
+		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
 	}
 
 	@Get(':courseId/user-permissions')

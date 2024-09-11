@@ -2,6 +2,7 @@ export * from './course-copy.uc';
 export * from './course-export.uc';
 export * from './course-import.uc';
 export * from './course-sync.uc';
+export * from './course-info.uc';
 export * from './course.uc';
 export * from './dashboard.uc';
 export * from './lesson-copy.uc';

@@ -1,4 +1,5 @@
-import { IImportUserRoleName, ImportUser, ImportUserProperties, MatchCreator, User } from '@shared/domain/entity';
+import { ImportUserRoleName, ImportUser, ImportUserProperties, MatchCreator } from '@modules/user-import/entity';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +24,7 @@ export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequenc
 		firstName: `John${sequence}`,
 		lastName: `Doe${sequence}`,
 		email: `user-${sequence}@example.com`,
-		roleNames: [RoleName.STUDENT as IImportUserRoleName],
+		roleNames: [RoleName.STUDENT as ImportUserRoleName],
 		classNames: ['firstClass'],
 		flagged: false,
 	};

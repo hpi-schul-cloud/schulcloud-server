@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService, Account } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { roleFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	UserMigrationDatabaseOperationFailedLoggableException,
@@ -288,6 +288,117 @@ describe(UserMigrationService.name, () => {
 				const { userId, targetExternalId, targetSystemId, err } = setup();
 
 				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(err);
+			});
+		});
+	});
+
+	describe('hasUserMigratedInMigrationPhase', () => {
+		describe('when user has no external id', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: new Date(),
+					externalId: undefined,
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					closedAt: undefined,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when login system of the user was never changed', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: undefined,
+					externalId: 'externalId',
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					closedAt: undefined,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the migration had been closed', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: new Date(),
+					externalId: 'externalId',
+				});
+
+				const closedAt = new Date();
+				closedAt.setMonth(closedAt.getMonth() + 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					closedAt,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the user had been migrated in the current active migration', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({
+					lastLoginSystemChange: new Date(),
+					externalId: 'externalId',
+				});
+
+				const startedAt = new Date();
+				startedAt.setMonth(startedAt.getMonth() - 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					startedAt,
+					closedAt: undefined,
+				});
+
+				return {
+					user,
+					userLoginMigration,
+				};
+			};
+
+			it('should return true', () => {
+				const { user, userLoginMigration } = setup();
+
+				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+
+				expect(result).toEqual(true);
 			});
 		});
 	});

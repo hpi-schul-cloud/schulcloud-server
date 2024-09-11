@@ -11,6 +11,7 @@ export {
 	AuthorizationReferenceService,
 	AuthorizationService,
 	ForbiddenLoggableException,
+	AuthorizationInjectionService,
 	Rule,
 	// For the use in feathers
 	SystemRule,

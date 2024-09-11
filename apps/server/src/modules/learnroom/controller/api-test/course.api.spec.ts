@@ -245,6 +245,114 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
+	describe('[POST] /courses/:courseId/start-sync', () => {
+		describe('when a course is not synchronized', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacher.account);
+
+				return {
+					loggedInClient,
+					course,
+					group,
+				};
+			};
+
+			it('should start the synchronization', async () => {
+				const { loggedInClient, course, group } = await setup();
+				const params = { groupId: group.id };
+
+				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
+
+				const result: CourseEntity = await em.findOneOrFail(CourseEntity, course.id);
+				expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
+				expect(result.syncedWithGroup?.id).toBe(group.id);
+			});
+		});
+
+		describe('when a course is already synchronized', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const otherGroup = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+					syncedWithGroup: otherGroup,
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacher.account);
+
+				return {
+					loggedInClient,
+					course,
+					group,
+					otherGroup,
+				};
+			};
+
+			it('should not start the synchronization', async () => {
+				const { loggedInClient, course, group, otherGroup } = await setup();
+				const params = { groupId: group.id };
+
+				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
+
+				const result: CourseEntity = await em.findOneOrFail(CourseEntity, course.id);
+				expect(response.statusCode).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNPROCESSABLE_ENTITY,
+					message: 'Unprocessable Entity',
+					title: 'Course Already Synchronized',
+					type: 'COURSE_ALREADY_SYNCHRONIZED',
+				});
+				expect(result.syncedWithGroup?.id).toBe(otherGroup.id);
+			});
+		});
+
+		describe('when the user is unauthorized', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				return {
+					course,
+					group,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { course, group } = await setup();
+				const params = { groupId: group.id };
+
+				const response = await testApiClient.post(`${course.id}/start-sync`).send(params);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+	});
+
 	describe('[GET] /courses/:courseId/cc-metadata', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
