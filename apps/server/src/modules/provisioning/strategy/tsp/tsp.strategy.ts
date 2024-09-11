@@ -1,4 +1,5 @@
 import { AccountSave, AccountService } from '@modules/account';
+import { Class, ClassService } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
@@ -8,6 +9,7 @@ import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
+import { BadDataLoggableExceptions } from '../loggable';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
@@ -15,7 +17,8 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly classService: ClassService
 	) {
 		super();
 	}
@@ -35,16 +38,31 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		const user = await this.provisionUserAndAccount(data, school);
 
 		// TODO EW-999: Create or update classes
+		if (!user.id) throw new BadDataLoggableExceptions('User ID is missing', { user });
+		if (!data.externalClasses) throw new BadDataLoggableExceptions('External classes are missing', { data });
+
+		for await (const externalClass of data.externalClasses) {
+			// TODO EW-999: Check if class exists
+			const result = await this.classService.findClassWithSchoolIdAndExternalId(school.id, externalClass.externalId);
+			if (result) {
+				// TODO EW-999: Update class
+			} else {
+				// TODO EW-999: Create class
+				const newClass = new Class({
+					schoolId: school.id,
+					externalId: externalClass.externalId,
+					name: externalClass.name,
+				});
+
+				await this.classService.createMany([newClass]);
+			}
+		}
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 
 	private async findSchoolOrFail(data: OauthDataDto): Promise<School> {
-		if (!data.externalSchool) {
-			throw new UnprocessableEntityException(
-				`Unable to create new external user ${data.externalUser.externalId} without a school`
-			);
-		}
+		if (!data.externalSchool) throw new BadDataLoggableExceptions('External school is missing', { data });
 
 		const school = await this.schoolService.getSchools({
 			systemId: data.system.systemId,
@@ -62,15 +80,34 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async provisionUserAndAccount(data: OauthDataDto, school: School): Promise<UserDO> {
+		if (!data.externalSchool) throw new BadDataLoggableExceptions('External school is missing', { data });
+
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
 
 		let user: UserDO;
-		if (existingUser) {
-			// TODO EW-999: Check school change
-
+		if (existingUser && school.id === data.externalSchool?.externalId) {
+			// Case: User exists and school is the same -> update user
 			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
+		} else if (existingUser && school.id !== data.externalSchool?.externalId) {
+			// Case: User exists but school is different -> school change and update user
+			const schools = await this.schoolService.getSchools({
+				systemId: data.system.systemId,
+				externalId: data.externalSchool.externalId,
+			});
+
+			if (schools.length !== 1) {
+				throw new NotFoundLoggableException(School.name, {
+					systemId: data.system.systemId,
+					externalId: data.externalSchool.externalId,
+				});
+			}
+
+			const newSchool = schools[0];
+
+			user = await this.updateUser(existingUser, data.externalUser, roleRefs, newSchool.id);
 		} else {
+			// Case: User does not exist yet -> create new user
 			user = await this.createUser(data.externalUser, roleRefs, school.id);
 		}
 
@@ -126,9 +163,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async ensureAccountExists(user: UserDO, systemId: string): Promise<void> {
-		if (!user.id) {
-			throw new UnprocessableEntityException('Unable to create account for user which has no id');
-		}
+		if (!user.id) throw new BadDataLoggableExceptions('user ID is missing', { user });
 
 		const account = await this.accountService.findByUserId(user.id);
 

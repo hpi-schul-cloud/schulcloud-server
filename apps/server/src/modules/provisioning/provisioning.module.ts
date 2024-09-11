@@ -11,6 +11,7 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
+import { ClassModule } from '../class';
 import { UserLicenseModule } from '../user-license';
 import { ProvisioningService } from './service/provisioning.service';
 import {
@@ -44,6 +45,7 @@ import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		SchoolModule,
+		ClassModule,
 	],
 	providers: [
 		ProvisioningService,
