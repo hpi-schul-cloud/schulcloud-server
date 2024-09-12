@@ -1,4 +1,4 @@
-import { UseRequestContext } from '@mikro-orm/core';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -25,7 +25,8 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 	constructor(
 		private readonly classesRepo: ClassesRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(ClassService.name);
 	}
