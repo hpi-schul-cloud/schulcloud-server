@@ -461,8 +461,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						},
 						type: externalGroupDto.type,
 						organizationId: school.id,
-						validFrom: externalGroupDto.from,
-						validUntil: externalGroupDto.until,
+						validPeriod: { from: externalGroupDto.from, until: externalGroupDto.until },
 						users: [
 							{
 								userId: student.id,
@@ -497,8 +496,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					},
 					type: externalGroupDto.type,
 					organizationId: school.id,
-					validFrom: externalGroupDto.from,
-					validUntil: externalGroupDto.until,
+					validPeriod: { from: externalGroupDto.from, until: externalGroupDto.until },
 					users: [
 						{
 							userId: student.id,
@@ -566,8 +564,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						},
 						type: externalGroupDto.type,
 						organizationId: undefined,
-						validFrom: externalGroupDto.from,
-						validUntil: externalGroupDto.until,
+						validPeriod: { from: externalGroupDto.from, until: externalGroupDto.until },
 						users: [
 							{
 								userId: teacher.id,
@@ -636,8 +633,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						},
 						type: externalGroupDto.type,
 						organizationId: undefined,
-						validFrom: externalGroupDto.from,
-						validUntil: externalGroupDto.until,
+						validPeriod: { from: externalGroupDto.from, until: externalGroupDto.until },
 						users: [
 							{
 								userId: student.id,
