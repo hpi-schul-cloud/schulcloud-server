@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseService } from '@modules/learnroom/service';
+import { PseudonymService } from '@modules/pseudonym';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -29,7 +30,6 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { FeathersRosterService } from './feathers-roster.service';
-import { PseudonymService } from './pseudonym.service';
 
 describe('FeathersRosterService', () => {
 	let module: TestingModule;

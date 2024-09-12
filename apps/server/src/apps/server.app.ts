@@ -4,26 +4,26 @@ import { Mail, MailService } from '@infra/mail';
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
-import { AccountUc } from '@src/modules/account/api/account.uc';
 import { SystemRule } from '@modules/authorization/domain/rules';
+
+import { ColumnBoardService } from '@modules/board';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
-import { FeathersRosterService } from '@modules/pseudonym';
-import { RocketChatService } from '@modules/rocketchat';
-import { ServerModule } from '@modules/server';
 import { InternalServerModule } from '@modules/internal-server';
+import { RocketChatService } from '@modules/rocketchat';
+import { FeathersRosterService } from '@modules/roster';
+import { ServerModule } from '@modules/server';
 import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
+import { AccountUc } from '@src/modules/account/api/account.uc';
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-
-import { ColumnBoardService } from '@modules/board';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,

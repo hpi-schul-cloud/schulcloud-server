@@ -1,19 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolExternalTool, SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
-import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	AnyMediaBoardNode,
-	BoardExternalReference,
-	isMediaBoard,
-	isMediaExternalToolElement,
-	MediaBoard,
-	MediaExternalToolElement,
-} from '../../domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { AnyMediaBoardNode, BoardExternalReference, ExternalToolElement, isMediaBoard, MediaBoard } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 
 type WithLayout<T> = Extract<T, { layout: unknown }>;
@@ -57,27 +50,13 @@ export class MediaBoardService {
 			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
 
-		const existing = this.findMediaElements(mediaBoard);
+		const existingExternalToolElements: ExternalToolElement[] = mediaBoard.getChildrenOfType(ExternalToolElement);
 
-		const exists = existing.some((element) =>
-			contextExternalTools.some((tool) => tool.id === element.contextExternalToolId)
+		const exists: boolean = existingExternalToolElements.some((element: ExternalToolElement): boolean =>
+			contextExternalTools.some((tool: ContextExternalTool): boolean => tool.id === element.contextExternalToolId)
 		);
 
 		return exists;
-	}
-
-	public findMediaElements(boardNode: AnyMediaBoardNode): MediaExternalToolElement[] {
-		const elements = boardNode.children.reduce((result: MediaExternalToolElement[], bn) => {
-			result.push(...this.findMediaElements(bn as AnyMediaBoardNode));
-
-			if (isMediaExternalToolElement(bn)) {
-				result.push(bn);
-			}
-
-			return result;
-		}, []);
-
-		return elements;
 	}
 
 	public async updateBackgroundColor<T extends WithBackgroundColor<AnyMediaBoardNode>>(
