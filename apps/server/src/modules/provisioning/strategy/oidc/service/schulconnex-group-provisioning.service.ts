@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { Group, GroupFilter, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
 import {
@@ -110,8 +110,10 @@ export class SchulconnexGroupProvisioningService {
 			}),
 			type: externalGroup.type,
 			organizationId,
-			validFrom: externalGroup.from,
-			validUntil: externalGroup.until,
+			validPeriod:
+				externalGroup.from && externalGroup.until
+					? new GroupPeriod({ from: externalGroup.from, until: externalGroup.until })
+					: undefined,
 			users: existingGroup?.users ?? [],
 		});
 
