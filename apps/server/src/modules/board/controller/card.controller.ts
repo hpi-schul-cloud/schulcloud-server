@@ -1,4 +1,6 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { PreferredToolInfoList } from '@modules/board/domain/types/PreferredToolInfo';
+import { sleep } from '@modules/board/loadtest/helper/sleep';
 import {
 	Body,
 	Controller,
@@ -154,5 +156,26 @@ export class CardController {
 		const response = ContentElementResponseFactory.mapToResponse(element);
 
 		return response;
+	}
+
+	@Get(':cardId/preferredTools')
+	@ApiResponse({ status: 200, type: PreferredToolInfoList })
+	async getPreferredTools(): Promise<PreferredToolInfoList> {
+		await sleep(100);
+		const elements: PreferredToolInfoList = {
+			data: [
+				{
+					icon: 'mdiMagnify',
+					name: 'Personal Preference',
+				},
+				{
+					icon: 'mdiTimerSandComplete',
+					name: 'Hier könnte ihre Werbung stehen!',
+				},
+			],
+			total: 2,
+		};
+
+		return elements;
 	}
 }
