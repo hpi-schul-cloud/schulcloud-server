@@ -13,12 +13,16 @@ export class DeletedElementContent {
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
 	deletedElementType: ContentElementType;
+
+	@ApiProperty()
+	description?: string;
 }
 
 export class DeletedElementResponse {
 	constructor(props: DeletedElementResponse) {
 		this.id = props.id;
 		this.type = props.type;
+		this.description = props.description;
 		this.content = props.content;
 		this.timestamps = props.timestamps;
 	}
@@ -28,6 +32,9 @@ export class DeletedElementResponse {
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
 	type: ContentElementType.DELETED;
+
+	@ApiProperty()
+	description?: string;
 
 	@ApiProperty()
 	content: DeletedElementContent;
