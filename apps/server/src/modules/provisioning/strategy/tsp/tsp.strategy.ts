@@ -1,11 +1,13 @@
 import { AccountSave, AccountService } from '@modules/account';
 import { Class, ClassService } from '@modules/class';
+import { ClassSourceOptions } from '@modules/class/domain/class-source-options.do';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
 import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
@@ -37,26 +39,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		const school = await this.findSchoolOrFail(data);
 		const user = await this.provisionUserAndAccount(data, school);
 
-		// TODO EW-999: Create or update classes
-		if (!user.id) throw new BadDataLoggableExceptions('User ID is missing', { user });
-		if (!data.externalClasses) throw new BadDataLoggableExceptions('External classes are missing', { data });
-
-		for await (const externalClass of data.externalClasses) {
-			// TODO EW-999: Check if class exists
-			const result = await this.classService.findClassWithSchoolIdAndExternalId(school.id, externalClass.externalId);
-			if (result) {
-				// TODO EW-999: Update class
-			} else {
-				// TODO EW-999: Create class
-				const newClass = new Class({
-					schoolId: school.id,
-					externalId: externalClass.externalId,
-					name: externalClass.name,
-				});
-
-				await this.classService.createMany([newClass]);
-			}
-		}
+		await this.provisionClasses(data, school, user);
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
@@ -114,6 +97,42 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		await this.ensureAccountExists(user, data.system.systemId);
 
 		return user;
+	}
+
+	private async provisionClasses(data: OauthDataDto, school: School, user: UserDO): Promise<void> {
+		if (!user.id) throw new BadDataLoggableExceptions('User ID is missing', { user });
+		if (!data.externalClasses) throw new BadDataLoggableExceptions('External classes are missing', { data });
+
+		for await (const externalClass of data.externalClasses) {
+			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(
+				school.id,
+				externalClass.externalId
+			);
+
+			if (currentClass) {
+				// Case: Class exists -> update class
+				currentClass.schoolId = school.id; // TODO: can the school change?
+				currentClass.name = externalClass.name;
+				if (user.roles.some((role) => role.name === RoleName.TEACHER)) currentClass.addTeacher(user.id);
+				if (user.roles.some((role) => role.name === RoleName.STUDENT)) currentClass.addUser(user.id);
+
+				await this.classService.save(currentClass);
+			} else {
+				// Case: Class does not exist yet -> create new class
+				const newClass = new Class({
+					id: '', // TODO: maybe generate a new ID
+					name: externalClass.name,
+					schoolId: school.id,
+					teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
+					userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					sourceOptions: new ClassSourceOptions({ tspUid: externalClass.externalId }),
+				});
+
+				await this.classService.save(newClass);
+			}
+		}
 	}
 
 	private async getRoleReferencesForUser(externalUser: ExternalUserDto): Promise<RoleReference[]> {

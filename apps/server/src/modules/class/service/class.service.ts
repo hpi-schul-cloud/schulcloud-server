@@ -54,8 +54,8 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		return result;
 	}
 
-	public async createMany(classes: Class[]): Promise<void> {
-		await this.classesRepo.createMany(classes);
+	public async save(classes: Class | Class[]): Promise<void> {
+		await this.classesRepo.save(classes);
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {

@@ -38,8 +38,10 @@ export class ClassesRepo {
 		return mapped;
 	}
 
-	async createMany(classes: Class[]): Promise<void> {
-		const entities: ClassEntity[] = classes.map((aclass: Class): ClassEntity => ClassMapper.mapToEntity(aclass));
+	async save(classes: Class | Class[]): Promise<void> {
+		const entities: ClassEntity[] = Array.isArray(classes)
+			? classes.map((aclass: Class): ClassEntity => ClassMapper.mapToEntity(aclass))
+			: [ClassMapper.mapToEntity(classes)];
 
 		await this.em.persistAndFlush(entities);
 	}
