@@ -76,7 +76,7 @@ export class MediaElementUc {
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 		// TODO in case you have more than one element, implement and use findContentElementById in media-board.service.ts
-		const element = await this.boardNodeService.findByClassAndId(MediaExternalToolElement, elementId);
+		const element = await this.boardNodeService.findContentElementById(elementId);
 
 		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
 
