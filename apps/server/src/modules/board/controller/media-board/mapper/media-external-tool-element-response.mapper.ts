@@ -1,8 +1,11 @@
 import { MediaExternalToolElement } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
+import { BaseResponseMapper } from '../../mapper/base-mapper.interface';
 import { MediaExternalToolElementContent, MediaExternalToolElementResponse } from '../dto';
 
-export class MediaExternalToolElementResponseMapper {
+export class MediaExternalToolElementResponseMapper
+	implements BaseResponseMapper<MediaExternalToolElement, MediaExternalToolElementResponse>
+{
 	private static instance: MediaExternalToolElementResponseMapper;
 
 	public static getInstance(): MediaExternalToolElementResponseMapper {
@@ -14,7 +17,7 @@ export class MediaExternalToolElementResponseMapper {
 	}
 
 	mapToResponse(element: MediaExternalToolElement): MediaExternalToolElementResponse {
-		const elementResponse: MediaExternalToolElementResponse = new MediaExternalToolElementResponse({
+		const elementResponse = new MediaExternalToolElementResponse({
 			id: element.id,
 			content: new MediaExternalToolElementContent({
 				contextExternalToolId: element.contextExternalToolId,

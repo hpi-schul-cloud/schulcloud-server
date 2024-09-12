@@ -1,7 +1,6 @@
-import { type AnyBoardNode, AnyMediaElement, MediaLine } from '../../../domain';
+import { type AnyBoardNode, AnyMediaElement, isAnyMediaElement, MediaLine } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
 import { MediaLineResponse } from '../dto';
-import { isAnyMediaElement } from '../dto/any-media-element.response';
 import { AnyMediaElementResponseFactory } from './any-media-element-response.factory';
 
 export class MediaLineResponseMapper {

@@ -1,7 +1,5 @@
-import { DeletedElement } from '../deleted-element.do';
-import { AnyMediaBoardNode, MediaBoardColors } from './types';
+import { AnyMediaBoardNode, isAnyMediaElement, MediaBoardColors } from './types';
 import type { MediaLineProps } from '../types';
-import { MediaExternalToolElement } from './media-external-tool-element.do';
 import { BoardNode } from '../board-node.do';
 
 export class MediaLine extends BoardNode<MediaLineProps> {
@@ -30,7 +28,7 @@ export class MediaLine extends BoardNode<MediaLineProps> {
 	}
 
 	canHaveChild(childNode: AnyMediaBoardNode): boolean {
-		const allowed: boolean = childNode instanceof MediaExternalToolElement || childNode instanceof DeletedElement;
+		const allowed: boolean = isAnyMediaElement(childNode);
 
 		return allowed;
 	}
