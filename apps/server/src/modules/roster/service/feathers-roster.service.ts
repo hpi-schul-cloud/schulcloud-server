@@ -1,7 +1,7 @@
 import { CourseService } from '@modules/learnroom/service';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
@@ -105,18 +105,12 @@ export class FeathersRosterService {
 	private async getCourses(pseudonym: string, oauth2ClientId: string): Promise<Course[]> {
 		const pseudonymContext: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
 		const user: UserDO = await this.userService.findById(pseudonymContext.userId);
+
 		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
-		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
-			schoolId: user.schoolId,
-			toolId: externalTool.id,
-			isDeactivated: false,
-		});
-
-		if (externalTool.isDeactivated || !schoolExternalTools.length) {
-			return [];
-		}
-
-		const schoolExternalTool: SchoolExternalTool = schoolExternalTools[0];
+		const schoolExternalTool: SchoolExternalTool = await this.validateSchoolExternalTool(
+			user.schoolId,
+			externalTool.id
+		);
 
 		let courses: Course[] = await this.courseService.findAllByUserId(pseudonymContext.userId);
 		courses = await this.filterCoursesByToolAvailability(courses, schoolExternalTool);
@@ -126,10 +120,13 @@ export class FeathersRosterService {
 
 	public async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
 		const course: Course = await this.courseService.findById(courseId);
-		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 
-		await this.validateSchoolExternalTool(course.school.id, externalTool.id);
-		await this.validateContextExternalTools(courseId);
+		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
+		const schoolExternalTool: SchoolExternalTool = await this.validateSchoolExternalTool(
+			course.school.id,
+			externalTool.id
+		);
+		await this.validateContextExternalTools(course, schoolExternalTool);
 
 		const [studentEntities, teacherEntities, substitutionTeacherEntities] = await Promise.all([
 			course.students.loadItems(),
@@ -281,31 +278,35 @@ export class FeathersRosterService {
 			oauth2ClientId
 		);
 
-		if (!externalTool || !externalTool.id) {
+		if (!externalTool || !externalTool.id || externalTool.isDeactivated) {
 			throw new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': oauth2ClientId });
 		}
 
 		return externalTool;
 	}
 
-	private async validateSchoolExternalTool(schoolId: EntityId, toolId: string): Promise<void> {
+	private async validateSchoolExternalTool(schoolId: EntityId, toolId: string): Promise<SchoolExternalTool> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
 			schoolId,
 			toolId,
+			isDeactivated: false,
 		});
 
 		if (schoolExternalTools.length === 0) {
 			throw new NotFoundLoggableException(SchoolExternalTool.name, { toolId });
 		}
+
+		return schoolExternalTools[0];
 	}
 
-	private async validateContextExternalTools(courseId: EntityId): Promise<void> {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
-			new ContextRef({ id: courseId, type: ToolContextType.COURSE })
+	private async validateContextExternalTools(course: Course, schoolExternalTool: SchoolExternalTool): Promise<void> {
+		const isExternalToolReferencedInCourse: boolean = await this.isExternalToolReferencedInCourse(
+			course,
+			schoolExternalTool
 		);
 
-		if (contextExternalTools.length === 0) {
-			throw new NotFoundLoggableException(ContextExternalTool.name, { 'contextRef.id': courseId });
+		if (!isExternalToolReferencedInCourse) {
+			throw new NotFoundLoggableException(ContextExternalTool.name, { contextId: course.id });
 		}
 	}
 

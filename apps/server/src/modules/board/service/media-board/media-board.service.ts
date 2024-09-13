@@ -6,7 +6,13 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { SchoolExternalTool, SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyMediaBoardNode, BoardExternalReference, ExternalToolElement, isMediaBoard, MediaBoard } from '../../domain';
+import {
+	AnyMediaBoardNode,
+	BoardExternalReference,
+	isMediaBoard,
+	MediaBoard,
+	MediaExternalToolElement,
+} from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 
 type WithLayout<T> = Extract<T, { layout: unknown }>;
@@ -50,9 +56,10 @@ export class MediaBoardService {
 			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
 
-		const existingExternalToolElements: ExternalToolElement[] = mediaBoard.getChildrenOfType(ExternalToolElement);
+		const existingExternalToolElements: MediaExternalToolElement[] =
+			mediaBoard.getChildrenOfType(MediaExternalToolElement);
 
-		const exists: boolean = existingExternalToolElements.some((element: ExternalToolElement): boolean =>
+		const exists: boolean = existingExternalToolElements.some((element: MediaExternalToolElement): boolean =>
 			contextExternalTools.some((tool: ContextExternalTool): boolean => tool.id === element.contextExternalToolId)
 		);
 
