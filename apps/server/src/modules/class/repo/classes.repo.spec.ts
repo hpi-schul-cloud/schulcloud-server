@@ -231,10 +231,10 @@ describe(ClassesRepo.name, () => {
 
 				const result = await repo.findClassWithSchoolIdAndExternalId(
 					class1.schoolId.toString(),
-					class1.sourceOptions?.tspUid as string
+					class1.sourceOptions?.tspUid || ''
 				);
 
-				expect(result).toEqual<ClassEntity>(class1);
+				expect(result).toEqual<Class>(ClassMapper.mapToDO(class1));
 			});
 		});
 
