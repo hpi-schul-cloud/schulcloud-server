@@ -81,8 +81,7 @@ describe('GroupRepo', () => {
 						}),
 					],
 					organizationId: group.organization?.id,
-					validFrom: group.validPeriod?.from,
-					validUntil: group.validPeriod?.until,
+					validPeriod: group.validPeriod,
 				});
 			});
 		});
@@ -690,8 +689,7 @@ describe('GroupRepo', () => {
 						}),
 					],
 					organizationId: groupEntity.organization?.id,
-					validFrom: groupEntity.validPeriod?.from,
-					validUntil: groupEntity.validPeriod?.until,
+					validPeriod: groupEntity.validPeriod,
 				});
 			});
 		});
