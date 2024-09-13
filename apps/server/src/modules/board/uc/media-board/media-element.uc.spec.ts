@@ -320,7 +320,7 @@ describe(MediaElementUc.name, () => {
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardNodeService.findContentElementById.mockResolvedValueOnce(mediaElement);
+				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
 
 				return {
 					user,
