@@ -3,17 +3,25 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
-import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory, setupEntities } from '@shared/testing';
+import { StorageProviderRepo } from '@shared/repo/storageprovider';
+import {
+	federalStateFactory,
+	legacySchoolDoFactory,
+	schoolYearFactory,
+	setupEntities,
+	storageProviderFactory,
+} from '@shared/testing';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
-import { SchoolValidationService } from './validation/school-validation.service';
 import { SchoolYearService } from './school-year.service';
+import { SchoolValidationService } from './validation/school-validation.service';
 
 describe('LegacySchoolService', () => {
 	let module: TestingModule;
 	let schoolService: LegacySchoolService;
 
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
+	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
 	let schoolValidationService: DeepMocked<SchoolValidationService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -25,6 +33,10 @@ describe('LegacySchoolService', () => {
 				{
 					provide: LegacySchoolRepo,
 					useValue: createMock<LegacySchoolRepo>(),
+				},
+				{
+					provide: StorageProviderRepo,
+					useValue: createMock<StorageProviderRepo>(),
 				},
 				{
 					provide: SchoolValidationService,
@@ -42,6 +54,7 @@ describe('LegacySchoolService', () => {
 		}).compile();
 
 		schoolRepo = module.get(LegacySchoolRepo);
+		storageProviderRepo = module.get(StorageProviderRepo);
 		schoolService = module.get(LegacySchoolService);
 		schoolValidationService = module.get(SchoolValidationService);
 		federalStateService = module.get(FederalStateService);
@@ -380,6 +393,8 @@ describe('LegacySchoolService', () => {
 			const year = schoolYearFactory.build();
 			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+			const storageProvider = storageProviderFactory.build();
+			storageProviderRepo.findAll.mockResolvedValue([storageProvider]);
 
 			const school = await schoolService.createSchool({ name, federalStateName });
 			expect(schoolRepo.save).toHaveBeenCalledWith(school);
