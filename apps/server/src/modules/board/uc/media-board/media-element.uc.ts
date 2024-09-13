@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
-import { DeletedElement, MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
+import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
@@ -76,7 +76,7 @@ export class MediaElementUc {
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const element = await this.boardNodeService.findContentElementById(elementId);
+		const element = await this.boardNodeService.findAnyMediaElementById(elementId);
 
 		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
 
