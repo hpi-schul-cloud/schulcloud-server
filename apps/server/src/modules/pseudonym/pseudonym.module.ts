@@ -7,6 +7,7 @@ import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';
 import { FeathersRosterService, PseudonymService } from './service';
 
+// Why import this module LearnroomModule and ToolModule, The UserModule should also checked, but maybe it is ok.
 @Module({
 	imports: [UserModule, LearnroomModule, forwardRef(() => ToolModule), LoggerModule, CqrsModule],
 	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger, FeathersRosterService],
