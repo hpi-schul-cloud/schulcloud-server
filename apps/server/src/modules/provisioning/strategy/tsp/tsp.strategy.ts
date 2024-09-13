@@ -1,6 +1,5 @@
 import { AccountSave, AccountService } from '@modules/account';
-import { ClassFactory, ClassService } from '@modules/class';
-import { ClassSourceOptions } from '@modules/class/domain/class-source-options.do';
+import { ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
@@ -112,6 +111,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 
 				await this.classService.save(currentClass);
 			} else {
+				// Case: Class does not exist yet -> create new class
 				const newClass = ClassFactory.create({
 					name: externalClass.name,
 					schoolId: school.id,

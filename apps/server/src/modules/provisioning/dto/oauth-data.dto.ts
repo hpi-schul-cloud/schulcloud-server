@@ -24,5 +24,6 @@ export class OauthDataDto {
 		this.externalSchool = props.externalSchool;
 		this.externalGroups = props.externalGroups;
 		this.externalLicenses = props.externalLicenses;
+		this.externalClasses = props.externalClasses;
 	}
 }
