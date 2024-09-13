@@ -4,8 +4,6 @@ import { School, SchoolProps } from '../do/school';
 import { SchoolQuery } from '../query';
 
 export interface SchoolRepo {
-	getSchool(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School | null>;
-
 	getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]>;
 
 	getSchoolById(schoolId: EntityId): Promise<School>;

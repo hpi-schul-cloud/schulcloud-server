@@ -49,19 +49,19 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	private async findSchoolOrFail(data: OauthDataDto): Promise<School> {
 		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
 
-		const school = await this.schoolService.getSchool({
-			systemId: data.system.systemId,
+		const schools = await this.schoolService.getSchools({
 			externalId: data.externalSchool.externalId,
+			systemId: data.system.systemId,
 		});
 
-		if (!school) {
+		if (schools.length !== 1) {
 			throw new NotFoundLoggableException(School.name, {
 				systemId: data.system.systemId,
 				externalId: data.externalSchool.externalId,
 			});
 		}
 
-		return school;
+		return schools[0];
 	}
 
 	private async provisionUserAndAccount(data: OauthDataDto, school: School): Promise<UserDO> {
@@ -76,16 +76,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
 		} else if (existingUser && school.id !== data.externalSchool?.externalId) {
 			// Case: User exists but school is different -> school change and update user
-			const newSchool = await this.schoolService.getSchool({
-				systemId: data.system.systemId,
-				externalId: data.externalSchool.externalId,
-			});
-
-			if (!newSchool)
-				throw new NotFoundLoggableException(School.name, {
-					systemId: data.system.systemId,
-					externalId: data.externalSchool.externalId,
-				});
+			const newSchool = await this.findSchoolOrFail(data);
 
 			user = await this.updateUser(existingUser, data.externalUser, roleRefs, newSchool.id);
 		} else {

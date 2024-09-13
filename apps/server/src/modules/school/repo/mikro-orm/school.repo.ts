@@ -15,21 +15,6 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return SchoolEntity;
 	}
 
-	public async getSchool(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School | null> {
-		const scope = new SchoolScope();
-
-		scope.allowEmptyQuery(false);
-		scope.byFederalState(query.federalStateId);
-		scope.byExternalId(query.externalId);
-		scope.bySystemId(query.systemId);
-
-		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
-		const entity = await this.em.findOne(SchoolEntity, scope.query, findOptions);
-		const school = entity ? SchoolEntityMapper.mapToDo(entity) : null;
-
-		return school;
-	}
-
 	public async getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const scope = new SchoolScope();
 		scope.allowEmptyQuery(true);

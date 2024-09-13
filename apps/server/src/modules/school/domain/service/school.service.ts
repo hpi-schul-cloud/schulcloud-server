@@ -33,13 +33,6 @@ export class SchoolService {
 		return school;
 	}
 
-	public async getSchool(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School | null> {
-		const school = await this.schoolRepo.getSchool(query, options);
-		const schoolWithInstanceFeatures = school ? this.addInstanceFeatures(school) : null;
-
-		return schoolWithInstanceFeatures;
-	}
-
 	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		let schools = await this.schoolRepo.getSchools(query, options);
 
