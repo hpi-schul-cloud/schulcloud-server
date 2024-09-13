@@ -43,7 +43,7 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
-@UseGuards(WsJwtAuthGuard)
+// @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@WebSocketServer()
 	server!: Server;
