@@ -1,5 +1,5 @@
 import { AccountSave, AccountService } from '@modules/account';
-import { Class, ClassService } from '@modules/class';
+import { ClassFactory, ClassService } from '@modules/class';
 import { ClassSourceOptions } from '@modules/class/domain/class-source-options.do';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
@@ -15,6 +15,8 @@ import { BadDataLoggableExceptions } from '../loggable';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
+	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
+
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
@@ -47,19 +49,19 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	private async findSchoolOrFail(data: OauthDataDto): Promise<School> {
 		if (!data.externalSchool) throw new BadDataLoggableExceptions('External school is missing', { data });
 
-		const school = await this.schoolService.getSchools({
+		const school = await this.schoolService.getSchool({
 			systemId: data.system.systemId,
 			externalId: data.externalSchool.externalId,
 		});
 
-		if (!school || school.length === 0) {
+		if (!school) {
 			throw new NotFoundLoggableException(School.name, {
 				systemId: data.system.systemId,
 				externalId: data.externalSchool.externalId,
 			});
 		}
 
-		return school[0];
+		return school;
 	}
 
 	private async provisionUserAndAccount(data: OauthDataDto, school: School): Promise<UserDO> {
@@ -69,24 +71,21 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
 
 		let user: UserDO;
-		if (existingUser && school.id === data.externalSchool?.externalId) {
+		if (existingUser && school.externalId === data.externalSchool?.externalId) {
 			// Case: User exists and school is the same -> update user
 			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
 		} else if (existingUser && school.id !== data.externalSchool?.externalId) {
 			// Case: User exists but school is different -> school change and update user
-			const schools = await this.schoolService.getSchools({
+			const newSchool = await this.schoolService.getSchool({
 				systemId: data.system.systemId,
 				externalId: data.externalSchool.externalId,
 			});
 
-			if (schools.length !== 1) {
+			if (!newSchool)
 				throw new NotFoundLoggableException(School.name, {
 					systemId: data.system.systemId,
 					externalId: data.externalSchool.externalId,
 				});
-			}
-
-			const newSchool = schools[0];
 
 			user = await this.updateUser(existingUser, data.externalUser, roleRefs, newSchool.id);
 		} else {
@@ -111,22 +110,24 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 
 			if (currentClass) {
 				// Case: Class exists -> update class
-				currentClass.schoolId = school.id; // TODO: can the school change?
+				currentClass.schoolId = school.id;
 				currentClass.name = externalClass.name;
+				currentClass.year = school.currentYear?.id;
+				currentClass.source = this.ENTITY_SOURCE;
+				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: externalClass.externalId });
+
 				if (user.roles.some((role) => role.name === RoleName.TEACHER)) currentClass.addTeacher(user.id);
 				if (user.roles.some((role) => role.name === RoleName.STUDENT)) currentClass.addUser(user.id);
 
 				await this.classService.save(currentClass);
 			} else {
-				// Case: Class does not exist yet -> create new class
-				const newClass = new Class({
-					id: '', // TODO: maybe generate a new ID
+				const newClass = ClassFactory.create({
 					name: externalClass.name,
 					schoolId: school.id,
+					year: school.currentYear?.id,
 					teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
 					userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					source: this.ENTITY_SOURCE,
 					sourceOptions: new ClassSourceOptions({ tspUid: externalClass.externalId }),
 				});
 

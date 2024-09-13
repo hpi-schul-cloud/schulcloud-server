@@ -51,6 +51,10 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.year;
 	}
 
+	set year(year: EntityId | undefined) {
+		this.props.year = year;
+	}
+
 	get gradeLevel(): number | undefined {
 		return this.props.gradeLevel;
 	}
@@ -67,8 +71,16 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.source;
 	}
 
+	set source(source: string | undefined) {
+		this.props.source = source;
+	}
+
 	get sourceOptions(): ClassSourceOptions | undefined {
 		return this.props.sourceOptions;
+	}
+
+	set sourceOptions(sourceOptions: ClassSourceOptions | undefined) {
+		this.props.sourceOptions = sourceOptions;
 	}
 
 	get createdAt(): Date {
@@ -105,5 +117,26 @@ export class Class extends DomainObject<ClassProps> {
 			: this.props.name;
 
 		return classFullName;
+	}
+}
+
+export class ClassFactory {
+	public static create(props: Partial<ClassProps>): Class {
+		const baseProps = this.getBaseProps();
+		const classProps = { ...baseProps, ...props };
+
+		return new Class(classProps);
+	}
+
+	private static getBaseProps(): ClassProps {
+		return {
+			id: '',
+			name: '',
+			schoolId: '',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			userIds: [],
+			teacherIds: [],
+		};
 	}
 }
