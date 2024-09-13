@@ -11,7 +11,7 @@ import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
-import { BadDataLoggableExceptions } from '../loggable';
+import { BadDataLoggableException } from '../loggable';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
@@ -47,7 +47,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async findSchoolOrFail(data: OauthDataDto): Promise<School> {
-		if (!data.externalSchool) throw new BadDataLoggableExceptions('External school is missing', { data });
+		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
 
 		const school = await this.schoolService.getSchool({
 			systemId: data.system.systemId,
@@ -65,7 +65,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async provisionUserAndAccount(data: OauthDataDto, school: School): Promise<UserDO> {
-		if (!data.externalSchool) throw new BadDataLoggableExceptions('External school is missing', { data });
+		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
 
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
@@ -99,8 +99,8 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async provisionClasses(data: OauthDataDto, school: School, user: UserDO): Promise<void> {
-		if (!user.id) throw new BadDataLoggableExceptions('User ID is missing', { user });
-		if (!data.externalClasses) throw new BadDataLoggableExceptions('External classes are missing', { data });
+		if (!user.id) throw new BadDataLoggableException('User ID is missing', { user });
+		if (!data.externalClasses) throw new BadDataLoggableException('External classes are missing', { data });
 
 		for await (const externalClass of data.externalClasses) {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(
@@ -183,7 +183,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private async ensureAccountExists(user: UserDO, systemId: string): Promise<void> {
-		if (!user.id) throw new BadDataLoggableExceptions('user ID is missing', { user });
+		if (!user.id) throw new BadDataLoggableException('user ID is missing', { user });
 
 		const account = await this.accountService.findByUserId(user.id);
 
