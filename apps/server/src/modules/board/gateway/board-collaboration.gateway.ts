@@ -1,7 +1,8 @@
-import { WsJwtAuthGuard } from '@infra/auth-guard';
+// import { WsJwtAuthGuard } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { UseGuards, UsePipes } from '@nestjs/common';
+// import { UseGuards, UsePipes } from '@nestjs/common';
+import { UsePipes } from '@nestjs/common';
 import {
 	OnGatewayDisconnect,
 	SubscribeMessage,
