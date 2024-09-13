@@ -1,26 +1,34 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { GroupModule } from '@modules/group';
+
 import { LessonModule } from '@modules/lesson';
 import { RoleModule } from '@modules/role';
+import { SchoolModule } from '@modules/school';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRepo, DashboardModelMapper, DashboardRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { CourseRoomsController } from './controller/course-rooms.controller';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
-import { CourseRoomsController } from './controller/course-rooms.controller';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
+
+import { CourseInfoController } from './controller/course-info.controller';
 import {
 	CourseCopyUC,
 	CourseExportUc,
 	CourseImportUc,
+	CourseInfoUc,
+	CourseRoomsAuthorisationService,
+	CourseRoomsUc,
 	CourseSyncUc,
 	CourseUc,
 	DashboardUc,
 	LessonCopyUC,
 	RoomBoardDTOFactory,
-	CourseRoomsAuthorisationService,
-	CourseRoomsUc,
 } from './uc';
 
 /**
@@ -35,11 +43,16 @@ import {
 		LearnroomModule,
 		AuthorizationReferenceModule,
 		RoleModule,
+		SchoolModule,
+		GroupModule,
+		UserModule,
+		ClassModule,
 	],
-	controllers: [DashboardController, CourseController, CourseRoomsController],
+	controllers: [DashboardController, CourseController, CourseInfoController, CourseRoomsController],
 	providers: [
 		DashboardUc,
 		CourseUc,
+		CourseInfoUc,
 		CourseRoomsUc,
 		RoomBoardResponseMapper,
 		RoomBoardDTOFactory,

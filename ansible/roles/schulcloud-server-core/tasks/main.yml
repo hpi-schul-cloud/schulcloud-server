@@ -214,6 +214,28 @@
     tags:
       - ingress
 
+
+  - name: remove old tldraw migration Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: Job
+      name: tldraw-migration-job
+      state: absent
+      wait: yes
+    tags:
+      - job
+
+  - name: tldraw migration Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-migration-job.yml.j2
+    when: WITH_TLDRAW2 is defined and WITH_TLDRAW2|bool
+    tags:
+      - job
+
   - name: Delete Files CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

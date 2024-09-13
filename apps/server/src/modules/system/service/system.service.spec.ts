@@ -2,8 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { systemFactory } from '@shared/testing';
 import { SYSTEM_REPO, SystemQuery, SystemRepo, SystemType } from '../domain';
+import { systemFactory } from '../testing';
 import { SystemService } from './system.service';
 
 describe(SystemService.name, () => {

@@ -6,7 +6,6 @@ import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { RuleManager } from '.';
 import { AuthorizationContextBuilder } from '../mapper';
 import {
-	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -25,9 +24,11 @@ import {
 	UserRule,
 } from '../rules';
 import { ExternalToolRule } from '../rules/external-tool.rule';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 describe('RuleManager', () => {
 	let service: RuleManager;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let courseRule: DeepMocked<CourseRule>;
 	let courseGroupRule: DeepMocked<CourseGroupRule>;
 	let lessonRule: DeepMocked<LessonRule>;
@@ -37,7 +38,6 @@ describe('RuleManager', () => {
 	let teamRule: DeepMocked<TeamRule>;
 	let submissionRule: DeepMocked<SubmissionRule>;
 	let schoolExternalToolRule: DeepMocked<SchoolExternalToolRule>;
-	let boardNodeRule: DeepMocked<BoardNodeRule>;
 	let contextExternalToolRule: DeepMocked<ContextExternalToolRule>;
 	let userLoginMigrationRule: DeepMocked<UserLoginMigrationRule>;
 	let schoolRule: DeepMocked<SchoolRule>;
@@ -53,6 +53,7 @@ describe('RuleManager', () => {
 		const module = await Test.createTestingModule({
 			providers: [
 				RuleManager,
+				{ provide: AuthorizationInjectionService, useValue: createMock<AuthorizationInjectionService>() },
 				{ provide: CourseRule, useValue: createMock<CourseRule>() },
 				{ provide: CourseGroupRule, useValue: createMock<CourseGroupRule>() },
 				{ provide: GroupRule, useValue: createMock<GroupRule>() },
@@ -63,7 +64,6 @@ describe('RuleManager', () => {
 				{ provide: TeamRule, useValue: createMock<TeamRule>() },
 				{ provide: SubmissionRule, useValue: createMock<SubmissionRule>() },
 				{ provide: SchoolExternalToolRule, useValue: createMock<SchoolExternalToolRule>() },
-				{ provide: BoardNodeRule, useValue: createMock<BoardNodeRule>() },
 				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 				{ provide: UserLoginMigrationRule, useValue: createMock<UserLoginMigrationRule>() },
 				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
@@ -75,6 +75,7 @@ describe('RuleManager', () => {
 		}).compile();
 
 		service = await module.get(RuleManager);
+		injectionService = module.get(AuthorizationInjectionService);
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
 		lessonRule = await module.get(LessonRule);
@@ -84,7 +85,6 @@ describe('RuleManager', () => {
 		teamRule = await module.get(TeamRule);
 		submissionRule = await module.get(SubmissionRule);
 		schoolExternalToolRule = await module.get(SchoolExternalToolRule);
-		boardNodeRule = await module.get(BoardNodeRule);
 		contextExternalToolRule = await module.get(ContextExternalToolRule);
 		userLoginMigrationRule = await module.get(UserLoginMigrationRule);
 		schoolRule = await module.get(SchoolRule);
@@ -96,6 +96,10 @@ describe('RuleManager', () => {
 	});
 
 	afterEach(() => {
+		injectionService.getAuthorizationRules.mockReset();
+	});
+
+	afterAll(() => {
 		jest.resetAllMocks();
 	});
 
@@ -104,66 +108,42 @@ describe('RuleManager', () => {
 	});
 
 	describe('selectRule', () => {
-		// We only test for one rule here, because all rules behave the same.
-		describe('when CourseRule is applicable', () => {
+		const buildRule = (isApplicable: boolean) => {
+			return { isApplicable: jest.fn().mockReturnValue(isApplicable), hasPermission: jest.fn() };
+		};
+
+		const buildApplicableRule = () => buildRule(true);
+		const buildNotApplicableRule = () => buildRule(false);
+
+		describe('when one Rule is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const object = courseFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
-				courseRule.isApplicable.mockReturnValueOnce(true);
-				courseGroupRule.isApplicable.mockReturnValueOnce(false);
-				lessonRule.isApplicable.mockReturnValueOnce(false);
-				legacySchoolRule.isApplicable.mockReturnValueOnce(false);
-				userRule.isApplicable.mockReturnValueOnce(false);
-				taskRule.isApplicable.mockReturnValueOnce(false);
-				teamRule.isApplicable.mockReturnValueOnce(false);
-				submissionRule.isApplicable.mockReturnValueOnce(false);
-				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				boardNodeRule.isApplicable.mockReturnValueOnce(false);
-				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
-				schoolRule.isApplicable.mockReturnValueOnce(false);
-				groupRule.isApplicable.mockReturnValueOnce(false);
-				systemRule.isApplicable.mockReturnValueOnce(false);
-				schoolSystemOptionsRule.isApplicable.mockReturnValueOnce(false);
-				externalToolRule.isApplicable.mockReturnValueOnce(false);
-				instanceRule.isApplicable.mockReturnValueOnce(false);
+				const applicableRule = buildApplicableRule();
+				const notApplicableRule = buildNotApplicableRule();
 
-				return { user, object, context };
+				injectionService.getAuthorizationRules.mockReturnValueOnce([applicableRule, notApplicableRule]);
+
+				return { user, object, context, applicableRule, notApplicableRule };
 			};
 
 			it('should call isApplicable on all rules', () => {
-				const { user, object, context } = setup();
+				const { user, object, context, applicableRule, notApplicableRule } = setup();
 
 				service.selectRule(user, object, context);
 
-				expect(courseRule.isApplicable).toBeCalled();
-				expect(courseGroupRule.isApplicable).toBeCalled();
-				expect(lessonRule.isApplicable).toBeCalled();
-				expect(legacySchoolRule.isApplicable).toBeCalled();
-				expect(userRule.isApplicable).toBeCalled();
-				expect(taskRule.isApplicable).toBeCalled();
-				expect(teamRule.isApplicable).toBeCalled();
-				expect(submissionRule.isApplicable).toBeCalled();
-				expect(schoolExternalToolRule.isApplicable).toBeCalled();
-				expect(boardNodeRule.isApplicable).toBeCalled();
-				expect(contextExternalToolRule.isApplicable).toBeCalled();
-				expect(userLoginMigrationRule.isApplicable).toBeCalled();
-				expect(schoolRule.isApplicable).toBeCalled();
-				expect(groupRule.isApplicable).toBeCalled();
-				expect(systemRule.isApplicable).toBeCalled();
-				expect(schoolSystemOptionsRule.isApplicable).toBeCalled();
-				expect(externalToolRule.isApplicable).toBeCalled();
-				expect(instanceRule.isApplicable).toBeCalled();
+				expect(applicableRule.isApplicable).toBeCalled();
+				expect(notApplicableRule.isApplicable).toBeCalled();
 			});
 
-			it('should return CourseRule', () => {
-				const { user, object, context } = setup();
+			it('should return Applicable Rule', () => {
+				const { user, object, context, applicableRule } = setup();
 
 				const result = service.selectRule(user, object, context);
 
-				expect(result).toBe(courseRule);
+				expect(result).toEqual(applicableRule);
 			});
 		});
 
@@ -173,24 +153,10 @@ describe('RuleManager', () => {
 				const object = courseFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
-				courseRule.isApplicable.mockReturnValueOnce(false);
-				courseGroupRule.isApplicable.mockReturnValueOnce(false);
-				lessonRule.isApplicable.mockReturnValueOnce(false);
-				legacySchoolRule.isApplicable.mockReturnValueOnce(false);
-				userRule.isApplicable.mockReturnValueOnce(false);
-				taskRule.isApplicable.mockReturnValueOnce(false);
-				teamRule.isApplicable.mockReturnValueOnce(false);
-				submissionRule.isApplicable.mockReturnValueOnce(false);
-				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				boardNodeRule.isApplicable.mockReturnValueOnce(false);
-				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
-				schoolRule.isApplicable.mockReturnValueOnce(false);
-				groupRule.isApplicable.mockReturnValueOnce(false);
-				systemRule.isApplicable.mockReturnValueOnce(false);
-				schoolSystemOptionsRule.isApplicable.mockReturnValueOnce(false);
-				externalToolRule.isApplicable.mockReturnValueOnce(false);
-				instanceRule.isApplicable.mockReturnValueOnce(false);
+				injectionService.getAuthorizationRules.mockReturnValueOnce([
+					buildNotApplicableRule(),
+					buildNotApplicableRule(),
+				]);
 
 				return { user, object, context };
 			};
@@ -208,24 +174,7 @@ describe('RuleManager', () => {
 				const object = courseFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
-				courseRule.isApplicable.mockReturnValueOnce(true);
-				courseGroupRule.isApplicable.mockReturnValueOnce(true);
-				lessonRule.isApplicable.mockReturnValueOnce(false);
-				legacySchoolRule.isApplicable.mockReturnValueOnce(false);
-				userRule.isApplicable.mockReturnValueOnce(false);
-				taskRule.isApplicable.mockReturnValueOnce(false);
-				teamRule.isApplicable.mockReturnValueOnce(false);
-				submissionRule.isApplicable.mockReturnValueOnce(false);
-				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				boardNodeRule.isApplicable.mockReturnValueOnce(false);
-				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				userLoginMigrationRule.isApplicable.mockReturnValueOnce(false);
-				schoolRule.isApplicable.mockReturnValueOnce(false);
-				groupRule.isApplicable.mockReturnValueOnce(false);
-				systemRule.isApplicable.mockReturnValueOnce(false);
-				schoolSystemOptionsRule.isApplicable.mockReturnValueOnce(false);
-				externalToolRule.isApplicable.mockReturnValueOnce(false);
-				instanceRule.isApplicable.mockReturnValueOnce(false);
+				injectionService.getAuthorizationRules.mockReturnValueOnce([buildApplicableRule(), buildApplicableRule()]);
 
 				return { user, object, context };
 			};
@@ -235,6 +184,76 @@ describe('RuleManager', () => {
 
 				expect(() => service.selectRule(user, object, context)).toThrow(InternalServerErrorException);
 			});
+		});
+	});
+
+	describe('currently, most of the Rules are injected into the AuthorizationInjectionService by the RuleManager. In the future, these should go into the modules instead', () => {
+		it('should inject CourseRule', () => {
+			expect(injectionService.injectAuthorizationRule).toHaveBeenCalledWith(courseRule);
+		});
+
+		it('should inject CourseGroupRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(courseGroupRule);
+		});
+
+		it('should inject LessonRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(lessonRule);
+		});
+
+		it('should inject LegacySchoolRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(legacySchoolRule);
+		});
+
+		it('should inject UserRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(userRule);
+		});
+
+		it('should inject TaskRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(taskRule);
+		});
+
+		it('should inject TeamRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(teamRule);
+		});
+
+		it('should inject SubmissionRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(submissionRule);
+		});
+
+		it('should inject SchoolExternalToolRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(schoolExternalToolRule);
+		});
+
+		it('should inject ContextExternalToolRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(contextExternalToolRule);
+		});
+
+		it('should inject UserLoginMigrationRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(userLoginMigrationRule);
+		});
+
+		it('should inject SchoolRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(schoolRule);
+		});
+
+		it('should inject GroupRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(groupRule);
+		});
+
+		it('should inject SystemRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(systemRule);
+		});
+
+		it('should inject SchoolSystemOptionsRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(schoolSystemOptionsRule);
+		});
+
+		it('should inject ExternalToolRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(externalToolRule);
+		});
+
+		it('should inject InstanceRule', () => {
+			expect(injectionService.injectAuthorizationRule).toBeCalledWith(instanceRule);
 		});
 	});
 });

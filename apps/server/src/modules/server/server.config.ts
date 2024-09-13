@@ -15,6 +15,7 @@ import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { ProvisioningConfig } from '@modules/provisioning';
+import { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
@@ -62,6 +63,7 @@ export interface ServerConfig
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
+		RoomConfig,
 		UserImportConfig,
 		VideoConferenceConfig,
 		BbbConfig,
@@ -72,6 +74,7 @@ export interface ServerConfig
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
+	CALENDAR_SERVICE_ENABLED: boolean;
 	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
 	FEATURE_EXTENSIONS_ENABLED: boolean;
 	FEATURE_TEAMS_ENABLED: boolean;
@@ -105,6 +108,7 @@ export interface ServerConfig
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
+	FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
@@ -123,6 +127,7 @@ export interface ServerConfig
 	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOMS_ENABLED: boolean;
+	FEATURE_TSP_SYNC_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -132,6 +137,7 @@ const config: ServerConfig = {
 		Configuration.get('ALERT_STATUS_URL') === null
 			? (Configuration.get('ALERT_STATUS_URL') as null)
 			: (Configuration.get('ALERT_STATUS_URL') as string),
+	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
 	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
 	FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED') as boolean,
@@ -194,6 +200,7 @@ const config: ServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
+	FEATURE_TSP_SYNC_ENABLED: Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
@@ -221,6 +228,7 @@ const config: ServerConfig = {
 	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: Configuration.get('FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED') as boolean,
+	FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED: Configuration.get('FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED') as boolean,
 	FEATURE_SHOW_MIGRATION_WIZARD: Configuration.get('FEATURE_SHOW_MIGRATION_WIZARD') as boolean,
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'

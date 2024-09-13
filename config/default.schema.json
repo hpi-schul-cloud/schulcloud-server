@@ -170,6 +170,11 @@
 			"default": false,
 			"description": "Feature toggle for TSP features."
 		},
+		"FEATURE_TSP_SYNC_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for TSP sync."
+		},
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
 			"default": true,
@@ -1393,6 +1398,11 @@
 			"default": false,
 			"description": "Enables the new class list view"
 		},
+		"FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new course list view"
+		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1660,6 +1670,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the AI Tutor"
+		},
+		"CALENDAR_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables calender service"
 		},
 		"FEATURE_ROOMS_ENABLED": {
 			"type": "boolean",

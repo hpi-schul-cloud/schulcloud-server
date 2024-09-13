@@ -1,14 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { SystemUc } from '@modules/system/uc/system.uc';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { SystemDeletedEvent, SystemQuery, SystemType } from '../domain';
 import { SystemService } from '../service';
+import { systemFactory } from '../testing';
+import { SystemUc } from './system.uc';
 
 describe('SystemUc', () => {
 	let module: TestingModule;
