@@ -392,6 +392,8 @@ describe('LegacySchoolService', () => {
 				const school = await schoolService.createSchool({ name, federalStateName });
 				expect(school.name).toEqual(name);
 				expect(school.federalState).toEqual(federalState);
+				expect(school.fileStorageType).toEqual('awsS3');
+				expect(school.storageProvider).toBeDefined();
 			});
 
 			it('should persist school', async () => {
@@ -399,6 +401,27 @@ describe('LegacySchoolService', () => {
 
 				const school = await schoolService.createSchool({ name, federalStateName });
 				expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			});
+
+			it('should call federalStateService.findFederalStateByName', async () => {
+				const { name, federalStateName } = setup();
+
+				await schoolService.createSchool({ name, federalStateName });
+				expect(federalStateService.findFederalStateByName).toHaveBeenCalledWith(federalStateName);
+			});
+
+			it('should call schoolYearService.getCurrentOrNextSchoolYear', async () => {
+				const { name, federalStateName } = setup();
+
+				await schoolService.createSchool({ name, federalStateName });
+				expect(schoolYearService.getCurrentOrNextSchoolYear).toHaveBeenCalled();
+			});
+
+			it('should call storageProviderRepo.findAll', async () => {
+				const { name, federalStateName } = setup();
+
+				await schoolService.createSchool({ name, federalStateName });
+				expect(storageProviderRepo.findAll).toHaveBeenCalled();
 			});
 		});
 
