@@ -21,15 +21,8 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		copyProps.domainObject = undefined;
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		copyProps.children = [];
 
 		return copyProps;
-	}
-
-	public getTrueProps(): T {
-		return this.props;
 	}
 
 	get level(): number {

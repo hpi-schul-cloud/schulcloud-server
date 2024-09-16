@@ -88,8 +88,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 					new Course({
 						...course.getProps(),
 						name: newGroup.name,
-						startDate: newGroup.validFrom,
-						untilDate: newGroup.validUntil,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
 					}),
@@ -128,8 +128,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 					new Course({
 						...course.getProps(),
 						name: newGroup.name,
-						startDate: newGroup.validFrom,
-						untilDate: newGroup.validUntil,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
 					}),
@@ -168,8 +168,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 					new Course({
 						...course.getProps(),
 						name: course.name,
-						startDate: newGroup.validFrom,
-						untilDate: newGroup.validUntil,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
 					}),
@@ -218,8 +218,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 					new Course({
 						...course.getProps(),
 						name: course.name,
-						startDate: newGroup.validFrom,
-						untilDate: newGroup.validUntil,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [teacherUserId],
 						syncedWithGroup: course.syncedWithGroup,
