@@ -31,7 +31,7 @@ export class MediaElementUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const element = await this.boardNodeService.findByClassAndId(MediaExternalToolElement, elementId);
+		const element = await this.boardNodeService.findAnyMediaElementById(elementId);
 		const targetLine = await this.boardNodeService.findByClassAndId(MediaLine, targetLineId);
 
 		await this.boardNodePermissionService.checkPermission(userId, targetLine, Action.write);

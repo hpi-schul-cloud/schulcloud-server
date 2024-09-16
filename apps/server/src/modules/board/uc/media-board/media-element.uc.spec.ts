@@ -91,7 +91,8 @@ describe(MediaElementUc.name, () => {
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaElement).mockResolvedValueOnce(mediaLine);
+				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
@@ -105,7 +106,7 @@ describe(MediaElementUc.name, () => {
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaExternalToolElement, mediaElement.id);
+				expect(boardNodeService.findAnyMediaElementById).toHaveBeenCalledWith(mediaElement.id);
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaLine, mediaLine.id);
 			});
 
