@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
@@ -62,6 +62,8 @@ export class LegacySchoolService {
 		return ret;
 	}
 
+	// this method id used for creating cypress test data
+	// please do not use this method for any other purpose
 	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
 		const [federalState, schoolYear, storageProviders] = await Promise.all([
 			this.federalStateService.findFederalStateByName(props.federalStateName),
@@ -69,8 +71,8 @@ export class LegacySchoolService {
 			this.storageProviderRepo.findAll(),
 		]);
 
-		if (storageProviders.length === 0) {
-			throw new Error('No storage providers found');
+		if (!Array.isArray(storageProviders) || storageProviders.length === 0) {
+			throw new InternalServerErrorException('No storage providers found');
 		}
 
 		const defaults = {

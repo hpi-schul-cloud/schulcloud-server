@@ -373,31 +373,54 @@ describe('LegacySchoolService', () => {
 	});
 
 	describe('create school', () => {
-		it('should return school', async () => {
-			const name = 'Hogwarts';
-			const federalStateName = 'maybescottland?';
-			const federalState = federalStateFactory.build({ name: federalStateName });
-			const year = schoolYearFactory.build();
-			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
-			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+		describe('when a school is created', () => {
+			const setup = () => {
+				const name = 'Hogwarts';
+				const federalStateName = 'maybescottland?';
+				const federalState = federalStateFactory.build({ name: federalStateName });
+				const year = schoolYearFactory.build();
+				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+				const storageProvider = storageProviderFactory.build();
+				storageProviderRepo.findAll.mockResolvedValue([storageProvider]);
+				return { name, federalStateName, federalState };
+			};
 
-			const school = await schoolService.createSchool({ name, federalStateName });
-			expect(school.name).toEqual(name);
-			expect(school.federalState).toEqual(federalState);
+			it('should return school', async () => {
+				const { name, federalStateName, federalState } = setup();
+
+				const school = await schoolService.createSchool({ name, federalStateName });
+				expect(school.name).toEqual(name);
+				expect(school.federalState).toEqual(federalState);
+			});
+
+			it('should persist school', async () => {
+				const { name, federalStateName } = setup();
+
+				const school = await schoolService.createSchool({ name, federalStateName });
+				expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			});
 		});
 
-		it('should persist school', async () => {
-			const name = 'Hogwarts';
-			const federalStateName = 'maybescottland?';
-			const federalState = federalStateFactory.build({ name: federalStateName });
-			const year = schoolYearFactory.build();
-			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
-			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
-			const storageProvider = storageProviderFactory.build();
-			storageProviderRepo.findAll.mockResolvedValue([storageProvider]);
+		describe('when no storage provider is found', () => {
+			const setup = () => {
+				const name = 'Hogwarts';
+				const federalStateName = 'maybescottland?';
+				const federalState = federalStateFactory.build({ name: federalStateName });
+				const year = schoolYearFactory.build();
+				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+				storageProviderRepo.findAll.mockResolvedValue([]);
+				return { name, federalStateName };
+			};
 
-			const school = await schoolService.createSchool({ name, federalStateName });
-			expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			it('should throw error', async () => {
+				const { name, federalStateName } = setup();
+
+				await expect(schoolService.createSchool({ name, federalStateName })).rejects.toThrowError(
+					'No storage providers found'
+				);
+			});
 		});
 	});
 });
