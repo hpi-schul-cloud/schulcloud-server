@@ -32,8 +32,6 @@ const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const {
-	FILE_PREVIEW_SERVICE_URI,
-	FILE_PREVIEW_CALLBACK_URI,
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
 	SECURITY_CHECK_SERVICE_PATH,
 } = require('../../../config/globals');
@@ -78,58 +76,6 @@ const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
 		storageProviderId,
 		bucket,
 	};
-};
-
-const prepareThumbnailGeneration = async (
-	file,
-	strategy,
-	userId,
-	{ name: dataName },
-	{ storageFileName, name: propName }
-) => {
-	if (Configuration.get('ENABLE_THUMBNAIL_GENERATION') === true) {
-		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
-
-		if (!fileObject) {
-			throw new NotFound('File seems not to be there.');
-		}
-
-		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
-
-		Promise.all([
-			strategy.getSignedUrl({
-				storageProviderId,
-				bucket,
-				flatFileName: storageFileName,
-				localFileName: storageFileName,
-				download: true,
-				Expires: 3600 * 24,
-			}),
-			strategy.generateSignedUrl({
-				userId,
-				flatFileName: storageFileName.replace(/(\..+)$/, '-thumbnail.png'),
-				fileType: returnFileType(dataName || propName), // data.type
-			}),
-		]).then(([downloadUrl, signedS3Url]) =>
-			rp
-				.post({
-					url: FILE_PREVIEW_SERVICE_URI,
-					body: {
-						downloadUrl,
-						signedS3Url,
-						callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
-						options: {
-							width: 120,
-						},
-					},
-					json: true,
-				})
-				.catch((err) => {
-					logger.warning(new Error('Can not create tumbnail', err)); // todo err message is lost and throw error
-				})
-		);
-	}
-	return Promise.resolve();
 };
 
 /**
@@ -267,7 +213,7 @@ const fileStorageService = {
 		if (!file) file = await FileModel.create(props);
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
-		prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
+
 		return file;
 	},
 
@@ -434,7 +380,7 @@ const signedUrlService = {
 		const header = {
 			name: encodeURIComponent(filename),
 			'flat-name': encodeURIComponent(flatFileName),
-			thumbnail: 'https://schulcloud.org/images/login-right.png',
+			thumbnail: '',
 		};
 
 		return parentPromise
@@ -457,7 +403,6 @@ const signedUrlService = {
 					'Content-Type': fileType,
 					'x-amz-meta-name': header.name,
 					'x-amz-meta-flat-name': header['flat-name'],
-					'x-amz-meta-thumbnail': header.thumbnail,
 				},
 			}))
 			.catch((err) => {
@@ -836,7 +781,7 @@ const newFileService = {
 						size: buffer.length,
 						storageFileName: flatFileName,
 						type: returnFileType(name),
-						thumbnail: 'https://schulcloud.org/images/login-right.png',
+						thumbnail: '',
 						name,
 						owner,
 						parent,

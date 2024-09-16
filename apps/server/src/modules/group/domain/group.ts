@@ -1,6 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { ExternalSource, type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { GroupPeriod } from './group-period';
 import { GroupTypes } from './group-types';
 import { GroupUser } from './group-user';
 
@@ -11,9 +12,7 @@ export interface GroupProps extends AuthorizableObject {
 
 	type: GroupTypes;
 
-	validFrom?: Date;
-
-	validUntil?: Date;
+	validPeriod?: GroupPeriod;
 
 	externalSource?: ExternalSource;
 
@@ -47,12 +46,8 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.type;
 	}
 
-	get validFrom(): Date | undefined {
-		return this.props.validFrom;
-	}
-
-	get validUntil(): Date | undefined {
-		return this.props.validUntil;
+	get validPeriod(): GroupPeriod | undefined {
+		return this.props.validPeriod;
 	}
 
 	removeUser(user: UserDO): void {

@@ -21,7 +21,7 @@ import {
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
@@ -36,6 +36,7 @@ import {
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
+import { ImportUser, MatchCreator } from '../../entity';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
@@ -1184,6 +1185,62 @@ describe('ImportUser Controller (API)', () => {
 				const { loggedInClient } = await setup();
 
 				await loggedInClient.post('cancel').expect(HttpStatus.NO_CONTENT);
+			});
+		});
+	});
+
+	describe('[PATCH] /user/import/clear-all-auto-matches', () => {
+		describe('when user is unauthorized', () => {
+			const setup = () => {
+				return {
+					notLoggedInClient: new TestApiClient(app, 'user/import'),
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { notLoggedInClient } = setup();
+
+				await notLoggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has no permission', () => {
+			const setup = async () => {
+				const { account, system } = await authenticatedUser([]);
+				setConfig(system._id.toString());
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has permission and all auto matches were successfully cleared', () => {
+			const setup = async () => {
+				const { school, system, account } = await authenticatedUser([Permission.IMPORT_USER_UPDATE], [], true, '00100');
+				setConfig(system._id.toString());
+
+				const importusers = importUserFactory.buildList(10, { school });
+				await em.persistAndFlush(importusers);
+
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return no content', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.NO_CONTENT);
 			});
 		});
 	});

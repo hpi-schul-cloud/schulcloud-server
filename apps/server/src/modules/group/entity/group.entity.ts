@@ -1,6 +1,6 @@
 import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { ExternalSourceEmbeddable } from '@modules/system/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { ExternalSourceEmbeddable } from '@shared/domain/entity/external-source.embeddable';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { EntityId } from '@shared/domain/types';
 import { GroupUserEmbeddable } from './group-user.embeddable';

@@ -1,8 +1,12 @@
 import { BoardModule } from '@modules/board';
+import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
+import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import {
@@ -28,13 +32,17 @@ import {
 	CourseCopyService,
 	CourseDoService,
 	CourseGroupService,
+	CourseRoomsService,
 	CourseService,
 	DashboardService,
 	GroupDeletedHandlerService,
-	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
+/**
+ * @deprecated - the learnroom module is deprecated and will be removed in the future
+ * it will be replaced by the new rooms module
+ */
 @Module({
 	imports: [
 		forwardRef(() => BoardModule),
@@ -44,6 +52,10 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LoggerModule,
 		TaskModule,
 		CqrsModule,
+		UserModule,
+		ClassModule,
+		SchoolModule,
+		GroupModule,
 	],
 	providers: [
 		{
@@ -71,7 +83,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		DashboardModelMapper,
 		DashboardService,
 		LegacyBoardRepo,
-		RoomsService,
+		CourseRoomsService,
 		UserRepo,
 		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
@@ -80,7 +92,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
-		RoomsService,
+		CourseRoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
 		CourseGroupService,

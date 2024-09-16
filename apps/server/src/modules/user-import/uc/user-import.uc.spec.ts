@@ -5,6 +5,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -14,10 +15,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { MatchCreatorScope, SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { Counted, SchoolFeature } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
 import {
 	federalStateFactory,
 	importUserFactory,
@@ -25,13 +26,15 @@ import {
 	schoolEntityFactory,
 	setupEntities,
 	systemEntityFactory,
-	systemFactory,
 	userDoFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
+import { ImportUser, MatchCreator } from '../entity';
 import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
+import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
 import {
@@ -593,7 +596,7 @@ describe('[ImportUserModule]', () => {
 
 				await uc.saveAllUsersMatches(currentUser.id);
 
-				const filters = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+				const filters = { matches: [ImportUserMatchCreatorScope.MANUAL, ImportUserMatchCreatorScope.AUTO] };
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(school, filters, {});
 				expect(importUserRepoDeleteImportUserSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy).toHaveBeenCalledTimes(2);
@@ -1206,6 +1209,76 @@ describe('[ImportUserModule]', () => {
 					await uc.cancelMigration(user.id);
 
 					expect(userImportService.resetMigrationForUsersSchool).toHaveBeenCalledWith(user, school);
+				});
+			});
+		});
+
+		describe('clearAllAutoMatches', () => {
+			describe('when user id is given', () => {
+				const setup = () => {
+					const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school: LegacySchoolDo = legacySchoolDoFactory.build({
+						id: schoolEntity.id,
+						inMaintenanceSince: new Date(2024, 1, 1),
+						inUserMigration: true,
+					});
+					const currentUser: User = userFactory.buildWithId({ school: schoolEntity });
+
+					const importUsers: ImportUser[] = [
+						importUserFactory.buildWithId({
+							school: schoolEntity,
+							matchedBy: MatchCreator.AUTO,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+						}),
+						importUserFactory.buildWithId({
+							school: schoolEntity,
+							matchedBy: MatchCreator.AUTO,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+						}),
+					];
+					const countedImportUsers: Counted<ImportUser[]> = [importUsers, importUsers.length];
+
+					userRepo.findById.mockResolvedValueOnce(currentUser);
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					importUserRepo.findImportUsers.mockResolvedValueOnce(countedImportUsers);
+					config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
+
+					return {
+						currentUser,
+						importUsers,
+					};
+				};
+
+				it('should check users permissions', async () => {
+					const { currentUser } = setup();
+
+					await uc.clearAllAutoMatches(currentUser.id);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(currentUser, [
+						Permission.IMPORT_USER_UPDATE,
+					]);
+				});
+
+				it('should check if feature is enabled', async () => {
+					const { currentUser } = setup();
+
+					await uc.clearAllAutoMatches(currentUser.id);
+
+					expect(userImportService.checkFeatureEnabled).toHaveBeenCalled();
+				});
+
+				it('should call the relevant functions for removing auto matches and saving the result', async () => {
+					const { currentUser, importUsers } = setup();
+
+					await uc.clearAllAutoMatches(currentUser.id);
+
+					const autoMatchFilter: ImportUserFilter = { matches: [ImportUserMatchCreatorScope.AUTO] };
+					expect(importUserRepo.findImportUsers).toBeCalledWith(currentUser.school, autoMatchFilter);
+					expect(userImportService.saveImportUsers).toBeCalledWith(importUsers);
 				});
 			});
 		});

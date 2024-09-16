@@ -1,9 +1,9 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SystemEntity } from '@modules/system/entity';
+import { ExternalSourceEmbeddable, SystemEntity } from '@modules/system/entity';
 import { ExternalSource } from '@shared/domain/domainobject';
-import { ExternalSourceEmbeddable, Role, SchoolEntity, User } from '@shared/domain/entity';
-import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Group, GroupPeriod, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from '../entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
@@ -23,10 +23,10 @@ export class GroupDomainMapper {
 		const props: GroupProps = group.getProps();
 
 		let validPeriod: GroupValidPeriodEmbeddable | undefined;
-		if (props.validFrom && props.validUntil) {
+		if (props.validPeriod) {
 			validPeriod = new GroupValidPeriodEmbeddable({
-				from: props.validFrom,
-				until: props.validUntil,
+				from: props.validPeriod.from,
+				until: props.validPeriod.until,
 			});
 		}
 
@@ -50,8 +50,9 @@ export class GroupDomainMapper {
 		const group: Group = new Group({
 			id: entity.id,
 			users: entity.users.map((groupUser): GroupUser => this.mapGroupUserEntityToGroupUser(groupUser)),
-			validFrom: entity.validPeriod ? entity.validPeriod.from : undefined,
-			validUntil: entity.validPeriod ? entity.validPeriod.until : undefined,
+			validPeriod: entity.validPeriod
+				? new GroupPeriod({ from: entity.validPeriod.from, until: entity.validPeriod.until })
+				: undefined,
 			externalSource: entity.externalSource
 				? this.mapExternalSourceEntityToExternalSource(entity.externalSource)
 				: undefined,

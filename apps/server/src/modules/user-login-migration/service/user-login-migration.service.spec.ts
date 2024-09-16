@@ -3,12 +3,13 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { legacySchoolDoFactory, systemFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
@@ -755,6 +756,73 @@ describe(UserLoginMigrationService.name, () => {
 				await expect(service.closeMigration({ ...userLoginMigration })).rejects.toThrow(
 					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
 				);
+			});
+		});
+	});
+
+	describe('hasMigrationClosed', () => {
+		describe('when migration is closed', () => {
+			const setup = () => {
+				const closedAt = new Date();
+				closedAt.setMonth(closedAt.getMonth() - 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt,
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return true', () => {
+				const { userLoginMigration } = setup();
+
+				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when migration is not closed', () => {
+			const setup = () => {
+				const closedAt = undefined;
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt,
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { userLoginMigration } = setup();
+
+				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when "closedAt" exists but has not passed', () => {
+			const setup = () => {
+				const closedAt = new Date();
+				closedAt.setMonth(closedAt.getMonth() + 1);
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt,
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return false', () => {
+				const { userLoginMigration } = setup();
+
+				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+
+				expect(result).toEqual(false);
 			});
 		});
 	});

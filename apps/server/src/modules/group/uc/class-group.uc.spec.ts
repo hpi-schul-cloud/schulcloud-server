@@ -15,6 +15,7 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { School, SchoolService } from '@modules/school/domain';
 import { schoolFactory, schoolYearFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -27,7 +28,6 @@ import {
 	roleDtoFactory,
 	schoolYearFactory as schoolYearEntityFactory,
 	setupEntities,
-	systemFactory,
 	UserAndAccountTestFactory,
 	userDoFactory,
 	userFactory,

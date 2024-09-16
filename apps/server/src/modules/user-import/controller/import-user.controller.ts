@@ -12,8 +12,9 @@ import {
 } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ImportUser, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
+import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';
 import { UserImportFetchUc, UserImportUc } from '../uc';
 import {
@@ -149,5 +150,18 @@ export class ImportUserController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.cancelMigration(currentUser.userId);
+	}
+
+	@Patch('clear-all-auto-matches')
+	@ApiOperation({
+		summary: 'Clear all auto matches',
+		description: 'Clear all auto matches from imported users of a school',
+	})
+	@ApiNoContentResponse()
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async clearAllAutoMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.clearAllAutoMatches(currentUser.userId);
 	}
 }

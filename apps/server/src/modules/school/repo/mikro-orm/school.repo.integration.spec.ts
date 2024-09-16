@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -66,14 +67,16 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when query is given', () => {
 			const setup = async () => {
 				const federalState = federalStateFactory.build();
-				const entity1 = schoolEntityFactory.build({ federalState });
+				const externalId = faker.string.uuid();
+				const systems = systemEntityFactory.buildList(1);
+				const entity1 = schoolEntityFactory.build({ federalState, externalId, systems });
 				const entity2 = schoolEntityFactory.build();
 				await em.persistAndFlush([entity1, entity2]);
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
 				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
 
-				const query = { federalStateId: federalState.id };
+				const query = { federalStateId: federalState.id, externalId, systemId: systems[0].id };
 
 				return { schoolDo1, schoolDo2, query };
 			};

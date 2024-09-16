@@ -175,6 +175,28 @@
     tags:
       - ingress
 
+
+  - name: remove old tldraw migration Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: Job
+      name: tldraw-migration-job
+      state: absent
+      wait: yes
+    tags:
+      - job
+
+  - name: tldraw migration Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-migration-job.yml.j2
+    when: WITH_TLDRAW2 is defined and WITH_TLDRAW2|bool
+    tags:
+      - job
+
   - name: Delete Files CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -188,7 +210,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-delete-files-cronjob.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - cronjob
 
@@ -315,7 +337,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - deployment
 
@@ -343,7 +365,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc-monitor.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - prometheus
 

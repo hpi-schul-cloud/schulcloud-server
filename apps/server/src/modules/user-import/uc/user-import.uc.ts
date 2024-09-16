@@ -10,10 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
-import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { Counted, EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import {
 	MigrationMayBeCompleted,
@@ -25,6 +25,9 @@ import {
 	UserAlreadyMigratedLoggable,
 } from '../loggable';
 
+import { ImportUserMatchCreatorScope, ImportUserNameMatchFilter, ImportUserFilter } from '../domain/interface';
+import { ImportUser, MatchCreator } from '../entity';
+import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
 import {
@@ -66,7 +69,7 @@ export class UserImportUc {
 	 */
 	public async findAllImportUsers(
 		currentUserId: EntityId,
-		query: IImportUserScope,
+		query: ImportUserFilter,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
@@ -122,11 +125,8 @@ export class UserImportUc {
 		this.userImportService.checkFeatureEnabled(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
-		// check same school
-		if (school.id !== importUser.school.id) {
-			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
-			throw new ForbiddenException('not same school');
-		}
+
+		this.checkImportUserSameSchool(school, importUser);
 
 		importUser.revokeMatch();
 		await this.importUserRepo.save(importUser);
@@ -142,11 +142,7 @@ export class UserImportUc {
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 
-		// check same school
-		if (school.id !== importUser.school.id) {
-			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
-			throw new ForbiddenException('not same school');
-		}
+		this.checkImportUserSameSchool(school, importUser);
 
 		importUser.flagged = flagged === true;
 		await this.importUserRepo.save(importUser);
@@ -165,7 +161,7 @@ export class UserImportUc {
 	 */
 	public async findAllUnmatchedUsers(
 		currentUserId: EntityId,
-		query: NameMatch,
+		query: ImportUserNameMatchFilter,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
@@ -185,7 +181,9 @@ export class UserImportUc {
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+		const filters: ImportUserFilter = {
+			matches: [ImportUserMatchCreatorScope.MANUAL, ImportUserMatchCreatorScope.AUTO],
+		};
 		// TODO batch/paginated import?
 		const options: IFindOptions<ImportUser> = {};
 		// TODO Change ImportUserRepo to DO to fix this workaround
@@ -340,6 +338,25 @@ export class UserImportUc {
 		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
 	}
 
+	public async clearAllAutoMatches(currentUserId: EntityId): Promise<void> {
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
+
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.userImportService.checkFeatureEnabled(school);
+
+		const filters: ImportUserFilter = { matches: [ImportUserMatchCreatorScope.AUTO] };
+		const [autoMatchedUsers]: Counted<ImportUser[]> = await this.importUserRepo.findImportUsers(
+			currentUser.school,
+			filters
+		);
+
+		for (const autoMatchedUser of autoMatchedUsers) {
+			autoMatchedUser.revokeMatch();
+		}
+
+		await this.userImportService.saveImportUsers(autoMatchedUsers);
+	}
+
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.authorizationService.checkAllPermissions(currentUser, [permission]);
@@ -433,6 +450,13 @@ export class UserImportUc {
 	private checkSchoolNotInMigration(school: LegacySchoolDo): void {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
+		}
+	}
+
+	private checkImportUserSameSchool(school: LegacySchoolDo, importUser: ImportUser) {
+		if (school.id !== importUser.school.id) {
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
+			throw new ForbiddenException('not same school');
 		}
 	}
 }
