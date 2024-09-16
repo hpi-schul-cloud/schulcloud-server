@@ -1,8 +1,7 @@
-// import { WsJwtAuthGuard } from '@infra/auth-guard';
+import { WsJwtAuthGuard } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-// import { UseGuards, UsePipes } from '@nestjs/common';
-import { UsePipes } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import {
 	OnGatewayDisconnect,
 	SubscribeMessage,
@@ -44,7 +43,7 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
-// @UseGuards(WsJwtAuthGuard)
+@UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@WebSocketServer()
 	server!: Server;
