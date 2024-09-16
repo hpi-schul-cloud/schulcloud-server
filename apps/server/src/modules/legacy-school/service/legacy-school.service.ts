@@ -1,9 +1,9 @@
+import { FileStorageType } from '@modules/school';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { FileStorageType } from '@src/modules/school/domain';
 import { FederalStateService } from './federal-state.service';
 import { SchoolYearService } from './school-year.service';
 import { SchoolValidationService } from './validation';
@@ -62,8 +62,11 @@ export class LegacySchoolService {
 		return ret;
 	}
 
-	// this method id used for creating cypress test data
-	// please do not use this method for any other purpose
+	/**
+	 * @deprecated
+	 * this method is only used for the creation of Cypress test data
+	 * please do not use this method for other purposes
+	 */
 	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
 		const [federalState, schoolYear, storageProviders] = await Promise.all([
 			this.federalStateService.findFederalStateByName(props.federalStateName),
