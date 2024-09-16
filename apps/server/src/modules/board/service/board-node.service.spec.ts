@@ -191,7 +191,7 @@ describe(BoardNodeService.name, () => {
 			it('should throw error', async () => {
 				const { boardNode } = setupNoneElement();
 
-				await expect(service.findContentElementById(boardNode.id)).rejects.toThrowError();
+				await expect(service.findAnyMediaElementById(boardNode.id)).rejects.toThrowError();
 			});
 		});
 	});
