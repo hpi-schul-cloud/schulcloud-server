@@ -18,8 +18,11 @@ export class DeletedElementResponseMapper implements BaseResponseMapper<DeletedE
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.DELETED,
-			description: element.description,
-			content: new DeletedElementContent({ title: element.title, deletedElementType: element.deletedElementType }),
+			content: new DeletedElementContent({
+				title: element.title,
+				deletedElementType: element.deletedElementType,
+				description: element.description,
+			}),
 		});
 
 		return result;

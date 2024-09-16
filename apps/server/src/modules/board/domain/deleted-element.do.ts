@@ -22,7 +22,7 @@ export class DeletedElement extends BoardNode<DeletedElementProps> {
 		return this.props.description;
 	}
 
-	set description(value: string) {
+	set description(value: string | undefined) {
 		this.props.description = value;
 	}
 
