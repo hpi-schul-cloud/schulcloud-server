@@ -12,6 +12,7 @@ import {
 	GroupUserResponse,
 } from '../dto';
 import { CourseInfoResponse } from '../dto/response/course-info.response';
+import { PeriodResponse } from '../dto/response/period.response';
 
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
@@ -81,6 +82,9 @@ export class GroupResponseMapper {
 			type: typeMapping[resolvedGroup.type],
 			externalSource,
 			users,
+			validPeriod: resolvedGroup.validPeriod
+				? new PeriodResponse({ from: resolvedGroup.validPeriod.from, until: resolvedGroup.validPeriod.until })
+				: undefined,
 			organizationId: resolvedGroup.organizationId,
 		});
 

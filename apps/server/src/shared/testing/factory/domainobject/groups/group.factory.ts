@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupProps, GroupTypes } from '@modules/group/domain';
+import { GroupPeriod } from '@modules/group/domain/group-period';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { DomainObjectFactory } from '../domain-object.factory';
 
@@ -14,8 +15,10 @@ export const groupFactory = DomainObjectFactory.define<Group, GroupProps>(Group,
 				roleId: new ObjectId().toHexString(),
 			},
 		],
-		validFrom: new Date(2023, 1),
-		validUntil: new Date(2023, 6),
+		validPeriod: new GroupPeriod({
+			from: new Date(2023, 1),
+			until: new Date(2023, 6),
+		}),
 		organizationId: new ObjectId().toHexString(),
 		externalSource: new ExternalSource({
 			externalId: `externalId-${sequence}`,

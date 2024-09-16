@@ -195,6 +195,10 @@ describe('Group (API)', () => {
 								role: teacherUser.roles[0].name,
 							},
 						],
+						validPeriod: {
+							from: group.validPeriod?.from.toISOString(),
+							until: group.validPeriod?.until.toISOString(),
+						},
 						externalSource: {
 							externalId: group.externalSource?.externalId,
 							systemId: group.externalSource?.system.id,
@@ -319,6 +323,10 @@ describe('Group (API)', () => {
 							role: adminUser.roles[0].name,
 						},
 					],
+					validPeriod: {
+						from: availableGroupInSchool.validPeriod?.from.toISOString(),
+						until: availableGroupInSchool.validPeriod?.until.toISOString(),
+					},
 					externalSource: {
 						externalId: availableGroupInSchool.externalSource?.externalId,
 						systemId: availableGroupInSchool.externalSource?.system.id,
@@ -372,6 +380,10 @@ describe('Group (API)', () => {
 										role: adminUser.roles[0].name,
 									},
 								],
+								validPeriod: {
+									from: groupInSchool.validPeriod?.from.toISOString(),
+									until: groupInSchool.validPeriod?.until.toISOString(),
+								},
 								externalSource: {
 									externalId: groupInSchool.externalSource?.externalId,
 									systemId: groupInSchool.externalSource?.system.id,
@@ -492,6 +504,10 @@ describe('Group (API)', () => {
 							role: teacherUser.roles[0].name,
 						},
 					],
+					validPeriod: {
+						from: availableTeachersGroup.validPeriod?.from.toISOString(),
+						until: availableTeachersGroup.validPeriod?.until.toISOString(),
+					},
 					externalSource: {
 						externalId: availableTeachersGroup.externalSource?.externalId,
 						systemId: availableTeachersGroup.externalSource?.system.id,
@@ -544,6 +560,10 @@ describe('Group (API)', () => {
 										role: teacherUser.roles[0].name,
 									},
 								],
+								validPeriod: {
+									from: teachersGroup.validPeriod?.from.toISOString(),
+									until: teachersGroup.validPeriod?.until.toISOString(),
+								},
 								externalSource: {
 									externalId: teachersGroup.externalSource?.externalId,
 									systemId: teachersGroup.externalSource?.system.id,
