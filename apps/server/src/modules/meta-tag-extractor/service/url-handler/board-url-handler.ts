@@ -7,7 +7,7 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 
 @Injectable()
 export class BoardUrlHandler extends AbstractUrlHandler implements UrlHandler {
-	patterns: RegExp[] = [/\/course-rooms\/(.*?)\/board\/?$/i];
+	patterns: RegExp[] = [/\/boards\/([0-9a-z]+)$/i];
 
 	constructor(private readonly columnBoardService: ColumnBoardService, private readonly courseService: CourseService) {
 		super();
