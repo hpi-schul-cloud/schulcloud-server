@@ -20,6 +20,7 @@ import { LanguageType } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
+import { StorageProviderEntity } from './storageprovider.entity';
 
 export interface SchoolProperties {
 	_id?: string;
@@ -130,6 +131,9 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	fileStorageType?: FileStorageType;
+
+	@ManyToOne(() => StorageProviderEntity, { nullable: true })
+	storageProvider?: StorageProviderEntity;
 
 	@Property({ nullable: true })
 	language?: LanguageType;
