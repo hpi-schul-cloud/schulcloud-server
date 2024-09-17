@@ -1,7 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
-import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement, MediaBoard } from '../domain';
+import {
+	AnyBoardNode,
+	AnyContentElement,
+	AnyMediaElement,
+	ColumnBoard,
+	isAnyMediaElement,
+	isContentElement,
+	MediaBoard,
+} from '../domain';
 import { BoardNodeRepo } from '../repo/board-node.repo';
 import { BoardNodeDeleteHooksService } from './internal/board-node-delete-hooks.service';
 import { ContentElementUpdateService } from './internal/content-element-update.service';
@@ -123,6 +131,16 @@ export class BoardNodeService {
 		const boardNode = await this.boardNodeRepo.findById(id, depth);
 
 		if (!isContentElement(boardNode)) {
+			throw new NotFoundException(`There is no content element with this id`);
+		}
+
+		return boardNode;
+	}
+
+	async findAnyMediaElementById(id: EntityId, depth?: number): Promise<AnyMediaElement> {
+		const boardNode = await this.boardNodeRepo.findById(id, depth);
+
+		if (!isAnyMediaElement(boardNode)) {
 			throw new NotFoundException(`There is no content element with this id`);
 		}
 

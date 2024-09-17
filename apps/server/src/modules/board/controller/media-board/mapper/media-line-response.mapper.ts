@@ -1,18 +1,18 @@
-import { type AnyBoardNode, isMediaExternalToolElement, MediaExternalToolElement, MediaLine } from '../../../domain';
+import { type AnyBoardNode, AnyMediaElement, isAnyMediaElement, MediaLine } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
-import { type MediaExternalToolElementResponse, MediaLineResponse } from '../dto';
-import { MediaExternalToolElementResponseMapper } from './media-external-tool-element-response.mapper';
+import { MediaLineResponse } from '../dto';
+import { AnyMediaElementResponseFactory } from './any-media-element-response.factory';
 
 export class MediaLineResponseMapper {
 	static mapToResponse(line: MediaLine): MediaLineResponse {
-		const elements: MediaExternalToolElementResponse[] = line.children
-			.filter((element: AnyBoardNode): element is MediaExternalToolElement => isMediaExternalToolElement(element))
-			.map((element: MediaExternalToolElement) => MediaExternalToolElementResponseMapper.mapToResponse(element));
+		const elements = line.children.filter((element: AnyBoardNode): element is AnyMediaElement =>
+			isAnyMediaElement(element)
+		);
 
 		const lineResponse: MediaLineResponse = new MediaLineResponse({
 			id: line.id,
 			title: line.title,
-			elements,
+			elements: AnyMediaElementResponseFactory.mapToResponse(elements),
 			timestamps: new TimestampsResponse({
 				lastUpdatedAt: line.updatedAt,
 				createdAt: line.createdAt,
