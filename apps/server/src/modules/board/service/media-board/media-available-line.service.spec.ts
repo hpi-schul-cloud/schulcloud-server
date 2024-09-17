@@ -189,6 +189,55 @@ describe(MediaAvailableLineService.name, () => {
 				expect(schoolExternalTools).toEqual([schoolExternalTool]);
 			});
 		});
+
+		describe('when there are unused tools and are restricted by the school admin', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+				const restrictedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId({
+						availableContexts: [],
+					});
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+
+				const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(usedSchoolExternalTool.id, user.school.id)
+					.buildWithId();
+
+				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build({
+					contextExternalToolId: usedContextExternalTool.id,
+				});
+				const board: MediaBoard = mediaBoardFactory.build({ children: [mediaExternalToolElement] });
+
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
+					schoolExternalTool,
+					restrictedSchoolExternalTool,
+					usedSchoolExternalTool,
+				]);
+				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
+
+				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
+
+				return { user, board, mediaExternalToolElement, restrictedSchoolExternalTool, schoolExternalTool };
+			};
+
+			it('should not return the restricted tools', async () => {
+				const { user, board, schoolExternalTool } = setup();
+
+				const schoolExternalTools: SchoolExternalTool[] = await service.getUnusedAvailableSchoolExternalTools(
+					user,
+					board
+				);
+
+				expect(schoolExternalTools).toEqual([schoolExternalTool]);
+			});
+		});
 	});
 
 	describe('getAvailableExternalToolsForSchool', () => {

@@ -27,9 +27,13 @@ export class MediaAvailableLineService {
 			isDeactivated: false,
 		});
 
+		const contextAvailableTools = schoolExternalTools.filter((schoolExternalTool: SchoolExternalTool) =>
+			schoolExternalTool.availableContexts.includes(ToolContextType.MEDIA_BOARD)
+		);
+
 		const contextExternalToolsByBoard: ContextExternalTool[] = await this.getContextExternalToolsByBoard(board);
 
-		const unusedSchoolExternalTools: SchoolExternalTool[] = schoolExternalTools.filter(
+		const unusedSchoolExternalTools: SchoolExternalTool[] = contextAvailableTools.filter(
 			(schoolExternalTool: SchoolExternalTool) => {
 				const isUsedByBoard = contextExternalToolsByBoard.some((contextExternalTool: ContextExternalTool) =>
 					this.isContextExternalToolUsedBySchoolExternalTool(contextExternalTool, schoolExternalTool)

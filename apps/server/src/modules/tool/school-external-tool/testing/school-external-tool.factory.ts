@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
 import { DeepPartial } from 'fishery';
 import { CustomParameterEntry } from '../../common/domain';
+import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
 import { schoolExternalToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
 
@@ -28,6 +29,6 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 		toolId: 'toolId',
 		isDeactivated: false,
 		status: schoolExternalToolConfigurationStatusFactory.build(),
-		availableContexts: [],
+		availableContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD],
 	};
 });

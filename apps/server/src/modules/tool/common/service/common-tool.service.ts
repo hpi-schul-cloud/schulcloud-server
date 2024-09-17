@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
 
 @Injectable()
@@ -9,5 +10,13 @@ export class CommonToolService {
 			return true;
 		}
 		return false;
+	}
+
+	public isSchoolExternalToolAvailableForContext(
+		schoolExternalTool: SchoolExternalTool,
+		context: ToolContextType
+	): boolean {
+		const isAvailable: boolean = schoolExternalTool.availableContexts.includes(context);
+		return isAvailable;
 	}
 }

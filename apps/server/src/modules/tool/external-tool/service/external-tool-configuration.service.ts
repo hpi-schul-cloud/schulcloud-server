@@ -48,7 +48,9 @@ export class ExternalToolConfigurationService {
 		contextType: ToolContextType
 	): ContextExternalToolTemplateInfo[] {
 		const availableToolsForContext: ContextExternalToolTemplateInfo[] = availableTools.filter(
-			(availableTool) => !this.commonToolService.isContextRestricted(availableTool.externalTool, contextType)
+			(availableTool) =>
+				!this.commonToolService.isContextRestricted(availableTool.externalTool, contextType) &&
+				this.commonToolService.isSchoolExternalToolAvailableForContext(availableTool.schoolExternalTool, contextType)
 		);
 		return availableToolsForContext;
 	}
