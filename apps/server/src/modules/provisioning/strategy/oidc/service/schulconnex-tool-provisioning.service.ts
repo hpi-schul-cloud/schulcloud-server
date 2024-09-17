@@ -74,6 +74,7 @@ export class SchulconnexToolProvisioningService {
 			schoolId,
 			isDeactivated: false,
 			parameters: [],
+			availableContexts: [],
 		});
 
 		const savedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(

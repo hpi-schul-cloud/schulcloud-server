@@ -1,5 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
+import { ToolContextType } from '../../common/enum';
 import { SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
 
 export interface SchoolExternalToolProps extends AuthorizableObject {
@@ -16,6 +17,8 @@ export interface SchoolExternalToolProps extends AuthorizableObject {
 	isDeactivated: boolean;
 
 	status?: SchoolExternalToolConfigurationStatus;
+
+	availableContexts: ToolContextType[];
 }
 
 export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
@@ -49,5 +52,9 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 
 	set status(value: SchoolExternalToolConfigurationStatus) {
 		this.props.status = value;
+	}
+
+	get availableContexts(): ToolContextType[] {
+		return this.props.availableContexts;
 	}
 }

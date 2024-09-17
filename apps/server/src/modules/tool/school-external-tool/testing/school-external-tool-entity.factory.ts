@@ -12,5 +12,6 @@ export const schoolExternalToolEntityFactory = BaseFactory.define<
 		school: schoolEntityFactory.buildWithId(),
 		schoolParameters: [{ name: 'schoolMockParameter', value: 'mockValue' }],
 		isDeactivated: false,
+		availableContexts: [],
 	};
 });
