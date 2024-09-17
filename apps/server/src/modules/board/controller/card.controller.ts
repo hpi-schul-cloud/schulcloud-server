@@ -165,11 +165,11 @@ export class CardController {
 		const elements: PreferredToolInfoList = {
 			data: [
 				{
-					icon: 'mdiMagnify',
+					icon: '$mdiMagnify',
 					name: 'Personal Preference',
 				},
 				{
-					icon: 'mdiTimerSandComplete',
+					icon: '$mdiTimerSandComplete',
 					name: 'Hier könnte ihre Werbung stehen!',
 				},
 			],
