@@ -154,6 +154,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 						isDeactivated: false,
 						schoolId,
 						parameters: [],
+						availableContexts: [],
 					})
 				);
 			});
