@@ -1,19 +1,28 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
+import * as jwt from 'jsonwebtoken';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import * as jwt from 'jsonwebtoken';
 
 export class TSPRestClient {
-	// private readonly TSP_API_BASE_URL: string;
-	// private readonly TSP_API_CLIENT_ID: string;
-	// private readonly TSP_API_CLIENT_SECRET: string;
-	// private readonly TSP_API_TOKEN_ENDPOINT: string;
+	private readonly baseUrl: string;
+
+	private readonly clientId: string;
+
+	private readonly clientSecret: string;
+
+	private readonly tokenEndpoint: string;
 
 	private lastToken!: string;
 
 	private lastTokenExpires!: number;
 
-	constructor(private readonly httpService: HttpService) {}
+	constructor(private readonly httpService: HttpService) {
+		this.baseUrl = Configuration.get('TSP_API_BASE_URL') as string;
+		this.clientId = Configuration.get('TSP_API_CLIENT_ID') as string;
+		this.clientSecret = Configuration.get('TSP_API_CLIENT_SECRET') as string;
+		this.tokenEndpoint = Configuration.get('TSP_API_TOKEN_ENDPOINT') as string;
+	}
 
 	private getJwt(lifetime = 30000): string {
 		const issueDate = Date.now();
@@ -28,9 +37,9 @@ export class TSPRestClient {
 
 		// create the payload for the jwt
 		const payload = {
-			apiClientSecret: 'secret', // TSP_API_CLIENT_SECRET
+			apiClientSecret: this.clientSecret, // TSP_API_CLIENT_SECRET
 			iss: 'locahost', // process.env.SC_DOMAIN
-			aud: 'base_url', // TSP_API_BASE_URL
+			aud: this.baseUrl, // TSP_API_BASE_URL
 			sub: 'host', // process.env.HOST
 			exp: issueDate + lifetime,
 			iat: issueDate,
