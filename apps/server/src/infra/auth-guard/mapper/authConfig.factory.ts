@@ -55,16 +55,10 @@ export class AuthConfigFactory {
 		const secret = TypeGuard.checkString(secretInput);
 		// Should we add length check for secrets and that it is NOT secrets like for local?
 
-		const jwtOptions = TypeGuard.checkDefinedObject(jwtOptionsInput);
-
-		const audienceUnknown = TypeGuard.checkKeyInObject(jwtOptions, 'audience');
-		const audience = TypeGuard.checkString(audienceUnknown);
-
-		const issuerUnknown = TypeGuard.checkKeyInObject(jwtOptions, 'issuer');
-		const issuer = TypeGuard.checkString(issuerUnknown);
-
-		const expiresInUnknown = TypeGuard.checkKeyInObject(jwtOptions, 'expiresIn');
-		const expiresIn = TypeGuard.checkString(expiresInUnknown);
+		const jwtOptions = TypeGuard.checkKeysInObject(jwtOptionsInput, ['audience', 'issuer', 'expiresIn']);
+		const audience = TypeGuard.checkString(jwtOptions.audience);
+		const issuer = TypeGuard.checkString(jwtOptions.issuer);
+		const expiresIn = TypeGuard.checkString(jwtOptions.expiresIn);
 
 		const jwtConstants = {
 			secret,
