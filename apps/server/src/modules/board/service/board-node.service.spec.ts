@@ -156,6 +156,46 @@ describe(BoardNodeService.name, () => {
 		});
 	});
 
+	describe('findAnyMediaElementById', () => {
+		const setup = () => {
+			const element = deletedElementFactory.build();
+			boardNodeRepo.findById.mockResolvedValueOnce(element);
+
+			return { element };
+		};
+
+		it('should use the repo', async () => {
+			const { element } = setup();
+
+			await service.findAnyMediaElementById(element.id);
+
+			expect(boardNodeRepo.findById).toHaveBeenCalledWith(element.id, undefined);
+		});
+
+		it('should return the repo result', async () => {
+			const { element } = setup();
+
+			const result = await service.findAnyMediaElementById(element.id);
+
+			expect(result).toBe(element);
+		});
+
+		describe('when node is not a content element', () => {
+			const setupNoneElement = () => {
+				const boardNode = columnBoardFactory.build();
+				boardNodeRepo.findById.mockResolvedValueOnce(boardNode);
+
+				return { boardNode };
+			};
+
+			it('should throw error', async () => {
+				const { boardNode } = setupNoneElement();
+
+				await expect(service.findAnyMediaElementById(boardNode.id)).rejects.toThrowError();
+			});
+		});
+	});
+
 	describe('replace', () => {
 		describe('when replacing a node', () => {
 			const setup = () => {
