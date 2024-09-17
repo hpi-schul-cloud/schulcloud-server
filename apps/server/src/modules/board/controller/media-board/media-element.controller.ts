@@ -73,7 +73,8 @@ export class MediaElementController {
 			params.position
 		);
 
-		const response: MediaExternalToolElementResponse = MediaExternalToolElementResponseMapper.mapToResponse(element);
+		const response: MediaExternalToolElementResponse =
+			MediaExternalToolElementResponseMapper.getInstance().mapToResponse(element);
 
 		return response;
 	}
