@@ -25,7 +25,7 @@ export class SchoolExternalToolResponse {
 	@ApiProperty({ type: SchoolExternalToolConfigurationStatusResponse })
 	status: SchoolExternalToolConfigurationStatusResponse;
 
-	@ApiProperty({ type: [ToolContextType] })
+	@ApiProperty({ enum: ToolContextType, isArray: true })
 	availableContexts: ToolContextType[];
 
 	constructor(response: SchoolExternalToolResponse) {
