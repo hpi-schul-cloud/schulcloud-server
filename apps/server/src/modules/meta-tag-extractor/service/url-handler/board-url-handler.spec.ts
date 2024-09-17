@@ -35,7 +35,7 @@ describe(BoardUrlHandler.name, () => {
 		describe('when url fits', () => {
 			it('should call courseService with the correct id', async () => {
 				const id = 'af322312feae';
-				const url = `https://localhost/course-rooms/${id}/board`;
+				const url = `https://localhost/boards/${id}`;
 
 				await boardUrlHandler.getMetaData(url);
 
@@ -44,7 +44,7 @@ describe(BoardUrlHandler.name, () => {
 
 			it('should take the title from the board name', async () => {
 				const id = 'af322312feae';
-				const url = `https://localhost/course-rooms/${id}/board`;
+				const url = `https://localhost/boards/${id}`;
 				const boardName = 'My Board';
 				columnBoardService.findById.mockResolvedValue({
 					title: boardName,
