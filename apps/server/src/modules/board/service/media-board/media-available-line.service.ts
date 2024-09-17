@@ -9,7 +9,6 @@ import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
-import { MediaBoardService } from './media-board.service';
 
 @Injectable()
 export class MediaAvailableLineService {
@@ -17,8 +16,7 @@ export class MediaAvailableLineService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly mediaBoardService: MediaBoardService
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	public async getUnusedAvailableSchoolExternalTools(user: User, board: MediaBoard): Promise<SchoolExternalTool[]> {
@@ -93,8 +91,8 @@ export class MediaAvailableLineService {
 	}
 
 	private async getContextExternalToolsByBoard(board: MediaBoard): Promise<ContextExternalTool[]> {
-		const contextExternalTools: Promise<ContextExternalTool | null>[] = this.mediaBoardService
-			.findMediaElements(board)
+		const contextExternalTools: Promise<ContextExternalTool | null>[] = board
+			.getChildrenOfType(MediaExternalToolElement)
 			.map((element: MediaExternalToolElement) =>
 				this.contextExternalToolService.findById(element.contextExternalToolId)
 			);

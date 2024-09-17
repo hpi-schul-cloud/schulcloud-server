@@ -18,7 +18,6 @@ import { User } from '@shared/domain/entity';
 import { setupEntities, userFactory } from '@shared/testing';
 import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
-import { MediaBoardService } from './media-board.service';
 
 describe(MediaAvailableLineService.name, () => {
 	let module: TestingModule;
@@ -28,7 +27,6 @@ describe(MediaAvailableLineService.name, () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
-	let mediaBoardService: DeepMocked<MediaBoardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -50,10 +48,6 @@ describe(MediaAvailableLineService.name, () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
-				{
-					provide: MediaBoardService,
-					useValue: createMock<MediaBoardService>(),
-				},
 			],
 		}).compile();
 
@@ -62,7 +56,6 @@ describe(MediaAvailableLineService.name, () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
-		mediaBoardService = module.get(MediaBoardService);
 
 		await setupEntities();
 	});
@@ -101,8 +94,6 @@ describe(MediaAvailableLineService.name, () => {
 					usedSchoolExternalTool,
 				]);
 				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
-
-				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
 				return { user, board, mediaExternalToolElement, schoolExternalTool };
 			};
@@ -166,7 +157,6 @@ describe(MediaAvailableLineService.name, () => {
 				const board: MediaBoard = mediaBoardFactory.build({
 					children: [mediaExternalToolElement, mediaExternalToolElementWithDeletedTool],
 				});
-				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool,
