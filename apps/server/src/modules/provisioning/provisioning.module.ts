@@ -14,6 +14,7 @@ import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
 import { ClassModule } from '../class';
 import { UserLicenseModule } from '../user-license';
 import { ProvisioningService } from './service/provisioning.service';
+import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
@@ -60,6 +61,7 @@ import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,
+		TspProvisioningService,
 	],
 	exports: [ProvisioningService],
 })
