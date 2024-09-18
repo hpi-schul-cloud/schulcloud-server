@@ -106,6 +106,7 @@ export class SocketConnection {
 
 	stopTimeoutChecks() {
 		if (!this.checkerInterval) {
+			/* istanbul ignore next */
 			clearInterval(this.checkerInterval);
 		}
 	}
