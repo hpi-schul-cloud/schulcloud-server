@@ -155,7 +155,14 @@ export class TypeGuard {
 		const object = TypeGuard.checkDefinedObject(value);
 
 		if (!TypeGuard.isEachKeyInObject(object, keys)) {
-			throw toThrow || new Error(`Object has missing key. Required are: ${JSON.stringify(keys)}`);
+			throw (
+				toThrow ||
+				new Error(
+					`Object has missing key. Required are: ${JSON.stringify(keys)}. Get object keys: ${JSON.stringify(
+						Object.keys(object)
+					)}`
+				)
+			);
 		}
 
 		return object;

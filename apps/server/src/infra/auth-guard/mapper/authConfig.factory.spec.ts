@@ -75,7 +75,7 @@ describe('AuthConfigFactory.build', () => {
 				issuer: 'myissuer',
 				expiresIn: '1h',
 			};
-			const error = new Error('Type is not a string');
+			const error = buildNotAStringError();
 
 			return { secret, jwtOptions, error };
 		};
@@ -111,7 +111,7 @@ describe('AuthConfigFactory.build', () => {
 		const setup = () => {
 			const secret = 'mysecret';
 			const jwtOptions = undefined;
-			const error = new Error('Type is not an object.');
+			const error = buildNotAnObjectError();
 
 			return { secret, jwtOptions, error };
 		};
@@ -130,7 +130,9 @@ describe('AuthConfigFactory.build', () => {
 				issuer: 'myissuer',
 				expiresIn: '1h',
 			};
-			const error = new Error('Object has no audience.');
+			const error = new Error(
+				'Object has missing key. Required are: ["audience","issuer","expiresIn"]. Get object keys: ["issuer","expiresIn"]'
+			);
 
 			return { secret, jwtOptions, error };
 		};
@@ -170,7 +172,7 @@ describe('AuthConfigFactory.build', () => {
 				issuer: undefined,
 				expiresIn: '1h',
 			};
-			const error = new Error('Type is not a string');
+			const error = buildNotAStringError();
 
 			return { secret, jwtOptions, error };
 		};
@@ -209,7 +211,9 @@ describe('AuthConfigFactory.build', () => {
 				audience: 'myaudience',
 				issuer: 'myissuer',
 			};
-			const error = new Error('Object has no expiresIn.');
+			const error = new Error(
+				'Object has missing key. Required are: ["audience","issuer","expiresIn"]. Get object keys: ["audience","issuer"]'
+			);
 
 			return { secret, jwtOptions, error };
 		};
