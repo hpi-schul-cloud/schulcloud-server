@@ -210,9 +210,8 @@ describe(MediaAvailableLineService.name, () => {
 					restrictedSchoolExternalTool,
 					usedSchoolExternalTool,
 				]);
-				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
 
-				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
+				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
 
 				return { user, board, mediaExternalToolElement, restrictedSchoolExternalTool, schoolExternalTool };
 			};

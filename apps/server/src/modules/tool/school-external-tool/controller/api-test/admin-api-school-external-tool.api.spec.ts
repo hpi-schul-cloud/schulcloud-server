@@ -8,6 +8,7 @@ import { schoolEntityFactory, TestApiClient } from '@shared/testing';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
+import { ToolContextType } from '../../../common/enum';
 import { SchoolExternalToolEntity } from '../../entity';
 import { schoolExternalToolConfigurationStatusFactory } from '../../testing';
 import { SchoolExternalToolPostParams, SchoolExternalToolResponse } from '../dto';
@@ -93,6 +94,7 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 						{ name: 'param2', value: 'false' },
 					],
 					isDeactivated: false,
+					availableContexts: [ToolContextType.MEDIA_BOARD],
 				};
 
 				await em.persistAndFlush([school, externalToolEntity]);
@@ -125,6 +127,7 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 						{ name: 'param1', value: 'value' },
 						{ name: 'param2', value: 'false' },
 					],
+					availableContexts: [ToolContextType.MEDIA_BOARD],
 				});
 
 				const schoolExternalTool: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
