@@ -1,3 +1,4 @@
+import { ObjectID } from 'bson';
 import { Class, ClassProps } from './class.do';
 
 export class ClassFactory {
@@ -10,7 +11,7 @@ export class ClassFactory {
 
 	private static getBaseProps(): ClassProps {
 		return {
-			id: '',
+			id: new ObjectID().toHexString(),
 			name: '',
 			schoolId: '',
 			createdAt: new Date(),
