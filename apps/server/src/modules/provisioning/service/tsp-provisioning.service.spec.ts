@@ -152,7 +152,9 @@ describe('TspProvisioningService', () => {
 				const school = schoolFactory.build();
 				const classes = [setupExternalClass()];
 				const clazz = classFactory.build();
-				const user = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId({
+					roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
+				});
 
 				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValue(clazz);
 
@@ -272,11 +274,15 @@ describe('TspProvisioningService', () => {
 		});
 
 		describe('when user does not exist and has no firstname, lastname and email', () => {
-			const setup = () => {
+			const setup = (withFirstname: boolean, withLastname: boolean, withEmail: boolean) => {
 				const school = schoolFactory.build();
 				const data = new OauthDataDto({
 					system: setupExternalSystem(),
-					externalUser: setupExternalUser(),
+					externalUser: setupExternalUser({
+						firstName: withFirstname ? faker.person.firstName() : undefined,
+						lastName: withLastname ? faker.person.lastName() : undefined,
+						email: withEmail ? faker.internet.email() : undefined,
+					}),
 					externalSchool: setupExternalSchool(),
 				});
 
@@ -286,8 +292,20 @@ describe('TspProvisioningService', () => {
 				return { data, school };
 			};
 
-			it('should create user', async () => {
-				const { data, school } = setup();
+			it('should throw with no firstname', async () => {
+				const { data, school } = setup(false, true, true);
+
+				await expect(sut.provisionUser(data, school)).rejects.toThrow();
+			});
+
+			it('should throw with no lastname', async () => {
+				const { data, school } = setup(true, false, true);
+
+				await expect(sut.provisionUser(data, school)).rejects.toThrow();
+			});
+
+			it('should throw with no email', async () => {
+				const { data, school } = setup(true, true, false);
 
 				await expect(sut.provisionUser(data, school)).rejects.toThrow();
 			});
