@@ -22,8 +22,8 @@ export class SchulconnexCourseSyncService {
 					course.name = newGroup.name;
 				}
 
-				course.startDate = newGroup.validFrom;
-				course.untilDate = newGroup.validUntil;
+				course.startDate = newGroup.validPeriod?.from;
+				course.untilDate = newGroup.validPeriod?.until;
 
 				const students: GroupUser[] = newGroup.users.filter(
 					(user: GroupUser): boolean => user.roleId === studentRole.id
