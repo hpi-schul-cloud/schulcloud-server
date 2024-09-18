@@ -10,7 +10,7 @@ describe('ClassFactory', () => {
 				expect(result).toBeInstanceOf(Class);
 				expect(result).toEqual(
 					expect.objectContaining({
-						id: '',
+						id: expect.any(String),
 						name: '',
 						schoolId: '',
 						createdAt: expect.any(Date),
