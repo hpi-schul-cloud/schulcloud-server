@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
+import { ToolContextType } from '../../../../common/enum';
 import { CustomParameterResponse } from './custom-parameter.response';
-import { ToolContextType } from '@modules/tool/common/enum';
 
 export class SchoolExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
