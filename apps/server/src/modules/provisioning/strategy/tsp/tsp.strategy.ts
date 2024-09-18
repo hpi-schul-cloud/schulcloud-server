@@ -1,28 +1,13 @@
-import { AccountSave, AccountService } from '@modules/account';
-import { ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
-import { RoleService } from '@modules/role';
-import { School, SchoolService } from '@modules/school';
-import { UserService } from '@modules/user';
-import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { RoleReference, UserDO } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
+import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
+import { TspProvisioningService } from '../../service/tsp-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
 import { BadDataLoggableException } from '../loggable';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
-	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
-
-	constructor(
-		private readonly schoolService: SchoolService,
-		private readonly userService: UserService,
-		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
-		private readonly classService: ClassService
-	) {
+	constructor(private readonly provisioningService: TspProvisioningService) {
 		super();
 	}
 
@@ -37,159 +22,14 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
-		const school = await this.findSchoolOrFail(data);
-		const user = await this.provisionUserAndAccount(data, school);
-
-		await this.provisionClasses(data, school, user);
-
-		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
-	}
-
-	private async findSchoolOrFail(data: OauthDataDto): Promise<School> {
 		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
-
-		const schools = await this.schoolService.getSchools({
-			externalId: data.externalSchool.externalId,
-			systemId: data.system.systemId,
-		});
-
-		if (schools.length !== 1) {
-			throw new NotFoundLoggableException(School.name, {
-				systemId: data.system.systemId,
-				externalId: data.externalSchool.externalId,
-			});
-		}
-
-		return schools[0];
-	}
-
-	private async provisionUserAndAccount(data: OauthDataDto, school: School): Promise<UserDO> {
-		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
-
-		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
-		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
-
-		let user: UserDO;
-		if (existingUser && school.externalId === data.externalSchool?.externalId) {
-			// Case: User exists and school is the same -> update user
-			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
-		} else if (existingUser && school.id !== data.externalSchool?.externalId) {
-			// Case: User exists but school is different -> school change and update user
-			const newSchool = await this.findSchoolOrFail(data);
-
-			user = await this.updateUser(existingUser, data.externalUser, roleRefs, newSchool.id);
-		} else {
-			// Case: User does not exist yet -> create new user
-			user = await this.createUser(data.externalUser, roleRefs, school.id);
-		}
-
-		await this.ensureAccountExists(user, data.system.systemId);
-
-		return user;
-	}
-
-	private async provisionClasses(data: OauthDataDto, school: School, user: UserDO): Promise<void> {
-		if (!user.id) throw new BadDataLoggableException('User ID is missing', { user });
 		if (!data.externalClasses) throw new BadDataLoggableException('External classes are missing', { data });
 
-		for await (const externalClass of data.externalClasses) {
-			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(
-				school.id,
-				externalClass.externalId
-			);
+		const school = await this.provisioningService.findSchoolOrFail(data.system, data.externalSchool);
+		const user = await this.provisioningService.provisionUser(data, school);
 
-			if (currentClass) {
-				// Case: Class exists -> update class
-				currentClass.schoolId = school.id;
-				currentClass.name = externalClass.name;
-				currentClass.year = school.currentYear?.id;
-				currentClass.source = this.ENTITY_SOURCE;
-				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: externalClass.externalId });
+		await this.provisioningService.provisionClasses(school, data.externalClasses, user);
 
-				if (user.roles.some((role) => role.name === RoleName.TEACHER)) currentClass.addTeacher(user.id);
-				if (user.roles.some((role) => role.name === RoleName.STUDENT)) currentClass.addUser(user.id);
-
-				await this.classService.save(currentClass);
-			} else {
-				// Case: Class does not exist yet -> create new class
-				const newClass = ClassFactory.create({
-					name: externalClass.name,
-					schoolId: school.id,
-					year: school.currentYear?.id,
-					teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
-					userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
-					source: this.ENTITY_SOURCE,
-					sourceOptions: new ClassSourceOptions({ tspUid: externalClass.externalId }),
-				});
-
-				await this.classService.save(newClass);
-			}
-		}
-	}
-
-	private async getRoleReferencesForUser(externalUser: ExternalUserDto): Promise<RoleReference[]> {
-		const rolesDtos = await this.roleService.findByNames(externalUser.roles || []);
-		const roleRefs = rolesDtos.map((role) => new RoleReference({ id: role.id || '', name: role.name }));
-
-		return roleRefs;
-	}
-
-	private async updateUser(
-		existingUser: UserDO,
-		externalUser: ExternalUserDto,
-		roleRefs: RoleReference[],
-		schoolId: string
-	): Promise<UserDO> {
-		existingUser.roles = roleRefs;
-		existingUser.schoolId = schoolId;
-		existingUser.firstName = externalUser.firstName || existingUser.firstName;
-		existingUser.lastName = externalUser.lastName || existingUser.lastName;
-		existingUser.email = externalUser.email || existingUser.email;
-		existingUser.birthday = externalUser.birthday;
-		const updatedUser = await this.userService.save(existingUser);
-
-		return updatedUser;
-	}
-
-	private async createUser(
-		externalUser: ExternalUserDto,
-		roleRefs: RoleReference[],
-		schoolId: string
-	): Promise<UserDO> {
-		if (!externalUser.firstName || !externalUser.lastName || !externalUser.email) {
-			throw new UnprocessableEntityException('Unable to create user without first name, last name or email');
-		}
-
-		const newUser = new UserDO({
-			roles: roleRefs,
-			schoolId,
-			firstName: externalUser.firstName,
-			lastName: externalUser.lastName,
-			email: externalUser.email,
-			birthday: externalUser.birthday,
-		});
-		const savedUser = await this.userService.save(newUser);
-
-		return savedUser;
-	}
-
-	private async ensureAccountExists(user: UserDO, systemId: string): Promise<void> {
-		if (!user.id) throw new BadDataLoggableException('user ID is missing', { user });
-
-		const account = await this.accountService.findByUserId(user.id);
-
-		if (!account) {
-			await this.accountService.saveWithValidation(
-				new AccountSave({
-					userId: user.id,
-					username: user.email,
-					systemId,
-					activated: true,
-				})
-			);
-		} else {
-			account.username = user.email;
-			await this.accountService.saveWithValidation(account);
-		}
+		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }
