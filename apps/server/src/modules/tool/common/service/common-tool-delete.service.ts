@@ -71,6 +71,7 @@ export class CommonToolDeleteService {
 			new ContextExternalToolDeletedEvent({
 				id: contextExternalTool.id,
 				title: contextExternalTool.displayName ?? externalTool.name,
+				description: externalTool.description,
 			})
 		);
 	}

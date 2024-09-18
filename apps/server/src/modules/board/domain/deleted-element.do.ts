@@ -18,6 +18,14 @@ export class DeletedElement extends BoardNode<DeletedElementProps> {
 		this.props.deletedElementType = value;
 	}
 
+	get description(): string | undefined {
+		return this.props.description;
+	}
+
+	set description(value: string | undefined) {
+		this.props.description = value;
+	}
+
 	canHaveChild(): boolean {
 		return false;
 	}
