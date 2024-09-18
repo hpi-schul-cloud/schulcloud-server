@@ -22,6 +22,7 @@ export class ToolConfigurationMapper {
 			parameters: externalTool.parameters
 				? ExternalToolResponseMapper.mapCustomParameterToResponse(externalTool.parameters)
 				: [],
+			validContexts: externalTool.getUnrestrictedContexts(),
 		});
 
 		return mapped;

@@ -373,6 +373,7 @@ describe('ToolConfigurationController (API)', () => {
 									location: CustomParameterLocationParams.BODY,
 								},
 							],
+							validContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD],
 						},
 					],
 				});
@@ -501,6 +502,7 @@ describe('ToolConfigurationController (API)', () => {
 							location: CustomParameterLocationParams.BODY,
 						},
 					],
+					validContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD],
 				});
 			});
 		});
