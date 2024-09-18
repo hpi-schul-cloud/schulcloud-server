@@ -134,6 +134,7 @@ describe(CommonToolDeleteService.name, () => {
 					new ContextExternalToolDeletedEvent({
 						id: contextExternalTool.id,
 						title: displayName,
+						description: 'description',
 					})
 				);
 			});
@@ -143,7 +144,7 @@ describe(CommonToolDeleteService.name, () => {
 	describe('deleteSchoolExternalTool', () => {
 		describe('when deleting a school external tool', () => {
 			const setup = () => {
-				const externalTool = externalToolFactory.build();
+				const externalTool = externalToolFactory.build({ description: undefined });
 				const schoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
 				});
@@ -199,6 +200,7 @@ describe(CommonToolDeleteService.name, () => {
 					new ContextExternalToolDeletedEvent({
 						id: contextExternalTool.id,
 						title: externalTool.name,
+						description: undefined,
 					})
 				);
 			});
@@ -254,6 +256,7 @@ describe(CommonToolDeleteService.name, () => {
 					new ContextExternalToolDeletedEvent({
 						id: contextExternalTool.id,
 						title: externalTool.name,
+						description: externalTool.description,
 					})
 				);
 			});

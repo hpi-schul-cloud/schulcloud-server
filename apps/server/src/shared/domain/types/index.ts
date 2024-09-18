@@ -10,3 +10,4 @@ export * from './system.type';
 export * from './task.types';
 export * from './value-of';
 export * from './schulcloud-theme.enum';
+export { Constructor } from './constructor';
