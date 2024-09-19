@@ -31,6 +31,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 	signOptions,
 	verifyOptions: signOptions,
 };
+
 @Module({
 	imports: [
 		LoggerModule,
