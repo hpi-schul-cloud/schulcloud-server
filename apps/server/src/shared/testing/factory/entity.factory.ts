@@ -12,7 +12,7 @@ import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery
  * @template C The class of the factory object being created.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class EntityFactory<T extends object, U, I = any, C = U> {
+export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	protected readonly propsFactory: Factory<U, I, C>;
 
 	constructor(private readonly EntityClass: { new (): T }, propsFactory: Factory<U, I, C>) {
@@ -30,7 +30,7 @@ export class EntityFactory<T extends object, U, I = any, C = U> {
 	 * @returns
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static define<T extends object, U, I = any, C = U, F = EntityFactory<T, U, I, C>>(
+	static define<T extends U, U extends object, I = any, C = U, F = EntityFactory<T, U, I, C>>(
 		this: new (EntityClass: { new (): T }, propsFactory: Factory<U, I, C>) => F,
 		EntityClass: { new (): T },
 		generator: GeneratorFn<U, I, C>
