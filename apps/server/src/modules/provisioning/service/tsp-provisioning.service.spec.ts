@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { roleDtoFactory, roleFactory, userDoFactory } from '@shared/testing';
@@ -12,6 +13,7 @@ import { SchoolService } from '@src/modules/school';
 import { schoolFactory } from '@src/modules/school/testing';
 import { UserService } from '@src/modules/user';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
+import { BadDataLoggableException } from '../strategy/loggable';
 import { TspProvisioningService } from './tsp-provisioning.service';
 
 describe('TspProvisioningService', () => {
@@ -125,7 +127,7 @@ describe('TspProvisioningService', () => {
 			it('should throw', async () => {
 				const { system, externalSchool } = setup();
 
-				await expect(sut.findSchoolOrFail(system, externalSchool)).rejects.toThrow();
+				await expect(sut.findSchoolOrFail(system, externalSchool)).rejects.toThrow(NotFoundLoggableException);
 			});
 		});
 	});
@@ -143,7 +145,7 @@ describe('TspProvisioningService', () => {
 			it('should throw', async () => {
 				const { school, classes, user } = setup();
 
-				await expect(sut.provisionClasses(school, classes, user)).rejects.toThrow();
+				await expect(sut.provisionClasses(school, classes, user)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 
@@ -208,7 +210,7 @@ describe('TspProvisioningService', () => {
 			it('should throw', async () => {
 				const { data, school } = setup();
 
-				await expect(sut.provisionUser(data, school)).rejects.toThrow();
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 
@@ -288,6 +290,7 @@ describe('TspProvisioningService', () => {
 
 				userServiceMock.findByExternalId.mockResolvedValue(null);
 				schoolServiceMock.getSchools.mockResolvedValue([school]);
+				roleServiceMock.findByNames.mockResolvedValue([]);
 
 				return { data, school };
 			};
@@ -295,19 +298,19 @@ describe('TspProvisioningService', () => {
 			it('should throw with no firstname', async () => {
 				const { data, school } = setup(false, true, true);
 
-				await expect(sut.provisionUser(data, school)).rejects.toThrow();
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
 
 			it('should throw with no lastname', async () => {
 				const { data, school } = setup(true, false, true);
 
-				await expect(sut.provisionUser(data, school)).rejects.toThrow();
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
 
 			it('should throw with no email', async () => {
 				const { data, school } = setup(true, true, false);
 
-				await expect(sut.provisionUser(data, school)).rejects.toThrow();
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 
