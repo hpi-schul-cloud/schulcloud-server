@@ -1,5 +1,14 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Controller, ForbiddenException, Get, HttpStatus, Query, UnauthorizedException } from '@nestjs/common';
+import {
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpStatus,
+	NotFoundException,
+	Param,
+	Query,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { ErrorResponse } from '@src/core/error/dto';
@@ -9,6 +18,8 @@ import { Room } from '../domain';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomPaginationParams } from './dto/request/room-pagination.params';
+import { RoomDetailsResponse } from './dto';
+import { RoomUrlParams } from './dto/request';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -32,6 +43,25 @@ export class RoomController {
 		const rooms = await this.roomUc.getRooms(currentUser.userId, findOptions);
 
 		const response = RoomMapper.mapToRoomListResponse(rooms, pagination);
+
+		return response;
+	}
+
+	@Get(':roomId')
+	@ApiOperation({ summary: 'Get the details of a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomDetailsResponse })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async getRoomDetails(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomDetailsResponse> {
+		const room = await this.roomUc.getRoomDetails(currentUser.userId, urlParams.roomId);
+
+		const response = RoomMapper.mapToRoomDetailsResponse(room);
 
 		return response;
 	}

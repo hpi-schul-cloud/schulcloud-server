@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class RoomResponse {
+export class RoomDetailsResponse {
 	@ApiProperty()
 	id: string;
 
@@ -22,7 +22,7 @@ export class RoomResponse {
 	@ApiPropertyOptional({ type: Date })
 	updatedAt?: Date;
 
-	constructor(room: RoomResponse) {
+	constructor(room: RoomDetailsResponse) {
 		this.id = room.id;
 		this.name = room.name;
 		this.color = room.color;

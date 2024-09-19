@@ -58,10 +58,4 @@ describe('RoomRepo', () => {
 			expect(result).toEqual(page);
 		});
 	});
-
-	describe('entityName', () => {
-		it('should return RoomEntity', () => {
-			expect(repo.entityName).toBe(RoomEntity);
-		});
-	});
 });

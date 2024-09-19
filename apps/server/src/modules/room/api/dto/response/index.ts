@@ -1,3 +1,3 @@
-export * from './room.response';
+export * from './room-details.response';
+export * from './room-item.response';
 export * from './room-list.response';
-export * from '../request/room-pagination.params';

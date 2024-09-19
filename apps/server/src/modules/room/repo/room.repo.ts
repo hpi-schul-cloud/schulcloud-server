@@ -1,8 +1,9 @@
-import { EntityName, QueryOrder } from '@mikro-orm/core';
+import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { Room } from '../domain/do/room.do';
 import { RoomEntity } from './entity/room.entity';
 import { RoomDomainMapper } from './room-domain.mapper';
@@ -11,10 +12,6 @@ import { RoomScope } from './room.scope';
 @Injectable()
 export class RoomRepo {
 	constructor(private readonly em: EntityManager) {}
-
-	get entityName(): EntityName<RoomEntity> {
-		return RoomEntity;
-	}
 
 	public async findRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		const scope = new RoomScope();
@@ -33,5 +30,12 @@ export class RoomRepo {
 		const page = new Page<Room>(domainObjects, total);
 
 		return page;
+	}
+
+	public async findById(id: EntityId): Promise<Room> {
+		const entity = await this.em.findOneOrFail(RoomEntity, id);
+		const domainobject = RoomDomainMapper.mapEntityToDo(entity);
+
+		return domainobject;
 	}
 }
