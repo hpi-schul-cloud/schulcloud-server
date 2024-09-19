@@ -1,16 +1,13 @@
-import { LearnroomModule } from '@modules/learnroom';
-import { ToolModule } from '@modules/tool';
-import { UserModule } from '@modules/user';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';
-import { FeathersRosterService, PseudonymService } from './service';
+import { PseudonymService } from './service';
 
 // Why import this module LearnroomModule and ToolModule, The UserModule should also checked, but maybe it is ok.
 @Module({
-	imports: [UserModule, LearnroomModule, forwardRef(() => ToolModule), LoggerModule, CqrsModule],
-	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger, FeathersRosterService],
-	exports: [PseudonymService, FeathersRosterService],
+	imports: [LoggerModule, CqrsModule],
+	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger],
+	exports: [PseudonymService],
 })
 export class PseudonymModule {}

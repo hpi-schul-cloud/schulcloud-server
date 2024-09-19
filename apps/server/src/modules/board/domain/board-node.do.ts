@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { Constructor, EntityId } from '@shared/domain/types';
 import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
 import type { AnyBoardNode, BoardNodeProps } from './types';
 
@@ -102,6 +102,20 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 
 	get updatedAt(): Date {
 		return this.props.createdAt;
+	}
+
+	public getChildrenOfType<U extends AnyBoardNode>(type: Constructor<U>): U[] {
+		const childrenOfType: U[] = [];
+
+		for (const child of this.children) {
+			childrenOfType.push(...child.getChildrenOfType(type));
+
+			if (child instanceof type) {
+				childrenOfType.push(child);
+			}
+		}
+
+		return childrenOfType;
 	}
 
 	private updatePath(parent: BoardNode<BoardNodeProps>): void {

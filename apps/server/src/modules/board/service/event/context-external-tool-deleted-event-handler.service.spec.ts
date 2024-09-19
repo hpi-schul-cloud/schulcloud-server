@@ -40,7 +40,11 @@ describe(ContextExternalToolDeletedEventHandlerService.name, () => {
 		describe('when a context external tool gets deleted', () => {
 			const setup = () => {
 				const contextExternalToolId = new ObjectId().toHexString();
-				const event = new ContextExternalToolDeletedEvent({ id: contextExternalToolId, title: 'Delete me' });
+				const event = new ContextExternalToolDeletedEvent({
+					id: contextExternalToolId,
+					title: 'Delete me',
+					description: 'description',
+				});
 				const externalToolElement = externalToolElementFactory.build({
 					contextExternalToolId,
 				});
@@ -70,6 +74,7 @@ describe(ContextExternalToolDeletedEventHandlerService.name, () => {
 						updatedAt: expect.any(Date) as unknown as Date,
 						deletedElementType: ContentElementType.EXTERNAL_TOOL,
 						title: event.title,
+						description: 'description',
 					})
 				);
 			});
