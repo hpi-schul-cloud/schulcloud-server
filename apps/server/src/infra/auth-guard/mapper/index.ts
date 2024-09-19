@@ -1,2 +1,3 @@
-export * from './config.mapper';
-export * from './current-user.mapper';
+export * from './authConfig.factory';
+export * from './current-user.factory';
+export * from './jwt.factory';

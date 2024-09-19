@@ -424,15 +424,16 @@ describe('LdapStrategy', () => {
 			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
-				const result: ICurrentUser = await strategy.validate(request);
+				const result = await strategy.validate(request);
 
-				expect(result).toEqual({
+				expect(result).toMatchObject<ICurrentUser>({
 					userId: user.id,
 					roles: [user.roles[0].id],
-					schoolId: school.id,
+					schoolId: school.id as string,
 					systemId: system.id,
 					accountId: account.id,
 					isExternalUser: true,
+					impersonated: false,
 				});
 			});
 		});
@@ -488,16 +489,17 @@ describe('LdapStrategy', () => {
 			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
-				const result: ICurrentUser = await strategy.validate(request);
+				const result = await strategy.validate(request);
 
 				expect(authenticationServiceMock.loadAccount).toHaveBeenCalledTimes(2);
-				expect(result).toEqual({
+				expect(result).toMatchObject<ICurrentUser>({
 					userId: user.id,
 					roles: [user.roles[0].id],
-					schoolId: school.id,
+					schoolId: school.id as string,
 					systemId: system.id,
 					accountId: account.id,
 					isExternalUser: true,
+					impersonated: false,
 				});
 			});
 		});
