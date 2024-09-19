@@ -21,6 +21,8 @@ export class ShdUc {
 		]);
 
 		const authContext = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
+		// Please add/check rule for instance! Currently the shd user is not added to this group as one that has write access for instance. Therefore we must define something.
+		// please also check the usage in files-storage
 		this.authorizationService.checkPermission(supportUser, instance, authContext);
 
 		const createJwtPayload = JwtPayloadFactory.buildFromCurrentUser(params); // TODO: Maybe add something like buildForSupport() ?
