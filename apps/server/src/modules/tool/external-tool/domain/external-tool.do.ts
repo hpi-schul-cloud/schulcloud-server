@@ -151,13 +151,6 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.props.createdAt = value;
 	}
 
-	public getUnrestrictedContexts(): ToolContextType[] {
-		const unrestrictedContexts = Object.values(ToolContextType).filter(
-			(context: ToolContextType) => !this.restrictToContexts?.includes(context)
-		);
-		return unrestrictedContexts;
-	}
-
 	public static readonly thumbnailNameAffix = 'thumbnail';
 
 	constructor(props: ExternalToolProps) {
