@@ -1,7 +1,6 @@
 import { ApiKeyGuard } from '@infra/auth-guard';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { AdminApiExternalToolUc } from '../uc';
 import { ExternalToolCreateParams, ExternalToolResponse } from './dto';
