@@ -33,8 +33,9 @@ describe('AdminApiContextExternalTool (API)', () => {
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
 
-		const apiKey = (adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[])[0]; // check config/test.json
-		testApiClient = new TestApiClient(app, basePath, apiKey, true);
+		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
+
+		testApiClient = new TestApiClient(app, basePath, apiKeys[0], true);
 	});
 
 	afterAll(async () => {

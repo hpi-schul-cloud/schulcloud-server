@@ -1,10 +1,11 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { serverConfig } from '@modules/server';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { schoolEntityFactory, TestApiClient } from '@shared/testing';
+// admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
@@ -18,13 +19,9 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
 
-	const apiKey = 'validApiKey';
-
 	const basePath = 'admin/tools/school-external-tools';
 
 	beforeAll(async () => {
-		serverConfig().ADMIN_API__ALLOWED_API_KEYS = [apiKey];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -33,7 +30,9 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
-		testApiClient = new TestApiClient(app, basePath, apiKey, true);
+
+		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
+		testApiClient = new TestApiClient(app, basePath, apiKeys[0], true);
 	});
 
 	afterAll(async () => {
