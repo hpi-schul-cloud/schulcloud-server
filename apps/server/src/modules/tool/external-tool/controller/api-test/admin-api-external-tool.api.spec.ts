@@ -32,6 +32,7 @@ describe('AdminApiExternalTool (API)', () => {
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
 
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
 		testApiClient = new TestApiClient(app, basePath, apiKeys[0], true);
 	});

@@ -31,7 +31,8 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
 
-		const apiKeys = <string[]>adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS; // check config/test.json
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
 		testApiClient = new TestApiClient(app, basePath, apiKeys[0], true);
 	});
 
