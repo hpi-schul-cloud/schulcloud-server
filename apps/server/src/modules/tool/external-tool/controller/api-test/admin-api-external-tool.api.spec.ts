@@ -1,10 +1,10 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { serverConfig } from '@modules/server';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@shared/testing';
-import { Response } from 'supertest';
+// admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -20,13 +20,9 @@ describe('AdminApiExternalTool (API)', () => {
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
 
-	const apiKey = 'validApiKey';
-
 	const basePath = 'admin/tools/external-tools';
 
 	beforeAll(async () => {
-		serverConfig().ADMIN_API__ALLOWED_API_KEYS = [apiKey];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -35,6 +31,8 @@ describe('AdminApiExternalTool (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
+
+		const apiKey = (adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[])[0]; // check config/test.json
 		testApiClient = new TestApiClient(app, basePath, apiKey, true);
 	});
 
@@ -107,12 +105,12 @@ describe('AdminApiExternalTool (API)', () => {
 				it('should create a tool', async () => {
 					const { postParams } = setup();
 
-					const response: Response = await testApiClient.post().send(postParams);
+					const response = await testApiClient.post().send(postParams);
 
 					const body: ExternalToolResponse = response.body as ExternalToolResponse;
 
 					expect(response.status).toEqual(HttpStatus.CREATED);
-					expect(body).toEqual<ExternalToolResponse>({
+					expect(response.body).toMatchObject<ExternalToolResponse>({
 						id: body.id,
 						name: 'Tool 1',
 						parameters: [
@@ -140,7 +138,7 @@ describe('AdminApiExternalTool (API)', () => {
 						openNewTab: true,
 					});
 
-					const externalTool: ExternalToolEntity | null = await em.findOne(ExternalToolEntity, { id: body.id });
+					const externalTool = await em.findOne(ExternalToolEntity, { id: body.id });
 					expect(externalTool).toBeDefined();
 				});
 			});

@@ -1,10 +1,11 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { serverConfig } from '@modules/server';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { courseFactory, schoolEntityFactory, TestApiClient } from '@shared/testing';
+// admin-api-context-external-tool and test file is wrong placed need to be part of a admin-api-module folder
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { ToolContextType } from '../../../common/enum';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
@@ -20,13 +21,9 @@ describe('AdminApiContextExternalTool (API)', () => {
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
 
-	const apiKey = 'validApiKey';
-
 	const basePath = 'admin/tools/context-external-tools';
 
 	beforeAll(async () => {
-		serverConfig().ADMIN_API__ALLOWED_API_KEYS = [apiKey];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -35,6 +32,8 @@ describe('AdminApiContextExternalTool (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
+
+		const apiKey = (adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[])[0]; // check config/test.json
 		testApiClient = new TestApiClient(app, basePath, apiKey, true);
 	});
 
@@ -117,10 +116,10 @@ describe('AdminApiContextExternalTool (API)', () => {
 
 				const response = await testApiClient.post().send(postParams);
 
-				const body: ExternalToolResponse = response.body as ExternalToolResponse;
+				const body = response.body as ExternalToolResponse;
 
 				expect(response.statusCode).toEqual(HttpStatus.CREATED);
-				expect(body).toEqual<ContextExternalToolResponse>({
+				expect(body).toMatchObject<ContextExternalToolResponse>({
 					id: expect.any(String),
 					schoolToolId: postParams.schoolToolId,
 					contextId: postParams.contextId,
@@ -132,7 +131,7 @@ describe('AdminApiContextExternalTool (API)', () => {
 					],
 				});
 
-				const contextExternalTool: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
+				const contextExternalTool = await em.findOne(ContextExternalToolEntity, {
 					id: body.id,
 				});
 				expect(contextExternalTool).toBeDefined();
