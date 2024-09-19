@@ -1,11 +1,16 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { RoomEntity, RoomEntityProps } from '../repo/entity/room.entity';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityFactory } from '@shared/testing/factory/entity.factory';
+import { RoomEntity } from '../repo/entity/room.entity';
+import { RoomProps } from '../domain';
 
-export const roomEntityFactory = BaseFactory.define<RoomEntity, RoomEntityProps>(RoomEntity, ({ sequence }) => {
+export const roomEntityFactory = EntityFactory.define<RoomEntity, RoomProps>(RoomEntity, ({ sequence }) => {
 	return {
+		id: new ObjectId().toHexString(),
 		name: `room #${sequence}`,
 		color: ['blue', 'red', 'green', 'yellow'][Math.floor(Math.random() * 4)],
 		startDate: new Date(),
 		untilDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	};
 });

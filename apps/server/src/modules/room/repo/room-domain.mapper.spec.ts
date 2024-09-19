@@ -63,13 +63,13 @@ describe('RoomDomainMapper', () => {
 		});
 
 		it('should wrap the actual entity reference in the domain object', () => {
-			const roomEntity = new RoomEntity({
+			const roomEntity = {
 				id: '1',
 				name: 'Test Room',
 				color: '#FF0000',
 				startDate: new Date('2023-01-01'),
 				untilDate: new Date('2023-12-31'),
-			});
+			} as RoomEntity;
 
 			const result = RoomDomainMapper.mapEntityToDo(roomEntity);
 			// @ts-expect-error check necessary
