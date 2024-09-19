@@ -35,7 +35,7 @@ class SCAuthenticationService extends AuthenticationService {
 
 module.exports = (app) => {
 	app.use('/authentication/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-	// Configure feathers-authentication
+	// Configure feathers-authentication for details see https://feathersjs.com/api/authentication/service#configuration
 	app.set('authentication', authConfig);
 	const authentication = new SCAuthenticationService(app);
 
