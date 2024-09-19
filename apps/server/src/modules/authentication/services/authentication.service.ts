@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Logger } from '@src/core/logger';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
@@ -17,8 +18,11 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<AuthenticationConfig, true>
-	) {}
+		private readonly configService: ConfigService<AuthenticationConfig, true>,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(AuthenticationService.name);
+	}
 
 	public async loadAccount(username: string, systemId?: string): Promise<Account> {
 		let account: Account | undefined | null;
@@ -41,6 +45,7 @@ export class AuthenticationService {
 	}
 
 	public async generateJwt(createJwtPayload: CreateJwtPayload): Promise<LoginDto> {
+		// TODO Fix me that no support JWT generation is possible
 		const jti = randomUUID();
 
 		const accessToken = this.jwtService.sign(createJwtPayload, {
@@ -52,6 +57,17 @@ export class AuthenticationService {
 		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
 
 		return result;
+	}
+
+	public async generateSupportJwt(createJwtPayload: CreateJwtPayload): Promise<LoginDto> {
+		// TODO: Fix me i want to use Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') * 1000; over nest config
+		createJwtPayload.support = true;
+		const loginDto = this.generateJwt(createJwtPayload);
+
+		// a alert or write it with ignor log level is helpfull
+		// this.logger.warning(new CreateSupportJwtLoggable(createJwtPayload));
+
+		return loginDto;
 	}
 
 	public async removeJwtFromWhitelist(jwtToken: string): Promise<void> {

@@ -8,5 +8,5 @@ module.exports = (app) => {
 
 	app.configure(jwtTimerServiceSetup);
 
-	app.configure(supportJWTServiceSetup);
+	app.configure(supportJWTServiceSetup); // TODO: Remove me
 };
