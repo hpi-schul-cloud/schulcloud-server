@@ -75,6 +75,7 @@ describe('jwt strategy', () => {
 
 			validationAdapter.isWhitelisted.mockResolvedValueOnce();
 			validationAdapter.isWhitelisted.mockClear();
+
 			return {
 				mockJwtPayload,
 			};
@@ -88,7 +89,9 @@ describe('jwt strategy', () => {
 
 		it('should return user', async () => {
 			const { mockJwtPayload } = setup();
+
 			const user = await strategy.validate(mockJwtPayload);
+
 			expect(user).toMatchObject({
 				userId: mockJwtPayload.userId,
 				roles: [mockJwtPayload.roles[0]],
@@ -106,6 +109,7 @@ describe('jwt strategy', () => {
 
 			validationAdapter.isWhitelisted.mockRejectedValueOnce(null);
 			validationAdapter.isWhitelisted.mockClear();
+
 			return {
 				mockJwtPayload,
 			};
@@ -113,6 +117,7 @@ describe('jwt strategy', () => {
 
 		it('should throw an UnauthorizedException', async () => {
 			const { mockJwtPayload } = setup();
+
 			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(WsException);
 		});
 	});

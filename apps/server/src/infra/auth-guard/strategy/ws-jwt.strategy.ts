@@ -6,7 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
 import { authConfig } from '../config';
 import { ICurrentUser, JwtPayload, StrategyType } from '../interface';
-import { CurrentUserMapper } from '../mapper';
+import { CurrentUserBuilder } from '../mapper';
 
 @Injectable()
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
@@ -25,7 +25,12 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		try {
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
-			const currentUser = CurrentUserMapper.jwtToICurrentUser(payload);
+			const currentUser = new CurrentUserBuilder(payload)
+				.asExternalUser(payload.isExternalUser)
+				.withExternalSystem(payload.systemId)
+				.asUserSupporter(payload.support)
+				.build();
+
 			return currentUser;
 		} catch (err) {
 			throw new WsException('Unauthorized access');
