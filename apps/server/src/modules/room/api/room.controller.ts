@@ -4,6 +4,7 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
+	HttpCode,
 	HttpStatus,
 	NotFoundException,
 	Param,
@@ -75,6 +76,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@HttpCode(204)
 	async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
 	}

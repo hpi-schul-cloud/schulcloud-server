@@ -8,15 +8,7 @@ export class RoomDomainMapper {
 			return roomEntity.domainObject;
 		}
 
-		const room: Room = new Room({
-			id: roomEntity.id,
-			name: roomEntity.name,
-			color: roomEntity.color,
-			startDate: roomEntity.startDate,
-			untilDate: roomEntity.untilDate,
-			createdAt: roomEntity.createdAt,
-			updatedAt: roomEntity.updatedAt,
-		});
+		const room: Room = new Room(roomEntity);
 
 		// attach to identity map
 		roomEntity.domainObject = room;

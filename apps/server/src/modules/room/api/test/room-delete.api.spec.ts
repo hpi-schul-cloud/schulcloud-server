@@ -97,7 +97,7 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
-				it.only('should delete the room', async () => {
+				it('should delete the room', async () => {
 					const { loggedInClient, room } = await setup();
 
 					const response = await loggedInClient.delete(room.id);
