@@ -128,6 +128,8 @@ export class TypeGuard {
 		}
 
 		for (const key of keys) {
+			TypeGuard.checkString(key);
+
 			if (!(key in value)) {
 				return false;
 			}
@@ -137,16 +139,33 @@ export class TypeGuard {
 	}
 
 	/** @return value of requested key in object. */
-	static checkKeyInObject(value: unknown, key: string): unknown {
+	static checkKeyInObject<T>(value: T, key: string, toThrow?: Error): unknown {
 		TypeGuard.checkString(key);
 
 		const object = TypeGuard.checkDefinedObject(value);
 
-		if (!TypeGuard.isEachKeyInObject(value, [key])) {
-			throw new Error(`Object has no ${key}.`);
+		if (!TypeGuard.isEachKeyInObject(object, [key])) {
+			throw toThrow || new Error(`Object has no ${key}.`);
 		}
 
 		return object[key];
+	}
+
+	static checkKeysInObject<T extends Record<string, unknown>>(value: unknown, keys: (keyof T)[], toThrow?: Error): T {
+		const object = TypeGuard.checkDefinedObject(value);
+
+		if (!TypeGuard.isEachKeyInObject(object, keys)) {
+			throw (
+				toThrow ||
+				new Error(
+					`Object has missing key. Required are: ${JSON.stringify(keys)}. Get object keys: ${JSON.stringify(
+						Object.keys(object)
+					)}`
+				)
+			);
+		}
+
+		return object;
 	}
 
 	// add additional method checkKeysInObject with key array see use case for example in method mapEtherpadSessionToSession
