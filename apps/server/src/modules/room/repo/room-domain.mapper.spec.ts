@@ -61,5 +61,21 @@ describe('RoomDomainMapper', () => {
 			expect(result.getProps().id).toBe('1');
 			expect(result.getProps().id).not.toBe(roomEntity.id);
 		});
+
+		it('should wrap the actual entity reference in the domain object', () => {
+			const roomEntity = new RoomEntity({
+				id: '1',
+				name: 'Test Room',
+				color: '#FF0000',
+				startDate: new Date('2023-01-01'),
+				untilDate: new Date('2023-12-31'),
+			});
+
+			const result = RoomDomainMapper.mapEntityToDo(roomEntity);
+			// @ts-expect-error check necessary
+			const { props } = result;
+
+			expect(props === roomEntity).toBe(true);
+		});
 	});
 });
