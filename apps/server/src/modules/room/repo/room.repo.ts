@@ -1,4 +1,4 @@
-import { QueryOrder } from '@mikro-orm/core';
+import { QueryOrder, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -37,5 +37,22 @@ export class RoomRepo {
 		const domainobject = RoomDomainMapper.mapEntityToDo(entity);
 
 		return domainobject;
+	}
+
+	public async delete(room: Room | Room[]): Promise<void> {
+		const rooms = Utils.asArray(room);
+
+		rooms.forEach((r) => {
+			this.em.remove(this.getProps(r));
+		});
+
+		await this.em.flush();
+	}
+
+	private getProps(room: Room): RoomEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } = room;
+		return props as RoomEntity;
 	}
 }

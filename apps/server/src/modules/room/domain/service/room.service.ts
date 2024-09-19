@@ -15,9 +15,13 @@ export class RoomService {
 		return rooms;
 	}
 
-	public async getRoomDetails(roomId: EntityId): Promise<Room> {
+	public async getSingleRoom(roomId: EntityId): Promise<Room> {
 		const room = await this.roomRepo.findById(roomId);
 
 		return room;
+	}
+
+	public async deleteRoom(room: Room): Promise<void> {
+		await this.roomRepo.delete(room);
 	}
 }

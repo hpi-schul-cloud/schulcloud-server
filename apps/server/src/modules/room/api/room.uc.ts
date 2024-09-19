@@ -24,13 +24,23 @@ export class RoomUc {
 		return rooms;
 	}
 
-	public async getRoomDetails(userId: EntityId, roomId: EntityId): Promise<Room> {
+	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<Room> {
 		this.checkFeatureEnabled();
 
 		// TODO check authorization
 
-		const room = await this.roomService.getRoomDetails(roomId);
+		const room = await this.roomService.getSingleRoom(roomId);
 		return room;
+	}
+
+	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
+		this.checkFeatureEnabled();
+
+		// TODO check authorization
+
+		const room = await this.roomService.getSingleRoom(roomId);
+
+		await this.roomService.deleteRoom(room);
 	}
 
 	private checkFeatureEnabled(): void {

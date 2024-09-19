@@ -1,6 +1,7 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
 	Controller,
+	Delete,
 	ForbiddenException,
 	Get,
 	HttpStatus,
@@ -53,16 +54,28 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getRoomDetails(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.getRoomDetails(currentUser.userId, urlParams.roomId);
+		const room = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
 		const response = RoomMapper.mapToRoomDetailsResponse(room);
 
 		return response;
+	}
+
+	@Delete(':roomId')
+	@ApiOperation({ summary: 'Delete a room' })
+	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Deletion successful' })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
+		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
 	}
 }
