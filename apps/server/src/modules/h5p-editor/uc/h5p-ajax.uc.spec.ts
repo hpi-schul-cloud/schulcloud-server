@@ -7,6 +7,7 @@ import { UserDO } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules/user';
+import { ICurrentUser } from '@infra/auth-guard';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -67,12 +68,13 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling GET', () => {
-		const userMock = {
+		const userMock: ICurrentUser = {
 			userId: 'dummyId',
 			roles: [],
 			schoolId: 'dummySchool',
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
+			impersonated: false,
 		};
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
@@ -109,12 +111,13 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling POST', () => {
-		const userMock = {
+		const userMock: ICurrentUser = {
 			userId: 'dummyId',
 			roles: [],
 			schoolId: 'dummySchool',
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
+			impersonated: false,
 		};
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
