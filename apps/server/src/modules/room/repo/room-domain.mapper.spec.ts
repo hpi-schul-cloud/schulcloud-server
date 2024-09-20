@@ -1,4 +1,5 @@
 import { Room } from '../domain/do/room.do';
+import { RoomColor } from '../domain/type';
 import { RoomEntity } from './entity';
 import { RoomDomainMapper } from './room-domain.mapper';
 
@@ -8,9 +9,9 @@ describe('RoomDomainMapper', () => {
 			const roomEntity = {
 				id: '1',
 				name: 'Test Room',
-				color: '#FF0000',
+				color: RoomColor.RED,
 				startDate: new Date('2023-01-01'),
-				untilDate: new Date('2023-12-31'),
+				endDate: new Date('2023-12-31'),
 			} as RoomEntity;
 
 			const result = RoomDomainMapper.mapEntityToDo(roomEntity);
@@ -19,9 +20,9 @@ describe('RoomDomainMapper', () => {
 			expect(result.getProps()).toEqual({
 				id: '1',
 				name: 'Test Room',
-				color: '#FF0000',
+				color: RoomColor.RED,
 				startDate: new Date('2023-01-01'),
-				untilDate: new Date('2023-12-31'),
+				endDate: new Date('2023-12-31'),
 			});
 		});
 
@@ -29,9 +30,9 @@ describe('RoomDomainMapper', () => {
 			const existingRoom = new Room({
 				id: '1',
 				name: 'Existing Room',
-				color: '#00FF00',
+				color: RoomColor.GREEN,
 				startDate: new Date('2023-01-01'),
-				untilDate: new Date('2023-12-31'),
+				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 			});
@@ -39,9 +40,9 @@ describe('RoomDomainMapper', () => {
 			const roomEntity = {
 				id: '2',
 				name: 'Test Room',
-				color: '#FF0000',
+				color: RoomColor.RED,
 				startDate: new Date('2023-02-01'),
-				untilDate: new Date('2023-11-30'),
+				endDate: new Date('2023-11-30'),
 				domainObject: existingRoom,
 			} as RoomEntity;
 
@@ -52,9 +53,9 @@ describe('RoomDomainMapper', () => {
 			expect(result.getProps()).toEqual({
 				id: '1',
 				name: 'Existing Room',
-				color: '#00FF00',
+				color: RoomColor.GREEN,
 				startDate: new Date('2023-01-01'),
-				untilDate: new Date('2023-12-31'),
+				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 			});
@@ -66,9 +67,9 @@ describe('RoomDomainMapper', () => {
 			const roomEntity = {
 				id: '1',
 				name: 'Test Room',
-				color: '#FF0000',
+				color: RoomColor.RED,
 				startDate: new Date('2023-01-01'),
-				untilDate: new Date('2023-12-31'),
+				endDate: new Date('2023-12-31'),
 			} as RoomEntity;
 
 			const result = RoomDomainMapper.mapEntityToDo(roomEntity);

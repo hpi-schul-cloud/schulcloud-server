@@ -1,6 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { Room, RoomProps } from '../../domain/do/room.do';
+import { RoomColor } from '../../domain/type';
 
 @Entity({ tableName: 'rooms' })
 export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
@@ -8,7 +9,7 @@ export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
 	name!: string;
 
 	@Property({ nullable: false })
-	color!: string;
+	color!: RoomColor;
 
 	@Property({ nullable: true })
 	startDate?: Date;

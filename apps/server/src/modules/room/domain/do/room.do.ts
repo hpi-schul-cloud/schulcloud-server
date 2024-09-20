@@ -1,10 +1,11 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import { RoomColor } from '../type';
 
 export interface RoomProps extends AuthorizableObject {
 	id: EntityId;
 	name: string;
-	color: string;
+	color: RoomColor;
 	startDate?: Date;
 	untilDate?: Date;
 	createdAt: Date;
@@ -30,11 +31,11 @@ export class Room extends DomainObject<RoomProps> {
 		this.props.name = value;
 	}
 
-	public get color(): string {
+	public get color(): RoomColor {
 		return this.props.color;
 	}
 
-	public set color(value: string) {
+	public set color(value: RoomColor) {
 		this.props.color = value;
 	}
 

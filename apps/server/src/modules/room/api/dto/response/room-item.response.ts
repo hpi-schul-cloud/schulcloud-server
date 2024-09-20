@@ -1,4 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
+import { RoomColor } from '../../../domain/type';
 
 export class RoomItemResponse {
 	@ApiProperty()
@@ -7,8 +9,9 @@ export class RoomItemResponse {
 	@ApiProperty()
 	name: string;
 
-	@ApiProperty()
-	color: string;
+	@ApiProperty({ enum: RoomColor, enumName: 'RoomColor' })
+	@IsEnum(RoomColor)
+	color: RoomColor;
 
 	@ApiPropertyOptional({ type: Date })
 	startDate?: Date;
@@ -16,11 +19,11 @@ export class RoomItemResponse {
 	@ApiPropertyOptional({ type: Date })
 	untilDate?: Date;
 
-	@ApiPropertyOptional({ type: Date })
-	createdAt?: Date;
+	@ApiProperty({ type: Date })
+	createdAt: Date;
 
-	@ApiPropertyOptional({ type: Date })
-	updatedAt?: Date;
+	@ApiProperty({ type: Date })
+	updatedAt: Date;
 
 	constructor(room: RoomItemResponse) {
 		this.id = room.id;

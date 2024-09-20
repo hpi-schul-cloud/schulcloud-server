@@ -11,6 +11,8 @@ export class RoomMapper {
 			color: room.color,
 			startDate: room.startDate,
 			untilDate: room.untilDate,
+			createdAt: room.createdAt,
+			updatedAt: room.updatedAt,
 		});
 
 		return response;
@@ -32,6 +34,8 @@ export class RoomMapper {
 			color: room.color,
 			startDate: room.startDate,
 			untilDate: room.untilDate,
+			createdAt: room.createdAt,
+			updatedAt: room.updatedAt,
 		});
 
 		return response;
