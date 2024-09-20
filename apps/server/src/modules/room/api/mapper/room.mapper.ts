@@ -10,7 +10,7 @@ export class RoomMapper {
 			name: room.name,
 			color: room.color,
 			startDate: room.startDate,
-			untilDate: room.untilDate,
+			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
 		});
@@ -33,7 +33,7 @@ export class RoomMapper {
 			name: room.name,
 			color: room.color,
 			startDate: room.startDate,
-			untilDate: room.untilDate,
+			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
 		});

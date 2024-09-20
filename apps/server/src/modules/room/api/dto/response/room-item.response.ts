@@ -17,7 +17,7 @@ export class RoomItemResponse {
 	startDate?: Date;
 
 	@ApiPropertyOptional({ type: Date })
-	untilDate?: Date;
+	endDate?: Date;
 
 	@ApiProperty({ type: Date })
 	createdAt: Date;
@@ -31,7 +31,7 @@ export class RoomItemResponse {
 		this.color = room.color;
 
 		this.startDate = room.startDate;
-		this.untilDate = room.untilDate;
+		this.endDate = room.endDate;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
 	}

@@ -10,7 +10,7 @@ export const roomEntityFactory = EntityFactory.define<RoomEntity, RoomProps>(Roo
 		name: `room #${sequence}`,
 		color: [RoomColor.BLUE, RoomColor.RED, RoomColor.GREEN, RoomColor.MAGENTA][Math.floor(Math.random() * 4)],
 		startDate: new Date(),
-		untilDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+		endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

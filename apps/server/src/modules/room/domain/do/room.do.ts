@@ -7,7 +7,7 @@ export interface RoomProps extends AuthorizableObject {
 	name: string;
 	color: RoomColor;
 	startDate?: Date;
-	untilDate?: Date;
+	endDate?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -47,12 +47,12 @@ export class Room extends DomainObject<RoomProps> {
 		this.props.startDate = value;
 	}
 
-	public get untilDate(): Date | undefined {
-		return this.props.untilDate;
+	public get endDate(): Date | undefined {
+		return this.props.endDate;
 	}
 
-	public set untilDate(value: Date) {
-		this.props.untilDate = value;
+	public set endDate(value: Date) {
+		this.props.endDate = value;
 	}
 
 	public get createdAt(): Date {

@@ -77,7 +77,7 @@ describe('Room Controller (API)', () => {
 						name: room.name,
 						color: room.color,
 						startDate: room.startDate?.toISOString(),
-						untilDate: room.untilDate?.toISOString(),
+						endDate: room.endDate?.toISOString(),
 					};
 				});
 				const expectedResponse = {
