@@ -28,9 +28,7 @@ describe(SchoolExternalToolInvalidAvailableContextsException.name, () => {
 
 			expect(result).toEqual({
 				type: 'SCHOOL_EXTERNAL_TOOL_INVALID_AVAILABLE_CONTEXTS',
-				message: `The available contexts of school external tool: ${schoolExternalTool.availableContexts.join(
-					', '
-				)} has one or more invalid contexts (allowed contexts: ${validContexts.join(', ')})`,
+				message: 'The available contexts of school external tool has one or more invalid contexts',
 				stack: exception.stack,
 				data: {
 					schoolExternalToolId: schoolExternalTool.id,
