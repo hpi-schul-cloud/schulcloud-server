@@ -1,16 +1,18 @@
-import { CreateJwtPayload } from '@infra/auth-guard';
+import { CreateJwtPayload, JwtPayloadFactory } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@shared/domain/entity';
+import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Logger } from '@src/core/logger';
+import { AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { CurrentUserMapper } from '../mapper';
 import { LoginDto } from '../uc/dto';
-import { AuthenticationConfig } from '../authentication-config';
 
 @Injectable()
 export class AuthenticationService {
@@ -44,13 +46,14 @@ export class AuthenticationService {
 		return account;
 	}
 
-	public async generateJwt(createJwtPayload: CreateJwtPayload): Promise<LoginDto> {
+	public async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number): Promise<LoginDto> {
 		// TODO Fix me that no support JWT generation is possible
 		const jti = randomUUID();
 
 		const accessToken = this.jwtService.sign(createJwtPayload, {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
+			expiresIn,
 		});
 
 		const result = new LoginDto({ accessToken });
@@ -59,10 +62,19 @@ export class AuthenticationService {
 		return result;
 	}
 
-	public async generateSupportJwt(createJwtPayload: CreateJwtPayload): Promise<LoginDto> {
+	public async generateSupportJwt(supportUser: User, targetUser: User): Promise<LoginDto> {
+		const targetUserAccount = await this.accountService.findByUserIdOrFail(targetUser.id);
+
+		const currentUser = CurrentUserMapper.userToICurrentUser(
+			targetUserAccount.id,
+			targetUser,
+			false,
+			targetUserAccount.systemId
+		);
+		const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUser.id);
 		// TODO: Fix me i want to use Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') * 1000; over nest config
-		createJwtPayload.support = true;
-		const loginDto = this.generateJwt(createJwtPayload);
+		const expiresIn = this.configService.get<number>('JWT_LIFETIME_SUPPORT_SECONDS') * 1000;
+		const loginDto = this.generateJwt(createJwtPayload, expiresIn);
 
 		// a alert or write it with ignor log level is helpfull
 		// this.logger.warning(new CreateSupportJwtLoggable(createJwtPayload));

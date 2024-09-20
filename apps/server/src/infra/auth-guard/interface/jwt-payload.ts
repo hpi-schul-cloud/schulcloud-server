@@ -5,8 +5,8 @@ export interface CreateJwtPayload {
 	roles: string[];
 	systemId?: string; // without this the user needs to change his PW during first login
 	support?: boolean;
-	// support UserId is missed see featherJS
-	isExternalUser: boolean;
+	supportUserId?: string;
+	isExternalUser?: boolean;
 }
 
 export interface JwtPayload extends CreateJwtPayload {

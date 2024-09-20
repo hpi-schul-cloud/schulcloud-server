@@ -16,7 +16,7 @@ class JwtPayloadImpl implements JwtPayload {
 
 	support?: boolean;
 
-	isExternalUser: boolean;
+	isExternalUser?: boolean;
 
 	aud: string;
 
