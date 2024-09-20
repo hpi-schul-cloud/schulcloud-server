@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
@@ -77,7 +76,7 @@ describe('Oauth2Strategy', () => {
 			it('should return the ICurrentUser', async () => {
 				const { systemId, user, account, idToken } = setup();
 
-				const result: ICurrentUser = await strategy.validate({
+				const result = await strategy.validate({
 					body: { code: 'code', redirectUri: 'redirectUri', systemId },
 				});
 
@@ -89,6 +88,7 @@ describe('Oauth2Strategy', () => {
 					accountId: account.id,
 					externalIdToken: idToken,
 					isExternalUser: true,
+					impersonated: false,
 				});
 			});
 		});
