@@ -612,6 +612,40 @@ describe('TypeGuard', () => {
 		});
 	});
 
+	describe('isEachKeyInObject', () => {
+		describe('when passing value is an object that has all requested keys', () => {
+			it('should be return true', () => {
+				expect(TypeGuard.isEachKeyInObject({ x1: 'abc', x2: 'bcd' }, ['x1', 'x2'])).toBe(true);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isEachKeyInObject({ x1: 'abc', x2: 'bcd' }, ['x1'])).toBe(true);
+			});
+		});
+
+		describe('when passing params do not match', () => {
+			it('should be return false', () => {
+				expect(TypeGuard.isEachKeyInObject({ x1: 'abc', x2: 'bcd' }, ['x1', 'x2', 'x3'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isEachKeyInObject({ x1: 'abc', x2: 'bcd' }, 'x1' as unknown as string[])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isEachKeyInObject('string', ['x1', 'x2'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isEachKeyInObject(undefined, ['x1', 'x2'])).toBe(false);
+			});
+
+			it('should be return false', () => {
+				expect(TypeGuard.isEachKeyInObject(null, ['x1', 'x2'])).toBe(false);
+			});
+		});
+	});
+
 	describe('checkKeyInObject', () => {
 		describe('when passing value is an object that has the requested key', () => {
 			it('should be return the key value', () => {
