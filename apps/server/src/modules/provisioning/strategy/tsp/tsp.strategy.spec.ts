@@ -11,6 +11,7 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
+import jwt from 'jsonwebtoken';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -80,8 +81,55 @@ describe('TspProvisioningStrategy', () => {
 
 	describe('getData', () => {
 		describe('When called', () => {
-			it('should throw', () => {
-				expect(() => sut.getData({} as OauthDataStrategyInputDto)).toThrow();
+			const setup = async () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'tspIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'externalUserId',
+						sid: 'externalSchoolId',
+						ptscListRolle: 'teacher',
+						personVorname: 'firstName',
+						personNachname: 'lastName',
+						ptscSchuleNummer: 'externalSchoolId',
+					};
+				});
+
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+					roles: [RoleName.TEACHER],
+					firstName: 'firstName',
+					lastName: 'lastName',
+				});
+
+				const externalSchool = await schoolService.getSchoolById(input.system.systemId);
+				const schoolName = externalSchool.getProps().name;
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: schoolName,
+				});
+
+				return { input, user, school };
+			};
+
+			it('should return mapped oauthDataDto if input is valid', async () => {
+				const { input, user, school } = await setup();
+				const result = await sut.getData(input);
+
+				expect(result).toEqual({
+					system: input.system,
+					externalUser: user,
+					externalSchool: school,
+					externalGroups: undefined,
+					externalLicenses: undefined,
+				} as OauthDataDto);
 			});
 		});
 	});

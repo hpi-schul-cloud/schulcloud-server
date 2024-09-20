@@ -2,12 +2,24 @@ import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
-import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
+import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
+import { validate } from 'class-validator';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import {
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ProvisioningDto,
+	ProvisioningSystemDto,
+} from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
+import { TspJwtPayload } from './tsp.jwt.payload';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
@@ -24,10 +36,76 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		return SystemProvisioningStrategy.TSP;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	override getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		// TODO EW-1004
-		throw new NotImplementedException();
+	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
+		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
+
+		if (!decodedAccessToken || !decodedAccessToken.sub) {
+			throw new IdTokenExtractionFailureLoggableException('sub');
+		}
+
+		const payload = new TspJwtPayload(decodedAccessToken);
+		const errors = await validate(payload);
+
+		if (errors.length > 0) {
+			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property).join(', '));
+		}
+
+		/* example payload access token:
+			"sub": "TSPUserId",
+			 "resource_access": {
+			"tis-ci-schulcloud-ad52150a5e48": {
+			"roles": [
+				"Lehrer",
+				"Admin"
+			]
+			}
+			},
+			"sid": "8c3c84ba-65a7-4618-a444-4dfc977a7ba0", provisioning system id => strategy tsp
+			"ptscListRolle": "Lehrer,Admin",
+			"personVorname": "TSC",
+			"ptscSchuleNummer": "11111",
+			"personNachname": "Admin"
+			"ptscListKlasseId": [...]
+		 */
+
+		const provisioningSystemDto = new ProvisioningSystemDto({
+			systemId: payload.sid,
+			provisioningStrategy: SystemProvisioningStrategy.TSP,
+		});
+
+		const externalUserDto = new ExternalUserDto({
+			externalId: payload.sub,
+			firstName: payload.personVorname,
+			lastName: payload.personNachname,
+			roles: Object.values(RoleName).filter((role) => payload.ptscListRolle.split(',').includes(role)),
+		});
+
+		const externalSchool = await this.schoolService.getSchoolById(payload.ptscSchuleNummer);
+		const schoolName = externalSchool.getProps().name;
+		const externalSchoolDto = new ExternalSchoolDto({
+			externalId: payload.ptscSchuleNummer,
+			name: schoolName,
+		});
+
+		const oauthDataDto = new OauthDataDto({
+			system: provisioningSystemDto,
+			externalUser: externalUserDto,
+			externalSchool: externalSchoolDto,
+			// TODO externalClass: ExternalClassDto , after merging EW-999
+		});
+
+		return oauthDataDto;
+	}
+
+	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
+		if (email) {
+			const usersWithEmail: UserDO[] = await this.userService.findByEmail(email);
+			if (usersWithEmail.length > 0) {
+				const user: UserDO = usersWithEmail[0];
+				return ` [schoolId: ${user.schoolId}, currentLdapId: ${user.externalId ?? ''}]`;
+			}
+		}
+		return '';
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
