@@ -97,17 +97,6 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		return oauthDataDto;
 	}
 
-	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
-		if (email) {
-			const usersWithEmail: UserDO[] = await this.userService.findByEmail(email);
-			if (usersWithEmail.length > 0) {
-				const user: UserDO = usersWithEmail[0];
-				return ` [schoolId: ${user.schoolId}, currentLdapId: ${user.externalId ?? ''}]`;
-			}
-		}
-		return '';
-	}
-
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
 		const school = await this.findSchoolOrFail(data);
 		const user = await this.provisionUserAndAccount(data, school);
