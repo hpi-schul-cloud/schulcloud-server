@@ -80,14 +80,12 @@ export class TspProvisioningService {
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
 
 		let user: UserDO;
-		if (existingUser && school.externalId === data.externalSchool?.externalId) {
+		if (existingUser && existingUser.schoolId === school.id) {
 			// Case: User exists and school is the same -> update user
 			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
-		} else if (existingUser && school.id !== data.externalSchool?.externalId) {
+		} else if (existingUser && existingUser.schoolId !== school.id) {
 			// Case: User exists but school is different -> school change and update user
-			const newSchool = await this.findSchoolOrFail(data.system, data.externalSchool);
-
-			user = await this.updateUser(existingUser, data.externalUser, roleRefs, newSchool.id);
+			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
 		} else {
 			// Case: User does not exist yet -> create new user
 			user = await this.createUser(data.externalUser, roleRefs, school.id);
