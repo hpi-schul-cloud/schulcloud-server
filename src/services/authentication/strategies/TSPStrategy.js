@@ -1,5 +1,4 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const { ObjectId } = require('bson');
 const { NotAuthenticated, BadRequest } = require('../../../errors');
 const logger = require('../../../logger');
 const {
@@ -9,7 +8,6 @@ const {
 	findSchool,
 	ENTITY_SOURCE,
 	SOURCE_ID_ATTRIBUTE,
-	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
 
@@ -17,6 +15,7 @@ const decryptTicket = async (ticket) => {
 	try {
 		const verifiedToken = await verifyToken(ticket);
 		const decryptedTicket = await decryptToken(verifiedToken);
+
 		return decryptedTicket;
 	} catch (err) {
 		logger.warning('TSP ticket not valid.', { error: err });

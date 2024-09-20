@@ -1,12 +1,11 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { Account, AccountService } from '@modules/account';
-import { OAuthService, OAuthTokenDto } from '@modules/oauth';
+import { AccountService } from '@modules/account';
+import { OAuthService } from '@modules/oauth';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { OauthCurrentUser, StrategyType } from '../interface';
+import { StrategyType } from '../interface';
 import { AccountNotFoundLoggableException, SchoolInMigrationLoggableException } from '../loggable';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { CurrentUserMapper } from '../mapper';
@@ -17,18 +16,18 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 		super();
 	}
 
-	async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
+	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { systemId, redirectUri, code } = request.body;
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
+		const tokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
-		const user: UserDO | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
+		const user = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (!user || !user.id) {
 			throw new SchoolInMigrationLoggableException();
 		}
 
-		const account: Account | null = await this.accountService.findByUserId(user.id);
+		const account = await this.accountService.findByUserId(user.id);
 		if (!account) {
 			throw new AccountNotFoundLoggableException();
 		}
@@ -37,12 +36,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			throw new UserAccountDeactivatedLoggableException();
 		}
 
-		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-			account.id,
-			user,
-			systemId,
-			tokenDto.idToken
-		);
+		const currentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, systemId, tokenDto.idToken);
 
 		return currentUser;
 	}

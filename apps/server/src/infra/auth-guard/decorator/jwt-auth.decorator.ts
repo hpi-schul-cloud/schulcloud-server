@@ -9,7 +9,8 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { extractJwtFromHeader } from '@shared/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../guard';
-import { ICurrentUser, isICurrentUser } from '../interface';
+import { ICurrentUser } from '../interface';
+import { isCurrentUser } from '../mapper';
 
 /**
  * Authentication Decorator taking care of require authentication header to be present, setting up the user context and extending openAPI spec.
@@ -33,7 +34,7 @@ export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, 
 	const expressRequest = ctx.switchToHttp().getRequest<Request>();
 	const requestUser = expressRequest.user;
 
-	if (!requestUser || !isICurrentUser(requestUser)) {
+	if (!requestUser || !isCurrentUser(requestUser)) {
 		throw new UnauthorizedException(
 			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
 		);
