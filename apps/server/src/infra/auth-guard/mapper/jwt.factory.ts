@@ -29,7 +29,7 @@ export class JwtPayloadFactory {
 			schoolId: currentUser.schoolId,
 			roles: currentUser.roles,
 			systemId: currentUser.systemId,
-			support: currentUser.impersonated,
+			support: true,
 			supportUserId,
 		};
 

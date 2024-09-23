@@ -56,7 +56,7 @@ class JWT {
 			typ: 'access',
 		};
 
-		const iat = new Date().valueOf();
+		const iat = Math.floor(new Date().valueOf() / 1000);
 		const exp = iat + this.expiredOffset;
 
 		const jwtData = {
@@ -115,7 +115,7 @@ class SupportJWTService {
 	}
 
 	executeInfo(currentUserId, userId) {
-		const minutes = this.expiredOffset / (60 * 1000);
+		const minutes = this.expiredOffset / 60;
 		// eslint-disable-next-line max-len
 		logger.info(
 			`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`
@@ -157,7 +157,7 @@ class SupportJWTService {
 const supportJWTServiceSetup = (app) => {
 	const authenticationSecret = Configuration.get('AUTHENTICATION');
 	const audienceName = Configuration.get('JWT_AUD');
-	const jwtLifetimeInMs = Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') * 1000;
+	const jwtLifetimeInMs = Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS');
 
 	const instance = new SupportJWTService(authenticationSecret, audienceName, jwtLifetimeInMs);
 

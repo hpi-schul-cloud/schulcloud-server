@@ -1,4 +1,4 @@
-import { AuthenticationService, LoginDto } from '@modules/authentication';
+import { AuthenticationService } from '@modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
 import { Injectable } from '@nestjs/common';
@@ -14,7 +14,7 @@ export class ShdUc {
 		private readonly instanceService: InstanceService
 	) {}
 
-	public async createSupportJwt(params: TargetUserIdParams, supportUserId: EntityId): Promise<LoginDto> {
+	public async createSupportJwt(params: TargetUserIdParams, supportUserId: EntityId): Promise<string> {
 		const [supportUser, instance, targetUser] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(supportUserId),
 			this.instanceService.getInstance(),
@@ -26,8 +26,8 @@ export class ShdUc {
 		// please also check the usage in files-storage
 		this.authorizationService.checkPermission(supportUser, instance, authContext);
 
-		const loginDto = this.authenticationService.generateSupportJwt(supportUser, targetUser);
+		const jwtToken = this.authenticationService.generateSupportJwt(supportUser, targetUser);
 
-		return loginDto;
+		return jwtToken;
 	}
 }
