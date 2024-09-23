@@ -59,7 +59,7 @@ const globals = {
 	AWS_SECRET_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
 	AWS_REGION: process.env.AWS_REGION || 'eu-de',
 	AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
-	AUTHENTICATION: process.env.AUTHENTICATION,
+
 	//
 	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
 	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,

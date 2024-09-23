@@ -69,6 +69,7 @@ export interface SubmissionItemProps extends BoardNodeProps {
 export interface DeletedElementProps extends BoardNodeProps {
 	title: string;
 	deletedElementType: ContentElementType;
+	description?: string;
 }
 
 export interface MediaBoardProps extends BoardNodeProps {

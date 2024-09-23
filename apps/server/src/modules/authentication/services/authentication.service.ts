@@ -1,6 +1,5 @@
 import { CreateJwtPayload } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
-import type { ServerConfig } from '@modules/server';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -10,6 +9,7 @@ import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { LoginDto } from '../uc/dto';
+import { AuthenticationConfig } from '../authentication-config';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,10 +17,10 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<ServerConfig, true>
+		private readonly configService: ConfigService<AuthenticationConfig, true>
 	) {}
 
-	async loadAccount(username: string, systemId?: string): Promise<Account> {
+	public async loadAccount(username: string, systemId?: string): Promise<Account> {
 		let account: Account | undefined | null;
 
 		if (systemId) {
@@ -40,22 +40,21 @@ export class AuthenticationService {
 		return account;
 	}
 
-	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
+	public async generateJwt(createJwtPayload: CreateJwtPayload): Promise<LoginDto> {
 		const jti = randomUUID();
 
-		const result = new LoginDto({
-			accessToken: this.jwtService.sign(user, {
-				subject: user.accountId,
-				jwtid: jti,
-			}),
+		const accessToken = this.jwtService.sign(createJwtPayload, {
+			subject: createJwtPayload.accountId,
+			jwtid: jti,
 		});
 
-		await this.jwtWhitelistAdapter.addToWhitelist(user.accountId, jti);
+		const result = new LoginDto({ accessToken });
+		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
 
 		return result;
 	}
 
-	async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
+	public async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
 
 		if (this.isValidJwt(decodedJwt)) {
@@ -67,7 +66,7 @@ export class AuthenticationService {
 		return typeof decodedJwt?.jti === 'string' && typeof decodedJwt?.accountId === 'string';
 	}
 
-	checkBrutForce(account: Account): void {
+	public checkBrutForce(account: Account): void {
 		if (account.lasttriedFailedLogin) {
 			const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
 
@@ -78,19 +77,19 @@ export class AuthenticationService {
 		}
 	}
 
-	async updateLastLogin(accountId: string): Promise<void> {
+	public async updateLastLogin(accountId: string): Promise<void> {
 		await this.accountService.updateLastLogin(accountId, new Date());
 	}
 
-	async updateLastTriedFailedLogin(id: string): Promise<void> {
+	public async updateLastTriedFailedLogin(id: string): Promise<void> {
 		await this.accountService.updateLastTriedFailedLogin(id, new Date());
 	}
 
-	normalizeUsername(username: string): string {
+	public normalizeUsername(username: string): string {
 		return username.trim().toLowerCase();
 	}
 
-	normalizePassword(password: string): string {
+	public normalizePassword(password: string): string {
 		return password.trim();
 	}
 }
