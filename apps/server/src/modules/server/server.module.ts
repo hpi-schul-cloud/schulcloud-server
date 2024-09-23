@@ -27,6 +27,7 @@ import { OauthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
+import { RosterModule } from '@modules/roster/roster.module';
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
@@ -98,6 +99,7 @@ const serverModules = [
 	AlertModule,
 	UserLicenseModule,
 	RoomApiModule,
+	RosterModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

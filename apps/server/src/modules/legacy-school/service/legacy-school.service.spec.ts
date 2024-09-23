@@ -3,17 +3,25 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
-import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory, setupEntities } from '@shared/testing';
+import { StorageProviderRepo } from '@shared/repo/storageprovider';
+import {
+	federalStateFactory,
+	legacySchoolDoFactory,
+	schoolYearFactory,
+	setupEntities,
+	storageProviderFactory,
+} from '@shared/testing';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
-import { SchoolValidationService } from './validation/school-validation.service';
 import { SchoolYearService } from './school-year.service';
+import { SchoolValidationService } from './validation/school-validation.service';
 
 describe('LegacySchoolService', () => {
 	let module: TestingModule;
 	let schoolService: LegacySchoolService;
 
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
+	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
 	let schoolValidationService: DeepMocked<SchoolValidationService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -25,6 +33,10 @@ describe('LegacySchoolService', () => {
 				{
 					provide: LegacySchoolRepo,
 					useValue: createMock<LegacySchoolRepo>(),
+				},
+				{
+					provide: StorageProviderRepo,
+					useValue: createMock<StorageProviderRepo>(),
 				},
 				{
 					provide: SchoolValidationService,
@@ -42,6 +54,7 @@ describe('LegacySchoolService', () => {
 		}).compile();
 
 		schoolRepo = module.get(LegacySchoolRepo);
+		storageProviderRepo = module.get(StorageProviderRepo);
 		schoolService = module.get(LegacySchoolService);
 		schoolValidationService = module.get(SchoolValidationService);
 		federalStateService = module.get(FederalStateService);
@@ -360,29 +373,77 @@ describe('LegacySchoolService', () => {
 	});
 
 	describe('create school', () => {
-		it('should return school', async () => {
-			const name = 'Hogwarts';
-			const federalStateName = 'maybescottland?';
-			const federalState = federalStateFactory.build({ name: federalStateName });
-			const year = schoolYearFactory.build();
-			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
-			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+		describe('when a school is created', () => {
+			const setup = () => {
+				const name = 'Hogwarts';
+				const federalStateName = 'maybescottland?';
+				const federalState = federalStateFactory.build({ name: federalStateName });
+				const year = schoolYearFactory.build();
+				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+				const storageProvider = storageProviderFactory.build();
+				storageProviderRepo.findAll.mockResolvedValue([storageProvider]);
+				return { name, federalStateName, federalState };
+			};
 
-			const school = await schoolService.createSchool({ name, federalStateName });
-			expect(school.name).toEqual(name);
-			expect(school.federalState).toEqual(federalState);
+			it('should return school', async () => {
+				const { name, federalStateName, federalState } = setup();
+
+				const school = await schoolService.createSchool({ name, federalStateName });
+				expect(school.name).toEqual(name);
+				expect(school.federalState).toEqual(federalState);
+				expect(school.fileStorageType).toEqual('awsS3');
+				expect(school.storageProvider).toBeDefined();
+			});
+
+			it('should persist school', async () => {
+				const { name, federalStateName } = setup();
+
+				const school = await schoolService.createSchool({ name, federalStateName });
+				expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			});
+
+			it('should call federalStateService.findFederalStateByName', async () => {
+				const { name, federalStateName } = setup();
+
+				await schoolService.createSchool({ name, federalStateName });
+				expect(federalStateService.findFederalStateByName).toHaveBeenCalledWith(federalStateName);
+			});
+
+			it('should call schoolYearService.getCurrentOrNextSchoolYear', async () => {
+				const { name, federalStateName } = setup();
+
+				await schoolService.createSchool({ name, federalStateName });
+				expect(schoolYearService.getCurrentOrNextSchoolYear).toHaveBeenCalled();
+			});
+
+			it('should call storageProviderRepo.findAll', async () => {
+				const { name, federalStateName } = setup();
+
+				await schoolService.createSchool({ name, federalStateName });
+				expect(storageProviderRepo.findAll).toHaveBeenCalled();
+			});
 		});
 
-		it('should persist school', async () => {
-			const name = 'Hogwarts';
-			const federalStateName = 'maybescottland?';
-			const federalState = federalStateFactory.build({ name: federalStateName });
-			const year = schoolYearFactory.build();
-			federalStateService.findFederalStateByName.mockResolvedValue(federalState);
-			schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+		describe('when no storage provider is found', () => {
+			const setup = () => {
+				const name = 'Hogwarts';
+				const federalStateName = 'maybescottland?';
+				const federalState = federalStateFactory.build({ name: federalStateName });
+				const year = schoolYearFactory.build();
+				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
+				storageProviderRepo.findAll.mockResolvedValue([]);
+				return { name, federalStateName };
+			};
 
-			const school = await schoolService.createSchool({ name, federalStateName });
-			expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			it('should throw error', async () => {
+				const { name, federalStateName } = setup();
+
+				await expect(schoolService.createSchool({ name, federalStateName })).rejects.toThrowError(
+					'No storage providers found'
+				);
+			});
 		});
 	});
 });
