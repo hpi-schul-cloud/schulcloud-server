@@ -65,8 +65,6 @@ describe('Room Controller (API)', () => {
 
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();

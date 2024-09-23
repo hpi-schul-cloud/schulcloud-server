@@ -4,8 +4,9 @@ import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { IFindOptions } from '@shared/domain/interface';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { Room, RoomService } from '../domain';
+import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
+import { RoomColor } from '../domain/type';
 
 @Injectable()
 export class RoomUc {
@@ -24,12 +25,32 @@ export class RoomUc {
 		return rooms;
 	}
 
+	public async createRoom(userId: EntityId, props: RoomCreateProps): Promise<Room> {
+		this.checkFeatureEnabled();
+
+		// TODO check authorization
+
+		const room = await this.roomService.createRoom(props);
+		return room;
+	}
+
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<Room> {
 		this.checkFeatureEnabled();
 
 		// TODO check authorization
 
 		const room = await this.roomService.getSingleRoom(roomId);
+		return room;
+	}
+
+	public async updateRoom(userId: EntityId, roomId: EntityId, props: RoomUpdateProps): Promise<Room> {
+		this.checkFeatureEnabled();
+
+		// TODO check authorization
+
+		const room = await this.roomService.getSingleRoom(roomId);
+		await this.roomService.updateRoom(room, props);
+
 		return room;
 	}
 

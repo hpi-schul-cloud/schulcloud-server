@@ -1,7 +1,9 @@
 import { Page } from '@shared/domain/domainobject';
-import { RoomPaginationParams } from '../dto/request/room-pagination.params';
-import { RoomItemResponse, RoomListResponse, RoomDetailsResponse } from '../dto';
 import { Room } from '../../domain/do/room.do';
+import { RoomPaginationParams } from '../dto/request/room-pagination.params';
+import { RoomDetailsResponse } from '../dto/response/room-details.response';
+import { RoomItemResponse } from '../dto/response/room-item.response';
+import { RoomListResponse } from '../dto/response/room-list.response';
 
 export class RoomMapper {
 	static mapToRoomResponse(room: Room): RoomItemResponse {

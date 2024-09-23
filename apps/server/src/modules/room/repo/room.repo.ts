@@ -39,20 +39,29 @@ export class RoomRepo {
 		return domainobject;
 	}
 
+	public async save(room: Room | Room[]): Promise<void> {
+		const rooms = Utils.asArray(room);
+
+		rooms.forEach((r) => {
+			const entity = RoomDomainMapper.mapDoToEntity(r);
+			this.em.persist(entity);
+		});
+
+		await this.flush();
+	}
+
 	public async delete(room: Room | Room[]): Promise<void> {
 		const rooms = Utils.asArray(room);
 
 		rooms.forEach((r) => {
-			this.em.remove(this.getProps(r));
+			const entity = RoomDomainMapper.mapDoToEntity(r);
+			this.em.remove(entity);
 		});
 
 		await this.em.flush();
 	}
 
-	private getProps(room: Room): RoomEntity {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const { props } = room;
-		return props as RoomEntity;
+	private async flush(): Promise<void> {
+		return this.em.flush();
 	}
 }

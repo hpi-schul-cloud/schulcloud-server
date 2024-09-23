@@ -2,9 +2,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
-import { serverConfig, type ServerConfig, ServerTestModule } from '@src/modules/server';
-import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { RoomEntity } from '../../repo';
+import { roomEntityFactory } from '../../testing/room-entity.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -38,7 +38,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const someId = new ObjectId().toHexString();
-				const response = await testApiClient.get(someId);
+				const response = await testApiClient.delete(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -66,8 +66,6 @@ describe('Room Controller (API)', () => {
 
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();

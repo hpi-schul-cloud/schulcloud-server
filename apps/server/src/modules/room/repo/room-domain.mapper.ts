@@ -15,4 +15,23 @@ export class RoomDomainMapper {
 
 		return room;
 	}
+
+	static mapDoToEntity(room: Room): RoomEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } = room;
+
+		if (!(props instanceof RoomEntity)) {
+			const entity = new RoomEntity();
+			Object.assign(entity, props);
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			room.props = entity;
+
+			return entity;
+		}
+
+		return props;
+	}
 }
