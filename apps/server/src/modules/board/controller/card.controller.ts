@@ -167,10 +167,12 @@ export class CardController {
 				{
 					icon: '$mdiMagnify',
 					name: 'Personal Preference',
+					schoolExternalToolId: '647de374cf6a427b9d39e5ba',
 				},
 				{
 					icon: '$mdiTimerSandComplete',
 					name: 'Hier könnte ihre Werbung stehen!',
+					schoolExternalToolId: '644a46e5d0a8301e6cf25d86',
 				},
 			],
 			total: 2,
