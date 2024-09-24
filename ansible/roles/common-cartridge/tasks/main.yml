@@ -8,14 +8,28 @@
   tags:
     - configmap
 
+- name: External Secret
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: external-secret.yml.j2
+    state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+               else 'absent'}}"
+  when:
+    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+  tags:
+    - 1password
+
 - name: 1Password
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: onepassword.yml.j2
   when: 
-      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-      - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
+    - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    - WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
   tags:
     - 1password
 
