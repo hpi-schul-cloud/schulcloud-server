@@ -31,7 +31,6 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { UpdateAccountLoggableException } from '../loggables';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -1329,7 +1328,7 @@ describe('AccountService', () => {
 						passwordOld: defaultPassword,
 						firstName: 'failToUpdate',
 					})
-				).rejects.toThrow(UpdateAccountLoggableException);
+				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
 
@@ -1362,7 +1361,7 @@ describe('AccountService', () => {
 						passwordOld: defaultPassword,
 						email: 'fail@to.update',
 					})
-				).rejects.toThrow(UpdateAccountLoggableException);
+				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
 

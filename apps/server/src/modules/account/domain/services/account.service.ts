@@ -13,7 +13,13 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	TypeGuard,
+	ValidationError,
+} from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
@@ -43,7 +49,6 @@ import {
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { UpdateAccountLoggableException } from '../loggables';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -90,20 +95,20 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		if (updateUser) {
 			try {
 				await this.userRepo.save(user);
-			} catch (err) {
-				throw new UpdateAccountLoggableException(User.name, err);
-				// throw new EntityNotFoundError(User.name);
+			} catch (err: unknown) {
+				const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
+				throw new EntityNotFoundError(User.name, details);
 			}
 		}
 		if (updateAccount) {
 			try {
 				await this.save(accountSave);
-			} catch (err) {
+			} catch (err: unknown) {
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				throw new UpdateAccountLoggableException(AccountEntity.name, err);
-				// throw new EntityNotFoundError(AccountEntity.name);
+				const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
+				throw new EntityNotFoundError(AccountEntity.name, details);
 			}
 		}
 	}
