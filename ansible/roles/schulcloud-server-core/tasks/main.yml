@@ -22,6 +22,12 @@
     tags:
       - service
 
+  - name: Edu Sharing Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-svc.yml.j2
+
   - name: FwuLearningContentsService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -192,6 +198,19 @@
       apply: yes
     tags:
       - ingress
+
+  - name: Edu Sharing Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-deployment.yml.j2
+
+  - name: Edu Sharing Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-ingress.yml.j2
+      apply: yes
 
   - name: FwuLearningContentsDeployment
     kubernetes.core.k8s:

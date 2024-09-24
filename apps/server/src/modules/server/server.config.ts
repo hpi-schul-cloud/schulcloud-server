@@ -128,6 +128,7 @@ export interface ServerConfig
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
+	EDU_SHARING__API_URL: string;
 }
 
 const config: ServerConfig = {
@@ -304,6 +305,7 @@ const config: ServerConfig = {
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
+	EDU_SHARING__API_URL: Configuration.get('EDU_SHARING__API_URL') as string,
 };
 
 export const serverConfig = () => config;
