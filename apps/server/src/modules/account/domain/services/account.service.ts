@@ -43,6 +43,7 @@ import {
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { UpdateAccountLoggableException } from '../loggables';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -90,7 +91,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				await this.userRepo.save(user);
 			} catch (err) {
-				throw new EntityNotFoundError(User.name);
+				throw new UpdateAccountLoggableException(User.name, err);
+				// throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
@@ -100,7 +102,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new UpdateAccountLoggableException(AccountEntity.name, err);
+				// throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
 	}
