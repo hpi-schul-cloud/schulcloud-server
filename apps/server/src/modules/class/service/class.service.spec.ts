@@ -252,4 +252,49 @@ describe(ClassService.name, () => {
 			});
 		});
 	});
+
+	describe('findClassWithSchoolIdAndExternalId', () => {
+		describe('when searching for a class', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const externalId = new ObjectId().toHexString();
+
+				classesRepo.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
+
+				return {
+					schoolId,
+					externalId,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { schoolId, externalId } = setup();
+
+				const result = await service.findClassWithSchoolIdAndExternalId(schoolId, externalId);
+
+				expect(result).toBeNull();
+				expect(classesRepo.findClassWithSchoolIdAndExternalId).toHaveBeenCalledWith(schoolId, externalId);
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when saving classes', () => {
+			const setup = () => {
+				const classes = classFactory.buildList(3);
+
+				return {
+					classes,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { classes } = setup();
+
+				await service.save(classes);
+
+				expect(classesRepo.save).toHaveBeenCalledWith(classes);
+			});
+		});
+	});
 });

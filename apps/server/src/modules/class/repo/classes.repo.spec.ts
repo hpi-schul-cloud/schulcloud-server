@@ -6,6 +6,7 @@ import { TestingModule } from '@nestjs/testing/testing-module';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import { randomUUID } from 'crypto';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';
@@ -204,6 +205,68 @@ describe(ClassesRepo.name, () => {
 				const result = await repo.findClassById(class1.id);
 
 				expect(result?.id).toEqual(class1.id);
+			});
+		});
+	});
+
+	describe('findClassWithSchoolIdAndExternalId', () => {
+		describe('when class is found with schoolId and externalId', () => {
+			const setup = async () => {
+				const classes = classEntityFactory.buildListWithId(3, {
+					gradeLevel: 5,
+					sourceOptions: { tspUid: randomUUID() },
+				});
+
+				await em.persistAndFlush(classes);
+				em.clear();
+
+				return {
+					classes,
+				};
+			};
+
+			it('should return class', async () => {
+				const { classes } = await setup();
+				const class1 = classes[0];
+
+				const result = await repo.findClassWithSchoolIdAndExternalId(
+					class1.schoolId.toString(),
+					class1.sourceOptions?.tspUid || ''
+				);
+
+				expect(result).toEqual<Class>(ClassMapper.mapToDO(class1));
+			});
+		});
+
+		describe('when class is not found with schoolId and externalId', () => {
+			it('should return null', async () => {
+				const result = await repo.findClassWithSchoolIdAndExternalId(new ObjectId().toHexString(), randomUUID());
+
+				expect(result).toEqual(null);
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when saving a single class', () => {
+			const setup = () => {
+				const count = 3;
+				const classes = classEntityFactory.buildListWithId(count, { gradeLevel: 5 }).map((c) => ClassMapper.mapToDO(c));
+
+				return {
+					classes,
+					count,
+				};
+			};
+
+			it('should save the class', async () => {
+				const { classes, count } = setup();
+
+				await repo.save(classes);
+
+				const result = await em.count(ClassEntity, {});
+
+				expect(result).toEqual(count);
 			});
 		});
 	});
