@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/learnroom/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { CourseService } from '@modules/learnroom/service';
 import { LessonService } from '../service';
 import { LessonUC } from './lesson.uc';
 
@@ -190,6 +190,50 @@ describe('LessonUC', () => {
 				const { user, lesson } = setup();
 				const result = await lessonUC.getLesson(user.id, lesson.id);
 				expect(result).toEqual(lesson);
+			});
+		});
+	});
+
+	describe('getTasks', () => {
+		describe('when user is a valid teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const lesson = lessonFactory.buildWithId();
+				lessonService.findById.mockResolvedValueOnce(lesson);
+
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+
+				return { user, lesson };
+			};
+
+			it('should get user with permissions from authorizationService', async () => {
+				const { user } = setup();
+				await lessonUC.getTasks(user.id, 'lessonId');
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should get lesson from lessonService', async () => {
+				const { user, lesson } = setup();
+				await lessonUC.getTasks(user.id, lesson.id);
+				expect(lessonService.findById).toHaveBeenCalledWith(lesson.id);
+			});
+
+			it('should return check permission', async () => {
+				const { user, lesson } = setup();
+				await lessonUC.getTasks(user.id, lesson.id);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					expect.objectContaining({ ...user }),
+					expect.objectContaining({ ...lesson }),
+					AuthorizationContextBuilder.read([Permission.TOPIC_VIEW])
+				);
+			});
+
+			it('should return tasks', async () => {
+				const { user, lesson } = setup();
+				const result = await lessonUC.getTasks(user.id, lesson.id);
+				expect(result).toEqual(lesson.getLessonLinkedTasks().map((task) => task));
 			});
 		});
 	});
