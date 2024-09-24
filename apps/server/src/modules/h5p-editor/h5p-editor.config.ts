@@ -1,10 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
+import { AuthenticationConfig } from '@modules/authentication';
 import { LanguageType } from '@shared/domain/interface';
 import { CoreModuleConfig } from '@src/core';
 
-export interface H5PEditorConfig extends CoreModuleConfig, AuthorizationClientConfig {
+export interface H5PEditorConfig extends CoreModuleConfig, AuthorizationClientConfig, Partial<AuthenticationConfig> {
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
 }
@@ -13,10 +14,16 @@ export const authorizationClientConfig: AuthorizationClientConfig = {
 	basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 };
 
+export const authenticationConfig: Partial<AuthenticationConfig> = {
+	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
+	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
+};
+
 const h5pEditorConfig: H5PEditorConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('H5P_EDITOR__INCOMING_REQUEST_TIMEOUT') as number,
 	...authorizationClientConfig,
+	...authenticationConfig,
 };
 
 export const translatorConfig = {
