@@ -97,7 +97,7 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.CREATED);
 					await expect(em.findOneOrFail(RoomEntity, roomId)).resolves.toMatchObject({
 						id: roomId,
-						startDate: new Date(Date.parse('2024-10-01')),
+						startDate: new Date('2024-10-01'),
 					});
 				});
 
@@ -122,7 +122,7 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.CREATED);
 					await expect(em.findOneOrFail(RoomEntity, roomId)).resolves.toMatchObject({
 						id: roomId,
-						endDate: new Date(Date.parse('2024-10-20')),
+						endDate: new Date('2024-10-20'),
 					});
 				});
 
@@ -152,8 +152,8 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.CREATED);
 					await expect(em.findOneOrFail(RoomEntity, roomId)).resolves.toMatchObject({
 						id: roomId,
-						startDate: new Date(Date.parse('2024-10-01')),
-						endDate: new Date(Date.parse('2024-10-20')),
+						startDate: new Date('2024-10-01'),
+						endDate: new Date('2024-10-20'),
 					});
 				});
 			});

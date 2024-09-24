@@ -1,5 +1,6 @@
-import { Room } from '../domain/do/room.do';
+import { Room, RoomProps } from '../domain/do/room.do';
 import { RoomColor } from '../domain/type';
+import { roomEntityFactory, roomFactory } from '../testing';
 import { RoomEntity } from './entity';
 import { RoomDomainMapper } from './room-domain.mapper';
 
@@ -77,6 +78,39 @@ describe('RoomDomainMapper', () => {
 			const { props } = result;
 
 			expect(props === roomEntity).toBe(true);
+		});
+	});
+
+	describe('mapDoToEntity', () => {
+		describe('when domain object props are instanceof RoomEntity', () => {
+			it('should return the entity', () => {
+				const roomEntity = roomEntityFactory.build();
+				const room = new Room(roomEntity);
+
+				const result = RoomDomainMapper.mapDoToEntity(room);
+
+				expect(result).toBe(roomEntity);
+			});
+		});
+
+		describe('when domain object props are not instanceof RoomEntity', () => {
+			it('should convert them to an entity and return it', () => {
+				const roomEntity: RoomProps = {
+					id: '66d581c3ef74c548a4efea1d',
+					name: 'Test Room #1',
+					color: RoomColor.RED,
+					startDate: new Date('2023-01-01'),
+					endDate: new Date('2023-12-31'),
+					createdAt: new Date('2024-10-1'),
+					updatedAt: new Date('2024-10-1'),
+				};
+				const room = new Room(roomEntity);
+
+				const result = RoomDomainMapper.mapDoToEntity(room);
+
+				expect(result).toBeInstanceOf(RoomEntity);
+				expect(result).toMatchObject(roomEntity);
+			});
 		});
 	});
 });

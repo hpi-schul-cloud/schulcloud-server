@@ -7,7 +7,6 @@ import { Room } from '../domain/do/room.do';
 import { RoomDomainMapper } from './room-domain.mapper';
 import { RoomRepo } from './room.repo';
 import { roomEntityFactory } from '../testing';
-import { RoomEntity } from './entity/room.entity';
 
 describe('RoomRepo', () => {
 	let module: TestingModule;

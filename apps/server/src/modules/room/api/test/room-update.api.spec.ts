@@ -87,8 +87,8 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build({
-					startDate: new Date(Date.parse('2024-10-01')),
-					endDate: new Date(Date.parse('2024-10-20')),
+					startDate: new Date('2024-10-01'),
+					endDate: new Date('2024-10-20'),
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persistAndFlush([room, teacherAccount, teacherUser]);
@@ -137,7 +137,7 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
 						id: room.id,
-						startDate: new Date(Date.parse('2024-10-02')),
+						startDate: new Date('2024-10-02'),
 					});
 				});
 
@@ -176,7 +176,7 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
 						id: room.id,
-						endDate: new Date(Date.parse('2024-10-18')),
+						endDate: new Date('2024-10-18'),
 					});
 				});
 
@@ -220,8 +220,8 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
 						id: room.id,
-						startDate: new Date(Date.parse('2024-10-05')),
-						endDate: new Date(Date.parse('2024-10-18')),
+						startDate: new Date('2024-10-05'),
+						endDate: new Date('2024-10-18'),
 					});
 				});
 			});
