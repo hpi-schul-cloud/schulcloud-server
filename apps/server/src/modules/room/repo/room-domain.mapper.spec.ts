@@ -1,6 +1,6 @@
 import { Room, RoomProps } from '../domain/do/room.do';
 import { RoomColor } from '../domain/type';
-import { roomEntityFactory, roomFactory } from '../testing';
+import { roomEntityFactory } from '../testing';
 import { RoomEntity } from './entity';
 import { RoomDomainMapper } from './room-domain.mapper';
 
