@@ -6,7 +6,6 @@ import { IFindOptions } from '@shared/domain/interface';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
-import { RoomColor } from '../domain/type';
 
 @Injectable()
 export class RoomUc {

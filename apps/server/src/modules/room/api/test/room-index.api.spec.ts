@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { RoomListResponse } from '../dto';
+import { RoomListResponse } from '../dto/response/room-list.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
