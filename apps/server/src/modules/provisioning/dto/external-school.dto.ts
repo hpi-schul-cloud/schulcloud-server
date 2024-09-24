@@ -1,7 +1,7 @@
 export class ExternalSchoolDto {
 	externalId: string;
 
-	name: string;
+	name?: string;
 
 	officialSchoolNumber?: string;
 

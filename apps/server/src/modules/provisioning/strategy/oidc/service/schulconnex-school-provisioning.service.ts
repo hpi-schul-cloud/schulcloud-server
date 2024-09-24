@@ -53,6 +53,9 @@ export class SchulconnexSchoolProvisioningService {
 	}
 
 	private getSchoolName(externalSchool: ExternalSchoolDto): string {
+		if (!externalSchool.name) {
+			throw new Error('External school name is required');
+		}
 		const schoolName: string = externalSchool.location
 			? `${externalSchool.name} (${externalSchool.location})`
 			: externalSchool.name;

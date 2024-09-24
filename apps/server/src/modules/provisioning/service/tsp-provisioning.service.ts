@@ -47,7 +47,9 @@ export class TspProvisioningService {
 			if (currentClass) {
 				// Case: Class exists -> update class
 				currentClass.schoolId = school.id;
-				currentClass.name = clazz.name;
+				if (clazz.name) {
+					currentClass.name = clazz.name;
+				}
 				currentClass.year = school.currentYear?.id;
 				currentClass.source = this.ENTITY_SOURCE;
 				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });

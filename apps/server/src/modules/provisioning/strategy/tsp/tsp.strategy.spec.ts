@@ -8,6 +8,7 @@ import { userDoFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import jwt from 'jsonwebtoken';
 import {
+	ExternalClassDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
@@ -81,6 +82,7 @@ describe('TspProvisioningStrategy', () => {
 						personVorname: 'firstName',
 						personNachname: 'lastName',
 						ptscSchuleNummer: 'externalSchoolId',
+						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
 					};
 				});
 
@@ -98,11 +100,15 @@ describe('TspProvisioningStrategy', () => {
 					name: schoolName,
 				});
 
-				return { input, user, school };
+				const externalClass1 = new ExternalClassDto({ externalId: 'externalClassId1' });
+				const externalClass2 = new ExternalClassDto({ externalId: 'externalClassId2' });
+				const externalClasses = [externalClass1, externalClass2];
+
+				return { input, user, school, externalClasses };
 			};
 
 			it('should return mapped oauthDataDto if input is valid', async () => {
-				const { input, user, school } = await setup();
+				const { input, user, school, externalClasses } = await setup();
 				const result = await sut.getData(input);
 
 				expect(result).toEqual({
@@ -111,7 +117,72 @@ describe('TspProvisioningStrategy', () => {
 					externalSchool: school,
 					externalGroups: undefined,
 					externalLicenses: undefined,
+					externalClasses,
 				} as OauthDataDto);
+			});
+		});
+
+		// AI: next 35 lines
+		describe('When idToken is invalid', () => {
+			it('should throw', async () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'invalidIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => null);
+
+				await expect(sut.getData(input)).rejects.toThrow();
+			});
+		});
+
+		describe('When idToken is missing sub', () => {
+			it('should throw', async () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'invalidIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {};
+				});
+
+				await expect(sut.getData(input)).rejects.toThrow();
+			});
+		});
+
+		describe('When payload is invalid', () => {
+			it('should throw', async () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'tspIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'externalUserId',
+						sid: 1000,
+						ptscListRolle: 'teacher',
+						personVorname: 'firstName',
+						personNachname: 'lastName',
+						ptscSchuleNummer: 'externalSchoolId',
+						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
+					};
+				});
+
+				await expect(sut.getData(input)).rejects.toThrow();
 			});
 		});
 	});

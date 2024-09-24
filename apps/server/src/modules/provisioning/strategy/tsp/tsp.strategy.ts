@@ -6,6 +6,7 @@ import { SchoolService } from '@src/modules/school';
 import { validate } from 'class-validator';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
+	ExternalClassDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
@@ -45,24 +46,6 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property).join(', '));
 		}
 
-		/* example payload access token:
-			"sub": "TSPUserId",
-			 "resource_access": {
-			"tis-ci-schulcloud-ad52150a5e48": {
-			"roles": [
-				"Lehrer",
-				"Admin"
-			]
-			}
-			},
-			"sid": "8c3c84ba-65a7-4618-a444-4dfc977a7ba0", provisioning system id => strategy tsp
-			"ptscListRolle": "Lehrer,Admin",
-			"personVorname": "TSC",
-			"ptscSchuleNummer": "11111",
-			"personNachname": "Admin"
-			"ptscListKlasseId": [...]
-		 */
-
 		const provisioningSystemDto = new ProvisioningSystemDto({
 			systemId: payload.sid,
 			provisioningStrategy: SystemProvisioningStrategy.TSP,
@@ -82,11 +65,15 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			name: schoolName,
 		});
 
+		const externalClassDtoList = payload.ptscListKlasseId.map(
+			(classId: string) => new ExternalClassDto({ externalId: classId })
+		);
+
 		const oauthDataDto = new OauthDataDto({
 			system: provisioningSystemDto,
 			externalUser: externalUserDto,
 			externalSchool: externalSchoolDto,
-			// TODO externalClass: ExternalClassDto , after merging EW-999
+			externalClasses: externalClassDtoList,
 		});
 
 		return oauthDataDto;
