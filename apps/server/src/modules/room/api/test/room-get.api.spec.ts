@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { RoomDetailsResponse } from '../dto/response/room-details.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -96,6 +97,8 @@ describe('Room Controller (API)', () => {
 					color: room.color,
 					startDate: room.startDate?.toISOString(),
 					endDate: room.endDate?.toISOString(),
+					createdAt: room.createdAt.toISOString(),
+					updatedAt: room.updatedAt.toISOString(),
 				};
 
 				return { loggedInClient, room, expectedResponse };
