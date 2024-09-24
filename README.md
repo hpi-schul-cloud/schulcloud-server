@@ -22,7 +22,7 @@ Note that not all the .md file here are up to date.
 ## NestJS Console Application
 
 ### Sync console
-> Find the here [Documentation](./apps/server/src/infra/sync/console/README.md)
+> Find the [Documentation](./apps/server/src/infra/sync/console/README.md) here.
 
 
 ## Feathers application
