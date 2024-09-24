@@ -31,6 +31,7 @@ export class JwtPayloadFactory {
 			systemId: currentUser.systemId,
 			support: true,
 			supportUserId,
+			isExternalUser: currentUser.isExternalUser,
 		};
 
 		const createJwtPayload = JwtPayloadFactory.build(data);

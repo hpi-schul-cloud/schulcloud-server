@@ -4,9 +4,9 @@ export interface CreateJwtPayload {
 	schoolId: string;
 	roles: string[];
 	systemId?: string; // without this the user needs to change his PW during first login
-	support?: boolean;
+	support: boolean;
 	supportUserId?: string;
-	isExternalUser?: boolean;
+	isExternalUser: boolean;
 }
 
 export interface JwtPayload extends CreateJwtPayload {

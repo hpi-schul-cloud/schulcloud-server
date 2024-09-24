@@ -46,10 +46,8 @@ export class AuthenticationService {
 		return account;
 	}
 
-	public async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number): Promise<string> {
-		// TODO Fix me that no support JWT generation is possible
+	private async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number): Promise<string> {
 		const jti = randomUUID();
-
 		const accessToken = this.jwtService.sign(createJwtPayload, {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
