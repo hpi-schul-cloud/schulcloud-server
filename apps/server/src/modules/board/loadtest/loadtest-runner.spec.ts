@@ -17,9 +17,10 @@ describe('LoadtestRunner', () => {
 	});
 
 	const setup = () => {
-		const runBoardTest = jest.fn().mockResolvedValue({ responseTimes: [] });
+		const runBoardTest = jest.fn().mockResolvedValue({});
+		const initializeLoadtestClients = jest.fn();
 		const createBoardLoadTest = jest.fn().mockImplementation(() => {
-			return { runBoardTest };
+			return { runBoardTest, initializeLoadtestClients };
 		});
 		const socketConfiguration = { baseUrl: 'http://localhost', path: '', token: '' };
 		const socketConnectionManager = new SocketConnectionManager(socketConfiguration);

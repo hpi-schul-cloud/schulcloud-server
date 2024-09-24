@@ -12,43 +12,39 @@ const SIMULATE_USER_TIME_MS = 120000;
 export class BoardLoadTest {
 	private columns: { id: string; cards: { id: string }[] }[] = [];
 
-	constructor(private socketConnectionManager: SocketConnectionManager, private onError: Callback) {}
+	private userProfiles: UserProfile[] = [];
 
-	async runBoardTest(boardId: string, configuration: ClassDefinition): Promise<void> {
+	private loadtestClients: LoadtestClient[] = [];
+
+	constructor(
+		private socketConnectionManager: SocketConnectionManager,
+		classDefinition: ClassDefinition,
+		private onError: Callback
+	) {
+		this.userProfiles = duplicateUserProfiles(classDefinition.users);
+	}
+
+	async runBoardTest(): Promise<void> {
 		try {
-			const userProfiles = duplicateUserProfiles(configuration.users);
-			const userClients = await this.initializeLoadtestClients(userProfiles.length, boardId);
-			await this.simulateUsersActions(userClients, userProfiles);
+			await this.simulateUsersActions();
 		} catch (err) {
 			this.onError((err as Error).message);
 		}
 	}
 
-	async initializeLoadtestClients(amount: number, boardId: string): Promise<LoadtestClient[]> {
-		const connections = await this.socketConnectionManager.createConnections(amount);
-		const promises = connections.map((socketConnection: SocketConnection) =>
-			this.initializeLoadtestClient(socketConnection, boardId)
-		);
-		const results = await Promise.all(promises);
-		return results;
+	async initializeLoadtestClients(boardId: string): Promise<void> {
+		const connections = await this.socketConnectionManager.createConnections(this.userProfiles.length);
+		this.loadtestClients = connections.map((socketConnection: SocketConnection) => {
+			const loadtestClient = createLoadtestClient(socketConnection, boardId);
+			return loadtestClient;
+		});
 	}
 
-	async initializeLoadtestClient(socketConnection: SocketConnection, boardId: string): Promise<LoadtestClient> {
-		/* istanbul ignore next */
-		const loadtestClient = createLoadtestClient(socketConnection, boardId);
-
-		await sleep(Math.ceil(Math.random() * 20000));
-		/* istanbul ignore next */
-		await loadtestClient.fetchBoard();
-		/* istanbul ignore next */
-		return loadtestClient;
-	}
-
-	async simulateUsersActions(loadtestClients: LoadtestClient[], userProfiles: UserProfile[]) {
+	async simulateUsersActions() {
 		// eslint-disable-next-line arrow-body-style
-		const promises = loadtestClients.map((loadtestClient, index) => {
+		const promises = this.loadtestClients.map((loadtestClient, index) => {
 			/* istanbul ignore next */
-			return this.simulateUserActions(loadtestClient, userProfiles[index]);
+			return this.simulateUserActions(loadtestClient, this.userProfiles[index]);
 		});
 		await Promise.all(promises);
 	}
@@ -56,7 +52,10 @@ export class BoardLoadTest {
 	async simulateUserActions(loadtestClient: LoadtestClient, userProfile: UserProfile, actionsMax = 1000000) {
 		const startTime = performance.now();
 
-		await sleep(Math.ceil(Math.random() * 3000));
+		await sleep(Math.ceil(Math.random() * 20000));
+
+		/* istanbul ignore next */
+		await loadtestClient.fetchBoard();
 
 		let actionCount = 0;
 		while (performance.now() - startTime < SIMULATE_USER_TIME_MS && actionCount < actionsMax) {

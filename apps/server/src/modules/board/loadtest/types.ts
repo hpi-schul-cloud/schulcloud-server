@@ -52,5 +52,9 @@ export type SocketConfiguration = {
 export type Callback = (...args: unknown[]) => void;
 
 export interface CreateBoardLoadTest {
-	(socketConnectionManager: SocketConnectionManager, onError: Callback): BoardLoadTest;
+	(
+		socketConnectionManager: SocketConnectionManager,
+		classDefinition: ClassDefinition,
+		onError: Callback
+	): BoardLoadTest;
 }
