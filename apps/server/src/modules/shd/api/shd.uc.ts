@@ -1,4 +1,4 @@
-import { AuthenticationService } from '@modules/authentication';
+import { AuthenticationService, LoginDto } from '@modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
 import { Injectable } from '@nestjs/common';
@@ -14,7 +14,7 @@ export class ShdUc {
 		private readonly instanceService: InstanceService
 	) {}
 
-	public async createSupportJwt(params: TargetUserIdParams, supportUserId: EntityId): Promise<string> {
+	public async createSupportJwt(params: TargetUserIdParams, supportUserId: EntityId): Promise<LoginDto> {
 		const [supportUser, instance, targetUser] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(supportUserId),
 			this.instanceService.getInstance(),
@@ -22,12 +22,11 @@ export class ShdUc {
 		]);
 
 		const authContext = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
-		// Please add/check rule for instance! Currently the shd user is not added to this group as one that has write access for instance. Therefore we must define something.
-		// please also check the usage in files-storage
 		this.authorizationService.checkPermission(supportUser, instance, authContext);
 
-		const jwtToken = this.authenticationService.generateSupportJwt(supportUser, targetUser);
+		const jwtToken = await this.authenticationService.generateSupportJwt(supportUser, targetUser);
+		const loginDto = new LoginDto({ accessToken: jwtToken });
 
-		return jwtToken;
+		return loginDto;
 	}
 }
