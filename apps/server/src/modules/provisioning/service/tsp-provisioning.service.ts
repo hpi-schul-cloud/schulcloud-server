@@ -114,7 +114,7 @@ export class TspProvisioningService {
 		schoolId: string
 	): Promise<UserDO> {
 		if (!externalUser.firstName || !externalUser.lastName || !externalUser.email) {
-			throw new BadDataLoggableException('User firstname, lastname and email is missing', { externalUser });
+			throw new BadDataLoggableException('User firstname, lastname or email is missing', { externalUser });
 		}
 
 		const newUser = new UserDO({
