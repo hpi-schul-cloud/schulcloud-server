@@ -13,7 +13,8 @@ export class JwtPayloadFactory {
 			schoolId: currentUser.schoolId,
 			roles: currentUser.roles,
 			systemId: currentUser.systemId,
-			support: currentUser.impersonated,
+			support: false,
+			supportUserId: undefined,
 			isExternalUser: currentUser.isExternalUser,
 		};
 

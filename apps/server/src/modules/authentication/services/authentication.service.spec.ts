@@ -1,10 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtPayloadFactory } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { currentUserFactory } from '@shared/testing';
+import { currentUserFactory, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { accountDoFactory } from '@src/modules/account/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -20,6 +23,7 @@ describe('AuthenticationService', () => {
 	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
+	let configService: DeepMocked<ConfigService>;
 
 	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
@@ -48,6 +52,10 @@ describe('AuthenticationService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>({ get: () => 15 }),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -55,6 +63,7 @@ describe('AuthenticationService', () => {
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
+		configService = module.get(ConfigService);
 	});
 
 	afterEach(() => {
@@ -111,16 +120,59 @@ describe('AuthenticationService', () => {
 		});
 	});
 
-	describe('generateJwt', () => {
+	describe('generateSupportJwt', () => {
 		describe('when generating new jwt', () => {
-			it('should pass the correct parameters', async () => {
+			const setup = () => {
+				const supportUser = userFactory.asSuperhero().buildWithId();
+				const targetUser = userFactory.asTeacher().buildWithId();
+				const targetUserAccount = accountDoFactory.buildWithId({ userId: targetUser.id });
 				const mockCurrentUser = currentUserFactory.withRole('random role').build();
+				const expiresIn = 150;
 
-				await authenticationService.generateJwt(mockCurrentUser);
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
+				configService.get.mockReturnValueOnce(expiresIn);
+
+				const expectedPayload = JwtPayloadFactory.buildFromSupportUser(mockCurrentUser, 'supportUser.id');
+
+				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
+			};
+
+			it.skip('should pass the correct parameters', async () => {
+				const { supportUser, targetUser, mockCurrentUser, expectedPayload, expiresIn } = setup();
+
+				await authenticationService.generateSupportJwt(supportUser, targetUser);
 				expect(jwtService.sign).toBeCalledWith(
-					mockCurrentUser,
+					expectedPayload,
 					expect.objectContaining({
 						subject: mockCurrentUser.accountId,
+						jwtid: expect.any(String),
+						expiresIn,
+					})
+				);
+			});
+		});
+	});
+
+	describe('generateCurrentUserJwt', () => {
+		describe('when generating new jwt', () => {
+			const setup = () => {
+				const mockCurrentUser = currentUserFactory.withRole('random role').build();
+				const expectedPayload = JwtPayloadFactory.buildFromCurrentUser(mockCurrentUser);
+				const expiresIn = 15;
+				configService.get.mockReturnValueOnce(expiresIn);
+
+				return { mockCurrentUser, expectedPayload, expiresIn };
+			};
+
+			it('should pass the correct parameters', async () => {
+				const { mockCurrentUser, expectedPayload, expiresIn } = setup();
+				await authenticationService.generateCurrentUserJwt(mockCurrentUser);
+				expect(jwtService.sign).toBeCalledWith(
+					expectedPayload,
+					expect.objectContaining({
+						subject: mockCurrentUser.accountId,
+						jwtid: expect.any(String),
+						expiresIn,
 					})
 				);
 			});

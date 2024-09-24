@@ -9,6 +9,7 @@ export class LoginUc {
 
 	async getLoginData(currentUser: ICurrentUser): Promise<LoginDto> {
 		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
+		await this.authService.updateLastLogin(currentUser.accountId);
 
 		const loginDto = new LoginDto({
 			accessToken: jwtToken,

@@ -36,7 +36,6 @@ const jwtModuleOptions: JwtModuleOptions = {
 	imports: [
 		LoggerModule,
 		PassportModule,
-		// TODO: fix me
 		JwtModule.register(jwtModuleOptions),
 		AccountModule,
 		SystemModule,
