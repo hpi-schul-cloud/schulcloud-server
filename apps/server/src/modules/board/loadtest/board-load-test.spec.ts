@@ -97,7 +97,6 @@ describe('BoardLoadTest', () => {
 			} as unknown as LoadtestClient;
 			const userProfile = fastEditor;
 
-			// await boarLoadTest.initializeLoadtestClients(boardId);
 			await boarLoadTest.simulateUserActions(loadtestClient, userProfile);
 
 			expect(loadtestClient.createColumn).toHaveBeenCalled();
