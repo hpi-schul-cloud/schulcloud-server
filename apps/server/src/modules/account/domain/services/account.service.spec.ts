@@ -31,6 +31,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { UpdateAccountLoggableException } from '../loggables';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -1321,14 +1322,14 @@ describe('AccountService', () => {
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
 
-			it('should throw EntityNotFoundError', async () => {
+			it('should throw UpdateAccountLoggableException', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
 				await expect(
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
 						passwordOld: defaultPassword,
 						firstName: 'failToUpdate',
 					})
-				).rejects.toThrow(EntityNotFoundError);
+				).rejects.toThrow(UpdateAccountLoggableException);
 			});
 		});
 
@@ -1354,14 +1355,14 @@ describe('AccountService', () => {
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
-			it('should throw EntityNotFoundError', async () => {
+			it('should throw UpdateAccountLoggableException', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: 'fail@to.update',
 					})
-				).rejects.toThrow(EntityNotFoundError);
+				).rejects.toThrow(UpdateAccountLoggableException);
 			});
 		});
 
