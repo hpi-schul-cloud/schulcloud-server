@@ -28,6 +28,10 @@ export class School extends DomainObject<SchoolProps> {
 		return this.props.systemIds;
 	}
 
+	get externalId(): string | undefined {
+		return this.props.externalId;
+	}
+
 	set externalId(externalId: string | undefined) {
 		this.props.externalId = externalId;
 	}

@@ -1,3 +1,4 @@
+import { ExternalClassDto } from './external-class.dto';
 import { ExternalGroupDto } from './external-group.dto';
 import { ExternalLicenseDto } from './external-license.dto';
 import { ExternalSchoolDto } from './external-school.dto';
@@ -15,11 +16,14 @@ export class OauthDataDto {
 
 	externalLicenses?: ExternalLicenseDto[];
 
+	externalClasses?: ExternalClassDto[];
+
 	constructor(props: OauthDataDto) {
 		this.system = props.system;
 		this.externalUser = props.externalUser;
 		this.externalSchool = props.externalSchool;
 		this.externalGroups = props.externalGroups;
 		this.externalLicenses = props.externalLicenses;
+		this.externalClasses = props.externalClasses;
 	}
 }
