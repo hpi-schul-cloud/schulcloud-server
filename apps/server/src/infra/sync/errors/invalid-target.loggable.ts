@@ -9,7 +9,7 @@ export class InvalidTargetLoggable implements Loggable {
 			message: 'Either synchronization is not activated or the target entered is invalid',
 			data: {
 				enteredTarget: this.target,
-				avaliableTargets: SyncStrategyTarget,
+				availableTargets: SyncStrategyTarget,
 			},
 		};
 	}
