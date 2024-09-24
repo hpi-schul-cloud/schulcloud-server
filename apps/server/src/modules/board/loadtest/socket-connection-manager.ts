@@ -31,21 +31,9 @@ export class SocketConnectionManager {
 		const connections: SocketConnection[] = [];
 
 		while (connections.length < amount) {
-			const batchAmount = Math.min(10, amount - connections.length);
-			const promises = Array(batchAmount)
-				.fill(1)
-				.map(() => this.createConnection());
-
-			const allSettled = await Promise.allSettled(promises);
-			allSettled.forEach((res) => {
-				if (res.status === 'fulfilled') {
-					connections.push(res.value);
-				} else {
-					/* istanbul ignore next */
-					this.onErrorHandler('failed to create connection');
-				}
-			});
-			await sleep(1000);
+			const connection = await this.createConnection();
+			connections.push(connection);
+			await sleep(100);
 		}
 		return connections;
 	}
