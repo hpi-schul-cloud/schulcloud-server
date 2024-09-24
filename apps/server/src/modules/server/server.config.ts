@@ -28,7 +28,7 @@ import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { ShdConfig } from '@modules/shd';
-import type { BbbConfig } from '../video-conference/bbb';
+import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {

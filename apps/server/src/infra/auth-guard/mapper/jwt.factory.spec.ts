@@ -1,4 +1,5 @@
 import { currentUserFactory, setupEntities } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { CreateJwtPayload } from '../interface';
 import { JwtPayloadFactory } from './jwt.factory';
 
@@ -28,7 +29,7 @@ describe('JwtPayloadFactory', () => {
 	describe('buildFromSupportUser', () => {
 		it('should map current user to create jwt payload', () => {
 			const currentUser = currentUserFactory.build();
-			const supportUserId = 'supportUserId';
+			const supportUserId = new ObjectId().toHexString();
 
 			const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUserId);
 

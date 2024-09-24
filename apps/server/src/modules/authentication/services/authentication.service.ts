@@ -46,7 +46,7 @@ export class AuthenticationService {
 		return account;
 	}
 
-	private async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number): Promise<string> {
+	private async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number | string): Promise<string> {
 		const jti = randomUUID();
 		const accessToken = this.jwtService.sign(createJwtPayload, {
 			subject: createJwtPayload.accountId,
@@ -61,7 +61,7 @@ export class AuthenticationService {
 
 	public async generateCurrentUserJwt(currentUser: ICurrentUser): Promise<string> {
 		const createJwtPayload = JwtPayloadFactory.buildFromCurrentUser(currentUser);
-		const expiresIn = this.configService.get<number>('JWT_LIFETIME');
+		const expiresIn = this.configService.get<string>('JWT_LIFETIME');
 		const jwtToken = await this.generateJwt(createJwtPayload, expiresIn);
 
 		return jwtToken;

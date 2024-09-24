@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { accountDoFactory } from '@src/modules/account/testing';
+import { accountDoFactory } from '@modules/account/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -111,6 +111,7 @@ describe('AuthenticationService', () => {
 					username: 'mockedUsername',
 					deactivatedAt: new Date(),
 				});
+
 			it('should throw USER_ACCOUNT_DEACTIVATED exception', async () => {
 				const deactivatedAccount = setup();
 				accountService.findByUsernameAndSystemId.mockResolvedValue(deactivatedAccount);
@@ -137,10 +138,11 @@ describe('AuthenticationService', () => {
 				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
 			};
 
-			it.skip('should pass the correct parameters', async () => {
+			it('should pass the correct parameters', async () => {
 				const { supportUser, targetUser, mockCurrentUser, expectedPayload, expiresIn } = setup();
 
 				await authenticationService.generateSupportJwt(supportUser, targetUser);
+
 				expect(jwtService.sign).toBeCalledWith(
 					expectedPayload,
 					expect.objectContaining({

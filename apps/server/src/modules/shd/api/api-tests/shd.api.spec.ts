@@ -82,7 +82,7 @@ describe('Shd API', () => {
 				});
 			});
 
-			describe('when user has not the access to request supportJwt', () => {
+			describe('when user has not the privilege to request supportJwt', () => {
 				it('should respond with unauthorized exception', async () => {
 					const { data, loggedInClient } = await setup();
 
