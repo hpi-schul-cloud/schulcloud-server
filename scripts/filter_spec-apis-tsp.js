@@ -1,3 +1,8 @@
+/**
+ * This script filters the OpenAPI spec of the TSP API to only include paths with the tag 'Export'.
+ * In 'apps\server\src\modules\common-cartridge\common-cartridge-client\README.md' you can find the instructions to run this script.
+ */
+
 const fs = require('fs');
 const axios = require('axios');
 const pathHelper = require('path');
@@ -57,57 +62,6 @@ function expandSchemaSet(schemas, spec) {
 		}
 	}
 }
-/*
-axios
-	.get(swaggerUrl)
-	// eslint-disable-next-line promise/always-return
-	.then((response) => {
-		const spec = response.data;
-
-		// Debugging: Ausgabe der gesamten Antwort
-		// console.log('Fetched OpenAPI spec:', JSON.stringify(spec, null, 2));
-
-		// Filter paths that start with the provided prefix
-		const filteredPaths = Object.keys(spec.paths)
-			.filter((path) => path.startsWith(pathPrefix))
-			.reduce((obj, key) => {
-				obj[key] = spec.paths[key];
-				return obj;
-			}, {});
-
-		// Get referenced schemas from the filtered paths
-		const schemas = new Set();
-		Object.keys(filteredPaths).forEach((path) => {
-			getReferencedSchemas(filteredPaths[path]).forEach((schema) => schemas.add(schema));
-		});
-
-		// Expand the set of schemas to include all referenced schemas from other schemas
-		expandSchemaSet(schemas, spec);
-
-		// Filter schemas
-		const filteredSchemas = Object.keys(spec.definitions)
-			.filter((schema) => schemas.has(schema))
-			.reduce((obj, key) => {
-				obj[key] = spec.definitions[key];
-				return obj;
-			}, {});
-
-		// Create top-level fields from the original spec
-		const filteredSwaggerDoc = {
-			swagger: spec.swagger,
-			info: spec.info,
-			servers: spec.servers,
-			paths: filteredPaths,
-			definitions: filteredSchemas,
-		};
-
-		fs.writeFileSync(outputPath, JSON.stringify(filteredSwaggerDoc, null, 2));
-		console.log(`Filtered spec of ${pathPrefix} written to ${outputPath}`);
-	})
-	.catch((error) => {
-		console.error(`Error fetching the OpenAPI spec: ${error}`);
-	});
-*/
 
 axios
 	.get(swaggerUrl)
