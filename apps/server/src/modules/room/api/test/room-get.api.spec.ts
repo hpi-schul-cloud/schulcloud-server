@@ -2,9 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
-import { serverConfig, type ServerConfig, ServerTestModule } from '@src/modules/server';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { RoomDetailsResponse } from '../dto/response/room-details.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
