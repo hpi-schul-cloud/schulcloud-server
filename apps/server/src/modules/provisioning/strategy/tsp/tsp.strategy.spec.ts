@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
+import { SchoolService } from '@src/modules/school';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalSchoolDto,
@@ -20,6 +21,7 @@ describe('TspProvisioningStrategy', () => {
 	let module: TestingModule;
 	let sut: TspProvisioningStrategy;
 	let provisioningServiceMock: DeepMocked<TspProvisioningService>;
+	let schoolServiceMock: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,11 +31,16 @@ describe('TspProvisioningStrategy', () => {
 					provide: TspProvisioningService,
 					useValue: createMock<TspProvisioningService>(),
 				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspProvisioningStrategy);
 		provisioningServiceMock = module.get(TspProvisioningService);
+		schoolServiceMock = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -84,7 +91,7 @@ describe('TspProvisioningStrategy', () => {
 					lastName: 'lastName',
 				});
 
-				const externalSchool = await schoolService.getSchoolById(input.system.systemId);
+				const externalSchool = await schoolServiceMock.getSchoolById(input.system.systemId);
 				const schoolName = externalSchool.getProps().name;
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
