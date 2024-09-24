@@ -77,7 +77,7 @@ export class Room extends DomainObject<RoomProps> {
 	private validateTimeSpan() {
 		if (this.props.startDate != null && this.props.endDate != null && this.props.startDate > this.props.endDate) {
 			throw new ValidationError(
-				`Invalid room room timespan. Start date '${this.props.startDate.toISOString()}' has to be before end date: '${this.props.endDate.toISOString()}'. Room id='${
+				`Invalid room timespan. Start date '${this.props.startDate.toISOString()}' has to be before end date: '${this.props.endDate.toISOString()}'. Room id='${
 					this.id
 				}'`
 			);
