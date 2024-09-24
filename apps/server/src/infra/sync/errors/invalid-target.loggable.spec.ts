@@ -20,7 +20,7 @@ describe(InvalidTargetLoggable.name, () => {
 				message: 'Either synchronization is not activated or the target entered is invalid',
 				data: {
 					enteredTarget: 'invalid-target',
-					avaliableTargets: SyncStrategyTarget,
+					availableTargets: SyncStrategyTarget,
 				},
 			});
 		});
