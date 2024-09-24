@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { TargetUserIdParams } from './dtos/target-user-id.params';
@@ -15,6 +15,7 @@ export class ShdController {
 	@ApiResponse({ status: 201, type: String })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiBody({ required: true, type: TargetUserIdParams })
 	@Post('/supportJwt')
 	public async supportJwt(@Body() bodyParams: TargetUserIdParams, @CurrentUser() currentUser: ICurrentUser) {
