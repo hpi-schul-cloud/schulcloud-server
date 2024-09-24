@@ -1,5 +1,5 @@
 {
-	"title": "HPI Schul-Cloud Configuration",
+	"title": "SVS Server Configuration",
 	"type": "object",
 	"additionalProperties": false,
 	"properties": {
@@ -119,11 +119,20 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
+		"AUTHENTICATION": {
+			"type": "string",
+			"description": "The secret that is used for create and validate the jwt."
+		},
 		"JWT_LIFETIME": {
 			"type": "string",
 			"default": "30d",
 			"pattern": "^[0-9]+d$",
 			"description": "Lifetime of generated JWTs in days."
+		},
+		"JWT_LIFETIME_SUPPORT_SECONDS": {
+			"type": "string",
+			"default": "3600",
+			"description": "Lifetime of generated support JWTs."
 		},
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
@@ -1580,6 +1589,11 @@
 			"type": "string",
 			"default": "http://localhost:3349",
 			"description": "Address for tldraw management app"
+		},
+		"WITH_TLDRAW2": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables tldraw2 feature"
 		},
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",

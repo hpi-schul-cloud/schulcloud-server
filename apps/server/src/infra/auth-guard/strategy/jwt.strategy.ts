@@ -5,7 +5,7 @@ import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
 import { authConfig } from '../config';
 import { ICurrentUser, JwtPayload } from '../interface';
-import { CurrentUserMapper } from '../mapper';
+import { CurrentUserBuilder } from '../mapper';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,7 +25,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 			// TODO: check user/account is active and has one role
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
-			const currentUser = CurrentUserMapper.jwtToICurrentUser(payload);
+			const currentUser = new CurrentUserBuilder(payload)
+				.asExternalUser(payload.isExternalUser)
+				.withExternalSystem(payload.systemId)
+				.asUserSupporter(payload.support)
+				.build();
+
 			return currentUser;
 		} catch (err) {
 			throw new UnauthorizedException('Unauthorized.', { cause: err as Error });

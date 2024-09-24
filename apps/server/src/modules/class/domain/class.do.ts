@@ -5,7 +5,7 @@ import { ClassSourceOptions } from './class-source-options.do';
 export interface ClassProps extends AuthorizableObject {
 	name: string;
 	schoolId: EntityId;
-	userIds?: EntityId[];
+	userIds: EntityId[];
 	teacherIds: EntityId[];
 	invitationLink?: string;
 	year?: EntityId;
@@ -23,11 +23,19 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.name;
 	}
 
+	set name(name: string) {
+		this.props.name = name;
+	}
+
 	get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 
-	get userIds(): EntityId[] | undefined {
+	set schoolId(schoolId: EntityId) {
+		this.props.schoolId = schoolId;
+	}
+
+	get userIds(): EntityId[] {
 		return this.props.userIds;
 	}
 
@@ -41,6 +49,10 @@ export class Class extends DomainObject<ClassProps> {
 
 	get year(): EntityId | undefined {
 		return this.props.year;
+	}
+
+	set year(year: EntityId | undefined) {
+		this.props.year = year;
 	}
 
 	get gradeLevel(): number | undefined {
@@ -59,8 +71,16 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.source;
 	}
 
+	set source(source: string | undefined) {
+		this.props.source = source;
+	}
+
 	get sourceOptions(): ClassSourceOptions | undefined {
 		return this.props.sourceOptions;
+	}
+
+	set sourceOptions(sourceOptions: ClassSourceOptions | undefined) {
+		this.props.sourceOptions = sourceOptions;
 	}
 
 	get createdAt(): Date {
@@ -69,6 +89,22 @@ export class Class extends DomainObject<ClassProps> {
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
+	}
+
+	public addTeacher(teacherId: EntityId) {
+		if (this.teacherIds.includes(teacherId)) {
+			return;
+		}
+
+		this.props.teacherIds.push(teacherId);
+	}
+
+	public addUser(userId: EntityId) {
+		if (this.userIds.includes(userId)) {
+			return;
+		}
+
+		this.props.userIds.push(userId);
 	}
 
 	public removeUser(userId: string) {

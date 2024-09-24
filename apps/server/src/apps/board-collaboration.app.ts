@@ -8,7 +8,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { MongoIoAdapter } from '@src/infra/socketio';
+import { RedisIoAdapter } from '@src/infra/socketio';
 import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 import express from 'express';
@@ -17,7 +17,6 @@ import {
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from '@src/apps/helpers/prometheus-metrics';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { DB_URL } from '@src/config';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -29,9 +28,8 @@ async function bootstrap() {
 	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	const mongoAdapter = new MongoIoAdapter(nestApp);
-	await mongoAdapter.connectToMongoDb(DB_URL);
-	const ioAdapter = mongoAdapter;
+	const ioAdapter = new RedisIoAdapter(nestApp);
+	ioAdapter.connectToRedis();
 	nestApp.useWebSocketAdapter(ioAdapter);
 
 	const options: SwaggerDocumentOptions = {
