@@ -309,7 +309,8 @@ const config: ServerConfig = {
 	TSP_API_BASE_URL: Configuration.get('TSP_API_BASE_URL') as string,
 	TSP_API_CLIENT_ID: Configuration.get('TSP_API_CLIENT_ID') as string,
 	TSP_API_CLIENT_SECRET: Configuration.get('TSP_API_CLIENT_SECRET') as string,
-	TSP_API_TOKEN_ENDPOINT: Configuration.get('TSP_API_TOKEN_ENDPOINT') as string,
+	TSP_API_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_TOKEN_LIFETIME_MS') as number,
+	TSP_API_SIGNATURE_KEY: Configuration.get('TSP_API_SIGNATURE_KEY') as string,
 };
 
 export const serverConfig = () => config;
