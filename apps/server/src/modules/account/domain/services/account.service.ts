@@ -10,7 +10,7 @@ import {
 	OperationType,
 	UserDeletedEvent,
 } from '@modules/deletion';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
@@ -90,7 +90,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				await this.userRepo.save(user);
 			} catch (err: unknown) {
-				throw new NotFoundException(User.name);
+				throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
