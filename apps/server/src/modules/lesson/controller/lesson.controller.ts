@@ -3,7 +3,7 @@ import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LessonUC } from '../uc';
 import { LessonMetadataListResponse, LessonResponse, LessonUrlParams, LessonsUrlParams } from './dto';
-import { TaskResponse } from './dto/task.response';
+import { SlimTaskResponse } from './dto/task.response';
 import { LessonMapper } from './mapper/lesson.mapper';
 
 @ApiTags('Lesson')
@@ -39,7 +39,7 @@ export class LessonController {
 	async getLessonTasks(
 		@Param() urlParams: LessonUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse[]> {
+	): Promise<SlimTaskResponse[]> {
 		const tasks = await this.lessonUC.getTasks(currentUser.userId, urlParams.lessonId);
 
 		return tasks;

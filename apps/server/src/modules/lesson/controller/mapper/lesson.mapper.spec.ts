@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse } from '../dto/task.response';
+import { SlimTaskResponse } from '../dto/task.response';
 import { LessonMapper } from './lesson.mapper';
 
 describe('LessonMapper', () => {
@@ -30,7 +30,7 @@ describe('LessonMapper', () => {
 
 				const result = LessonMapper.mapTaskToResponse(task);
 
-				expect(result).toEqual<TaskResponse>({
+				expect(result).toEqual<SlimTaskResponse>({
 					name: task.name,
 					description: task.description,
 					descriptionInputFormat: task.descriptionInputFormat,

@@ -1,6 +1,6 @@
 import { LessonEntity, Task } from '@shared/domain/entity';
 import { LessonMetadataResponse } from '../dto';
-import { TaskResponse } from '../dto/task.response';
+import { SlimTaskResponse } from '../dto/task.response';
 
 export class LessonMapper {
 	public static mapToMetadataResponse(lesson: LessonEntity): LessonMetadataResponse {
@@ -8,8 +8,8 @@ export class LessonMapper {
 		return dto;
 	}
 
-	public static mapTaskToResponse(task: Task): TaskResponse {
-		const response = new TaskResponse({
+	public static mapTaskToResponse(task: Task): SlimTaskResponse {
+		const response = new SlimTaskResponse({
 			name: task.name,
 			description: task.description,
 			descriptionInputFormat: task.descriptionInputFormat,
