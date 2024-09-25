@@ -27,6 +27,7 @@ import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
+import { RoomItemResponse } from './dto/response/room-item.response';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -64,10 +65,10 @@ export class RoomController {
 	async createRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createRoomParams: CreateRoomBodyParams
-	): Promise<RoomDetailsResponse> {
+	): Promise<RoomItemResponse> {
 		const room = await this.roomUc.createRoom(currentUser.userId, createRoomParams);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomItemResponse(room);
 
 		return response;
 	}

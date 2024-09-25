@@ -6,7 +6,7 @@ import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
 
 export class RoomMapper {
-	static mapToRoomResponse(room: Room): RoomItemResponse {
+	static mapToRoomItemResponse(room: Room): RoomItemResponse {
 		const response = new RoomItemResponse({
 			id: room.id,
 			name: room.name,
@@ -22,7 +22,7 @@ export class RoomMapper {
 
 	static mapToRoomListResponse(rooms: Page<Room>, pagination: RoomPaginationParams): RoomListResponse {
 		const roomResponseData: RoomItemResponse[] = rooms.data.map(
-			(room): RoomItemResponse => this.mapToRoomResponse(room)
+			(room): RoomItemResponse => this.mapToRoomItemResponse(room)
 		);
 		const response = new RoomListResponse(roomResponseData, rooms.total, pagination.skip, pagination.limit);
 
@@ -30,7 +30,7 @@ export class RoomMapper {
 	}
 
 	static mapToRoomDetailsResponse(room: Room): RoomDetailsResponse {
-		const response = new RoomItemResponse({
+		const response = new RoomDetailsResponse({
 			id: room.id,
 			name: room.name,
 			color: room.color,
