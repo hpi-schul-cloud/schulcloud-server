@@ -19,7 +19,6 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { Logger } from '@src/core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { ErrorUtils } from '@src/core/error/utils';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
@@ -91,11 +90,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				await this.userRepo.save(user);
 			} catch (err: unknown) {
-				// const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
-				// throw new EntityNotFoundError(User.name, details);
-				// TODO: Need to be removed
-				const details = ErrorUtils.createHttpExceptionOptions(err);
-				throw new NotFoundException(AccountEntity.name, details);
+				throw new NotFoundException(User.name);
 			}
 		}
 		if (updateAccount) {
@@ -105,11 +100,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				// const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
-				// throw new EntityNotFoundError(AccountEntity.name, details);
-				// TODO: Need to be removed
-				const details = ErrorUtils.createHttpExceptionOptions(err);
-				throw new NotFoundException(AccountEntity.name, details);
+				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
 	}
