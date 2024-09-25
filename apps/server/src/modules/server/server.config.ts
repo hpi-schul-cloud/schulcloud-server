@@ -19,7 +19,7 @@ import { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import type { ToolConfig } from '@modules/tool/tool-config';
+import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
@@ -311,6 +311,11 @@ const config: ServerConfig = {
 	TSP_API_CLIENT_SECRET: Configuration.get('TSP_API_CLIENT_SECRET') as string,
 	TSP_API_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_TOKEN_LIFETIME_MS') as number,
 	TSP_API_SIGNATURE_KEY: Configuration.get('TSP_API_SIGNATURE_KEY') as string,
+	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
+	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
+	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
+	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
+	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 };
 
 export const serverConfig = () => config;
