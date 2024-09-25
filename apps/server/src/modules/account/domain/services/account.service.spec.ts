@@ -1321,7 +1321,7 @@ describe('AccountService', () => {
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
 
-			it('should throw UpdateAccountLoggableException', async () => {
+			it('should throw EntityNotFoundError', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
 				await expect(
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
@@ -1354,7 +1354,7 @@ describe('AccountService', () => {
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
-			it('should throw UpdateAccountLoggableException', async () => {
+			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {

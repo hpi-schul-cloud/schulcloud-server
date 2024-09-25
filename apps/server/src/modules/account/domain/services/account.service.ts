@@ -10,7 +10,7 @@ import {
 	OperationType,
 	UserDeletedEvent,
 } from '@modules/deletion';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
@@ -49,6 +49,7 @@ import {
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { ErrorUtils } from '@src/core/error/utils';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -96,8 +97,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				await this.userRepo.save(user);
 			} catch (err: unknown) {
-				const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
-				throw new EntityNotFoundError(User.name, details);
+				// const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
+				// throw new EntityNotFoundError(User.name, details);
+				// TODO: Need to be removed
+				const details = ErrorUtils.createHttpExceptionOptions(err);
+				throw new NotFoundException(AccountEntity.name, details);
 			}
 		}
 		if (updateAccount) {
@@ -107,8 +111,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
-				throw new EntityNotFoundError(AccountEntity.name, details);
+				// const details = TypeGuard.isError(err) ? { causeErrorMessage: err.message } : {};
+				// throw new EntityNotFoundError(AccountEntity.name, details);
+				// TODO: Need to be removed
+				const details = ErrorUtils.createHttpExceptionOptions(err);
+				throw new NotFoundException(AccountEntity.name, details);
 			}
 		}
 	}
