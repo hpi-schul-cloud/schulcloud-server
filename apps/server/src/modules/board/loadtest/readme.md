@@ -6,19 +6,19 @@ The tests can be run from your local environment or from any other place that ha
 
 In order to run the load tests you need to provide three environment variables:
 
-### target
+### TARGET_URL
 
 The Url of the server.
 
 e.g. `export TARGET_URL=http://localhost:4450` <br>
 e.g. `export TARGET_URL=https://bc-7830-board-loadtests-merge.brb.dbildungscloud.dev`
 
-### courseId
+### COURSE_ID
 
 The id of the course that the user (see next variable "token") is allowed to create boards in.<br>
 e.g. `export COURSE_ID=66c493f577499cc64bf9aab4`
 
-### token
+### TOKEN
 
 A valid JWT-token of a user that is allowed to create boards in the given course. <br>
 e.g. `export TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6...`
@@ -51,3 +51,17 @@ To run the test:
 ```bash
 npx jest apps/server/src/modules/board/loadtest/board-collaboration.load.spec.ts
 ```
+
+### VIEWER_CLASSES
+
+Defines the number of viewer classes. Those classes consist of an active user (= the teacher) editing stuff on the board and thirty students.
+
+e.g `export VIEWER_CLASSES=2`
+e.g `export VIEWER_CLASSES=0`
+
+### COLLAB_CLASSES
+
+Defines the number of collaboration classes. Those classes consist of thirty active users.
+
+e.g. `export COLLAB_CLASSES=2`
+e.g. `export COLLAB_CLASSES=0`

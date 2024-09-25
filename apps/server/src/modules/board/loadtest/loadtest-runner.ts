@@ -8,6 +8,7 @@ import { getUrlConfiguration } from './helper/get-url-configuration';
 import { useResponseTimes } from './helper/responseTimes.composable';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfiguration } from './types';
+import { BoardLoadTest } from './board-load-test';
 
 const { getAvgByAction, getTotalAvg } = useResponseTimes();
 
@@ -125,11 +126,15 @@ export class LoadtestRunner {
 			throw new Error('Failed to create all boards');
 		}
 
-		const promises: Promise<unknown>[] = classes.flatMap(async (classDefinition, index) => {
-			const boardLoadTest = this.createBoardLoadTest(this.socketConnectionManager, this.onError);
-			const boardId = boardIds[index];
-			return boardLoadTest.runBoardTest(boardId, classDefinition);
-		});
+		const boardLoadTests: BoardLoadTest[] = [];
+		for (const classDefinition of classes) {
+			const boardLoadTest = this.createBoardLoadTest(this.socketConnectionManager, classDefinition, this.onError);
+			const boardId = boardIds[boardLoadTests.length];
+			await boardLoadTest.initializeLoadtestClients(boardId);
+			boardLoadTests.push(boardLoadTest);
+		}
+
+		const promises: Promise<unknown>[] = boardLoadTests.map((boardLoadTest) => boardLoadTest.runBoardTest());
 
 		await Promise.all(promises);
 
