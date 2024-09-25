@@ -631,5 +631,25 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(result).toEqual<ExternalLicenseDto[]>([]);
 			});
 		});
+
+		describe('when a license response has no target', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
+				licenseResponse[0].target = undefined;
+
+				return {
+					licenseResponse,
+				};
+			};
+
+			it('should should be filtered out', () => {
+				const { licenseResponse } = setup();
+
+				const result: ExternalLicenseDto[] | undefined =
+					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([]);
+			});
+		});
 	});
 });

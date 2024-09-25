@@ -243,13 +243,21 @@ export class SchulconnexResponseMapper {
 	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
 			.map((license: SchulconnexPoliciesInfoResponse) => {
-				if (license.target.partOf === '') {
-					license.target.partOf = undefined;
+				if (license.target) {
+					if (license.target?.partOf === '') {
+						license.target.partOf = undefined;
+					}
+
+					const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
+						mediumId: license.target.uid,
+						mediaSourceId: license.target.partOf,
+					});
+
+					return externalLicenseDto;
 				}
 
 				const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-					mediumId: license.target.uid,
-					mediaSourceId: license.target.partOf,
+					mediumId: '',
 				});
 
 				return externalLicenseDto;

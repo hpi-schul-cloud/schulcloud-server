@@ -8,6 +8,7 @@ import { GroupService } from '@modules/group/service/group.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
+import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable/policies-info-error-response-loggable';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
@@ -136,6 +137,18 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		groups?: SchulconnexResponseValidationGroups[]
 	): Promise<void> {
 		const responsesArray = Array.isArray(response) ? response : [response];
+
+		responsesArray.forEach((item) => {
+			if (item instanceof SchulconnexPoliciesInfoResponse && item.access_control) {
+				this.logger.info(
+					new PoliciesInfoErrorResponseLoggable(
+						item.access_control['@type'],
+						item.access_control.error.code,
+						item.access_control.error.value
+					)
+				);
+			}
+		});
 
 		const validationPromises: Promise<ValidationError[]>[] = responsesArray.map((item) =>
 			validate(item, {
