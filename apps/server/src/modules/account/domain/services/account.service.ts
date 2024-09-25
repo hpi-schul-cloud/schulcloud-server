@@ -196,7 +196,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	public async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
-		console.log(userId);
 		if (password !== confirmPassword) {
 			throw new ForbiddenOperationError('Password and confirm password do not match.');
 		}
