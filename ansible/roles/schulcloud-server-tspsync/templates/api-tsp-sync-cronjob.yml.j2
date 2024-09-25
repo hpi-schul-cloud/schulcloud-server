@@ -1,0 +1,109 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-tsp-sync-cronjob
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: api-tsp-sync-cronjob
+    app.kubernetes.io/component: tsp-sync
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+  name: api-tsp-sync-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "{{ SERVER_TSP_SYNC_CRONJOB_SCHEDULE|default("9 3 * * *", true) }}"
+  jobTemplate:
+    metadata:
+      labels:
+        app: api-tsp-sync-cronjob
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: api-tsp-sync-cronjob
+        app.kubernetes.io/component: tsp-sync
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            runAsNonRoot: true
+          containers:
+          - name: api-tsp-sync-cronjob
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+            command: ['/bin/sh', '-c']
+            args: [' npm run nest:start:console sync run tsp']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 20
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/part-of
+                      operator: In
+                      values:
+                      - schulcloud-verbund
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: git.repo
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_REPO_NAME }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: git.branch
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/version
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+{% endif %}
+        metadata:
+          labels:
+            app: api-tsp-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: api-tsp-sync-cronjob
+            app.kubernetes.io/component: tsp-sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
