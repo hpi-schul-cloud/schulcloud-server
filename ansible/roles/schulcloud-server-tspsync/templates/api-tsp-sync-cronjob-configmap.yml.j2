@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ NAMESPACE }}
+  name: api-tsp-sync-cronjob-configmap
+  labels:
+    app: api-tsp-sync-cronjob
+data:
+  NODE_OPTIONS: "--max-old-space-size=3072"
+  NEST_LOG_LEVEL: "error"
+  EXIT_ON_ERROR: "true"
+

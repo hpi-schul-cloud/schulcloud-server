@@ -40,10 +40,12 @@ spec:
             envFrom:
             - configMapRef:
                 name: api-configmap
+            - configMapRef:
+                name: api-tsp-sync-cronjob-configmap
             - secretRef:
                 name: api-secret
             command: ['/bin/sh', '-c']
-            args: [' npm run nest:start:console sync run tsp']
+            args: ['npm run nest:start:sync tsp']
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
