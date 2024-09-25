@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
+import { Page } from '@shared/domain/domainobject';
+import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
@@ -10,7 +13,8 @@ export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
 	async validateCreate(externalTool: ExternalTool): Promise<void> {
@@ -21,6 +25,10 @@ export class ExternalToolValidationService {
 		this.validateLti11Config(externalTool);
 
 		this.externalToolLogoService.validateLogoSize(externalTool);
+
+		if (externalTool.isPreferred) {
+			await this.validatePreferredToolsLimit();
+		}
 	}
 
 	async validateUpdate(toolId: string, externalTool: ExternalTool): Promise<void> {
@@ -53,6 +61,10 @@ export class ExternalToolValidationService {
 		}
 
 		this.externalToolLogoService.validateLogoSize(externalTool);
+
+		if (externalTool.isPreferred) {
+			await this.validatePreferredToolsLimit();
+		}
 	}
 
 	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {
@@ -87,5 +99,16 @@ export class ExternalToolValidationService {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalTool.id;
+	}
+
+	private async validatePreferredToolsLimit(): Promise<void> {
+		const preferredTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({
+			isPreferred: true,
+		});
+		if (preferredTools.total >= this.configService.get<number>('CTL_TOOLS__PREFERRED_TOOLS_LIMIT')) {
+			throw new ValidationError(
+				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+			);
+		}
 	}
 }

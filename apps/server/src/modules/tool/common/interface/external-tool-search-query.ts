@@ -6,4 +6,6 @@ export interface ExternalToolSearchQuery {
 	isHidden?: boolean;
 
 	ids?: string[];
+
+	isPreferred?: boolean;
 }
