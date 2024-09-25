@@ -89,14 +89,14 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		if (updateUser) {
 			try {
 				await this.userRepo.save(user);
-			} catch (err) {
+			} catch (err: unknown) {
 				throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
 			try {
 				await this.save(accountSave);
-			} catch (err) {
+			} catch (err: unknown) {
 				if (err instanceof ValidationError) {
 					throw err;
 				}
