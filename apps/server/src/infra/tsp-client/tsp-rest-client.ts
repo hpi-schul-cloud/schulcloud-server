@@ -23,7 +23,7 @@ export class TSPRestClient {
 
 	private cachedToken: string | undefined;
 
-	private expiresAt: number | undefined;
+	private tokenExpiresAt: number | undefined;
 
 	constructor(configService: ConfigService<ServerConfig, true>) {
 		this.domain = configService.getOrThrow<string>('SC_DOMAIN');
@@ -52,11 +52,11 @@ export class TSPRestClient {
 	private createJwt(): string {
 		const now = Date.now();
 
-		if (this.cachedToken && this.expiresAt && this.expiresAt > now) {
+		if (this.cachedToken && this.tokenExpiresAt && this.tokenExpiresAt > now) {
 			return this.cachedToken;
 		}
 
-		this.expiresAt = now + this.tokenLifetime;
+		this.tokenExpiresAt = now + this.tokenLifetime;
 
 		const payload = {
 			apiClientId: this.clientId,
@@ -64,8 +64,8 @@ export class TSPRestClient {
 			iss: this.domain,
 			aud: this.baseUrl,
 			sub: this.host,
-			exp: this.expiresAt,
-			iat: this.expiresAt - this.tokenLifetime,
+			exp: this.tokenExpiresAt,
+			iat: this.tokenExpiresAt - this.tokenLifetime,
 			jti: randomUUID(),
 		};
 
