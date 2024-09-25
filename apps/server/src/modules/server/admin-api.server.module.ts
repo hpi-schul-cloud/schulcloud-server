@@ -16,11 +16,11 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infr
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { AdminApiRegistrationPinModule } from '../registration-pin/admin-api-registration-pin.module';
-import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
+import { adminApiServerConfig } from './admin-api-server.config';
 
 const serverModules = [
-	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,

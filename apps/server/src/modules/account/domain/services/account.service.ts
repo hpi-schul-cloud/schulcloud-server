@@ -89,14 +89,14 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		if (updateUser) {
 			try {
 				await this.userRepo.save(user);
-			} catch (err) {
+			} catch (err: unknown) {
 				throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
 			try {
 				await this.save(accountSave);
-			} catch (err) {
+			} catch (err: unknown) {
 				if (err instanceof ValidationError) {
 					throw err;
 				}
@@ -211,17 +211,17 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		const firstLoginPassed = userPreferences ? userPreferences.firstLogin : false;
 
 		if (!user.forcePasswordChange && firstLoginPassed) {
-			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
+			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.', { userId });
 		} // Password change was forces or this is a first logon for the user
 
 		const account: Account = await this.findByUserIdOrFail(userId);
 
 		if (account.systemId) {
-			throw new ForbiddenOperationError('External account details can not be changed.');
+			throw new ForbiddenOperationError('External account details can not be changed.', { userId });
 		}
 
 		if (await this.validatePassword(account, password)) {
-			throw new ForbiddenOperationError('New password can not be same as old password.');
+			throw new ForbiddenOperationError('New password can not be same as old password.', { userId });
 		}
 
 		try {
