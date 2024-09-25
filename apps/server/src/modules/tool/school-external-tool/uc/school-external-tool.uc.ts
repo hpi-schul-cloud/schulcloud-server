@@ -8,6 +8,8 @@ import { CommonToolMetadataService } from '../../common/service/common-tool-meta
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { ExternalToolService } from '@modules/tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -16,13 +18,16 @@ export class SchoolExternalToolUc {
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly externalToolService: ExternalToolService
 	) {}
 
 	async findSchoolExternalTools(userId: EntityId, query: SchoolExternalToolQueryInput): Promise<SchoolExternalTool[]> {
 		let tools: SchoolExternalTool[] = [];
 		if (query.schoolId) {
 			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
+
+			tools = await this.getContextRestrictions(tools);
 
 			const user: User = await this.authorizationService.getUserWithPermissions(userId);
 			const school: School = await this.schoolService.getSchoolById(query.schoolId);
@@ -33,6 +38,16 @@ export class SchoolExternalToolUc {
 		}
 
 		return tools;
+	}
+
+	private async getContextRestrictions(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
+		const schoolExternalTools = tools.map(async tool => {
+			const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId)
+			tool.restrictToContexts = externalTool.restrictToContexts;
+			return tool;
+		})
+
+		return Promise.all(schoolExternalTools)
 	}
 
 	async createSchoolExternalTool(
