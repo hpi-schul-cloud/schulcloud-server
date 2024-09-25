@@ -1,17 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadFactory } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { currentUserFactory, userFactory } from '@shared/testing';
+import { currentUserFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { accountDoFactory } from '@modules/account/testing';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
@@ -33,6 +34,8 @@ describe('AuthenticationService', () => {
 	});
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				AuthenticationService,
@@ -126,14 +129,20 @@ describe('AuthenticationService', () => {
 			const setup = () => {
 				const supportUser = userFactory.asSuperhero().buildWithId();
 				const targetUser = userFactory.asTeacher().buildWithId();
-				const targetUserAccount = accountDoFactory.buildWithId({ userId: targetUser.id });
-				const mockCurrentUser = currentUserFactory.withRole('random role').build();
+				const targetUserAccount = accountDoFactory.build({ userId: targetUser.id });
+				const mockCurrentUser = CurrentUserMapper.userToICurrentUser(
+					targetUserAccount.id,
+					targetUser,
+					false,
+					targetUserAccount.systemId
+				);
 				const expiresIn = 150;
 
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
 				configService.get.mockReturnValueOnce(expiresIn);
+				jwtService.sign.mockReturnValueOnce('jwt');
 
-				const expectedPayload = JwtPayloadFactory.buildFromSupportUser(mockCurrentUser, 'supportUser.id');
+				const expectedPayload = JwtPayloadFactory.buildFromSupportUser(mockCurrentUser, supportUser.id);
 
 				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
 			};
@@ -152,6 +161,14 @@ describe('AuthenticationService', () => {
 					})
 				);
 			});
+
+			it('should return the generated jwt', async () => {
+				const { mockCurrentUser } = setup();
+
+				const result = await authenticationService.generateCurrentUserJwt(mockCurrentUser);
+
+				expect(result).toEqual('jwt');
+			});
 		});
 	});
 
@@ -162,6 +179,7 @@ describe('AuthenticationService', () => {
 				const expectedPayload = JwtPayloadFactory.buildFromCurrentUser(mockCurrentUser);
 				const expiresIn = 15;
 				configService.get.mockReturnValueOnce(expiresIn);
+				jwtService.sign.mockReturnValueOnce('jwt');
 
 				return { mockCurrentUser, expectedPayload, expiresIn };
 			};
@@ -177,6 +195,14 @@ describe('AuthenticationService', () => {
 						expiresIn,
 					})
 				);
+			});
+
+			it('should return the generated jwt', async () => {
+				const { mockCurrentUser } = setup();
+
+				const result = await authenticationService.generateCurrentUserJwt(mockCurrentUser);
+
+				expect(result).toEqual('jwt');
 			});
 		});
 	});
