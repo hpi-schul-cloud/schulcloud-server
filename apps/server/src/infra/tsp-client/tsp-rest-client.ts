@@ -1,9 +1,12 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { TspRestClientConfig } from './tsp-rest-client-config';
 
+@Injectable()
 export class TSPRestClient {
 	private readonly baseUrl: string;
 
@@ -13,15 +16,18 @@ export class TSPRestClient {
 
 	private readonly tokenEndpoint: string;
 
-	private lastToken!: string;
+	private lastToken: string | undefined;
 
-	private lastTokenExpires!: number;
+	private lastTokenExpires: number | undefined;
 
-	constructor(private readonly httpService: HttpService) {
-		this.baseUrl = Configuration.get('TSP_API_BASE_URL') as string;
-		this.clientId = Configuration.get('TSP_API_CLIENT_ID') as string;
-		this.clientSecret = Configuration.get('TSP_API_CLIENT_SECRET') as string;
-		this.tokenEndpoint = Configuration.get('TSP_API_TOKEN_ENDPOINT') as string;
+	constructor(
+		private readonly configService: ConfigService<TspRestClientConfig, true>,
+		private readonly httpService: HttpService
+	) {
+		this.baseUrl = configService.get<string>('TSP_API_BASE_URL');
+		this.clientId = configService.get<string>('TSP_API_CLIENT_ID');
+		this.clientSecret = configService.get<string>('TSP_API_CLIENT_SECRET');
+		this.tokenEndpoint = configService.get<string>('TSP_API_TOKEN_ENDPOINT');
 	}
 
 	private getJwt(lifetime = 30000): string {
