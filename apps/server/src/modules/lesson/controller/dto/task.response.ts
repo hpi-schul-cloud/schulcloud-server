@@ -32,10 +32,10 @@ export class TaskResponse {
 	@ApiProperty({ nullable: true })
 	public readonly courseId?: string;
 
-	@ApiProperty()
+	@ApiProperty({ type: [String] })
 	public readonly submissionIds: string[] = [];
 
-	@ApiProperty()
+	@ApiProperty({ type: [String] })
 	public readonly finishedIds: string[] = [];
 
 	constructor(props: Readonly<TaskResponse>) {
