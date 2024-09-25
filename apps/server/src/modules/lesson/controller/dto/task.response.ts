@@ -29,24 +29,14 @@ export class TaskResponse {
 	@ApiProperty({ nullable: true })
 	public readonly creator?: string;
 
-	// @Index()
-	// @ManyToOne('Course', { fieldName: 'courseId', nullable: true })
-	// course?: Course;
+	@ApiProperty({ nullable: true })
+	public readonly courseId?: string;
 
-	// @Index()
-	// @ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
-	// school: SchoolEntity;
+	@ApiProperty()
+	public readonly submissionIds: string[] = [];
 
-	// @Index()
-	// @ManyToOne('LessonEntity', { fieldName: 'lessonId', nullable: true })
-	// lesson?: LessonEntity; // In database exist also null, but it can not set.
-
-	// @OneToMany('Submission', 'task')
-	// submissions = new Collection<Submission>(this);
-
-	// @Index()
-	// @ManyToMany('User', undefined, { fieldName: 'archived' })
-	// finished = new Collection<User>(this);
+	@ApiProperty()
+	public readonly finishedIds: string[] = [];
 
 	constructor(props: Readonly<TaskResponse>) {
 		this.name = props.name;
@@ -56,7 +46,10 @@ export class TaskResponse {
 		this.dueDate = props.dueDate;
 		this.private = props.private;
 		this.creator = props.creator;
+		this.courseId = props.courseId;
 		this.publicSubmissions = props.publicSubmissions;
 		this.teamSubmissions = props.teamSubmissions;
+		this.submissionIds = props.submissionIds;
+		this.finishedIds = props.finishedIds;
 	}
 }
