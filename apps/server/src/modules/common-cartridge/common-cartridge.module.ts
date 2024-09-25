@@ -10,6 +10,7 @@ import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CoursesClientModule } from './common-cartridge-client/course-client';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
+import { CourseRoomsModule } from './common-cartridge-client/room-client';
 
 @Module({
 	imports: [
@@ -27,6 +28,9 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 			entities: ALL_ENTITIES,
 		}),
 		BoardClientModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+		CourseRoomsModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 	],

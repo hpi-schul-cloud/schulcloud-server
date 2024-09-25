@@ -1,0 +1,17 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+api/course-rooms-api.ts
+base.ts
+common.ts
+configuration.ts
+git_push.sh
+index.ts
+models/board-element-response.ts
+models/copy-api-response.ts
+models/index.ts
+models/lesson-copy-api-params.ts
+models/patch-order-params.ts
+models/patch-visibility-params.ts
+models/single-column-board-response.ts
