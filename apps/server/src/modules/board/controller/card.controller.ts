@@ -18,6 +18,7 @@ import { ApiValidationError } from '@shared/common';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
+	AppointmentFinderElementResponse,
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
@@ -124,7 +125,8 @@ export class CardController {
 		RichTextElementResponse,
 		SubmissionContainerElementResponse,
 		DrawingElementResponse,
-		DeletedElementResponse
+		DeletedElementResponse,
+		AppointmentFinderElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -137,6 +139,7 @@ export class CardController {
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
+				{ $ref: getSchemaPath(AppointmentFinderElementResponse) },
 			],
 		},
 	})

@@ -33,6 +33,11 @@ export interface CardProps extends BoardNodeProps {
 
 export interface CollaborativeTextEditorElementProps extends BoardNodeProps {}
 
+export interface AppointmentFinderElementProps extends BoardNodeProps {
+	externalId?: string;
+	externalAdminId?: string;
+}
+
 export interface DrawingElementProps extends BoardNodeProps {
 	description: string;
 }

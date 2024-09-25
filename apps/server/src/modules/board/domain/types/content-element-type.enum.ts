@@ -7,4 +7,5 @@ export enum ContentElementType {
 	EXTERNAL_TOOL = 'externalTool',
 	COLLABORATIVE_TEXT_EDITOR = 'collaborativeTextEditor',
 	DELETED = 'deleted',
+	APPOINTMENT_FINDER = 'appointmentFinder',
 }

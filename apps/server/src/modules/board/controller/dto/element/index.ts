@@ -1,6 +1,8 @@
 export * from './any-content-element.response';
+export * from './appointment-finder-element.response';
 export * from './collaborative-text-editor-element.response';
 export * from './create-content-element.body.params';
+export * from './deleted-element.response';
 export * from './drawing-element.response';
 export * from './external-tool-element.response';
 export * from './file-element.response';
@@ -8,4 +10,3 @@ export * from './link-element.response';
 export * from './rich-text-element.response';
 export * from './submission-container-element.response';
 export * from './update-element-content.body.params';
-export * from './deleted-element.response';

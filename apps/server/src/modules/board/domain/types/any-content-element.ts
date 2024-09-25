@@ -1,3 +1,4 @@
+import { AppointmentFinderElement, isAppointmentFinderElement } from '../appointment-finder.do';
 import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from '../collaborative-text-editor.do';
 import { type DeletedElement, isDeletedElement } from '../deleted-element.do';
 import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
@@ -16,7 +17,8 @@ export type AnyContentElement =
 	| LinkElement
 	| RichTextElement
 	| SubmissionContainerElement
-	| DeletedElement;
+	| DeletedElement
+	| AppointmentFinderElement;
 
 export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
 	const result =
@@ -27,7 +29,8 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 		isLinkElement(boardNode) ||
 		isRichTextElement(boardNode) ||
 		isSubmissionContainerElement(boardNode) ||
-		isDeletedElement(boardNode);
+		isDeletedElement(boardNode) ||
+		isAppointmentFinderElement(boardNode);
 
 	return result;
 };

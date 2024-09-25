@@ -1,4 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
+import { AppointmentFinderElement } from './appointment-finder.do';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -32,6 +33,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.SUBMISSION_CONTAINER_ELEMENT]: SubmissionContainerElement,
 	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
 	[BoardNodeType.DELETED_ELEMENT]: DeletedElement,
+	[BoardNodeType.APPOINTMENT_FINDER_ELEMENT]: AppointmentFinderElement,
 } as const;
 
 export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>

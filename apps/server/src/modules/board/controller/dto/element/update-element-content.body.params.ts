@@ -131,13 +131,33 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 	content!: ExternalToolContentBody;
 }
 
+export class AppointmentFinderContentBody {
+	@IsString()
+	@ApiProperty()
+	appointmentFinderId!: string;
+
+	@IsString()
+	@ApiProperty()
+	adminId!: string;
+}
+
+export class AppointmentFinderElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.APPOINTMENT_FINDER })
+	type!: ContentElementType.APPOINTMENT_FINDER;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: AppointmentFinderContentBody;
+}
+
 export type AnyElementContentBody =
 	| FileContentBody
 	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
-	| ExternalToolContentBody;
+	| ExternalToolContentBody
+	| AppointmentFinderContentBody;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -151,6 +171,7 @@ export class UpdateElementContentBodyParams {
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
+				{ value: AppointmentFinderElementContentBody, name: ContentElementType.APPOINTMENT_FINDER },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -163,6 +184,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 			{ $ref: getSchemaPath(DrawingElementContentBody) },
+			{ $ref: getSchemaPath(AppointmentFinderElementContentBody) },
 		],
 	})
 	data!:
@@ -171,5 +193,6 @@ export class UpdateElementContentBodyParams {
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
 		| ExternalToolElementContentBody
-		| DrawingElementContentBody;
+		| DrawingElementContentBody
+		| AppointmentFinderElementContentBody;
 }
