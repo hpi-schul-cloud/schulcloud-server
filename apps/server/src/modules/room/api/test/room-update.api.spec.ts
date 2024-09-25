@@ -125,6 +125,39 @@ describe('Room Controller (API)', () => {
 						color: 'green',
 					});
 				});
+
+				describe('when name is empty', () => {
+					it('should return a 400 error', async () => {
+						const { loggedInClient, room } = await setup();
+						const params = { name: '', color: 'red' };
+
+						const response = await loggedInClient.patch(room.id, params);
+
+						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					});
+				});
+
+				describe('when color is empty', () => {
+					it('should return a 400 error', async () => {
+						const { loggedInClient, room } = await setup();
+						const params = { name: 'Room #101', color: '' };
+
+						const response = await loggedInClient.patch(room.id, params);
+
+						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					});
+				});
+
+				describe('when color is not part of the enum', () => {
+					it('should return a 400 error', async () => {
+						const { loggedInClient, room } = await setup();
+						const params = { name: 'Room #101', color: 'fancy-color' };
+
+						const response = await loggedInClient.patch(room.id, params);
+
+						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					});
+				});
 			});
 
 			describe('when a start date is given', () => {

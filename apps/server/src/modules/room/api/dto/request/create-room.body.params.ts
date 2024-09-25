@@ -35,7 +35,7 @@ export class CreateRoomBodyParams implements RoomCreateProps {
 	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Start date of the room',
+		description: 'End date of the room',
 		required: false,
 		type: Date,
 	})

@@ -63,7 +63,7 @@ describe('RoomService', () => {
 		});
 	});
 
-	describe('ceateRoom', () => {
+	describe('createRoom', () => {
 		const setup = () => {
 			const props: RoomCreateProps = {
 				name: 'room #1',
