@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AuthGuardConfig } from '@infra/auth-guard';
 import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { LanguageType } from '@shared/domain/interface';
 import { CoreModuleConfig } from '@src/core';
-// TODO AuthGuardConfig ..merge other PR first
 
-export interface H5PEditorConfig extends CoreModuleConfig, AuthorizationClientConfig {
+export interface H5PEditorConfig extends CoreModuleConfig, AuthorizationClientConfig, AuthGuardConfig {
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
 }
@@ -19,6 +19,10 @@ const h5pEditorConfig: H5PEditorConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('H5P_EDITOR__INCOMING_REQUEST_TIMEOUT') as number,
 	...authorizationClientConfig,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
+	ADMIN_API__ALLOWED_API_KEYS: [],
+	JWT_AUD: Configuration.get('JWT_AUD') as string,
+	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
+	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
 };
 
 export const translatorConfig = {
