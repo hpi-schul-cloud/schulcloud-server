@@ -58,7 +58,13 @@ const config: AdminApiServerConfig = {
 		.map((part) => (part.split(':').pop() ?? '').trim()),
 	JWT_AUD: Configuration.get('JWT_AUD') as string,
 	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
-	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string, // ?
+	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
+	LOGIN_BLOCK_TIME: 0,
+	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
+		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
+	) as boolean,
+	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
+	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 };
 
 export const adminApiServerConfig = () => config;
