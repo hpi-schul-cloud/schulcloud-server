@@ -78,6 +78,8 @@ describe('Room Controller (API)', () => {
 						color: room.color,
 						startDate: room.startDate?.toISOString(),
 						endDate: room.endDate?.toISOString(),
+						createdAt: room.createdAt.toISOString(),
+						updatedAt: room.updatedAt.toISOString(),
 					};
 				});
 				const expectedResponse = {
