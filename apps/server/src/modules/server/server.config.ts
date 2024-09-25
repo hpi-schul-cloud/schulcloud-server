@@ -27,6 +27,7 @@ import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
+import { TspRestClientConfig } from '@src/infra/tsp-client/tsp-rest-client-config';
 import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
@@ -67,6 +68,7 @@ export interface ServerConfig
 		UserImportConfig,
 		VideoConferenceConfig,
 		BbbConfig,
+		TspRestClientConfig,
 		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -304,6 +306,10 @@ const config: ServerConfig = {
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
+	TSP_API_BASE_URL: Configuration.get('TSP_API_BASE_URL') as string,
+	TSP_API_CLIENT_ID: Configuration.get('TSP_API_CLIENT_ID') as string,
+	TSP_API_CLIENT_SECRET: Configuration.get('TSP_API_CLIENT_SECRET') as string,
+	TSP_API_TOKEN_ENDPOINT: Configuration.get('TSP_API_TOKEN_ENDPOINT') as string,
 };
 
 export const serverConfig = () => config;
