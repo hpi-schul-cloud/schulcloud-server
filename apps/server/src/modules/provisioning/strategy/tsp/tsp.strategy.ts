@@ -58,11 +58,8 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			roles: Object.values(RoleName).filter((role) => payload.ptscListRolle.split(',').includes(role)),
 		});
 
-		const externalSchool = await this.schoolService.getSchoolById(payload.ptscSchuleNummer);
-		const schoolName = externalSchool.getProps().name;
 		const externalSchoolDto = new ExternalSchoolDto({
 			externalId: payload.ptscSchuleNummer,
-			name: schoolName,
 		});
 
 		const externalClassDtoList = payload.ptscListKlasseId.map(

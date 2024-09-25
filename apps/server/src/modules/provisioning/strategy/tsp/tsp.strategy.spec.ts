@@ -22,7 +22,6 @@ describe('TspProvisioningStrategy', () => {
 	let module: TestingModule;
 	let sut: TspProvisioningStrategy;
 	let provisioningServiceMock: DeepMocked<TspProvisioningService>;
-	let schoolServiceMock: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -41,7 +40,6 @@ describe('TspProvisioningStrategy', () => {
 
 		sut = module.get(TspProvisioningStrategy);
 		provisioningServiceMock = module.get(TspProvisioningService);
-		schoolServiceMock = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -64,7 +62,7 @@ describe('TspProvisioningStrategy', () => {
 
 	describe('getData', () => {
 		describe('When called', () => {
-			const setup = async () => {
+			const setup = () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'externalSchoolId',
@@ -93,11 +91,8 @@ describe('TspProvisioningStrategy', () => {
 					lastName: 'lastName',
 				});
 
-				const externalSchool = await schoolServiceMock.getSchoolById(input.system.systemId);
-				const schoolName = externalSchool.getProps().name;
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
-					name: schoolName,
 				});
 
 				const externalClass1 = new ExternalClassDto({ externalId: 'externalClassId1' });
@@ -108,7 +103,7 @@ describe('TspProvisioningStrategy', () => {
 			};
 
 			it('should return mapped oauthDataDto if input is valid', async () => {
-				const { input, user, school, externalClasses } = await setup();
+				const { input, user, school, externalClasses } = setup();
 				const result = await sut.getData(input);
 
 				expect(result).toEqual({
@@ -122,7 +117,6 @@ describe('TspProvisioningStrategy', () => {
 			});
 		});
 
-		// AI: next 35 lines
 		describe('When idToken is invalid', () => {
 			it('should throw', async () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({

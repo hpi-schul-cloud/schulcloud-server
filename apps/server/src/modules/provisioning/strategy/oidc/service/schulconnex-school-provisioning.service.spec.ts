@@ -146,6 +146,48 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 				});
 			});
 
+			describe('when the external system does not provide a Name for the school', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = new LegacySchoolDo({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(null);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+					};
+				};
+
+				it('should throw an error', async () => {
+					const { systemId, externalSchoolDto } = setup();
+
+					await expect(service.provisionExternalSchool(externalSchoolDto, systemId)).rejects.toThrowError(
+						'External school name is required'
+					);
+				});
+			});
+
 			describe('when the external system does not provide a location for the school', () => {
 				const setup = () => {
 					const systemId = new ObjectId().toHexString();
