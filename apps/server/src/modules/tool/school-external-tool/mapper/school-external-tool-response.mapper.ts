@@ -28,6 +28,7 @@ export class SchoolExternalToolResponseMapper {
 				isOutdatedOnScopeSchool: schoolExternalTool.status.isOutdatedOnScopeSchool,
 				isGloballyDeactivated: schoolExternalTool.status.isGloballyDeactivated,
 			}),
+			restrictToContexts: schoolExternalTool.restrictToContexts,
 		});
 
 		return response;

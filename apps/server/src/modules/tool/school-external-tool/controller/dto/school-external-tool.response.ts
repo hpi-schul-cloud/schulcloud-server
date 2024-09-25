@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
 import { SchoolExternalToolConfigurationStatusResponse } from './school-external-tool-configuration.response';
+import { ToolContextType } from '@modules/tool/common/enum';
 
 export class SchoolExternalToolResponse {
 	@ApiProperty()
@@ -24,6 +25,9 @@ export class SchoolExternalToolResponse {
 	@ApiProperty({ type: SchoolExternalToolConfigurationStatusResponse })
 	status: SchoolExternalToolConfigurationStatusResponse;
 
+	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
+	restrictToContexts?: ToolContextType[];
+
 	constructor(response: SchoolExternalToolResponse) {
 		this.id = response.id;
 		this.name = response.name;
@@ -32,5 +36,6 @@ export class SchoolExternalToolResponse {
 		this.isDeactivated = response.isDeactivated;
 		this.parameters = response.parameters;
 		this.status = response.status;
+		this.restrictToContexts = response.restrictToContexts
 	}
 }
