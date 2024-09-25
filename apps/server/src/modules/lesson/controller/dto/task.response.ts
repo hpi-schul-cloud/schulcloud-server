@@ -56,5 +56,7 @@ export class TaskResponse {
 		this.dueDate = props.dueDate;
 		this.private = props.private;
 		this.creator = props.creator;
+		this.publicSubmissions = props.publicSubmissions;
+		this.teamSubmissions = props.teamSubmissions;
 	}
 }

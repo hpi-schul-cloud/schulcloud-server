@@ -16,7 +16,7 @@ export class LessonMapper {
 			availableDate: task.availableDate,
 			dueDate: task.dueDate,
 			private: task.private,
-			creator: task.creator?._id.toHexString(),
+			creator: task.creator?.id,
 			publicSubmissions: task.publicSubmissions,
 			teamSubmissions: task.teamSubmissions,
 		});

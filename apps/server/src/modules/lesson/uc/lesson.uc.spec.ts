@@ -198,9 +198,9 @@ describe('LessonUC', () => {
 		describe('when user is a valid teacher', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-
 				const lesson = lessonFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				lessonService.findById.mockResolvedValueOnce(lesson);
 
 				authorizationService.hasPermission.mockReturnValueOnce(true);
