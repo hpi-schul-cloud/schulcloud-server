@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+// FIXME: imports
 import { CustomParameter } from '@modules/tool/common/domain';
 import {
 	CustomParameterLocation,
@@ -149,5 +150,6 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		isDeactivated: false,
 		openNewTab: false,
 		createdAt: new Date(2020, 1, 1),
+		isPreferred: false,
 	};
 });

@@ -57,6 +57,15 @@ export class ExternalToolResponse {
 	@ApiPropertyOptional({ type: ExternalToolMediumResponse, description: 'Medium of the external tool' })
 	medium?: ExternalToolMediumResponse;
 
+	@ApiProperty({ type: Boolean, description: 'Should the tool be a preferred tool' })
+	isPreferred!: boolean;
+
+	@ApiPropertyOptional({
+		type: String,
+		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
+	})
+	iconName?: string;
+
 	constructor(response: ExternalToolResponse) {
 		this.id = response.id;
 		this.name = response.name;
@@ -71,5 +80,7 @@ export class ExternalToolResponse {
 		this.openNewTab = response.openNewTab;
 		this.restrictToContexts = response.restrictToContexts;
 		this.medium = response.medium;
+		this.isPreferred = response.isPreferred;
+		this.iconName = response.iconName;
 	}
 }

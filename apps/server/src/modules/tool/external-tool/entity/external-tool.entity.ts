@@ -36,6 +36,10 @@ export interface ExternalToolEntityProps {
 	restrictToContexts?: ToolContextType[];
 
 	medium?: ExternalToolMediumEntity;
+
+	isPreferred: boolean;
+
+	iconName?: string;
 }
 
 @Entity({ tableName: 'external-tools' })
@@ -80,6 +84,12 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => ExternalToolMediumEntity, { nullable: true, object: true })
 	medium?: ExternalToolMediumEntity;
 
+	@Property()
+	isPreferred: boolean;
+
+	@Property({ nullable: true })
+	iconName?: string;
+
 	constructor(props: ExternalToolEntityProps) {
 		super();
 		if (props.id) {
@@ -98,5 +108,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.openNewTab = props.openNewTab;
 		this.restrictToContexts = props.restrictToContexts;
 		this.medium = props.medium;
+		this.isPreferred = props.isPreferred;
+		this.iconName = props.iconName;
 	}
 }

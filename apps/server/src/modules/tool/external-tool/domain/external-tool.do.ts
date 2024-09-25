@@ -36,6 +36,10 @@ export interface ExternalToolProps extends AuthorizableObject {
 	medium?: ExternalToolMedium;
 
 	createdAt?: Date;
+
+	isPreferred: boolean;
+
+	iconName?: string;
 }
 
 export class ExternalTool extends DomainObject<ExternalToolProps> {
@@ -151,6 +155,22 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.props.createdAt = value;
 	}
 
+	get isPreferred(): boolean {
+		return this.props.isPreferred;
+	}
+
+	set isPreferred(value: boolean) {
+		this.props.isPreferred = value;
+	}
+
+	get iconName(): string | undefined {
+		return this.props.iconName;
+	}
+
+	set iconName(value: string | undefined) {
+		this.props.iconName = value;
+	}
+
 	public static readonly thumbnailNameAffix = 'thumbnail';
 
 	constructor(props: ExternalToolProps) {
@@ -177,6 +197,8 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.restrictToContexts = props.restrictToContexts;
 		this.medium = props.medium;
 		this.createdAt = props.createdAt;
+		this.isPreferred = props.isPreferred;
+		this.iconName = props.iconName;
 	}
 
 	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {

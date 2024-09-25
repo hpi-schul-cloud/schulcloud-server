@@ -75,6 +75,8 @@ export class ExternalToolResponseMapper {
 			openNewTab: externalTool.openNewTab,
 			restrictToContexts: externalTool.restrictToContexts,
 			medium: this.mapMediumToResponse(externalTool.medium),
+			isPreferred: externalTool.isPreferred,
+			iconName: externalTool.iconName,
 		});
 	}
 

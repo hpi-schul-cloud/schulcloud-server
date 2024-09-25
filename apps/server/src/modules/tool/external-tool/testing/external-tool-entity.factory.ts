@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+// FIXME: imports
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -126,6 +127,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 				uploadUrl: 'https://uploadurl.com',
 				fileRecord: fileRecordFactory.build(),
 			},
+			isPreferred: false,
 		};
 	}
 );

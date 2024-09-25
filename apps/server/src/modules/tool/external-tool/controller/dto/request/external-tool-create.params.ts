@@ -97,4 +97,16 @@ export class ExternalToolCreateParams {
 	@IsOptional()
 	@ApiPropertyOptional({ type: ExternalToolMediumParams, description: 'Medium of the external tool' })
 	medium?: ExternalToolMediumParams;
+
+	@IsBoolean()
+	@ApiProperty({ type: Boolean, description: 'Should the tool be a preferred tool', default: false })
+	isPreferred!: boolean;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional({
+		type: String,
+		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
+	})
+	iconName?: string;
 }

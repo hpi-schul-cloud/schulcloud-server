@@ -83,7 +83,7 @@ export class ExternalToolUpdateParams {
 	isDeactivated!: boolean;
 
 	@IsBoolean()
-	@ApiProperty({ type: Boolean, default: false, description: 'Open the tool in a new tab' })
+	@ApiProperty()
 	openNewTab!: boolean;
 
 	@IsArray()
@@ -101,4 +101,16 @@ export class ExternalToolUpdateParams {
 	@IsOptional()
 	@ApiPropertyOptional({ type: ExternalToolMediumParams, description: 'Medium of the external tool' })
 	medium?: ExternalToolMediumParams;
+
+	@IsBoolean()
+	@ApiProperty({ type: Boolean, default: false, description: 'Should the tool be a preferred tool' })
+	isPreferred!: boolean;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional({
+		type: String,
+		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
+	})
+	iconName?: string;
 }
