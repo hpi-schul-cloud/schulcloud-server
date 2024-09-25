@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { setupEntities, taskFactory } from '@shared/testing';
+import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { SlimTaskResponse } from '../dto/task.response';
 import { LessonMapper } from './lesson.mapper';
 
@@ -20,6 +20,8 @@ describe('LessonMapper', () => {
 				const task = taskFactory.buildWithId({
 					publicSubmissions: true,
 					teamSubmissions: true,
+					submissions: submissionFactory.buildListWithId(2),
+					finished: userFactory.buildListWithId(2),
 				});
 
 				return { task };
