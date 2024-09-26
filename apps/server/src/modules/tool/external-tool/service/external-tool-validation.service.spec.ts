@@ -534,7 +534,7 @@ describe(ExternalToolValidationService.name, () => {
 		describe('when the external tool is set to be a preferred tool', () => {
 			describe('when the preferred tool has an icon name', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.build({
+					const externalTool: ExternalTool = externalToolFactory.buildWithId({
 						isPreferred: true,
 						iconName: 'mdiAlert',
 					});
@@ -549,7 +549,7 @@ describe(ExternalToolValidationService.name, () => {
 				it('should not throw an validation error', async () => {
 					const { externalTool } = setup();
 
-					const result: Promise<void> = service.validateCreate(externalTool);
+					const result: Promise<void> = service.validateUpdate(externalTool.id, externalTool);
 
 					await expect(result).resolves.not.toThrow();
 				});
@@ -580,7 +580,7 @@ describe(ExternalToolValidationService.name, () => {
 				it('should throw an validation error', async () => {
 					const { externalTool, expectedError } = setup();
 
-					const result: Promise<void> = service.validateCreate(externalTool);
+					const result: Promise<void> = service.validateUpdate(externalTool.id, externalTool);
 
 					await expect(result).rejects.toThrow(expectedError);
 				});
@@ -611,7 +611,7 @@ describe(ExternalToolValidationService.name, () => {
 				it('should throw an validation error', async () => {
 					const { externalTool, expectedError } = setup();
 
-					const result: Promise<void> = service.validateCreate(externalTool);
+					const result: Promise<void> = service.validateUpdate(externalTool.id, externalTool);
 
 					await expect(result).rejects.toThrow(expectedError);
 				});
@@ -645,7 +645,7 @@ describe(ExternalToolValidationService.name, () => {
 				it('should throw an validation error', async () => {
 					const { externalTool, expectedError } = setup();
 
-					const result: Promise<void> = service.validateCreate(externalTool);
+					const result: Promise<void> = service.validateUpdate(externalTool.id, externalTool);
 
 					await expect(result).rejects.toThrow(expectedError);
 				});
@@ -679,7 +679,7 @@ describe(ExternalToolValidationService.name, () => {
 				it('should throw an validation error', async () => {
 					const { externalTool, expectedError } = setup();
 
-					const result: Promise<void> = service.validateCreate(externalTool);
+					const result: Promise<void> = service.validateUpdate(externalTool.id, externalTool);
 
 					await expect(result).rejects.toThrow(expectedError);
 				});
