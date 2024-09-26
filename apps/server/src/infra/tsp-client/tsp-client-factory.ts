@@ -40,9 +40,6 @@ export class TspClientFactory {
 			new Configuration({
 				accessToken: this.createJwt(),
 				basePath: this.baseUrl,
-				// baseOptions: {
-				// 	headers: this.createHeaders(),
-				// },
 			})
 		);
 
@@ -73,12 +70,4 @@ export class TspClientFactory {
 
 		return this.cachedToken;
 	}
-
-	// private createHeaders(): Record<string, string> {
-	// 	const token = this.createJwt();
-
-	// 	return {
-	// 		Authorization: `AUTH-JWT apiClientId=${this.clientId},jwt=${token}`,
-	// 	};
-	// }
 }
