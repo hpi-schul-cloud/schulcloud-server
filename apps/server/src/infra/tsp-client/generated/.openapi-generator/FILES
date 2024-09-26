@@ -9,4 +9,10 @@ configuration.ts
 git_push.sh
 index.ts
 models/index.ts
+models/robj-export-klasse.ts
 models/robj-export-lehrer-migration.ts
+models/robj-export-lehrer.ts
+models/robj-export-schueler-migration.ts
+models/robj-export-schueler.ts
+models/robj-export-schule.ts
+models/version-response.ts
