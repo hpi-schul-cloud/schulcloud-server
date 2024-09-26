@@ -1,4 +1,4 @@
-export * from './dto';
-export * from './mapper';
-export * from './room.controller';
-export * from './room.uc';
+import { RoomController } from './room.controller';
+import { RoomUc } from './room.uc';
+
+export { RoomController, RoomUc };
