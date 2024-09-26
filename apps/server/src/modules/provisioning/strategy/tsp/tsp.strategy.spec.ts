@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalClassDto,
@@ -30,10 +29,6 @@ describe('TspProvisioningStrategy', () => {
 				{
 					provide: TspProvisioningService,
 					useValue: createMock<TspProvisioningService>(),
-				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
@@ -76,7 +71,7 @@ describe('TspProvisioningStrategy', () => {
 					return {
 						sub: 'externalUserId',
 						sid: 'externalSchoolId',
-						ptscListRolle: 'teacher',
+						ptscListRolle: 'schueler,lehrer,admin',
 						personVorname: 'firstName',
 						personNachname: 'lastName',
 						ptscSchuleNummer: 'externalSchoolId',
@@ -86,7 +81,7 @@ describe('TspProvisioningStrategy', () => {
 
 				const user: ExternalUserDto = new ExternalUserDto({
 					externalId: 'externalUserId',
-					roles: [RoleName.TEACHER],
+					roles: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMINISTRATOR],
 					firstName: 'firstName',
 					lastName: 'lastName',
 				});
@@ -113,7 +108,7 @@ describe('TspProvisioningStrategy', () => {
 					externalGroups: undefined,
 					externalLicenses: undefined,
 					externalClasses,
-				} as OauthDataDto);
+				});
 			});
 		});
 

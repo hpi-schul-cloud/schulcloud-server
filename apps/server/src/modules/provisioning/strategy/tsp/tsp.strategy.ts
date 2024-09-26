@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
-import { SchoolService } from '@src/modules/school';
 import { validate } from 'class-validator';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
@@ -12,7 +11,6 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 	ProvisioningDto,
-	ProvisioningSystemDto,
 } from '../../dto';
 import { TspProvisioningService } from '../../service/tsp-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
@@ -21,10 +19,13 @@ import { TspJwtPayload } from './tsp.jwt.payload';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
-	constructor(
-		private readonly provisioningService: TspProvisioningService,
-		private readonly schoolService: SchoolService
-	) {
+	RoleMapping: Record<string, RoleName> = {
+		lehrer: RoleName.TEACHER,
+		schueler: RoleName.STUDENT,
+		admin: RoleName.ADMINISTRATOR,
+	};
+
+	constructor(private readonly provisioningService: TspProvisioningService) {
 		super();
 	}
 
@@ -46,16 +47,11 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property).join(', '));
 		}
 
-		const provisioningSystemDto = new ProvisioningSystemDto({
-			systemId: payload.sid,
-			provisioningStrategy: SystemProvisioningStrategy.TSP,
-		});
-
 		const externalUserDto = new ExternalUserDto({
 			externalId: payload.sub,
 			firstName: payload.personVorname,
 			lastName: payload.personNachname,
-			roles: Object.values(RoleName).filter((role) => payload.ptscListRolle.split(',').includes(role)),
+			roles: payload.ptscListRolle.split(',').map((tspRole) => this.RoleMapping[tspRole]),
 		});
 
 		const externalSchoolDto = new ExternalSchoolDto({
@@ -67,7 +63,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		);
 
 		const oauthDataDto = new OauthDataDto({
-			system: provisioningSystemDto,
+			system: input.system,
 			externalUser: externalUserDto,
 			externalSchool: externalSchoolDto,
 			externalClasses: externalClassDtoList,
