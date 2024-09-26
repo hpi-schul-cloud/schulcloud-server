@@ -1,3 +1,4 @@
-export * from './class.module';
+export { ClassModule } from './class.module';
 export * from './domain';
-export * from './service';
+export { ClassConfig } from './class.config';
+export { ClassService } from './service';

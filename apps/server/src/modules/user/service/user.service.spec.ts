@@ -1,4 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
+import { CalendarService } from '@infra/calendar';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
@@ -25,8 +27,6 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { CalendarService } from '@infra/calendar';
-import { ICurrentUser } from '@infra/auth-guard';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -301,7 +301,7 @@ describe('UserService', () => {
 					accountId: account.id,
 					roles: [role.id],
 					isExternalUser: false,
-					impersonated: false,
+					support: false,
 				});
 			});
 		});

@@ -130,8 +130,8 @@
 			"description": "Lifetime of generated JWTs in days."
 		},
 		"JWT_LIFETIME_SUPPORT_SECONDS": {
-			"type": "string",
-			"default": "3600",
+			"type": "number",
+			"default": 3600,
 			"description": "Lifetime of generated support JWTs."
 		},
 		"JWT_TIMEOUT_SECONDS": {
