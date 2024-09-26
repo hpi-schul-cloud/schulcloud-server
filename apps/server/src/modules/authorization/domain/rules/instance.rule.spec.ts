@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepMocked } from '@golevelup/ts-jest';
 import { instanceFactory } from '@modules/instance/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
@@ -17,13 +17,7 @@ describe(InstanceRule.name, () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			providers: [
-				InstanceRule,
-				{
-					provide: AuthorizationHelper,
-					useValue: createMock<AuthorizationHelper>(),
-				},
-			],
+			providers: [InstanceRule, AuthorizationHelper],
 		}).compile();
 
 		rule = module.get(InstanceRule);
@@ -77,65 +71,116 @@ describe(InstanceRule.name, () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('when the user has all permissions', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const instance = instanceFactory.build();
-				const context: AuthorizationContext = {
-					action: Action.write,
-					requiredPermissions: [Permission.FILESTORAGE_VIEW],
+		describe('when user is a superhero', () => {
+			describe('when the user has write permissions', () => {
+				const setup = () => {
+					const user = userFactory.asSuperhero().build();
+					const instance = instanceFactory.build();
+					const context: AuthorizationContext = {
+						action: Action.write,
+						requiredPermissions: [Permission.INSTANCE_VIEW],
+					};
+
+					return {
+						user,
+						instance,
+						context,
+					};
 				};
 
-				authorizationHelper.hasAllPermissions.mockReturnValue(true);
+				it('should check all permissions', () => {
+					const { user, instance, context } = setup();
+					const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
-				return {
-					user,
-					instance,
-					context,
-				};
-			};
+					rule.hasPermission(user, instance, context);
 
-			it('should check all permissions', () => {
-				const { user, instance, context } = setup();
+					expect(spy).toHaveBeenCalledWith(user, context.requiredPermissions);
+				});
 
-				rule.hasPermission(user, instance, context);
+				it('should return true', () => {
+					const { user, instance, context } = setup();
 
-				expect(authorizationHelper.hasAllPermissions).toHaveBeenCalledWith(user, context.requiredPermissions);
+					const result = rule.hasPermission(user, instance, context);
+
+					expect(result).toEqual(true);
+				});
 			});
 
-			it('should return true', () => {
-				const { user, instance, context } = setup();
+			describe('when the user has read permissions', () => {
+				const setup = () => {
+					const user = userFactory.asSuperhero().build();
+					const instance = instanceFactory.build();
+					const context: AuthorizationContext = {
+						action: Action.read,
+						requiredPermissions: [Permission.INSTANCE_VIEW],
+					};
 
-				const result = rule.hasPermission(user, instance, context);
+					return {
+						user,
+						instance,
+						context,
+					};
+				};
 
-				expect(result).toEqual(true);
+				it('should return true', () => {
+					const { user, instance, context } = setup();
+
+					const result = rule.hasPermission(user, instance, context);
+
+					expect(result).toEqual(true);
+				});
 			});
 		});
 
-		describe('when the user has no permission', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const instance = instanceFactory.build();
-				const context: AuthorizationContext = {
-					action: Action.write,
-					requiredPermissions: [Permission.FILESTORAGE_VIEW],
+		describe('when user is a student', () => {
+			describe('when the user has no write permission', () => {
+				const setup = () => {
+					const user = userFactory.asStudent().build();
+					const instance = instanceFactory.build();
+					const context: AuthorizationContext = {
+						action: Action.write,
+						requiredPermissions: [Permission.FILESTORAGE_CREATE],
+					};
+
+					return {
+						user,
+						instance,
+						context,
+					};
 				};
 
-				authorizationHelper.hasAllPermissions.mockReturnValue(false);
+				it('should return false', () => {
+					const { user, instance, context } = setup();
 
-				return {
-					user,
-					instance,
-					context,
+					const result = rule.hasPermission(user, instance, context);
+
+					expect(result).toEqual(false);
+				});
+			});
+
+			describe('when the user has read permission', () => {
+				const setup = () => {
+					const user = userFactory.asStudent().build();
+					const instance = instanceFactory.build();
+					const context: AuthorizationContext = {
+						action: Action.read,
+						requiredPermissions: [Permission.FILESTORAGE_VIEW],
+					};
+
+					return {
+						user,
+						instance,
+						context,
+					};
 				};
-			};
 
-			it('should return false', () => {
-				const { user, instance, context } = setup();
+				it('should return true', () => {
+					const { user, instance, context } = setup();
 
-				const result = rule.hasPermission(user, instance, context);
+					const result = rule.hasPermission(user, instance, context);
 
-				expect(result).toEqual(false);
+					expect(result).toEqual(true);
+				});
 			});
 		});
 	});
