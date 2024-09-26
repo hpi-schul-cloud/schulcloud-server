@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
     app.kubernetes.io/name: api-tsp-sync-cronjob
-    app.kubernetes.io/component: tsp-sync
+    app.kubernetes.io/component: sync
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
@@ -22,12 +22,22 @@ spec:
         app.kubernetes.io/part-of: schulcloud-verbund
         app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         app.kubernetes.io/name: api-tsp-sync-cronjob
-        app.kubernetes.io/component: tsp-sync
+        app.kubernetes.io/component: sync
         app.kubernetes.io/managed-by: ansible
         git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       template:
+        metadata:
+          labels:
+            app: api-tsp-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: api-tsp-sync-cronjob
+            app.kubernetes.io/component: sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
           securityContext:
             runAsUser: 1000
@@ -99,13 +109,3 @@ spec:
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
 {% endif %}
-        metadata:
-          labels:
-            app: api-tsp-sync-cronjob
-            app.kubernetes.io/part-of: schulcloud-verbund
-            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name: api-tsp-sync-cronjob
-            app.kubernetes.io/component: tsp-sync
-            app.kubernetes.io/managed-by: ansible
-            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
