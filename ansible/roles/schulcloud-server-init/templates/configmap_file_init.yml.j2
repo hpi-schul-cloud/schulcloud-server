@@ -518,17 +518,6 @@ data:
     # ========== Start of the CTL seed data configuration section.
     echo "Inserting ctl seed data secrets to external-tools..."
     mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-             {
-               "name": "Moodle Fortbildung",
-             },
-             { $set: {
-               "config_secret": "'$CTL_SEED_SECRET_MOODLE_FORTB'",
-             } },
-             {
-               "upsert": true
-             }
-         );'
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
            {
              "name": "Product Test Onlinediagnose Grundschule - Mathematik",
            },
