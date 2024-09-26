@@ -364,7 +364,7 @@ describe('Login Controller (api)', () => {
 					schoolId: school.id,
 					accountId: account.id,
 					isExternalUser: true,
-					// impersonated: false,
+					// support: false,
 					// externalIdToken: undefined,
 				});
 			});
