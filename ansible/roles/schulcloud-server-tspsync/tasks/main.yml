@@ -111,15 +111,3 @@
     when: WITH_TSP
     tags:
       - configmap
-
-  - name: remove API TSP Sync CronJob ConfigMap
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      state: absent
-      api_version: batch/v1
-      kind: ConfigMap
-      namespace: "{{ NAMESPACE }}"
-      name: api-tsp-sync-cronjob-configmap
-    when: not WITH_TSP
-    tags:
-      - configmap
