@@ -96,6 +96,8 @@ describe('AdminApiExternalTool (API)', () => {
 						url: 'https://link.to-my-tool.com',
 						openNewTab: true,
 						thumbnailUrl: 'https://link.to-my-thumbnail.com',
+						isPreferred: true,
+						iconName: 'mdiAlert',
 					};
 
 					return {
@@ -137,6 +139,8 @@ describe('AdminApiExternalTool (API)', () => {
 						isDeactivated: false,
 						url: 'https://link.to-my-tool.com',
 						openNewTab: true,
+						isPreferred: true,
+						iconName: 'mdiAlert',
 					});
 
 					const externalTool = await em.findOne(ExternalToolEntity, { id: body.id });

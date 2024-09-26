@@ -1,6 +1,7 @@
+import { DeepPartial } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
-// FIXME: imports
-import { CustomParameter } from '@modules/tool/common/domain';
+import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
+import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -9,7 +10,7 @@ import {
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
 	ToolConfigType,
-} from '@modules/tool/common/enum';
+} from '../../common/enum';
 import {
 	BasicToolConfig,
 	ExternalTool,
@@ -17,9 +18,7 @@ import {
 	ExternalToolProps,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
-} from '@modules/tool/external-tool/domain';
-import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
-import { DeepPartial } from 'fishery';
+} from '../domain';
 import { fileRecordRefFactory } from './file-record-ref.factory';
 
 export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
