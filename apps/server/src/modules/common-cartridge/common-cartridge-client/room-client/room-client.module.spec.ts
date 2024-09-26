@@ -20,7 +20,7 @@ describe(CourseRoomsModule.name, () => {
 	});
 
 	describe('when module is initialized', () => {
-		it('should be defined', () => {
+		it('it should be defined', () => {
 			const courseRoomsClientAdapter = module.get(CourseRoomsClientAdapter);
 
 			expect(courseRoomsClientAdapter).toBeDefined();

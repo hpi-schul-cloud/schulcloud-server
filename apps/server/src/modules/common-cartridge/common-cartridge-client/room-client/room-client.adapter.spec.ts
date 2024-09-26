@@ -69,7 +69,7 @@ describe(CourseRoomsClientAdapter.name, () => {
 
 			it('should return the structure of the course', async () => {
 				const { roomId, response } = setup();
-				const result = await service.getCourseRoomBoard(roomId);
+				const result = await service.getRoomsByCourseId(roomId);
 
 				expect(result).toEqual(response.data);
 			});
@@ -91,7 +91,7 @@ describe(CourseRoomsClientAdapter.name, () => {
 		it('should throw an UnauthorizedException', async () => {
 			const { roomId, error, adapter } = setup();
 
-			await expect(adapter.getCourseRoomBoard(roomId)).rejects.toThrowError(error);
+			await expect(adapter.getRoomsByCourseId(roomId)).rejects.toThrowError(error);
 		});
 	});
 });

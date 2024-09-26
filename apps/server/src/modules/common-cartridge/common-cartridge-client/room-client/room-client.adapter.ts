@@ -9,9 +9,10 @@ import { CourseRoomsApi, SingleColumnBoardResponse } from './room-api-client';
 export class CourseRoomsClientAdapter {
 	constructor(private readonly courseRoomsApi: CourseRoomsApi, @Inject(REQUEST) private request: Request) {}
 
-	public async getCourseRoomBoard(roomId: string): Promise<SingleColumnBoardResponse> {
+	public async getRoomsByCourseId(roomId: string): Promise<SingleColumnBoardResponse> {
 		const options = this.createOptionParams();
 		const response = await this.courseRoomsApi.courseRoomsControllerGetRoomBoard(roomId, options);
+
 		return response.data;
 	}
 
