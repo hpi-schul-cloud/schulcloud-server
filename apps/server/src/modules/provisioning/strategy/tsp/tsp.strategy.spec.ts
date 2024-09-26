@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
+import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalClassDto,
@@ -101,7 +102,7 @@ describe('TspProvisioningStrategy', () => {
 				const { input, user, school, externalClasses } = setup();
 				const result = await sut.getData(input);
 
-				expect(result).toEqual({
+				expect(result).toEqual<OauthDataDto>({
 					system: input.system,
 					externalUser: user,
 					externalSchool: school,
@@ -113,7 +114,7 @@ describe('TspProvisioningStrategy', () => {
 		});
 
 		describe('When idToken is invalid', () => {
-			it('should throw', async () => {
+			const setup = () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'externalSchoolId',
@@ -125,12 +126,18 @@ describe('TspProvisioningStrategy', () => {
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => null);
 
-				await expect(sut.getData(input)).rejects.toThrow();
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailure', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
 			});
 		});
 
 		describe('When idToken is missing sub', () => {
-			it('should throw', async () => {
+			const setup = () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'externalSchoolId',
@@ -144,12 +151,17 @@ describe('TspProvisioningStrategy', () => {
 					return {};
 				});
 
-				await expect(sut.getData(input)).rejects.toThrow();
+				return { input };
+			};
+			it('should throw IdTokenExtractionFailure', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
 			});
 		});
 
 		describe('When payload is invalid', () => {
-			it('should throw', async () => {
+			const setup = () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'externalSchoolId',
@@ -171,7 +183,13 @@ describe('TspProvisioningStrategy', () => {
 					};
 				});
 
-				await expect(sut.getData(input)).rejects.toThrow();
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailure', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
 			});
 		});
 	});

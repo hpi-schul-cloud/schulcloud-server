@@ -7,6 +7,7 @@ import { SchoolFeature } from '@shared/domain/types';
 import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@shared/testing';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
+import { SchoolNameRequiredLoggableException } from '../../loggable/school-name-required-loggable-exception';
 
 describe(SchulconnexSchoolProvisioningService.name, () => {
 	let module: TestingModule;
@@ -183,7 +184,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					const { systemId, externalSchoolDto } = setup();
 
 					await expect(service.provisionExternalSchool(externalSchoolDto, systemId)).rejects.toThrowError(
-						'External school name is required'
+						new SchoolNameRequiredLoggableException('ExternalSchool.name')
 					);
 				});
 			});

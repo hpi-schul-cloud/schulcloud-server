@@ -51,14 +51,14 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			externalId: payload.sub,
 			firstName: payload.personVorname,
 			lastName: payload.personNachname,
-			roles: payload.ptscListRolle.split(',').map((tspRole) => this.RoleMapping[tspRole]),
+			roles: (payload.ptscListRolle ?? '').split(',').map((tspRole) => this.RoleMapping[tspRole]),
 		});
 
 		const externalSchoolDto = new ExternalSchoolDto({
-			externalId: payload.ptscSchuleNummer,
+			externalId: payload.ptscSchuleNummer || '',
 		});
 
-		const externalClassDtoList = payload.ptscListKlasseId.map(
+		const externalClassDtoList = (payload.ptscListKlasseId ?? []).map(
 			(classId: string) => new ExternalClassDto({ externalId: classId })
 		);
 
