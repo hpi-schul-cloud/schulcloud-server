@@ -14,7 +14,9 @@ export interface ICurrentUser {
 	systemId?: EntityId;
 
 	/** True if a support member impersonates the user */
-	impersonated: boolean;
+	support: boolean;
+
+	supportUserId?: EntityId;
 
 	/** True if the user is an external user e.g. an oauth user or ldap user */
 	isExternalUser: boolean;
