@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import * as jwt from 'jsonwebtoken';
-import { Configuration, ExportApiFactory, ExportApiInterface } from './tsp-api-client';
+import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 
 @Injectable()
 export class TSPRestClient {

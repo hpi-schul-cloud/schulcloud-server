@@ -2,6 +2,32 @@
 	"$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
 	"spaces": 2,
 	"generator-cli": {
-		"version": "7.6.0"
+		"version": "7.6.0",
+		"generators": {
+			"tsp-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "https://test2.schulportal-thueringen.de/tip-ms/api/swagger.json",
+				"output": "./apps/server/src/infra/tsp-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:exportLehrerListMigration"
+				},
+				"globalProperty": {
+					"models": "RobjExportLehrerMigration,",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			}
+		}
 	}
 }
