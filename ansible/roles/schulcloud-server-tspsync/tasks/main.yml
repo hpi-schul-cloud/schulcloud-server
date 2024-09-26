@@ -87,7 +87,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-cronjob.yml.j2
-    when: FEATURE_TSP_SYNC_ENABLED
+    when: WITH_TSP_SYNC
     tags:
       - cronjob
 
@@ -99,7 +99,7 @@
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
       name: api-tsp-sync-cronjob
-    when: not FEATURE_TSP_SYNC_ENABLED
+    when: not WITH_TSP_SYNC
     tags:
       - cronjob
 
@@ -108,6 +108,6 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-cronjob-configmap.yml.j2
-    when: FEATURE_TSP_SYNC_ENABLED
+    when: WITH_TSP_SYNC
     tags:
       - configmap
