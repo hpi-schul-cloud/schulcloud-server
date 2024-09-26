@@ -23,12 +23,13 @@ import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfig } from '@modules/video-conference';
-import { LanguageType } from '@shared/domain/interface';
-import { SchulcloudTheme } from '@shared/domain/types';
+import type { VideoConferenceConfig } from '@modules/video-conference';
+import type { LanguageType } from '@shared/domain/interface';
+import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import { BbbConfig } from '../video-conference/bbb';
-import { Timezone } from './types/timezone.enum';
+import type { ShdConfig } from '@modules/shd';
+import type { BbbConfig } from '@modules/video-conference/bbb';
+import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -67,7 +68,8 @@ export interface ServerConfig
 		UserImportConfig,
 		VideoConferenceConfig,
 		BbbConfig,
-		AlertConfig {
+		AlertConfig,
+		ShdConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
