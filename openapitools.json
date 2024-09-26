@@ -11,10 +11,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:exportLehrerListMigration"
+					"FILTER": "operationId:exportKlasseList|exportLehrerListMigration|exportLehrerList|exportSchuelerListMigration|exportSchuelerList|exportSchuleList|version"
 				},
 				"globalProperty": {
-					"models": "RobjExportLehrerMigration,",
+					"models": "RobjExportKlasse:RobjExportLehrerMigration:RobjExportLehrer:RobjExportSchuelerMigration:RobjExportSchueler:RobjExportSchule:VersionResponse",
 					"apis": "",
 					"supportingFiles": ""
 				},
