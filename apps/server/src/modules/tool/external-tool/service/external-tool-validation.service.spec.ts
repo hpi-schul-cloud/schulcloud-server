@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
+import { Page } from '@shared/domain/domainobject';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { externalToolFactory } from '../testing';
@@ -9,7 +10,6 @@ import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolService } from './external-tool.service';
-import { Page } from '@shared/domain/domainobject';
 
 describe(ExternalToolValidationService.name, () => {
 	let module: TestingModule;
