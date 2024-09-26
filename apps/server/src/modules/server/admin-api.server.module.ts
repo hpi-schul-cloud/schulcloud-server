@@ -44,7 +44,7 @@ const serverModules = [
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: [...ALL_ENTITIES, FileEntity],
-			debug: true,
+			// debug: true, // use it for locally debugging of queries
 		}),
 		CqrsModule,
 		LoggerModule,
