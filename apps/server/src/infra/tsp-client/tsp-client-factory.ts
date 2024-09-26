@@ -6,7 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 
 @Injectable()
-export class TSPRestClient {
+export class TspClientFactory {
 	private readonly domain: string;
 
 	private readonly host: string;
@@ -35,7 +35,7 @@ export class TSPRestClient {
 		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_TOKEN_LIFETIME_MS');
 	}
 
-	public createApi(): ExportApiInterface {
+	public createExportClient(): ExportApiInterface {
 		const factory = ExportApiFactory(
 			new Configuration({
 				accessToken: this.createJwt(),

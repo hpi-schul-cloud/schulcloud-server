@@ -27,7 +27,7 @@ import { VideoConferenceConfig } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import { TspRestClientConfig } from '@src/infra/tsp-client/tsp-rest-client-config';
+import { TspRestClientConfig } from '@src/infra/tsp-client/tsp-client-config';
 import { BbbConfig } from '../video-conference/bbb';
 import { Timezone } from './types/timezone.enum';
 
