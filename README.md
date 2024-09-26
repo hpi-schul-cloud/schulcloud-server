@@ -19,6 +19,11 @@ There is also some old documentation in the server code /apps/server/doc/*.md.
 
 Note that not all the .md file here are up to date.
 
+## NestJS Console Applications
+
+### Sync console
+> Find the [Documentation](./apps/server/src/infra/sync/console/README.md) here.
+
 
 ## Feathers application
 
