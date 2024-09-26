@@ -26,8 +26,8 @@ export class CommonCartridgeExportService {
 		return courseCommonCartridgeMetadata;
 	}
 
-	public async findCourseRooms(courseId: string): Promise<SingleColumnBoardResponse> {
-		const courseRooms = await this.courseRoomsClientAdapter.getRoomsByCourseId(courseId);
+	public async findRoomBoardByCourseId(courseId: string): Promise<SingleColumnBoardResponse> {
+		const courseRooms = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		return courseRooms;
 	}

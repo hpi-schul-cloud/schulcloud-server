@@ -24,8 +24,8 @@ export class CommonCartridgeUc {
 		return response;
 	}
 
-	public async exportCourseRooms(courseId: EntityId): Promise<SingleColumnBoardResponse> {
-		const response = await this.exportService.findCourseRooms(courseId);
+	public async exportRoomBoard(courseId: EntityId): Promise<SingleColumnBoardResponse> {
+		const response = await this.exportService.findRoomBoardByCourseId(courseId);
 
 		return response;
 	}

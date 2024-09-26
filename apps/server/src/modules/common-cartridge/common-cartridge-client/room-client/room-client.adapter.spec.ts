@@ -49,8 +49,8 @@ describe(CourseRoomsClientAdapter.name, () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('getCourseRoomBoard', () => {
-		describe('when getCourseRoomBoard is called', () => {
+	describe('getRoomBoardByCourseId', () => {
+		describe('when getRoomBoardByCourseId is called', () => {
 			const setup = () => {
 				const roomId = faker.string.uuid();
 				const response = createMock<AxiosResponse<SingleColumnBoardResponse>>({
@@ -67,9 +67,9 @@ describe(CourseRoomsClientAdapter.name, () => {
 				return { roomId, response };
 			};
 
-			it('should return the structure of the course', async () => {
+			it('should return a room board with full contents', async () => {
 				const { roomId, response } = setup();
-				const result = await service.getRoomsByCourseId(roomId);
+				const result = await service.getRoomBoardByCourseId(roomId);
 
 				expect(result).toEqual(response.data);
 			});
@@ -91,7 +91,7 @@ describe(CourseRoomsClientAdapter.name, () => {
 		it('should throw an UnauthorizedException', async () => {
 			const { roomId, error, adapter } = setup();
 
-			await expect(adapter.getRoomsByCourseId(roomId)).rejects.toThrowError(error);
+			await expect(adapter.getRoomBoardByCourseId(roomId)).rejects.toThrowError(error);
 		});
 	});
 });

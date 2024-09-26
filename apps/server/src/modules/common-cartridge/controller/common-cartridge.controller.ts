@@ -16,7 +16,7 @@ export class CommonCartridgeController {
 	}
 
 	@Get('export/:parentId/room')
-	public async exportCourseRooms(@Param() exportCourseParams: ExportCourseParams): Promise<SingleColumnBoardResponse> {
-		return this.commonCartridgeUC.exportCourseRooms(exportCourseParams.parentId);
+	public async exportRoomBoard(@Param() exportCourseParams: ExportCourseParams): Promise<SingleColumnBoardResponse> {
+		return this.commonCartridgeUC.exportRoomBoard(exportCourseParams.parentId);
 	}
 }
