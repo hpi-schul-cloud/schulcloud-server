@@ -7,11 +7,12 @@ import { LegacyLogger } from '@src/core/logger';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
-import { DeletionConfig, DomainDeletionReport } from '../../domain/interface';
+import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
+import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 @EventsHandler(DataDeletedEvent)

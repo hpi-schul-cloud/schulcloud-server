@@ -1,9 +1,9 @@
 security:
   - jwtBearer: []
 info:
-  title: Schul-Cloud Account Service API
+  title: dBildungscloud Account Service API
   description:
-    This is the API specification for the HPI Schul-Cloud Account service.
+    This is the API specification for the dBildungscloud Account service.
     
   contact:
     name: support
@@ -28,8 +28,6 @@ components:
     accounts_list:
       description: TODO
     jwtTimer:
-      description: TODO
-    supportJWT:
       description: TODO
     confirm:
       description: TODO
@@ -78,31 +76,6 @@ paths:
         content:
           {}
         description: no request body required
-  /accounts/supportJWT:
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/supportJWT'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/supportJWT'
   /accounts/confirm:
     post:
       parameters: []
