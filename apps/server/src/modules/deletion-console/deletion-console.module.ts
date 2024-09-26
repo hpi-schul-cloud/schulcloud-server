@@ -31,7 +31,7 @@ import { DeletionExecutionConsole } from './deletion-execution.console';
 			user: DB_USERNAME,
 			allowGlobalContext: true,
 			entities: [...ALL_ENTITIES, FileEntity],
-			debug: true,
+			// debug: true, // use it for locally debugging of queries
 		}),
 		AccountModule,
 		HttpModule,

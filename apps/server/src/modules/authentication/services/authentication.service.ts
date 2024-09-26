@@ -1,15 +1,18 @@
-import { CreateJwtPayload } from '@infra/auth-guard';
+import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@shared/domain/entity';
+import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
+import { ShdUserCreateTokenLoggable } from '../loggable';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
-import { LoginDto } from '../uc/dto';
+import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,8 +20,11 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<AuthenticationConfig, true>
-	) {}
+		private readonly configService: ConfigService<AuthenticationConfig, true>,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(AuthenticationService.name);
+	}
 
 	public async loadAccount(username: string, systemId?: string): Promise<Account> {
 		let account: Account | undefined | null;
@@ -40,18 +46,43 @@ export class AuthenticationService {
 		return account;
 	}
 
-	public async generateJwt(createJwtPayload: CreateJwtPayload): Promise<LoginDto> {
+	private async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number | string): Promise<string> {
 		const jti = randomUUID();
-
 		const accessToken = this.jwtService.sign(createJwtPayload, {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
+			expiresIn,
 		});
 
-		const result = new LoginDto({ accessToken });
 		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
 
-		return result;
+		return accessToken;
+	}
+
+	public async generateCurrentUserJwt(currentUser: ICurrentUser): Promise<string> {
+		const createJwtPayload = JwtPayloadFactory.buildFromCurrentUser(currentUser);
+		const expiresIn = this.configService.get<string>('JWT_LIFETIME');
+		const jwtToken = await this.generateJwt(createJwtPayload, expiresIn);
+
+		return jwtToken;
+	}
+
+	public async generateSupportJwt(supportUser: User, targetUser: User): Promise<string> {
+		const targetUserAccount = await this.accountService.findByUserIdOrFail(targetUser.id);
+		const currentUser = CurrentUserMapper.userToICurrentUser(
+			targetUserAccount.id,
+			targetUser,
+			false,
+			targetUserAccount.systemId
+		);
+		const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUser.id);
+		const expiresIn = this.configService.get<number>('JWT_LIFETIME_SUPPORT_SECONDS');
+
+		const jwtToken = await this.generateJwt(createJwtPayload, expiresIn);
+
+		this.logger.info(new ShdUserCreateTokenLoggable(supportUser.id, targetUser.id, expiresIn));
+
+		return jwtToken;
 	}
 
 	public async removeJwtFromWhitelist(jwtToken: string): Promise<void> {

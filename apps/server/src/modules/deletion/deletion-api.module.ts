@@ -13,6 +13,7 @@ import { DeletionExecutionsController } from './api/controller/deletion-executio
 import { DeletionRequestsController } from './api/controller/deletion-requests.controller';
 import { DeletionRequestUc } from './api/uc';
 
+// The most of this imports should not be part of the api module.
 @Module({
 	imports: [
 		CalendarModule,
