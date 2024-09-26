@@ -61,4 +61,19 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 
 		return domainObjects;
 	}
+
+	async findByOauth2Issuer(issuer: string): Promise<System | null> {
+		const entity: SystemEntity | null = await this.em.findOne(SystemEntity, {
+			type: SystemTypeEnum.OAUTH,
+			oauthConfig: { issuer },
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: System = SystemEntityMapper.mapToDo(entity);
+
+		return domainObject;
+	}
 }

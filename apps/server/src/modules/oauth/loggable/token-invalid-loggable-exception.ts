@@ -2,13 +2,13 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class IdTokenInvalidLoggableException extends BusinessError implements Loggable {
+export class TokenInvalidLoggableException extends BusinessError implements Loggable {
 	constructor() {
 		super(
 			{
-				type: 'ID_TOKEN_INVALID',
-				title: 'Id token invalid',
-				defaultMessage: 'Failed to validate idToken',
+				type: 'TOKEN_INVALID',
+				title: 'token invalid',
+				defaultMessage: 'Failed to validate token',
 			},
 			HttpStatus.UNAUTHORIZED
 		);

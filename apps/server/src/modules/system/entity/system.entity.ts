@@ -16,6 +16,7 @@ export interface SystemEntityProps {
 	provisioningUrl?: string;
 }
 
+@Embeddable()
 export class OauthConfigEntity {
 	constructor(oauthConfig: OauthConfigEntity) {
 		this.clientId = oauthConfig.clientId;
@@ -151,6 +152,8 @@ export class LdapConfigEntity {
 		};
 	};
 }
+
+@Embeddable()
 export class OidcConfigEntity {
 	constructor(oidcConfig: OidcConfigEntity) {
 		this.clientId = oidcConfig.clientId;
@@ -202,17 +205,17 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	displayName?: string;
 
-	@Property({ nullable: true })
+	@Embedded(() => OauthConfigEntity, { object: true, nullable: true })
 	oauthConfig?: OauthConfigEntity;
 
 	@Property({ nullable: true })
 	@Enum()
 	provisioningStrategy?: SystemProvisioningStrategy;
 
-	@Property({ nullable: true })
+	@Embedded(() => OidcConfigEntity, { object: true, nullable: true })
 	oidcConfig?: OidcConfigEntity;
 
-	@Embedded({ entity: () => LdapConfigEntity, object: true, nullable: true })
+	@Embedded(() => LdapConfigEntity, { object: true, nullable: true })
 	ldapConfig?: LdapConfigEntity;
 
 	@Property({ nullable: true })

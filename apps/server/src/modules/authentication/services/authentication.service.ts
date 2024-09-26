@@ -5,11 +5,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { LoginDto } from '../uc/dto';
-import { AuthenticationConfig } from '../authentication-config';
 
 @Injectable()
 export class AuthenticationService {
@@ -60,6 +60,10 @@ export class AuthenticationService {
 		if (this.isValidJwt(decodedJwt)) {
 			await this.jwtWhitelistAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
+	}
+
+	public async removeUserFromWhitelist(account: Account): Promise<void> {
+		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
 	}
 
 	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {

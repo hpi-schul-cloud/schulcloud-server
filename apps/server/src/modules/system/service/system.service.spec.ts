@@ -217,6 +217,44 @@ describe(SystemService.name, () => {
 		});
 	});
 
+	describe('findByOauth2Issuer', () => {
+		describe('when the system exists', () => {
+			const setup = () => {
+				const issuer = 'issuer';
+				const system = systemFactory.withOauthConfig({ issuer }).build();
+
+				systemRepo.findByOauth2Issuer.mockResolvedValueOnce(system);
+
+				return {
+					system,
+					issuer,
+				};
+			};
+
+			it('should return the system', async () => {
+				const { system, issuer } = setup();
+
+				const result = await service.findByOauth2Issuer(issuer);
+
+				expect(result).toEqual(system);
+			});
+		});
+
+		describe('when the system does not exist', () => {
+			const setup = () => {
+				systemRepo.findByOauth2Issuer.mockResolvedValueOnce(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result = await service.findByOauth2Issuer('issuer');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('delete', () => {
 		describe('when the system was deleted', () => {
 			const setup = () => {

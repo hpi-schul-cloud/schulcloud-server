@@ -7,9 +7,9 @@ import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
 import { SystemEntity } from '../../entity';
+import { systemLdapConfigFactory, systemOauthConfigFactory, systemOidcConfigFactory } from '../../testing';
 import { SystemEntityMapper } from './mapper';
 import { SystemMikroOrmRepo } from './system.repo';
-import { systemLdapConfigFactory, systemOauthConfigFactory, systemOidcConfigFactory } from '../../testing';
 
 describe(SystemMikroOrmRepo.name, () => {
 	let module: TestingModule;
@@ -362,6 +362,39 @@ describe(SystemMikroOrmRepo.name, () => {
 				// @ts-expect-error Testcase
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 				await expect(repo.save(system)).rejects.toThrowError(NotImplementedException);
+			});
+		});
+	});
+
+	describe('findByOauth2Issuer', () => {
+		describe('when the system exists', () => {
+			const setup = async () => {
+				const issuer = 'external-system-issuer';
+				const systemEntity: SystemEntity = systemEntityFactory.withOauthConfig({ issuer }).buildWithId();
+
+				await em.persistAndFlush([systemEntity]);
+				em.clear();
+
+				return {
+					systemEntity,
+					issuer,
+				};
+			};
+
+			it('should return the system', async () => {
+				const { systemEntity, issuer } = await setup();
+
+				const result = await repo.findByOauth2Issuer(issuer);
+
+				expect(result).toEqual(SystemEntityMapper.mapToDo(systemEntity));
+			});
+		});
+
+		describe('when the system does not exist', () => {
+			it('should return null', async () => {
+				const result = await repo.findByOauth2Issuer('unknown-issuer');
+
+				expect(result).toBeNull();
 			});
 		});
 	});
