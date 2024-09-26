@@ -6,6 +6,14 @@ import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery
  * Entity factory based on thoughtbot/fishery
  * https://github.com/thoughtbot/fishery
  *
+ * This one is intended for entities that have their state solely managed by domain objects.
+ * These entities should not be initialized by the entity the constructor. So it shouldn't have any parameters.
+ *
+ * The factory takes the entity class and the entity properties type as parameters
+ * and produces an entitiy by:
+ * - calling the constructor without any parameters
+ * - and then assigning the properties
+ *
  * @template T The entity to be built
  * @template U The properties interface of the entity
  * @template I The transient parameters that your factory supports
