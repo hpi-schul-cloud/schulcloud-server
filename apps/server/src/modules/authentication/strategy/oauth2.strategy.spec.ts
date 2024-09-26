@@ -88,7 +88,7 @@ describe('Oauth2Strategy', () => {
 					accountId: account.id,
 					externalIdToken: idToken,
 					isExternalUser: true,
-					impersonated: false,
+					support: false,
 				});
 			});
 		});
