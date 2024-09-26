@@ -37,7 +37,7 @@ export class LogoutService {
 		const user: UserDO | null = await this.userService.findByExternalId(externalId, system.id);
 
 		if (!user?.id) {
-			throw new NotFoundLoggableException('User', { externalId });
+			throw new NotFoundLoggableException('User', { externalId, systemId: system.id });
 		}
 
 		const account: Account | null = await this.accountService.findByUserId(user.id);
