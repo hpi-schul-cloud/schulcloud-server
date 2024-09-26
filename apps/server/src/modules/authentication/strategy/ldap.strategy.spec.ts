@@ -433,7 +433,7 @@ describe('LdapStrategy', () => {
 					systemId: system.id,
 					accountId: account.id,
 					isExternalUser: true,
-					impersonated: false,
+					support: false,
 				});
 			});
 		});
@@ -499,7 +499,7 @@ describe('LdapStrategy', () => {
 					systemId: system.id,
 					accountId: account.id,
 					isExternalUser: true,
-					impersonated: false,
+					support: false,
 				});
 			});
 		});
