@@ -7,7 +7,7 @@ import { SchoolFeature } from '@shared/domain/types';
 import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@shared/testing';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
-import { SchoolNameRequiredLoggableException } from '../../loggable/school-name-required-loggable-exception';
+import { SchoolNameRequiredLoggableException } from '../../../loggable';
 
 describe(SchulconnexSchoolProvisioningService.name, () => {
 	let module: TestingModule;

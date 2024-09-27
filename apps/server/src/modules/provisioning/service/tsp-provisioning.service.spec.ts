@@ -13,7 +13,7 @@ import { SchoolService } from '@src/modules/school';
 import { schoolFactory } from '@src/modules/school/testing';
 import { UserService } from '@src/modules/user';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
-import { BadDataLoggableException } from '../strategy/loggable';
+import { BadDataLoggableException } from '../loggable';
 import { TspProvisioningService } from './tsp-provisioning.service';
 
 describe('TspProvisioningService', () => {

@@ -8,7 +8,7 @@ import { RoleName } from '@shared/domain/interface';
 import { School, SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
-import { BadDataLoggableException } from '../strategy/loggable';
+import { BadDataLoggableException } from '../loggable';
 
 @Injectable()
 export class TspProvisioningService {
