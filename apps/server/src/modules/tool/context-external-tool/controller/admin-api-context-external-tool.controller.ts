@@ -1,10 +1,8 @@
 import { ApiKeyGuard } from '@infra/auth-guard';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { AdminApiContextExternalToolUc } from '../uc';
-import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from './dto';
 
 @ApiTags('AdminApi: Context External Tool')
@@ -16,16 +14,15 @@ export class AdminApiContextExternalToolController {
 	@Post()
 	@ApiOperation({ summary: 'Creates a ContextExternalTool' })
 	async createContextExternalTool(@Body() body: ContextExternalToolPostParams): Promise<ContextExternalToolResponse> {
-		const contextExternalToolProps: ContextExternalToolDto =
-			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
+		const contextExternalToolProps = ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
-		const contextExternalTool: ContextExternalTool = await this.adminApiContextExternalToolUc.createContextExternalTool(
+		const contextExternalTool = await this.adminApiContextExternalToolUc.createContextExternalTool(
 			contextExternalToolProps
 		);
 
-		const response: ContextExternalToolResponse =
+		const contextExternalToolResonse =
 			ContextExternalToolResponseMapper.mapContextExternalToolResponse(contextExternalTool);
 
-		return response;
+		return contextExternalToolResonse;
 	}
 }
