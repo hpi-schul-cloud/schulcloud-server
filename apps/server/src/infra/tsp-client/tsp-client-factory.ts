@@ -1,9 +1,9 @@
-import { ServerConfig } from '@modules/server';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
+import { TspRestClientConfig } from './tsp-client-config';
 
 @Injectable()
 export class TspClientFactory {
@@ -25,7 +25,7 @@ export class TspClientFactory {
 
 	private tokenExpiresAt: number | undefined;
 
-	constructor(configService: ConfigService<ServerConfig, true>) {
+	constructor(configService: ConfigService<TspRestClientConfig, true>) {
 		this.domain = configService.getOrThrow<string>('SC_DOMAIN');
 		this.host = configService.getOrThrow<string>('HOST');
 		this.baseUrl = configService.getOrThrow<string>('TSP_API_BASE_URL');

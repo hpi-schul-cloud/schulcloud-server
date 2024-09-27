@@ -1,4 +1,6 @@
 export interface TspRestClientConfig {
+	SC_DOMAIN: string;
+	HOST: string;
 	TSP_API_BASE_URL: string;
 	TSP_API_CLIENT_ID: string;
 	TSP_API_CLIENT_SECRET: string;
