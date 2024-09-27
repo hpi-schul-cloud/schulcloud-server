@@ -1,9 +1,11 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/learnroom/service/course.service';
 import { Injectable } from '@nestjs/common';
+import { LessonEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LessonEntity } from '@shared/domain/entity';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { LessonLinkedTaskResponse } from '../controller/dto/lesson-linked-task.response';
+import { LessonMapper } from '../controller/mapper/lesson.mapper';
 import { LessonService } from '../service';
 
 @Injectable()
@@ -50,5 +52,16 @@ export class LessonUC {
 		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]));
 
 		return lesson;
+	}
+
+	async getLessonLinkedTasks(userId: EntityId, lessonId: EntityId): Promise<LessonLinkedTaskResponse[]> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const lesson = await this.lessonService.findById(lessonId);
+
+		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]));
+
+		const tasks = lesson.getLessonLinkedTasks().map((task) => LessonMapper.mapTaskToResponse(task));
+
+		return tasks;
 	}
 }
