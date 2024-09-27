@@ -79,24 +79,6 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	// TODO maybe we don't need that method
-	// async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
-	// 	const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
-	// 	const sortedPaths = entities.map((e) => e.path).sort();
-	// 	const commonPath = sortedPaths[0];
-	// 	const dontMatch = sortedPaths.some((p) => !p.startsWith(commonPath));
-
-	// 	if (!commonPath || commonPath === ROOT_PATH || dontMatch) {
-	// 		throw new EntityNotFoundError(`Parent node of [${ids.join(',')}] not found`);
-	// 	}
-
-	// 	const commonAncestorIds = commonPath.split(',').filter((id) => id !== '');
-	// 	const parentId = commonAncestorIds[commonAncestorIds.length - 1];
-	// 	const parentNode = await this.findById(parentId, depth);
-
-	// 	return parentNode;
-	// }
-
 	async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		return this.persist(boardNode).flush();
 	}
