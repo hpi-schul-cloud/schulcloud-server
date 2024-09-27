@@ -83,7 +83,7 @@ export class ExternalToolUpdateParams {
 	isDeactivated!: boolean;
 
 	@IsBoolean()
-	@ApiProperty()
+	@ApiProperty({ type: Boolean, default: false, description: 'Open the tool in a new tab' })
 	openNewTab!: boolean;
 
 	@IsArray()
