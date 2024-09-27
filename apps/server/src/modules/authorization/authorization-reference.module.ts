@@ -2,15 +2,7 @@ import { InstanceModule } from '@modules/instance';
 import { LessonModule } from '@modules/lesson';
 import { ToolModule } from '@modules/tool';
 import { forwardRef, Module } from '@nestjs/common';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LegacySchoolRepo,
-	SchoolExternalToolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	UserRepo,
-} from '@shared/repo';
+import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
@@ -33,7 +25,6 @@ import { TeamsModule } from '../teams';
 		TaskRepo,
 		LegacySchoolRepo,
 		SubmissionRepo,
-		SchoolExternalToolRepo,
 		AuthorizationReferenceService,
 	],
 	exports: [AuthorizationReferenceService],

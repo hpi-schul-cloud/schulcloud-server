@@ -9,7 +9,6 @@ import {
 	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
-	SchoolExternalToolRule,
 	SchoolRule,
 	SchoolSystemOptionsRule,
 	SubmissionRule,
@@ -31,7 +30,6 @@ export class RuleManager {
 		groupRule: GroupRule,
 		legaySchoolRule: LegacySchoolRule,
 		lessonRule: LessonRule,
-		schoolExternalToolRule: SchoolExternalToolRule,
 		schoolRule: SchoolRule,
 		schoolSystemOptionsRule: SchoolSystemOptionsRule,
 		submissionRule: SubmissionRule,
@@ -49,7 +47,6 @@ export class RuleManager {
 		this.authorizationInjectionService.injectAuthorizationRule(groupRule);
 		this.authorizationInjectionService.injectAuthorizationRule(legaySchoolRule);
 		this.authorizationInjectionService.injectAuthorizationRule(lessonRule);
-		this.authorizationInjectionService.injectAuthorizationRule(schoolExternalToolRule);
 		this.authorizationInjectionService.injectAuthorizationRule(schoolRule);
 		this.authorizationInjectionService.injectAuthorizationRule(schoolSystemOptionsRule);
 		this.authorizationInjectionService.injectAuthorizationRule(submissionRule);

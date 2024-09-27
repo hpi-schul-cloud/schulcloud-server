@@ -8,7 +8,6 @@ export * from './course.rule';
 export * from './legacy-school.rule';
 export * from './lesson.rule';
 export * from './school.rule';
-export * from './school-external-tool.rule';
 export * from './submission.rule';
 export * from './task.rule';
 export * from './team.rule';

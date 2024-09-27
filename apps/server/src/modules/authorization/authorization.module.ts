@@ -4,7 +4,6 @@ import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationHelper, AuthorizationService, RuleManager, AuthorizationInjectionService } from './domain';
 import {
-	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
 	ExternalToolRule,
@@ -12,7 +11,6 @@ import {
 	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
-	SchoolExternalToolRule,
 	SchoolRule,
 	SchoolSystemOptionsRule,
 	SubmissionRule,
@@ -40,7 +38,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		GroupRule,
 		LessonRule,
 		SchoolRule,
-		SchoolExternalToolRule,
 		SubmissionRule,
 		TaskRule,
 		TeamRule,

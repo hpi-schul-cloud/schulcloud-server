@@ -5,23 +5,32 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action } from '../type';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 
 describe('SchoolExternalToolRule', () => {
 	let service: SchoolExternalToolRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, SchoolExternalToolRule],
+			providers: [
+				AuthorizationHelper,
+				SchoolExternalToolRule,
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
+			],
 		}).compile();
 
 		service = await module.get(SchoolExternalToolRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	beforeEach(() => {});
@@ -47,6 +56,12 @@ describe('SchoolExternalToolRule', () => {
 			role,
 		};
 	};
+
+	describe('constructor', () => {
+		it('should inject itself', () => {
+			expect(injectionService.injectAuthorizationRule).toHaveBeenCalledWith(service);
+		});
+	});
 
 	describe('hasPermission is called', () => {
 		describe('when user has permission', () => {

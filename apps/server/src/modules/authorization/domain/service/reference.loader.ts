@@ -7,15 +7,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LegacySchoolRepo,
-	SchoolExternalToolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	UserRepo,
-} from '@shared/repo';
+import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType, AuthorizationLoaderService } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
@@ -31,7 +23,6 @@ export class ReferenceLoader {
 		private readonly lessonService: LessonService,
 		private readonly teamAuthorisableService: TeamAuthorisableService,
 		private readonly submissionRepo: SubmissionRepo,
-		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
 		private readonly instanceService: InstanceService,
 		private readonly authorizationInjectionService: AuthorizationInjectionService
@@ -45,7 +36,6 @@ export class ReferenceLoader {
 		service.injectReferenceLoader(AuthorizableReferenceType.Lesson, this.lessonService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamAuthorisableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this.schoolExternalToolRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.ExternalTool, this.externalToolAuthorizableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Instance, this.instanceService);
 	}
