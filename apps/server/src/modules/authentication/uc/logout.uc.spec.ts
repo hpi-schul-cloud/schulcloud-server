@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { accountDoFactory } from '@modules/account/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorLoggable } from '@src/core/error/loggable';
 import { Logger } from '@src/core/logger';
@@ -87,13 +87,13 @@ describe(LogoutUc.name, () => {
 			it('should throw a generic error', async () => {
 				const { logoutToken } = setup();
 
-				await expect(logoutUc.logoutOidc(logoutToken)).rejects.toThrow(UnauthorizedException);
+				await expect(logoutUc.logoutOidc(logoutToken)).rejects.toThrow(BadRequestException);
 			});
 
 			it('should log the original error', async () => {
 				const { logoutToken, error } = setup();
 
-				await expect(logoutUc.logoutOidc(logoutToken)).rejects.toThrow(UnauthorizedException);
+				await expect(logoutUc.logoutOidc(logoutToken)).rejects.toThrow(BadRequestException);
 
 				expect(logger.warning).toHaveBeenCalledWith(new ErrorLoggable(error));
 			});

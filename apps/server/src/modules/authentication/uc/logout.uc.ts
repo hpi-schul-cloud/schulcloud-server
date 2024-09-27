@@ -1,5 +1,5 @@
 import { Account } from '@modules/account';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ErrorLoggable } from '@src/core/error/loggable';
 import { Logger } from '@src/core/logger';
 import { AuthenticationService, LogoutService } from '../services';
@@ -23,7 +23,8 @@ export class LogoutUc {
 				this.logger.warning(new ErrorLoggable(error));
 			}
 
-			throw new UnauthorizedException();
+			// Must respond with bad request: https://openid.net/specs/openid-connect-backchannel-1_0.html#BCResponse
+			throw new BadRequestException();
 		}
 	}
 }
