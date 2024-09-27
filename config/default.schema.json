@@ -1399,6 +1399,11 @@
 					"type": "integer",
 					"default": 300000,
 					"description": "Maximum size of the logo of an external tool in bytes"
+				},
+				"PREFERRED_TOOLS_LIMIT": {
+					"type": "integer",
+					"default": 10,
+					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
 		},
