@@ -7,7 +7,6 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
-import { ToolContextType } from '@modules/tool/common/enum';
 
 @Injectable()
 export class SchoolExternalToolService {
@@ -91,17 +90,5 @@ export class SchoolExternalToolService {
 		createdSchoolExternalTool = await this.enrichWithDataFromExternalTool(createdSchoolExternalTool);
 
 		return createdSchoolExternalTool;
-	}
-
-	public isSchoolExternalToolAvailableForContext(
-		schoolExternalTool: SchoolExternalTool,
-		context: ToolContextType
-	): boolean {
-		if (schoolExternalTool.availableContexts === undefined) {
-			return true;
-		}
-
-		const isAvailable: boolean = schoolExternalTool.availableContexts.includes(context);
-		return isAvailable;
 	}
 }
