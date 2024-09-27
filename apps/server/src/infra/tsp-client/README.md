@@ -31,7 +31,7 @@ export class MyNewService {
 
 We are using the openapi-generator-cli to generate apis, models and supporting files in the
 `generated` directory. **DO NOT** modify anything in the `generated` folder, because it will
-deleted on the next client generation.
+be deleted on the next client generation.
 
 The client generation is done with the npm command `npm run generate-client:tsp-api`. This
 will delete the old and create new files. We are using the `tsp-api` generator configuration 
