@@ -67,10 +67,17 @@ describe('TspClientFactory', () => {
 				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 			});
 		});
+
 		describe('when token is cached', () => {
-			it('should return ExportApiInterface', () => {
+			const setup = () => {
 				Reflect.set(sut, 'cachedToken', faker.string.alpha());
-				const result = sut.createExportClient();
+				const client = sut.createExportClient();
+
+				return client;
+			};
+
+			it('should return ExportApiInterface', () => {
+				const result = setup();
 
 				expect(result).toBeDefined();
 				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
