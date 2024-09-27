@@ -1,7 +1,6 @@
 // TODO fix modules circular dependency
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { TeamAuthorisableService } from '@src/modules/teams/service/team-authorisable.service';
-import { ExternalToolAuthorizableService } from '@modules/tool/external-tool/service';
 import { LessonService } from '@modules/lesson';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -23,7 +22,6 @@ export class ReferenceLoader {
 		private readonly lessonService: LessonService,
 		private readonly teamAuthorisableService: TeamAuthorisableService,
 		private readonly submissionRepo: SubmissionRepo,
-		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
 		private readonly instanceService: InstanceService,
 		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
@@ -36,7 +34,6 @@ export class ReferenceLoader {
 		service.injectReferenceLoader(AuthorizableReferenceType.Lesson, this.lessonService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamAuthorisableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.ExternalTool, this.externalToolAuthorizableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Instance, this.instanceService);
 	}
 

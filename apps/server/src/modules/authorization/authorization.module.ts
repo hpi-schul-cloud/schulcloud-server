@@ -6,7 +6,6 @@ import { AuthorizationHelper, AuthorizationService, RuleManager, AuthorizationIn
 import {
 	CourseGroupRule,
 	CourseRule,
-	ExternalToolRule,
 	GroupRule,
 	InstanceRule,
 	LegacySchoolRule,
@@ -46,7 +45,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		LegacySchoolRule,
 		SystemRule,
 		SchoolSystemOptionsRule,
-		ExternalToolRule,
 		InstanceRule,
 	],
 	exports: [

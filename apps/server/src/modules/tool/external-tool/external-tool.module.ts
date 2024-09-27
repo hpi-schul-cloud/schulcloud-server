@@ -40,7 +40,6 @@ import {
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		DatasheetPdfService,
-		ExternalToolAuthorizableService,
 		ExternalToolImageService,
 	],
 })

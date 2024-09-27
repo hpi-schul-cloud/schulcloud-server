@@ -1,12 +1,21 @@
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { AuthorizationContext, Rule } from '../type';
+import {
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 
 @Injectable()
 export class ExternalToolRule implements Rule<ExternalTool> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		injectionService: AuthorizationInjectionService
+	) {
+		injectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched: boolean = object instanceof ExternalTool;

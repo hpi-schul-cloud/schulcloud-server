@@ -18,7 +18,6 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from '../rules';
-import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 
@@ -38,7 +37,6 @@ export class RuleManager {
 		teamRule: TeamRule,
 		userLoginMigrationRule: UserLoginMigrationRule,
 		userRule: UserRule,
-		externalToolRule: ExternalToolRule,
 		instanceRule: InstanceRule,
 		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
@@ -55,7 +53,6 @@ export class RuleManager {
 		this.authorizationInjectionService.injectAuthorizationRule(teamRule);
 		this.authorizationInjectionService.injectAuthorizationRule(userLoginMigrationRule);
 		this.authorizationInjectionService.injectAuthorizationRule(userRule);
-		this.authorizationInjectionService.injectAuthorizationRule(externalToolRule);
 		this.authorizationInjectionService.injectAuthorizationRule(instanceRule);
 	}
 

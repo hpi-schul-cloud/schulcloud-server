@@ -28,7 +28,6 @@ import { ContextExternalToolRule } from './authorisation/context-external-tool.r
 	exports: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,
-		ContextExternalToolAuthorizableService,
 		ToolReferenceService,
 		ToolConfigurationStatusService,
 	],

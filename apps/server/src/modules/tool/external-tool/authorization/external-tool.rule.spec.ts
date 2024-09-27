@@ -5,15 +5,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action } from '../type';
 import { ExternalToolRule } from './external-tool.rule';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
 
 describe(ExternalToolRule.name, () => {
 	let module: TestingModule;
 	let rule: ExternalToolRule;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -25,11 +25,16 @@ describe(ExternalToolRule.name, () => {
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
 			],
 		}).compile();
 
 		rule = module.get(ExternalToolRule);
 		authorizationHelper = module.get(AuthorizationHelper);
+		injectionService = module.get(AuthorizationInjectionService);
 	});
 
 	beforeEach(() => {
@@ -38,6 +43,13 @@ describe(ExternalToolRule.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('constructor', () => {
+		it('should inject itself into the AuthorizationInjectionService', () => {
+			new ExternalToolRule(authorizationHelper, injectionService);
+			expect(injectionService.injectAuthorizationRule).toHaveBeenCalledWith(rule);
+		});
 	});
 
 	describe('isApplicable', () => {
