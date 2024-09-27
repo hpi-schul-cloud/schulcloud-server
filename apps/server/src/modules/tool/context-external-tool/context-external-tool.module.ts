@@ -7,6 +7,7 @@ import { SchoolExternalToolModule } from '../school-external-tool';
 import { ContextExternalToolAuthorizableService, ContextExternalToolService, ToolReferenceService } from './service';
 import { ContextExternalToolValidationService } from './service/context-external-tool-validation.service';
 import { ToolConfigurationStatusService } from './service/tool-configuration-status.service';
+import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { ToolConfigurationStatusService } from './service/tool-configuration-sta
 		ContextExternalToolAuthorizableService,
 		ToolReferenceService,
 		ToolConfigurationStatusService,
+		ContextExternalToolRule,
 	],
 	exports: [
 		ContextExternalToolService,

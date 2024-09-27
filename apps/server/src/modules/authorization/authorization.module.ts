@@ -35,7 +35,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		RuleManager,
 		AuthorizationHelper,
 		// rules
-		ContextExternalToolRule,
 		CourseGroupRule,
 		CourseRule,
 		GroupRule,
