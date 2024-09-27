@@ -158,5 +158,32 @@ describe(SchoolExternalToolValidationService.name, () => {
 				await expect(promise).rejects.toThrow(SchoolExternalToolInvalidAvailableContextsException);
 			});
 		});
+
+		describe('when the school external tool has undefined available contexts', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					availableContexts: undefined,
+				});
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					id: schoolExternalTool.toolId,
+					restrictToContexts: [ToolContextType.COURSE, ToolContextType.MEDIA_BOARD],
+				});
+
+				externalToolService.findById.mockResolvedValue(externalTool);
+
+				return {
+					schoolExternalTool,
+				};
+			};
+
+			it('should not throw an validation error', async () => {
+				const { schoolExternalTool } = setup();
+
+				const promise = service.validateAvailableContexts(schoolExternalTool);
+
+				await expect(promise).resolves.not.toThrow();
+			});
+		});
 	});
 });
