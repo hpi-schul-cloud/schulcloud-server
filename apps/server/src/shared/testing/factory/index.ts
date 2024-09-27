@@ -9,6 +9,7 @@ export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './currentuser.factory';
 export * from './domainobject';
+export * from './entity.factory';
 export * from './external-group-dto.factory';
 export { externalSchoolDtoFactory } from './external-school-dto.factory';
 export * from './external-tool-pseudonym.factory';
