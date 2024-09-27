@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client/response/policies-info/schulconnex-policies-info-response';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@shared/testing';
@@ -8,7 +9,7 @@ import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
-import { schulconnexPoliciesInfoResponseFactory, schulconnexResponseFactory } from './testing';
+import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';
 
 describe(SchulconnexRestClient.name, () => {
 	let client: SchulconnexRestClient;
@@ -199,7 +200,8 @@ describe(SchulconnexRestClient.name, () => {
 		describe('when requesting policies-info', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const response: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
+				const response: SchulconnexPoliciesInfoLicenseResponse[] =
+					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -224,7 +226,7 @@ describe(SchulconnexRestClient.name, () => {
 			it('should return the response', async () => {
 				const { accessToken } = setup();
 
-				const result: SchulconnexPoliciesInfoResponse[] = await client.getPoliciesInfo(accessToken);
+				const result: SchulconnexPoliciesInfoResponse = await client.getPoliciesInfo(accessToken);
 
 				expect(result).toBeDefined();
 			});
@@ -234,7 +236,8 @@ describe(SchulconnexRestClient.name, () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
 				const customUrl = 'https://override.url/policies-info';
-				const response: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
+				const response: SchulconnexPoliciesInfoLicenseResponse[] =
+					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 

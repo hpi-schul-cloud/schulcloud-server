@@ -1,15 +1,16 @@
+import { SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
 import { Loggable, LoggableMessage } from '@shared/common/loggable/interfaces';
 
 export class PoliciesInfoErrorResponseLoggable implements Loggable {
-	constructor(private readonly type: string, private readonly code: string, private readonly value: string) {}
+	constructor(private readonly item: SchulconnexPoliciesInfoErrorResponse) {}
 
 	getLogMessage(): LoggableMessage {
 		return {
 			message: 'The /policies-info endpoint returned an error for a media source.',
 			data: {
-				type: this.type,
-				code: this.code,
-				value: this.value,
+				type: this.item.access_control['@type'],
+				code: this.item.access_control.error.code,
+				value: this.item.access_control.error.value,
 			},
 		};
 	}

@@ -6,11 +6,11 @@ import {
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexLaufzeitResponse,
-	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client/response';
+import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client/response/policies-info/schulconnex-policies-info-response';
 import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -240,24 +240,16 @@ export class SchulconnexResponseMapper {
 		};
 	}
 
-	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoResponse[]): ExternalLicenseDto[] {
+	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoLicenseResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
-			.map((license: SchulconnexPoliciesInfoResponse) => {
-				if (license.target) {
-					if (license.target?.partOf === '') {
-						license.target.partOf = undefined;
-					}
-
-					const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-						mediumId: license.target.uid,
-						mediaSourceId: license.target.partOf,
-					});
-
-					return externalLicenseDto;
+			.map((license: SchulconnexPoliciesInfoLicenseResponse) => {
+				if (license.target.partOf === '') {
+					license.target.partOf = undefined;
 				}
 
 				const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-					mediumId: '',
+					mediumId: license.target.uid,
+					mediaSourceId: license.target.partOf,
 				});
 
 				return externalLicenseDto;

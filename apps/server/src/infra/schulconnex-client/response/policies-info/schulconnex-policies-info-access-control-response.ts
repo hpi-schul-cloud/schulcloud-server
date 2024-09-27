@@ -1,4 +1,4 @@
-import { SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client/response/policies-info/schulconnex-policies-info-error-response';
+import { SchulconnexPoliciesInfoErrorDescriptionResponse } from '@infra/schulconnex-client/';
 import { Type } from 'class-transformer';
 import { IsObject, IsString, ValidateNested } from 'class-validator';
 
@@ -8,6 +8,6 @@ export class SchulconnexPoliciesInfoAccessControlResponse {
 
 	@IsObject()
 	@ValidateNested()
-	@Type(() => SchulconnexPoliciesInfoErrorResponse)
-	error!: SchulconnexPoliciesInfoErrorResponse;
+	@Type(() => SchulconnexPoliciesInfoErrorDescriptionResponse)
+	error!: SchulconnexPoliciesInfoErrorDescriptionResponse;
 }

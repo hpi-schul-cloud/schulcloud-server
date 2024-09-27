@@ -1,9 +1,11 @@
 import {
+	SchulconnexPoliciesInfoErrorResponse,
+	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexResponseValidationGroups,
-} from '@infra/schulconnex-client/response';
-import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
+	SchulconnexRestClient,
+} from '@infra/schulconnex-client';
 import { GroupService } from '@modules/group/service/group.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -110,12 +112,23 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 					}
 				);
 
-				const schulconnexLizenzInfoResponses = plainToClass(
+				const schulconnexPoliciesInfoResponse = plainToClass(
 					SchulconnexPoliciesInfoResponse,
 					schulconnexPoliciesInfoAxiosResponse
 				);
-				await this.checkResponseValidation(schulconnexLizenzInfoResponses);
-				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
+
+				await this.checkResponseValidation(schulconnexPoliciesInfoResponse);
+
+				const schulconnexPoliciesInfoLicenceResponses: SchulconnexPoliciesInfoLicenseResponse[] =
+					schulconnexPoliciesInfoResponse.data.filter((item): item is SchulconnexPoliciesInfoLicenseResponse => {
+						if (item instanceof SchulconnexPoliciesInfoErrorResponse) {
+							this.logger.warning(new PoliciesInfoErrorResponseLoggable(item));
+							return false;
+						}
+						return true;
+					});
+
+				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexPoliciesInfoLicenceResponses);
 			} catch (error) {
 				this.logger.warning(new FetchingPoliciesInfoFailedLoggable(externalUser, policiesInfoUrl));
 			}
@@ -137,18 +150,6 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		groups?: SchulconnexResponseValidationGroups[]
 	): Promise<void> {
 		const responsesArray = Array.isArray(response) ? response : [response];
-
-		responsesArray.forEach((item) => {
-			if (item instanceof SchulconnexPoliciesInfoResponse && item.access_control) {
-				this.logger.info(
-					new PoliciesInfoErrorResponseLoggable(
-						item.access_control['@type'],
-						item.access_control.error.code,
-						item.access_control.error.value
-					)
-				);
-			}
-		});
 
 		const validationPromises: Promise<ValidationError[]>[] = responsesArray.map((item) =>
 			validate(item, {

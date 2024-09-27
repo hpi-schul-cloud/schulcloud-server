@@ -1,31 +1,29 @@
+import { SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
+import { schulconnexPoliciesInfoErrorResponseFactory } from '@infra/schulconnex-client/testing';
 import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable/policies-info-error-response-loggable';
 
 describe(PoliciesInfoErrorResponseLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const type = 'media source mock';
-			const code = '500';
-			const value = 'errorcode value';
+			const errorResponse: SchulconnexPoliciesInfoErrorResponse = schulconnexPoliciesInfoErrorResponseFactory.build();
 
-			const loggable: PoliciesInfoErrorResponseLoggable = new PoliciesInfoErrorResponseLoggable(type, code, value);
+			const loggable: PoliciesInfoErrorResponseLoggable = new PoliciesInfoErrorResponseLoggable(errorResponse);
 
 			return {
 				loggable,
-				type,
-				code,
-				value,
+				errorResponse,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { loggable, type, code, value } = setup();
+			const { loggable, errorResponse } = setup();
 
 			expect(loggable.getLogMessage()).toEqual({
 				message: 'The /policies-info endpoint returned an error for a media source.',
 				data: {
-					type,
-					code,
-					value,
+					type: errorResponse.access_control['@type'],
+					code: errorResponse.access_control.error.code,
+					value: errorResponse.access_control.error.value,
 				},
 			});
 		});

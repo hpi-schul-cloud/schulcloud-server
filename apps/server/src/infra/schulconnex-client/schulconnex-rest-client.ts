@@ -1,3 +1,7 @@
+import {
+	SchulconnexPoliciesInfoErrorResponse,
+	SchulconnexPoliciesInfoLicenseResponse,
+} from '@infra/schulconnex-client';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
@@ -51,15 +55,17 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	public async getPoliciesInfo(
 		accessToken: string,
 		options?: { overrideUrl: string }
-	): Promise<SchulconnexPoliciesInfoResponse[]> {
+	): Promise<SchulconnexPoliciesInfoResponse> {
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/policies-info`);
 
-		const response: Promise<SchulconnexPoliciesInfoResponse[]> = this.getRequest<SchulconnexPoliciesInfoResponse[]>(
-			url,
-			accessToken
-		);
+		const response: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[] =
+			await this.getRequest<(SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]>(
+				url,
+				accessToken
+			);
 
-		return response;
+		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };
+		return responseObject;
 	}
 
 	private checkOptions(): boolean {

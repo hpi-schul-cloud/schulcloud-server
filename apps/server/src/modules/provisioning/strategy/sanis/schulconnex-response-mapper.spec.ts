@@ -4,8 +4,8 @@ import {
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexPersonenkontextResponse,
+	schulconnexPoliciesInfoLicenseResponseFactory,
 	SchulconnexPoliciesInfoResponse,
-	schulconnexPoliciesInfoResponseFactory,
 	SchulconnexResponse,
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
@@ -561,9 +561,10 @@ describe(SchulconnexResponseMapper.name, () => {
 	describe('mapToExternalLicenses', () => {
 		describe('when a license response has a medium id and no media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
-					target: { uid: 'bildungscloud', partOf: '' },
-				});
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
+					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
+						target: { uid: 'bildungscloud', partOf: '' },
+					});
 
 				return {
 					licenseResponse,
@@ -587,9 +588,10 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has a medium id and a media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
-					target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
-				});
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
+					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
+						target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
+					});
 
 				return {
 					licenseResponse,
@@ -613,9 +615,10 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has no medium id', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1, {
-					target: { uid: '', partOf: 'bildungscloud-source' },
-				});
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
+					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
+						target: { uid: '', partOf: 'bildungscloud-source' },
+					});
 
 				return {
 					licenseResponse,
@@ -634,7 +637,8 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has no target', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] = schulconnexPoliciesInfoResponseFactory.buildList(1);
+				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
+					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1);
 				licenseResponse[0].target = undefined;
 
 				return {
