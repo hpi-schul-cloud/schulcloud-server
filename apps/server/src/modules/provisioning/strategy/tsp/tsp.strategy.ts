@@ -36,7 +36,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
 
-		if (!decodedAccessToken || !decodedAccessToken.sub) {
+		if (!decodedAccessToken) {
 			throw new IdTokenExtractionFailureLoggableException('sub');
 		}
 

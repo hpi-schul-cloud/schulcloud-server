@@ -136,30 +136,6 @@ describe('TspProvisioningStrategy', () => {
 			});
 		});
 
-		describe('When idToken is missing sub', () => {
-			const setup = () => {
-				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'externalSchoolId',
-						provisioningStrategy: SystemProvisioningStrategy.TSP,
-					}),
-					idToken: 'invalidIdToken',
-					accessToken: 'tspAccessToken',
-				});
-
-				jest.spyOn(jwt, 'decode').mockImplementation(() => {
-					return {};
-				});
-
-				return { input };
-			};
-			it('should throw IdTokenExtractionFailure', async () => {
-				const { input } = setup();
-
-				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
-			});
-		});
-
 		describe('When payload is invalid', () => {
 			const setup = () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({

@@ -57,6 +57,7 @@ export class SchulconnexSchoolProvisioningService {
 		if (!externalSchool.name) {
 			throw new SchoolNameRequiredLoggableException('ExternalSchool.name');
 		}
+
 		const schoolName: string = externalSchool.location
 			? `${externalSchool.name} (${externalSchool.location})`
 			: externalSchool.name;
