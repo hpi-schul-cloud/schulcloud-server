@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { InputFormat } from '@shared/domain/types';
 
-export class SlimTaskResponse {
+export class LessonLinkedTaskResponse {
 	@ApiProperty()
 	public readonly name: string;
 
@@ -38,7 +38,7 @@ export class SlimTaskResponse {
 	@ApiProperty({ type: [String] })
 	public readonly finishedIds: string[] = [];
 
-	constructor(props: Readonly<SlimTaskResponse>) {
+	constructor(props: Readonly<LessonLinkedTaskResponse>) {
 		this.name = props.name;
 		this.description = props.description;
 		this.descriptionInputFormat = props.descriptionInputFormat;

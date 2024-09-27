@@ -194,7 +194,7 @@ describe('LessonUC', () => {
 		});
 	});
 
-	describe('getTasks', () => {
+	describe('getLessonLinkedTasks', () => {
 		describe('when user is a valid teacher', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -210,19 +210,25 @@ describe('LessonUC', () => {
 
 			it('should get user with permissions from authorizationService', async () => {
 				const { user } = setup();
-				await lessonUC.getTasks(user.id, 'lessonId');
+
+				await lessonUC.getLessonLinkedTasks(user.id, 'lessonId');
+
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should get lesson from lessonService', async () => {
 				const { user, lesson } = setup();
-				await lessonUC.getTasks(user.id, lesson.id);
+
+				await lessonUC.getLessonLinkedTasks(user.id, lesson.id);
+
 				expect(lessonService.findById).toHaveBeenCalledWith(lesson.id);
 			});
 
 			it('should return check permission', async () => {
 				const { user, lesson } = setup();
-				await lessonUC.getTasks(user.id, lesson.id);
+
+				await lessonUC.getLessonLinkedTasks(user.id, lesson.id);
+
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					expect.objectContaining({ ...user }),
 					expect.objectContaining({ ...lesson }),
@@ -232,7 +238,9 @@ describe('LessonUC', () => {
 
 			it('should return tasks', async () => {
 				const { user, lesson } = setup();
-				const result = await lessonUC.getTasks(user.id, lesson.id);
+
+				const result = await lessonUC.getLessonLinkedTasks(user.id, lesson.id);
+
 				expect(result).toEqual(lesson.getLessonLinkedTasks().map((task) => task));
 			});
 		});

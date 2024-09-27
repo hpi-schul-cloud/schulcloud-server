@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { LessonEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SlimTaskResponse } from '../controller/dto/task.response';
+import { LessonLinkedTaskResponse } from '../controller/dto/lesson-linked-task.response';
 import { LessonMapper } from '../controller/mapper/lesson.mapper';
 import { LessonService } from '../service';
 
@@ -54,7 +54,7 @@ export class LessonUC {
 		return lesson;
 	}
 
-	async getTasks(userId: EntityId, lessonId: EntityId): Promise<SlimTaskResponse[]> {
+	async getLessonLinkedTasks(userId: EntityId, lessonId: EntityId): Promise<LessonLinkedTaskResponse[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const lesson = await this.lessonService.findById(lessonId);
 
