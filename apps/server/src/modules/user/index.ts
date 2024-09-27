@@ -1,3 +1,3 @@
-export * from './interfaces';
+export { UserConfig } from './user.config';
 export { UserModule } from './user.module';
-export * from './service/user.service';
+export { UserService } from './service';

@@ -46,6 +46,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -100,6 +101,7 @@ const serverModules = [
 	UserLicenseModule,
 	RoomApiModule,
 	RosterModule,
+	ShdApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

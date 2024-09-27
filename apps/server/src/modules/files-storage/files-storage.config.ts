@@ -25,6 +25,7 @@ const fileStorageConfig: FileStorageConfig = {
 	USE_STREAM_TO_ANTIVIRUS: Configuration.get('FILES_STORAGE__USE_STREAM_TO_ANTIVIRUS') as boolean,
 	...authorizationClientConfig,
 	...defaultConfig,
+	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 };
 
 // The configurations lookup

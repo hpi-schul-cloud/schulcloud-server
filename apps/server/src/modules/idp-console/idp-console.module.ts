@@ -27,7 +27,7 @@ import { SynchronizationUc } from './uc';
 			user: DB_USERNAME,
 			allowGlobalContext: true,
 			entities: [...ALL_ENTITIES, SynchronizationEntity],
-			debug: true,
+			// debug: true, // use it for locally debugging of queries
 		}),
 		UserModule,
 		LoggerModule,

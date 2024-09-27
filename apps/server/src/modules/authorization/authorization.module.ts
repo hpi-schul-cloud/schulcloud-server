@@ -56,7 +56,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 	exports: [
 		FeathersAuthorizationService,
 		AuthorizationService,
-		SystemRule,
+		SystemRule, // Why export? This is a no go!
 		AuthorizationInjectionService,
 		AuthorizationHelper,
 	],

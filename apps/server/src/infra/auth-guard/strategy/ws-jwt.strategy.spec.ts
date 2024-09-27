@@ -98,7 +98,7 @@ describe('jwt strategy', () => {
 				schoolId: mockJwtPayload.schoolId,
 				accountId: mockJwtPayload.accountId,
 				systemId: mockJwtPayload.systemId,
-				impersonated: mockJwtPayload.support,
+				support: mockJwtPayload.support,
 			});
 		});
 	});
