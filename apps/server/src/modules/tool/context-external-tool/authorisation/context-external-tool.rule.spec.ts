@@ -9,53 +9,69 @@ import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { ContextExternalToolRule } from './context-external-tool.rule';
-import { Action, AuthorizationHelper } from '@src/modules/authorization';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 
 describe('ContextExternalToolRule', () => {
 	let service: ContextExternalToolRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, ContextExternalToolRule],
+			providers: [
+				AuthorizationHelper,
+				ContextExternalToolRule,
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
+			],
 		}).compile();
 
 		service = await module.get(ContextExternalToolRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	beforeEach(() => {});
 
-	const setup = () => {
-		const permissionA = 'a' as Permission;
-		const permissionB = 'b' as Permission;
-		const permissionC = 'c' as Permission;
-
-		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
-
-		const school = schoolEntityFactory.build();
-		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
-			schoolExternalToolEntityFactory.build({
-				school,
-			});
-		const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
-			schoolTool: schoolExternalToolEntity,
+	describe('constructor', () => {
+		it('should inject itself into the AuthorizationInjectionService', () => {
+			expect(injectionService.injectAuthorizationRule).toHaveBeenCalledWith(service);
 		});
-		const user: User = userFactory.build({ roles: [role], school });
-		return {
-			permissionA,
-			permissionB,
-			permissionC,
-			school,
-			entity,
-			user,
-			role,
-		};
-	};
+	});
 
 	describe('hasPermission is called', () => {
+		const setup = () => {
+			const permissionA = 'a' as Permission;
+			const permissionB = 'b' as Permission;
+			const permissionC = 'c' as Permission;
+
+			const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
+
+			const school = schoolEntityFactory.build();
+			const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
+				schoolExternalToolEntityFactory.build({
+					school,
+				});
+			const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
+				schoolTool: schoolExternalToolEntity,
+			});
+			const user: User = userFactory.build({ roles: [role], school });
+			return {
+				permissionA,
+				permissionB,
+				permissionC,
+				school,
+				entity,
+				user,
+				role,
+			};
+		};
+
 		describe('when user has permission', () => {
 			it('should call hasAllPermissions on AuthorizationHelper', () => {
 				const { user, entity } = setup();
