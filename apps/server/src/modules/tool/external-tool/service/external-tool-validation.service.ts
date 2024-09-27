@@ -101,19 +101,27 @@ export class ExternalToolValidationService {
 		return duplicate == null || duplicate.id === externalTool.id;
 	}
 
-	private async validatePreferredTool(preferredTool: ExternalTool): Promise<void> {
-		const preferredTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({
-			isPreferred: true,
-		});
-		if (preferredTools.total >= this.configService.get<number>('CTL_TOOLS__PREFERRED_TOOLS_LIMIT')) {
+	private async validatePreferredTool(toolToValidate: ExternalTool): Promise<void> {
+		if (!toolToValidate.iconName) {
 			throw new ValidationError(
-				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+				`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolToValidate.name} is missing.`
 			);
 		}
 
-		if (!preferredTool.iconName) {
+		const preferredTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({
+			isPreferred: true,
+		});
+
+		const isToolToValidateAlreadyPreferred: boolean = preferredTools.data.some(
+			(existingPreferredTool: ExternalTool) => existingPreferredTool.id === toolToValidate.id
+		);
+		if (isToolToValidateAlreadyPreferred) {
+			return;
+		}
+
+		if (preferredTools.total >= this.configService.get<number>('CTL_TOOLS__PREFERRED_TOOLS_LIMIT')) {
 			throw new ValidationError(
-				`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${preferredTool.name} is missing.`
+				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 			);
 		}
 	}

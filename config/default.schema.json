@@ -1402,7 +1402,7 @@
 				},
 				"PREFERRED_TOOLS_LIMIT": {
 					"type": "integer",
-					"default": 10,
+					"default": 5,
 					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
