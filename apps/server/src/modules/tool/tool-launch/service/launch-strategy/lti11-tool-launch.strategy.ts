@@ -1,7 +1,8 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -28,6 +29,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
@@ -63,10 +65,13 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const roleNames: RoleName[] = user.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
 		const ltiRoles: LtiRole[] = LtiRoleMapper.mapRolesToLtiRoles(roleNames);
 
+		const decrypted = this.encryptionService.decrypt(config.secret);
+		console.log(decrypted);
+
 		const additionalProperties: PropertyData[] = [
 			new PropertyData({ name: 'key', value: config.key }),
 			// TODO N21-2097 use decryption for secret
-			new PropertyData({ name: 'secret', value: config.secret }),
+			new PropertyData({ name: 'secret', value: decrypted }),
 
 			new PropertyData({ name: 'lti_message_type', value: config.lti_message_type, location: PropertyLocation.BODY }),
 			new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),

@@ -517,6 +517,11 @@ data:
 
     # ========== Start of the CTL seed data configuration section.
     echo "Inserting ctl seed data secrets to external-tools..."
+
+         # Encrypt secrets that contain IServ's OAuth client secret and LDAP server's search user password.
+                CTL_SEED_SECRET_ONLINE_DIA_MATHE=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_MATHE)
+                $CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH=$(node scripts/secret.js -s $AES_KEY -e $$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH)
+
     mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
            {
              "name": "Product Test Onlinediagnose Grundschule - Mathematik",
