@@ -213,7 +213,7 @@ describe(MediaAvailableLineService.name, () => {
 
 				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
 
-				return { user, board, mediaExternalToolElement, restrictedSchoolExternalTool, schoolExternalTool };
+				return { user, board, schoolExternalTool };
 			};
 
 			it('should not return the restricted tools', async () => {
@@ -225,6 +225,60 @@ describe(MediaAvailableLineService.name, () => {
 				);
 
 				expect(schoolExternalTools).toEqual([schoolExternalTool]);
+			});
+		});
+
+		describe('when there are unused tools and have undefined restriction by the school admin', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+				const restrictedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId({
+						availableContexts: [],
+					});
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+				const undefinedRestrictedTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId({
+						availableContexts: undefined,
+					});
+
+				const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(usedSchoolExternalTool.id, user.school.id)
+					.buildWithId();
+
+				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build({
+					contextExternalToolId: usedContextExternalTool.id,
+				});
+				const board: MediaBoard = mediaBoardFactory.build({ children: [mediaExternalToolElement] });
+
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
+					schoolExternalTool,
+					restrictedSchoolExternalTool,
+					usedSchoolExternalTool,
+					undefinedRestrictedTool,
+				]);
+
+				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
+
+				return { user, board, schoolExternalTool, undefinedRestrictedTool };
+			};
+
+			it('should return tools with undefined restriction', async () => {
+				const { user, board, schoolExternalTool, undefinedRestrictedTool } = setup();
+
+				const schoolExternalTools: SchoolExternalTool[] = await service.getUnusedAvailableSchoolExternalTools(
+					user,
+					board
+				);
+
+				expect(schoolExternalTools).toEqual([schoolExternalTool, undefinedRestrictedTool]);
 			});
 		});
 	});

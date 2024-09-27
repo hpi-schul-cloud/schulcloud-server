@@ -18,7 +18,7 @@ export interface SchoolExternalToolProps extends AuthorizableObject {
 
 	status?: SchoolExternalToolConfigurationStatus;
 
-	availableContexts: ToolContextType[];
+	availableContexts?: ToolContextType[];
 }
 
 export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
@@ -54,7 +54,7 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 		this.props.status = value;
 	}
 
-	get availableContexts(): ToolContextType[] {
+	get availableContexts(): ToolContextType[] | undefined {
 		return this.props.availableContexts;
 	}
 }

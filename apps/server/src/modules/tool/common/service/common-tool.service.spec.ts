@@ -134,5 +134,24 @@ describe('CommonToolService', () => {
 				expect(result).toBe(false);
 			});
 		});
+
+		describe('when available contexts of the tool is undefined', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					availableContexts: undefined,
+				});
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { schoolExternalTool, context };
+			};
+
+			it('should return true', () => {
+				const { schoolExternalTool, context } = setup();
+
+				const result = service.isSchoolExternalToolAvailableForContext(schoolExternalTool, context);
+
+				expect(result).toBe(true);
+			});
+		});
 	});
 });

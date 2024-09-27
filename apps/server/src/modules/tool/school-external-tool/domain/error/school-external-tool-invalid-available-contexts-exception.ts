@@ -19,7 +19,8 @@ export class SchoolExternalToolInvalidAvailableContextsException extends Busines
 			{
 				schoolExternalToolId: schoolExternalTool.id,
 				schoolExternalToolName: schoolExternalTool.name,
-				schoolExternalToolAvailableContexts: schoolExternalTool.availableContexts.join(', '),
+				schoolExternalToolAvailableContexts:
+					schoolExternalTool.availableContexts?.join(', ') ?? Object.values(ToolContextType).join(', '),
 				validContexts: validContexts.join(', '),
 			}
 		);
@@ -33,7 +34,8 @@ export class SchoolExternalToolInvalidAvailableContextsException extends Busines
 			data: {
 				schoolExternalToolId: this.schoolExternalTool.id,
 				schoolExternalToolName: this.schoolExternalTool.name,
-				schoolExternalToolAvailableContexts: this.schoolExternalTool.availableContexts.join(', '),
+				schoolExternalToolAvailableContexts:
+					this.schoolExternalTool.availableContexts?.join(', ') ?? Object.values(ToolContextType).join(', '),
 				validContexts: this.validContexts.join(', '),
 			},
 		};

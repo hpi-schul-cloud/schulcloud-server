@@ -16,6 +16,10 @@ export class CommonToolService {
 		schoolExternalTool: SchoolExternalTool,
 		context: ToolContextType
 	): boolean {
+		if (schoolExternalTool.availableContexts === undefined) {
+			return true;
+		}
+
 		const isAvailable: boolean = schoolExternalTool.availableContexts.includes(context);
 		return isAvailable;
 	}

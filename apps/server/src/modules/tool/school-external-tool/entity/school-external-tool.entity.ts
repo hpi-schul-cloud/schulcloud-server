@@ -17,7 +17,7 @@ export interface SchoolExternalToolEntityProps {
 
 	isDeactivated: boolean;
 
-	availableContexts: ToolContextType[];
+	availableContexts?: ToolContextType[];
 }
 
 @Entity({ tableName: 'school-external-tools' })
@@ -35,7 +35,7 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	isDeactivated: boolean;
 
 	@Property()
-	availableContexts: ToolContextType[];
+	availableContexts?: ToolContextType[];
 
 	constructor(props: SchoolExternalToolEntityProps) {
 		super();

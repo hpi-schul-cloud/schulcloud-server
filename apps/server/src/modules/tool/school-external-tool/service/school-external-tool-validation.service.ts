@@ -28,6 +28,10 @@ export class SchoolExternalToolValidationService {
 	}
 
 	async validateAvailableContexts(schoolExternalTool: SchoolExternalTool): Promise<void> {
+		if (schoolExternalTool.availableContexts === undefined) {
+			return;
+		}
+
 		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 		const validContexts: ToolContextType[] = loadedExternalTool.restrictToContexts ?? Object.values(ToolContextType);
 
