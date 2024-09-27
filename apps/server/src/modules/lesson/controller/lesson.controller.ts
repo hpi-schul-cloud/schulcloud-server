@@ -3,6 +3,7 @@ import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LessonUC } from '../uc';
 import { LessonMetadataListResponse, LessonResponse, LessonUrlParams, LessonsUrlParams } from './dto';
+import { LessonLinkedTaskResponse } from './dto/lesson-linked-task.response';
 import { LessonMapper } from './mapper/lesson.mapper';
 
 @ApiTags('Lesson')
@@ -32,5 +33,15 @@ export class LessonController {
 		const lesson = await this.lessonUC.getLesson(currentUser.userId, urlParams.lessonId);
 		const response = new LessonResponse(lesson);
 		return response;
+	}
+
+	@Get(':lessonId/tasks')
+	async getLessonTasks(
+		@Param() urlParams: LessonUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<LessonLinkedTaskResponse[]> {
+		const tasks = await this.lessonUC.getLessonLinkedTasks(currentUser.userId, urlParams.lessonId);
+
+		return tasks;
 	}
 }
