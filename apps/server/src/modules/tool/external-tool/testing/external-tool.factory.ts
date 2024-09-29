@@ -149,5 +149,6 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		isDeactivated: false,
 		openNewTab: false,
 		createdAt: new Date(2020, 1, 1),
+		restrictToContexts: undefined,
 	};
 });
