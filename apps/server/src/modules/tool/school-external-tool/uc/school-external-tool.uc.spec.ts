@@ -7,15 +7,15 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
 import { School, SchoolService } from '@src/modules/school';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { ExternalToolService } from '@modules/tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
-import { ExternalToolService } from '@modules/tool';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { externalToolFactory } from '@modules/tool/external-tool/testing';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
