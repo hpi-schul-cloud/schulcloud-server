@@ -4,12 +4,12 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolService } from '@src/modules/school';
+import { ExternalToolService } from '@modules/tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { ExternalToolService } from '@modules/tool';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -41,13 +41,13 @@ export class SchoolExternalToolUc {
 	}
 
 	private async getContextRestrictions(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
-		const schoolExternalTools = tools.map(async tool => {
-			const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId)
+		const schoolExternalTools = tools.map(async (tool) => {
+			const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
 			tool.restrictToContexts = externalTool.restrictToContexts;
 			return tool;
-		})
+		});
 
-		return Promise.all(schoolExternalTools)
+		return Promise.all(schoolExternalTools);
 	}
 
 	async createSchoolExternalTool(

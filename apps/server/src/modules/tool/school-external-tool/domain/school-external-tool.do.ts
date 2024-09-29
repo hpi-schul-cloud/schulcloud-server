@@ -1,7 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { ToolContextType } from '@modules/tool/common/enum';
 import { CustomParameterEntry } from '../../common/domain';
 import { SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
-import { ToolContextType } from '@modules/tool/common/enum';
 
 export interface SchoolExternalToolProps extends AuthorizableObject {
 	id: string;
