@@ -1,6 +1,8 @@
+import { ValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
-import { Room, RoomProps } from './room.do';
 import { roomFactory } from '../../testing';
+import { RoomColor } from '../type';
+import { Room, RoomProps } from './room.do';
 
 describe('Room', () => {
 	let room: Room;
@@ -8,9 +10,9 @@ describe('Room', () => {
 	const roomProps: RoomProps = {
 		id: roomId,
 		name: 'Conference Room',
-		color: 'blue',
+		color: RoomColor.BLUE,
 		startDate: new Date('2024-01-01'),
-		untilDate: new Date('2024-12-31'),
+		endDate: new Date('2024-12-31'),
 		createdAt: new Date('2024-01-01'),
 		updatedAt: new Date('2024-01-01'),
 	};
@@ -41,9 +43,9 @@ describe('Room', () => {
 	});
 
 	it('should get and set color', () => {
-		expect(room.color).toBe('blue');
-		room.color = 'red';
-		expect(room.color).toBe('red');
+		expect(room.color).toBe(RoomColor.BLUE);
+		room.color = RoomColor.RED;
+		expect(room.color).toBe(RoomColor.RED);
 	});
 
 	it('should get and set startDate', () => {
@@ -53,11 +55,11 @@ describe('Room', () => {
 		expect(room.startDate).toEqual(newStartDate);
 	});
 
-	it('should get and set untilDate', () => {
-		expect(room.untilDate).toEqual(new Date('2024-12-31'));
-		const newUntilDate = new Date('2024-11-30');
-		room.untilDate = newUntilDate;
-		expect(room.untilDate).toEqual(newUntilDate);
+	it('should get and set endDate', () => {
+		expect(room.endDate).toEqual(new Date('2024-12-31'));
+		const newEndDate = new Date('2024-11-30');
+		room.endDate = newEndDate;
+		expect(room.endDate).toEqual(newEndDate);
 	});
 
 	it('should get createdAt', () => {
@@ -68,5 +70,56 @@ describe('Room', () => {
 	it('should get updatedAt', () => {
 		const expectedUpdatedAt = new Date('2024-01-01');
 		expect(room.updatedAt).toEqual(expectedUpdatedAt);
+	});
+
+	describe('time frame validation', () => {
+		const setup = () => {
+			const props: RoomProps = {
+				id: roomId,
+				name: 'Conference Room',
+				color: RoomColor.BLUE,
+				startDate: new Date('2024-01-01'),
+				endDate: new Date('2024-12-31'),
+				createdAt: new Date('2024-01-01'),
+				updatedAt: new Date('2024-01-01'),
+			};
+
+			return { props };
+		};
+
+		describe('when costructor is called with invalid time frame', () => {
+			it('should throw validation error', () => {
+				const buildInvalid = () => {
+					const { props } = setup();
+					props.startDate = new Date('2024-12-31');
+					props.endDate = new Date('2024-01-01');
+					// eslint-disable-next-line no-new
+					new Room(props);
+				};
+				expect(buildInvalid).toThrowError(ValidationError);
+			});
+		});
+
+		describe('when setting start date after end date', () => {
+			it('should throw validation error', () => {
+				const setInvalidStartDate = () => {
+					const { props } = setup();
+					const inValidRoom = new Room(props);
+					inValidRoom.startDate = new Date('2025-01-01');
+				};
+				expect(setInvalidStartDate).toThrowError(ValidationError);
+			});
+		});
+
+		describe('when setting end date before start date', () => {
+			it('should throw validation error', () => {
+				const setInvalidEndDate = () => {
+					const { props } = setup();
+					const inValidRoom = new Room(props);
+					inValidRoom.endDate = new Date('2023-12-31');
+				};
+				expect(setInvalidEndDate).toThrowError(ValidationError);
+			});
+		});
 	});
 });

@@ -9,13 +9,13 @@ export class InstanceService implements AuthorizationLoaderServiceGeneric<Instan
 	constructor(private readonly instanceRepo: InstanceRepo) {}
 
 	public async findById(id: EntityId): Promise<Instance> {
-		const instance: Instance = await this.instanceRepo.findById(id);
+		const instance = await this.instanceRepo.findById(id);
 
 		return instance;
 	}
 
 	public async getInstance(): Promise<Instance> {
-		const instance: Instance = await this.instanceRepo.getInstance();
+		const instance = await this.instanceRepo.getInstance();
 
 		return instance;
 	}

@@ -1,4 +1,5 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
 import { HttpException } from '@nestjs/common';
@@ -7,7 +8,6 @@ import { UserDO } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules/user';
-import { ICurrentUser } from '@infra/auth-guard';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -74,7 +74,7 @@ describe('H5P Ajax', () => {
 			schoolId: 'dummySchool',
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
-			impersonated: false,
+			support: false,
 		};
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
@@ -117,7 +117,7 @@ describe('H5P Ajax', () => {
 			schoolId: 'dummySchool',
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
-			impersonated: false,
+			support: false,
 		};
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {

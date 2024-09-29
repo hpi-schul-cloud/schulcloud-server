@@ -1,5 +1,5 @@
 import { courseFactory } from '@modules/learnroom/testing';
-import { Permission } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	courseFactory as courseEntityFactory,
 	roleFactory,
@@ -225,6 +225,40 @@ describe('AuthorizationHelper', () => {
 				const permissions = service.hasAccessToEntity(user2, task, ['creator']);
 
 				expect(permissions).toEqual(false);
+			});
+		});
+	});
+
+	describe('hasRole', () => {
+		describe('when user has role', () => {
+			const setup = () => {
+				const user = userFactory.asTeacher().buildWithId();
+
+				return { user };
+			};
+
+			it('should return true', () => {
+				const { user } = setup();
+
+				const result = service.hasRole(user, RoleName.TEACHER);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user does not have role', () => {
+			const setup = () => {
+				const user = userFactory.asStudent().buildWithId();
+
+				return { user };
+			};
+
+			it('should return false', () => {
+				const { user } = setup();
+
+				const result = service.hasRole(user, RoleName.TEACHER);
+
+				expect(result).toBe(false);
 			});
 		});
 	});

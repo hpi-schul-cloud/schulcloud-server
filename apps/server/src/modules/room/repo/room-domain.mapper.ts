@@ -8,19 +8,30 @@ export class RoomDomainMapper {
 			return roomEntity.domainObject;
 		}
 
-		const room: Room = new Room({
-			id: roomEntity.id,
-			name: roomEntity.name,
-			color: roomEntity.color,
-			startDate: roomEntity.startDate,
-			untilDate: roomEntity.untilDate,
-			createdAt: roomEntity.createdAt,
-			updatedAt: roomEntity.updatedAt,
-		});
+		const room = new Room(roomEntity);
 
 		// attach to identity map
 		roomEntity.domainObject = room;
 
 		return room;
+	}
+
+	static mapDoToEntity(room: Room): RoomEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } = room;
+
+		if (!(props instanceof RoomEntity)) {
+			const entity = new RoomEntity();
+			Object.assign(entity, props);
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			room.props = entity;
+
+			return entity;
+		}
+
+		return props;
 	}
 }

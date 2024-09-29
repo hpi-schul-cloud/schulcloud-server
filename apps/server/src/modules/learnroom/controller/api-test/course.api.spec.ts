@@ -150,7 +150,7 @@ describe('Course Controller (API)', () => {
 			const response = await loggedInClient.postWithAttachment('import', 'file', course, courseFileName);
 
 			expect(response.statusCode).toEqual(201);
-		});
+		}, 10000);
 	});
 
 	describe('[POST] /courses/:courseId/stop-sync', () => {

@@ -1,5 +1,6 @@
 export { JwtValidationAdapter } from './adapter';
 export { AuthGuardModule } from './auth-guard.module';
+export { AuthGuardConfig } from './auth-guard.config';
 export { XApiKeyConfig, authConfig } from './config';
 export { CurrentUser, JWT, JwtAuthentication } from './decorator';
 // JwtAuthGuard only exported because api tests still overried this guard.

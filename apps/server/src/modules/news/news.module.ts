@@ -8,6 +8,7 @@ import { TeamNewsController } from './controller/team-news.controller';
 import { NewsUc } from './uc/news.uc';
 import { NewsService } from './service/news.service';
 
+// imports from deletion module?
 @Module({
 	imports: [AuthorizationModule, CqrsModule, LoggerModule],
 	controllers: [NewsController, TeamNewsController],
