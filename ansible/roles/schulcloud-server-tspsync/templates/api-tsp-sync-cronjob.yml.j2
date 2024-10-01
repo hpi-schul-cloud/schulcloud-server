@@ -14,7 +14,7 @@ metadata:
   name: api-tsp-sync-cronjob
 spec:
   concurrencyPolicy: Forbid
-  schedule: "{{ SERVER_TSP_SYNC_CRONJOB_SCHEDULE|default("9 3 * * *", true) }}"
+  schedule: "{{ SERVER_TSP_SYNC_CRONJOB_SCHEDULE }}"
   jobTemplate:
     metadata:
       labels:

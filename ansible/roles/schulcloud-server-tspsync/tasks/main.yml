@@ -108,6 +108,6 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-cronjob-configmap.yml.j2
-    when: WITH_TSP_SYNC
+      state: "{{ 'present' if WITH_TSP_SYNC|bool else 'absent'}}"
     tags:
       - configmap
