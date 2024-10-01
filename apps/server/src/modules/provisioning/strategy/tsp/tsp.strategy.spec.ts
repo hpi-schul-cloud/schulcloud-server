@@ -5,7 +5,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
+import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
+import jwt from 'jsonwebtoken';
 import {
+	ExternalClassDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
@@ -55,8 +58,114 @@ describe('TspProvisioningStrategy', () => {
 
 	describe('getData', () => {
 		describe('When called', () => {
-			it('should throw', () => {
-				expect(() => sut.getData({} as OauthDataStrategyInputDto)).toThrow();
+			const setup = () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'tspIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'externalUserId',
+						sid: 'externalSchoolId',
+						ptscListRolle: 'schueler,lehrer,admin',
+						personVorname: 'firstName',
+						personNachname: 'lastName',
+						ptscSchuleNummer: 'externalSchoolId',
+						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
+					};
+				});
+
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+					roles: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMINISTRATOR],
+					firstName: 'firstName',
+					lastName: 'lastName',
+				});
+
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+				});
+
+				const externalClass1 = new ExternalClassDto({ externalId: 'externalClassId1' });
+				const externalClass2 = new ExternalClassDto({ externalId: 'externalClassId2' });
+				const externalClasses = [externalClass1, externalClass2];
+
+				return { input, user, school, externalClasses };
+			};
+
+			it('should return mapped oauthDataDto if input is valid', async () => {
+				const { input, user, school, externalClasses } = setup();
+				const result = await sut.getData(input);
+
+				expect(result).toEqual<OauthDataDto>({
+					system: input.system,
+					externalUser: user,
+					externalSchool: school,
+					externalGroups: undefined,
+					externalLicenses: undefined,
+					externalClasses,
+				});
+			});
+		});
+
+		describe('When idToken is invalid', () => {
+			const setup = () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'invalidIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => null);
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailure', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
+			});
+		});
+
+		describe('When payload is invalid', () => {
+			const setup = () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'tspIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'externalUserId',
+						sid: 1000,
+						ptscListRolle: 'teacher',
+						personVorname: 'firstName',
+						personNachname: 'lastName',
+						ptscSchuleNummer: 'externalSchoolId',
+						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailure', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
 			});
 		});
 	});
