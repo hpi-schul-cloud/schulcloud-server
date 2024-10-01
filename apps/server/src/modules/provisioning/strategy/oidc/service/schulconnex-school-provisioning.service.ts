@@ -5,6 +5,7 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { ExternalSchoolDto } from '../../../dto';
+import { SchoolNameRequiredLoggableException } from '../../../loggable';
 
 @Injectable()
 export class SchulconnexSchoolProvisioningService {
@@ -53,6 +54,10 @@ export class SchulconnexSchoolProvisioningService {
 	}
 
 	private getSchoolName(externalSchool: ExternalSchoolDto): string {
+		if (!externalSchool.name) {
+			throw new SchoolNameRequiredLoggableException('ExternalSchool.name');
+		}
+
 		const schoolName: string = externalSchool.location
 			? `${externalSchool.name} (${externalSchool.location})`
 			: externalSchool.name;

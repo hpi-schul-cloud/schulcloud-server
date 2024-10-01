@@ -1,1 +1,1 @@
-export * from './bad-data.loggable-exception';
+export * from '../../loggable/bad-data.loggable-exception';
