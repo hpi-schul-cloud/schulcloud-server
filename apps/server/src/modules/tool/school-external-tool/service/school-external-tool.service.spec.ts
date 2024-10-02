@@ -10,6 +10,7 @@ import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../do
 import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolService } from './school-external-tool.service';
+import { ToolContextType } from '@modules/tool/common/enum';
 
 describe(SchoolExternalToolService.name, () => {
 	let module: TestingModule;
@@ -53,7 +54,9 @@ describe(SchoolExternalToolService.name, () => {
 	describe('findSchoolExternalTools', () => {
 		describe('when called with query', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.COURSE]
+				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					name: undefined,
 					status: undefined,
