@@ -64,6 +64,8 @@ export class ExternalToolRepoMapper {
 			restrictToContexts: entity.restrictToContexts,
 			medium: this.mapExternalToolMediumEntityToDO(entity.medium),
 			createdAt: entity.createdAt,
+			isPreferred: entity.isPreferred,
+			iconName: entity.iconName,
 		});
 	}
 
@@ -144,6 +146,8 @@ export class ExternalToolRepoMapper {
 			openNewTab: domainObject.openNewTab,
 			restrictToContexts: domainObject.restrictToContexts,
 			medium: this.mapExternalToolMediumDOToEntity(domainObject.medium),
+			isPreferred: domainObject.isPreferred,
+			iconName: domainObject.iconName,
 		};
 	}
 

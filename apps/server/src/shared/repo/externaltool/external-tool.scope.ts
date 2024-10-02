@@ -30,4 +30,11 @@ export class ExternalToolScope extends Scope<ExternalToolEntity> {
 		}
 		return this;
 	}
+
+	byPreferred(isPreferred?: boolean): this {
+		if (isPreferred !== undefined) {
+			this.addQuery({ isPreferred });
+		}
+		return this;
+	}
 }
