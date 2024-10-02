@@ -4,6 +4,7 @@ import { OauthAdapterService } from '@modules/oauth';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import axios from 'axios';
 import { TspClientFactory } from './tsp-client-factory';
 
 describe('TspClientFactory', () => {
@@ -120,8 +121,7 @@ describe('TspClientFactory', () => {
 		});
 	});
 
-	// HINT: If you want to test the actual API, you can use the following test and fill in the required data.
-	describe.skip('when using the created client', () => {
+	describe('when using the created client', () => {
 		const setup = () => {
 			const client = sut.createExportClient({
 				clientId: '<clientId>',
@@ -129,16 +129,36 @@ describe('TspClientFactory', () => {
 				tokenEndpoint: '<tokenEndpoint>',
 			});
 
-			return client;
+			jest.mock('axios');
+
+			oauthAdapterServiceMock.sendTokenRequest.mockResolvedValue({
+				accessToken: faker.string.alpha(),
+				idToken: faker.string.alpha(),
+				refreshToken: faker.string.alpha(),
+			});
+
+			const axiosMock = axios as jest.Mocked<typeof axios>;
+
+			axiosMock.request = jest.fn();
+			axiosMock.request.mockResolvedValue({
+				data: {
+					version: '1.1',
+				},
+			});
+
+			return {
+				client,
+				axiosMock,
+			};
 		};
 
 		it('should return the migration version', async () => {
-			const client = setup();
+			const { client, axiosMock } = setup();
 
-			const result = await client.version();
+			const response = await client.version();
 
-			expect(result.status).toBe(200);
-			expect(result.data.version).toBe('1.1');
+			expect(axiosMock.request).toHaveBeenCalledTimes(1);
+			expect(response.data.version).toBe('1.1');
 		});
 	});
 });
