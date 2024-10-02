@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
+import { ToolContextType } from '@modules/tool/common/enum';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
@@ -10,7 +11,6 @@ import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../do
 import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolService } from './school-external-tool.service';
-import { ToolContextType } from '@modules/tool/common/enum';
 
 describe(SchoolExternalToolService.name, () => {
 	let module: TestingModule;
