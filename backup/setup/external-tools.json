@@ -932,35 +932,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "65fd44ba09e6ffd0bae3b8d3"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1711097018086"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1711117950821"
-			}
-		},
-		"name": "Moodle Fortbildung",
-		"url": "https://moodle-01.staging.dataport.dbildungsplattform.de/enrol/lti/cartridge.php/2/07aa5a7e070aa4ffac138a000d502638/cartridge.xml",
-		"config_type": "lti11",
-		"config_baseUrl": "https://moodle-01.staging.dataport.dbildungsplattform.de/enrol/lti/tool.php?id=2",
-		"config_key": "moodle",
-		"config_lti_message_type": "basic-lti-launch-request",
-		"config_privacy_permission": "e-mail",
-		"config_launch_presentation_locale": "de-DE",
-		"parameters": [],
-		"isHidden": false,
-		"isDeactivated": false,
-		"openNewTab": true,
-		"version": 3,
-		"restrictToContexts": []
-	},
-	{
-		"_id": {
 			"$oid": "65fd9736cb3d21d77bee50a6"
 		},
 		"createdAt": {

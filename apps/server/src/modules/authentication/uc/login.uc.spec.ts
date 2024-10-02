@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@shared/testing';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoginDto } from './dto';
 import { LoginUc } from './login.uc';
@@ -28,18 +29,9 @@ describe('LoginUc', () => {
 	describe('getLoginData', () => {
 		describe('when userInfo is given', () => {
 			const setup = () => {
-				const userInfo = {
-					accountId: '',
-					roles: [],
-					schoolId: '',
-					userId: '',
-					systemId: '',
-					impersonated: false,
-					isExternalUser: false,
-					someProperty: 'shouldNotBeMapped',
-				};
+				const userInfo = currentUserFactory.build();
 				const loginDto: LoginDto = new LoginDto({ accessToken: 'accessToken' });
-				authenticationService.generateJwt.mockResolvedValue(loginDto);
+				authenticationService.generateCurrentUserJwt.mockResolvedValue('accessToken');
 
 				return {
 					userInfo,
@@ -52,13 +44,13 @@ describe('LoginUc', () => {
 
 				await loginUc.getLoginData(userInfo);
 
-				expect(authenticationService.generateJwt).toHaveBeenCalledWith({
+				expect(authenticationService.generateCurrentUserJwt).toHaveBeenCalledWith({
 					accountId: userInfo.accountId,
 					userId: userInfo.userId,
 					schoolId: userInfo.schoolId,
 					roles: userInfo.roles,
 					systemId: userInfo.systemId,
-					support: userInfo.impersonated,
+					support: userInfo.support,
 					isExternalUser: userInfo.isExternalUser,
 				});
 			});

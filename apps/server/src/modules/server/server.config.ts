@@ -23,12 +23,14 @@ import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfig } from '@modules/video-conference';
-import { LanguageType } from '@shared/domain/interface';
-import { SchulcloudTheme } from '@shared/domain/types';
+import type { VideoConferenceConfig } from '@modules/video-conference';
+import type { LanguageType } from '@shared/domain/interface';
+import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import { BbbConfig } from '../video-conference/bbb';
-import { Timezone } from './types/timezone.enum';
+import { TspRestClientConfig } from '@src/infra/tsp-client/tsp-client-config';
+import type { ShdConfig } from '@modules/shd';
+import type { BbbConfig } from '@modules/video-conference/bbb';
+import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -67,7 +69,9 @@ export interface ServerConfig
 		UserImportConfig,
 		VideoConferenceConfig,
 		BbbConfig,
-		AlertConfig {
+		TspRestClientConfig,
+		AlertConfig,
+		ShdConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -304,11 +308,17 @@ const config: ServerConfig = {
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
+	TSP_API_BASE_URL: Configuration.get('TSP_API_BASE_URL') as string,
+	TSP_API_CLIENT_ID: Configuration.get('TSP_API_CLIENT_ID') as string,
+	TSP_API_CLIENT_SECRET: Configuration.get('TSP_API_CLIENT_SECRET') as string,
+	TSP_API_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_TOKEN_LIFETIME_MS') as number,
+	TSP_API_SIGNATURE_KEY: Configuration.get('TSP_API_SIGNATURE_KEY') as string,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
 };
 
 export const serverConfig = () => config;

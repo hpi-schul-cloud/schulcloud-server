@@ -8,7 +8,7 @@ import { RoleName } from '@shared/domain/interface';
 import { School, SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
-import { BadDataLoggableException } from '../strategy/loggable';
+import { BadDataLoggableException } from '../loggable';
 
 @Injectable()
 export class TspProvisioningService {
@@ -47,7 +47,9 @@ export class TspProvisioningService {
 			if (currentClass) {
 				// Case: Class exists -> update class
 				currentClass.schoolId = school.id;
-				currentClass.name = clazz.name;
+				if (clazz.name) {
+					currentClass.name = clazz.name;
+				}
 				currentClass.year = school.currentYear?.id;
 				currentClass.source = this.ENTITY_SOURCE;
 				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });

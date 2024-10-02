@@ -130,8 +130,8 @@
 			"description": "Lifetime of generated JWTs in days."
 		},
 		"JWT_LIFETIME_SUPPORT_SECONDS": {
-			"type": "string",
-			"default": "3600",
+			"type": "number",
+			"default": 3600,
 			"description": "Lifetime of generated support JWTs."
 		},
 		"JWT_TIMEOUT_SECONDS": {
@@ -173,6 +173,11 @@
 			"type": "string",
 			"default": "",
 			"description": "The key used to sign/verify TSP request tokens."
+		},
+		"TSP_API_TOKEN_LIFETIME_MS": {
+			"type": "number",
+			"default": "30000",
+			"description": "The TSP token lifetime in milliseconds."
 		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
@@ -1399,6 +1404,11 @@
 					"type": "integer",
 					"default": 300000,
 					"description": "Maximum size of the logo of an external tool in bytes"
+				},
+				"PREFERRED_TOOLS_LIMIT": {
+					"type": "integer",
+					"default": 5,
+					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
 		},

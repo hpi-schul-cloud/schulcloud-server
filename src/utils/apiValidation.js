@@ -7,7 +7,6 @@ const ignorePathsList = [
 	/|(.*\/accounts\/api($|\/$))/,
 	/|(.*\/accounts\/confirm($|\/$))/,
 	/|(.*\/accounts\/jwtTimer($|\/$))/, // todo: proper api-integrationtests with redis
-	/|(.*\/accounts\/supportJWT($|\/$))/,
 	/|(.*\/activationModel($|\/$))/,
 	/|(.*\/activationModel\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/activation($|\/$))/,

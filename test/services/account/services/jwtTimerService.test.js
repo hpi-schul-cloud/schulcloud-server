@@ -13,11 +13,6 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('jwtTimer service', () => {
-	it('registered the supportJWT service', async () => {
-		// eslint-disable-next-line global-require
-		const defaultApp = await require('../../../../src/app')();
-		assert.ok(defaultApp.service('accounts/jwtTimer'));
-	});
 	describe('redis mocked', () => {
 		let app;
 		let nestServices;

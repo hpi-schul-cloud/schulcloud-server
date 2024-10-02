@@ -14,7 +14,9 @@ class JwtPayloadImpl implements JwtPayload {
 
 	systemId?: string;
 
-	support?: boolean;
+	support: boolean;
+
+	supportUserId?: string;
 
 	isExternalUser: boolean;
 
@@ -38,6 +40,7 @@ class JwtPayloadImpl implements JwtPayload {
 		this.systemId = data.systemId || '';
 		this.support = data.support || false;
 		this.isExternalUser = data.isExternalUser;
+		this.supportUserId = data.supportUserId;
 		this.aud = data.aud;
 		this.exp = data.exp;
 		this.iat = data.iat;

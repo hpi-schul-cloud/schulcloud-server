@@ -1,7 +1,7 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { CurrentUserBuilder } from './current-user.factory';
 import { ICurrentUser } from '../interface';
+import { CurrentUserBuilder } from './current-user.factory';
 
 describe('CurrentUserBuilder', () => {
 	beforeAll(async () => {
@@ -35,7 +35,7 @@ describe('CurrentUserBuilder', () => {
 				schoolId: requiredProps.schoolId,
 				accountId: requiredProps.accountId,
 				roles: requiredProps.roles,
-				impersonated: false,
+				support: false,
 				isExternalUser: false,
 				systemId: undefined,
 				externalIdToken: undefined,
@@ -53,7 +53,7 @@ describe('CurrentUserBuilder', () => {
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
 					roles: requiredProps.roles,
-					impersonated: true,
+					support: true,
 					isExternalUser: false,
 					systemId: undefined,
 					externalIdToken: undefined,
@@ -72,7 +72,7 @@ describe('CurrentUserBuilder', () => {
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
 					roles: requiredProps.roles,
-					impersonated: false,
+					support: false,
 					isExternalUser: true,
 					systemId: undefined,
 					externalIdToken: undefined,
@@ -92,7 +92,7 @@ describe('CurrentUserBuilder', () => {
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
 					roles: requiredProps.roles,
-					impersonated: false,
+					support: false,
 					isExternalUser: false,
 					systemId,
 					externalIdToken: undefined,
@@ -112,7 +112,7 @@ describe('CurrentUserBuilder', () => {
 					schoolId: requiredProps.schoolId,
 					accountId: requiredProps.accountId,
 					roles: requiredProps.roles,
-					impersonated: false,
+					support: false,
 					isExternalUser: true,
 					systemId: undefined,
 					externalIdToken,

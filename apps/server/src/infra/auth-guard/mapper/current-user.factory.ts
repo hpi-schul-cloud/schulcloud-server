@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
 import { TypeGuard } from '@shared/common';
+import { EntityId } from '@shared/domain/types';
 import { ICurrentUser } from '../interface';
 
 interface RequiredCurrentUserProps {
@@ -30,7 +30,7 @@ export class CurrentUserBuilder {
 			schoolId: requiredProps.schoolId,
 			accountId: requiredProps.accountId,
 			roles: requiredProps.roles,
-			impersonated: false,
+			support: false,
 			isExternalUser: false,
 			systemId: undefined,
 			externalIdToken: undefined,
@@ -45,7 +45,7 @@ export class CurrentUserBuilder {
 
 	public asUserSupporter(asUserSupporter?: boolean) {
 		if (asUserSupporter === true) {
-			this.props.impersonated = asUserSupporter;
+			this.props.support = asUserSupporter;
 		}
 
 		return this;

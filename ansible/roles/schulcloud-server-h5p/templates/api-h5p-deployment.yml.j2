@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: api-h5p-deployment
   namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
   labels:
     app: api-h5p
     app.kubernetes.io/part-of: schulcloud-verbund
