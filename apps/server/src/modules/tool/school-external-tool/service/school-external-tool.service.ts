@@ -55,7 +55,7 @@ export class SchoolExternalToolService {
 			...tool.getProps(),
 			name: externalTool.name,
 			status,
-			restrictToContexts: externalTool.restrictToContexts
+			restrictToContexts: externalTool.restrictToContexts,
 		});
 
 		return schoolExternalTool;

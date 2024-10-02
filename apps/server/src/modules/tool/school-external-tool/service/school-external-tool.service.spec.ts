@@ -55,7 +55,7 @@ describe(SchoolExternalToolService.name, () => {
 		describe('when called with query', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
-					restrictToContexts: [ToolContextType.COURSE]
+					restrictToContexts: [ToolContextType.COURSE],
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					name: undefined,
@@ -104,7 +104,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-						restrictToContexts: externalTool.restrictToContexts
+						restrictToContexts: externalTool.restrictToContexts,
 					}),
 				]);
 			});
