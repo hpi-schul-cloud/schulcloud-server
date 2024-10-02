@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client/response/policies-info/schulconnex-policies-info-response';
+import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@shared/testing';

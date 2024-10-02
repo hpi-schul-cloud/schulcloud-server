@@ -65,6 +65,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 			);
 
 		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };
+
 		return responseObject;
 	}
 

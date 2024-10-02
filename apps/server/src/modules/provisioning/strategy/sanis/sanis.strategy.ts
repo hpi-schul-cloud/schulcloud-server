@@ -1,5 +1,4 @@
 import {
-	SchulconnexPoliciesInfoErrorResponse,
 	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
@@ -9,8 +8,8 @@ import {
 import { GroupService } from '@modules/group/service/group.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
-import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable/policies-info-error-response-loggable';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
@@ -121,11 +120,12 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 
 				const schulconnexPoliciesInfoLicenceResponses: SchulconnexPoliciesInfoLicenseResponse[] =
 					schulconnexPoliciesInfoResponse.data.filter((item): item is SchulconnexPoliciesInfoLicenseResponse => {
-						if (item instanceof SchulconnexPoliciesInfoErrorResponse) {
-							this.logger.warning(new PoliciesInfoErrorResponseLoggable(item));
-							return false;
+						if (item instanceof SchulconnexPoliciesInfoLicenseResponse) {
+							return true;
 						}
-						return true;
+
+						this.logger.warning(new PoliciesInfoErrorResponseLoggable(item));
+						return false;
 					});
 
 				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexPoliciesInfoLicenceResponses);

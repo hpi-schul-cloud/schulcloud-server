@@ -2,7 +2,7 @@ import {
 	SchulconnexPoliciesInfoErrorResponse,
 	SchulconnexPoliciesInfoLicenseResponse,
 } from '@infra/schulconnex-client';
-import { PolymorphicArrayTransform } from '@shared/controller/transformer/polymorphic-array.transformer';
+import { PolymorphicArrayTransform } from '@shared/controller';
 import { ClassConstructor } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
