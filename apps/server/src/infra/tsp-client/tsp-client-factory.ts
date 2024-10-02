@@ -44,7 +44,7 @@ export class TspClientFactory {
 		return factory;
 	}
 
-	private async getAccessToken(params: FactoryParams): Promise<string> {
+	public async getAccessToken(params: FactoryParams): Promise<string> {
 		const now = Date.now();
 
 		if (this.cachedToken && this.tokenExpiresAt && this.tokenExpiresAt > now) {

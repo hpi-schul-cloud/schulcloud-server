@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { OauthAdapterService } from '@modules/oauth';
 import { ServerConfig } from '@modules/server';
-import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TspClientFactory } from './tsp-client-factory';
@@ -11,20 +10,23 @@ describe('TspClientFactory', () => {
 	let module: TestingModule;
 	let sut: TspClientFactory;
 	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
+	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [HttpModule],
 			providers: [
-				OauthAdapterService,
 				TspClientFactory,
+				{
+					provide: OauthAdapterService,
+					useValue: createMock<OauthAdapterService>(),
+				},
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<ServerConfig, true>>({
 						getOrThrow: (key: string) => {
 							switch (key) {
 								case 'TSP_API_BASE_URL':
-									return 'https://test2.schulportal-thueringen.de/tip-ms/api';
+									return faker.internet.url();
 								case 'TSP_API_TOKEN_LIFETIME_MS':
 									return faker.number.int();
 								default:
@@ -38,6 +40,7 @@ describe('TspClientFactory', () => {
 
 		sut = module.get(TspClientFactory);
 		configServiceMock = module.get(ConfigService);
+		oauthAdapterServiceMock = module.get(OauthAdapterService);
 	});
 
 	afterAll(async () => {
@@ -85,6 +88,35 @@ describe('TspClientFactory', () => {
 				expect(result).toBeDefined();
 				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 			});
+		});
+	});
+
+	describe('getAccessToken', () => {
+		const setup = () => {
+			const clientId = faker.string.alpha();
+			const clientSecret = faker.string.alpha();
+			const tokenEndpoint = faker.internet.url();
+
+			oauthAdapterServiceMock.sendTokenRequest.mockResolvedValue({
+				accessToken: faker.string.alpha(),
+				idToken: faker.string.alpha(),
+				refreshToken: faker.string.alpha(),
+			});
+
+			return {
+				clientId,
+				clientSecret,
+				tokenEndpoint,
+			};
+		};
+
+		it('should return access token', async () => {
+			const params = setup();
+
+			const response = await sut.getAccessToken(params);
+
+			expect(response).toBeDefined();
+			expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 		});
 	});
 
