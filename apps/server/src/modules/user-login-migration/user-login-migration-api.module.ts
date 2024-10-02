@@ -1,7 +1,7 @@
 import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { OauthModule } from '@modules/oauth';
+import { OauthModule } from '@modules/oauth/oauth.module';
 import { ProvisioningModule } from '@modules/provisioning';
 import { UserModule } from '@modules/user';
 import { ImportUserModule } from '@modules/user-import';

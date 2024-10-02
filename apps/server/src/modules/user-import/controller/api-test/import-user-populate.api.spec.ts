@@ -1,4 +1,5 @@
-import { SchulconnexResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
+import { SchulconnexResponse } from '@infra/schulconnex-client';
+import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { serverConfig, ServerConfig } from '@modules/server';
