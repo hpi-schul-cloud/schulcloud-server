@@ -23,6 +23,7 @@ export class SchoolExternalToolUc {
 		let tools: SchoolExternalTool[] = [];
 		if (query.schoolId) {
 			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
+
 			const user: User = await this.authorizationService.getUserWithPermissions(userId);
 			const school: School = await this.schoolService.getSchoolById(query.schoolId);
 
