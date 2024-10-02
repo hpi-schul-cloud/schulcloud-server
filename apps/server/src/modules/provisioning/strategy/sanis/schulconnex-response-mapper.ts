@@ -1,3 +1,4 @@
+import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client';
 import {
 	lernperiodeFormat,
 	SchulconnexCommunicationType,
@@ -10,7 +11,6 @@ import {
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client/response';
-import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client/response/policies-info/schulconnex-policies-info-response';
 import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
