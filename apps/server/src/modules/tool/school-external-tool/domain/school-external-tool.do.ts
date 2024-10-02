@@ -57,8 +57,4 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 	get restrictToContexts(): ToolContextType[] | undefined {
 		return this.props.restrictToContexts;
 	}
-
-	set restrictToContexts(value: ToolContextType[] | undefined) {
-		this.props.restrictToContexts = value;
-	}
 }
