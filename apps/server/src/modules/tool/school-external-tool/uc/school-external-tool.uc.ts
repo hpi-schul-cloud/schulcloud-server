@@ -48,6 +48,7 @@ export class SchoolExternalToolUc {
 		this.authorizationService.checkPermission(user, school, context);
 
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+		await this.schoolExternalToolValidationService.validateAvailableContexts(schoolExternalTool);
 
 		const createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
 			schoolExternalTool
@@ -103,6 +104,7 @@ export class SchoolExternalToolUc {
 		this.authorizationService.checkPermission(user, school, context);
 
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+		await this.schoolExternalToolValidationService.validateAvailableContexts(schoolExternalTool);
 
 		const updated: SchoolExternalTool = new SchoolExternalTool({
 			...schoolExternalToolDto,

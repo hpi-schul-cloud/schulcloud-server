@@ -13,6 +13,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '../../../con
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
+import { ToolContextType } from '../../../common/enum';
 import { SchoolExternalToolEntity } from '../../entity';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
@@ -90,6 +91,7 @@ describe('ToolSchoolController (API)', () => {
 					{ name: 'param2', value: 'false' },
 				],
 				isDeactivated: false,
+				availableContexts: [ToolContextType.COURSE],
 			};
 
 			em.persist([
@@ -143,6 +145,7 @@ describe('ToolSchoolController (API)', () => {
 					{ name: 'param1', value: 'value' },
 					{ name: 'param2', value: 'false' },
 				],
+				availableContexts: [ToolContextType.COURSE],
 			});
 
 			const createdSchoolExternalTool: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
@@ -150,6 +153,7 @@ describe('ToolSchoolController (API)', () => {
 				tool: postParams.toolId,
 			});
 			expect(createdSchoolExternalTool).toBeDefined();
+			expect(createdSchoolExternalTool?.availableContexts).toEqual(postParams.availableContexts);
 		});
 	});
 
@@ -238,6 +242,7 @@ describe('ToolSchoolController (API)', () => {
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school,
+				availableContexts: [ToolContextType.COURSE],
 			});
 
 			const params: SchoolExternalToolSearchParams = {
@@ -304,6 +309,7 @@ describe('ToolSchoolController (API)', () => {
 									value: schoolExternalToolEntity.schoolParameters[0].value,
 								},
 							],
+							availableContexts: [ToolContextType.COURSE],
 						},
 					],
 				})
@@ -332,6 +338,7 @@ describe('ToolSchoolController (API)', () => {
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school,
+				availableContexts: [ToolContextType.COURSE],
 			});
 
 			const schoolExternalToolResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({
@@ -350,6 +357,7 @@ describe('ToolSchoolController (API)', () => {
 						value: schoolExternalToolEntity.schoolParameters[0].value,
 					},
 				],
+				availableContexts: [ToolContextType.COURSE],
 			});
 
 			em.persist([
@@ -451,14 +459,17 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: school.id,
 				parameters: [paramEntry],
 				isDeactivated: false,
+				availableContexts: [ToolContextType.COURSE],
 			};
 
 			const updatedParamEntry: CustomParameterEntryParam = { name: 'param1', value: 'updatedValue' };
+			const updatedAvailableContexts: ToolContextType[] = [ToolContextType.COURSE, ToolContextType.MEDIA_BOARD];
 			const postParamsUpdate: SchoolExternalToolPostParams = {
 				toolId: externalToolEntity.id,
 				schoolId: school.id,
 				parameters: [updatedParamEntry],
 				isDeactivated: false,
+				availableContexts: updatedAvailableContexts,
 			};
 
 			const schoolExternalToolResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({
@@ -477,6 +488,7 @@ describe('ToolSchoolController (API)', () => {
 						value: updatedParamEntry.value,
 					},
 				],
+				availableContexts: updatedAvailableContexts,
 			});
 
 			return {

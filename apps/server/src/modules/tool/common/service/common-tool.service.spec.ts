@@ -1,6 +1,8 @@
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
 import { CommonToolService } from './common-tool.service';
 
@@ -88,6 +90,65 @@ describe('CommonToolService', () => {
 				const { externalTool, context } = setup();
 
 				const result = service.isContextRestricted(externalTool, context);
+
+				expect(result).toBe(true);
+			});
+		});
+	});
+
+	describe('isSchoolExternalToolAvailableForContext', () => {
+		describe('when tool is available for the given context', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					availableContexts: [ToolContextType.COURSE, ToolContextType.MEDIA_BOARD],
+				});
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { schoolExternalTool, context };
+			};
+
+			it('should return true', () => {
+				const { schoolExternalTool, context } = setup();
+
+				const result = service.isSchoolExternalToolAvailableForContext(schoolExternalTool, context);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when tool is not available for the given context', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					availableContexts: [ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD],
+				});
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { schoolExternalTool, context };
+			};
+
+			it('should return false', () => {
+				const { schoolExternalTool, context } = setup();
+
+				const result = service.isSchoolExternalToolAvailableForContext(schoolExternalTool, context);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when available contexts of the tool is undefined', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					availableContexts: undefined,
+				});
+				const context: ToolContextType = ToolContextType.COURSE;
+
+				return { schoolExternalTool, context };
+			};
+
+			it('should return true', () => {
+				const { schoolExternalTool, context } = setup();
+
+				const result = service.isSchoolExternalToolAvailableForContext(schoolExternalTool, context);
 
 				expect(result).toBe(true);
 			});

@@ -1,4 +1,5 @@
 import { CustomParameterEntry } from '../../common/domain';
+import { ToolContextType } from '../../common/enum';
 import {
 	CustomParameterEntryResponse,
 	SchoolExternalToolConfigurationStatusResponse,
@@ -28,6 +29,7 @@ export class SchoolExternalToolResponseMapper {
 				isOutdatedOnScopeSchool: schoolExternalTool.status.isOutdatedOnScopeSchool,
 				isGloballyDeactivated: schoolExternalTool.status.isGloballyDeactivated,
 			}),
+			availableContexts: schoolExternalTool.availableContexts ?? Object.values(ToolContextType),
 		});
 
 		return response;

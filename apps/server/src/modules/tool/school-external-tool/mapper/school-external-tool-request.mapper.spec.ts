@@ -1,3 +1,4 @@
+import { ToolContextType } from '../../common/enum';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
 import { SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
@@ -10,11 +11,13 @@ describe('SchoolExternalToolRequestMapper', () => {
 					name: 'name',
 					value: 'value',
 				};
+
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
 					schoolId: 'schoolId',
 					parameters: [param],
 					isDeactivated: true,
+					availableContexts: [ToolContextType.MEDIA_BOARD],
 				};
 
 				return {
@@ -35,6 +38,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [{ name: param.name, value: param.value }],
 					schoolId: params.schoolId,
 					isDeactivated: true,
+					availableContexts: [ToolContextType.MEDIA_BOARD],
 				});
 			});
 		});
@@ -46,6 +50,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					schoolId: 'schoolId',
 					parameters: undefined,
 					isDeactivated: false,
+					availableContexts: [],
 				};
 
 				return {
@@ -65,6 +70,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [],
 					schoolId: params.schoolId,
 					isDeactivated: false,
+					availableContexts: [],
 				});
 			});
 		});

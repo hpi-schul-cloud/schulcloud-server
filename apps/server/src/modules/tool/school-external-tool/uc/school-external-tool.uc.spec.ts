@@ -269,6 +269,14 @@ describe('SchoolExternalToolUc', () => {
 				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(tool);
 			});
 
+			it('should call schoolExternalToolValidationService.validateAvailableContexts()', async () => {
+				const { user, tool } = setup();
+
+				await uc.createSchoolExternalTool(user.id, tool.getProps());
+
+				expect(schoolExternalToolValidationService.validateAvailableContexts).toHaveBeenCalledWith(tool);
+			});
+
 			it('should call schoolExternalToolService.createSchoolExternalTool', async () => {
 				const { user, tool } = setup();
 
@@ -378,6 +386,14 @@ describe('SchoolExternalToolUc', () => {
 			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool.getProps());
 
 			expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(updatedTool);
+		});
+
+		it('should call schoolExternalToolValidationService.validateAvailableContexts()', async () => {
+			const { updatedTool, user } = setup();
+
+			await uc.createSchoolExternalTool(user.id, updatedTool.getProps());
+
+			expect(schoolExternalToolValidationService.validateAvailableContexts).toHaveBeenCalledWith(updatedTool);
 		});
 
 		it('should call the service to update the tool', async () => {
