@@ -101,6 +101,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
+						restrictToContexts: externalTool.restrictToContexts
 					}),
 				]);
 			});

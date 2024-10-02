@@ -4,8 +4,6 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolService } from '@src/modules/school';
-import { ExternalToolService } from '@modules/tool';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
@@ -18,17 +16,13 @@ export class SchoolExternalToolUc {
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
-		private readonly externalToolService: ExternalToolService
+		private readonly schoolService: SchoolService
 	) {}
 
 	async findSchoolExternalTools(userId: EntityId, query: SchoolExternalToolQueryInput): Promise<SchoolExternalTool[]> {
 		let tools: SchoolExternalTool[] = [];
 		if (query.schoolId) {
 			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
-
-			tools = await this.getContextRestrictions(tools);
-
 			const user: User = await this.authorizationService.getUserWithPermissions(userId);
 			const school: School = await this.schoolService.getSchoolById(query.schoolId);
 
@@ -38,16 +32,6 @@ export class SchoolExternalToolUc {
 		}
 
 		return tools;
-	}
-
-	private async getContextRestrictions(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
-		const schoolExternalTools = tools.map(async (tool) => {
-			const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
-			tool.restrictToContexts = externalTool.restrictToContexts;
-			return tool;
-		});
-
-		return Promise.all(schoolExternalTools);
 	}
 
 	async createSchoolExternalTool(
