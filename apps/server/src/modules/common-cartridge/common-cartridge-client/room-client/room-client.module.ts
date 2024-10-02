@@ -1,11 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
 import { Configuration, CourseRoomsApi } from './room-api-client';
-import { CourseRoomsClientConig } from './courses-room-client.config';
+import { CourseRoomsClientConfig } from './courses-room-client.config';
 
 @Module({})
 export class CourseRoomsModule {
-	static register(config: CourseRoomsClientConig): DynamicModule {
+	static register(config: CourseRoomsClientConfig): DynamicModule {
 		const providers = [
 			CourseRoomsClientAdapter,
 			{

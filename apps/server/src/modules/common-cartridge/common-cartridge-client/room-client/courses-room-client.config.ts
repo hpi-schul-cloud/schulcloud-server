@@ -1,5 +1,5 @@
 import { ConfigurationParameters } from './room-api-client';
 
-export interface CourseRoomsClientConig extends ConfigurationParameters {
+export interface CourseRoomsClientConfig extends ConfigurationParameters {
 	basePath?: string;
 }
