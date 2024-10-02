@@ -7,9 +7,10 @@ import {
 	SchoolExternalToolValidationService,
 } from './service';
 import { SchoolExternalToolRule } from './authorization/school-external-tool.rule';
+import { AuthorizationModule } from '@src/modules/authorization';
 
 @Module({
-	imports: [forwardRef(() => CommonToolModule), forwardRef(() => ExternalToolModule)],
+	imports: [forwardRef(() => CommonToolModule), forwardRef(() => ExternalToolModule), AuthorizationModule],
 	providers: [
 		SchoolExternalToolService,
 		SchoolExternalToolValidationService,

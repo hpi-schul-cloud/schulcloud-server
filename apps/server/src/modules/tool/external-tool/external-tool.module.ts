@@ -18,9 +18,18 @@ import {
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 } from './service';
+import { AuthorizationModule } from '@src/modules/authorization';
 
 @Module({
-	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule, InstanceModule],
+	imports: [
+		CommonToolModule,
+		LoggerModule,
+		OauthProviderServiceModule,
+		EncryptionModule,
+		HttpModule,
+		InstanceModule,
+		AuthorizationModule,
+	],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,

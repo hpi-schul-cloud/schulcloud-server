@@ -8,6 +8,7 @@ import { ContextExternalToolAuthorizableService, ContextExternalToolService, Too
 import { ContextExternalToolValidationService } from './service/context-external-tool-validation.service';
 import { ToolConfigurationStatusService } from './service/tool-configuration-status.service';
 import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
+import { AuthorizationModule } from '@src/modules/authorization';
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { ContextExternalToolRule } from './authorisation/context-external-tool.r
 		SchoolExternalToolModule,
 		LoggerModule,
 		UserLicenseModule,
+		AuthorizationModule,
 	],
 	providers: [
 		ContextExternalToolService,
