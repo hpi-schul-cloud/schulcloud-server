@@ -58,7 +58,7 @@ export class ExternalToolResponse {
 	medium?: ExternalToolMediumResponse;
 
 	@ApiProperty({ type: Boolean, description: 'Should the tool be a preferred tool' })
-	isPreferred!: boolean;
+	isPreferred: boolean;
 
 	@ApiPropertyOptional({
 		type: String,
