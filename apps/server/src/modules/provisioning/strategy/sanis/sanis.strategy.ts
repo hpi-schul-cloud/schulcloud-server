@@ -1,9 +1,10 @@
 import {
+	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 	SchulconnexResponseValidationGroups,
-} from '@infra/schulconnex-client/response';
-import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
+	SchulconnexRestClient,
+} from '@infra/schulconnex-client';
 import { GroupService } from '@modules/group/service/group.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +22,7 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from '../../dto';
-import { FetchingPoliciesInfoFailedLoggable } from '../../loggable';
+import { FetchingPoliciesInfoFailedLoggable, PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexProvisioningStrategy } from '../oidc';
 import {
@@ -109,12 +110,24 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 					}
 				);
 
-				const schulconnexLizenzInfoResponses = plainToClass(
+				const schulconnexPoliciesInfoResponse = plainToClass(
 					SchulconnexPoliciesInfoResponse,
 					schulconnexPoliciesInfoAxiosResponse
 				);
-				await this.checkResponseValidation(schulconnexLizenzInfoResponses);
-				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
+
+				await this.checkResponseValidation(schulconnexPoliciesInfoResponse);
+
+				const schulconnexPoliciesInfoLicenceResponses: SchulconnexPoliciesInfoLicenseResponse[] =
+					schulconnexPoliciesInfoResponse.data.filter((item): item is SchulconnexPoliciesInfoLicenseResponse => {
+						if (item instanceof SchulconnexPoliciesInfoLicenseResponse) {
+							return true;
+						}
+
+						this.logger.warning(new PoliciesInfoErrorResponseLoggable(item));
+						return false;
+					});
+
+				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexPoliciesInfoLicenceResponses);
 			} catch (error) {
 				this.logger.warning(new FetchingPoliciesInfoFailedLoggable(externalUser, policiesInfoUrl));
 			}
