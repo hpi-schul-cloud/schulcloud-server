@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { OauthAdapterService } from '@modules/oauth';
+import { ServerConfig } from '@modules/server';
+import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerConfig } from '@src/modules/server';
 import { TspClientFactory } from './tsp-client-factory';
 
 describe('TspClientFactory', () => {
@@ -12,25 +14,17 @@ describe('TspClientFactory', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
+			imports: [HttpModule],
 			providers: [
+				OauthAdapterService,
 				TspClientFactory,
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<ServerConfig, true>>({
 						getOrThrow: (key: string) => {
 							switch (key) {
-								case 'SC_DOMAIN':
-									return faker.internet.domainName();
-								case 'HOST':
-									return faker.internet.url();
 								case 'TSP_API_BASE_URL':
-									return 'https://test2.schulportal-thueringen.de/tip-ms/api/';
-								case 'TSP_API_CLIENT_ID':
-									return faker.string.uuid();
-								case 'TSP_API_CLIENT_SECRET':
-									return faker.string.uuid();
-								case 'TSP_API_SIGNATURE_KEY':
-									return faker.string.uuid();
+									return 'https://test2.schulportal-thueringen.de/tip-ms/api';
 								case 'TSP_API_TOKEN_LIFETIME_MS':
 									return faker.number.int();
 								default:
@@ -61,7 +55,11 @@ describe('TspClientFactory', () => {
 	describe('createExportClient', () => {
 		describe('when createExportClient is called', () => {
 			it('should return ExportApiInterface', () => {
-				const result = sut.createExportClient();
+				const result = sut.createExportClient({
+					clientId: faker.string.alpha(),
+					clientSecret: faker.string.alpha(),
+					tokenEndpoint: faker.internet.url(),
+				});
 
 				expect(result).toBeDefined();
 				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
@@ -70,8 +68,13 @@ describe('TspClientFactory', () => {
 
 		describe('when token is cached', () => {
 			const setup = () => {
+				const client = sut.createExportClient({
+					clientId: faker.string.alpha(),
+					clientSecret: faker.string.alpha(),
+					tokenEndpoint: faker.internet.url(),
+				});
+
 				Reflect.set(sut, 'cachedToken', faker.string.alpha());
-				const client = sut.createExportClient();
 
 				return client;
 			};
@@ -85,10 +88,14 @@ describe('TspClientFactory', () => {
 		});
 	});
 
-	// TODO: add a working integration test
+	// HINT: If you want to test the actual API, you can use the following test and fill in the required data.
 	describe.skip('when using the created client', () => {
 		const setup = () => {
-			const client = sut.createExportClient();
+			const client = sut.createExportClient({
+				clientId: '<clientId>',
+				clientSecret: '<clientSecret>',
+				tokenEndpoint: '<tokenEndpoint>',
+			});
 
 			return client;
 		};
@@ -99,7 +106,7 @@ describe('TspClientFactory', () => {
 			const result = await client.version();
 
 			expect(result.status).toBe(200);
-			expect(result.data.version).toBeDefined();
+			expect(result.data.version).toBe('1.1');
 		});
 	});
 });
