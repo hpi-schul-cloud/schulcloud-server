@@ -1,9 +1,7 @@
-import {
-	SchulconnexPoliciesInfoPermissionResponse,
-	SchulconnexPoliciesInfoTargetResponse,
-} from '@infra/schulconnex-client';
 import { Type } from 'class-transformer';
 import { IsArray, IsObject, ValidateNested } from 'class-validator';
+import { SchulconnexPoliciesInfoPermissionResponse } from './schulconnex-policies-info-permission-response';
+import { SchulconnexPoliciesInfoTargetResponse } from './schulconnex-policies-info-target-response';
 
 export class SchulconnexPoliciesInfoLicenseResponse {
 	@IsObject()

@@ -1,12 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchulconnexPoliciesInfoLicenseResponse } from '@infra/schulconnex-client';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
-import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
+import {
+	SchulconnexPoliciesInfoLicenseResponse,
+	SchulconnexPoliciesInfoResponse,
+	SchulconnexResponse,
+} from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';

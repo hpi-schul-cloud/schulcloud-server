@@ -4,7 +4,6 @@ import {
 	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
-	schulconnexResponseFactory,
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
@@ -12,13 +11,13 @@ import {
 	schulconnexPoliciesInfoErrorResponseFactory,
 	schulconnexPoliciesInfoLicenseResponseFactory,
 	schulconnexPoliciesInfoResponseFactory,
+	schulconnexResponseFactory,
 } from '@infra/schulconnex-client/testing';
 import { GroupService } from '@modules/group';
 import { GroupTypes } from '@modules/group/domain';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -33,6 +32,7 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningSystemDto,
 } from '../../dto';
+import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import {
 	SchulconnexCourseSyncService,

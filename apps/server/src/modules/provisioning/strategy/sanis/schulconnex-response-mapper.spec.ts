@@ -4,12 +4,13 @@ import {
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexPersonenkontextResponse,
-	schulconnexPoliciesInfoLicenseResponseFactory,
-	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
-	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
+import {
+	schulconnexPoliciesInfoLicenseResponseFactory,
+	schulconnexResponseFactory,
+} from '@infra/schulconnex-client/testing';
 import { GroupTypes } from '@modules/group';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -561,10 +562,9 @@ describe(SchulconnexResponseMapper.name, () => {
 	describe('mapToExternalLicenses', () => {
 		describe('when a license response has a medium id and no media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
-					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
-						target: { uid: 'bildungscloud', partOf: '' },
-					});
+				const licenseResponse = schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
+					target: { uid: 'bildungscloud', partOf: '' },
+				});
 
 				return {
 					licenseResponse,
@@ -588,10 +588,9 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has a medium id and a media source', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
-					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
-						target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
-					});
+				const licenseResponse = schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
+					target: { uid: 'bildungscloud', partOf: 'bildungscloud-source' },
+				});
 
 				return {
 					licenseResponse,
@@ -615,31 +614,9 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when a license response has no medium id', () => {
 			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
-					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
-						target: { uid: '', partOf: 'bildungscloud-source' },
-					});
-
-				return {
-					licenseResponse,
-				};
-			};
-
-			it('should should be filtered out', () => {
-				const { licenseResponse } = setup();
-
-				const result: ExternalLicenseDto[] | undefined =
-					SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
-
-				expect(result).toEqual<ExternalLicenseDto[]>([]);
-			});
-		});
-
-		describe('when a license response has no target', () => {
-			const setup = () => {
-				const licenseResponse: SchulconnexPoliciesInfoResponse[] =
-					schulconnexPoliciesInfoLicenseResponseFactory.buildList(1);
-				licenseResponse[0].target = undefined;
+				const licenseResponse = schulconnexPoliciesInfoLicenseResponseFactory.buildList(1, {
+					target: { uid: '', partOf: 'bildungscloud-source' },
+				});
 
 				return {
 					licenseResponse,

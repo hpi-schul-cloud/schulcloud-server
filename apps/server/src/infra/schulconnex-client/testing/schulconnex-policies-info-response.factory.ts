@@ -1,9 +1,10 @@
+import { Factory } from 'fishery';
 import {
+	SchulconnexPoliciesInfoActionType,
 	SchulconnexPoliciesInfoErrorResponse,
 	SchulconnexPoliciesInfoLicenseResponse,
-} from '@infra/schulconnex-client';
-import { Factory } from 'fishery';
-import { SchulconnexPoliciesInfoActionType, SchulconnexPoliciesInfoResponse } from '../response';
+	SchulconnexPoliciesInfoResponse,
+} from '../response';
 
 export const schulconnexPoliciesInfoLicenseResponseFactory = Factory.define<SchulconnexPoliciesInfoLicenseResponse>(
 	() => {

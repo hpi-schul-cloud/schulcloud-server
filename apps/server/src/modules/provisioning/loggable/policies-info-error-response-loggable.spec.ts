@@ -1,6 +1,6 @@
 import { SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
 import { schulconnexPoliciesInfoErrorResponseFactory } from '@infra/schulconnex-client/testing';
-import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable/policies-info-error-response-loggable';
+import { PoliciesInfoErrorResponseLoggable } from './policies-info-error-response-loggable';
 
 describe(PoliciesInfoErrorResponseLoggable.name, () => {
 	describe('getLogMessage', () => {

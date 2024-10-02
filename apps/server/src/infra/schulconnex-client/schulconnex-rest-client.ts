@@ -1,7 +1,3 @@
-import {
-	SchulconnexPoliciesInfoErrorResponse,
-	SchulconnexPoliciesInfoLicenseResponse,
-} from '@infra/schulconnex-client';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
@@ -12,7 +8,12 @@ import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPersonenInfoParams } from './request';
-import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
+import {
+	SchulconnexPoliciesInfoErrorResponse,
+	SchulconnexPoliciesInfoLicenseResponse,
+	SchulconnexPoliciesInfoResponse,
+	SchulconnexResponse,
+} from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 

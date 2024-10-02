@@ -1,10 +1,8 @@
-import {
-	SchulconnexPoliciesInfoErrorResponse,
-	SchulconnexPoliciesInfoLicenseResponse,
-} from '@infra/schulconnex-client';
 import { PolymorphicArrayTransform } from '@shared/controller';
 import { ClassConstructor } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
+import { SchulconnexPoliciesInfoErrorResponse } from './schulconnex-policies-info-error-response';
+import { SchulconnexPoliciesInfoLicenseResponse } from './schulconnex-policies-info-license-response';
 
 const policiesInfoDiscriminator = (
 	obj: unknown

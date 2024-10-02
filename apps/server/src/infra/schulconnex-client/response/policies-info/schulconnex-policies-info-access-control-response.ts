@@ -1,6 +1,6 @@
-import { SchulconnexPoliciesInfoErrorDescriptionResponse } from '@infra/schulconnex-client/';
 import { Type } from 'class-transformer';
 import { IsObject, IsString, ValidateNested } from 'class-validator';
+import { SchulconnexPoliciesInfoErrorDescriptionResponse } from './schulconnex-policies-info-error-description-response';
 
 export class SchulconnexPoliciesInfoAccessControlResponse {
 	@IsString()

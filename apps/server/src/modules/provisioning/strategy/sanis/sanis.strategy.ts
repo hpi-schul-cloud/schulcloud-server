@@ -8,7 +8,6 @@ import {
 import { GroupService } from '@modules/group/service/group.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PoliciesInfoErrorResponseLoggable } from '@shared/common/loggable';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -23,7 +22,7 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from '../../dto';
-import { FetchingPoliciesInfoFailedLoggable } from '../../loggable';
+import { FetchingPoliciesInfoFailedLoggable, PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexProvisioningStrategy } from '../oidc';
 import {
