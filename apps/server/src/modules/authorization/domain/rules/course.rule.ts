@@ -2,17 +2,12 @@ import { Course } from '@modules/learnroom/domain';
 import { Injectable } from '@nestjs/common';
 import { Course as CourseEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
-import { AuthorizationHelper, AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class CourseRule implements Rule<CourseEntity | Course> {
-	constructor(
-		private readonly authorizationHelper: AuthorizationHelper,
-		authorisationInjectionService: AuthorizationInjectionService
-	) {
-		authorisationInjectionService.injectAuthorizationRule(this);
-	}
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof CourseEntity || object instanceof Course;

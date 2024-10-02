@@ -4,6 +4,7 @@ import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
 	CourseGroupRule,
+	CourseRule,
 	GroupRule,
 	InstanceRule,
 	LegacySchoolRule,
@@ -24,6 +25,7 @@ import { AuthorizationInjectionService } from './authorization-injection.service
 export class RuleManager {
 	constructor(
 		courseGroupRule: CourseGroupRule,
+		courseRule: CourseRule,
 		groupRule: GroupRule,
 		legaySchoolRule: LegacySchoolRule,
 		lessonRule: LessonRule,
@@ -39,6 +41,7 @@ export class RuleManager {
 		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
 		this.authorizationInjectionService.injectAuthorizationRule(courseGroupRule);
+		this.authorizationInjectionService.injectAuthorizationRule(courseRule);
 		this.authorizationInjectionService.injectAuthorizationRule(groupRule);
 		this.authorizationInjectionService.injectAuthorizationRule(legaySchoolRule);
 		this.authorizationInjectionService.injectAuthorizationRule(lessonRule);

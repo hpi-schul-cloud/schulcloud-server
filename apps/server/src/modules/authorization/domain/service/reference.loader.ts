@@ -6,7 +6,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
+import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType, AuthorizationLoaderService } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
@@ -14,6 +14,7 @@ import { AuthorizationInjectionService } from './authorization-injection.service
 @Injectable()
 export class ReferenceLoader {
 	constructor(
+		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
@@ -28,6 +29,7 @@ export class ReferenceLoader {
 		service.injectReferenceLoader(AuthorizableReferenceType.Task, this.taskRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Course, this.courseRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.CourseGroup, this.courseGroupRepo);
+		service.injectReferenceLoader(AuthorizableReferenceType.User, this.userRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.School, this.schoolRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Lesson, this.lessonService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamAuthorisableService);
