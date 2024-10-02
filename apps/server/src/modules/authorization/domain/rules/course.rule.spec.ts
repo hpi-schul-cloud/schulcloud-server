@@ -6,11 +6,13 @@ import { courseFactory as courseEntityFactory, roleFactory, setupEntities, userF
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action } from '../type';
 import { CourseRule } from './course.rule';
+import { AuthorizationInjectionService } from '../service/authorization-injection.service';
 
 describe('CourseRule', () => {
 	let module: TestingModule;
 	let service: CourseRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: AuthorizationInjectionService;
 	let user: User;
 	let entity: Course;
 	const permissionA = 'a' as Permission;
@@ -21,11 +23,12 @@ describe('CourseRule', () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			providers: [AuthorizationHelper, CourseRule],
+			providers: [AuthorizationHelper, CourseRule, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(CourseRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	beforeEach(() => {
@@ -39,6 +42,12 @@ describe('CourseRule', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
 	});
 
 	describe('when validating an entity', () => {

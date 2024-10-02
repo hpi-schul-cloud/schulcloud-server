@@ -5,10 +5,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { LegacySchoolRule } from './legacy-school.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('LegacySchoolRule', () => {
 	let service: LegacySchoolRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: AuthorizationInjectionService;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -17,11 +19,12 @@ describe('LegacySchoolRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, LegacySchoolRule],
+			providers: [AuthorizationHelper, LegacySchoolRule, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(LegacySchoolRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	const setupSchoolAndUser = () => {
@@ -34,6 +37,12 @@ describe('LegacySchoolRule', () => {
 
 		return { school, user };
 	};
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
+	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		const { school, user } = setupSchoolAndUser();

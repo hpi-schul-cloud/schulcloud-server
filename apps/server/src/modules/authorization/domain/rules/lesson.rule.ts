@@ -4,14 +4,18 @@ import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
+import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class LessonRule implements Rule<LessonEntity> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
-		private readonly courseGroupRule: CourseGroupRule
-	) {}
+		private readonly courseGroupRule: CourseGroupRule,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof LessonEntity;

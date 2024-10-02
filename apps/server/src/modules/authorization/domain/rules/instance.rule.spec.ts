@@ -6,10 +6,12 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext } from '../type';
 import { InstanceRule } from './instance.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe(InstanceRule.name, () => {
 	let module: TestingModule;
 	let rule: InstanceRule;
+	let injectionService: AuthorizationInjectionService;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
@@ -17,15 +19,22 @@ describe(InstanceRule.name, () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			providers: [InstanceRule, AuthorizationHelper],
+			providers: [InstanceRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
 		rule = module.get(InstanceRule);
 		authorizationHelper = module.get(AuthorizationHelper);
+		injectionService = module.get(AuthorizationInjectionService);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
 	});
 
 	describe('isApplicable', () => {

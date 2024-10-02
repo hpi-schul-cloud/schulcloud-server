@@ -17,6 +17,7 @@ import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
+import { AuthorizationInjectionService } from '../service';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });
@@ -27,19 +28,35 @@ const buildUserWithPermission = (permission) => {
 
 describe('SubmissionRule', () => {
 	let submissionRule: SubmissionRule;
+	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, SubmissionRule, TaskRule, CourseRule, LessonRule, CourseGroupRule],
+			providers: [
+				AuthorizationHelper,
+				SubmissionRule,
+				TaskRule,
+				CourseRule,
+				LessonRule,
+				CourseGroupRule,
+				AuthorizationInjectionService,
+			],
 		}).compile();
 
 		submissionRule = await module.get(SubmissionRule);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(submissionRule);
+		});
 	});
 
 	describe('isApplicable', () => {

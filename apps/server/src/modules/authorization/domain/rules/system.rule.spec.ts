@@ -9,10 +9,12 @@ import { schoolEntityFactory, setupEntities, systemEntityFactory, userFactory } 
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { SystemRule } from './system.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe(SystemRule.name, () => {
 	let module: TestingModule;
 	let rule: SystemRule;
+	let injectionService: AuthorizationInjectionService;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
@@ -26,11 +28,13 @@ describe(SystemRule.name, () => {
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		rule = module.get(SystemRule);
 		authorizationHelper = module.get(AuthorizationHelper);
+		injectionService = module.get(AuthorizationInjectionService);
 	});
 
 	afterAll(async () => {
@@ -39,6 +43,12 @@ describe(SystemRule.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
 	});
 
 	describe('isApplicable', () => {

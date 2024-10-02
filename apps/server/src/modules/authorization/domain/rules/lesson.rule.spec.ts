@@ -17,6 +17,7 @@ import { Action, AuthorizationContext } from '../type';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('LessonRule', () => {
 	let rule: LessonRule;
@@ -25,6 +26,7 @@ describe('LessonRule', () => {
 	let courseGroupRule: DeepPartial<CourseGroupRule>;
 	let globalUser: User;
 	let entity: LessonEntity;
+	let injectionService: AuthorizationInjectionService;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -33,18 +35,25 @@ describe('LessonRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, LessonRule, CourseRule, CourseGroupRule],
+			providers: [AuthorizationHelper, LessonRule, CourseRule, CourseGroupRule, AuthorizationInjectionService],
 		}).compile();
 
 		rule = await module.get(LessonRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	beforeEach(() => {
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		globalUser = userFactory.build({ roles: [role] });
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {

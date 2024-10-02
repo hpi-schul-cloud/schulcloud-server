@@ -3,7 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { groupFactory, roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action, AuthorizationContext, AuthorizationHelper } from '@src/modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 import { Group } from '@src/modules/group';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupRule } from './group.rule';
@@ -11,6 +16,7 @@ import { GroupRule } from './group.rule';
 describe('GroupRule', () => {
 	let module: TestingModule;
 	let rule: GroupRule;
+	let injectionService: AuthorizationInjectionService;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
@@ -24,10 +30,12 @@ describe('GroupRule', () => {
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		rule = module.get(GroupRule);
+		injectionService = module.get(AuthorizationInjectionService);
 		authorizationHelper = module.get(AuthorizationHelper);
 	});
 
@@ -37,6 +45,12 @@ describe('GroupRule', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
 	});
 
 	describe('isApplicable', () => {

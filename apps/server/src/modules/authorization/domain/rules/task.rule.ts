@@ -4,14 +4,18 @@ import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
+import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class TaskRule implements Rule<Task> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
-		private readonly lessonRule: LessonRule
-	) {}
+		private readonly lessonRule: LessonRule,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof Task;

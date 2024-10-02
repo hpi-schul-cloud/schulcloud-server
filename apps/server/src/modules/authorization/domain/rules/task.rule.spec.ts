@@ -8,12 +8,14 @@ import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 import { TaskRule } from './task.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('TaskRule', () => {
 	let service: TaskRule;
 	let authorizationHelper: AuthorizationHelper;
 	let courseRule: DeepPartial<CourseRule>;
 	let lessonRule: DeepPartial<LessonRule>;
+	let injectionService: AuthorizationInjectionService;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -22,13 +24,27 @@ describe('TaskRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, TaskRule, CourseRule, LessonRule, CourseGroupRule],
+			providers: [
+				AuthorizationHelper,
+				TaskRule,
+				CourseRule,
+				LessonRule,
+				CourseGroupRule,
+				AuthorizationInjectionService,
+			],
 		}).compile();
 
 		service = await module.get(TaskRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		lessonRule = await module.get(LessonRule);
+		injectionService = await module.get(AuthorizationInjectionService);
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
 	});
 
 	describe('[method] hasPermission', () => {

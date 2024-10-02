@@ -5,20 +5,27 @@ import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { SchoolRule } from './school.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('SchoolRule', () => {
 	let rule: SchoolRule;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
+	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [SchoolRule, { provide: AuthorizationHelper, useValue: createMock<AuthorizationHelper>() }],
+			providers: [
+				SchoolRule,
+				{ provide: AuthorizationHelper, useValue: createMock<AuthorizationHelper>() },
+				AuthorizationInjectionService,
+			],
 		}).compile();
 
 		rule = await module.get(SchoolRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	const setupSchoolAndUser = () => {
@@ -27,6 +34,12 @@ describe('SchoolRule', () => {
 
 		return { school, user };
 	};
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
+	});
 
 	describe('isApplicable', () => {
 		describe('when object is instance of School', () => {

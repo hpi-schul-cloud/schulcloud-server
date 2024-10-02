@@ -3,13 +3,19 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { AuthorizationContext, Rule } from '../type';
+import { AuthorizationInjectionService } from '../service';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
 export class LegacySchoolRule implements Rule<LegacySchoolDo> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof LegacySchoolDo;

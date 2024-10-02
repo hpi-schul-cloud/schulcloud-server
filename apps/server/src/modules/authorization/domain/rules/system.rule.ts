@@ -3,10 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
+import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class SystemRule implements Rule<System> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched: boolean = object instanceof System;

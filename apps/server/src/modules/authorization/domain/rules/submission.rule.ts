@@ -3,10 +3,17 @@ import { Submission, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { TaskRule } from './task.rule';
+import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class SubmissionRule implements Rule<Submission> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly taskRule: TaskRule,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof Submission;

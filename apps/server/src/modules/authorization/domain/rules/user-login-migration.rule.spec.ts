@@ -7,10 +7,12 @@ import { schoolEntityFactory, setupEntities, userFactory, userLoginMigrationDOFa
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext } from '../type';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('UserLoginMigrationRule', () => {
 	let module: TestingModule;
 	let rule: UserLoginMigrationRule;
+	let injectionService: AuthorizationInjectionService;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
@@ -24,15 +26,23 @@ describe('UserLoginMigrationRule', () => {
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		rule = module.get(UserLoginMigrationRule);
 		authorizationHelper = module.get(AuthorizationHelper);
+		injectionService = module.get(AuthorizationInjectionService);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
 	});
 
 	describe('isApplicable', () => {

@@ -4,9 +4,11 @@ import { roleFactory, setupEntities, teamFactory, userFactory } from '@shared/te
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { TeamRule } from './team.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('TeamRule', () => {
 	let rule: TeamRule;
+	let injectionService: AuthorizationInjectionService;
 	const permissionA = 'a' as Permission;
 	const permissionC = 'c' as Permission;
 	const teamPermissionA = 'TA' as Permission;
@@ -18,10 +20,17 @@ describe('TeamRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, TeamRule],
+			providers: [AuthorizationHelper, TeamRule, AuthorizationInjectionService],
 		}).compile();
 
 		rule = await module.get(TeamRule);
+		injectionService = await module.get(AuthorizationInjectionService);
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
+		});
 	});
 
 	describe('isApplicable', () => {

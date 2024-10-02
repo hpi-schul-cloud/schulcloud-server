@@ -3,10 +3,16 @@ import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { AuthorizationContext, Rule } from '../type';
+import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched: boolean = object instanceof UserLoginMigrationDO;

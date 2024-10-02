@@ -3,10 +3,17 @@ import { CourseGroup, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { CourseRule } from './course.rule';
+import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class CourseGroupRule implements Rule<CourseGroup> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly courseRule: CourseRule) {}
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly courseRule: CourseRule,
+		injectionService: AuthorizationInjectionService
+	) {
+		injectionService.injectAuthorizationRule(this);
+	}
 
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof CourseGroup;

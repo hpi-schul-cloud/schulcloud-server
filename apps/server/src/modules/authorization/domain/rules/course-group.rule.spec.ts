@@ -6,10 +6,12 @@ import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { AuthorizationInjectionService } from '../service';
 
 describe('CourseGroupRule', () => {
 	let service: CourseGroupRule;
 	let authorizationHelper: AuthorizationHelper;
+	let injectionService: AuthorizationInjectionService;
 	let courseRule: CourseRule;
 	let user: User;
 	let entity: CourseGroup;
@@ -21,11 +23,12 @@ describe('CourseGroupRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, CourseRule, CourseGroupRule],
+			providers: [AuthorizationHelper, CourseRule, CourseGroupRule, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(CourseGroupRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 		courseRule = await module.get(CourseRule);
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		user = userFactory.build({ roles: [role] });
@@ -37,6 +40,12 @@ describe('CourseGroupRule', () => {
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
 	});
 
 	describe('Action.read', () => {

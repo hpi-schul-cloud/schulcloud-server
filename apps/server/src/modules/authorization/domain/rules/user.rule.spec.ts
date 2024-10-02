@@ -5,6 +5,7 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { UserRule } from './user.rule';
+import { AuthorizationInjectionService } from '../service';
 
 describe('UserRule', () => {
 	let service: UserRule;
@@ -12,6 +13,7 @@ describe('UserRule', () => {
 	let user: User;
 	let entity: User;
 	let role: Role;
+	let injectionService: AuthorizationInjectionService;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -20,16 +22,23 @@ describe('UserRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, UserRule],
+			providers: [AuthorizationHelper, UserRule, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(UserRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	beforeEach(() => {
 		role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		user = userFactory.build({ roles: [role] });
+	});
+
+	describe('constructor', () => {
+		it('should inject into AuthorizationInjectionService', () => {
+			expect(injectionService.getAuthorizationRules()).toContain(service);
+		});
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
