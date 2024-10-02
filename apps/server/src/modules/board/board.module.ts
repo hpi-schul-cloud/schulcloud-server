@@ -25,7 +25,6 @@ import {
 import {
 	BoardContextService,
 	BoardNodeCopyService,
-	BoardNodeCreateHooksService,
 	BoardNodeDeleteHooksService,
 	ColumnBoardCopyService,
 	ColumnBoardLinkService,
@@ -57,7 +56,6 @@ import {
 		BoardNodeFactory,
 		BoardNodeCopyService,
 		BoardCommonToolService,
-		BoardNodeCreateHooksService,
 		BoardNodeDeleteHooksService,
 		ColumnBoardService,
 		ContentElementUpdateService,
@@ -77,7 +75,6 @@ import {
 		BoardNodeService,
 		BoardCommonToolService,
 		ColumnBoardService,
-		BoardNodeCreateHooksService,
 	],
 })
 export class BoardModule {}
