@@ -1,5 +1,5 @@
 import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
-
+import { MediaSourceEntity } from '@modules/user-license/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';
@@ -40,6 +40,7 @@ export interface ExternalToolEntityProps {
 	isPreferred: boolean;
 
 	iconName?: string;
+	//mediaSource?: MediaSourceEntity;
 }
 
 @Entity({ tableName: 'external-tools' })
@@ -89,6 +90,8 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	iconName?: string;
+//	@Embedded(() => MediaSourceEntity, { nullable: true, object: true })
+	//mediaSource?: MediaSourceEntity;
 
 	constructor(props: ExternalToolEntityProps) {
 		super();
@@ -110,5 +113,6 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.medium = props.medium;
 		this.isPreferred = props.isPreferred;
 		this.iconName = props.iconName;
+	//	this.mediaSource = props.mediaSource;
 	}
 }

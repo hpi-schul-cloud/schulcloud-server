@@ -1,4 +1,6 @@
 import { DomainObject } from '@shared/domain/domain-object';
+import { MediaSourceOauthConfig } from './media-source-oauth-config';
+import { MediaSourceDataFormat } from '../enum';
 
 export interface MediaSourceProps {
 	id: string;
@@ -6,6 +8,10 @@ export interface MediaSourceProps {
 	name?: string;
 
 	sourceId: string;
+
+	format?: MediaSourceDataFormat;
+
+	config?: MediaSourceOauthConfig;
 }
 
 export class MediaSource extends DomainObject<MediaSourceProps> {
@@ -15,5 +21,13 @@ export class MediaSource extends DomainObject<MediaSourceProps> {
 
 	get sourceId(): string {
 		return this.props.sourceId;
+	}
+
+	get format(): MediaSourceDataFormat | undefined {
+		return this.props.format;
+	}
+
+	get config(): MediaSourceOauthConfig | undefined {
+		return this.props.config;
 	}
 }

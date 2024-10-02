@@ -7,6 +7,8 @@ export class MediaSourceMapper {
 		const entityProps: EntityData<MediaSourceEntity> = {
 			name: entityDO.name,
 			sourceId: entityDO.sourceId,
+			config: entityDO.config,
+			format: entityDO.format,
 		};
 
 		return entityProps;
@@ -17,6 +19,8 @@ export class MediaSourceMapper {
 			id: entity.id,
 			name: entity.name,
 			sourceId: entity.sourceId,
+			config: entity.config,
+			format: entity.format,
 		});
 
 		return domainObject;

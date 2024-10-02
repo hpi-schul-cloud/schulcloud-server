@@ -20,6 +20,8 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 				id: entity.mediaSource.id,
 				name: entity.mediaSource.name,
 				sourceId: entity.mediaSource.sourceId,
+				format: entity.mediaSource.format,
+				config: entity.mediaSource.config,
 			});
 		}
 
