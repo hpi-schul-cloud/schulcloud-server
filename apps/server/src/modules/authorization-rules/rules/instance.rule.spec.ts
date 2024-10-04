@@ -3,10 +3,13 @@ import { instanceFactory } from '@modules/instance/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext } from '../type';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 import { InstanceRule } from './instance.rule';
-import { AuthorizationInjectionService } from '../service';
 
 describe(InstanceRule.name, () => {
 	let module: TestingModule;

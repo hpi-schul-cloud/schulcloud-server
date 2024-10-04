@@ -1,9 +1,13 @@
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '../type';
-import { AuthorizationInjectionService } from '../service';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 
 @Injectable()
 export class SystemRule implements Rule<System> {

@@ -1,10 +1,14 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '../type';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
-import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class LessonRule implements Rule<LessonEntity> {

@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { Group } from '@src/modules/group';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { AuthorizationContext, Rule } from '../type';
-import { AuthorizationInjectionService } from '../service';
+import {
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 
 @Injectable()
-export class GroupRule implements Rule<Group> {
+export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -15,15 +18,15 @@ export class GroupRule implements Rule<Group> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched: boolean = object instanceof Group;
+		const isMatched: boolean = object instanceof UserLoginMigrationDO;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: Group, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: UserLoginMigrationDO, context: AuthorizationContext): boolean {
 		const hasPermission: boolean =
 			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
-			(object.organizationId ? user.school.id === object.organizationId : true);
+			user.school.id === entity.schoolId;
 
 		return hasPermission;
 	}

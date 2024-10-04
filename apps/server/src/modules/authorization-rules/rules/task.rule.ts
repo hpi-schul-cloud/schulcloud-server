@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Task, User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '../type';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
-import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class TaskRule implements Rule<Task> {

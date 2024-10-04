@@ -10,6 +10,7 @@ import { AccountApiModule } from '@modules/account/account-api.module';
 import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceApiModule } from '@modules/authorization/authorization-reference.api.module';
+import { AuthorizationRulesModule } from '@modules/authorization-rules';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
@@ -56,6 +57,7 @@ const serverModules = [
 	AuthenticationApiModule,
 	AuthGuardModule,
 	AuthorizationReferenceApiModule,
+	AuthorizationRulesModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,

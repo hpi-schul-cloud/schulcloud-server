@@ -12,10 +12,12 @@ import {
 	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationContextBuilder } from '../mapper';
-import { AuthorizationHelper } from '../service/authorization.helper';
+import {
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 import { SchoolSystemOptionsRule } from './school-system-options.rule';
-import { AuthorizationInjectionService } from '../service';
 
 describe(SchoolSystemOptionsRule.name, () => {
 	let module: TestingModule;

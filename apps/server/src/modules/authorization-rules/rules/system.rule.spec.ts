@@ -6,10 +6,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { schoolEntityFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '../mapper';
-import { AuthorizationHelper } from '../service/authorization.helper';
+import {
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 import { SystemRule } from './system.rule';
-import { AuthorizationInjectionService } from '../service';
 
 describe(SystemRule.name, () => {
 	let module: TestingModule;

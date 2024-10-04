@@ -2,10 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action } from '../type';
-import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
 import { UserRule } from './user.rule';
-import { AuthorizationInjectionService } from '../service';
 
 describe('UserRule', () => {
 	let service: UserRule;

@@ -10,14 +10,17 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext } from '../type';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
-import { AuthorizationInjectionService } from '../service';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });

@@ -1,9 +1,13 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Submission, User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '../type';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 import { TaskRule } from './task.rule';
-import { AuthorizationInjectionService } from '../service';
 
 @Injectable()
 export class SubmissionRule implements Rule<Submission> {

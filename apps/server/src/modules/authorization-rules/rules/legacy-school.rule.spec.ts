@@ -2,10 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, legacySchoolDoFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action } from '../type';
-import { AuthorizationHelper } from '../service/authorization.helper';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@src/modules/authorization';
 import { LegacySchoolRule } from './legacy-school.rule';
-import { AuthorizationInjectionService } from '../service';
 
 describe('LegacySchoolRule', () => {
 	let service: LegacySchoolRule;

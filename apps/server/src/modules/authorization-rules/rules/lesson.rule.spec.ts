@@ -11,13 +11,16 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationContextBuilder } from '../mapper';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action, AuthorizationContext } from '../type';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
-import { AuthorizationInjectionService } from '../service';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 
 describe('LessonRule', () => {
 	let rule: LessonRule;

@@ -2,10 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '../mapper';
-import { AuthorizationHelper } from '../service/authorization.helper';
+import {
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@src/modules/authorization';
 import { SchoolRule } from './school.rule';
-import { AuthorizationInjectionService } from '../service';
 
 describe('SchoolRule', () => {
 	let rule: SchoolRule;

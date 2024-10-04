@@ -14,8 +14,6 @@ export {
 	ForbiddenLoggableException,
 	AuthorizationInjectionService,
 	Rule,
-	// For the use in feathers
-	SystemRule,
 } from './domain';
 // Should not used anymore
 export { FeathersAuthorizationService } from './feathers';

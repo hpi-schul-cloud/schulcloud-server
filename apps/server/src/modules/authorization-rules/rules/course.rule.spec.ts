@@ -3,10 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory as courseEntityFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '../service/authorization.helper';
-import { Action } from '../type';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
 import { CourseRule } from './course.rule';
-import { AuthorizationInjectionService } from '../service/authorization-injection.service';
 
 describe('CourseRule', () => {
 	let module: TestingModule;

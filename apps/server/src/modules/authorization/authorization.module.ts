@@ -3,22 +3,6 @@ import { Module } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationHelper, AuthorizationService, RuleManager, AuthorizationInjectionService } from './domain';
-import {
-	CourseGroupRule,
-	CourseRule,
-	GroupRule,
-	InstanceRule,
-	LegacySchoolRule,
-	LessonRule,
-	SchoolRule,
-	SchoolSystemOptionsRule,
-	SubmissionRule,
-	SystemRule,
-	TaskRule,
-	TeamRule,
-	UserLoginMigrationRule,
-	UserRule,
-} from './domain/rules';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 
 @Module({
@@ -31,28 +15,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		UserRepo,
 		RuleManager,
 		AuthorizationHelper,
-		// rules
-		CourseGroupRule,
-		CourseRule,
-		GroupRule,
-		LessonRule,
-		SchoolRule,
-		SubmissionRule,
-		TaskRule,
-		TeamRule,
-		UserRule,
-		UserLoginMigrationRule,
-		LegacySchoolRule,
-		SystemRule,
-		SchoolSystemOptionsRule,
-		InstanceRule,
 	],
-	exports: [
-		FeathersAuthorizationService,
-		AuthorizationService,
-		SystemRule, // Why export? This is a no go!
-		AuthorizationInjectionService,
-		AuthorizationHelper,
-	],
+	exports: [FeathersAuthorizationService, AuthorizationService, AuthorizationInjectionService, AuthorizationHelper],
 })
 export class AuthorizationModule {}
