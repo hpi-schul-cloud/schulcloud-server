@@ -1,22 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InstanceService } from '@modules/instance';
-import { LessonService } from '@modules/lesson';
-import { ContextExternalToolAuthorizableService, ExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LegacySchoolRepo,
-	SchoolExternalToolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	UserRepo,
-} from '@shared/repo';
+import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { TeamAuthorisableService } from '@src/modules/teams';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationInjectionService } from './authorization-injection.service';
@@ -29,12 +18,7 @@ describe('reference.loader', () => {
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
-	let lessonService: DeepMocked<LessonService>;
-	let teamsAuthorisableService: DeepMocked<TeamAuthorisableService>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
-	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
-	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
 	let instanceService: DeepMocked<InstanceService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
@@ -69,28 +53,8 @@ describe('reference.loader', () => {
 					useValue: createMock<LegacySchoolRepo>(),
 				},
 				{
-					provide: LessonService,
-					useValue: createMock<LessonService>(),
-				},
-				{
-					provide: TeamAuthorisableService,
-					useValue: createMock<TeamAuthorisableService>(),
-				},
-				{
 					provide: SubmissionRepo,
 					useValue: createMock<SubmissionRepo>(),
-				},
-				{
-					provide: SchoolExternalToolRepo,
-					useValue: createMock<SchoolExternalToolRepo>(),
-				},
-				{
-					provide: ContextExternalToolAuthorizableService,
-					useValue: createMock<ContextExternalToolAuthorizableService>(),
-				},
-				{
-					provide: ExternalToolAuthorizableService,
-					useValue: createMock<ExternalToolAuthorizableService>(),
 				},
 				{
 					provide: InstanceService,
@@ -106,12 +70,7 @@ describe('reference.loader', () => {
 		courseGroupRepo = await module.get(CourseGroupRepo);
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(LegacySchoolRepo);
-		lessonService = await module.get(LessonService);
-		teamsAuthorisableService = await module.get(TeamAuthorisableService);
 		submissionRepo = await module.get(SubmissionRepo);
-		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
-		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
 		instanceService = await module.get(InstanceService);
 	});
 
@@ -184,42 +143,10 @@ describe('reference.loader', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.School, schoolRepo);
 		});
 
-		it('should inject lesson service', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Lesson, lessonService);
-		});
-
-		it('should inject teams repo', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(
-				AuthorizableReferenceType.Team,
-				teamsAuthorisableService
-			);
-		});
-
 		it('should inject submission repo', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.Submission,
 				submissionRepo
-			);
-		});
-
-		it('should inject school external tool repo', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(
-				AuthorizableReferenceType.SchoolExternalToolEntity,
-				schoolExternalToolRepo
-			);
-		});
-
-		it('should inject context external tool authorizable service', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(
-				AuthorizableReferenceType.ContextExternalToolEntity,
-				contextExternalToolAuthorizableService
-			);
-		});
-
-		it('should inject external tool authorizable service', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(
-				AuthorizableReferenceType.ExternalTool,
-				externalToolAuthorizableService
 			);
 		});
 
