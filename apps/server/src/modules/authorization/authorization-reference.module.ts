@@ -1,5 +1,4 @@
 import { InstanceModule } from '@modules/instance';
-import { LessonModule } from '@modules/lesson';
 import { Module } from '@nestjs/common';
 import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -13,7 +12,7 @@ import { TeamsModule } from '../teams';
  * Avoid using this module and load the needed data in your use cases and then use the normal AuthorizationModule!
  */
 @Module({
-	imports: [AuthorizationModule, LessonModule, TeamsModule, LoggerModule, InstanceModule],
+	imports: [AuthorizationModule, TeamsModule, LoggerModule, InstanceModule],
 	providers: [
 		AuthorizationHelper,
 		ReferenceLoader,
