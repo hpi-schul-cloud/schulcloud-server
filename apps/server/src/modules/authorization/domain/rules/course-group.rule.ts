@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CourseGroup, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
-import { CourseRule } from './course.rule';
-import { AuthorizationInjectionService } from '../service';
+import { AuthorizationInjectionService, AuthorizationService } from '../service';
 
 @Injectable()
 export class CourseGroupRule implements Rule<CourseGroup> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
-		private readonly courseRule: CourseRule,
+		private readonly authorisationService: AuthorizationService,
 		injectionService: AuthorizationInjectionService
 	) {
 		injectionService.injectAuthorizationRule(this);
@@ -27,7 +26,7 @@ export class CourseGroupRule implements Rule<CourseGroup> {
 		const hasAllPermissions = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		const hasPermission =
 			this.authorizationHelper.hasAccessToEntity(user, object, ['students']) ||
-			this.courseRule.hasPermission(user, object.course, { action: Action.write, requiredPermissions: [] });
+			this.authorisationService.hasPermission(user, object.course, { action: Action.write, requiredPermissions: [] });
 
 		return hasAllPermissions && hasPermission;
 	}
