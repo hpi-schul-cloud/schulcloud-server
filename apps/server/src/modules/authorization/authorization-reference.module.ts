@@ -4,7 +4,6 @@ import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
-import { TeamsModule } from '../teams';
 
 /**
  * This module is part of an intermediate state. In the future it should be replaced by an AuthorizationApiModule.
@@ -12,7 +11,7 @@ import { TeamsModule } from '../teams';
  * Avoid using this module and load the needed data in your use cases and then use the normal AuthorizationModule!
  */
 @Module({
-	imports: [AuthorizationModule, TeamsModule, LoggerModule, InstanceModule],
+	imports: [AuthorizationModule, LoggerModule, InstanceModule],
 	providers: [
 		AuthorizationHelper,
 		ReferenceLoader,

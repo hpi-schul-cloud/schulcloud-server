@@ -18,7 +18,6 @@ export class ReferenceLoader {
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
-		private readonly teamAuthorisableService: TeamAuthorisableService,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly instanceService: InstanceService,
 		private readonly authorizationInjectionService: AuthorizationInjectionService
@@ -29,7 +28,6 @@ export class ReferenceLoader {
 		service.injectReferenceLoader(AuthorizableReferenceType.CourseGroup, this.courseGroupRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.User, this.userRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.School, this.schoolRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.Team, this.teamAuthorisableService);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Instance, this.instanceService);
 	}

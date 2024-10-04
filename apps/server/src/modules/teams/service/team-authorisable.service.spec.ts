@@ -3,10 +3,12 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory } from '@shared/testing';
 import { TeamAuthorisableService } from './team-authorisable.service';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 
 describe('team authorisable service', () => {
 	let module: TestingModule;
 	let service: TeamAuthorisableService;
+	let injectionService: AuthorizationInjectionService;
 
 	let teamsRepo: DeepMocked<TeamsRepo>;
 
@@ -20,11 +22,17 @@ describe('team authorisable service', () => {
 					provide: TeamsRepo,
 					useValue: createMock<TeamsRepo>(),
 				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		service = module.get(TeamAuthorisableService);
+		injectionService = module.get(AuthorizationInjectionService);
 		teamsRepo = module.get(TeamsRepo);
+	});
+
+	it('should inject intself into authorisation', () => {
+		expect(injectionService.getReferenceLoader(AuthorizableReferenceType.Team)).toEqual(service);
 	});
 
 	it('should return entity', async () => {

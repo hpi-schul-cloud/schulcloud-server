@@ -20,10 +20,7 @@ describe(ExternalToolAuthorizableService.name, () => {
 					provide: ExternalToolRepo,
 					useValue: createMock<ExternalToolRepo>(),
 				},
-				{
-					provide: AuthorizationInjectionService,
-					useValue: createMock<AuthorizationInjectionService>(),
-				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
@@ -42,10 +39,7 @@ describe(ExternalToolAuthorizableService.name, () => {
 
 	describe('constructor', () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
-			expect(authorizationInjectionService.injectReferenceLoader).toHaveBeenCalledWith(
-				AuthorizableReferenceType.ExternalTool,
-				service
-			);
+			expect(authorizationInjectionService.getReferenceLoader(AuthorizableReferenceType.ExternalTool)).toEqual(service);
 		});
 	});
 
