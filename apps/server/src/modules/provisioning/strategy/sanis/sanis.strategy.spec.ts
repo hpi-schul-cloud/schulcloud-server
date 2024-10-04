@@ -1,13 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	SchulconnexGruppenResponse,
+	SchulconnexPoliciesInfoLicenseResponse,
+	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
-	schulconnexResponseFactory,
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
-import { SchulconnexPoliciesInfoResponse } from '@infra/schulconnex-client/response';
-import { schulconnexPoliciesInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-policies-info-response-factory';
+import {
+	schulconnexPoliciesInfoErrorResponseFactory,
+	schulconnexPoliciesInfoLicenseResponseFactory,
+	schulconnexPoliciesInfoResponseFactory,
+	schulconnexResponseFactory,
+} from '@infra/schulconnex-client/testing';
 import { GroupService } from '@modules/group';
 import { GroupTypes } from '@modules/group/domain';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -27,6 +32,7 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningSystemDto,
 } from '../../dto';
+import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import {
 	SchulconnexCourseSyncService,
@@ -170,12 +176,13 @@ describe(SanisProvisioningStrategy.name, () => {
 						},
 					}),
 				];
-				const schulconnexLizenzInfoResponses: SchulconnexPoliciesInfoResponse[] =
-					schulconnexPoliciesInfoResponseFactory.buildList(1);
-				const schulconnexLizenzInfoResponse = schulconnexLizenzInfoResponses[0];
+				const schulconnexPoliciesInfoLicenseResponse: SchulconnexPoliciesInfoLicenseResponse =
+					schulconnexPoliciesInfoLicenseResponseFactory.build();
 				const licenses: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses([
-					schulconnexLizenzInfoResponse,
+					schulconnexPoliciesInfoLicenseResponse,
 				]);
+				const schulconnexPoliciesInfoResponse: SchulconnexPoliciesInfoResponse =
+					schulconnexPoliciesInfoResponseFactory.build({ data: [schulconnexPoliciesInfoLicenseResponse] });
 
 				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
@@ -185,7 +192,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
 				validationFunction.mockResolvedValueOnce([]);
 				validationFunction.mockResolvedValueOnce([]);
-				schulconnexRestClient.getPoliciesInfo.mockResolvedValueOnce(schulconnexLizenzInfoResponses);
+				schulconnexRestClient.getPoliciesInfo.mockResolvedValueOnce(schulconnexPoliciesInfoResponse);
 				validationFunction.mockResolvedValueOnce([]);
 
 				return {
@@ -196,7 +203,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					groups,
 					licenses,
 					schulconnexResponse,
-					schulconnexLizenzInfoResponse,
+					schulconnexPoliciesInfoResponse,
 				};
 			};
 
@@ -235,11 +242,11 @@ describe(SanisProvisioningStrategy.name, () => {
 			});
 
 			it('should validate the response for licenses', async () => {
-				const { input, schulconnexLizenzInfoResponse } = setup();
+				const { input, schulconnexPoliciesInfoResponse } = setup();
 
 				await strategy.getData(input);
 
-				expect(validationFunction).toHaveBeenCalledWith(schulconnexLizenzInfoResponse, {
+				expect(validationFunction).toHaveBeenCalledWith(schulconnexPoliciesInfoResponse, {
 					always: true,
 					forbidUnknownValues: false,
 				});
@@ -400,7 +407,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				};
 			};
 
-			it('should not call getLizenzInfo', async () => {
+			it('should not call getPoliciesInfo', async () => {
 				const { input } = setup();
 
 				await strategy.getData(input);
@@ -512,6 +519,69 @@ describe(SanisProvisioningStrategy.name, () => {
 				const result: OauthDataDto = await strategy.getData(input);
 
 				expect(result.externalUser.roles).toEqual(expect.arrayContaining([RoleName.ADMINISTRATOR, RoleName.TEACHER]));
+			});
+		});
+
+		describe('when policies-info returns at least one error response', () => {
+			const setup = () => {
+				const provisioningUrl = 'sanisProvisioningUrl';
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+				});
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: 'schoolName',
+				});
+
+				const schulconnexPoliciesInfoLicenseResponse = schulconnexPoliciesInfoLicenseResponseFactory.build();
+				const schulconnexPoliciesInfoErrorResponse = schulconnexPoliciesInfoErrorResponseFactory.build();
+
+				const schulconnexPoliciesInfoResponse: SchulconnexPoliciesInfoResponse =
+					schulconnexPoliciesInfoResponseFactory.build({
+						data: [schulconnexPoliciesInfoLicenseResponse, schulconnexPoliciesInfoErrorResponse],
+					});
+
+				const licenses: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses([
+					schulconnexPoliciesInfoLicenseResponse,
+				]);
+
+				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
+				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
+				mapper.mapToExternalUserDto.mockReturnValue(user);
+				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				schulconnexRestClient.getPoliciesInfo.mockResolvedValueOnce(schulconnexPoliciesInfoResponse);
+				validationFunction.mockResolvedValue([]);
+
+				return { schulconnexPoliciesInfoErrorResponse, input, licenses };
+			};
+
+			it('should log the error response', async () => {
+				const { input, schulconnexPoliciesInfoErrorResponse } = setup();
+
+				await strategy.getData(input);
+
+				expect(logger.warning).toHaveBeenCalledWith(
+					new PoliciesInfoErrorResponseLoggable(schulconnexPoliciesInfoErrorResponse)
+				);
+			});
+
+			it('should return the correct licenses', async () => {
+				const { input, licenses } = setup();
+
+				const result: OauthDataDto = await strategy.getData(input);
+
+				expect(result.externalLicenses).toEqual(licenses);
+				expect(result.externalLicenses).toHaveLength(1);
 			});
 		});
 
