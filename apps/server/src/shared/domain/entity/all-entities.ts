@@ -10,6 +10,7 @@ import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomEntity } from '@modules/room/repo/entity';
+import { RoomMemberEntity } from '@src/modules/room-member/repo/entity/room-member.entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
@@ -75,6 +76,7 @@ export const ALL_ENTITIES = [
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
+	RoomMemberEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,
