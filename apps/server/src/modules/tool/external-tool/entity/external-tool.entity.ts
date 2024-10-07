@@ -1,5 +1,4 @@
 import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
-import { MediaSourceEntity } from '@modules/user-license/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';

@@ -54,6 +54,8 @@ describe(MediaSourceRepo.name, () => {
 						id: mediaSource.id,
 						name: mediaSource.name,
 						sourceId: mediaSource.sourceId,
+						format: mediaSource.format,
+						config: mediaSource.config,
 					})
 				);
 			});
