@@ -46,8 +46,6 @@ export class ExternalToolService {
 			toUpdate.config.secret = this.encryptionService.encrypt(toUpdate.config.secret);
 		}
 
-		console.log(toUpdate);
-
 		await this.updateOauth2ToolConfig(toUpdate);
 
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);

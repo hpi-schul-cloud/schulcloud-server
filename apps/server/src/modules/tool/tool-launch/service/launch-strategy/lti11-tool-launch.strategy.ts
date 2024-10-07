@@ -66,7 +66,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const ltiRoles: LtiRole[] = LtiRoleMapper.mapRolesToLtiRoles(roleNames);
 
 		const decrypted = this.encryptionService.decrypt(config.secret);
-		console.log(decrypted);
 
 		const additionalProperties: PropertyData[] = [
 			new PropertyData({ name: 'key', value: config.key }),
