@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
+import { ToolContextType } from '@modules/tool/common/enum';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
@@ -53,7 +54,9 @@ describe(SchoolExternalToolService.name, () => {
 	describe('findSchoolExternalTools', () => {
 		describe('when called with query', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.COURSE],
+				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					name: undefined,
 					status: undefined,
@@ -101,6 +104,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
+						restrictToContexts: externalTool.restrictToContexts,
 					}),
 				]);
 			});
