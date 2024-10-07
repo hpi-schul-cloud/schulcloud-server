@@ -1,9 +1,10 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
@@ -32,7 +33,8 @@ export class ExternalToolUc {
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
 		private readonly datasheetPdfService: DatasheetPdfService,
-		private readonly externalToolImageService: ExternalToolImageService
+		private readonly externalToolImageService: ExternalToolImageService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
 	public async createExternalTool(
@@ -41,6 +43,10 @@ export class ExternalToolUc {
 		jwt: string
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		if (ExternalTool.isLti11Config(externalToolCreate.config) && externalToolCreate.config.secret) {
+			externalToolCreate.config.secret = this.encryptionService.encrypt(externalToolCreate.config.secret);
+		}
 
 		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate, jwt);
 
