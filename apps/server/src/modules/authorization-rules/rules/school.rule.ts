@@ -6,6 +6,7 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@src/modules/authorization';
+import { Permission } from '@shared/domain/interface/permission.enum';
 import { School } from '@src/modules/school/domain/do';
 
 @Injectable()
@@ -24,11 +25,13 @@ export class SchoolRule implements Rule<School> {
 	}
 
 	public hasPermission(user: User, school: School, context: AuthorizationContext): boolean {
-		const hasRequiredPermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
+		let hasPermission = false;
 		const isUsersSchool = user.school.id === school.id;
-
-		const hasPermission = hasRequiredPermissions && isUsersSchool;
+		if (isUsersSchool) {
+			hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		} else {
+			hasPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.SCHOOL_EDIT_ALL]);
+		}
 
 		return hasPermission;
 	}
