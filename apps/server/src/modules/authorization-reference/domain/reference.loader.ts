@@ -4,9 +4,12 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { InstanceService } from '../../../instance';
-import { AuthorizableReferenceType, AuthorizationLoaderService } from '../type';
-import { AuthorizationInjectionService } from './authorization-injection.service';
+import {
+	AuthorizationInjectionService,
+	AuthorizationLoaderService,
+	AuthorizableReferenceType,
+} from '@src/modules/authorization/domain';
+import { InstanceService } from '../../instance';
 
 @Injectable()
 export class ReferenceLoader {

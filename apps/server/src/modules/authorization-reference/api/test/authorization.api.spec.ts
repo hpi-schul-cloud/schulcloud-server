@@ -4,7 +4,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizableReferenceType, AuthorizationContext, AuthorizationContextBuilder } from '../../domain';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizableReferenceType,
+} from '@modules/authorization';
 import { AuthorizationReponseMapper } from '../mapper';
 import { AuthorizationBodyParams } from '../dto';
 

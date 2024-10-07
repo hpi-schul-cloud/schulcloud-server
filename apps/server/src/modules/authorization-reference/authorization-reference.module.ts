@@ -2,8 +2,8 @@ import { InstanceModule } from '@modules/instance';
 import { Module } from '@nestjs/common';
 import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from './authorization.module';
-import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
+import { AuthorizationModule } from '@modules/authorization';
+import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 
 /**
  * This module is part of an intermediate state. In the future it should be replaced by an AuthorizationApiModule.
@@ -13,7 +13,6 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 @Module({
 	imports: [AuthorizationModule, LoggerModule, InstanceModule],
 	providers: [
-		AuthorizationHelper,
 		ReferenceLoader,
 		UserRepo,
 		CourseRepo,

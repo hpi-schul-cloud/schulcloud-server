@@ -9,7 +9,6 @@ export {
 	AuthorizationHelper,
 	AuthorizationLoaderService,
 	AuthorizationLoaderServiceGeneric,
-	AuthorizationReferenceService,
 	AuthorizationService,
 	ForbiddenLoggableException,
 	AuthorizationInjectionService,

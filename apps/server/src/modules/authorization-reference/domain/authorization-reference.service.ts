@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ForbiddenLoggableException } from '../error';
-import { AuthorizableReferenceType, AuthorizationContext } from '../type';
-import { AuthorizationService } from './authorization.service';
+import {
+	AuthorizationContext,
+	AuthorizationService,
+	ForbiddenLoggableException,
+	AuthorizableReferenceType,
+} from '@src/modules/authorization';
 import { ReferenceLoader } from './reference.loader';
 
 /**

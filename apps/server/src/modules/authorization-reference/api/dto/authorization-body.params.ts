@@ -1,8 +1,8 @@
-import { Permission } from '@shared/domain/interface';
+import { Action, AuthorizationContext, AuthorizableReferenceType } from '@modules/authorization';
 import { ApiProperty } from '@nestjs/swagger';
+import { Permission } from '@shared/domain/interface';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsMongoId, ValidateNested } from 'class-validator';
-import { Action, AuthorizableReferenceType, AuthorizationContext } from '../../domain';
 
 class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Action)

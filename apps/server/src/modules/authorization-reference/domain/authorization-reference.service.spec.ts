@@ -3,11 +3,13 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationService } from '@modules/authorization';
-import { AuthorizableReferenceType } from '../type';
+import {
+	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+	ForbiddenLoggableException,
+} from '@modules/authorization';
 import { ReferenceLoader } from './reference.loader';
-import { AuthorizationContextBuilder } from '../mapper';
-import { ForbiddenLoggableException } from '../error';
 import { AuthorizationReferenceService } from './authorization-reference.service';
 
 describe('AuthorizationReferenceService', () => {
