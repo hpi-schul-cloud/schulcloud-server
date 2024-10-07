@@ -1,8 +1,8 @@
-import { SchulconnexClientModule } from '@infra/schulconnex-client';
+import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { OauthModule } from '@modules/oauth';
+import { OauthModule } from '@modules/oauth/oauth.module';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
@@ -11,9 +11,9 @@ import { Module } from '@nestjs/common';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { ImportUserController } from './controller/import-user.controller';
+import { ImportUserRepo } from './repo';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
 import { UserImportFetchUc, UserImportUc } from './uc';
-import { ImportUserRepo } from './repo';
 
 @Module({
 	imports: [

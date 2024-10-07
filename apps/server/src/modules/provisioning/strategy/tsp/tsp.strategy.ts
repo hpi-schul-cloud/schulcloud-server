@@ -12,9 +12,9 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningDto,
 } from '../../dto';
+import { BadDataLoggableException } from '../../loggable';
 import { TspProvisioningService } from '../../service/tsp-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
-import { BadDataLoggableException } from '../loggable';
 import { TspJwtPayload } from './tsp.jwt.payload';
 
 @Injectable()
