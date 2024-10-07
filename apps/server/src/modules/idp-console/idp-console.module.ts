@@ -1,6 +1,6 @@
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { SchulconnexClientModule } from '@infra/schulconnex-client';
+import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { defaultMikroOrmOptions } from '@modules/server';
 import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';

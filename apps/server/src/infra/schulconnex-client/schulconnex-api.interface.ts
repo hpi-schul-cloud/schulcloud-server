@@ -6,5 +6,5 @@ export interface SchulconnexApiInterface {
 
 	getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SchulconnexResponse[]>;
 
-	getPoliciesInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexPoliciesInfoResponse[]>;
+	getPoliciesInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexPoliciesInfoResponse>;
 }

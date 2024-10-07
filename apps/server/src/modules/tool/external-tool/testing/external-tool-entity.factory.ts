@@ -1,4 +1,7 @@
+import { DeepPartial } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { fileRecordFactory } from '@shared/testing';
+import { BaseFactory } from '@shared/testing/factory/base.factory';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -6,7 +9,7 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '@modules/tool/common/enum';
+} from '../../common/enum';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -15,10 +18,7 @@ import {
 	ExternalToolMediumEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-} from '@modules/tool/external-tool/entity';
-import { fileRecordFactory } from '@shared/testing';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+} from '../entity';
 
 export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, ExternalToolEntityProps> {
 	withName(name: string): this {
@@ -126,6 +126,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 				uploadUrl: 'https://uploadurl.com',
 				fileRecord: fileRecordFactory.build(),
 			},
+			isPreferred: false,
 		};
 	}
 );

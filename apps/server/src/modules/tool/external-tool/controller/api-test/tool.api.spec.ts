@@ -91,6 +91,8 @@ describe('ToolController (API)', () => {
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
 			thumbnailUrl: 'https://link.to-my-thumbnail.com',
+			isPreferred: true,
+			iconName: 'mdiAlert',
 		};
 
 		describe('when valid data is given', () => {
@@ -161,6 +163,8 @@ describe('ToolController (API)', () => {
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
 					thumbnailUrl: postParams.thumbnailUrl,
+					isPreferred: true,
+					iconName: 'mdiAlert',
 				});
 			});
 		});
@@ -259,6 +263,7 @@ describe('ToolController (API)', () => {
 				mediaSourceId: 'source:1',
 			},
 			thumbnailUrl: 'https://link.to-my-thumbnail.com',
+			isPreferred: false,
 		};
 
 		describe('when valid data is given', () => {
@@ -506,6 +511,7 @@ describe('ToolController (API)', () => {
 				mediumId: 'mediumId',
 				publisher: 'publisher',
 			},
+			isPreferred: false,
 		};
 
 		describe('when valid data is given', () => {
@@ -587,6 +593,7 @@ describe('ToolController (API)', () => {
 						publisher: params.medium?.publisher,
 					},
 					thumbnailUrl: 'https://link.to-my-thumbnail2.com',
+					isPreferred: false,
 				});
 			});
 		});

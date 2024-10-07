@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
-import { SchulconnexPoliciesInfoResponse } from '@infra/schulconnex-client/response';
+import { SchulconnexPoliciesInfoResponse, SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
@@ -27,8 +26,8 @@ import { ErrorResponse } from '@src/core/error/dto';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
-import { Response } from 'supertest';
 import { DeepPartial } from 'fishery';
+import { Response } from 'supertest';
 import { UserLoginMigrationUc } from '../../uc';
 import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
 

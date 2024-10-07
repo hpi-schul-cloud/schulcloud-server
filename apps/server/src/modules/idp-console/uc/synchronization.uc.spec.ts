@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchulconnexResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import {
 	Synchronization,
 	synchronizationFactory,

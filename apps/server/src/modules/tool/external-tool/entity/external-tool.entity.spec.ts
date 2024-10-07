@@ -60,6 +60,8 @@ describe('ExternalToolEntity', () => {
 				isHidden: true,
 				isDeactivated: false,
 				openNewTab: true,
+				isPreferred: true,
+				iconName: 'mdiAlert',
 			});
 			return {
 				externalToolEntity,

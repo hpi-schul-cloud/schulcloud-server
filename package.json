@@ -105,7 +105,7 @@
 		"nest:start:common-cartridge": "node dist/apps/server/apps/common-cartridge.app",
 		"nest:start:common-cartridge:dev": "nest start common-cartridge --watch --",
 		"nest:start:common-cartridge:debug": "nest start common-cartridge --debug --watch --",
-		"nest:start:sync":"npm run nest:start:console -- sync run",
+		"nest:start:sync": "npm run nest:start:console -- sync run",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest \"^((?!(\\.load)\\.spec\\.ts).)*\"",
 		"nest:test:unit": "jest \"^((?!(\\.api|\\.load)\\.spec\\.ts).)*\\.spec\\.ts$\"",
@@ -121,7 +121,9 @@
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
 		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization-client/authorization-api-client' -c 'openapitools-config.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'",
-		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'"
+		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'",
+		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
+		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
