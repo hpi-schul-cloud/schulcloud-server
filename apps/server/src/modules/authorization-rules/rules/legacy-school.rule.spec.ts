@@ -1,14 +1,8 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, legacySchoolDoFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@src/modules/authorization';
+import { legacySchoolDoFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
 import { LegacySchoolRule } from './legacy-school.rule';
 
 describe('LegacySchoolRule', () => {

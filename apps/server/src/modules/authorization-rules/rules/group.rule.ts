@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import { Group } from '@src/modules/group';
 import {
-	Action,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 	Rule,
 } from '@src/modules/authorization';
+import { Group } from '@src/modules/group';
 
 @Injectable()
 export class GroupRule implements Rule<Group> {

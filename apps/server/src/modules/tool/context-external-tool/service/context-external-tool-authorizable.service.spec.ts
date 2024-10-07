@@ -2,12 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { legacySchoolDoFactory } from '@shared/testing';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ContextExternalTool } from '../domain';
 import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
-import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 
 describe('ContextExternalToolAuthorizableService', () => {
 	let module: TestingModule;
@@ -24,10 +24,7 @@ describe('ContextExternalToolAuthorizableService', () => {
 					provide: ContextExternalToolRepo,
 					useValue: createMock<ContextExternalToolRepo>(),
 				},
-				{
-					provide: AuthorizationInjectionService,
-					useValue: createMock<AuthorizationInjectionService>(),
-				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
@@ -46,11 +43,7 @@ describe('ContextExternalToolAuthorizableService', () => {
 
 	describe('constructor', () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
-			new ContextExternalToolAuthorizableService(contextExternalToolRepo, injectionService);
-			expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(
-				AuthorizableReferenceType.ContextExternalToolEntity,
-				service
-			);
+			expect(injectionService.getReferenceLoader(AuthorizableReferenceType.ContextExternalToolEntity)).toBe(service);
 		});
 	});
 

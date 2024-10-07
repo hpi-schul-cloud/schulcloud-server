@@ -5,8 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { ExternalToolRule } from './external-tool.rule';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
+import { ExternalToolRule } from './external-tool.rule';
 
 describe(ExternalToolRule.name, () => {
 	let module: TestingModule;
@@ -25,10 +25,7 @@ describe(ExternalToolRule.name, () => {
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
-				{
-					provide: AuthorizationInjectionService,
-					useValue: createMock<AuthorizationInjectionService>(),
-				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
@@ -47,8 +44,7 @@ describe(ExternalToolRule.name, () => {
 
 	describe('constructor', () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
-			new ExternalToolRule(authorizationHelper, injectionService);
-			expect(injectionService.injectAuthorizationRule).toHaveBeenCalledWith(rule);
+			expect(injectionService.getAuthorizationRules()).toContain(rule);
 		});
 	});
 

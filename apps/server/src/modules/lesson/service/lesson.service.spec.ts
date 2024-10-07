@@ -15,9 +15,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
-import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 
 describe('LessonService', () => {
 	let lessonService: LessonService;

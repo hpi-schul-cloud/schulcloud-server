@@ -11,9 +11,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { CourseGroupRule } from './course-group.rule';
-import { CourseRule } from './course.rule';
-import { LessonRule } from './lesson.rule';
 import {
 	Action,
 	AuthorizationContext,
@@ -21,6 +18,9 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@src/modules/authorization';
+import { CourseGroupRule } from './course-group.rule';
+import { CourseRule } from './course.rule';
+import { LessonRule } from './lesson.rule';
 
 describe('LessonRule', () => {
 	let rule: LessonRule;

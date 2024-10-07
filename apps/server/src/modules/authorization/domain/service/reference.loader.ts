@@ -1,6 +1,4 @@
 // TODO fix modules circular dependency
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { TeamAuthorisableService } from '@src/modules/teams/service/team-authorisable.service';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';

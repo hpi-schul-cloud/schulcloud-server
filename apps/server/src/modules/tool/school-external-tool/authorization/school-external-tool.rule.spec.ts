@@ -1,3 +1,4 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
@@ -5,9 +6,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { SchoolExternalToolRule } from './school-external-tool.rule';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 describe('SchoolExternalToolRule', () => {
 	let service: SchoolExternalToolRule;
