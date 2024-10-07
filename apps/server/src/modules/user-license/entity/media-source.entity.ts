@@ -11,9 +11,9 @@ export interface MediaSourceEntityProps {
 
 	sourceId: string;
 
-	config: MediaSourceConfigEmbeddable;
+	config?: MediaSourceConfigEmbeddable;
 
-	format: MediaSourceDataFormat;
+	format?: MediaSourceDataFormat;
 }
 
 @Entity({ tableName: 'media-sources' })
@@ -36,9 +36,9 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	name?: string;
 
-	@Property()
-	format: MediaSourceDataFormat;
+	@Property({ nullable: true })
+	format?: MediaSourceDataFormat;
 
-	@Embedded(() => MediaSourceConfigEmbeddable, { object: true })
-	config: MediaSourceConfigEmbeddable;
+	@Embedded(() => MediaSourceConfigEmbeddable, { object: true, nullable: true })
+	config?: MediaSourceConfigEmbeddable;
 }
