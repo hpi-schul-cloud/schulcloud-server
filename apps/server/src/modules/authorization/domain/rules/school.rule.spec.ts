@@ -1,3 +1,4 @@
+import { Permission } from '@shared/domain/interface/permission.enum';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,11 +10,12 @@ import { SchoolRule } from './school.rule';
 describe('SchoolRule', () => {
 	let rule: SchoolRule;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
+	let module: TestingModule;
 
 	beforeAll(async () => {
 		await setupEntities();
 
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [SchoolRule, { provide: AuthorizationHelper, useValue: createMock<AuthorizationHelper>() }],
 		}).compile();
 
@@ -24,9 +26,18 @@ describe('SchoolRule', () => {
 	const setupSchoolAndUser = () => {
 		const school = schoolFactory.build();
 		const user = userFactory.build({ school: schoolEntityFactory.buildWithId(undefined, school.id) });
+		const superUser = userFactory.asSuperhero([Permission.SCHOOL_EDIT_ALL]).build();
 
-		return { school, user };
+		return { school, user, superUser };
 	};
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
 
 	describe('isApplicable', () => {
 		describe('when object is instance of School', () => {
@@ -88,7 +99,7 @@ describe('SchoolRule', () => {
 				const { user, school } = setupSchoolAndUser();
 				const context = AuthorizationContextBuilder.read([]);
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationHelper.hasAllPermissions.mockReturnValue(false);
 
 				return { user, school, context };
 			};
@@ -108,7 +119,7 @@ describe('SchoolRule', () => {
 				const someOtherSchool = schoolFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
 
 				return { user, someOtherSchool, context };
 			};
@@ -119,6 +130,26 @@ describe('SchoolRule', () => {
 				const result = rule.hasPermission(user, someOtherSchool, context);
 
 				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the user has super powers', () => {
+			const setup = () => {
+				const { superUser } = setupSchoolAndUser();
+				const someOtherSchool = schoolFactory.build();
+				const context = AuthorizationContextBuilder.read([]);
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return { superUser, someOtherSchool, context };
+			};
+
+			it('should return true', () => {
+				const { superUser, someOtherSchool, context } = setup();
+
+				const result = rule.hasPermission(superUser, someOtherSchool, context);
+
+				expect(result).toBe(true);
 			});
 		});
 	});
