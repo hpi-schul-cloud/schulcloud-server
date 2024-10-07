@@ -3,17 +3,27 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
-import { CourseRoomsApi, SingleColumnBoardResponse } from './room-api-client';
+import { CourseRoomsApi } from './room-api-client';
+import { RoomBoardDto } from './dto/room-board.dto';
 
 @Injectable()
 export class CourseRoomsClientAdapter {
 	constructor(private readonly courseRoomsApi: CourseRoomsApi, @Inject(REQUEST) private request: Request) {}
 
-	public async getRoomBoardByCourseId(roomId: string): Promise<SingleColumnBoardResponse> {
+	public async getRoomBoardByCourseId(roomId: string): Promise<RoomBoardDto> {
 		const options = this.createOptionParams();
 		const response = await this.courseRoomsApi.courseRoomsControllerGetRoomBoard(roomId, options);
 
-		return response.data;
+		const roomBoard: RoomBoardDto = new RoomBoardDto({
+			roomId: response.data.roomId,
+			title: response.data.title,
+			displayColor: response.data.displayColor,
+			elements: [],
+			isArchived: response.data.isArchived,
+			isSynchronized: response.data.isSynchronized,
+		});
+
+		return roomBoard;
 	}
 
 	private createOptionParams(): RawAxiosRequestConfig {

@@ -1,3 +1,5 @@
+import { BoardElementDto } from './board-element.dto';
+
 export class RoomBoardDto {
 	roomId: string;
 
@@ -5,7 +7,7 @@ export class RoomBoardDto {
 
 	displayColor: string;
 
-	elements: Array<string>;
+	elements: Array<BoardElementDto>;
 
 	isArchived: boolean;
 

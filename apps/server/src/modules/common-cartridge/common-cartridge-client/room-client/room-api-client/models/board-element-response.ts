@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { BoardElementResponseContent } from './board-element-response-content';
 
 /**
  * 
@@ -27,11 +30,11 @@ export interface BoardElementResponse {
      */
     'type': BoardElementResponseType;
     /**
-     * Content of the Board, either: a task or a lesson specific for the board
-     * @type {object}
+     * 
+     * @type {BoardElementResponseContent}
      * @memberof BoardElementResponse
      */
-    'content': object;
+    'content': BoardElementResponseContent;
 }
 
 export const BoardElementResponseType = {

@@ -2,8 +2,8 @@ import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storag
 import { Injectable } from '@nestjs/common';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client';
 import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
-import { SingleColumnBoardResponse } from '../common-cartridge-client/room-client/room-api-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -26,7 +26,7 @@ export class CommonCartridgeExportService {
 		return courseCommonCartridgeMetadata;
 	}
 
-	public async findRoomBoardByCourseId(courseId: string): Promise<SingleColumnBoardResponse> {
+	public async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
 		const courseRooms = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		return courseRooms;
