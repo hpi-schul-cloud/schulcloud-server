@@ -1,6 +1,10 @@
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { MediaSourceAuthMethod } from '../enum';
+import { EntityId } from '../../../shared/domain/types';
 
-export class MediaSourceOauthConfig {
+export interface MediaSourceOauthConfigProps extends AuthorizableObject {
+	id: EntityId;
+
 	clientId: string;
 
 	clientSecret: string;
@@ -8,11 +12,6 @@ export class MediaSourceOauthConfig {
 	authEndpoint: string;
 
 	method: MediaSourceAuthMethod;
-
-	constructor(props: MediaSourceOauthConfig) {
-		this.clientId = props.clientId;
-		this.clientSecret = props.clientSecret;
-		this.authEndpoint = props.authEndpoint;
-		this.method = props.method;
-	}
 }
+
+export class MediaSourceOauthConfig extends DomainObject<MediaSourceOauthConfigProps> {}

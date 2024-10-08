@@ -1,8 +1,8 @@
-import { DomainObject } from '@shared/domain/domain-object';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { MediaSourceOauthConfig } from './media-source-oauth-config';
 import { MediaSourceDataFormat } from '../enum';
 
-export interface MediaSourceProps {
+export interface MediaSourceProps extends AuthorizableObject {
 	id: string;
 
 	name?: string;

@@ -12,6 +12,9 @@ import {
 	mediaUserLicenseFactory,
 } from '../testing';
 import { MediaUserLicenseRepo } from './media-user-license.repo';
+import { MediaSourceConfigMapper } from './media-source-config.mapper';
+import { MediaSourceConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
+import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
 
 describe(MediaUserLicenseRepo.name, () => {
 	let module: TestingModule;
@@ -40,7 +43,8 @@ describe(MediaUserLicenseRepo.name, () => {
 		describe('when searching for a users media licences', () => {
 			const setup = async () => {
 				const user: UserEntity = userFactory.build();
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
+				const config: MediaSourceConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ config });
 				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({ user, mediaSource });
 				const otherMediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build();
 
@@ -52,11 +56,12 @@ describe(MediaUserLicenseRepo.name, () => {
 					user,
 					mediaUserLicense,
 					mediaSource,
+					config,
 				};
 			};
 
 			it('should return user licenses for user', async () => {
-				const { user, mediaUserLicense, mediaSource } = await setup();
+				const { user, mediaUserLicense, mediaSource, config } = await setup();
 
 				const result: MediaUserLicense[] = await repo.findMediaUserLicensesForUser(user.id);
 
@@ -71,7 +76,7 @@ describe(MediaUserLicenseRepo.name, () => {
 							name: mediaSource.name,
 							sourceId: mediaSource.sourceId,
 							format: mediaSource.format,
-							config: mediaSource.config,
+							config: MediaSourceConfigMapper.mapToDo(config),
 						}),
 					}),
 				]);
