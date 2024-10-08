@@ -7,6 +7,7 @@ import { AccountService } from '@modules/account';
 import { SystemRule } from '@modules/authorization/domain/rules';
 
 import { ColumnBoardService } from '@modules/board';
+import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
 import { InternalServerModule } from '@modules/internal-server';
@@ -93,6 +94,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-group-service'] = nestApp.get(GroupService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-column-board-service'] = nestApp.get(ColumnBoardService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment

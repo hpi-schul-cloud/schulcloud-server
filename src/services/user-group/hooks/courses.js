@@ -190,6 +190,11 @@ const removeColumnBoard = async (context) => {
 	await context.app.service('nest-column-board-service').deleteByCourseId(courseId);
 };
 
+const removeContextExternalTools = async (context) => {
+	const courseId = context.id;
+	await context.app.service('nest-context-external-tool-service').deleteContextExternalToolsByCourseId(courseId);
+};
+
 /**
  * remove all substitution teacher which are also teachers
  * @param hook - contains and request body
@@ -250,6 +255,7 @@ module.exports = {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
 	removeColumnBoard,
+	removeContextExternalTools,
 	removeSubstitutionDuplicates,
 	courseInviteHook,
 	patchPermissionHook,
