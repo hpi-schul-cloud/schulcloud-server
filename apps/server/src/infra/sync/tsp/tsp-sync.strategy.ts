@@ -27,7 +27,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncSchools(system: System): Promise<School[]> {
-		const tspSchools = await this.tspSyncService.fetchTspSchools();
+		const tspSchools = await this.tspSyncService.fetchTspSchools(system);
 
 		const schoolPromises = tspSchools.map((school) =>
 			this.schoolLimit(async () => {

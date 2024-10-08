@@ -38,8 +38,12 @@ export class TspSyncService {
 		return systems[0];
 	}
 
-	public async fetchTspSchools() {
-		const client = this.tspClientFactory.createExportClient();
+	public async fetchTspSchools(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
 		const schools = (await client.exportSchuleList()).data;
 
 		return schools;
