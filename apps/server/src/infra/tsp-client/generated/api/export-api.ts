@@ -61,6 +61,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
             if (dtLetzteAenderung !== undefined) {
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
             }
@@ -96,6 +99,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
             if (dtLetzteAenderung !== undefined) {
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
             }
@@ -130,6 +136,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -160,6 +169,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
             if (dtLetzteAenderung !== undefined) {
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
@@ -195,6 +207,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -225,6 +240,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
             if (dtLetzteAenderung !== undefined) {
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
@@ -259,6 +277,9 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
