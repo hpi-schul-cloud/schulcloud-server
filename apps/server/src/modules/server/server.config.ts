@@ -29,7 +29,7 @@ import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import { TspClientConfig } from '@src/infra/tsp-client/tsp-client-config';
+import { TspClientConfig } from '@infra/tsp-client';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
