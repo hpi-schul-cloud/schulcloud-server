@@ -1,4 +1,4 @@
-import { OauthModule } '@modules/oauth';
+import { OauthModule } from '@modules/oauth';
 import { Module } from '@nestjs/common';
 import { TspClientFactory } from './tsp-client-factory';
 

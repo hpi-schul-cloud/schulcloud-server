@@ -3,6 +3,7 @@ import { XApiKeyConfig } from '@infra/auth-guard';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
+import type { TspClientConfig } from '@infra/tsp-client';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -29,7 +30,6 @@ import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import { TspClientConfig } from '@infra/tsp-client';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
