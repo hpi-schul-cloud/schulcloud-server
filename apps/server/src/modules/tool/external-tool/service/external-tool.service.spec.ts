@@ -510,6 +510,27 @@ describe(ExternalToolService.name, () => {
 	});
 
 	describe('updateExternalTool', () => {
+		describe('when external tool with lti11 config is given', () => {
+			const setup = () => {
+				encryptionService.encrypt.mockReturnValue('newEncryptedSecret');
+				const changedTool: ExternalTool = externalToolFactory
+					.withLti11Config({ secret: 'newEncryptedSecret' })
+					.build({ name: 'newName' });
+
+				return {
+					changedTool,
+				};
+			};
+
+			it('should call externalToolServiceMapper', async () => {
+				const { changedTool } = setup();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(externalToolRepo.save).toHaveBeenLastCalledWith(changedTool);
+			});
+		});
+
 		describe('when external tool with oauthConfig is given', () => {
 			const setup = () => {
 				const existingTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();

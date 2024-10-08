@@ -6,11 +6,11 @@ import {
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
 	SchulconnexLaufzeitResponse,
-	SchulconnexPoliciesInfoResponse,
+	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexResponse,
 	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
-} from '@infra/schulconnex-client/response';
+} from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -240,9 +240,9 @@ export class SchulconnexResponseMapper {
 		};
 	}
 
-	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoResponse[]): ExternalLicenseDto[] {
+	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoLicenseResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
-			.map((license: SchulconnexPoliciesInfoResponse) => {
+			.map((license: SchulconnexPoliciesInfoLicenseResponse) => {
 				if (license.target.partOf === '') {
 					license.target.partOf = undefined;
 				}

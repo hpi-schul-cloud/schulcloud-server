@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { EntityId } from '@shared/domain/types';
+import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextExternalToolDeletedEvent } from '../../context-external-tool/domain';
 import type { ExternalTool } from '../../external-tool/domain';
 import type { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -42,6 +44,14 @@ export class CommonToolDeleteService {
 		const externalTool: ExternalTool = await this.externalToolRepo.findById(schoolExternalTool.toolId);
 
 		await this.deleteContextExternalToolInternal(externalTool, contextExternalTool);
+	}
+
+	public async deleteContextExternalToolsByCourseId(courseId: EntityId): Promise<void> {
+		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
+			context: { id: courseId, type: ToolContextType.COURSE },
+		});
+
+		await this.contextExternalToolRepo.delete(contextExternalTools);
 	}
 
 	private async deleteSchoolExternalToolInternal(

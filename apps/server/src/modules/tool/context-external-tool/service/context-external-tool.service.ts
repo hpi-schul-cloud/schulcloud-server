@@ -54,6 +54,11 @@ export class ContextExternalToolService {
 		await this.commonToolDeleteService.deleteContextExternalTool(contextExternalTool);
 	}
 
+	// called from feathers
+	public async deleteContextExternalToolsByCourseId(courseId: EntityId): Promise<void> {
+		await this.commonToolDeleteService.deleteContextExternalToolsByCourseId(courseId);
+	}
+
 	public async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			context: contextRef,

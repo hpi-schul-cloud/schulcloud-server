@@ -42,7 +42,10 @@ export class ExternalToolService {
 	}
 
 	public async updateExternalTool(toUpdate: ExternalTool): Promise<ExternalTool> {
-		// TODO N21-2097 use encryption for secret
+		if (ExternalTool.isLti11Config(toUpdate.config) && toUpdate.config.secret) {
+			toUpdate.config.secret = this.encryptionService.encrypt(toUpdate.config.secret);
+		}
+
 		await this.updateOauth2ToolConfig(toUpdate);
 
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
