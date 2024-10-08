@@ -6,7 +6,7 @@
 		"generators": {
 			"tsp-api": {
 				"generatorName": "typescript-axios",
-				"inputSpec": "https://test2.schulportal-thueringen.de/tip-ms/api/swagger.json",
+				"inputSpec": "./apps/server/src/infra/tsp-client/openapi.json",
 				"output": "./apps/server/src/infra/tsp-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
