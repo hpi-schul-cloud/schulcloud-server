@@ -1,4 +1,4 @@
-import { TspClientFactory } from '@infra/tsp-client';
+import { RobjExportSchule, TspClientFactory } from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { School, SchoolService } from '@modules/school';
@@ -10,6 +10,7 @@ import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { ObjectId } from 'bson';
+import moment from 'moment/moment';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
 
 @Injectable()
@@ -27,7 +28,7 @@ export class TspSyncService {
 	public async findTspSystemOrFail(): Promise<System> {
 		const systems = (
 			await this.systemService.find({
-				types: [SystemType.OIDC],
+				types: [SystemType.OAUTH, SystemType.OIDC],
 			})
 		).filter((system) => system.provisioningStrategy === SystemProvisioningStrategy.TSP);
 
@@ -44,7 +45,10 @@ export class TspSyncService {
 			clientSecret: system.oauthConfig?.clientSecret ?? '',
 			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
 		});
-		const schools = (await client.exportSchuleList()).data;
+		const lastChangeDate = moment(new Date(0)).format('YYYY-MM-DD HH:mm:ss.SSS');
+		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
+
+		console.log(`Found ${schools.length} schools in TSP`);
 
 		return schools;
 	}
@@ -65,6 +69,7 @@ export class TspSyncService {
 		school.name = name;
 
 		const updatedSchool = await this.schoolService.save(school);
+		console.log(`Updated School: ${updatedSchool.getInfo().name}`);
 
 		return updatedSchool;
 	}
@@ -86,6 +91,8 @@ export class TspSyncService {
 		});
 
 		const savedSchool = await this.schoolService.save(school);
+
+		console.log(`Created School: ${savedSchool.getInfo().name}`);
 
 		return savedSchool;
 	}
