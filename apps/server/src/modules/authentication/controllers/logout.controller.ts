@@ -1,5 +1,5 @@
 import { JWT, JwtAuthentication } from '@infra/auth-guard';
-import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { LogoutUc } from '../uc';
 
@@ -9,7 +9,7 @@ export class LogoutController {
 	constructor(private readonly logoutUc: LogoutUc) {}
 
 	@JwtAuthentication()
-	@Delete()
+	@Post()
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Logs out a user.' })
 	@ApiOkResponse({ description: 'Logout was successful.' })
