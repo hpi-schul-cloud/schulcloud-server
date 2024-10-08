@@ -262,4 +262,26 @@ describe(CommonToolDeleteService.name, () => {
 			});
 		});
 	});
+
+	describe('deleteContextExternalToolsByCourseId', () => {
+		describe('when deleting a context external tool', () => {
+			const setup = () => {
+				const contextExternalTool = contextExternalToolFactory.build();
+
+				contextExternalToolRepo.find.mockResolvedValueOnce([contextExternalTool]);
+
+				return {
+					contextExternalTool,
+				};
+			};
+
+			it('should delete the context external tool', async () => {
+				const { contextExternalTool } = setup();
+
+				await service.deleteContextExternalToolsByCourseId(contextExternalTool.contextRef.id);
+
+				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool]);
+			});
+		});
+	});
 });
