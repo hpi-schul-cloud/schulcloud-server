@@ -347,11 +347,19 @@ describe(ExternalToolUc.name, () => {
 		});
 
 		describe('when external tool with lti11 config is given', () => {
-			it('should call the encryption service', async () => {
+			const setupLTI = () => {
 				const { currentUser } = setupAuthorization();
 				const { externalTool, lti11ToolConfig } = setupDefault();
 				externalTool.config = lti11ToolConfig;
 				encryptionService.encrypt.mockReturnValue('encrypted');
+
+				return {
+					currentUser,
+					externalTool,
+				};
+			};
+			it('should call the encryption service', async () => {
+				const { currentUser, externalTool } = setupLTI();
 
 				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
 
@@ -405,6 +413,14 @@ describe(ExternalToolUc.name, () => {
 					jwt,
 				};
 			};
+
+			it('should call encryption service', async () => {
+				const { user, externalTool1, externalTool2 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()], 'jwt');
+
+				expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			});
 
 			it('should check the users permission', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
@@ -498,6 +514,52 @@ describe(ExternalToolUc.name, () => {
 					externalTool2.id,
 					jwt
 				);
+			});
+		});
+
+		describe('when importing lti tool', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const externalTool1 = externalToolFactory.build({
+					name: 'tool1',
+					medium: {
+						mediumId: 'medium1',
+						mediaSourceId: 'mediumSource1',
+					},
+				});
+
+				const ltiConfig = lti11ToolConfigFactory.build();
+				externalTool1.config = ltiConfig;
+
+				const externalToolCreate1: ExternalToolCreate = {
+					...externalTool1.getProps(),
+					thumbnailUrl: 'https://thumbnail.url1',
+				};
+
+				const jwt = 'jwt';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				logoService.fetchLogo.mockResolvedValueOnce(undefined);
+				const thumbnailFileRecordRef = fileRecordRefFactory.build();
+				externalToolImageService.uploadImageFileFromUrl.mockResolvedValueOnce(thumbnailFileRecordRef);
+				externalToolService.createExternalTool.mockResolvedValueOnce(externalTool1);
+				encryptionService.encrypt.mockReturnValue('encrypted');
+
+				return {
+					user,
+					externalTool1,
+					externalToolCreate1,
+					thumbnailFileRecordRef,
+					jwt,
+				};
+			};
+
+			it('should call encryption service', async () => {
+				const { user, externalTool1 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps()], 'jwt');
+
+				expect(encryptionService.encrypt).toHaveBeenCalled();
 			});
 		});
 

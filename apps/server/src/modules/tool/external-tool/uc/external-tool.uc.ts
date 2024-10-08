@@ -70,6 +70,10 @@ export class ExternalToolUc {
 			});
 
 			try {
+				if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
+					externalTool.config.secret = this.encryptionService.encrypt(externalTool.config.secret);
+				}
+
 				// eslint-disable-next-line no-await-in-loop
 				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool, jwt);
 
