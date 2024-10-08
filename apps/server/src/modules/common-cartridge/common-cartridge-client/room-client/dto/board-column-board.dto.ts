@@ -7,9 +7,9 @@ export class BoardColumnBoardDto {
 
 	published: boolean;
 
-	createdAt: Date;
+	createdAt: string;
 
-	updatedAt: Date;
+	updatedAt: string;
 
 	columnBoardId: string;
 

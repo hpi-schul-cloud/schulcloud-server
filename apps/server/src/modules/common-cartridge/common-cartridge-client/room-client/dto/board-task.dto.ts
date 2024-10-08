@@ -5,9 +5,9 @@ export class BoardTaskDto {
 
 	name: string;
 
-	availableDate?: Date;
+	availableDate?: string;
 
-	dueDate?: Date;
+	dueDate?: string;
 
 	courseName?: string;
 
@@ -15,9 +15,9 @@ export class BoardTaskDto {
 
 	displayColor?: string;
 
-	createdAt: Date;
+	createdAt: string;
 
-	updatedAt: Date;
+	updatedAt: string;
 
 	status: BoardTaskStatusDto;
 

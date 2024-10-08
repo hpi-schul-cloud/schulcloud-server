@@ -11,9 +11,9 @@ export class BoardLessonDto {
 
 	numberOfPlannedTasks?: number;
 
-	createdAt: Date;
+	createdAt: string;
 
-	updatedAt: Date;
+	updatedAt: string;
 
 	hidden: boolean;
 
