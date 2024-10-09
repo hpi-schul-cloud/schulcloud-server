@@ -60,10 +60,10 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 		describe('when an entity with the id exists', () => {
 			const setup = async () => {
 				const oauthSessionTokenId = new ObjectId().toHexString();
-				const oauthSessionTokenEntity = oauthSessionTokenEntityFactory.buildWithId(
-					{ refreshToken: 'token1' },
-					oauthSessionTokenId
-				);
+				const oauthSessionTokenEntity = oauthSessionTokenEntityFactory.build({
+					id: oauthSessionTokenId,
+					refreshToken: 'token1',
+				});
 
 				await em.persistAndFlush(oauthSessionTokenEntity);
 				em.clear();
