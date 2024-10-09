@@ -52,8 +52,7 @@ export class ExternalToolUc {
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const updatedConfig = this.encryptLtiSecret(externalToolCreate);
-		externalToolCreate.config = updatedConfig;
+		externalToolCreate.config = this.encryptLtiSecret(externalToolCreate);
 
 		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate, jwt);
 
@@ -77,8 +76,7 @@ export class ExternalToolUc {
 			});
 
 			try {
-				const updatedConfig = this.encryptLtiSecret(externalTool);
-				externalTool.config = updatedConfig;
+				externalTool.config = this.encryptLtiSecret(externalTool);
 
 				// eslint-disable-next-line no-await-in-loop
 				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool, jwt);
@@ -134,12 +132,11 @@ export class ExternalToolUc {
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
+		externalToolUpdate.config = this.encryptLtiSecret(externalToolUpdate);
+
 		const { thumbnailUrl, ...externalToolUpdateProps } = externalToolUpdate;
 
 		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
-
-		const updatedConfig = this.encryptLtiSecret(externalToolUpdate);
-		externalToolUpdate.config = updatedConfig;
 
 		// Use secrets from existing config
 		const updatedConfigProps: ExternalToolConfig = { ...currentExternalTool.config, ...externalToolUpdateProps.config };
@@ -269,16 +266,16 @@ export class ExternalToolUc {
 	}
 
 	private encryptLtiSecret(
-		externalToolUpdate: ExternalToolCreate | ExternalToolUpdate
+		externalTool: ExternalToolCreate | ExternalToolUpdate
 	): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
-		if (ExternalTool.isLti11Config(externalToolUpdate.config) && externalToolUpdate.config.secret) {
-			const encrypted = this.encryptionService.encrypt(externalToolUpdate.config.secret);
+		if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
+			const encrypted = this.encryptionService.encrypt(externalTool.config.secret);
 
-			const updatedConfig = new Lti11ToolConfig({ ...externalToolUpdate.config, secret: encrypted });
+			const updatedConfig = new Lti11ToolConfig({ ...externalTool.config, secret: encrypted });
 
 			return updatedConfig;
 		}
 
-		return externalToolUpdate.config;
+		return externalTool.config;
 	}
 }
