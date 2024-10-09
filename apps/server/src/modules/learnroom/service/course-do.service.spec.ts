@@ -260,11 +260,11 @@ describe(CourseDoService.name, () => {
 			it('should not attempt to save the course if already synchronized', async () => {
 				const { course, group, students, teachers } = setup();
 
-				try {
-					await service.startSynchronization(course, group, students, teachers);
-				} catch (error) {
-					expect(courseRepo.save).not.toHaveBeenCalled();
-				}
+				await expect(service.startSynchronization(course, group, students, teachers)).rejects.toThrow(
+					CourseAlreadySynchronizedLoggableException
+				);
+
+				expect(courseRepo.save).not.toHaveBeenCalled();
 			});
 		});
 	});
