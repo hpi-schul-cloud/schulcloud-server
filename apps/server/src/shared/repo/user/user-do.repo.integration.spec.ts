@@ -386,6 +386,72 @@ describe('UserRepo', () => {
 	});
 
 	describe('find() is called', () => {
+		describe('usecases', () => {
+			describe('when searching by school and role', () => {
+				const setup = async () => {
+					const school = schoolEntityFactory.buildWithId();
+					const otherSchool = schoolEntityFactory.buildWithId();
+					const role = roleFactory.buildWithId();
+					const otherRole = roleFactory.buildWithId();
+					const userWithSchoolAndRole = userFactory.buildWithId({ school, roles: [role] });
+					const userWithSchoolAndMultipleRoles = userFactory.buildWithId({ school, roles: [role, otherRole] });
+					const userWithDifferentSchool = userFactory.buildWithId({ school: otherSchool, roles: [role] });
+					const userWithDifferentRole = userFactory.buildWithId({ school, roles: [otherRole] });
+					const query: UserQuery = {
+						schoolId: school.id,
+						roleId: role.id,
+					};
+
+					await em.persistAndFlush([
+						userWithSchoolAndMultipleRoles,
+						userWithSchoolAndRole,
+						userWithDifferentSchool,
+						userWithDifferentRole,
+					]);
+
+					return {
+						userWithDifferentRole,
+						userWithDifferentSchool,
+						userWithSchoolAndMultipleRoles,
+						userWithSchoolAndRole,
+						query,
+					};
+				};
+
+				it('should find user with school and role', async () => {
+					const { query, userWithSchoolAndRole } = await setup();
+
+					const result = await repo.find(query);
+
+					expect(result.data).toContainEqual(expect.objectContaining({ id: userWithSchoolAndRole.id }));
+				});
+
+				it('should find user with school and multiple roles', async () => {
+					const { query, userWithSchoolAndMultipleRoles } = await setup();
+
+					const result = await repo.find(query);
+
+					expect(result.data).toContainEqual(expect.objectContaining({ id: userWithSchoolAndMultipleRoles.id }));
+				});
+
+				it('should not find user with school, but different role', async () => {
+					const { query, userWithDifferentRole } = await setup();
+
+					const result = await repo.find(query);
+
+					expect(result.data).not.toContain(expect.objectContaining({ id: userWithDifferentRole.id }));
+				});
+
+				it('should not find user with role, but different school', async () => {
+					const { query, userWithDifferentSchool } = await setup();
+
+					const result = await repo.find(query);
+
+					expect(result.data).not.toContain(expect.objectContaining({ id: userWithDifferentSchool.id }));
+				});
+			});
+		});
+
 		const setupFind = async () => {
 			const query: UserQuery = {
 				schoolId: undefined,

@@ -22,6 +22,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
+			.byRoleId(query.roleId)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.whereLastLoginSystemChangeIsBetween(
