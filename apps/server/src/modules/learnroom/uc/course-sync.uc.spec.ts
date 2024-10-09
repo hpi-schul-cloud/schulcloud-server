@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { GroupService } from '@modules/group';
+import { RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { groupFactory, setupEntities, userFactory } from '@shared/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { groupFactory, roleDtoFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseDoService } from '../service';
 import { courseFactory } from '../testing';
 import { CourseSyncUc } from './course-sync.uc';
@@ -15,6 +16,7 @@ describe(CourseSyncUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let courseService: DeepMocked<CourseDoService>;
 	let groupService: DeepMocked<GroupService>;
+	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -32,6 +34,10 @@ describe(CourseSyncUc.name, () => {
 					provide: GroupService,
 					useValue: createMock<GroupService>(),
 				},
+				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
 			],
 		}).compile();
 
@@ -39,6 +45,7 @@ describe(CourseSyncUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseDoService);
 		groupService = module.get(GroupService);
+		roleService = module.get(RoleService);
 		await setupEntities();
 	});
 
@@ -93,15 +100,30 @@ describe(CourseSyncUc.name, () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.build();
 				const group = groupFactory.build();
+				const studentRole = roleDtoFactory.build({ id: 'student-role-id' });
+				const teacherRole = roleDtoFactory.build({ id: 'teacher-role-id' });
+
+				group.users = [
+					{ roleId: 'student-role-id', userId: 'student-user-id' },
+					{ roleId: 'teacher-role-id', userId: 'teacher-user-id' },
+				];
+
+				const students = group.users.filter((groupUser) => groupUser.roleId === studentRole.id);
+				const teachers = group.users.filter((groupUser) => groupUser.roleId === teacherRole.id);
 
 				courseService.findById.mockResolvedValueOnce(course);
 				groupService.findById.mockResolvedValueOnce(group);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roleService.findByName.mockResolvedValueOnce(studentRole).mockResolvedValueOnce(teacherRole);
 
 				return {
 					user,
 					course,
 					group,
+					studentRole,
+					teacherRole,
+					students,
+					teachers,
 				};
 			};
 
@@ -119,14 +141,18 @@ describe(CourseSyncUc.name, () => {
 				);
 			});
 
-			it('should start the synchronization', async () => {
-				const { user, course, group } = setup();
+			it('should start the synchronization with correct roles', async () => {
+				const { user, course, group, students, teachers } = setup();
 
 				await uc.startSynchronization(user.id, course.id, group.id);
+
 				expect(courseService.findById).toHaveBeenCalledWith(course.id);
 				expect(groupService.findById).toHaveBeenCalledWith(group.id);
 
-				expect(courseService.startSynchronization).toHaveBeenCalledWith(course, group);
+				expect(roleService.findByName).toHaveBeenCalledWith(RoleName.STUDENT);
+				expect(roleService.findByName).toHaveBeenCalledWith(RoleName.TEACHER);
+
+				expect(courseService.startSynchronization).toHaveBeenCalledWith(course, group, students, teachers);
 			});
 		});
 	});
