@@ -6,6 +6,9 @@ import { MediaSource } from '../domain';
 import { MediaSourceEntity } from '../entity';
 import { mediaSourceEntityFactory, mediaSourceFactory } from '../testing';
 import { MediaSourceRepo } from './media-source.repo';
+import { MediaSourceConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
+import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
+import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
 describe(MediaSourceRepo.name, () => {
 	let module: TestingModule;
@@ -33,7 +36,9 @@ describe(MediaSourceRepo.name, () => {
 	describe('findBySourceId', () => {
 		describe('when a media source exists', () => {
 			const setup = async () => {
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
+				const config: MediaSourceConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
+
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ config });
 
 				await em.persistAndFlush([mediaSource]);
 
@@ -41,11 +46,12 @@ describe(MediaSourceRepo.name, () => {
 
 				return {
 					mediaSource,
+					config,
 				};
 			};
 
 			it('should return user licenses for user', async () => {
-				const { mediaSource } = await setup();
+				const { mediaSource, config } = await setup();
 
 				const result = await repo.findBySourceId(mediaSource.sourceId);
 
@@ -54,6 +60,8 @@ describe(MediaSourceRepo.name, () => {
 						id: mediaSource.id,
 						name: mediaSource.name,
 						sourceId: mediaSource.sourceId,
+						format: mediaSource.format,
+						config: MediaSourceConfigMapper.mapToDo(config),
 					})
 				);
 			});
