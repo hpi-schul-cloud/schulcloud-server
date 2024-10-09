@@ -237,7 +237,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 		});
 
-		describe('when getting the list of external tools that can be added to a context', () => {
+		describe('when getting the list of school external tools that can be added to a context', () => {
 			const setup = () => {
 				const user: User = userFactory.build();
 				const hiddenTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
