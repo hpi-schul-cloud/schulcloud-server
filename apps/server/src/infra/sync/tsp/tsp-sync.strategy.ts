@@ -1,19 +1,28 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import { System } from '@src/modules/system';
 import pLimit from 'p-limit';
+import { TspSyncConfig } from './tsp-sync.config';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
+import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
 import { TspSyncService } from './tsp-sync.service';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
 	private readonly schoolLimit: pLimit.Limit;
 
-	constructor(private readonly tspSyncService: TspSyncService) {
+	constructor(
+		private readonly logger: Logger,
+		private readonly tspSyncService: TspSyncService,
+		configService: ConfigService<TspSyncConfig, true>
+	) {
 		super();
-		this.schoolLimit = pLimit(Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number);
+		this.logger.setContext(TspSyncStrategy.name);
+		this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
 	}
 
 	public override getType(): SyncStrategyTarget {
@@ -28,26 +37,33 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	private async syncSchools(system: System): Promise<School[]> {
 		const tspSchools = await this.tspSyncService.fetchTspSchools(system);
+		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length));
 
-		const schoolPromises = tspSchools.map((school) =>
+		const schoolPromises = tspSchools.map((tspSchool) =>
 			this.schoolLimit(async () => {
-				const existingSchool = await this.tspSyncService.findSchool(system, school.schuleNummer ?? '');
+				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer ?? '');
 
 				if (existingSchool) {
-					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, school.schuleName ?? '');
-					return updatedSchool;
+					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName ?? '');
+					return { school: updatedSchool, created: false };
 				}
 
 				const createdSchool = await this.tspSyncService.createSchool(
 					system,
-					school.schuleNummer ?? '',
-					school.schuleName ?? ''
+					tspSchool.schuleNummer ?? '',
+					tspSchool.schuleName ?? ''
 				);
-				return createdSchool;
+				return { school: createdSchool, created: true };
 			})
 		);
 
 		const scSchools = await Promise.all(schoolPromises);
-		return scSchools;
+
+		const total = scSchools.length;
+		const createdSchools = scSchools.filter((scSchool) => scSchool.created).length;
+		const updatedSchools = total - createdSchools;
+		this.logger.info(new TspSchoolsSyncedLoggable(total, createdSchools, updatedSchools));
+
+		return scSchools.map((scSchool) => scSchool.school);
 	}
 }
