@@ -1,11 +1,11 @@
 import { RobjExportSchule, TspClientFactory } from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
-import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
+import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -45,10 +45,9 @@ export class TspSyncService {
 			clientSecret: system.oauthConfig?.clientSecret ?? '',
 			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
 		});
-		const lastChangeDate = moment(new Date(0)).format('YYYY-MM-DD HH:mm:ss.SSS');
-		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
 
-		console.log(`Found ${schools.length} schools in TSP`);
+		const lastChangeDate = this.formatChangeDate(new Date(0));
+		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
 
 		return schools;
 	}
@@ -69,7 +68,6 @@ export class TspSyncService {
 		school.name = name;
 
 		const updatedSchool = await this.schoolService.save(school);
-		console.log(`Updated School: ${updatedSchool.getInfo().name}`);
 
 		return updatedSchool;
 	}
@@ -92,8 +90,6 @@ export class TspSyncService {
 
 		const savedSchool = await this.schoolService.save(school);
 
-		console.log(`Created School: ${savedSchool.getInfo().name}`);
-
 		return savedSchool;
 	}
 
@@ -105,5 +101,9 @@ export class TspSyncService {
 		const federalStateEntity = await this.federalStateService.findFederalStateByName(FederalStateNames.THUERINGEN);
 		this.federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 		return this.federalState;
+	}
+
+	private formatChangeDate(date: Date): string {
+		return moment(date).format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 }
