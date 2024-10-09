@@ -997,5 +997,62 @@
 			"board-element",
 			"media-board"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "670670862800fa38ddff1227"
+		},
+		"createdAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"updatedAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"name": "CY Test Tool Preferred",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [],
+		"isPreferred": true,
+		"iconName": "magnify"
+	},
+	{
+		"_id": {
+			"$oid": "670670bc2800fa38ddff122a"
+		},
+		"createdAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"updatedAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"name": "CY Test Tool Preferred With Param",
+		"url": "https://google.de/",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [
+			{
+				"name": "contextParam",
+				"displayName": "context parameter",
+				"description": "",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			}
+		],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1,
+		"isDeactivated": false,
+		"restrictToContexts": [],
+		"isPreferred": true,
+		"iconName": "magnify-plus-outline"
 	}
 ]
