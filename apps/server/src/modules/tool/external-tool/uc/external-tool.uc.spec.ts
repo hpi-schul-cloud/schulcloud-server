@@ -570,6 +570,21 @@ describe(ExternalToolUc.name, () => {
 
 				expect(encryptionService.encrypt).toHaveBeenCalled();
 			});
+
+			it('should save tool', async () => {
+				const { user, externalTool1 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps()], 'jwt');
+
+				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
+					1,
+					new ExternalTool({
+						...externalTool1.getProps(),
+						config: lti11ToolConfigFactory.build({ ...externalTool1.config, secret: 'encrypted' }),
+						id: expect.any(String),
+					})
+				);
+			});
 		});
 
 		describe('when an external tools fails the validation', () => {
