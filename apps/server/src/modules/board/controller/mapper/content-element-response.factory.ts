@@ -7,6 +7,7 @@ import {
 	isRichTextElementResponse,
 	RichTextElementResponse,
 } from '../dto';
+import { AppointmentFinderElementResponseMapper } from './appointment-finder-element-response.mapper';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { CollaborativeTextEditorElementResponseMapper } from './collaborative-text-editor-element-response.mapper';
 import { DeletedElementResponseMapper } from './deleted-element-response.mapper';
@@ -27,6 +28,7 @@ export class ContentElementResponseFactory {
 		ExternalToolElementResponseMapper.getInstance(),
 		CollaborativeTextEditorElementResponseMapper.getInstance(),
 		DeletedElementResponseMapper.getInstance(),
+		AppointmentFinderElementResponseMapper.getInstance(),
 	];
 
 	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
