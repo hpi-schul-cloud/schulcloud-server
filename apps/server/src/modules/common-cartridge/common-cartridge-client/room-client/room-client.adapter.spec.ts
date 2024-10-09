@@ -4,8 +4,11 @@ import { REQUEST } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
 import { Request } from 'express';
 import { AxiosResponse } from 'axios';
+import { jest } from '@jest/globals';
 import { CourseRoomsApi, SingleColumnBoardResponse } from './room-api-client';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
+import { RoomBoardDtoMapper } from './mapper/board-element-dto.mapper';
+import { RoomBoardDto } from './dto/room-board.dto';
 
 const jwtToken = 'dummyJwtToken';
 
@@ -29,6 +32,10 @@ describe(CourseRoomsClientAdapter.name, () => {
 							authorization: `Bearer ${jwtToken}`,
 						},
 					}),
+				},
+				{
+					provide: RoomBoardDtoMapper,
+					useValue: createMock<RoomBoardDtoMapper>(),
 				},
 			],
 		}).compile();
@@ -62,16 +69,25 @@ describe(CourseRoomsClientAdapter.name, () => {
 					},
 				});
 
-				courseRoomsApi.courseRoomsControllerGetRoomBoard.mockResolvedValueOnce(response);
+				const mappedResponse: RoomBoardDto = {
+					roomId: response.data.roomId,
+					title: response.data.title,
+					displayColor: response.data.displayColor,
+					isSynchronized: response.data.isSynchronized,
+					elements: [],
+					isArchived: false,
+				};
 
-				return { roomId, response };
+				jest.spyOn(RoomBoardDtoMapper, 'mapResponseToRoomBoardDto').mockReturnValueOnce(mappedResponse);
+
+				return { roomId, mappedResponse };
 			};
 
 			it('should return a room board with full contents', async () => {
-				const { roomId, response } = setup();
+				const { roomId, mappedResponse } = setup();
 				const result = await service.getRoomBoardByCourseId(roomId);
 
-				expect(result).toEqual(response.data);
+				expect(result).toEqual(mappedResponse);
 			});
 		});
 	});

@@ -15,7 +15,7 @@ import { BoardTaskStatusMapper } from './board-task-status-dto.mapper';
 import { BoardColumnBoardLayoutMapper } from './board-column-board-layout-dto.mapper';
 
 export class RoomBoardDtoMapper {
-	public static mapResponseToRommBoardDto(response: SingleColumnBoardResponse): RoomBoardDto {
+	public static mapResponseToRoomBoardDto(response: SingleColumnBoardResponse): RoomBoardDto {
 		const elements: BoardElementDto[] = this.mapBoardElements(response);
 
 		const mapped: RoomBoardDto = new RoomBoardDto({

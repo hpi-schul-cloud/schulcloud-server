@@ -15,7 +15,7 @@ export class CourseRoomsClientAdapter {
 		const options = this.createOptionParams();
 		const response = await this.courseRoomsApi.courseRoomsControllerGetRoomBoard(roomId, options);
 
-		return RoomBoardDtoMapper.mapResponseToRommBoardDto(response.data);
+		return RoomBoardDtoMapper.mapResponseToRoomBoardDto(response.data);
 	}
 
 	private createOptionParams(): RawAxiosRequestConfig {
