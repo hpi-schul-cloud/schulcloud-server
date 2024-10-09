@@ -5,6 +5,7 @@ import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MediaSource, MediaUserLicense } from '../domain';
 import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseType } from '../entity';
+import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
 @Injectable()
 export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense, MediaUserLicenseEntity> {
@@ -20,6 +21,8 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 				id: entity.mediaSource.id,
 				name: entity.mediaSource.name,
 				sourceId: entity.mediaSource.sourceId,
+				format: entity.mediaSource.format,
+				config: entity.mediaSource.config ? MediaSourceConfigMapper.mapToDo(entity.mediaSource.config) : undefined,
 			});
 		}
 

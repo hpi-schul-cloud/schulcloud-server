@@ -2,7 +2,7 @@ import { Entity, Enum, Index, ManyToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { User as UserEntity } from '@shared/domain/entity/user.entity';
 import { EntityId } from '@shared/domain/types';
-import { UserLicenseType } from './user-license-type';
+import { UserLicenseType } from '../enum/user-license-type';
 
 export interface UserLicenseProps {
 	id?: EntityId;
