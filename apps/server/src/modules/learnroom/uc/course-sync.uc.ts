@@ -1,7 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { Group, GroupService, GroupUser } from '@modules/group';
+import { GroupService, GroupUser } from '@modules/group';
+import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
-import { RoleDto, RoleService } from '@modules/role';
 
 import { type User as UserEntity } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
