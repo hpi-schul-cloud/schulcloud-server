@@ -31,7 +31,7 @@ class ConsentService {
 			// check for _basonType is need for internal request
 			// and because of id could also include an $in or simular
 			// eslint-disable-next-line no-underscore-dangle
-			if (typeof userId === 'string' || userId._bsontype === 'ObjectID') {
+			if (typeof userId === 'string' || userId._bsontype === 'ObjectId') {
 				const user = await this.modelService.get(userId);
 				return {
 					total: 1,
