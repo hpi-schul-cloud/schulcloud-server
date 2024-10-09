@@ -101,9 +101,9 @@ export class ToolConfigurationController {
 	@ApiOperation({ summary: 'Lists all preferred tools that can be added for a given context' })
 	@ApiOkResponse({
 		description: 'List of preferred tools for a context',
-		type: ContextExternalToolConfigurationTemplateListResponse,
+		type: PreferedToolListResponse,
 	})
-	public async getPreferedTools(
+	public async getPreferedToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextRefParams
 	): Promise<PreferedToolListResponse> {
