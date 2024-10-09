@@ -41,6 +41,13 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	byRoleId(roleId?: EntityId): UserScope {
+		if (roleId !== undefined) {
+			this.addQuery({ roles: roleId });
+		}
+		return this;
+	}
+
 	byName(name?: string): UserScope {
 		if (name !== undefined) {
 			const escapedName = name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
