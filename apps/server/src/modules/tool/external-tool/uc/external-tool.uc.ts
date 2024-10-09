@@ -135,10 +135,13 @@ export class ExternalToolUc {
 		// Use secrets from existing config
 		const updatedConfigProps: ExternalToolConfig = { ...currentExternalTool.config, ...externalToolUpdateProps.config };
 
+		const { isLti11Config } = ExternalTool;
+
 		if (
-			ExternalTool.isLti11Config(updatedConfigProps) &&
-			ExternalTool.isLti11Config(currentExternalTool.config) &&
-			updatedConfigProps.secret !== currentExternalTool.config.secret
+			(isLti11Config(updatedConfigProps) &&
+				isLti11Config(currentExternalTool.config) &&
+				updatedConfigProps.secret !== currentExternalTool.config.secret) ||
+			(!isLti11Config(currentExternalTool.config) && isLti11Config(updatedConfigProps))
 		) {
 			updatedConfigProps.secret = this.encryptionService.encrypt(updatedConfigProps.secret);
 		}
