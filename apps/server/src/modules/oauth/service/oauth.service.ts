@@ -8,14 +8,15 @@ import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { isObject } from '@nestjs/common/utils/shared.utils';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
+	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
@@ -130,10 +131,28 @@ export class OAuthService {
 		});
 
 		if (typeof decodedJWT === 'string') {
-			throw new IdTokenInvalidLoggableException();
+			throw new TokenInvalidLoggableException();
 		}
 
 		return decodedJWT;
+	}
+
+	// https://openid.net/specs/openid-connect-backchannel-1_0.html#Validation
+	async validateLogoutToken(logoutToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
+		const validatedJwt: JwtPayload = await this.validateToken(logoutToken, oauthConfig);
+
+		if (
+			!isObject(validatedJwt.events) ||
+			!Object.keys(validatedJwt.events).includes('http://schemas.openid.net/event/backchannel-logout')
+		) {
+			throw new TokenInvalidLoggableException();
+		}
+
+		if (validatedJwt.nonce !== undefined) {
+			throw new TokenInvalidLoggableException();
+		}
+
+		return validatedJwt;
 	}
 
 	private buildTokenRequestPayload(

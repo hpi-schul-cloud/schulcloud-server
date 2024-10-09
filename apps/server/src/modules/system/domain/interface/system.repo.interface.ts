@@ -9,6 +9,8 @@ export interface SystemRepo {
 
 	getSystemById(systemId: EntityId): Promise<System | null>;
 
+	findByOauth2Issuer(issuer: string): Promise<System | null>;
+
 	findAllForLdapLogin(): Promise<System[]>;
 
 	delete(domainObject: System): Promise<void>;

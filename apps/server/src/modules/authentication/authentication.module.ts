@@ -5,6 +5,7 @@ import { AccountModule } from '@modules/account';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -12,6 +13,7 @@ import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { SignOptions } from 'jsonwebtoken';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
@@ -44,6 +46,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		IdentityManagementModule,
 		CacheWrapperModule,
 		AuthGuardModule,
+		UserModule,
 	],
 	providers: [
 		UserRepo,
@@ -54,7 +57,8 @@ const jwtModuleOptions: JwtModuleOptions = {
 		LdapStrategy,
 		Oauth2Strategy,
 		JwtWhitelistAdapter,
+		LogoutService,
 	],
-	exports: [AuthenticationService],
+	exports: [AuthenticationService, LogoutService],
 })
 export class AuthenticationModule {}

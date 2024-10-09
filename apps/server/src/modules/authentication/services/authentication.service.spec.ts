@@ -9,6 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import jwt from 'jsonwebtoken';
+import { accountDoFactory } from '../../account/testing';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
@@ -226,6 +227,18 @@ describe('AuthenticationService', () => {
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
 				expect(jwtWhitelistAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('removeUserFromWhitelist', () => {
+		describe('when an account was provided', () => {
+			it('should call the jwtValidationAdapter to remove the jwt', async () => {
+				const account = accountDoFactory.build();
+
+				await authenticationService.removeUserFromWhitelist(account);
+
+				expect(jwtWhitelistAdapter.removeFromWhitelist).toHaveBeenCalledWith(account.id);
 			});
 		});
 	});
