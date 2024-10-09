@@ -9,15 +9,23 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
+import { H5PEditorModule } from '@modules/h5p-editor';
 import metaTagExtractorConfig from './meta-tag-extractor.config';
 import { MetaTagExtractorService } from './service';
 import { MetaTagInternalUrlService } from './service/meta-tag-internal-url.service';
-import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './service/url-handler';
+import {
+	BoardUrlHandler,
+	CourseUrlHandler,
+	H5pUrlHandler,
+	LessonUrlHandler,
+	TaskUrlHandler,
+} from './service/url-handler';
 
 @Module({
 	imports: [
 		BoardModule,
 		ConsoleWriterModule,
+		H5PEditorModule,
 		HttpModule,
 		LearnroomModule,
 		LessonModule,
@@ -33,6 +41,7 @@ import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } f
 		LessonUrlHandler,
 		CourseUrlHandler,
 		BoardUrlHandler,
+		H5pUrlHandler,
 	],
 	exports: [MetaTagExtractorService],
 })
