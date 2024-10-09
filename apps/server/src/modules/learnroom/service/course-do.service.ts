@@ -1,5 +1,5 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import { type Group } from '@modules/group';
+import { GroupUser, type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
@@ -45,12 +45,27 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 		await this.courseRepo.save(course);
 	}
 
-	public async startSynchronization(course: Course, group: Group): Promise<void> {
+	public async startSynchronization(
+		course: Course,
+		group: Group,
+		students: GroupUser[],
+		teachers: GroupUser[]
+	): Promise<void> {
 		if (course.syncedWithGroup) {
 			throw new CourseAlreadySynchronizedLoggableException(course.id);
 		}
 
 		course.syncedWithGroup = group.id;
+		course.name = group.name;
+		course.startDate = group.validPeriod?.from;
+		course.untilDate = group.validPeriod?.until;
+
+		if (teachers.length >= 1) {
+			course.students = students.map((groupUser: GroupUser): EntityId => groupUser.userId);
+			course.teachers = teachers.map((groupUser: GroupUser): EntityId => groupUser.userId);
+		} else {
+			course.students = [];
+		}
 
 		await this.courseRepo.save(course);
 	}
