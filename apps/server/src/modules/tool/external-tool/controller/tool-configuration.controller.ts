@@ -107,7 +107,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextRefParams
 	): Promise<PreferedToolListResponse> {
-		const prefferedTools: ContextExternalToolTemplateInfo[] =
+		const preferedTools: ContextExternalToolTemplateInfo[] =
 			await this.externalToolConfigurationUc.getPreferedToolsForContext(
 				currentUser.userId,
 				currentUser.schoolId,
@@ -115,7 +115,7 @@ export class ToolConfigurationController {
 				params.contextType
 			);
 
-		const mapped: PreferedToolListResponse = ToolConfigurationMapper.mapToPreferedToolListResponse(prefferedTools);
+		const mapped: PreferedToolListResponse = ToolConfigurationMapper.mapToPreferedToolListResponse(preferedTools);
 
 		return mapped;
 	}
