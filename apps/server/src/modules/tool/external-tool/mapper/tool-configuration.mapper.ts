@@ -1,3 +1,5 @@
+import { PreferedToolListResponse } from '@modules/tool/external-tool/controller/dto/response/prefered-tool-list.response';
+import { PreferedToolResponse } from '@modules/tool/external-tool/controller/dto/response/prefered-tool.response';
 import { ToolContextType } from '../../common/enum';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
@@ -76,5 +78,25 @@ export class ToolConfigurationMapper {
 		const mappedTypes = new ToolContextTypesListResponse(toolContextTypes);
 
 		return mappedTypes;
+	}
+
+	static mapToPreferedToolListResponse(preferedTools: ContextExternalToolTemplateInfo[]): PreferedToolListResponse {
+		const mappedTools = preferedTools.map((tool): PreferedToolResponse => this.mapToPreferedToolResponse(tool));
+
+		const mapped = new PreferedToolListResponse(mappedTools);
+
+		return mapped;
+	}
+
+	static mapToPreferedToolResponse(preferedTool: ContextExternalToolTemplateInfo): PreferedToolResponse {
+		const { externalTool, schoolExternalTool } = preferedTool;
+
+		const mapped = new PreferedToolResponse({
+			schoolExternalToolId: schoolExternalTool.id ?? '',
+			name: externalTool.name,
+			icon: externalTool.iconName ?? '',
+		});
+
+		return mapped;
 	}
 }
