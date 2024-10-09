@@ -75,12 +75,13 @@ export class TspSyncService {
 	public async createSchool(system: System, identifier: string, name: string): Promise<School> {
 		const schoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
 		const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
+		const federalState = await this.findFederalState();
 
 		const school = SchoolFactory.build({
 			externalId: identifier,
 			name,
 			systemIds: [system.id],
-			federalState: await this.findFederalState(),
+			federalState,
 			currentYear: schoolYear,
 			features: new Set([SchoolFeature.OAUTH_PROVISIONING_ENABLED]),
 			createdAt: new Date(),
