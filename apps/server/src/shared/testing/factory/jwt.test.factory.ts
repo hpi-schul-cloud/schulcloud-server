@@ -1,15 +1,15 @@
-import jwt from 'jsonwebtoken';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
+import jwt from 'jsonwebtoken';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
 const privateKey: string | Buffer = keyPair.privateKey.export({ type: 'pkcs1', format: 'pem' });
 
 interface CreateJwtParams {
-	privateKey?: string | Buffer;
 	sub?: string;
 	iss?: string;
 	aud?: string;
+	exp?: number;
 	accountId?: string;
 	external_sub?: string;
 }
@@ -22,16 +22,17 @@ export class JwtTestFactory {
 	public static createJwt(params?: CreateJwtParams): string {
 		const validJwt = jwt.sign(
 			{
-				sub: params?.sub ?? 'testUser',
-				iss: params?.iss ?? 'issuer',
-				aud: params?.aud ?? 'audience',
+				sub: 'testUser',
+				iss: 'issuer',
+				aud: 'audience',
 				jti: 'jti',
 				iat: Date.now(),
 				exp: Date.now() + 100000,
-				accountId: params?.accountId ?? 'accountId',
-				external_sub: params?.external_sub ?? 'externalSub',
+				accountId: 'accountId',
+				external_sub: 'externalSub',
+				...params,
 			},
-			params?.privateKey ?? privateKey,
+			privateKey,
 			{
 				algorithm: 'RS256',
 			}
