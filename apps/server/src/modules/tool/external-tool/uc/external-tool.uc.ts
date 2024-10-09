@@ -11,7 +11,15 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
+import {
+	BasicToolConfig,
+	ExternalTool,
+	ExternalToolConfig,
+	ExternalToolDatasheetTemplateData,
+	ExternalToolMetadata,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '../domain';
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
 	DatasheetPdfService,
@@ -44,9 +52,8 @@ export class ExternalToolUc {
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		if (ExternalTool.isLti11Config(externalToolCreate.config) && externalToolCreate.config.secret) {
-			externalToolCreate.config.secret = this.encryptionService.encrypt(externalToolCreate.config.secret);
-		}
+		const updatedConfig = this.encryptLtiSecret(externalToolCreate);
+		externalToolCreate.config = updatedConfig;
 
 		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate, jwt);
 
@@ -70,9 +77,8 @@ export class ExternalToolUc {
 			});
 
 			try {
-				if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
-					externalTool.config.secret = this.encryptionService.encrypt(externalTool.config.secret);
-				}
+				const updatedConfig = this.encryptLtiSecret(externalTool);
+				externalTool.config = updatedConfig;
 
 				// eslint-disable-next-line no-await-in-loop
 				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool, jwt);
@@ -132,19 +138,11 @@ export class ExternalToolUc {
 
 		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
+		const updatedConfig = this.encryptLtiSecret(externalToolUpdate);
+		externalToolUpdate.config = updatedConfig;
+
 		// Use secrets from existing config
 		const updatedConfigProps: ExternalToolConfig = { ...currentExternalTool.config, ...externalToolUpdateProps.config };
-
-		const { isLti11Config } = ExternalTool;
-
-		if (
-			(isLti11Config(updatedConfigProps) &&
-				isLti11Config(currentExternalTool.config) &&
-				updatedConfigProps.secret !== currentExternalTool.config.secret) ||
-			(!isLti11Config(currentExternalTool.config) && isLti11Config(updatedConfigProps))
-		) {
-			updatedConfigProps.secret = this.encryptionService.encrypt(updatedConfigProps.secret);
-		}
 
 		const pendingExternalTool: ExternalTool = new ExternalTool({
 			...currentExternalTool.getProps(),
@@ -268,5 +266,19 @@ export class ExternalToolUc {
 		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
+	}
+
+	private encryptLtiSecret(
+		externalToolUpdate: ExternalToolCreate | ExternalToolUpdate
+	): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
+		if (ExternalTool.isLti11Config(externalToolUpdate.config) && externalToolUpdate.config.secret) {
+			const encrypted = this.encryptionService.encrypt(externalToolUpdate.config.secret);
+
+			const updatedConfig = new Lti11ToolConfig({ ...externalToolUpdate.config, secret: encrypted });
+
+			return updatedConfig;
+		}
+
+		return externalToolUpdate.config;
 	}
 }
