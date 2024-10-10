@@ -49,6 +49,7 @@ export class OauthAdapterService {
 		try {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {
+			console.error('Error while requesting token', error);
 			if (isAxiosError(error)) {
 				throw new TokenRequestLoggableException(error);
 			}
