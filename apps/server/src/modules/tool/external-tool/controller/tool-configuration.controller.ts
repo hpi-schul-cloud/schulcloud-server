@@ -8,7 +8,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { PreferedToolListResponse } from '@modules/tool/external-tool/controller/dto/response/prefered-tool-list.response';
+import { PreferredToolListResponse } from '@modules/tool/external-tool/controller/dto/response/preferred-tool-list.response';
 import { ToolContextType } from '../../common/enum';
 import { ExternalTool } from '../domain';
 import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
@@ -101,12 +101,12 @@ export class ToolConfigurationController {
 	@ApiOperation({ summary: 'Lists all preferred tools that can be added for a given context' })
 	@ApiOkResponse({
 		description: 'List of preferred tools for a context',
-		type: PreferedToolListResponse,
+		type: PreferredToolListResponse,
 	})
-	public async getPreferedToolsForContext(
+	public async getPreferredToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextRefParams
-	): Promise<PreferedToolListResponse> {
+	): Promise<PreferredToolListResponse> {
 		const preferedTools: ContextExternalToolTemplateInfo[] =
 			await this.externalToolConfigurationUc.getPreferedToolsForContext(
 				currentUser.userId,
@@ -115,7 +115,7 @@ export class ToolConfigurationController {
 				params.contextType
 			);
 
-		const mapped: PreferedToolListResponse = ToolConfigurationMapper.mapToPreferedToolListResponse(preferedTools);
+		const mapped: PreferredToolListResponse = ToolConfigurationMapper.mapToPreferredToolListResponse(preferedTools);
 
 		return mapped;
 	}
