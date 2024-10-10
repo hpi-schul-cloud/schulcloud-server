@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { BoardTaskStatusResponse } from '../room-api-client';
 import { BoardTaskStatusMapper } from './board-task-status-dto.mapper';
+import { BoardTaskStatusDto } from '../dto/board-task-status.dto';
 
 describe(BoardTaskStatusMapper.name, () => {
 	describe('mapBoardTaskStatusToDto', () => {
@@ -16,6 +17,7 @@ describe(BoardTaskStatusMapper.name, () => {
 
 			const statusDto = BoardTaskStatusMapper.mapBoardTaskStatusToDto(statusResponse);
 
+			expect(statusDto).toBeInstanceOf(BoardTaskStatusDto);
 			expect(statusDto).toEqual(statusResponse);
 		});
 	});
