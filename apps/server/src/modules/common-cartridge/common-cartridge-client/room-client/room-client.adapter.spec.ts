@@ -7,7 +7,7 @@ import { AxiosResponse } from 'axios';
 import { jest } from '@jest/globals';
 import { CourseRoomsApi, SingleColumnBoardResponse } from './room-api-client';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
-import { RoomBoardDtoMapper } from './mapper/board-element-dto.mapper';
+import { RoomBoardDtoMapper } from './mapper/room-board-dto.mapper';
 import { RoomBoardDto } from './dto/room-board.dto';
 
 const jwtToken = 'dummyJwtToken';

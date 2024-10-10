@@ -54,6 +54,11 @@ export class RoomBoardDtoMapper {
 			name: task.name,
 			createdAt: task.createdAt,
 			updatedAt: task.updatedAt,
+			availableDate: task.availableDate ?? undefined,
+			dueDate: task.dueDate ?? undefined,
+			courseName: task.courseName ?? undefined,
+			description: task.description ?? undefined,
+			displayColor: task.displayColor ?? undefined,
 			status: BoardTaskStatusMapper.mapBoardTaskStatusToDto(task.status),
 		});
 

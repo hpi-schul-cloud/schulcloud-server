@@ -5,7 +5,7 @@ import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
 import { CourseRoomsApi } from './room-api-client';
 import { RoomBoardDto } from './dto/room-board.dto';
-import { RoomBoardDtoMapper } from './mapper/board-element-dto.mapper';
+import { RoomBoardDtoMapper } from './mapper/room-board-dto.mapper';
 
 @Injectable()
 export class CourseRoomsClientAdapter {
