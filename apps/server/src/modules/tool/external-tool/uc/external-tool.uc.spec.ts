@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
@@ -13,6 +14,7 @@ import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { currentUserFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
+import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
@@ -22,6 +24,7 @@ import {
 	ExternalToolMetadata,
 	ExternalToolParameterDatasheetTemplateProperty,
 	ExternalToolProps,
+	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
 import {
@@ -36,9 +39,10 @@ import {
 	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
 	fileRecordRefFactory,
+	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
-import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate } from './dto';
+import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate, Lti11ToolConfigUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
 describe(ExternalToolUc.name, () => {
@@ -54,6 +58,7 @@ describe(ExternalToolUc.name, () => {
 	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
 	let pdfService: DeepMocked<DatasheetPdfService>;
 	let externalToolImageService: DeepMocked<ExternalToolImageService>;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -99,6 +104,10 @@ describe(ExternalToolUc.name, () => {
 					provide: ExternalToolImageService,
 					useValue: createMock<ExternalToolImageService>(),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
@@ -112,6 +121,7 @@ describe(ExternalToolUc.name, () => {
 		commonToolMetadataService = module.get(CommonToolMetadataService);
 		pdfService = module.get(DatasheetPdfService);
 		externalToolImageService = module.get(ExternalToolImageService);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -140,6 +150,7 @@ describe(ExternalToolUc.name, () => {
 
 		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).buildWithId();
 		const oauth2ConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigFactory.build();
+		const lti11ToolConfig: Lti11ToolConfig = lti11ToolConfigFactory.build();
 
 		const query: ExternalToolSearchQuery = {
 			name: externalTool.name,
@@ -171,6 +182,7 @@ describe(ExternalToolUc.name, () => {
 			query,
 			toolId,
 			mockLogoBase64,
+			lti11ToolConfig,
 		};
 	};
 
@@ -334,6 +346,44 @@ describe(ExternalToolUc.name, () => {
 				);
 			});
 		});
+
+		describe('when external tool with lti11 config is given', () => {
+			const setupLTI = () => {
+				const { currentUser } = setupAuthorization();
+				const { externalTool, lti11ToolConfig } = setupDefault();
+				externalTool.config = lti11ToolConfig;
+
+				encryptionService.encrypt.mockReturnValue('encrypted');
+
+				return {
+					currentUser,
+					externalTool,
+				};
+			};
+			it('should call the encryption service', async () => {
+				const { currentUser, externalTool } = setupLTI();
+
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+
+				expect(encryptionService.encrypt).toHaveBeenCalledWith('secret');
+			});
+
+			it('should call the service to save a tool', async () => {
+				const { currentUser, externalTool } = setupLTI();
+
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+
+				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
+					1,
+					new ExternalTool({
+						...externalTool.getProps(),
+						logo: 'base64LogoString',
+						config: { ...externalTool.config, secret: 'encrypted' },
+						id: expect.any(String),
+					})
+				);
+			});
+		});
 	});
 
 	describe('importExternalTools', () => {
@@ -381,6 +431,14 @@ describe(ExternalToolUc.name, () => {
 					jwt,
 				};
 			};
+
+			it('should not call encryption service', async () => {
+				const { user, externalTool1, externalTool2 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()], 'jwt');
+
+				expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			});
 
 			it('should check the users permission', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
@@ -473,6 +531,67 @@ describe(ExternalToolUc.name, () => {
 					ExternalTool.thumbnailNameAffix,
 					externalTool2.id,
 					jwt
+				);
+			});
+		});
+
+		describe('when importing lti tool', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const externalTool1 = externalToolFactory.build({
+					name: 'tool1',
+					medium: {
+						mediumId: 'medium1',
+						mediaSourceId: 'mediumSource1',
+					},
+				});
+
+				const ltiConfig = lti11ToolConfigFactory.build();
+				externalTool1.config = ltiConfig;
+
+				const externalToolCreate1: ExternalToolCreate = {
+					...externalTool1.getProps(),
+					thumbnailUrl: 'https://thumbnail.url1',
+				};
+
+				const jwt = 'jwt';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				logoService.fetchLogo.mockResolvedValueOnce(undefined);
+				const thumbnailFileRecordRef = fileRecordRefFactory.build();
+				externalToolImageService.uploadImageFileFromUrl.mockResolvedValueOnce(thumbnailFileRecordRef);
+				externalToolService.createExternalTool.mockResolvedValueOnce(externalTool1);
+				encryptionService.encrypt.mockReturnValue('encrypted');
+
+				return {
+					user,
+					externalTool1,
+					externalToolCreate1,
+					thumbnailFileRecordRef,
+					jwt,
+				};
+			};
+
+			it('should call encryption service', async () => {
+				const { user, externalTool1 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps()], 'jwt');
+
+				expect(encryptionService.encrypt).toHaveBeenCalled();
+			});
+
+			it('should save tool', async () => {
+				const { user, externalTool1 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps()], 'jwt');
+
+				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
+					1,
+					new ExternalTool({
+						...externalTool1.getProps(),
+						config: lti11ToolConfigFactory.build({ ...externalTool1.config, secret: 'encrypted' }),
+						id: expect.any(String),
+					})
 				);
 			});
 		});
@@ -643,6 +762,8 @@ describe(ExternalToolUc.name, () => {
 				url: undefined,
 			});
 
+			const lti11ToolConfig: Lti11ToolConfig = lti11ToolConfigFactory.build();
+
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalTool);
 			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolToUpdate));
 
@@ -652,6 +773,7 @@ describe(ExternalToolUc.name, () => {
 				externalToolDOtoUpdate: externalToolToUpdate,
 				toolId,
 				mockLogoBase64,
+				lti11ToolConfig,
 			};
 		};
 
@@ -866,6 +988,129 @@ describe(ExternalToolUc.name, () => {
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<ExternalTool>>({ thumbnail: thumbnailFileRecordRef })
 				);
+			});
+		});
+
+		describe('when lti11 config is given and secret is not encrypted', () => {
+			const setupLTI = () => {
+				const { externalTool, toolId, mockLogoBase64 } = setupDefault();
+
+				const lti11ToolConfig: Lti11ToolConfig = lti11ToolConfigFactory.build();
+				const externalToolToUpdate: ExternalToolUpdate = {
+					...externalTool.getProps(),
+					name: 'newName',
+					config: lti11ToolConfig,
+					url: undefined,
+					logo: mockLogoBase64,
+				};
+
+				const currentTestTool = new ExternalTool({ ...externalToolToUpdate });
+				const expectedLtiConfig = lti11ToolConfigFactory.buildWithId({ secret: 'encrypted' });
+				currentTestTool.config = expectedLtiConfig;
+
+				const updatedExternalTool: ExternalTool = externalToolFactory.build({
+					...externalTool.getProps(),
+					name: 'newName',
+					config: expectedLtiConfig,
+					url: undefined,
+					logo: mockLogoBase64,
+				});
+
+				externalToolService.findById.mockResolvedValue(currentTestTool);
+				encryptionService.encrypt.mockReturnValue(expectedLtiConfig.secret);
+				externalToolService.updateExternalTool.mockResolvedValue(updatedExternalTool);
+
+				return {
+					externalTool,
+					updatedExternalToolDO: updatedExternalTool,
+					externalToolDOtoUpdate: externalToolToUpdate,
+					toolId,
+					mockLogoBase64,
+					lti11ToolConfig,
+				};
+			};
+
+			it('should call encryption service', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId, externalToolDOtoUpdate, lti11ToolConfig } = setupLTI();
+
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+
+				expect(encryptionService.encrypt).toHaveBeenNthCalledWith(1, lti11ToolConfig.secret);
+			});
+
+			it('should call the service to update the tool', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId, externalToolDOtoUpdate, updatedExternalToolDO } = setupLTI();
+
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+
+				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(updatedExternalToolDO);
+			});
+		});
+
+		describe('when lti11 config is given and secret is already encrypted', () => {
+			const setupLTI = () => {
+				const { externalTool, toolId, mockLogoBase64 } = setupDefault();
+
+				const lti11ToolConfig: Lti11ToolConfigUpdate = {
+					type: ToolConfigType.LTI11,
+					baseUrl: 'https://www.basic-baseUrl.com/',
+					key: 'key',
+					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					launch_presentation_locale: 'de-DE',
+				};
+
+				const externalToolToUpdate: ExternalToolUpdate = {
+					...externalTool.getProps(),
+					config: lti11ToolConfig,
+					name: 'newName',
+					url: undefined,
+				};
+
+				const updatedExternalTool: ExternalTool = externalToolFactory.build({
+					...externalTool.getProps(),
+					config: lti11ToolConfigFactory.build({ ...externalTool.config, secret: 'encrypted' }),
+					name: 'newName',
+					url: undefined,
+					logo: mockLogoBase64,
+				});
+
+				externalToolService.findById.mockResolvedValue(
+					new ExternalTool({
+						...externalToolToUpdate,
+						config: lti11ToolConfigFactory.build({ ...externalToolToUpdate.config, secret: 'encrypted' }),
+					})
+				);
+				externalToolService.updateExternalTool.mockResolvedValue(updatedExternalTool);
+
+				return {
+					externalTool,
+					updatedExternalToolDO: updatedExternalTool,
+					externalToolDOtoUpdate: externalToolToUpdate,
+					toolId,
+					mockLogoBase64,
+					lti11ToolConfig,
+				};
+			};
+
+			it('should not call encryption service', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId, externalToolDOtoUpdate } = setupLTI();
+
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+
+				expect(encryptionService.encrypt).not.toHaveBeenCalledWith();
+			});
+
+			it('should call the service to update the tool', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId, externalToolDOtoUpdate, updatedExternalToolDO } = setupLTI();
+
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+
+				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(updatedExternalToolDO);
 			});
 		});
 	});
