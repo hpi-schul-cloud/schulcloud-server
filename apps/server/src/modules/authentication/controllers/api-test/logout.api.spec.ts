@@ -54,7 +54,7 @@ describe('Logout Controller (api)', () => {
 			it('should log out the user', async () => {
 				const { loggedInClient, studentAccount } = await setup();
 
-				const response: Response = await loggedInClient.delete('');
+				const response: Response = await loggedInClient.post('');
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(await cacheManager.store.keys(`jwt:${studentAccount.id}:*`)).toHaveLength(0);
@@ -63,7 +63,7 @@ describe('Logout Controller (api)', () => {
 
 		describe('when the user is not logged in', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.delete('');
+				const response: Response = await testApiClient.post('');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
