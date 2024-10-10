@@ -1,16 +1,25 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
+import {
+	BasicToolConfig,
+	ExternalTool,
+	ExternalToolConfig,
+	ExternalToolDatasheetTemplateData,
+	ExternalToolMetadata,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '../domain';
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
 	DatasheetPdfService,
@@ -32,7 +41,8 @@ export class ExternalToolUc {
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
 		private readonly datasheetPdfService: DatasheetPdfService,
-		private readonly externalToolImageService: ExternalToolImageService
+		private readonly externalToolImageService: ExternalToolImageService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
 	public async createExternalTool(
@@ -41,6 +51,8 @@ export class ExternalToolUc {
 		jwt: string
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		externalToolCreate.config = this.encryptLtiSecret(externalToolCreate);
 
 		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate, jwt);
 
@@ -64,6 +76,8 @@ export class ExternalToolUc {
 			});
 
 			try {
+				externalTool.config = this.encryptLtiSecret(externalTool);
+
 				// eslint-disable-next-line no-await-in-loop
 				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool, jwt);
 
@@ -117,6 +131,8 @@ export class ExternalToolUc {
 		jwt: string
 	): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		externalToolUpdate.config = this.encryptLtiSecret(externalToolUpdate);
 
 		const { thumbnailUrl, ...externalToolUpdateProps } = externalToolUpdate;
 
@@ -247,5 +263,19 @@ export class ExternalToolUc {
 		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
+	}
+
+	private encryptLtiSecret(
+		externalTool: ExternalToolCreate | ExternalToolUpdate
+	): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
+		if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
+			const encrypted = this.encryptionService.encrypt(externalTool.config.secret);
+
+			const updatedConfig = new Lti11ToolConfig({ ...externalTool.config, secret: encrypted });
+
+			return updatedConfig;
+		}
+
+		return externalTool.config;
 	}
 }
