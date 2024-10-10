@@ -6,7 +6,7 @@ import { RoomBoardDto } from '../dto/room-board.dto';
 import { BoardElementDtoType } from '../enums/board-element.enum';
 import {
 	BoardColumnBoardResponse,
-	BoardElementResponseContent,
+	BoardElementResponse,
 	BoardLessonResponse,
 	BoardTaskResponse,
 	SingleColumnBoardResponse,
@@ -33,16 +33,16 @@ export class RoomBoardDtoMapper {
 	private static mapBoardElements(response: SingleColumnBoardResponse): BoardElementDto[] {
 		const elements: BoardElementDto[] = [];
 		response.elements.forEach((element) => {
-			if (this.isBoardTaskResponse(element.content)) {
-				elements.push(this.mapTask(element.content));
+			if (this.isBoardTaskResponse(element)) {
+				elements.push(this.mapTask(element.content as BoardTaskResponse));
 			}
 
-			if (this.isBoardLessonResponse(element.content)) {
-				elements.push(this.mapLesson(element.content));
+			if (this.isBoardLessonResponse(element)) {
+				elements.push(this.mapLesson(element.content as BoardLessonResponse));
 			}
 
-			if (this.isBoardColumnBoardResponse(element.content)) {
-				elements.push(this.mapColumnBoard(element.content));
+			if (this.isBoardColumnBoardResponse(element)) {
+				elements.push(this.mapColumnBoard(element.content as BoardColumnBoardResponse));
 			}
 		});
 		return elements;
@@ -109,15 +109,15 @@ export class RoomBoardDtoMapper {
 		return boardElmentDto;
 	}
 
-	private static isBoardTaskResponse(content: BoardElementResponseContent): content is BoardTaskResponse {
-		return (content as BoardTaskResponse).status !== undefined;
+	private static isBoardTaskResponse(element: BoardElementResponse): element is BoardElementResponse {
+		return element.type === BoardElementDtoType.TASK;
 	}
 
-	private static isBoardLessonResponse(content: BoardElementResponseContent): content is BoardLessonResponse {
-		return (content as BoardLessonResponse).courseName !== undefined;
+	private static isBoardLessonResponse(element: BoardElementResponse): element is BoardElementResponse {
+		return element.type === BoardElementDtoType.LESSON;
 	}
 
-	private static isBoardColumnBoardResponse(content: BoardElementResponseContent): content is BoardColumnBoardResponse {
-		return (content as BoardColumnBoardResponse).columnBoardId !== undefined;
+	private static isBoardColumnBoardResponse(element: BoardElementResponse): element is BoardElementResponse {
+		return element.type === BoardElementDtoType.COLUMN_BOARD;
 	}
 }

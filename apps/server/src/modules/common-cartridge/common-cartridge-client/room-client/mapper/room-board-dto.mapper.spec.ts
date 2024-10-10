@@ -50,7 +50,7 @@ describe(RoomBoardDtoMapper.name, () => {
 
 				return { response, task };
 			};
-			it('should map response to RoomBoardDto with tasks element', () => {
+			it('should map response to RoomBoardDto with tasks elements', () => {
 				const { response, task } = setup();
 				const result = RoomBoardDtoMapper.mapResponseToRoomBoardDto(response);
 
@@ -91,7 +91,7 @@ describe(RoomBoardDtoMapper.name, () => {
 				return { response, lesson };
 			};
 
-			it('should map response to RoomBoardDto with lessons element', () => {
+			it('should map response to RoomBoardDto with lesson elements', () => {
 				const { response, lesson } = setup();
 				const result = RoomBoardDtoMapper.mapResponseToRoomBoardDto(response);
 
@@ -130,7 +130,7 @@ describe(RoomBoardDtoMapper.name, () => {
 				return { response, columnBoard };
 			};
 
-			it('should map response to RoomBoardDto with lessons element', () => {
+			it('should map response to RoomBoardDto with columnboard elements', () => {
 				const { response, columnBoard } = setup();
 				const result = RoomBoardDtoMapper.mapResponseToRoomBoardDto(response);
 
