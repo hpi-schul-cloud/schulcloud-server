@@ -17,7 +17,11 @@ import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { AuthorizationLoaderService } from '@src/modules/authorization';
+import {
+	AuthorizableReferenceType,
+	AuthorizationInjectionService,
+	AuthorizationLoaderService,
+} from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 
 @Injectable()
@@ -26,11 +30,13 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		injectionService: AuthorizationInjectionService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(LessonService.name);
+		injectionService.injectReferenceLoader(AuthorizableReferenceType.Lesson, this);
 	}
 
 	@UseRequestContext()

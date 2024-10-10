@@ -3,6 +3,7 @@ import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
@@ -20,7 +21,15 @@ import {
 } from './service';
 
 @Module({
-	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule, InstanceModule],
+	imports: [
+		CommonToolModule,
+		LoggerModule,
+		OauthProviderServiceModule,
+		EncryptionModule,
+		HttpModule,
+		InstanceModule,
+		AuthorizationModule,
+	],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
@@ -40,7 +49,6 @@ import {
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		DatasheetPdfService,
-		ExternalToolAuthorizableService,
 		ExternalToolImageService,
 	],
 })
