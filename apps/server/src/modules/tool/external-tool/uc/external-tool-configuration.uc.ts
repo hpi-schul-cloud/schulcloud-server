@@ -162,20 +162,12 @@ export class ExternalToolConfigurationUc {
 	public async getPreferedToolsForContext(
 		userId: EntityId,
 		schoolId: EntityId,
-		contextId: EntityId,
-		contextType: ToolContextType
+		contextType?: ToolContextType
 	): Promise<ContextExternalToolTemplateInfo[]> {
-		const [externalTools, contextExternalTools]: [Page<ExternalTool>, ContextExternalTool[]] = await Promise.all([
-			this.externalToolService.findExternalTools({ isPreferred: true }),
-			this.contextExternalToolService.findContextExternalTools({
-				context: { id: contextId, type: contextType },
-			}),
-		]);
-
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.hasAllPermissions(user, [Permission.CONTEXT_TOOL_ADMIN]);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
-		await this.ensureContextPermissions(user, contextExternalTools, context);
+		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({ isPreferred: true });
 
 		const schoolExternalTools: SchoolExternalTool[] = (
 			await Promise.all(
@@ -200,15 +192,17 @@ export class ExternalToolConfigurationUc {
 	private prepareAvailableToolsForContext(
 		externalTools: ExternalTool[],
 		schoolExternalTools: SchoolExternalTool[],
-		contextType: ToolContextType
+		contextType?: ToolContextType
 	): ContextExternalToolTemplateInfo[] {
 		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
 			this.externalToolConfigurationService.filterForAvailableExternalTools(externalTools, schoolExternalTools);
 
-		availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
-			availableToolsForContext,
-			contextType
-		);
+		if (contextType) {
+			availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
+				availableToolsForContext,
+				contextType
+			);
+		}
 
 		availableToolsForContext.forEach((toolTemplateInfo) => {
 			this.externalToolConfigurationService.filterParametersForScope(
