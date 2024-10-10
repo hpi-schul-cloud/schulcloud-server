@@ -58,9 +58,9 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			externalId: payload.ptscSchuleNummer || '',
 		});
 
-		const externalClassDtoList = (payload.ptscListKlasseId ?? []).map(
-			(classId: string) => new ExternalClassDto({ externalId: classId })
-		);
+		const externalClassDtoList = payload.ptscListKlasseId
+			? [new ExternalClassDto({ externalId: payload.ptscListKlasseId })]
+			: [];
 
 		const oauthDataDto = new OauthDataDto({
 			system: input.system,

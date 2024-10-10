@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
 
 export class TspJwtPayload implements JwtPayload {
@@ -26,8 +26,8 @@ export class TspJwtPayload implements JwtPayload {
 	public ptscSchuleNummer: string | undefined;
 
 	@IsOptional()
-	@IsArray()
-	public ptscListKlasseId: [] | undefined;
+	@IsString()
+	public ptscListKlasseId: string | undefined;
 
 	constructor(data: Partial<TspJwtPayload>) {
 		Object.assign(this, data);
