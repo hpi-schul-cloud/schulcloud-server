@@ -1,10 +1,11 @@
-export { UserLicenseModule } from './user-license.module';
-export { MediaUserLicenseService, MediaSourceService } from './service';
-export { MediaUserLicense, MediaSource, MediaUserLicenseProps, MediaSourceProps, AnyUserLicense } from './domain';
-export { UserLicenseType } from './entity/user-license-type';
+export { AnyUserLicense, MediaSource, MediaSourceProps, MediaUserLicense, MediaUserLicenseProps } from './domain';
+export { MediaSourceEntity } from './entity';
+export { UserLicenseType } from './enum/user-license-type';
+export { MediaSourceService, MediaUserLicenseService } from './service';
 export {
-	mediaUserLicenseFactory,
-	mediaSourceFactory,
 	mediaSourceEntityFactory,
+	mediaSourceFactory,
 	mediaUserLicenseEntityFactory,
+	mediaUserLicenseFactory,
 } from './testing';
+export { UserLicenseModule } from './user-license.module';

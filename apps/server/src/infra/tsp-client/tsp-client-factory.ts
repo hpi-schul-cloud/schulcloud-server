@@ -1,23 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomUUID } from 'crypto';
+import { OauthAdapterService } from '@src/modules/oauth';
+import { OAuthGrantType } from '@src/modules/oauth/interface/oauth-grant-type.enum';
+import { ClientCredentialsGrantTokenRequest } from '@src/modules/oauth/service/dto';
 import * as jwt from 'jsonwebtoken';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
-import { TspRestClientConfig } from './tsp-client-config';
+import { TspClientConfig } from './tsp-client-config';
+
+type FactoryParams = {
+	clientId: string;
+	clientSecret: string;
+	tokenEndpoint: string;
+};
 
 @Injectable()
 export class TspClientFactory {
-	private readonly domain: string;
-
-	private readonly host: string;
-
 	private readonly baseUrl: string;
-
-	private readonly clientId: string;
-
-	private readonly clientSecret: string;
-
-	private readonly signingKey: string;
 
 	private readonly tokenLifetime: number;
 
@@ -25,20 +23,20 @@ export class TspClientFactory {
 
 	private tokenExpiresAt: number | undefined;
 
-	constructor(configService: ConfigService<TspRestClientConfig, true>) {
-		this.domain = configService.getOrThrow<string>('SC_DOMAIN');
-		this.host = configService.getOrThrow<string>('HOST');
+	constructor(
+		private readonly oauthAdapterService: OauthAdapterService,
+		configService: ConfigService<TspClientConfig, true>
+	) {
 		this.baseUrl = configService.getOrThrow<string>('TSP_API_BASE_URL');
-		this.clientId = configService.getOrThrow<string>('TSP_API_CLIENT_ID');
-		this.clientSecret = configService.getOrThrow<string>('TSP_API_CLIENT_SECRET');
-		this.signingKey = configService.getOrThrow<string>('TSP_API_SIGNATURE_KEY');
 		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_TOKEN_LIFETIME_MS');
 	}
 
-	public createExportClient(): ExportApiInterface {
+	public createExportClient(params: FactoryParams): ExportApiInterface {
 		const factory = ExportApiFactory(
 			new Configuration({
-				accessToken: this.createJwt(),
+				// accessToken has to be a function otherwise it will be called once
+				// and will not be refresh the access token when it expires
+				apiKey: async () => this.getAccessToken(params),
 				basePath: this.baseUrl,
 			})
 		);
@@ -46,28 +44,32 @@ export class TspClientFactory {
 		return factory;
 	}
 
-	private createJwt(): string {
+	public async getAccessToken(params: FactoryParams): Promise<string> {
 		const now = Date.now();
 
 		if (this.cachedToken && this.tokenExpiresAt && this.tokenExpiresAt > now) {
 			return this.cachedToken;
 		}
 
-		this.tokenExpiresAt = now + this.tokenLifetime;
+		const payload = new ClientCredentialsGrantTokenRequest({
+			client_id: params.clientId,
+			client_secret: params.clientSecret,
+			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
+		});
 
-		const payload = {
-			apiClientId: this.clientId,
-			apiClientSecret: this.clientSecret,
-			iss: this.domain,
-			aud: this.baseUrl,
-			sub: this.host,
-			exp: this.tokenExpiresAt,
-			iat: this.tokenExpiresAt - this.tokenLifetime,
-			jti: randomUUID(),
-		};
+		const response = await this.oauthAdapterService.sendTokenRequest(params.tokenEndpoint, payload);
 
-		this.cachedToken = jwt.sign(payload, this.signingKey);
+		this.cachedToken = response.accessToken;
+		this.tokenExpiresAt = this.getExpiresAt(now, response.accessToken);
 
-		return this.cachedToken;
+		// We need the Bearer prefix for the generated client, because OAS 2 does not support Bearer token type
+		return `Bearer ${this.cachedToken}`;
+	}
+
+	private getExpiresAt(now: number, token: string): number {
+		const decoded = jwt.decode(token, { json: true });
+		const expiresAt = decoded?.exp || now + this.tokenLifetime;
+
+		return expiresAt;
 	}
 }

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -24,7 +23,6 @@ describe(ExternalToolService.name, () => {
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let commonToolDeleteService: DeepMocked<CommonToolDeleteService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
-	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,10 +41,6 @@ describe(ExternalToolService.name, () => {
 					useValue: createMock<ExternalToolServiceMapper>(),
 				},
 				{
-					provide: DefaultEncryptionService,
-					useValue: createMock<EncryptionService>(),
-				},
-				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -62,7 +56,6 @@ describe(ExternalToolService.name, () => {
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
 		commonToolDeleteService = module.get(CommonToolDeleteService);
-		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -160,28 +153,13 @@ describe(ExternalToolService.name, () => {
 
 		describe('when lti11 config is set', () => {
 			const setup = () => {
-				const encryptedSecret = 'encryptedSecret';
 				const { externalTool, lti11ToolConfig } = createTools();
 				externalTool.config = lti11ToolConfig;
-				const lti11ToolConfigDOEncrypted: Lti11ToolConfig = { ...lti11ToolConfig, secret: encryptedSecret };
-				const externalToolDOEncrypted: ExternalTool = externalToolFactory.build({
-					...externalTool,
-					config: lti11ToolConfigDOEncrypted,
-				});
 
-				encryptionService.encrypt.mockReturnValue(encryptedSecret);
-				externalToolRepo.save.mockResolvedValue(externalToolDOEncrypted);
+				externalToolRepo.save.mockResolvedValue(externalTool);
 
-				return { externalTool, lti11ToolConfig, encryptedSecret, externalToolDOEncrypted };
+				return { externalTool, lti11ToolConfig };
 			};
-
-			it('should encrypt the secret', async () => {
-				const { externalTool } = setup();
-
-				await service.createExternalTool(externalTool);
-
-				expect(encryptionService.encrypt).toHaveBeenCalledWith('secret');
-			});
 
 			it('should call the repo to save a tool', async () => {
 				const { externalTool } = setup();
@@ -192,11 +170,11 @@ describe(ExternalToolService.name, () => {
 			});
 
 			it('should save DO', async () => {
-				const { externalTool, externalToolDOEncrypted } = setup();
+				const { externalTool } = setup();
 
 				const result: ExternalTool = await service.createExternalTool(externalTool);
 
-				expect(result).toEqual(externalToolDOEncrypted);
+				expect(result).toEqual(externalTool);
 			});
 		});
 	});
@@ -512,7 +490,6 @@ describe(ExternalToolService.name, () => {
 	describe('updateExternalTool', () => {
 		describe('when external tool with lti11 config is given', () => {
 			const setup = () => {
-				encryptionService.encrypt.mockReturnValue('newEncryptedSecret');
 				const changedTool: ExternalTool = externalToolFactory
 					.withLti11Config({ secret: 'newEncryptedSecret' })
 					.build({ name: 'newName' });
