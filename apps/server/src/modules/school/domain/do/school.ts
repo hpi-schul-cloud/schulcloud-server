@@ -40,6 +40,10 @@ export class School extends DomainObject<SchoolProps> {
 		this.props.ldapLastSync = ldapLastSync;
 	}
 
+	set name(name: string) {
+		this.props.name = name;
+	}
+
 	public getInfo(): SchoolInfo {
 		const info = {
 			id: this.props.id,

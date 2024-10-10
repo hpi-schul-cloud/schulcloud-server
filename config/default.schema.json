@@ -179,6 +179,11 @@
 			"default": "30000",
 			"description": "The TSP token lifetime in milliseconds."
 		},
+		"TSP_SYNC_SCHOOL_LIMIT": {
+			"type": "number",
+			"default": "10",
+			"description": "The amount of schools the sync handles at once."
+		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
 			"default": false,
