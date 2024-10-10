@@ -261,6 +261,15 @@ describe(ExternalToolUc.name, () => {
 			);
 		});
 
+		it('should return saved a tool', async () => {
+			const { currentUser } = setupAuthorization();
+			const { externalTool } = setupDefault();
+
+			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+
+			expect(result).toEqual(externalTool);
+		});
+
 		describe('when fetching logo', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
