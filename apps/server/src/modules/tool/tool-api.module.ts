@@ -1,3 +1,4 @@
+import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -35,6 +36,7 @@ import { ToolModule } from './tool.module';
 		BoardModule,
 		SchoolModule,
 		UserLicenseModule,
+		EncryptionModule,
 	],
 	controllers: [
 		ToolLaunchController,
