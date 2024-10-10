@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupPeriod, GroupUser } from '@modules/group';
+import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { groupFactory, roleDtoFactory } from '@shared/testing';
