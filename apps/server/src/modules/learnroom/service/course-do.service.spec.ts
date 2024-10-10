@@ -1,20 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupUser } from '@modules/group';
+import { Group } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { groupFactory } from '@shared/testing';
-import {
-	Course,
-	COURSE_REPO,
-	CourseAlreadySynchronizedLoggableException,
-	CourseFilter,
-	CourseNotSynchronizedLoggableException,
-	CourseRepo,
-} from '../domain';
+import { Course, COURSE_REPO, CourseFilter, CourseRepo } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';
 
@@ -136,128 +129,6 @@ describe(CourseDoService.name, () => {
 			const result: Course[] = await service.findBySyncedGroup(group);
 
 			expect(result).toEqual([course]);
-		});
-	});
-
-	describe('stopSynchronization', () => {
-		describe('when a course is synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
-
-				return {
-					course,
-				};
-			};
-
-			it('should save a course without a synchronized group', async () => {
-				const { course } = setup();
-
-				await service.stopSynchronization(course);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						syncedWithGroup: undefined,
-					})
-				);
-			});
-		});
-
-		describe('when a course is not synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build();
-
-				return {
-					course,
-				};
-			};
-
-			it('should throw an unprocessable entity exception', async () => {
-				const { course } = setup();
-
-				await expect(service.stopSynchronization(course)).rejects.toThrow(CourseNotSynchronizedLoggableException);
-			});
-		});
-	});
-
-	describe('startSynchronization', () => {
-		describe('when a course is not synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build();
-				const group: Group = groupFactory.build();
-				const students: GroupUser[] = [{ roleId: 'student-role-id', userId: 'student-user-id' }];
-				const teachers: GroupUser[] = [{ roleId: 'teacher-role-id', userId: 'teacher-user-id' }];
-
-				return {
-					course,
-					group,
-					students,
-					teachers,
-				};
-			};
-
-			it('should save a course with synchronized group, students, and teachers', async () => {
-				const { course, group, students, teachers } = setup();
-
-				await service.startSynchronization(course, group, students, teachers);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						syncedWithGroup: group.id,
-						name: group.name,
-						startDate: group.validPeriod?.from,
-						untilDate: group.validPeriod?.until,
-						studentIds: students.map((student) => student.userId),
-						teacherIds: teachers.map((teacher) => teacher.userId),
-					})
-				);
-			});
-
-			it('should set an empty list of students if no teachers are present', async () => {
-				const { course, group, students } = setup();
-				const teachers: GroupUser[] = []; // No teachers
-
-				await service.startSynchronization(course, group, students, teachers);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						syncedWithGroup: group.id,
-						name: group.name,
-						startDate: group.validPeriod?.from,
-						untilDate: group.validPeriod?.until,
-						studentIds: [],
-						teacherIds: [],
-					})
-				);
-			});
-		});
-
-		describe('when a course is already synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
-				const group: Group = groupFactory.build();
-				const students: GroupUser[] = [{ roleId: 'student-role-id', userId: 'student-user-id' }];
-				const teachers: GroupUser[] = [{ roleId: 'teacher-role-id', userId: 'teacher-user-id' }];
-
-				return {
-					course,
-					group,
-					students,
-					teachers,
-				};
-			};
-
-			it('should throw a CourseAlreadySynchronizedLoggableException', async () => {
-				const { course, group, students, teachers } = setup();
-
-				await expect(service.startSynchronization(course, group, students, teachers)).rejects.toThrow(
-					CourseAlreadySynchronizedLoggableException
-				);
-
-				expect(courseRepo.save).not.toHaveBeenCalled();
-			});
 		});
 	});
 

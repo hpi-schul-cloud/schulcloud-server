@@ -1,17 +1,10 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import { GroupUser, type Group } from '@modules/group';
+import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	type Course,
-	COURSE_REPO,
-	CourseAlreadySynchronizedLoggableException,
-	CourseFilter,
-	CourseNotSynchronizedLoggableException,
-	CourseRepo,
-} from '../domain';
+import { COURSE_REPO, CourseFilter, CourseRepo, type Course } from '../domain';
 
 @Injectable()
 export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course> {
@@ -33,41 +26,6 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 		const courses: Course[] = await this.courseRepo.findBySyncedGroup(group);
 
 		return courses;
-	}
-
-	public async stopSynchronization(course: Course): Promise<void> {
-		if (!course.syncedWithGroup) {
-			throw new CourseNotSynchronizedLoggableException(course.id);
-		}
-
-		course.syncedWithGroup = undefined;
-
-		await this.courseRepo.save(course);
-	}
-
-	public async startSynchronization(
-		course: Course,
-		group: Group,
-		students: GroupUser[],
-		teachers: GroupUser[]
-	): Promise<void> {
-		if (course.syncedWithGroup) {
-			throw new CourseAlreadySynchronizedLoggableException(course.id);
-		}
-
-		course.syncedWithGroup = group.id;
-		course.name = group.name;
-		course.startDate = group.validPeriod?.from;
-		course.untilDate = group.validPeriod?.until;
-
-		if (teachers.length >= 1) {
-			course.students = students.map((groupUser: GroupUser): EntityId => groupUser.userId);
-			course.teachers = teachers.map((groupUser: GroupUser): EntityId => groupUser.userId);
-		} else {
-			course.students = [];
-		}
-
-		await this.courseRepo.save(course);
 	}
 
 	public async getCourseInfo(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {

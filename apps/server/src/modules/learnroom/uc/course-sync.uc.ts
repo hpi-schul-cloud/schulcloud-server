@@ -1,34 +1,32 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { GroupService, GroupUser } from '@modules/group';
-import { RoleService } from '@modules/role';
+import { GroupService } from '@modules/group';
 import { Injectable } from '@nestjs/common';
-
-import { type User as UserEntity } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Course } from '../domain';
-import { CourseDoService } from '../service';
+import { CourseDoService, CourseSyncService } from '../service';
 
 @Injectable()
 export class CourseSyncUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseService: CourseDoService,
-		private readonly groupService: GroupService,
-		private readonly roleService: RoleService
+		private readonly courseSyncService: CourseSyncService,
+		private readonly groupService: GroupService
 	) {}
 
 	public async stopSynchronization(userId: EntityId, courseId: EntityId): Promise<void> {
-		const course: Course = await this.courseService.findById(courseId);
+		const [course, user] = await Promise.all([
+			this.courseService.findById(courseId),
+			this.authorizationService.getUserWithPermissions(userId),
+		]);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(
 			user,
 			course,
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
 
-		await this.courseService.stopSynchronization(course);
+		await this.courseSyncService.stopSynchronization(course);
 	}
 
 	public async startSynchronization(userId: string, courseId: string, groupId: string) {
@@ -44,14 +42,6 @@ export class CourseSyncUc {
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
 
-		const [studentRole, teacherRole] = await Promise.all([
-			this.roleService.findByName(RoleName.STUDENT),
-			this.roleService.findByName(RoleName.TEACHER),
-		]);
-
-		const students = group.users.filter((groupUser: GroupUser) => groupUser.roleId === studentRole.id);
-		const teachers = group.users.filter((groupUser: GroupUser) => groupUser.roleId === teacherRole.id);
-
-		await this.courseService.startSynchronization(course, group, students, teachers);
+		await this.courseSyncService.startSynchronization(course, group);
 	}
 }
