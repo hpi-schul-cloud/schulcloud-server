@@ -20,8 +20,8 @@ import { System } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
+	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -190,7 +190,7 @@ describe('OAuthService', () => {
 				jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 				await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
-					new IdTokenInvalidLoggableException()
+					new TokenInvalidLoggableException()
 				);
 			});
 		});
