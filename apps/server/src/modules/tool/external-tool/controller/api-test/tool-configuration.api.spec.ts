@@ -772,7 +772,7 @@ describe('ToolConfigurationController (API)', () => {
 				};
 			};
 
-			it('should return a forbidden status', async () => {
+			it('should return a unauthorized status', async () => {
 				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.get(`/preferred-tools`);
