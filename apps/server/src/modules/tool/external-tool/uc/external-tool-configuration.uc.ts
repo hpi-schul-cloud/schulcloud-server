@@ -164,10 +164,10 @@ export class ExternalToolConfigurationUc {
 		schoolId: EntityId,
 		contextType?: ToolContextType
 	): Promise<ContextExternalToolTemplateInfo[]> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.hasAllPermissions(user, [Permission.CONTEXT_TOOL_ADMIN]);
-
 		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({ isPreferred: true });
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.CONTEXT_TOOL_ADMIN]);
 
 		const schoolExternalTools: SchoolExternalTool[] = (
 			await Promise.all(
