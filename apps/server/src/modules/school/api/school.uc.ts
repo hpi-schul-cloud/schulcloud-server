@@ -1,7 +1,9 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { Permission, SortOrder } from '@shared/domain/interface';
+import { PaginationParams } from '@shared/controller';
+import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UserService } from '@src/modules/user';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import { SchoolUpdateBodyParams } from './dto/param';
 import {
@@ -11,7 +13,9 @@ import {
 	SchoolSystemResponse,
 } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
+import { SchoolUserListResponse } from './dto/response/school-user.response';
 import { SchoolResponseMapper, SystemResponseMapper } from './mapper';
+import { SchoolUserResponseMapper } from './mapper/school-user.response.mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
 
 @Injectable()
@@ -19,7 +23,8 @@ export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly userService: UserService
 	) {}
 
 	public async getSchoolById(schoolId: EntityId, userId: EntityId): Promise<SchoolResponse> {
@@ -125,5 +130,25 @@ export class SchoolUc {
 		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
 
 		return dto;
+	}
+
+	public async getSchoolTeachers(
+		schoolId: EntityId,
+		userId: EntityId,
+		pagination?: PaginationParams
+	): Promise<SchoolUserListResponse> {
+		/* const [school, user] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TEACHER_VIEW]);
+		this.authorizationService.checkPermission(user, school, authContext); */
+
+		const result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER, { pagination });
+
+		const responseDto = SchoolUserResponseMapper.mapToListResponse(result, pagination);
+
+		return responseDto;
 	}
 }
