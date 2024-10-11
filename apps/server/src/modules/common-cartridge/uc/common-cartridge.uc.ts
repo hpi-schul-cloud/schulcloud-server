@@ -4,7 +4,6 @@ import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
-import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -20,12 +19,6 @@ export class CommonCartridgeUc {
 			courseFileIds,
 			courseCommonCartridgeMetadata,
 		});
-
-		return response;
-	}
-
-	public async exportRoomBoard(courseId: EntityId): Promise<RoomBoardDto> {
-		const response = await this.exportService.findRoomBoardByCourseId(courseId);
 
 		return response;
 	}
