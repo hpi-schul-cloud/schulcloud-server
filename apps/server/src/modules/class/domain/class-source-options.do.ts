@@ -12,4 +12,8 @@ export class ClassSourceOptions {
 	get tspUid(): string | undefined {
 		return this.props.tspUid;
 	}
+
+	set tspUid(tspUid: string | undefined) {
+		this.props.tspUid = tspUid;
+	}
 }

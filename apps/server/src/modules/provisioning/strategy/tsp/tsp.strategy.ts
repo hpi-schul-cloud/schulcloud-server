@@ -19,12 +19,6 @@ import { TspJwtPayload } from './tsp.jwt.payload';
 
 @Injectable()
 export class TspProvisioningStrategy extends ProvisioningStrategy {
-	RoleMapping: Record<string, RoleName> = {
-		lehrer: RoleName.TEACHER,
-		schueler: RoleName.STUDENT,
-		admin: RoleName.ADMINISTRATOR,
-	};
-
 	constructor(private readonly provisioningService: TspProvisioningService) {
 		super();
 	}
@@ -51,7 +45,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			externalId: payload.sub,
 			firstName: payload.personVorname,
 			lastName: payload.personNachname,
-			roles: (payload.ptscListRolle ?? '').split(',').map((tspRole) => this.RoleMapping[tspRole]),
+			roles: payload.ptscListRolle.split(',').map((role) => this.mapRoles(role)),
 		});
 
 		const externalSchoolDto = new ExternalSchoolDto({
@@ -59,7 +53,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		const externalClassDtoList = payload.ptscListKlasseId
-			? [new ExternalClassDto({ externalId: payload.ptscListKlasseId })]
+			? [new ExternalClassDto({ externalId: payload.ptscListKlasseId, name: '' })]
 			: [];
 
 		const oauthDataDto = new OauthDataDto({
@@ -82,5 +76,21 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		await this.provisioningService.provisionClasses(school, data.externalClasses, user);
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
+	}
+
+	private mapRoles(tspRole: string): RoleName {
+		// TODO: Are all roles mapped correctly?
+		const roleNameLowerCase = tspRole.toLowerCase();
+
+		switch (roleNameLowerCase) {
+			case 'lehrer':
+				return RoleName.TEACHER;
+			case 'schueler':
+				return RoleName.STUDENT;
+			case 'administrator':
+				return RoleName.ADMINISTRATOR;
+			default:
+				return RoleName.USER;
+		}
 	}
 }

@@ -47,9 +47,7 @@ export class TspProvisioningService {
 			if (currentClass) {
 				// Case: Class exists -> update class
 				currentClass.schoolId = school.id;
-				if (clazz.name) {
-					currentClass.name = clazz.name;
-				}
+				currentClass.name = clazz.name;
 				currentClass.year = school.currentYear?.id;
 				currentClass.source = this.ENTITY_SOURCE;
 				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
@@ -115,7 +113,7 @@ export class TspProvisioningService {
 		roleRefs: RoleReference[],
 		schoolId: string
 	): Promise<UserDO> {
-		if (!externalUser.firstName || !externalUser.lastName || !externalUser.email) {
+		if (!externalUser.firstName || !externalUser.lastName) {
 			throw new BadDataLoggableException('User firstname, lastname or email is missing', { externalUser });
 		}
 
@@ -124,8 +122,9 @@ export class TspProvisioningService {
 			schoolId,
 			firstName: externalUser.firstName,
 			lastName: externalUser.lastName,
-			email: externalUser.email,
+			email: this.createTspEmail(externalUser.firstName, externalUser.lastName),
 			birthday: externalUser.birthday,
+			externalId: externalUser.externalId,
 		});
 		const savedUser = await this.userService.save(newUser);
 
@@ -137,7 +136,10 @@ export class TspProvisioningService {
 
 		const account = await this.accountService.findByUserId(user.id);
 
-		if (!account) {
+		if (account) {
+			await account.update(new AccountSave({ userId: user.id, systemId, username: user.email, activated: true }));
+			await this.accountService.save(account);
+		} else {
 			await this.accountService.saveWithValidation(
 				new AccountSave({
 					userId: user.id,
@@ -146,10 +148,6 @@ export class TspProvisioningService {
 					activated: true,
 				})
 			);
-		} else {
-			account.username = user.email;
-
-			await this.accountService.saveWithValidation(account);
 		}
 	}
 
@@ -158,5 +156,11 @@ export class TspProvisioningService {
 		const roleRefs = rolesDtos.map((role) => new RoleReference({ id: role.id || '', name: role.name }));
 
 		return roleRefs;
+	}
+
+	private createTspEmail(firstname: string, lastname: string): string {
+		const email = `${firstname}.${lastname}@tsp.de`;
+
+		return email.toLowerCase();
 	}
 }
