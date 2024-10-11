@@ -16,7 +16,7 @@ describe(TspSchulnummerMissingLoggable.name, () => {
 	describe('getLogMessage', () => {
 		it('should return a log message', () => {
 			expect(loggable.getLogMessage()).toEqual({
-				message: `A TSP school is missing a Schulnummer. Skipping school.`,
+				message: `A TSP school is missing a Schulnummer. This school is skipped.`,
 			});
 		});
 	});

@@ -98,7 +98,7 @@ describe(TspSyncService.name, () => {
 				systemService.find.mockResolvedValueOnce([]);
 			};
 
-			it('should throw', async () => {
+			it('should throw a TspSystemNotFound exception', async () => {
 				setup();
 
 				await expect(sut.findTspSystemOrFail()).rejects.toThrow();
