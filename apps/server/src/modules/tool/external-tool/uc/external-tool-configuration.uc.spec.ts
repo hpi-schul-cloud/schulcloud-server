@@ -736,27 +736,22 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has insufficient permission', () => {
 			const setup = () => {
 				const user: User = userFactory.build();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(new ForbiddenException());
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
+				authorizationService.hasAllPermissions.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
 
-				return { user, contextExternalTool };
+				return { user };
 			};
 
 			it('should fail when authorizationService throws ForbiddenException', async () => {
-				const { user, contextExternalTool } = setup();
+				const { user } = setup();
 
-				const func = async () =>
-					uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+				const func = async () => uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
-				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-					user,
-					contextExternalTool,
-					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
-				);
+				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
 			});
 		});
 
@@ -775,10 +770,6 @@ describe('ExternalToolConfigurationUc', () => {
 					toolId: unusedExternalTool.id,
 				});
 
-				const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					schoolToolRef: { schoolToolId: usedSchoolExternalTool.id },
-				});
-
 				externalToolService.findExternalTools.mockResolvedValue(
 					new Page<ExternalTool>(
 						[hiddenExternalTool, usedExternalTool, unusedExternalTool, externalToolWithoutSchoolTool],
@@ -789,7 +780,6 @@ describe('ExternalToolConfigurationUc', () => {
 					usedSchoolExternalTool,
 					unusedSchoolExternalTool,
 				]);
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([usedContextExternalTool]);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
@@ -803,26 +793,21 @@ describe('ExternalToolConfigurationUc', () => {
 					user,
 					usedExternalTool,
 					usedSchoolExternalTool,
-					usedContextExternalTool,
 				};
 			};
 
-			it('should call the toolPermissionHelper with CONTEXT_TOOL_ADMIN permission', async () => {
-				const { user, usedContextExternalTool } = setup();
+			it('should call the authorizationService with CONTEXT_TOOL_ADMIN permission', async () => {
+				const { user } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.BOARD_ELEMENT);
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
-				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-					user,
-					usedContextExternalTool,
-					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
-				);
+				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
 			});
 
 			it('should call externalToolLogoService', async () => {
 				const { usedExternalTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.BOARD_ELEMENT);
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(usedExternalTool);
 			});
@@ -830,7 +815,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should filter for restricted contexts', async () => {
 				const { usedExternalTool, usedSchoolExternalTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.BOARD_ELEMENT);
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				expect(externalToolConfigurationService.filterForContextRestrictions).toHaveBeenCalledWith(
 					[{ externalTool: usedExternalTool, schoolExternalTool: usedSchoolExternalTool }],
@@ -841,7 +826,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should call filterParametersForScope', async () => {
 				const { usedExternalTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.BOARD_ELEMENT);
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				expect(externalToolConfigurationService.filterParametersForScope).toHaveBeenCalledWith(
 					usedExternalTool,
@@ -862,13 +847,8 @@ describe('ExternalToolConfigurationUc', () => {
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
-					schoolToolRef: { schoolToolId: schoolExternalTool.id },
-				});
-
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>([externalTool], 1));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
 
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool, schoolExternalTool },
@@ -886,12 +866,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should allow to add a preferred tool to a given context', async () => {
 				const { externalTool, schoolExternalTool } = setup();
 
-				const preferredTools = await uc.getPreferedToolsForContext(
-					'userId',
-					'schoolId',
-					'contextId',
-					ToolContextType.BOARD_ELEMENT
-				);
+				const preferredTools = await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				expect(preferredTools).toEqual([
 					{
