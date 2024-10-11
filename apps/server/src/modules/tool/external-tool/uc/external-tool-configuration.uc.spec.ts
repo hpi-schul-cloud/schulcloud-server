@@ -738,7 +738,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				authorizationService.hasAllPermissions.mockImplementation(() => {
+				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 
@@ -751,7 +751,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const func = async () => uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
-				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
 			});
 		});
 
@@ -801,7 +801,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
-				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
 			});
 
 			it('should call externalToolLogoService', async () => {
