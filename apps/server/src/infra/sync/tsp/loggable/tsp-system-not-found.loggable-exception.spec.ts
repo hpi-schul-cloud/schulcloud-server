@@ -16,6 +16,7 @@ describe(TspSystemNotFoundLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		it('should return a log message', () => {
 			expect(loggable.getLogMessage()).toEqual({
+				message: 'The TSP system could not be found during the sync',
 				type: 'TSP_SYSTEM_NOT_FOUND',
 				stack: expect.any(String),
 			});

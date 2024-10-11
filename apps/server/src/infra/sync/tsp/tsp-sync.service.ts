@@ -39,14 +39,14 @@ export class TspSyncService {
 		return systems[0];
 	}
 
-	public async fetchTspSchools(system: System) {
+	public async fetchTspSchools(system: System, daysToFetch: number) {
 		const client = this.tspClientFactory.createExportClient({
 			clientId: system.oauthConfig?.clientId ?? '',
 			clientSecret: system.oauthConfig?.clientSecret ?? '',
 			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
 		});
 
-		const lastChangeDate = this.formatChangeDate(new Date(0));
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
 		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
 
 		return schools;
@@ -104,7 +104,7 @@ export class TspSyncService {
 		return this.federalState;
 	}
 
-	private formatChangeDate(date: Date): string {
-		return moment(date).format('YYYY-MM-DD HH:mm:ss.SSS');
+	private formatChangeDate(daysToFetch: number): string {
+		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 }

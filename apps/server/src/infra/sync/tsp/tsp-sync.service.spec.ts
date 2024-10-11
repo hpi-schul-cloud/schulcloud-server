@@ -139,7 +139,7 @@ describe(TspSyncService.name, () => {
 			it('should use the oauthConfig to create the client', async () => {
 				const { clientId, clientSecret, tokenEndpoint, system } = setup();
 
-				await sut.fetchTspSchools(system);
+				await sut.fetchTspSchools(system, 1);
 
 				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
 					clientId,
@@ -151,7 +151,7 @@ describe(TspSyncService.name, () => {
 			it('should call exportSchuleList', async () => {
 				const { system, exportApiMock } = setup();
 
-				await sut.fetchTspSchools(system);
+				await sut.fetchTspSchools(system, 1);
 
 				expect(exportApiMock.exportSchuleList).toHaveBeenCalledTimes(1);
 			});
@@ -159,7 +159,7 @@ describe(TspSyncService.name, () => {
 			it('should return an array of schools', async () => {
 				const { system } = setup();
 
-				const schools = await sut.fetchTspSchools(system);
+				const schools = await sut.fetchTspSchools(system, 1);
 
 				expect(schools).toBeDefined();
 				expect(schools).toBeInstanceOf(Array);

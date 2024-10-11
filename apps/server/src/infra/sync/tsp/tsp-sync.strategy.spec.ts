@@ -34,6 +34,8 @@ describe(TspSyncStrategy.name, () => {
 							switch (key) {
 								case 'TSP_SYNC_SCHOOL_LIMIT':
 									return 10;
+								case 'TSP_SYNC_SCHOOL_DAYS_TO_FETCH':
+									return 1;
 								default:
 									throw new Error(`Unknown key: ${key}`);
 							}
@@ -131,6 +133,27 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(tspSyncService.updateSchool).toHaveBeenCalled();
+			});
+		});
+
+		describe('when tsp school does not have a schulnummer', () => {
+			const setup = () => {
+				const tspSchool: RobjExportSchule = {
+					schuleNummer: undefined,
+					schuleName: faker.string.alpha(),
+				};
+				const tspSchools = [tspSchool];
+				tspSyncService.fetchTspSchools.mockResolvedValueOnce(tspSchools);
+			};
+
+			it('should skip the school', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.findSchool).not.toHaveBeenCalled();
+				expect(tspSyncService.updateSchool).not.toHaveBeenCalled();
+				expect(tspSyncService.createSchool).not.toHaveBeenCalled();
 			});
 		});
 	});
