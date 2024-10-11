@@ -116,8 +116,7 @@ describe(CourseSyncService.name, () => {
 				const { course, group, students, teachers } = setup();
 
 				await service.startSynchronization(course, group);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: group.id,
@@ -126,16 +125,15 @@ describe(CourseSyncService.name, () => {
 						untilDate: group.validPeriod?.until,
 						studentIds: students.map((student) => student.userId),
 						teacherIds: teachers.map((teacher) => teacher.userId),
-					})
-				);
+					}),
+				]);
 			});
 
 			it('should set an empty list of students if no teachers are present', async () => {
 				const { course, groupWithoutTeachers } = setup();
 
 				await service.startSynchronization(course, groupWithoutTeachers);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: groupWithoutTeachers.id,
@@ -144,8 +142,8 @@ describe(CourseSyncService.name, () => {
 						untilDate: groupWithoutTeachers.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
-					})
-				);
+					}),
+				]);
 			});
 		});
 
@@ -171,7 +169,7 @@ describe(CourseSyncService.name, () => {
 					CourseAlreadySynchronizedLoggableException
 				);
 
-				expect(courseRepo.save).not.toHaveBeenCalled();
+				expect(courseRepo.saveAll).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -215,8 +213,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, studentId, teacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: newGroup.name,
@@ -225,90 +222,8 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
-					})
-				);
-			});
-		});
-
-		describe('when the course name is the same as the old group name', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build({ name: 'Course Name' });
-				const studentRole: RoleDto = roleDtoFactory.build();
-				const teacherRole: RoleDto = roleDtoFactory.build();
-				const oldGroup: Group = groupFactory.build({ name: 'Course Name' });
-				const newGroup: Group = groupFactory.build({
-					name: 'New Group Name',
-					users: [],
-				});
-
-				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
-				roleService.findByName.mockResolvedValueOnce(studentRole);
-				roleService.findByName.mockResolvedValueOnce(teacherRole);
-
-				return {
-					course,
-					newGroup,
-					oldGroup,
-				};
-			};
-
-			it('should synchronize the group name', async () => {
-				const { course, newGroup, oldGroup } = setup();
-
-				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						name: newGroup.name,
-						syncedWithGroup: newGroup.id,
-						startDate: newGroup.validPeriod?.from,
-						untilDate: newGroup.validPeriod?.until,
-						studentIds: [],
-						teacherIds: [],
-					})
-				);
-			});
-		});
-
-		describe('when the course name is different from the old group name', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build({ name: 'Custom Course Name' });
-				const studentRole: RoleDto = roleDtoFactory.build();
-				const teacherRole: RoleDto = roleDtoFactory.build();
-				const oldGroup: Group = groupFactory.build({ name: 'Course Name' });
-				const newGroup: Group = groupFactory.build({
-					name: 'New Group Name',
-					users: [],
-				});
-
-				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
-				roleService.findByName.mockResolvedValueOnce(studentRole);
-				roleService.findByName.mockResolvedValueOnce(teacherRole);
-
-				return {
-					course,
-					newGroup,
-					oldGroup,
-				};
-			};
-
-			it('should keep the old course name', async () => {
-				const { course, newGroup, oldGroup } = setup();
-
-				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						name: course.name,
-						syncedWithGroup: newGroup.id,
-						startDate: newGroup.validPeriod?.from,
-						untilDate: newGroup.validPeriod?.until,
-						studentIds: [],
-						teacherIds: [],
-					})
-				);
+					}),
+				]);
 			});
 		});
 
@@ -347,19 +262,19 @@ describe(CourseSyncService.name, () => {
 			it('should keep the last teacher, remove all students', async () => {
 				const { course, newGroup, teacherUserId } = setup();
 
-				await service.synchronizeCourseWithGroup(newGroup, newGroup);
+				await service.synchronizeCourseWithGroup(newGroup);
 
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
-						name: course.name,
+						name: newGroup.name,
 						startDate: newGroup.validPeriod?.from,
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [teacherUserId],
 						syncedWithGroup: course.syncedWithGroup,
-					})
-				);
+					}),
+				]);
 			});
 		});
 	});

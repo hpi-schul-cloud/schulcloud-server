@@ -74,11 +74,6 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 
 			const groupProvisioningPromises: Promise<unknown>[] = groups.map(
 				async (externalGroup: ExternalGroupDto): Promise<void> => {
-					const existingGroup: Group | null = await this.groupService.findByExternalSource(
-						externalGroup.externalId,
-						data.system.systemId
-					);
-
 					const provisionedGroup: Group | null = await this.schulconnexGroupProvisioningService.provisionExternalGroup(
 						externalGroup,
 						data.externalSchool,
@@ -86,10 +81,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 					);
 
 					if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
-						await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(
-							provisionedGroup,
-							existingGroup ?? undefined
-						);
+						await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(provisionedGroup);
 					}
 				}
 			);
@@ -109,7 +101,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
 			const courseSyncPromises: Promise<unknown>[] = removedFromGroups.map(
 				async (removedFromGroup: Group): Promise<void> => {
-					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);
+					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup);
 				}
 			);
 

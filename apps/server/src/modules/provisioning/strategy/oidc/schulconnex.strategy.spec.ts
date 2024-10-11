@@ -385,57 +385,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 			});
 		});
 
-		describe('when an existing group gets provisioned', () => {
-			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
-				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
-
-				const externalUserId = 'externalUserId';
-				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: new ObjectId().toHexString(),
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalGroups,
-				});
-
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
-					externalId: externalUserId,
-				});
-				const existingGroup: Group = groupFactory.build();
-				const updatedGroup: Group = groupFactory.build();
-
-				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([]);
-				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
-				groupService.findByExternalSource.mockResolvedValueOnce(existingGroup);
-				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(updatedGroup);
-
-				return {
-					oauthData,
-					existingGroup,
-					updatedGroup,
-				};
-			};
-
-			it('should synchronize all linked courses with the group', async () => {
-				const { oauthData, updatedGroup, existingGroup } = setup();
-
-				await strategy.apply(oauthData);
-
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(
-					updatedGroup,
-					existingGroup
-				);
-			});
-		});
-
-		describe('when a new group is provisioned', () => {
+		describe('when a group is provisioned', () => {
 			const setup = () => {
 				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
@@ -476,7 +426,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup, undefined);
+				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup);
 			});
 		});
 
@@ -520,7 +470,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(group, group);
+				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(group);
 			});
 		});
 
