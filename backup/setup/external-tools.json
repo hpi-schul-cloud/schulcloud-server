@@ -1019,7 +1019,7 @@
 		"isDeactivated": false,
 		"restrictToContexts": [],
 		"isPreferred": true,
-		"iconName": "magnify"
+		"iconName": "mdiMagnify"
 	},
 	{
 		"_id": {
@@ -1053,6 +1053,6 @@
 		"isDeactivated": false,
 		"restrictToContexts": [],
 		"isPreferred": true,
-		"iconName": "magnify-plus-outline"
+		"iconName": "mdiMagnifyPlusOutline"
 	}
 ]
