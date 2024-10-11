@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PreferredToolResponse {
 	@ApiProperty({ type: String, description: 'Id of the school external tool' })
@@ -7,11 +7,11 @@ export class PreferredToolResponse {
 	@ApiProperty({ type: String, description: 'Name of the external tool' })
 	name: string;
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		type: String,
 		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
 	})
-	iconName?: string;
+	iconName: string;
 
 	constructor(configuration: PreferredToolResponse) {
 		this.schoolExternalToolId = configuration.schoolExternalToolId;

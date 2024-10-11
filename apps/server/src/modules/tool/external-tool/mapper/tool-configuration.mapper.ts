@@ -94,7 +94,7 @@ export class ToolConfigurationMapper {
 		const mapped = new PreferredToolResponse({
 			schoolExternalToolId: schoolExternalTool.id ?? '',
 			name: externalTool.name,
-			iconName: externalTool.iconName,
+			iconName: externalTool.iconName ?? '',
 		});
 
 		return mapped;
