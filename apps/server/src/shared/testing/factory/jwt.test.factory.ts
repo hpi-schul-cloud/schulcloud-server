@@ -37,6 +37,7 @@ export class JwtTestFactory {
 				algorithm: 'RS256',
 			}
 		);
+
 		return validJwt;
 	}
 }
