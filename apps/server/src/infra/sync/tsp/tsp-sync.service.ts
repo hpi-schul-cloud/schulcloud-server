@@ -1,4 +1,9 @@
-import { RobjExportSchule, TspClientFactory } from '@infra/tsp-client';
+import {
+	RobjExportLehrerMigration,
+	RobjExportSchuelerMigration,
+	RobjExportSchule,
+	TspClientFactory,
+} from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
@@ -105,5 +110,27 @@ export class TspSyncService {
 
 	private formatChangeDate(date: Date): string {
 		return moment(date).format('YYYY-MM-DD HH:mm:ss.SSS');
+	}
+
+	public async fetchTspTeachers(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+		const teachers: RobjExportLehrerMigration[] = (await client.exportLehrerListMigration()).data;
+
+		return teachers;
+	}
+
+	public async fetchTspStudents(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+		const students: RobjExportSchuelerMigration[] = (await client.exportSchuelerListMigration()).data;
+
+		return students;
 	}
 }

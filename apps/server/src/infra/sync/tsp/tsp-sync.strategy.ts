@@ -32,6 +32,8 @@ export class TspSyncStrategy extends SyncStrategy {
 	public async sync(): Promise<void> {
 		const system = await this.tspSyncService.findTspSystemOrFail();
 
+		await this.migrateUserIds(system);
+
 		await this.syncSchools(system);
 	}
 
@@ -66,4 +68,20 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		return scSchools.map((scSchool) => scSchool.school);
 	}
+
+	private async migrateUserIds(system: System): Promise<void> {
+		const TspTeacherIds = await this.tspSyncService.fetchTspTeachers(system);
+
+		const TspStudentIds = await this.tspSyncService.fetchTspStudents(system);
+
+		for await (const { lehrerUidAlt, lehrerUidNeu } of TspTeacherIds) {
+			// migrateTeacherIds
+		}
+
+		for await (const { schuelerUidAlt, schuelerUidNeu } of TspStudentIds) {
+			// migrateStudentIds
+		}
+	}
+
+	private async migrateTeacherIds(lehrerUidAlt: string, lehrerUidNeu: string): Promise<void> {}
 }
