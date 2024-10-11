@@ -8,8 +8,7 @@ export class ToolContextTypeParams {
 	@ApiPropertyOptional({
 		enum: ToolContextType,
 		enumName: 'ToolContextType',
-		isArray: true,
-		description: 'XXX',
+		description: 'Context types for tools',
 	})
 	contextType?: ToolContextType;
 }
