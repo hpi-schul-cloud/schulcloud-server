@@ -137,13 +137,13 @@ export class SchoolUc {
 		userId: EntityId,
 		pagination?: PaginationParams
 	): Promise<SchoolUserListResponse> {
-		/* const [school, user] = await Promise.all([
+		const [school, user] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
 		]);
 
-		const authContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TEACHER_VIEW]);
-		this.authorizationService.checkPermission(user, school, authContext); */
+		const authContext = AuthorizationContextBuilder.read([Permission.TEACHER_LIST]);
+		this.authorizationService.checkPermission(user, school, authContext);
 
 		const result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER, { pagination });
 

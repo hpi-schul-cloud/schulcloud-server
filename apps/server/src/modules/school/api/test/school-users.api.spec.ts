@@ -73,6 +73,77 @@ describe('School Controller (API)', () => {
 			});
 		});
 
+		describe('when schoolId doesnt exist', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return 404', async () => {
+				const { loggedInClient } = await setup();
+				const someId = new ObjectId().toHexString();
+
+				const response = await loggedInClient.get(`/${someId}/teachers`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when user is not in the correct school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				const otherSchool = schoolEntityFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
+				const teacherRole = teacherUser.roles[0];
+				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, teacherUser, teachersOfSchool, school };
+			};
+
+			it('should return 403', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response = await loggedInClient.get(`${school.id}/teachers`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when user has no permission to view teachers', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const teacherRole = studentUser.roles[0];
+				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
+
+				await em.persistAndFlush([studentAccount, studentUser, ...teachersOfSchool]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient, studentUser, teachersOfSchool, school };
+			};
+
+			it('should return 403', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response = await loggedInClient.get(`${school.id}/teachers`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
 		describe('when user has permission to view teachers', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.build();
@@ -80,7 +151,10 @@ describe('School Controller (API)', () => {
 				const teacherRole = teacherUser.roles[0];
 				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool]);
+				const otherSchool = schoolEntityFactory.build();
+				const teachersOfOtherSchool = userFactory.buildList(3, { school: otherSchool, roles: [teacherRole] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool, ...teachersOfOtherSchool]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
