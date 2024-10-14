@@ -76,7 +76,7 @@ describe('TspProvisioningStrategy', () => {
 						personVorname: 'firstName',
 						personNachname: 'lastName',
 						ptscSchuleNummer: 'externalSchoolId',
-						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
+						ptscListKlasseId: 'externalClassId1,externalClassId2',
 					};
 				});
 
@@ -151,7 +151,7 @@ describe('TspProvisioningStrategy', () => {
 					return {
 						sub: 'externalUserId',
 						sid: 1000,
-						ptscListRolle: 'teacher',
+						ptscListRolle: 'lehrer,admin',
 						personVorname: 'firstName',
 						personNachname: 'lastName',
 						ptscSchuleNummer: 'externalSchoolId',
@@ -166,6 +166,39 @@ describe('TspProvisioningStrategy', () => {
 				const { input } = setup();
 
 				await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
+			});
+		});
+
+		describe('When roles are missing', () => {
+			const setup = () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'externalSchoolId',
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					idToken: 'tspIdToken',
+					accessToken: 'tspAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'externalUserId',
+						sid: 1000,
+						ptscListRolle: '',
+						personVorname: 'firstName',
+						personNachname: 'lastName',
+						ptscSchuleNummer: 'externalSchoolId',
+						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailure', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 			});
 		});
 	});
