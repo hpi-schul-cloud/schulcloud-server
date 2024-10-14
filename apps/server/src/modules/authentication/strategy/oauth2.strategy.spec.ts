@@ -65,7 +65,7 @@ describe(Oauth2Strategy.name, () => {
 				const expiryDate = new Date();
 
 				const idToken = JwtTestFactory.createJwt();
-				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() });
+				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() / 1000 });
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
 						idToken,
