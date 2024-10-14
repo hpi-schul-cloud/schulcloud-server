@@ -11,7 +11,7 @@ describe(OauthSessionTokenFactory.name, () => {
 				const userId = new ObjectId().toHexString();
 				const systemId = new ObjectId().toHexString();
 				const expiryDate = new Date();
-				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() });
+				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() / 1000 });
 
 				return {
 					userId,

@@ -15,7 +15,7 @@ export class OauthSessionTokenFactory {
 		const oauthSessionToken = new OauthSessionToken({
 			...params,
 			id: new ObjectId().toHexString(),
-			expiresAt: new Date(decodedRefreshToken.exp),
+			expiresAt: new Date(decodedRefreshToken.exp * 1000),
 		});
 
 		return oauthSessionToken;
