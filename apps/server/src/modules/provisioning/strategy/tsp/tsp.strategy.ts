@@ -52,9 +52,11 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			externalId: payload.ptscSchuleNummer || '',
 		});
 
+		// TODO: The name is currently missing, should we fetch it from the tsp api?
+		// Endpoint: /backend_schule_klasse_detail/<externalKlasseId>?schuleId=<externalSchoolDto.externalId>
 		const externalClassDtoList = payload.ptscListKlasseId
-			? [new ExternalClassDto({ externalId: payload.ptscListKlasseId, name: '' })]
-			: [];
+			.split(',')
+			.map((externalId) => new ExternalClassDto({ externalId, name: '' }));
 
 		const oauthDataDto = new OauthDataDto({
 			system: input.system,
@@ -87,7 +89,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 				return RoleName.TEACHER;
 			case 'schueler':
 				return RoleName.STUDENT;
-			case 'administrator':
+			case 'admin':
 				return RoleName.ADMINISTRATOR;
 			default:
 				return RoleName.USER;

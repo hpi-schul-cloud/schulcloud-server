@@ -14,6 +14,8 @@ import { BadDataLoggableException } from '../loggable';
 export class TspProvisioningService {
 	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 
+	private TSP_EMAIL_DOMAIN = 'tsp.de';
+
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly classService: ClassService,
@@ -122,7 +124,7 @@ export class TspProvisioningService {
 			schoolId,
 			firstName: externalUser.firstName,
 			lastName: externalUser.lastName,
-			email: this.createTspEmail(externalUser.firstName, externalUser.lastName),
+			email: this.createTspEmail(externalUser.externalId),
 			birthday: externalUser.birthday,
 			externalId: externalUser.externalId,
 		});
@@ -137,9 +139,11 @@ export class TspProvisioningService {
 		const account = await this.accountService.findByUserId(user.id);
 
 		if (account) {
+			// Updates account with new systemId and username
 			await account.update(new AccountSave({ userId: user.id, systemId, username: user.email, activated: true }));
 			await this.accountService.save(account);
 		} else {
+			// Creates new account for user
 			await this.accountService.saveWithValidation(
 				new AccountSave({
 					userId: user.id,
@@ -158,8 +162,8 @@ export class TspProvisioningService {
 		return roleRefs;
 	}
 
-	private createTspEmail(firstname: string, lastname: string): string {
-		const email = `${firstname}.${lastname}@tsp.de`;
+	private createTspEmail(externalId: string): string {
+		const email = `${externalId}@${this.TSP_EMAIL_DOMAIN}`;
 
 		return email.toLowerCase();
 	}
