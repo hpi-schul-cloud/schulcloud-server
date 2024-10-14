@@ -64,7 +64,11 @@ export class TspSyncService {
 		return schools[0];
 	}
 
-	public async updateSchool(school: School, name: string): Promise<School> {
+	public async updateSchool(school: School, name?: string): Promise<School> {
+		if (!name) {
+			return school;
+		}
+
 		school.name = name;
 
 		const updatedSchool = await this.schoolService.save(school);

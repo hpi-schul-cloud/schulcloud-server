@@ -4,7 +4,7 @@ describe(TspSchulnummerMissingLoggable.name, () => {
 	let loggable: TspSchulnummerMissingLoggable;
 
 	beforeAll(() => {
-		loggable = new TspSchulnummerMissingLoggable();
+		loggable = new TspSchulnummerMissingLoggable('Schule');
 	});
 
 	describe('when loggable is initialized', () => {
@@ -16,7 +16,10 @@ describe(TspSchulnummerMissingLoggable.name, () => {
 	describe('getLogMessage', () => {
 		it('should return a log message', () => {
 			expect(loggable.getLogMessage()).toEqual({
-				message: `A TSP school is missing a Schulnummer. This school is skipped.`,
+				message: `The TSP school 'Schule' is missing a Schulnummer. This school is skipped.`,
+				data: {
+					schulName: 'Schule',
+				},
 			});
 		});
 	});

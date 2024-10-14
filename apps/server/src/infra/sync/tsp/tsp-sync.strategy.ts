@@ -53,7 +53,7 @@ export class TspSyncStrategy extends SyncStrategy {
 				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
 
 				if (existingSchool) {
-					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName ?? '');
+					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
 					return { school: updatedSchool, created: false };
 				}
 

@@ -232,6 +232,26 @@ describe(TspSyncService.name, () => {
 				});
 			});
 		});
+
+		describe('when school name is undefined', () => {
+			const setup = () => {
+				const newName = undefined;
+				const oldName = faker.string.alpha();
+				const school = schoolFactory.build({
+					name: oldName,
+				});
+
+				return { newName, school };
+			};
+
+			it('should not update school', async () => {
+				const { newName, school } = setup();
+
+				await sut.updateSchool(school, newName);
+
+				expect(schoolService.save).not.toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('createSchool', () => {
