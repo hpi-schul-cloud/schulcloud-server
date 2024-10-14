@@ -117,7 +117,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.startSynchronization(course, group);
 
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: group.id,
@@ -126,8 +126,8 @@ describe(CourseSyncService.name, () => {
 						untilDate: group.validPeriod?.until,
 						studentIds: students.map((student) => student.userId),
 						teacherIds: teachers.map((teacher) => teacher.userId),
-					})
-				);
+					}),
+				]);
 			});
 
 			it('should set an empty list of students if no teachers are present', async () => {
@@ -135,7 +135,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.startSynchronization(course, groupWithoutTeachers);
 
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: groupWithoutTeachers.id,
@@ -144,8 +144,8 @@ describe(CourseSyncService.name, () => {
 						untilDate: groupWithoutTeachers.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
-					})
-				);
+					}),
+				]);
 			});
 		});
 
@@ -171,7 +171,7 @@ describe(CourseSyncService.name, () => {
 					CourseAlreadySynchronizedLoggableException
 				);
 
-				expect(courseRepo.save).not.toHaveBeenCalled();
+				expect(courseRepo.saveAll).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -179,7 +179,6 @@ describe(CourseSyncService.name, () => {
 	describe('synchronizeCourseWithGroup', () => {
 		describe('when synchronizing with a new group', () => {
 			const setup = () => {
-				const course: Course = courseFactory.build();
 				const studentId: string = new ObjectId().toHexString();
 				const teacherId: string = new ObjectId().toHexString();
 				const studentRoleId: string = new ObjectId().toHexString();
@@ -198,6 +197,7 @@ describe(CourseSyncService.name, () => {
 						},
 					],
 				});
+				const course: Course = courseFactory.build({ syncedWithGroup: newGroup.id });
 
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
@@ -216,17 +216,16 @@ describe(CourseSyncService.name, () => {
 
 				await service.synchronizeCourseWithGroup(newGroup);
 
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
-						name: newGroup.name,
 						syncedWithGroup: newGroup.id,
 						startDate: newGroup.validPeriod?.from,
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
-					})
-				);
+					}),
+				]);
 			});
 		});
 
@@ -256,8 +255,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, oldGroup } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: newGroup.name,
@@ -266,8 +264,8 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
-					})
-				);
+					}),
+				]);
 			});
 		});
 
@@ -297,8 +295,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, oldGroup } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: course.name,
@@ -307,8 +304,8 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
-					})
-				);
+					}),
+				]);
 			});
 		});
 
@@ -348,8 +345,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, teacherUserId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, newGroup);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: course.name,
@@ -358,8 +354,8 @@ describe(CourseSyncService.name, () => {
 						studentIds: [],
 						teacherIds: [teacherUserId],
 						syncedWithGroup: course.syncedWithGroup,
-					})
-				);
+					}),
+				]);
 			});
 		});
 	});
