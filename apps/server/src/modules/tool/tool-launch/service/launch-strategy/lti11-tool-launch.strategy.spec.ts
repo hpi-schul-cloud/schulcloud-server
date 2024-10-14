@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
@@ -36,6 +37,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 	let userService: DeepMocked<UserService>;
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let lti11EncryptionService: DeepMocked<Lti11EncryptionService>;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -77,6 +79,10 @@ describe('Lti11ToolLaunchStrategy', () => {
 					provide: AutoGroupExternalUuidStrategy,
 					useValue: createMock<AutoGroupExternalUuidStrategy>(),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
@@ -85,6 +91,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 		userService = module.get(UserService);
 		pseudonymService = module.get(PseudonymService);
 		lti11EncryptionService = module.get(Lti11EncryptionService);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -134,10 +141,13 @@ describe('Lti11ToolLaunchStrategy', () => {
 					],
 				});
 
+				const decrypted = 'decryptedSecret';
+				encryptionService.decrypt.mockReturnValue(decrypted);
 				userService.findById.mockResolvedValue(user);
 
 				return {
 					data,
+					decrypted,
 					user,
 					mockKey,
 					mockSecret,
@@ -148,14 +158,14 @@ describe('Lti11ToolLaunchStrategy', () => {
 			};
 
 			it('should contain lti key and secret without location', async () => {
-				const { data, mockKey, mockSecret } = setup();
+				const { data, mockKey, decrypted } = setup();
 
 				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 				expect(result).toEqual(
 					expect.arrayContaining([
 						new PropertyData({ name: 'key', value: mockKey }),
-						new PropertyData({ name: 'secret', value: mockSecret }),
+						new PropertyData({ name: 'secret', value: decrypted }),
 					])
 				);
 			});

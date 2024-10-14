@@ -1,7 +1,6 @@
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { OauthProviderService } from '@modules/oauth-provider/domain/service/oauth-provider.service';
-import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -19,15 +18,12 @@ export class ExternalToolService {
 		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly legacyLogger: LegacyLogger,
 		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
-		if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
-			externalTool.config.secret = this.encryptionService.encrypt(externalTool.config.secret);
-		} else if (ExternalTool.isOauth2Config(externalTool.config)) {
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
 			const oauthClient: Partial<ProviderOauthClient> = this.mapper.mapDoToProviderOauthClient(
 				externalTool.name,
 				externalTool.config
@@ -42,7 +38,6 @@ export class ExternalToolService {
 	}
 
 	public async updateExternalTool(toUpdate: ExternalTool): Promise<ExternalTool> {
-		// TODO N21-2097 use encryption for secret
 		await this.updateOauth2ToolConfig(toUpdate);
 
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
