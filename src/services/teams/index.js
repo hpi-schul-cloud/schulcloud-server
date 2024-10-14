@@ -1,8 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
-const service = require('../../utils/feathers-mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const service = require('../../utils/feathers-mongoose');
 
 const { NotFound, BadRequest, GeneralError } = require('../../errors');
 const hooks = require('./hooks');
@@ -29,6 +29,7 @@ const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const HOST = Configuration.get('HOST');
 
 const { AdminOverview } = require('./services');
+const { SCHOOL_FEATURES } = require('../school/model');
 
 class Get {
 	constructor(options) {
@@ -94,14 +95,20 @@ class Add {
 	 * @param {String} email
 	 * @return {Promise::User}
 	 */
-	async _getUsersByEmail(email) {
+	async _getUsersByEmail(email, school) {
+		const query = {
+			email,
+			$populate: [{ path: 'roles' }, { path: 'schoolId' }],
+		};
+
+		if (!school.features?.includes(SCHOOL_FEATURES.SHOW_OUTDATED_USERS)) {
+			query.outdatedSince = null;
+		}
+
 		return this.app
 			.service('users')
 			.find({
-				query: {
-					email,
-					$populate: [{ path: 'roles' }],
-				},
+				query,
 			})
 			.then((users) => extractOne(users))
 			.catch((err) => {
@@ -154,62 +161,64 @@ class Add {
 	 * }}
 	 */
 	async _collectUserAndLinkData({ email, role, teamId }) {
-		return Promise.all([
-			// eslint-disable-next-line no-underscore-dangle
-			this._getUsersByEmail(email),
-			// eslint-disable-next-line no-underscore-dangle
-			this._getExpertSchoolId(),
-			// eslint-disable-next-line no-underscore-dangle
-			this._getExpertRoleId(),
-			getTeam(this, teamId),
-		])
-			.then(async ([user, schoolId, expertRoleId, team]) => {
-				let isUserCreated = false;
-				let isResend = false;
-				let userRoleName;
-				if (isUndefined(user) && role === 'teamexpert') {
-					const newUser = {
-						email,
-						schoolId,
-						roles: [expertRoleId],
-						firstName: 'Experte',
-						lastName: 'Experte',
-					};
-					// eslint-disable-next-line no-param-reassign
-					user = await userModel.create(newUser);
-					isUserCreated = true;
-				}
-
-				if (isUserCreated || isDefined(role)) {
-					userRoleName = role;
-				} else {
-					const teamUser = team.invitedUserIds.find((invited) => invited.email === email);
-					isResend = true;
-					userRoleName = (teamUser || {}).role || role;
-				}
-
-				// if role teamadmin by import from teacher over email and
-				// no user exist, the user is undefined
-				if (isUndefined(user)) {
-					throw new BadRequest('User must exist.');
-				}
-				if (isUndefined(userRoleName)) {
-					throw new BadRequest('For this case the team role for user must be set.');
-				}
-				return {
-					esid: schoolId,
-					isUserCreated,
-					isResend,
-					user,
-					team,
-					userRoleName,
-					importHash: user.importHash,
+		try {
+			const team = await getTeam(this, teamId);
+			const school = await this.app.service('schools').get(team.schoolId);
+			// eslint-disable-next-line prefer-const
+			let [user, schoolId, expertRoleId] = await Promise.all([
+				// eslint-disable-next-line no-underscore-dangle
+				this._getUsersByEmail(email, school),
+				// eslint-disable-next-line no-underscore-dangle
+				this._getExpertSchoolId(),
+				// eslint-disable-next-line no-underscore-dangle
+				this._getExpertRoleId(),
+			]);
+			let isUserCreated = false;
+			let isResend = false;
+			let userRoleName;
+			if (isUndefined(user) && role === 'teamexpert') {
+				const newUser = {
+					email,
+					schoolId,
+					roles: [expertRoleId],
+					firstName: 'Experte',
+					lastName: 'Experte',
 				};
-			})
-			.catch((err) => {
-				warning(err);
-				throw new BadRequest('Can not resolve the user information.');
-			});
+				// eslint-disable-next-line no-param-reassign
+				user = await userModel.create(newUser);
+				isUserCreated = true;
+			}
+
+			if (isUserCreated || isDefined(role)) {
+				userRoleName = role;
+			} else {
+				const teamUser = team.invitedUserIds.find((invited) => invited.email === email);
+				isResend = true;
+				userRoleName = (teamUser || {}).role || role;
+			}
+
+			// if role teamadmin by import from teacher over email and
+			// no user exist, the user is undefined
+			if (isUndefined(user)) {
+				throw new BadRequest('User must exist.');
+			}
+			if (isUndefined(userRoleName)) {
+				throw new BadRequest('For this case the team role for user must be set.');
+			}
+
+			return {
+				esid: schoolId,
+				isUserCreated,
+				isResend,
+				user,
+				team,
+				userRoleName,
+				importHash: user.importHash,
+			};
+		} catch (err) {
+			warning(err);
+			throw new BadRequest('Can not resolve the user information.');
+		}
 	}
 
 	/**
