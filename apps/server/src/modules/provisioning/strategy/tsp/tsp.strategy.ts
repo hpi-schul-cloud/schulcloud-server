@@ -45,18 +45,23 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			externalId: payload.sub,
 			firstName: payload.personVorname,
 			lastName: payload.personNachname,
-			roles: payload.ptscListRolle.split(',').map((role) => this.mapRoles(role)),
+			roles: payload.ptscListRolle
+				.split(',')
+				.map((role) => this.mapRoles(role))
+				.filter(Boolean) as RoleName[],
 		});
+
+		if (externalUserDto.roles && externalUserDto.roles.length < 1) {
+			throw new IdTokenExtractionFailureLoggableException('ptscListRolle');
+		}
 
 		const externalSchoolDto = new ExternalSchoolDto({
-			externalId: payload.ptscSchuleNummer || '',
+			externalId: payload.ptscSchuleNummer,
 		});
 
-		// TODO: The name is currently missing, should we fetch it from the tsp api?
-		// Endpoint: /backend_schule_klasse_detail/<externalKlasseId>?schuleId=<externalSchoolDto.externalId>
 		const externalClassDtoList = payload.ptscListKlasseId
 			.split(',')
-			.map((externalId) => new ExternalClassDto({ externalId, name: '' }));
+			.map((externalId) => new ExternalClassDto({ externalId }));
 
 		const oauthDataDto = new OauthDataDto({
 			system: input.system,
@@ -80,8 +85,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 
-	private mapRoles(tspRole: string): RoleName {
-		// TODO: Are all roles mapped correctly?
+	private mapRoles(tspRole: string): RoleName | null {
 		const roleNameLowerCase = tspRole.toLowerCase();
 
 		switch (roleNameLowerCase) {
@@ -92,7 +96,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			case 'admin':
 				return RoleName.ADMINISTRATOR;
 			default:
-				return RoleName.USER;
+				return null;
 		}
 	}
 }
