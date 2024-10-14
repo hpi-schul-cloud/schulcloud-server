@@ -1053,7 +1053,7 @@
 		"isDeactivated": false,
 		"restrictToContexts": [],
 		"isPreferred": true,
-		"iconName": "mdiMagnifyPlusOutline"
+		"iconName": "mdiChatOutline"
 	},
 	{
 		"_id": {
@@ -1076,7 +1076,7 @@
 		"isDeactivated": false,
 		"restrictToContexts": ["course"],
 		"isPreferred": true,
-		"iconName": "mdiMagnify"
+		"iconName": "mdiFileQuestionOutline"
 	},
 	{
 		"_id": {
