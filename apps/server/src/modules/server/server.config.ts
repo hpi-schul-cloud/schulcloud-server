@@ -3,6 +3,7 @@ import { XApiKeyConfig } from '@infra/auth-guard';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
+import { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
@@ -70,6 +71,7 @@ export interface ServerConfig
 		VideoConferenceConfig,
 		BbbConfig,
 		TspClientConfig,
+		TspSyncConfig,
 		AlertConfig,
 		ShdConfig {
 	NODE_ENV: NodeEnvType;
@@ -310,6 +312,8 @@ const config: ServerConfig = {
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
 	TSP_API_BASE_URL: Configuration.get('TSP_API_BASE_URL') as string,
 	TSP_API_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_TOKEN_LIFETIME_MS') as number,
+	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
+	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
