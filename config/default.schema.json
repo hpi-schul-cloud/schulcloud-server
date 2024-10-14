@@ -184,6 +184,11 @@
 			"default": "10",
 			"description": "The amount of schools the sync handles at once."
 		},
+		"TSP_SYNC_SCHOOL_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches schools from the TSP."
+		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
 			"default": false,

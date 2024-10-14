@@ -8,12 +8,15 @@ import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
+import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
 	private readonly schoolLimit: pLimit.Limit;
+
+	private readonly schoolDaysToFetch: number;
 
 	constructor(
 		private readonly logger: Logger,
@@ -23,6 +26,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
 		this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
+		this.schoolDaysToFetch = configService.get<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', 1);
 	}
 
 	public override getType(): SyncStrategyTarget {
@@ -38,21 +42,26 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncSchools(system: System): Promise<School[]> {
-		const tspSchools = await this.tspSyncService.fetchTspSchools(system);
-		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length));
+		const tspSchools = await this.tspSyncService.fetchTspSchools(system, this.schoolDaysToFetch);
+		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, this.schoolDaysToFetch));
 
 		const schoolPromises = tspSchools.map((tspSchool) =>
 			this.schoolLimit(async () => {
-				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer ?? '');
+				if (!tspSchool.schuleNummer) {
+					this.logger.warning(new TspSchulnummerMissingLoggable());
+					return null;
+				}
+
+				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
 
 				if (existingSchool) {
-					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName ?? '');
+					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
 					return { school: updatedSchool, created: false };
 				}
 
 				const createdSchool = await this.tspSyncService.createSchool(
 					system,
-					tspSchool.schuleNummer ?? '',
+					tspSchool.schuleNummer,
 					tspSchool.schuleName ?? ''
 				);
 				return { school: createdSchool, created: true };
@@ -61,12 +70,13 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		const scSchools = await Promise.all(schoolPromises);
 
-		const total = scSchools.length;
-		const createdSchools = scSchools.filter((scSchool) => scSchool.created).length;
-		const updatedSchools = total - createdSchools;
-		this.logger.info(new TspSchoolsSyncedLoggable(total, createdSchools, updatedSchools));
+		const total = tspSchools.length;
+		const totalProcessed = scSchools.filter((scSchool) => scSchool != null).length;
+		const createdSchools = scSchools.filter((scSchool) => scSchool != null && scSchool.created).length;
+		const updatedSchools = scSchools.filter((scSchool) => scSchool != null && !scSchool.created).length;
+		this.logger.info(new TspSchoolsSyncedLoggable(total, totalProcessed, createdSchools, updatedSchools));
 
-		return scSchools.map((scSchool) => scSchool.school);
+		return scSchools.filter((scSchool) => scSchool != null).map((scSchool) => scSchool.school);
 	}
 
 	private async migrateUserIds(system: System): Promise<void> {

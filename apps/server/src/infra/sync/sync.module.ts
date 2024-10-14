@@ -15,11 +15,10 @@ import { SyncUc } from './uc/sync.uc';
 
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		LoggerModule,
 		ConsoleWriterModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspClientModule, SystemModule, SchoolModule, LegacySchoolModule]
+			? [TspClientModule, SystemModule, SchoolModule, LegacySchoolModule, RabbitMQWrapperModule]
 			: []),
 	],
 	providers: [

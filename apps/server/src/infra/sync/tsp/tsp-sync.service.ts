@@ -44,14 +44,14 @@ export class TspSyncService {
 		return systems[0];
 	}
 
-	public async fetchTspSchools(system: System) {
+	public async fetchTspSchools(system: System, daysToFetch: number) {
 		const client = this.tspClientFactory.createExportClient({
 			clientId: system.oauthConfig?.clientId ?? '',
 			clientSecret: system.oauthConfig?.clientSecret ?? '',
 			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
 		});
 
-		const lastChangeDate = this.formatChangeDate(new Date(0));
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
 		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
 
 		return schools;
@@ -69,7 +69,11 @@ export class TspSyncService {
 		return schools[0];
 	}
 
-	public async updateSchool(school: School, name: string): Promise<School> {
+	public async updateSchool(school: School, name?: string): Promise<School> {
+		if (!name) {
+			return school;
+		}
+
 		school.name = name;
 
 		const updatedSchool = await this.schoolService.save(school);
@@ -80,12 +84,13 @@ export class TspSyncService {
 	public async createSchool(system: System, identifier: string, name: string): Promise<School> {
 		const schoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
 		const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
+		const federalState = await this.findFederalState();
 
 		const school = SchoolFactory.build({
 			externalId: identifier,
 			name,
 			systemIds: [system.id],
-			federalState: await this.findFederalState(),
+			federalState,
 			currentYear: schoolYear,
 			features: new Set([SchoolFeature.OAUTH_PROVISIONING_ENABLED]),
 			createdAt: new Date(),
@@ -108,10 +113,6 @@ export class TspSyncService {
 		return this.federalState;
 	}
 
-	private formatChangeDate(date: Date): string {
-		return moment(date).format('YYYY-MM-DD HH:mm:ss.SSS');
-	}
-
 	public async fetchTspTeachers(system: System) {
 		const client = this.tspClientFactory.createExportClient({
 			clientId: system.oauthConfig?.clientId ?? '',
@@ -132,5 +133,9 @@ export class TspSyncService {
 		const students: RobjExportSchuelerMigration[] = (await client.exportSchuelerListMigration()).data;
 
 		return students;
+	}
+
+	private formatChangeDate(daysToFetch: number): string {
+		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 }
