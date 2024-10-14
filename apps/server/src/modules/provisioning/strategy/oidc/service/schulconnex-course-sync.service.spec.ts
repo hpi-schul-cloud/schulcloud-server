@@ -34,21 +34,41 @@ describe(SchulconnexCourseSyncService.name, () => {
 	});
 
 	describe('synchronizeCourseWithGroup', () => {
-		describe('when synchronizing with a group', () => {
+		describe('when synchronizing with a new group', () => {
 			const setup = () => {
-				const group: Group = groupFactory.build();
+				const newGroup: Group = groupFactory.build();
 
 				return {
-					group,
+					newGroup,
 				};
 			};
 
 			it('should synchronize with the group', async () => {
-				const { group } = setup();
+				const { newGroup } = setup();
 
-				await service.synchronizeCourseWithGroup(group);
+				await service.synchronizeCourseWithGroup(newGroup);
 
-				expect(courseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(group);
+				expect(courseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(newGroup, undefined);
+			});
+		});
+
+		describe('when synchronizing with a new group and an old group', () => {
+			const setup = () => {
+				const newGroup: Group = groupFactory.build();
+				const oldGroup: Group = groupFactory.build();
+
+				return {
+					newGroup,
+					oldGroup,
+				};
+			};
+
+			it('should synchronize with the group', async () => {
+				const { newGroup, oldGroup } = setup();
+
+				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
+
+				expect(courseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(newGroup, oldGroup);
 			});
 		});
 	});
