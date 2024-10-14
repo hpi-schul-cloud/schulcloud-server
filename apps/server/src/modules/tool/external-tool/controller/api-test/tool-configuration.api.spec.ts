@@ -849,12 +849,12 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							schoolExternalToolId: schoolExternalTool.id,
 							name: externalTool.name,
-							iconName: externalTool.iconName,
+							iconName: 'iconName',
 						},
 						{
 							schoolExternalToolId: schoolExternalTool2.id,
 							name: externalToolWithContextRestriction.name,
-							iconName: externalToolWithContextRestriction.iconName,
+							iconName: 'iconName',
 						},
 					],
 				});
@@ -870,7 +870,7 @@ describe('ToolConfigurationController (API)', () => {
 						{
 							schoolExternalToolId: schoolExternalTool.id,
 							name: externalTool.name,
-							iconName: externalTool.iconName,
+							iconName: 'iconName',
 						},
 					],
 				});
