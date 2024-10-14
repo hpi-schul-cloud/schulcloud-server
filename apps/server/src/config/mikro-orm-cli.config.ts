@@ -15,7 +15,6 @@ export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	user: DB_USERNAME,
 	entities: [...ALL_ENTITIES, FileEntity, FileRecord],
 	allowGlobalContext: true,
-	debug: true,
 	/*
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		new NotFoundException(`The requested ${entityName}: ${JSON.stringify(where)} has not been found.`),
