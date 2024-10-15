@@ -1,9 +1,9 @@
-import { IdTokenInvalidLoggableException } from './id-token-invalid-loggable-exception';
+import { TokenInvalidLoggableException } from './token-invalid-loggable-exception';
 
-describe(IdTokenInvalidLoggableException.name, () => {
+describe(TokenInvalidLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new IdTokenInvalidLoggableException();
+			const exception = new TokenInvalidLoggableException();
 			return { exception };
 		};
 
@@ -13,8 +13,8 @@ describe(IdTokenInvalidLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				type: 'ID_TOKEN_INVALID',
-				message: 'Failed to validate idToken',
+				type: 'TOKEN_INVALID',
+				message: 'Failed to validate token',
 				stack: expect.any(String),
 			});
 		});
