@@ -1,13 +1,13 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { cleanupCollections, groupEntityFactory, roleFactory, userFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { RoomMember } from '../do/room-member.do';
+import { RoomMember, RoomMemberProps } from '../do/room-member.do';
 import { roomMemberEntityFactory } from '../testing';
+import { RoomMemberEntity } from './entity';
 import { RoomMemberDomainMapper } from './room-member-domain.mapper';
 
-// TODO: fix this test
 describe('RoomMemberDomainMapper', () => {
 	let module: TestingModule;
 	let em: EntityManager;
@@ -30,7 +30,7 @@ describe('RoomMemberDomainMapper', () => {
 	});
 
 	describe('mapEntityToDo', () => {
-		const setup = () => {
+		it('should map RoomMemberEntity to RoomMember domain object', () => {
 			const user = userFactory.build();
 			const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR });
 			const userGroupEntity = groupEntityFactory.buildWithId({
@@ -38,34 +38,50 @@ describe('RoomMemberDomainMapper', () => {
 			});
 			const roomMemberEntity = roomMemberEntityFactory.build({ userGroup: userGroupEntity });
 
-			return { roomMemberEntity, userGroupEntity };
-		};
-
-		it('should map RoomMemberEntity to RoomMember domain object', () => {
-			const { roomMemberEntity } = setup();
 			const result = RoomMemberDomainMapper.mapEntityToDo(roomMemberEntity);
-			// NOTE: result.getProps().id === undefined, I don't know why
 			expect(result.id).toEqual(roomMemberEntity.id);
-			expect(result.getProps().userGroup.id).toEqual(roomMemberEntity.userGroup.id);
-			expect(result.getProps().userGroup.users[0].role.id).toEqual(roomMemberEntity.userGroup.users[0].role.id);
-			expect(result.getProps().userGroup.users[0].user.id).toEqual(roomMemberEntity.userGroup.users[0].user.id);
-			expect(result.getProps().roomId).toEqual(roomMemberEntity.roomId);
+			expect(result.userGroup.id).toEqual(roomMemberEntity.userGroup.id);
+			expect(result.userGroup.users[0].role.id).toEqual(roomMemberEntity.userGroup.users[0].role.id);
+			expect(result.userGroup.users[0].user.id).toEqual(roomMemberEntity.userGroup.users[0].user.id);
+			expect(result.roomId).toEqual(roomMemberEntity.roomId);
 		});
 
-		// NOTE: something missing with the domain object
-		// it('should return existing domainObject if present', () => {
-		// 	const { roomMemberEntity } = setup();
+		it('should return existing domainObject if present', () => {
+			const user = userFactory.build();
+			const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR });
+			const userGroupEntity = groupEntityFactory.buildWithId({
+				users: [{ role, user }],
+			});
 
-		// 	const result = RoomMemberDomainMapper.mapEntityToDo(roomMemberEntity);
+			const roomMemberDo = new RoomMember({
+				id: '1',
+				roomId: new ObjectId(),
+				userGroup: userGroupEntity,
+				createdAt: new Date('2023-01-01'),
+				updatedAt: new Date('2023-01-01'),
+			});
 
-		// 	// expect(result).toBe(existingRoomMember);
-		// 	expect(result.getProps()).toEqual({
-		// 		id: '1',
-		// 		userId: 'user1',
-		// 		roomId: 'room1',
-		// 		role: 'ROOM_VIEWER',
-		// 	});
-		// });
+			const roomMemberEntity = {
+				id: '1',
+				roomId: roomMemberDo.roomId,
+				userGroup: userGroupEntity,
+				createdAt: new Date('2023-01-01'),
+				updatedAt: new Date('2023-01-01'),
+				domainObject: roomMemberDo,
+			} as RoomMemberEntity;
+
+			const result = RoomMemberDomainMapper.mapEntityToDo(roomMemberEntity);
+
+			expect(result).toBe(roomMemberDo);
+			expect(result).toBeInstanceOf(RoomMember);
+			expect(result.getProps()).toEqual({
+				id: '1',
+				roomId: roomMemberDo.roomId,
+				createdAt: new Date('2023-01-01'),
+				updatedAt: new Date('2023-01-01'),
+				userGroup: userGroupEntity,
+			});
+		});
 	});
 
 	describe('mapDoToEntity', () => {
@@ -80,14 +96,36 @@ describe('RoomMemberDomainMapper', () => {
 			return { roomMemberEntity, userGroupEntity };
 		};
 
-		it('should return entity when props are instanceof RoomMemberEntity', () => {
-			const { roomMemberEntity } = setup();
+		describe('when domain object props are instanceof RoomMemberEntity', () => {
+			it('should return the entity', () => {
+				const { roomMemberEntity } = setup();
 
-			const roomMember = new RoomMember(roomMemberEntity);
+				const roomMember = new RoomMember(roomMemberEntity);
 
-			const result = RoomMemberDomainMapper.mapDoToEntity(roomMember);
+				const result = RoomMemberDomainMapper.mapDoToEntity(roomMember);
 
-			expect(result).toBe(roomMemberEntity);
+				expect(result).toBe(roomMemberEntity);
+			});
+		});
+
+		describe('when domain object props are not instanceof RoomMemberEntity', () => {
+			it('should convert them to an entity and return it', () => {
+				const { userGroupEntity } = setup();
+
+				const roomMemberEntity: RoomMemberProps = {
+					id: '66d581c3ef74c548a4efea1d',
+					roomId: new ObjectId(),
+					userGroup: userGroupEntity,
+					createdAt: new Date('2023-01-01'),
+					updatedAt: new Date('2023-01-01'),
+				};
+				const roomMember = new RoomMember(roomMemberEntity);
+
+				const result = RoomMemberDomainMapper.mapDoToEntity(roomMember);
+
+				expect(result).toBeInstanceOf(RoomMemberEntity);
+				expect(result).toMatchObject(roomMemberEntity);
+			});
 		});
 	});
 });
