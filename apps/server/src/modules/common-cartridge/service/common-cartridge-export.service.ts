@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { FilesStorageService } from '@src/modules/files-storage/service';
 import { FileRecord } from '@src/modules/files-storage/entity';
 import { GetFileResponse, StorageLocation } from '@src/modules/files-storage/interface';
+import { ObjectId } from 'bson';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client';
 import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
@@ -46,7 +47,7 @@ export class CommonCartridgeExportService {
 			isUploading: false,
 			parentId: fileRecords[0].parentId,
 			storageLocation: StorageLocation.SCHOOL,
-			storageLocationId: 'default',
+			storageLocationId: new ObjectId().toHexString(),
 		});
 		const fileResponse = await this.fileStorageService.download(fileRecorde, {
 			fileRecordId: fileRecords[0].id,
