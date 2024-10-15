@@ -58,7 +58,7 @@ const config: AdminApiServerConfig = {
 		.map((part) => (part.split(':').pop() ?? '').trim()),
 	JWT_AUD: Configuration.get('JWT_AUD') as string,
 	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
-	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
+	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
 	LOGIN_BLOCK_TIME: 0,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'

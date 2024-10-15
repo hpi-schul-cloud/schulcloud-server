@@ -119,10 +119,6 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
-		"AUTHENTICATION": {
-			"type": "string",
-			"description": "The secret that is used for create and validate the jwt."
-		},
 		"JWT_PRIVATE_KEY": {
 			"type": "string",
 			"description": "The private key used to sign JWTs."
