@@ -169,7 +169,7 @@ describe('TspProvisioningStrategy', () => {
 			});
 		});
 
-		describe('When roles are missing', () => {
+		describe('When roles are missing or unknown', () => {
 			const setup = () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
@@ -183,12 +183,11 @@ describe('TspProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: 'externalUserId',
-						sid: 1000,
-						ptscListRolle: '',
+						ptscListRolle: 'user',
 						personVorname: 'firstName',
 						personNachname: 'lastName',
 						ptscSchuleNummer: 'externalSchoolId',
-						ptscListKlasseId: ['externalClassId1', 'externalClassId2'],
+						ptscListKlasseId: 'externalClassId1,externalClassId2',
 					};
 				});
 
