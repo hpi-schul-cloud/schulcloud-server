@@ -8,8 +8,6 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { PreferredToolListResponse } from '@modules/tool/external-tool/controller/dto/response/preferred-tool-list.response';
-import { ToolContextTypeParams } from '@modules/tool/external-tool/controller/dto/request/tool-context-type.params';
 import { ToolContextType } from '../../common/enum';
 import { ExternalTool } from '../domain';
 import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
@@ -24,6 +22,8 @@ import {
 	SchoolExternalToolIdParams,
 	SchoolIdParams,
 	ToolContextTypesListResponse,
+	PreferredToolListResponse,
+	ToolContextTypeParams,
 } from './dto';
 
 @ApiTags('Tool')

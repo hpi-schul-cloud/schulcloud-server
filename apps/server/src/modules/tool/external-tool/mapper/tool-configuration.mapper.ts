@@ -1,5 +1,3 @@
-import { PreferredToolListResponse } from '@modules/tool/external-tool/controller/dto/response/preferred-tool-list.response';
-import { PreferredToolResponse } from '@modules/tool/external-tool/controller/dto/response/preferred-tool.response';
 import { ToolContextType } from '../../common/enum';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
@@ -7,6 +5,8 @@ import {
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
+	PreferredToolListResponse,
+	PreferredToolResponse,
 } from '../controller/dto';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';

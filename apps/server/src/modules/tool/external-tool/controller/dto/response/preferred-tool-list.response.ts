@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PreferredToolResponse } from '@modules/tool/external-tool/controller/dto/response/preferred-tool.response';
+import { PreferredToolResponse } from './preferred-tool.response';
 
 export class PreferredToolListResponse {
 	@ApiProperty({ type: [PreferredToolResponse] })
