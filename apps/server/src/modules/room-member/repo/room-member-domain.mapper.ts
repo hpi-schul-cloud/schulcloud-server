@@ -7,7 +7,6 @@ export class RoomMemberDomainMapper {
 		if (roomMemberEntity.domainObject) {
 			return roomMemberEntity.domainObject;
 		}
-		console.log('roomMemberEntity', roomMemberEntity);
 		const roomMember = new RoomMember(roomMemberEntity);
 
 		// attach to identity map

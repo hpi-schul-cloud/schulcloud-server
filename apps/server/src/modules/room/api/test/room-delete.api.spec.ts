@@ -1,7 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
+import {
+	TestApiClient,
+	UserAndAccountTestFactory,
+	cleanupCollections,
+	groupEntityFactory,
+	roleFactory,
+} from '@shared/testing';
+import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -85,8 +93,16 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
+				const role = roleFactory.buildWithId({
+					name: RoleName.ROOM_EDITOR,
+					permissions: [Permission.ROOM_EDIT],
+				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				const userGroup = groupEntityFactory.buildWithId({
+					users: [{ role, user: teacherUser }],
+				});
+				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroup });
+				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -106,13 +122,47 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 404 error', async () => {
+				it('should return a 403 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.delete(someId);
 
-					expect(response.status).toBe(HttpStatus.NOT_FOUND);
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+		});
+
+		describe('when the user has not the required permissions', () => {
+			const setup = async () => {
+				const room = roomEntityFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, room };
+			};
+
+			describe('when the room exists', () => {
+				it('should return 403', async () => {
+					const { loggedInClient, room } = await setup();
+
+					const response = await loggedInClient.delete(room.id);
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+
+			describe('when the room does not exist', () => {
+				it('should return a 403 error', async () => {
+					const { loggedInClient } = await setup();
+					const someId = new ObjectId().toHexString();
+
+					const response = await loggedInClient.delete(someId);
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
 		});

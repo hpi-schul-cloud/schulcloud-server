@@ -1,8 +1,9 @@
 import { Utils } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { RoomMemberEntity } from './entity/room-member.entity';
+import { RoomMemberScope } from './room-member.scope';
 
 @Injectable()
 export class RoomMemberRepo {
@@ -10,6 +11,24 @@ export class RoomMemberRepo {
 
 	async findById(id: EntityId): Promise<RoomMemberEntity | null> {
 		return this.em.findOne(RoomMemberEntity, id, {
+			populate: ['userGroup', 'userGroup.users.user', 'userGroup.users.role'],
+		});
+	}
+
+	async findByRoomId(roomId: EntityId): Promise<RoomMemberEntity | null> {
+		return this.em.findOne(
+			RoomMemberEntity,
+			{ roomId: new ObjectId(roomId) },
+			{
+				populate: ['userGroup', 'userGroup.users.user', 'userGroup.users.role'],
+			}
+		);
+	}
+
+	async findByRoomIds(roomIds: EntityId[]): Promise<RoomMemberEntity[]> {
+		const scope = new RoomMemberScope();
+		scope.byRoomIds(roomIds);
+		return this.em.find(RoomMemberEntity, scope.query, {
 			populate: ['userGroup', 'userGroup.users.user', 'userGroup.users.role'],
 		});
 	}

@@ -1,11 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections, groupEntityFactory, roleFactory, userFactory } from '@shared/testing';
-import { RoomMemberRepo } from './room-member.repo';
 import { roomMemberEntityFactory } from '../testing';
 import { RoomMemberEntity } from './entity/room-member.entity';
+import { RoomMemberRepo } from './room-member.repo';
 
 describe('RoomMemberRepo', () => {
 	let module: TestingModule;
@@ -61,9 +61,27 @@ describe('RoomMemberRepo', () => {
 	});
 
 	describe('save', () => {
-		it('should save a single room member', async () => {
-			const roomMember = roomMemberEntityFactory.build();
+		const setup = async () => {
+			const existingUser = userFactory.buildWithId();
+			const existingRole = roleFactory.buildWithId({
+				name: RoleName.ROOM_EDITOR,
+				permissions: [Permission.ROOM_EDIT, Permission.ROOM_VIEW],
+			});
 
+			await em.persistAndFlush([existingUser, existingRole]);
+			em.clear();
+
+			return { existingUser, existingRole };
+		};
+
+		it('should save a single room member', async () => {
+			const { existingUser, existingRole } = await setup();
+			const userGroupEntity = groupEntityFactory.buildWithId({
+				users: [{ role: existingRole, user: existingUser }],
+				organization: undefined,
+				externalSource: undefined,
+			});
+			const roomMember = roomMemberEntityFactory.build({ userGroup: userGroupEntity });
 			await repo.save(roomMember);
 
 			const savedMember = await em.findOne(RoomMemberEntity, roomMember.id);
@@ -72,7 +90,13 @@ describe('RoomMemberRepo', () => {
 		});
 
 		it('should save multiple room members', async () => {
-			const roomMembers = roomMemberEntityFactory.buildList(3);
+			const { existingUser, existingRole } = await setup();
+			const userGroupEntity = groupEntityFactory.buildWithId({
+				users: [{ role: existingRole, user: existingUser }],
+				organization: undefined,
+				externalSource: undefined,
+			});
+			const roomMembers = roomMemberEntityFactory.buildList(3, { userGroup: userGroupEntity });
 
 			await repo.save(roomMembers);
 
@@ -117,6 +141,76 @@ describe('RoomMemberRepo', () => {
 				})
 			);
 			expect(deletedMembers).toHaveLength(roomMembers.length);
+		});
+	});
+
+	describe('findByRoomId', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR });
+			const userGroupEntity = groupEntityFactory.buildWithId({
+				users: [{ role, user }],
+			});
+			const roomMemberEntity = roomMemberEntityFactory.buildWithId({
+				userGroup: userGroupEntity,
+			});
+			await em.persistAndFlush([user, userGroupEntity, roomMemberEntity]);
+			em.clear();
+
+			return { roomMemberEntity, userGroupEntity };
+		};
+
+		it('should find room member by roomId', async () => {
+			const { roomMemberEntity, userGroupEntity } = await setup();
+
+			const result = await repo.findByRoomId(roomMemberEntity.roomId.toString());
+
+			expect(result).toBeDefined();
+			expect(result?.id).toEqual(roomMemberEntity.id);
+			expect(result?.userGroup?.id).toEqual(userGroupEntity.id);
+		});
+
+		it('should return null if no room member found', async () => {
+			const result = await repo.findByRoomId(new ObjectId().toString());
+
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('findByRoomIds', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR });
+			const userGroupEntity = groupEntityFactory.buildWithId({
+				users: [{ role, user }],
+			});
+			const roomMemberEntities = roomMemberEntityFactory.buildList(3, {
+				userGroup: userGroupEntity,
+			});
+			await em.persistAndFlush([user, userGroupEntity, ...roomMemberEntities]);
+			em.clear();
+
+			return { roomMemberEntities, userGroupEntity };
+		};
+
+		it('should find room members by roomIds', async () => {
+			const { roomMemberEntities, userGroupEntity } = await setup();
+
+			const roomIds = roomMemberEntities.map((member) => member.roomId.toString());
+			const result = await repo.findByRoomIds(roomIds);
+
+			expect(result).toHaveLength(3);
+			result.forEach((member, index) => {
+				expect(member.id).toEqual(roomMemberEntities[index].id);
+				expect(member.userGroup?.id).toEqual(userGroupEntity.id);
+			});
+		});
+
+		it('should return empty array if no room members found', async () => {
+			const nonExistentRoomIds = [new ObjectId().toString(), new ObjectId().toString()];
+			const result = await repo.findByRoomIds(nonExistentRoomIds);
+
+			expect(result).toEqual([]);
 		});
 	});
 });

@@ -4,6 +4,8 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IFindOptions } from '@shared/domain/interface';
+import { RoomMemberService } from '@src/modules/room-member';
+import { AuthorizationService } from '@src/modules/authorization';
 import { RoomUc } from './room.uc';
 import { RoomService, Room } from '../domain';
 import { roomFactory } from '../testing';
@@ -13,6 +15,7 @@ describe('RoomUc', () => {
 	let uc: RoomUc;
 	let configService: DeepMocked<ConfigService>;
 	let roomService: DeepMocked<RoomService>;
+	let roomMemberService: DeepMocked<RoomMemberService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,12 +29,21 @@ describe('RoomUc', () => {
 					provide: RoomService,
 					useValue: createMock<RoomService>(),
 				},
+				{
+					provide: RoomMemberService,
+					useValue: createMock<RoomMemberService>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get<RoomUc>(RoomUc);
 		configService = module.get(ConfigService);
 		roomService = module.get(RoomService);
+		roomMemberService = module.get(RoomMemberService);
 	});
 
 	afterAll(async () => {
@@ -70,8 +82,13 @@ describe('RoomUc', () => {
 
 		it('should return rooms when feature is enabled', async () => {
 			const { paginatedRooms } = setup();
-			const result = await uc.getRooms('userId', {});
+			roomMemberService.batchHasAuthorization.mockResolvedValue(
+				paginatedRooms.data.map((room) => {
+					return { roomId: room.id, hasAuthorization: true };
+				})
+			);
 
+			const result = await uc.getRooms('userId', {});
 			expect(result).toEqual(paginatedRooms);
 		});
 	});
