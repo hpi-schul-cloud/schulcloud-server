@@ -61,10 +61,6 @@ export class Course extends DomainObject<CourseProps> {
 		this.props.teacherIds = value;
 	}
 
-	set substitutionTeachers(value: EntityId[]) {
-		this.props.substitutionTeacherIds = value;
-	}
-
 	get substitutionTeachers(): EntityId[] {
 		return this.props.substitutionTeacherIds;
 	}
