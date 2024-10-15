@@ -20,6 +20,7 @@ export interface UserProperties {
 	externalId?: string;
 	language?: LanguageType;
 	forcePasswordChange?: boolean;
+	discoverable?: boolean;
 	preferences?: Record<string, unknown>;
 	deletedAt?: Date;
 	lastLoginSystemChange?: Date;
@@ -96,6 +97,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
 
+	@Property({ nullable: true })
+	discoverable?: boolean;
+
 	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
 
@@ -141,6 +145,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;
 		this.forcePasswordChange = props.forcePasswordChange;
+		this.discoverable = props.discoverable;
 		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 		this.deletedAt = props.deletedAt;

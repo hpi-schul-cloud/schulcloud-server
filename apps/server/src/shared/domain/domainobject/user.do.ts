@@ -34,6 +34,8 @@ export class UserDO extends BaseDO {
 
 	forcePasswordChange?: boolean;
 
+	discoverable?: boolean;
+
 	preferences?: Record<string, unknown>;
 
 	lastLoginSystemChange?: Date;
@@ -62,6 +64,7 @@ export class UserDO extends BaseDO {
 		this.emailSearchValues = domainObject.emailSearchValues;
 		this.language = domainObject.language;
 		this.forcePasswordChange = domainObject.forcePasswordChange;
+		this.discoverable = domainObject.discoverable;
 		this.preferences = domainObject.preferences;
 		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
 		this.outdatedSince = domainObject.outdatedSince;
