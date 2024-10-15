@@ -14,6 +14,7 @@ export interface UserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
+	preferredName?: string;
 	school: SchoolEntity;
 	roles: Role[];
 	ldapDn?: string;
@@ -45,6 +46,7 @@ interface UserInfo {
 @Entity({ tableName: 'users' })
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
+@Index({ properties: ['preferredName'] })
 @Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
@@ -58,6 +60,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 	@Property()
 	lastName: string;
+
+	@Property({ nullable: true })
+	preferredName?: string;
 
 	@Index()
 	@ManyToMany({ fieldName: 'roles', entity: () => Role })
@@ -135,6 +140,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		super();
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
+		this.preferredName = props.preferredName;
 		this.email = props.email;
 		this.school = props.school;
 		this.roles.set(props.roles);
