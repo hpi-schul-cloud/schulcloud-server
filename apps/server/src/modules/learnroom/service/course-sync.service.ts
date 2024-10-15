@@ -64,6 +64,10 @@ export class CourseSyncService {
 				} else {
 					course.students = [];
 				}
+
+				course.classes = [];
+				course.groups = [];
+
 				return course;
 			});
 

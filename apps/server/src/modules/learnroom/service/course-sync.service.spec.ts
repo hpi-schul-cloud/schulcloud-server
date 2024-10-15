@@ -93,8 +93,12 @@ describe(CourseSyncService.name, () => {
 	describe('startSynchronization', () => {
 		describe('when a course is not synchronized with a group', () => {
 			const setup = () => {
-				const course: Course = courseFactory.build();
-
+				const teacherId = new ObjectId().toHexString();
+				const course: Course = courseFactory.build({
+					classIds: [new ObjectId().toHexString()],
+					groupIds: [new ObjectId().toHexString()],
+					substitutionTeacherIds: [teacherId],
+				});
 				const studentRole = roleDtoFactory.build({ id: 'student-role-id' });
 				const teacherRole = roleDtoFactory.build({ id: 'teacher-role-id' });
 				const students: GroupUser[] = [{ roleId: 'student-role-id', userId: 'student-user-id' }];
@@ -109,11 +113,12 @@ describe(CourseSyncService.name, () => {
 					students,
 					teachers,
 					groupWithoutTeachers,
+					teacherId,
 				};
 			};
 
 			it('should save a course with synchronized group, students, and teachers', async () => {
-				const { course, group, students, teachers } = setup();
+				const { course, group, students, teachers, teacherId } = setup();
 
 				await service.startSynchronization(course, group);
 
@@ -126,12 +131,15 @@ describe(CourseSyncService.name, () => {
 						untilDate: group.validPeriod?.until,
 						studentIds: students.map((student) => student.userId),
 						teacherIds: teachers.map((teacher) => teacher.userId),
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [teacherId],
 					}),
 				]);
 			});
 
 			it('should set an empty list of students if no teachers are present', async () => {
-				const { course, groupWithoutTeachers } = setup();
+				const { course, groupWithoutTeachers, teacherId } = setup();
 
 				await service.startSynchronization(course, groupWithoutTeachers);
 
@@ -144,6 +152,9 @@ describe(CourseSyncService.name, () => {
 						untilDate: groupWithoutTeachers.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [teacherId],
 					}),
 				]);
 			});
@@ -197,7 +208,13 @@ describe(CourseSyncService.name, () => {
 						},
 					],
 				});
-				const course: Course = courseFactory.build({ syncedWithGroup: newGroup.id });
+				const substituteTeacherId = new ObjectId().toHexString();
+				const course: Course = courseFactory.build({
+					classIds: [new ObjectId().toHexString()],
+					groupIds: [new ObjectId().toHexString()],
+					substitutionTeacherIds: [substituteTeacherId],
+					syncedWithGroup: newGroup.id,
+				});
 
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
@@ -208,11 +225,12 @@ describe(CourseSyncService.name, () => {
 					newGroup,
 					studentId,
 					teacherId,
+					substituteTeacherId,
 				};
 			};
 
 			it('should synchronize with the group', async () => {
-				const { course, newGroup, studentId, teacherId } = setup();
+				const { course, newGroup, studentId, teacherId, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
 
@@ -224,6 +242,9 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);
 			});
@@ -231,7 +252,13 @@ describe(CourseSyncService.name, () => {
 
 		describe('when the course name is the same as the old group name', () => {
 			const setup = () => {
-				const course: Course = courseFactory.build({ name: 'Course Name' });
+				const substituteTeacherId = new ObjectId().toHexString();
+				const course: Course = courseFactory.build({
+					name: 'Course Name',
+					classIds: [new ObjectId().toHexString()],
+					groupIds: [new ObjectId().toHexString()],
+					substitutionTeacherIds: [substituteTeacherId],
+				});
 				const studentRole: RoleDto = roleDtoFactory.build();
 				const teacherRole: RoleDto = roleDtoFactory.build();
 				const oldGroup: Group = groupFactory.build({ name: 'Course Name' });
@@ -248,11 +275,12 @@ describe(CourseSyncService.name, () => {
 					course,
 					newGroup,
 					oldGroup,
+					substituteTeacherId,
 				};
 			};
 
 			it('should synchronize the group name', async () => {
-				const { course, newGroup, oldGroup } = setup();
+				const { course, newGroup, oldGroup, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -264,6 +292,9 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);
 			});
@@ -271,7 +302,13 @@ describe(CourseSyncService.name, () => {
 
 		describe('when the course name is different from the old group name', () => {
 			const setup = () => {
-				const course: Course = courseFactory.build({ name: 'Custom Course Name' });
+				const substituteTeacherId = new ObjectId().toHexString();
+				const course: Course = courseFactory.build({
+					name: 'Custom Course Name',
+					classIds: [new ObjectId().toHexString()],
+					groupIds: [new ObjectId().toHexString()],
+					substitutionTeacherIds: [substituteTeacherId],
+				});
 				const studentRole: RoleDto = roleDtoFactory.build();
 				const teacherRole: RoleDto = roleDtoFactory.build();
 				const oldGroup: Group = groupFactory.build({ name: 'Course Name' });
@@ -288,11 +325,12 @@ describe(CourseSyncService.name, () => {
 					course,
 					newGroup,
 					oldGroup,
+					substituteTeacherId,
 				};
 			};
 
 			it('should keep the old course name', async () => {
-				const { course, newGroup, oldGroup } = setup();
+				const { course, newGroup, oldGroup, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -304,6 +342,9 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
 						teacherIds: [],
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);
 			});
@@ -311,6 +352,7 @@ describe(CourseSyncService.name, () => {
 
 		describe('when the last teacher gets removed from a synced group', () => {
 			const setup = () => {
+				const substituteTeacherId = new ObjectId().toHexString();
 				const studentUserId = new ObjectId().toHexString();
 				const teacherUserId = new ObjectId().toHexString();
 				const studentRoleId: string = new ObjectId().toHexString();
@@ -329,6 +371,7 @@ describe(CourseSyncService.name, () => {
 					teacherIds: [teacherUserId],
 					studentIds: [studentUserId],
 					syncedWithGroup: newGroup.id,
+					substitutionTeacherIds: [substituteTeacherId],
 				});
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
@@ -338,11 +381,12 @@ describe(CourseSyncService.name, () => {
 					course,
 					newGroup,
 					teacherUserId,
+					substituteTeacherId,
 				};
 			};
 
 			it('should keep the last teacher, remove all students', async () => {
-				const { course, newGroup, teacherUserId } = setup();
+				const { course, newGroup, teacherUserId, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -354,6 +398,9 @@ describe(CourseSyncService.name, () => {
 						studentIds: [],
 						teacherIds: [teacherUserId],
 						syncedWithGroup: course.syncedWithGroup,
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);
 			});
