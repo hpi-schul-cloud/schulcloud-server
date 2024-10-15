@@ -14,8 +14,8 @@ import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
+	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
@@ -130,7 +130,7 @@ export class OAuthService {
 		});
 
 		if (typeof decodedJWT === 'string') {
-			throw new IdTokenInvalidLoggableException();
+			throw new TokenInvalidLoggableException();
 		}
 
 		return decodedJWT;
