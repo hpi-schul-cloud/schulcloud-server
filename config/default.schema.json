@@ -1522,6 +1522,7 @@
 			"type": "object",
 			"description": "Configuration of tldraw related settings",
 			"required": [
+				"WEBSOCKET_URL",
 				"PING_TIMEOUT",
 				"FINALIZE_DELAY",
 				"SOCKET_PORT",
@@ -1530,10 +1531,14 @@
 				"MAX_DOCUMENT_SIZE",
 				"ASSETS_ENABLED",
 				"ASSETS_SYNC_ENABLED",
-				"ASSETS_MAX_SIZE",
+				"ASSETS_MAX_SIZE_BYTES",
 				"ASSETS_ALLOWED_MIME_TYPES_LIST"
 			],
 			"properties": {
+				"WEBSOCKET_URL": {
+					"type": "string",
+					"description": "Web socket url for tldraw"
+				},
 				"SOCKET_PORT": {
 					"type": "number",
 					"description": "Web socket port for tldraw"
@@ -1566,7 +1571,7 @@
 					"type": "boolean",
 					"description": "Enables synchronization of tldraw board assets with file storage"
 				},
-				"ASSETS_MAX_SIZE": {
+				"ASSETS_MAX_SIZE_BYTES": {
 					"type": "integer",
 					"description": "Maximum asset size in bytes"
 				},
@@ -1588,6 +1593,7 @@
 				}
 			},
 			"default": {
+				"WEBSOCKET_URL": "ws://localhost:3345",
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
 				"FINALIZE_DELAY": 5000,
@@ -1596,7 +1602,7 @@
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
 				"ASSETS_SYNC_ENABLED": false,
-				"ASSETS_MAX_SIZE": 10485760,
+				"ASSETS_MAX_SIZE_BYTES": 10485760,
 				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
 		},
