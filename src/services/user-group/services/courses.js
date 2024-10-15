@@ -26,6 +26,7 @@ const {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
 	removeColumnBoard,
+	removeContextExternalTools,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
@@ -146,7 +147,7 @@ const courseHooks = {
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],
-		remove: [removeColumnBoard],
+		remove: [removeColumnBoard, removeContextExternalTools],
 	},
 };
 

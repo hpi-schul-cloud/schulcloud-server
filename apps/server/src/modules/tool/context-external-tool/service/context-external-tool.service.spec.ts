@@ -123,6 +123,27 @@ describe(ContextExternalToolService.name, () => {
 		});
 	});
 
+	describe('deleteContextExternalToolsByCourseId', () => {
+		describe('when deleting a context external tool', () => {
+			const setup = () => {
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				const courseId = contextExternalTool.contextRef.id;
+
+				return {
+					courseId,
+				};
+			};
+
+			it('should delete the context external tool', async () => {
+				const { courseId } = setup();
+
+				await service.deleteContextExternalToolsByCourseId(courseId);
+
+				expect(commonToolDeleteService.deleteContextExternalToolsByCourseId).toHaveBeenCalledWith(courseId);
+			});
+		});
+	});
+
 	describe('saveContextExternalTool', () => {
 		describe('when contextExternalTool is given', () => {
 			const setup = () => {
