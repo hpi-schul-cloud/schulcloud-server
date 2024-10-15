@@ -3,11 +3,11 @@ import {
 	AuthorizationClientAdapter,
 	AuthorizationContextBuilder,
 	AuthorizationContextParams,
+	AuthorizationContextParamsRequiredPermissions,
 } from '@infra/authorization-client';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
@@ -85,7 +85,7 @@ export class FilesStorageUC {
 			await this.authorizationClientAdapter.checkPermissionsByReference(
 				AuthorizationBodyParamsReferenceType.INSTANCES,
 				storageLocationId,
-				AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
+				AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.INSTANCE_VIEW])
 			);
 		}
 
