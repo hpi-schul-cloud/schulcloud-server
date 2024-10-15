@@ -27,7 +27,8 @@ const signOptions: SignOptions = {
 	header: { ...header, alg: algorithm },
 };
 const jwtModuleOptions: JwtModuleOptions = {
-	secret: authConfig.secret,
+	privateKey: authConfig.privateKey,
+	publicKey: authConfig.publicKey,
 	signOptions,
 	verifyOptions: signOptions,
 };

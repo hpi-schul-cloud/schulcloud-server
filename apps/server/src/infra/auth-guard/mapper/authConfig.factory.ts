@@ -45,14 +45,16 @@ export interface JwtOptions {
 }
 
 export interface JwtConstants {
-	secret: string;
+	privateKey: string;
+	publicKey: string;
 	jwtOptions: JwtOptions;
 }
 
 // Check if it not more a jwt factory and should be renamed and moved
 export class AuthConfigFactory {
-	public static build(secretInput: unknown, jwtOptionsInput: unknown): JwtConstants {
-		const secret = TypeGuard.checkString(secretInput);
+	public static build(privateKeyInput: unknown, publicKeyInput: unknown, jwtOptionsInput: unknown): JwtConstants {
+		const privateKey = TypeGuard.checkString(privateKeyInput);
+		const publicKey = TypeGuard.checkString(publicKeyInput);
 		// Should we add length check for secrets and that it is NOT secrets like for local?
 
 		const jwtOptions = TypeGuard.checkKeysInObject(jwtOptionsInput, ['audience', 'issuer', 'expiresIn']);
@@ -61,12 +63,13 @@ export class AuthConfigFactory {
 		const expiresIn = TypeGuard.checkString(jwtOptions.expiresIn);
 
 		const jwtConstants = {
-			secret,
+			privateKey,
+			publicKey,
 			jwtOptions: {
 				header: { typ: 'access' }, // or should it be typ: 'JWT' ? alg ?
 				audience,
 				issuer,
-				algorithm: Algorithms.HS256,
+				algorithm: Algorithms.RS256,
 				expiresIn,
 			},
 		};

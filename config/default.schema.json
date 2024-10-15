@@ -123,6 +123,14 @@
 			"type": "string",
 			"description": "The secret that is used for create and validate the jwt."
 		},
+		"JWT_PRIVATE_KEY": {
+			"type": "string",
+			"description": "The private key used to sign JWTs."
+		},
+		"JWT_PUBLIC_KEY": {
+			"type": "string",
+			"description": "The public key used to verify JWTs."
+		},
 		"JWT_LIFETIME": {
 			"type": "string",
 			"default": "30d",

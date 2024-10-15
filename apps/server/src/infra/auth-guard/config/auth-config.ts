@@ -7,4 +7,7 @@ const jwtOptions = {
 	expiresIn: Configuration.get('JWT_LIFETIME') as string,
 };
 
-export const authConfig = AuthConfigFactory.build(Configuration.get('AUTHENTICATION'), jwtOptions);
+const privateKey = Configuration.get('JWT_PRIVATE_KEY') as string;
+const publicKey = Configuration.get('JWT_PUBLIC_KEY') as string;
+
+export const authConfig = AuthConfigFactory.build(privateKey, publicKey, jwtOptions);
