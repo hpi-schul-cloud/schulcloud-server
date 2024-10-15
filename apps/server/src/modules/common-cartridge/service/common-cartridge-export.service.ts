@@ -1,5 +1,8 @@
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
+import { FilesStorageService } from '@src/modules/files-storage/service';
+import { FileRecord } from '@src/modules/files-storage/entity';
+import { GetFileResponse, StorageLocation } from '@src/modules/files-storage/interface';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client';
 import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
@@ -11,7 +14,8 @@ export class CommonCartridgeExportService {
 		private readonly filesService: FilesStorageClientAdapterService,
 		private readonly boardClientAdapter: BoardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
-		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter
+		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
+		private readonly fileStorageService: FilesStorageService
 	) {}
 
 	public async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
@@ -30,5 +34,25 @@ export class CommonCartridgeExportService {
 		const courseRooms = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		return courseRooms;
+	}
+
+	public async downloadFile(courseId: string): Promise<GetFileResponse> {
+		const fileRecords: FileDto[] = await this.filesService.listFilesOfParent(courseId);
+		const fileRecorde: FileRecord = new FileRecord({
+			name: fileRecords[0].name,
+			size: 1,
+			mimeType: 'application/octet-stream',
+			parentType: fileRecords[0].parentType,
+			isUploading: false,
+			parentId: fileRecords[0].parentId,
+			storageLocation: StorageLocation.SCHOOL,
+			storageLocationId: 'default',
+		});
+		const fileResponse = await this.fileStorageService.download(fileRecorde, {
+			fileRecordId: fileRecords[0].id,
+			fileName: fileRecords[0].name,
+		});
+
+		return fileResponse;
 	}
 }

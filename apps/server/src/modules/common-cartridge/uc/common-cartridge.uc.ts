@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
@@ -21,5 +22,11 @@ export class CommonCartridgeUc {
 		});
 
 		return response;
+	}
+
+	public async exportJustFile(courseId: EntityId): Promise<GetFileResponse> {
+		const files = await this.exportService.downloadFile(courseId);
+
+		return files;
 	}
 }
