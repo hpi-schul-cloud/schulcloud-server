@@ -164,10 +164,10 @@ export class ExternalToolConfigurationUc {
 		schoolId: EntityId,
 		contextType?: ToolContextType
 	): Promise<ContextExternalToolTemplateInfo[]> {
-		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({ isPreferred: true });
-
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.CONTEXT_TOOL_ADMIN]);
+
+		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({ isPreferred: true });
 
 		const schoolExternalTools: SchoolExternalTool[] = (
 			await Promise.all(
@@ -209,9 +209,6 @@ export class ExternalToolConfigurationUc {
 				toolTemplateInfo.externalTool,
 				CustomParameterScope.CONTEXT
 			);
-		});
-
-		availableToolsForContext.forEach((toolTemplateInfo) => {
 			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(toolTemplateInfo.externalTool);
 		});
 
