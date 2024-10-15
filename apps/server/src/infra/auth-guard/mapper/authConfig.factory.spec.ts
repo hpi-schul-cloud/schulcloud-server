@@ -6,70 +6,41 @@ const buildNotAnObjectError = () => new Error(`Type is not an object.`);
 describe('AuthConfigFactory.build', () => {
 	describe('when input is valid', () => {
 		const setup = () => {
-			const secret = 'mysecret';
-			const input = {
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
+			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: 'myissuer',
 				expiresIn: '1h',
 			};
 			const expectedResult: JwtConstants = {
-				secret: 'mysecret',
+				privateKey: 'myprivatekey',
+				publicKey: 'mypublickey',
 				jwtOptions: {
 					header: { typ: 'access' },
 					audience: 'myaudience',
 					issuer: 'myissuer',
-					algorithm: Algorithms.HS256,
+					algorithm: Algorithms.RS256,
 					expiresIn: '1h',
 				},
 			};
 
-			return { secret, input, expectedResult };
+			return { privateKey, publicKey, jwtOptions, expectedResult };
 		};
 
 		it('should map input to JwtConstants', () => {
-			const { secret, input, expectedResult } = setup();
+			const { privateKey, publicKey, jwtOptions, expectedResult } = setup();
 
-			const result: JwtConstants = AuthConfigFactory.build(secret, input);
+			const result: JwtConstants = AuthConfigFactory.build(privateKey, publicKey, jwtOptions);
 
 			expect(result).toEqual(expectedResult);
 		});
 	});
 
-	describe('when input is null', () => {
+	describe('when privateKey is undefined', () => {
 		const setup = () => {
-			const secret = 'mysecret';
-			const input = null;
-			const error = buildNotAnObjectError();
-
-			return { secret, input, error };
-		};
-
-		it('should throw', () => {
-			const { secret, input, error } = setup();
-
-			expect(() => AuthConfigFactory.build(secret, input)).toThrow(error);
-		});
-	});
-
-	describe('when input is undefined', () => {
-		const setup = () => {
-			const secret = 'mysecret';
-			const input = undefined;
-			const error = buildNotAnObjectError();
-
-			return { secret, input, error };
-		};
-
-		it('should throw', () => {
-			const { secret, input, error } = setup();
-
-			expect(() => AuthConfigFactory.build(secret, input)).toThrow(error);
-		});
-	});
-
-	describe('when secret prop is unedfined', () => {
-		const setup = () => {
-			const secret = undefined;
+			const privateKey = undefined;
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: 'myissuer',
@@ -77,19 +48,20 @@ describe('AuthConfigFactory.build', () => {
 			};
 			const error = buildNotAStringError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
-	describe('when secret prop is number', () => {
+	describe('when privateKey is number', () => {
 		const setup = () => {
-			const secret = 123;
+			const privateKey = 123;
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: 'myissuer',
@@ -97,35 +69,37 @@ describe('AuthConfigFactory.build', () => {
 			};
 			const error = buildNotAStringError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
-	describe('when jwtOptions is unedfined', () => {
+	describe('when jwtOptions is undefined', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = undefined;
 			const error = buildNotAnObjectError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
 	describe('when audience prop is undefined', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				issuer: 'myissuer',
 				expiresIn: '1h',
@@ -134,19 +108,20 @@ describe('AuthConfigFactory.build', () => {
 				'Object has missing key. Required are: ["audience","issuer","expiresIn"]. Get object keys: ["issuer","expiresIn"]'
 			);
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
 	describe('when audience prop is number', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 123,
 				issuer: 'myissuer',
@@ -154,19 +129,20 @@ describe('AuthConfigFactory.build', () => {
 			};
 			const error = buildNotAStringError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
 	describe('when issuer prop is undefined', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: undefined,
@@ -174,19 +150,20 @@ describe('AuthConfigFactory.build', () => {
 			};
 			const error = buildNotAStringError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
 	describe('when issuer prop is number', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: 123,
@@ -194,19 +171,20 @@ describe('AuthConfigFactory.build', () => {
 			};
 			const error = buildNotAStringError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
 	describe('when expiresIn prop is undefined', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: 'myissuer',
@@ -215,19 +193,20 @@ describe('AuthConfigFactory.build', () => {
 				'Object has missing key. Required are: ["audience","issuer","expiresIn"]. Get object keys: ["audience","issuer"]'
 			);
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 
 	describe('when expiresIn prop is number', () => {
 		const setup = () => {
-			const secret = 'mysecret';
+			const privateKey = 'myprivatekey';
+			const publicKey = 'mypublickey';
 			const jwtOptions = {
 				audience: 'myaudience',
 				issuer: 'myissuer',
@@ -235,13 +214,13 @@ describe('AuthConfigFactory.build', () => {
 			};
 			const error = buildNotAStringError();
 
-			return { secret, jwtOptions, error };
+			return { privateKey, publicKey, jwtOptions, error };
 		};
 
 		it('should throw', () => {
-			const { secret, jwtOptions, error } = setup();
+			const { privateKey, publicKey, jwtOptions, error } = setup();
 
-			expect(() => AuthConfigFactory.build(secret, jwtOptions)).toThrow(error);
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
 		});
 	});
 });

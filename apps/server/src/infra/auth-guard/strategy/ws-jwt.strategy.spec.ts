@@ -9,7 +9,7 @@ import { WsJwtStrategy } from './ws-jwt.strategy';
 
 jest.mock('../config', () => {
 	const authConfig = {
-		secret: 'mysecret',
+		publicKey: 'mypublickey',
 		jwtOptions: {
 			header: { typ: 'JWT' },
 			audience: 'myaudience',
@@ -26,7 +26,7 @@ jest.mock('../config', () => {
 
 const buildAuthConfig = () => {
 	return {
-		secret: 'mysecret',
+		publicKey: 'mypublickey',
 		jwtOptions: {
 			header: { typ: 'JWT' },
 			audience: 'myaudience',
