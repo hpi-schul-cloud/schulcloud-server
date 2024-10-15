@@ -16,7 +16,6 @@ import {
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
 import { Response } from 'supertest';
-import { PreferredToolListResponse } from '@modules/tool/external-tool/controller/dto/response/preferred-tool-list.response';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -35,6 +34,7 @@ import {
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
+	PreferredToolListResponse,
 } from '../dto';
 
 describe('ToolConfigurationController (API)', () => {
