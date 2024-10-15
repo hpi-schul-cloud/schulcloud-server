@@ -1,11 +1,26 @@
-import { RobjExportSchule, TspClientFactory } from '@infra/tsp-client';
+import {
+	RobjExportKlasse,
+	RobjExportLehrer,
+	RobjExportSchueler,
+	RobjExportSchule,
+	TspClientFactory,
+} from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
+import {
+	ExternalClassDto,
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	ProvisioningSystemDto,
+} from '@src/modules/provisioning';
+import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -40,16 +55,39 @@ export class TspSyncService {
 	}
 
 	public async fetchTspSchools(system: System, daysToFetch: number) {
-		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
-		});
+		const client = this.createClient(system);
 
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
 		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
 
 		return schools;
+	}
+
+	public async fetchTspTeachers(system: System, daysToFetch: number) {
+		const client = this.createClient(system);
+
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
+		const teachers: RobjExportLehrer[] = (await client.exportLehrerList(lastChangeDate)).data;
+
+		return teachers;
+	}
+
+	public async fetchTspStudents(system: System, daysToFetch: number) {
+		const client = this.createClient(system);
+
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
+		const students: RobjExportSchueler[] = (await client.exportSchuelerList(lastChangeDate)).data;
+
+		return students;
+	}
+
+	public async fetchTspClasses(system: System, daysToFetch: number) {
+		const client = this.createClient(system);
+
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
+		const classes: RobjExportKlasse[] = (await client.exportKlasseList(lastChangeDate)).data;
+
+		return classes;
 	}
 
 	public async findSchool(system: System, identifier: string): Promise<School | undefined> {
@@ -62,6 +100,14 @@ export class TspSyncService {
 			return undefined;
 		}
 		return schools[0];
+	}
+
+	public async findSchoolsForSystem(system: System): Promise<School[]> {
+		const schools = await this.schoolService.getSchools({
+			systemId: system.id,
+		});
+
+		return schools;
 	}
 
 	public async updateSchool(school: School, name?: string): Promise<School> {
@@ -98,6 +144,119 @@ export class TspSyncService {
 		return savedSchool;
 	}
 
+	public mapTspDataToOauthData(
+		system: System,
+		schools: School[],
+		tspTeachers: RobjExportLehrer[],
+		tspStudents: RobjExportSchueler[],
+		tspClasses: RobjExportKlasse[]
+	): OauthDataDto[] {
+		const systemDto = new ProvisioningSystemDto({
+			systemId: system.id,
+			provisioningStrategy: SystemProvisioningStrategy.TSP,
+		});
+
+		const externalSchools = new Map<string, ExternalSchoolDto>();
+
+		schools.forEach((school) => {
+			if (!school.externalId) {
+				throw new BadDataLoggableException(`School ${school.id} has no externalId`);
+			}
+
+			externalSchools.set(
+				school.externalId,
+				new ExternalSchoolDto({
+					externalId: school.externalId,
+				})
+			);
+		});
+
+		const externalClasses = new Map<string, ExternalUserDto>();
+		const teacherForClasses = new Map<string, string>();
+
+		tspClasses.forEach((tspClass) => {
+			if (!tspClass.klasseId) {
+				// TODO: log
+				console.log(`Class has no id ${tspClass.klasseName ?? ''}`);
+				return;
+			}
+
+			const externalClass: ExternalClassDto = {
+				externalId: tspClass.klasseId,
+				name: tspClass.klasseName,
+			};
+
+			externalClasses.set(tspClass.klasseId, externalClass);
+
+			if (tspClass.lehrerUid) {
+				teacherForClasses.set(tspClass.lehrerUid, tspClass.klasseId);
+			}
+		});
+
+		const oauthDataDtos: OauthDataDto[] = [];
+
+		tspTeachers.forEach((tspTeacher) => {
+			if (!tspTeacher.lehrerUid) {
+				// TODO log
+				console.log(`Teacher has no id ${tspTeacher.lehrerNachname ?? ''}`);
+				return;
+			}
+
+			const externalUser = new ExternalUserDto({
+				externalId: tspTeacher.lehrerUid,
+				firstName: tspTeacher.lehrerNachname,
+				lastName: tspTeacher.lehrerNachname,
+				roles: [RoleName.TEACHER],
+				email: `tsp/${tspTeacher.lehrerUid}`, // TODO check if correct
+			});
+
+			const classId = teacherForClasses.get(tspTeacher.lehrerUid);
+			const classTeacher = classId == null ? undefined : externalClasses.get(classId);
+
+			const externalSchool = tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
+
+			const oauthDataDto = new OauthDataDto({
+				system: systemDto,
+				externalUser,
+				externalSchool,
+				externalClasses: classTeacher ? [classTeacher] : [],
+			});
+
+			oauthDataDtos.push(oauthDataDto);
+		});
+
+		tspStudents.forEach((tspStudent) => {
+			if (!tspStudent.schuelerUid) {
+				// TODO log
+				console.log(`Student has no id ${tspStudent.schuelerNachname ?? ''}`);
+				return;
+			}
+
+			const externalUser = new ExternalUserDto({
+				externalId: tspStudent.schuelerUid,
+				firstName: tspStudent.schuelerNachname,
+				lastName: tspStudent.schuelerNachname,
+				roles: [RoleName.STUDENT],
+				email: `tsp/${tspStudent.schuelerUid}`, // TODO check if correct
+			});
+
+			const classStudent = tspStudent.klasseId == null ? undefined : externalClasses.get(tspStudent.klasseId);
+
+			const externalSchool = tspStudent.schuleNummer == null ? undefined : externalSchools.get(tspStudent.schuleNummer);
+
+			const oauthDataDto = new OauthDataDto({
+				system: systemDto,
+				externalUser,
+				externalSchool,
+				externalClasses: classStudent ? [classStudent] : [],
+			});
+
+			oauthDataDtos.push(oauthDataDto);
+		});
+
+		return oauthDataDtos;
+	}
+
 	private async findFederalState(): Promise<FederalState> {
 		if (this.federalState) {
 			return this.federalState;
@@ -110,5 +269,15 @@ export class TspSyncService {
 
 	private formatChangeDate(daysToFetch: number): string {
 		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+	}
+
+	private createClient(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+
+		return client;
 	}
 }

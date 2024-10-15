@@ -126,6 +126,7 @@ export class TspProvisioningService {
 			lastName: externalUser.lastName,
 			email: externalUser.email,
 			birthday: externalUser.birthday,
+			externalId: externalUser.externalId,
 		});
 		const savedUser = await this.userService.save(newUser);
 
@@ -149,7 +150,7 @@ export class TspProvisioningService {
 		} else {
 			account.username = user.email;
 
-			await this.accountService.saveWithValidation(account);
+			await this.accountService.save(account);
 		}
 	}
 

@@ -36,6 +36,10 @@ describe(TspSyncStrategy.name, () => {
 									return 10;
 								case 'TSP_SYNC_SCHOOL_DAYS_TO_FETCH':
 									return 1;
+								case 'TSP_SYNC_DATA_LIMIT':
+									return 10;
+								case 'TSP_SYNC_DATA_DAYS_TO_FETCH':
+									return 1;
 								default:
 									throw new Error(`Unknown key: ${key}`);
 							}
