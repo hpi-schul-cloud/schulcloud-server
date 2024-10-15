@@ -3,20 +3,19 @@ import { extractJwtFromHeader } from '@shared/common';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
-import { CardListResponse } from '@src/modules/board/controller/dto';
 import { BoardCardApi, CardResponse } from './cards-api-client';
 
 @Injectable()
 export class CardClientAdapter {
 	constructor(private readonly boardCardApi: BoardCardApi, @Inject(REQUEST) private request: Request) {}
 
-	public async getAllBoardCardsbyIds(cardsIds: Array<string>): Promise<CardResponse> {
+	public async getAllBoardCardsbyIds(cardsIds: Array<string>): Promise<Array<CardResponse>> {
 		const options = this.createOptionParams();
 		const getBoardCardsResponse = await this.boardCardApi
 			.cardControllerGetCards(cardsIds, options)
 			.then((response) => response.data);
 
-		return getBoardCardsResponse;
+		return getBoardCardsResponse.data;
 	}
 
 	private createOptionParams(): RawAxiosRequestConfig {
