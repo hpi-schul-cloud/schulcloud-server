@@ -6,6 +6,7 @@ import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-re
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
@@ -103,4 +104,5 @@ export const ALL_ENTITIES = [
 	MediaUserLicenseEntity,
 	InstanceEntity,
 	MediaSourceEntity,
+	OauthSessionTokenEntity,
 ];
