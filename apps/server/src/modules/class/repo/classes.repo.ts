@@ -43,17 +43,7 @@ export class ClassesRepo {
 			? classes.map((aclass: Class): ClassEntity => ClassMapper.mapToEntity(aclass))
 			: [ClassMapper.mapToEntity(classes)];
 
-		await Promise.allSettled(
-			entities.map(async (entity) => {
-				if (!entity.id) {
-					this.em.persist(entity);
-				} else {
-					const existingEntity = this.em.find(ClassEntity, { id: entity.id });
-					await this.em.assign(existingEntity, entity);
-				}
-			})
-		);
-
+		await this.em.upsertMany(entities);
 		await this.em.flush();
 	}
 
