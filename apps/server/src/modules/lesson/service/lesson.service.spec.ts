@@ -15,6 +15,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 
@@ -23,6 +24,7 @@ describe('LessonService', () => {
 	let module: TestingModule;
 
 	let lessonRepo: DeepMocked<LessonRepo>;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -32,6 +34,7 @@ describe('LessonService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				LessonService,
+				AuthorizationInjectionService,
 				{
 					provide: LessonRepo,
 					useValue: createMock<LessonRepo>(),
@@ -59,6 +62,7 @@ describe('LessonService', () => {
 		lessonService = module.get(LessonService);
 
 		lessonRepo = module.get(LessonRepo);
+		injectionService = module.get(AuthorizationInjectionService);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		eventBus = module.get(EventBus);
 	});
@@ -91,6 +95,12 @@ describe('LessonService', () => {
 		await lessonService.findById(lesson.id);
 
 		expect(lessonRepo.findById).toHaveBeenCalledWith(lesson.id);
+	});
+
+	describe('constructor', () => {
+		it('should inject itself into the AuthorizationInjectionService', () => {
+			expect(injectionService.getReferenceLoader(AuthorizableReferenceType.Lesson)).toEqual(lessonService);
+		});
 	});
 
 	describe('findByCourseIds', () => {
