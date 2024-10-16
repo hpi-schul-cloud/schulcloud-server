@@ -2,6 +2,7 @@ import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo';
 import { Scope } from '@shared/repo/scope';
+import { UserDiscoverableQuery } from '@src/modules/user/service/user-query.type';
 
 export class UserScope extends Scope<User> {
 	isOutdated(isOutdated?: boolean): UserScope {
@@ -52,6 +53,16 @@ export class UserScope extends Scope<User> {
 		if (name !== undefined) {
 			const escapedName = name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 			this.addQuery({ $or: [{ firstName: new RegExp(escapedName, 'i') }, { lastName: new RegExp(escapedName, 'i') }] });
+		}
+		return this;
+	}
+
+	withDiscoverableTrue(query?: UserDiscoverableQuery): UserScope {
+		if (query === 'true') {
+			this.addQuery({ discoverable: true });
+		}
+		if (query === 'not-false') {
+			this.addQuery({ discoverable: { $ne: false } });
 		}
 		return this;
 	}

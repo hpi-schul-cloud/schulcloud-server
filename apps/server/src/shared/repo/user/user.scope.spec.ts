@@ -199,6 +199,32 @@ describe('UserScope', () => {
 		});
 	});
 
+	describe('withDiscoverabilityTrue', () => {
+		describe('when undefined', () => {
+			it('should not add a query', () => {
+				scope.withDiscoverableTrue();
+
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when not false', () => {
+			it('should add query to find true and undefined', () => {
+				scope.withDiscoverableTrue('not-false');
+
+				expect(scope.query).toEqual({ discoverable: { $ne: false } });
+			});
+		});
+
+		describe('when tue', () => {
+			it('should add a query to find true', () => {
+				scope.withDiscoverableTrue('true');
+
+				expect(scope.query).toEqual({ discoverable: true });
+			});
+		});
+	});
+
 	describe('withDeleted', () => {
 		describe('when deleted users are included', () => {
 			it('should not add a query', () => {
