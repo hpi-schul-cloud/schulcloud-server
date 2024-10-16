@@ -85,6 +85,11 @@ describe(TspSyncStrategy.name, () => {
 		describe('when sync is called', () => {
 			const setup = () => {
 				tspSyncService.fetchTspSchools.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should find the tsp system', async () => {

@@ -177,7 +177,7 @@ export class TspSyncService {
 		});
 
 		const externalClasses = new Map<string, ExternalUserDto>();
-		const teacherForClasses = new Map<string, string>();
+		const teacherForClasses = new Map<string, Array<string>>();
 
 		tspClasses.forEach((tspClass) => {
 			if (!tspClass.klasseId) {
@@ -193,7 +193,9 @@ export class TspSyncService {
 			externalClasses.set(tspClass.klasseId, externalClass);
 
 			if (tspClass.lehrerUid) {
-				teacherForClasses.set(tspClass.lehrerUid, tspClass.klasseId);
+				const classSet = teacherForClasses.get(tspClass.lehrerUid) ?? [];
+				classSet.push(tspClass.klasseId);
+				teacherForClasses.set(tspClass.lehrerUid, classSet);
 			}
 		});
 
@@ -213,8 +215,10 @@ export class TspSyncService {
 				email: `tsp/${tspTeacher.lehrerUid}@schul-cloud.org`,
 			});
 
-			const classId = teacherForClasses.get(tspTeacher.lehrerUid);
-			const classTeacher = classId == null ? undefined : externalClasses.get(classId);
+			const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
+			const classes = classIds
+				.map((classId) => externalClasses.get(classId))
+				.filter((externalClass) => !!externalClass);
 
 			const externalSchool = tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
 
@@ -222,7 +226,7 @@ export class TspSyncService {
 				system: systemDto,
 				externalUser,
 				externalSchool,
-				externalClasses: classTeacher ? [classTeacher] : [],
+				externalClasses: classes,
 			});
 
 			oauthDataDtos.push(oauthDataDto);
