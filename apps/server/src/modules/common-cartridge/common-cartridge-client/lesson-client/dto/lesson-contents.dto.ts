@@ -1,0 +1,34 @@
+export class LessonContentDto {
+	content: object;
+
+	_id: string;
+
+	contentId: string;
+
+	title: string;
+
+	component: LessonContentDtoComponent;
+
+	hidden: boolean;
+
+	constructor(props: LessonContentDto) {
+		this.content = props.content;
+		this._id = props._id;
+		this.contentId = props.contentId;
+		this.title = props.title;
+		this.component = props.component;
+		this.hidden = props.hidden;
+	}
+}
+
+export const LessonContentDtoComponentValues = {
+	ETHERPAD: 'Etherpad',
+	GEO_GEBRA: 'geoGebra',
+	INTERNAL: 'internal',
+	RESOURCES: 'resources',
+	TEXT: 'text',
+	NE_XBOARD: 'neXboard',
+} as const;
+
+export type LessonContentDtoComponent =
+	typeof LessonContentDtoComponentValues[keyof typeof LessonContentDtoComponentValues];
