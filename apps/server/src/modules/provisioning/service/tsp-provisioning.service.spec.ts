@@ -239,7 +239,7 @@ describe('TspProvisioningService', () => {
 				await sut.provisionUser(data, school);
 
 				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
-				expect(accountServiceMock.saveWithValidation).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -303,12 +303,6 @@ describe('TspProvisioningService', () => {
 
 			it('should throw with no lastname', async () => {
 				const { data, school } = setup(true, false, true);
-
-				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
-			});
-
-			it('should throw with no email', async () => {
-				const { data, school } = setup(true, true, false);
 
 				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});

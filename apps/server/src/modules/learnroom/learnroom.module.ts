@@ -3,6 +3,7 @@ import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
+import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
@@ -34,6 +35,7 @@ import {
 	CourseGroupService,
 	CourseRoomsService,
 	CourseService,
+	CourseSyncService,
 	DashboardService,
 	GroupDeletedHandlerService,
 } from './service';
@@ -56,6 +58,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		ClassModule,
 		SchoolModule,
 		GroupModule,
+		RoleModule,
 	],
 	providers: [
 		{
@@ -79,6 +82,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		},
 		CourseService,
 		CourseDoService,
+		CourseSyncService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
@@ -92,6 +96,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
+		CourseSyncService,
 		CourseRoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
