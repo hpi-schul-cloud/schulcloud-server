@@ -32,6 +32,7 @@ const userSchema = new Schema(
 
 		firstName: { type: String, required: true },
 		firstNameSearchValues: { type: Schema.Types.Array },
+		prefferedName: { type: String },
 		middleName: { type: String },
 		lastName: { type: String, required: true },
 		lastNameSearchValues: { type: Schema.Types.Array },
