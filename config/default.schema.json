@@ -1522,10 +1522,10 @@
 			"type": "object",
 			"description": "Configuration of tldraw related settings",
 			"required": [
-				"PING_TIMEOUT",
-				"FINALIZE_DELAY",
 				"SOCKET_PORT",
 				"WEBSOCKET_URL",
+				"PING_TIMEOUT",
+				"FINALIZE_DELAY",
 				"GC_ENABLED",
 				"DB_COMPRESS_THRESHOLD",
 				"MAX_DOCUMENT_SIZE",
