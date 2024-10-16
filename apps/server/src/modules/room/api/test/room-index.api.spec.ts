@@ -10,6 +10,7 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
+import { GroupEntityTypes } from '@src/modules/group';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -134,13 +135,14 @@ describe('Room Controller (API)', () => {
 				});
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					users: [{ role, user: studentUser }],
-					organization: undefined,
+					type: GroupEntityTypes.ROOM,
+					organization: studentUser.school,
 					externalSource: undefined,
 				});
 				const roomMembers = rooms.map((room) =>
-					roomMemberEntityFactory.build({ userGroup: userGroupEntity, roomId: room.id })
+					roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id })
 				);
-				await em.persistAndFlush([...rooms, ...roomMembers, studentAccount, studentUser]);
+				await em.persistAndFlush([...rooms, ...roomMembers, studentAccount, studentUser, userGroupEntity]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -175,19 +177,18 @@ describe('Room Controller (API)', () => {
 				expect(response.body as RoomListResponse).toEqual(expectedResponse);
 			});
 
-			// TODO: fix, broken due to poor pagination filter by roomMember module
-			// it('should return a list of rooms with pagination', async () => {
-			// 	const { loggedInClient, expectedResponse } = await setup();
+			it('should return a list of rooms with pagination', async () => {
+				const { loggedInClient, expectedResponse } = await setup();
 
-			// 	const response = await loggedInClient.get().query({ skip: 1, limit: 1 });
-			// 	expect(response.status).toBe(HttpStatus.OK);
-			// 	expect(response.body as RoomListResponse).toEqual({
-			// 		data: expectedResponse.data.slice(1),
-			// 		limit: 1,
-			// 		skip: 1,
-			// 		total: 2,
-			// 	});
-			// });
+				const response = await loggedInClient.get().query({ skip: 1, limit: 1 });
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.body as RoomListResponse).toEqual({
+					data: expectedResponse.data.slice(1),
+					limit: 1,
+					skip: 1,
+					total: 2,
+				});
+			});
 
 			it('should return an alphabetically sorted list of rooms', async () => {
 				const { loggedInClient } = await setup();

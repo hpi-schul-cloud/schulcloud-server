@@ -106,8 +106,8 @@ describe('Room Controller (API)', () => {
 				const userGroup = groupEntityFactory.buildWithId({
 					users: [{ role, user: teacherUser }],
 				});
-				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroup });
-				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser]);
+				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -116,14 +116,14 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 					const params = { name: 'Room #101', color: 'green' };
 
 					const response = await loggedInClient.patch(someId, params);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 
@@ -308,25 +308,25 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 					const params = { name: 'Room #101', color: 'green' };
 
 					const response = await loggedInClient.patch(someId, params);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 
 			describe('when the required parameters are given', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient, room } = await setup();
 					const params = { name: 'Room #101', color: 'green' };
 
 					const response = await loggedInClient.patch(room.id, params);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 		});

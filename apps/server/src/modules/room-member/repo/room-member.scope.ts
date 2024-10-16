@@ -10,4 +10,12 @@ export class RoomMemberScope extends Scope<RoomMemberEntity> {
 		}
 		return this;
 	}
+
+	byUserGroupIds(userGroupIds: EntityId[]): this {
+		if (userGroupIds && userGroupIds.length > 0) {
+			this.addQuery({ userGroupId: { $in: userGroupIds.map((id) => new ObjectId(id)) } });
+		}
+
+		return this;
+	}
 }

@@ -5,10 +5,12 @@ import { GroupModule } from '@modules/group';
 import { RoomMemberModule } from '@modules/room-member';
 import { RoomService } from './domain/service';
 import { RoomRepo } from './repo';
+import { RoomRule } from './authorization/room.rule';
+import { AuthorizationModule } from '../authorization';
 
 @Module({
-	imports: [CqrsModule, RoomMemberModule, GroupModule, RoleModule],
-	providers: [RoomRepo, RoomService],
+	imports: [CqrsModule, RoomMemberModule, GroupModule, RoleModule, AuthorizationModule],
+	providers: [RoomRepo, RoomService, RoomRule],
 	exports: [RoomService],
 })
 export class RoomModule {}

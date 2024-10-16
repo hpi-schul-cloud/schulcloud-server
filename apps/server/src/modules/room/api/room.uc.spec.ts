@@ -4,7 +4,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IFindOptions } from '@shared/domain/interface';
-import { RoomMemberService } from '@src/modules/room-member';
+import { RoomMemberRepo, RoomMemberService } from '@src/modules/room-member';
 import { AuthorizationService } from '@src/modules/authorization';
 import { RoomUc } from './room.uc';
 import { RoomService, Room } from '../domain';
@@ -15,7 +15,6 @@ describe('RoomUc', () => {
 	let uc: RoomUc;
 	let configService: DeepMocked<ConfigService>;
 	let roomService: DeepMocked<RoomService>;
-	let roomMemberService: DeepMocked<RoomMemberService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,13 +36,16 @@ describe('RoomUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: RoomMemberRepo,
+					useValue: createMock<RoomMemberRepo>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get<RoomUc>(RoomUc);
 		configService = module.get(ConfigService);
 		roomService = module.get(RoomService);
-		roomMemberService = module.get(RoomMemberService);
 	});
 
 	afterAll(async () => {
@@ -59,7 +61,7 @@ describe('RoomUc', () => {
 			configService.get.mockReturnValue(true);
 			const rooms: Room[] = roomFactory.buildList(2);
 			const paginatedRooms: Page<Room> = new Page<Room>(rooms, rooms.length);
-			roomService.getRooms.mockResolvedValue(paginatedRooms);
+			roomService.getRoomsByIds.mockResolvedValue(paginatedRooms);
 			const findOptions: IFindOptions<Room> = {};
 
 			return {
@@ -76,17 +78,15 @@ describe('RoomUc', () => {
 		it('should call roomService.getRooms with findOptions', async () => {
 			const { findOptions } = setup();
 
+			jest.spyOn(uc as any, 'getAuthorizedRoomIds').mockResolvedValue([]);
 			await uc.getRooms('userId', findOptions);
-			expect(roomService.getRooms).toHaveBeenCalledWith(findOptions);
+
+			expect(roomService.getRoomsByIds).toHaveBeenCalledWith([], findOptions);
 		});
 
 		it('should return rooms when feature is enabled', async () => {
 			const { paginatedRooms } = setup();
-			roomMemberService.batchHasAuthorization.mockResolvedValue(
-				paginatedRooms.data.map((room) => {
-					return { roomId: room.id, hasAuthorization: true };
-				})
-			);
+			jest.spyOn(uc as any, 'getAuthorizedRoomIds').mockResolvedValue(paginatedRooms.data.map((room) => room.id));
 
 			const result = await uc.getRooms('userId', {});
 			expect(result).toEqual(paginatedRooms);

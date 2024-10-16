@@ -1,15 +1,13 @@
+import { Forbidden } from '@feathersjs/errors';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
+import { Role, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoleRepo } from '@shared/repo';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { Group, GroupService, GroupTypes } from '@src/modules/group';
-import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '@src/modules/group/entity';
-import { RoomMemberEntity } from '../repo/entity/room-member.entity';
+import { Group, GroupService, GroupTypes, GroupUserEmbeddable } from '@src/modules/group';
+import { RoomMember } from '../do/room-member.do';
 import { RoomMemberRepo } from '../repo/room-member.repo';
-import { roomMemberEntityFactory } from '../testing';
 
 @Injectable()
 export class RoomMemberService {
@@ -17,66 +15,57 @@ export class RoomMemberService {
 		private readonly roomMembersRepo: RoomMemberRepo,
 		private readonly groupService: GroupService,
 		private readonly roleRepo: RoleRepo,
-		private readonly em: EntityManager,
-		private readonly authorizationService: AuthorizationService
+		private readonly em: EntityManager
 	) {}
 
-	private async createNewRoomMemberWithEditorRole(roomId: EntityId, groupUser: GroupUserEmbeddable) {
+	private async createNewRoomMemberWithEditorRole(
+		roomId: EntityId,
+		groupUser: GroupUserEmbeddable,
+		schoolId: EntityId
+	) {
 		const newGroup = new Group({
 			name: `Room Members for Room ${roomId}`,
 			externalSource: undefined,
-			type: GroupTypes.OTHER,
+			type: GroupTypes.ROOM,
 			users: [{ userId: groupUser.user.id, roleId: groupUser.role.id }],
 			id: new ObjectId().toHexString(),
+			organizationId: schoolId,
 		});
-		const savedGroup = await this.groupService.save(newGroup);
-		const groupEntity = new GroupEntity({
-			name: savedGroup.name,
-			type: GroupEntityTypes.OTHER,
-			users: [groupUser],
+
+		await this.groupService.save(newGroup);
+
+		const roomMember = new RoomMember({
+			roomId: new ObjectId(roomId),
+			userGroupId: new ObjectId(newGroup.id),
+			id: new ObjectId().toHexString(),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			members: [{ userId: new ObjectId(groupUser.user.id), role: groupUser.role }],
 		});
-		const roomMember = roomMemberEntityFactory.build({
-			roomId,
-			userGroup: groupEntity,
-		});
-		const savedRoomMember = await this.roomMembersRepo.save(roomMember);
-		return savedRoomMember;
+
+		await this.roomMembersRepo.save(roomMember);
+		return roomMember;
 	}
 
-	private async addUserToRoomMember(roomMemberEntity: RoomMemberEntity, groupUser: GroupUserEmbeddable) {
-		roomMemberEntity.userGroup.users.push(groupUser);
-		return this.roomMembersRepo.save(roomMemberEntity);
+	private async addUserToRoomMember(roomMember: RoomMember, user: User, role: Role) {
+		const group = await this.groupService.findById(roomMember.userGroupId.toHexString());
+		if (!group) throw new Forbidden('Room member group not found');
+
+		const groupUser = { userId: user.id, roleId: role.id };
+		group.addUser(groupUser);
+		await this.groupService.save(group);
+
+		roomMember.addMember(new ObjectId(user.id), role);
+
+		return roomMember;
 	}
 
-	public async hasAuthorization(roomId: EntityId, user: User, action: Action) {
-		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
-		if (roomMember === null) return false;
-		return this.authorizationService.hasPermission(user, roomMember, { requiredPermissions: [], action });
-	}
-
-	public async batchHasAuthorization(
-		roomIds: EntityId[],
-		user: User,
-		action: Action
-	): Promise<{ roomId: EntityId; hasAuthorization: boolean }[]> {
-		const roomMembers = await this.roomMembersRepo.findByRoomIds(roomIds);
-		return roomMembers.map((roomMember) => {
-			return {
-				roomId: roomMember.roomId.toHexString(),
-				hasAuthorization: this.authorizationService.hasPermission(user, roomMember, {
-					requiredPermissions: [],
-					action,
-				}),
-			};
-		});
-	}
-
-	public async addMemberToRoom(roomId: EntityId, user: User, roleName: RoleName) {
+	public async addMemberToRoom(roomId: EntityId, user: User, roleName: RoleName): Promise<RoomMember> {
 		const role = await this.roleRepo.findByName(roleName);
 		const groupUser = new GroupUserEmbeddable({ role, user });
 		const roomMember = await this.roomMembersRepo.findById(roomId);
-		if (roomMember === null) return this.createNewRoomMemberWithEditorRole(roomId, groupUser);
+		if (roomMember === null) return this.createNewRoomMemberWithEditorRole(roomId, groupUser, user.school.id);
 
-		return this.addUserToRoomMember(roomMember, groupUser);
+		return this.addUserToRoomMember(roomMember, user, role);
 	}
 }

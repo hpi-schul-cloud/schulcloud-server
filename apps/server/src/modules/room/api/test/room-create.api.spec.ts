@@ -1,10 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, roleFactory } from '@shared/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
-import { RoomMemberEntity } from '@src/modules/room-member';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, roleFactory } from '@shared/testing';
+import { GroupEntity } from '@src/modules/group';
+import { RoomMemberEntity } from '@src/modules/room-member';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { RoomEntity } from '../../repo';
 
 describe('Room Controller (API)', () => {
@@ -76,7 +77,7 @@ describe('Room Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, teacherUser };
+				return { loggedInClient, teacherUser, role };
 			};
 
 			describe('when the required parameters are given', () => {
@@ -97,15 +98,17 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
-					const roomMember = await em.findOneOrFail(
-						RoomMemberEntity,
-						{ roomId: new ObjectId(roomId) },
-						{ populate: ['userGroup', 'userGroup.users.user', 'userGroup.users.role'] }
-					);
+					const roomMember = await em.findOneOrFail(RoomMemberEntity, { roomId: new ObjectId(roomId) });
 
-					expect(roomMember.userGroup.users).toHaveLength(1);
-					expect(roomMember.userGroup.users[0].user.id).toBe(teacherUser.id);
-					// PROBLEM: role.id is changed due to sibling test updating em
+					const userGroup = await em.findOneOrFail(GroupEntity, {
+						_id: roomMember.userGroupId,
+					});
+
+					expect(roomMember).toBeDefined();
+					expect(userGroup).toBeDefined();
+					expect(userGroup.users).toHaveLength(1);
+					expect(userGroup.users[0].user.id).toBe(teacherUser.id);
+					// PROBLEM: role.id,name is changed due to sibling test updating em
 					// this line works if test "it" is executed alone
 					// expect(roomMember.userGroup.users[0].role.name).toBe(RoleName.ROOM_EDITOR);
 				});

@@ -1,18 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { Role } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { GroupEntity } from '@src/modules/group/entity/group.entity';
 
 export interface RoomMemberProps extends AuthorizableObject {
 	id: EntityId;
 	roomId: ObjectId;
-	userGroup: GroupEntity;
+	userGroupId: ObjectId;
+	members: { userId: ObjectId; role: Role }[];
 	createdAt: Date;
 	updatedAt: Date;
 }
-
-export type RoomMemberCreateProps = Pick<RoomMemberProps, 'roomId'>;
-export type RoomMemberUpdateProps = RoomMemberCreateProps;
 
 export class RoomMember extends DomainObject<RoomMemberProps> {
 	public constructor(props: RoomMemberProps) {
@@ -33,7 +31,23 @@ export class RoomMember extends DomainObject<RoomMemberProps> {
 		return this.props.roomId;
 	}
 
-	public get userGroup(): GroupEntity {
-		return this.props.userGroup;
+	public get userGroupId(): ObjectId {
+		return this.props.userGroupId;
+	}
+
+	public get members(): RoomMemberProps['members'] {
+		return this.props.members;
+	}
+
+	public set members(members: RoomMemberProps['members']) {
+		this.props.members = members;
+	}
+
+	public addMember(userId: ObjectId, role: Role): void {
+		this.props.members.push({ userId, role });
+	}
+
+	public removeMember(userId: ObjectId): void {
+		this.props.members = this.props.members.filter((member) => member.userId !== userId);
 	}
 }

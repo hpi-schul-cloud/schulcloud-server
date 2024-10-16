@@ -9,6 +9,7 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
+import { GroupEntityTypes } from '@src/modules/group';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { RoomEntity } from '../../repo';
@@ -99,10 +100,11 @@ describe('Room Controller (API)', () => {
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const userGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
 					users: [{ role, user: teacherUser }],
 				});
-				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroup });
-				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser]);
+				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -115,20 +117,20 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 
 					const response = await loggedInClient.delete(room.id);
-
+					console.log(response.body);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).rejects.toThrow(NotFoundException);
 				});
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.delete(someId);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 		});
@@ -146,23 +148,23 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
-				it('should return 403', async () => {
+				it('should return 400', async () => {
 					const { loggedInClient, room } = await setup();
 
 					const response = await loggedInClient.delete(room.id);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.delete(someId);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 		});

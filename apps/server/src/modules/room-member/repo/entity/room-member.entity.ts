@@ -1,17 +1,27 @@
-import { Entity, Index, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { GroupEntity } from '@src/modules/group/entity/group.entity';
-import { RoomMember, RoomMemberProps } from '../../do/room-member.do';
+import { EntityId } from '@shared/domain/types';
+import { RoomMember } from '../../do/room-member.do';
+
+export interface RoomMemberEntityProps extends AuthorizableObject {
+	id: EntityId;
+	roomId: ObjectId;
+	userGroupId: ObjectId;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
 @Entity({ tableName: 'room-members' })
-export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMemberProps {
+export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMemberEntityProps {
 	@Property()
 	@Index()
 	roomId!: ObjectId;
 
-	@OneToOne(() => GroupEntity, { owner: true, orphanRemoval: true })
-	userGroup!: GroupEntity;
+	@Property()
+	@Index()
+	userGroupId!: ObjectId;
 
 	@Property({ persist: false })
 	domainObject: RoomMember | undefined;

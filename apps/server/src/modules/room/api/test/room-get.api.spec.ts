@@ -9,6 +9,7 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
+import { GroupEntityTypes } from '@src/modules/group';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -98,11 +99,12 @@ describe('Room Controller (API)', () => {
 					permissions: [Permission.ROOM_VIEW],
 				});
 				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
 					users: [{ role, user: studentUser }],
-					organization: undefined,
+					organization: studentUser.school,
 					externalSource: undefined,
 				});
-				const roomMember = roomMemberEntityFactory.build({ userGroup: userGroupEntity, roomId: room.id });
+				const roomMember = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
 				await em.persistAndFlush([room, studentAccount, studentUser, role, userGroupEntity, roomMember]);
 				em.clear();
 
@@ -132,13 +134,13 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.get(someId);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 		});
@@ -156,12 +158,12 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
-				it('should return 403', async () => {
+				it('should return 400', async () => {
 					const { loggedInClient, room } = await setup();
 
 					const response = await loggedInClient.get(room.id);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 		});
