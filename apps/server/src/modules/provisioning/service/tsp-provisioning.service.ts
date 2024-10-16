@@ -117,7 +117,6 @@ export class TspProvisioningService {
 	): Promise<UserDO> {
 		if (!externalUser.firstName || !externalUser.lastName) {
 			throw new BadDataLoggableException('User firstname or lastname is missing', { externalUser });
-
 		}
 
 		const newUser = new UserDO({
