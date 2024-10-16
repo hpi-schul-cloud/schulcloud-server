@@ -79,6 +79,48 @@ describe('AuthConfigFactory.build', () => {
 		});
 	});
 
+	describe('when publicKey is undefined', () => {
+		const setup = () => {
+			const privateKey = 'myprivatekey';
+			const publicKey = undefined;
+			const jwtOptions = {
+				audience: 'myaudience',
+				issuer: 'myissuer',
+				expiresIn: '1h',
+			};
+			const error = buildNotAStringError();
+
+			return { privateKey, publicKey, jwtOptions, error };
+		};
+
+		it('should throw', () => {
+			const { privateKey, publicKey, jwtOptions, error } = setup();
+
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
+		});
+	});
+
+	describe('when publicKey is number', () => {
+		const setup = () => {
+			const privateKey = 'myprivatekey';
+			const publicKey = 123;
+			const jwtOptions = {
+				audience: 'myaudience',
+				issuer: 'myissuer',
+				expiresIn: '1h',
+			};
+			const error = buildNotAStringError();
+
+			return { privateKey, publicKey, jwtOptions, error };
+		};
+
+		it('should throw', () => {
+			const { privateKey, publicKey, jwtOptions, error } = setup();
+
+			expect(() => AuthConfigFactory.build(privateKey, publicKey, jwtOptions)).toThrow(error);
+		});
+	});
+
 	describe('when jwtOptions is undefined', () => {
 		const setup = () => {
 			const privateKey = 'myprivatekey';
