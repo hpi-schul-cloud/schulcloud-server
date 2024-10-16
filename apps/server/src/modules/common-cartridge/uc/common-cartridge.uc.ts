@@ -24,8 +24,8 @@ export class CommonCartridgeUc {
 		return response;
 	}
 
-	public async exportJustFile(courseId: EntityId): Promise<GetFileResponse> {
-		const files = await this.exportService.downloadFile(courseId);
+	public async exportJustFile(): Promise<GetFileResponse> {
+		const files = await this.exportService.downloadFile();
 
 		return files;
 	}
