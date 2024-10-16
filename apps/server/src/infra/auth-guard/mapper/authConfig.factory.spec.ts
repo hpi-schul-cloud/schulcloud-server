@@ -17,7 +17,7 @@ describe('AuthConfigFactory.build', () => {
 				privateKey: 'myprivatekey',
 				publicKey: 'mypublickey',
 				jwtOptions: {
-					header: { typ: 'access' },
+					header: { typ: 'JWT' },
 					audience: 'myaudience',
 					issuer: 'myissuer',
 					algorithm: Algorithms.RS256,

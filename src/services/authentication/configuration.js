@@ -11,7 +11,7 @@ module.exports = {
 		secret: Configuration.get('JWT_PRIVATE_KEY') + Configuration.get('JWT_PUBLIC_KEY'),
 		authStrategies: ['jwt', 'tsp', 'api-key'],
 		jwtOptions: {
-			header: { typ: 'access' },
+			header: { typ: 'JWT' },
 			audience: Configuration.get('JWT_AUD'),
 			issuer: 'feathers',
 			algorithm: 'RS256',

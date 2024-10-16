@@ -66,7 +66,7 @@ export class AuthConfigFactory {
 			privateKey,
 			publicKey,
 			jwtOptions: {
-				header: { typ: 'access' }, // or should it be typ: 'JWT' ? alg ?
+				header: { typ: 'JWT' },
 				audience,
 				issuer,
 				algorithm: Algorithms.RS256,
