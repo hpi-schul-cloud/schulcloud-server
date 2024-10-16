@@ -1,33 +1,34 @@
-import { IsString, IsOptional, IsArray } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
 
 export class TspJwtPayload implements JwtPayload {
 	@IsString()
+	@IsNotEmpty()
 	public sub!: string;
 
 	@IsOptional()
 	@IsString()
 	public sid: string | undefined;
 
-	@IsOptional()
 	@IsString()
-	public ptscListRolle: string | undefined;
+	@IsNotEmpty()
+	public ptscListRolle!: string;
 
-	@IsOptional()
 	@IsString()
-	public personVorname: string | undefined;
+	@IsNotEmpty()
+	public personVorname!: string;
 
-	@IsOptional()
 	@IsString()
-	public personNachname: string | undefined;
+	@IsNotEmpty()
+	public personNachname!: string;
 
-	@IsOptional()
 	@IsString()
-	public ptscSchuleNummer: string | undefined;
+	@IsNotEmpty()
+	public ptscSchuleNummer!: string;
 
-	@IsOptional()
-	@IsArray()
-	public ptscListKlasseId: [] | undefined;
+	@IsString()
+	@IsNotEmpty()
+	public ptscListKlasseId!: string;
 
 	constructor(data: Partial<TspJwtPayload>) {
 		Object.assign(this, data);

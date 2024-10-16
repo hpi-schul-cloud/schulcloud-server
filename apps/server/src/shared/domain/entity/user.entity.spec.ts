@@ -30,6 +30,7 @@ describe('User Entity', () => {
 			const user = new User({
 				firstName: 'John',
 				lastName: 'Cale',
+				preferredName: 'Johnny',
 				email: 'john.cale@velvet.underground',
 				school,
 				roles: [],

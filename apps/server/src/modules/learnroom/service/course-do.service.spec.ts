@@ -7,14 +7,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { groupFactory } from '@shared/testing';
-import {
-	Course,
-	COURSE_REPO,
-	CourseAlreadySynchronizedLoggableException,
-	CourseFilter,
-	CourseNotSynchronizedLoggableException,
-	CourseRepo,
-} from '../domain';
+import { Course, COURSE_REPO, CourseFilter, CourseRepo } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';
 
@@ -136,93 +129,6 @@ describe(CourseDoService.name, () => {
 			const result: Course[] = await service.findBySyncedGroup(group);
 
 			expect(result).toEqual([course]);
-		});
-	});
-
-	describe('stopSynchronization', () => {
-		describe('when a course is synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
-
-				return {
-					course,
-				};
-			};
-
-			it('should save a course without a synchronized group', async () => {
-				const { course } = setup();
-
-				await service.stopSynchronization(course);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						syncedWithGroup: undefined,
-					})
-				);
-			});
-		});
-
-		describe('when a course is not synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build();
-
-				return {
-					course,
-				};
-			};
-
-			it('should throw an unprocessable entity exception', async () => {
-				const { course } = setup();
-
-				await expect(service.stopSynchronization(course)).rejects.toThrow(CourseNotSynchronizedLoggableException);
-			});
-		});
-	});
-
-	describe('startSynchronization', () => {
-		describe('when a course is not synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build();
-				const group: Group = groupFactory.build();
-
-				return {
-					course,
-					group,
-				};
-			};
-
-			it('should save a course with a synchronized group', async () => {
-				const { course, group } = setup();
-
-				await service.startSynchronization(course, group);
-
-				expect(courseRepo.save).toHaveBeenCalledWith(
-					new Course({
-						...course.getProps(),
-						syncedWithGroup: group.id,
-					})
-				);
-			});
-		});
-
-		describe('when a course is synchronized with a group', () => {
-			const setup = () => {
-				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
-				const group: Group = groupFactory.build();
-
-				return {
-					course,
-					group,
-				};
-			};
-			it('should throw an unprocessable entity exception', async () => {
-				const { course, group } = setup();
-
-				await expect(service.startSynchronization(course, group)).rejects.toThrow(
-					CourseAlreadySynchronizedLoggableException
-				);
-			});
 		});
 	});
 

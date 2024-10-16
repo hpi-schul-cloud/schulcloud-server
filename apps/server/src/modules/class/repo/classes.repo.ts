@@ -43,7 +43,8 @@ export class ClassesRepo {
 			? classes.map((aclass: Class): ClassEntity => ClassMapper.mapToEntity(aclass))
 			: [ClassMapper.mapToEntity(classes)];
 
-		await this.em.persistAndFlush(entities);
+		await this.em.upsertMany(entities);
+		await this.em.flush();
 	}
 
 	async updateMany(classes: Class[]): Promise<void> {

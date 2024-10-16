@@ -14,6 +14,8 @@ export class UserDO extends BaseDO {
 
 	lastName: string;
 
+	preferredName?: string;
+
 	roles: RoleReference[];
 
 	schoolId: EntityId;
@@ -52,6 +54,7 @@ export class UserDO extends BaseDO {
 		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;
+		this.preferredName = domainObject.preferredName;
 		this.roles = domainObject.roles;
 		this.schoolId = domainObject.schoolId;
 		this.ldapDn = domainObject.ldapDn;
