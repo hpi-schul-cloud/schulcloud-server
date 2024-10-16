@@ -4,6 +4,7 @@ import { RobjExportSchule } from '@infra/tsp-client';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
+import { ProvisioningService } from '@src/modules/provisioning';
 import { schoolFactory } from '@src/modules/school/testing';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -45,6 +46,10 @@ describe(TspSyncStrategy.name, () => {
 							}
 						},
 					}),
+				},
+				{
+					provide: ProvisioningService,
+					useValue: createMock<ProvisioningService>(),
 				},
 			],
 		}).compile();

@@ -12,6 +12,7 @@ import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import {
 	ExternalClassDto,
@@ -26,6 +27,7 @@ import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { ObjectId } from 'bson';
 import moment from 'moment/moment';
+import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
 
 @Injectable()
@@ -37,8 +39,11 @@ export class TspSyncService {
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly federalStateService: FederalStateService,
-		private readonly schoolYearService: SchoolYearService
-	) {}
+		private readonly schoolYearService: SchoolYearService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(TspSyncService.name);
+	}
 
 	public async findTspSystemOrFail(): Promise<System> {
 		const systems = (
@@ -176,8 +181,7 @@ export class TspSyncService {
 
 		tspClasses.forEach((tspClass) => {
 			if (!tspClass.klasseId) {
-				// TODO: log
-				console.log(`Class has no id ${tspClass.klasseName ?? ''}`);
+				this.logger.info(new TspMissingExternalIdLoggable('class'));
 				return;
 			}
 
@@ -197,8 +201,7 @@ export class TspSyncService {
 
 		tspTeachers.forEach((tspTeacher) => {
 			if (!tspTeacher.lehrerUid) {
-				// TODO log
-				console.log(`Teacher has no id ${tspTeacher.lehrerNachname ?? ''}`);
+				this.logger.info(new TspMissingExternalIdLoggable('teacher'));
 				return;
 			}
 
@@ -207,7 +210,7 @@ export class TspSyncService {
 				firstName: tspTeacher.lehrerNachname,
 				lastName: tspTeacher.lehrerNachname,
 				roles: [RoleName.TEACHER],
-				email: `tsp/${tspTeacher.lehrerUid}`, // TODO check if correct
+				email: `tsp/${tspTeacher.lehrerUid}@schul-cloud.org`,
 			});
 
 			const classId = teacherForClasses.get(tspTeacher.lehrerUid);
@@ -227,8 +230,7 @@ export class TspSyncService {
 
 		tspStudents.forEach((tspStudent) => {
 			if (!tspStudent.schuelerUid) {
-				// TODO log
-				console.log(`Student has no id ${tspStudent.schuelerNachname ?? ''}`);
+				this.logger.info(new TspMissingExternalIdLoggable('student'));
 				return;
 			}
 
@@ -237,7 +239,7 @@ export class TspSyncService {
 				firstName: tspStudent.schuelerNachname,
 				lastName: tspStudent.schuelerNachname,
 				roles: [RoleName.STUDENT],
-				email: `tsp/${tspStudent.schuelerUid}`, // TODO check if correct
+				email: `tsp/${tspStudent.schuelerUid}@schul-cloud.org`,
 			});
 
 			const classStudent = tspStudent.klasseId == null ? undefined : externalClasses.get(tspStudent.klasseId);

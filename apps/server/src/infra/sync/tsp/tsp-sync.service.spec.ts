@@ -6,6 +6,7 @@ import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory, schoolYearFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
 import { SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -46,6 +47,10 @@ describe(TspSyncService.name, () => {
 				{
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
