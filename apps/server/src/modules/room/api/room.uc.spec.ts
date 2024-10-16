@@ -1,21 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IFindOptions } from '@shared/domain/interface';
-import { RoomMemberRepo, RoomMemberService } from '@src/modules/room-member';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { RoomUc } from './room.uc';
-import { RoomService, Room } from '../domain';
+import { RoomMemberRepo, RoomMemberService } from '@src/modules/room-member';
+import { Room, RoomService } from '../domain';
+import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
+import { RoomUc } from './room.uc';
 
 describe('RoomUc', () => {
 	let module: TestingModule;
 	let uc: RoomUc;
 	let configService: DeepMocked<ConfigService>;
 	let roomService: DeepMocked<RoomService>;
-
+	let authorizationService: DeepMocked<AuthorizationService>;
+	let roomMemberService: DeepMocked<RoomMemberService>;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -46,6 +49,9 @@ describe('RoomUc', () => {
 		uc = module.get<RoomUc>(RoomUc);
 		configService = module.get(ConfigService);
 		roomService = module.get(RoomService);
+		authorizationService = module.get(AuthorizationService);
+		roomMemberService = module.get(RoomMemberService);
+		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -90,6 +96,27 @@ describe('RoomUc', () => {
 
 			const result = await uc.getRooms('userId', {});
 			expect(result).toEqual(paginatedRooms);
+		});
+	});
+
+	describe('createRoom', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			configService.get.mockReturnValue(true);
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+			authorizationService.checkOneOfPermissions.mockReturnValue(undefined);
+			const room = roomFactory.build();
+			roomService.createRoom.mockResolvedValue(room);
+			roomMemberService.addMemberToRoom.mockRejectedValue(new Error('test'));
+			return { user, room };
+		};
+
+		it('should cleanup room if room members throws error', async () => {
+			const { user, room } = setup();
+
+			await expect(uc.createRoom(user.id, { color: RoomColor.BLUE, name: 'test' })).rejects.toThrow();
+
+			expect(roomService.deleteRoom).toHaveBeenCalledWith(room);
 		});
 	});
 });

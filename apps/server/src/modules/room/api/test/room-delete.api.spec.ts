@@ -117,7 +117,6 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 
 					const response = await loggedInClient.delete(room.id);
-					console.log(response.body);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).rejects.toThrow(NotFoundException);
 				});

@@ -36,22 +36,14 @@ export class RoomMemberDomainMapper {
 	}
 
 	static mapDoToEntity(roomMember: RoomMember): RoomMemberEntity {
+		const entity = new RoomMemberEntity();
+		const { members, ...rest } = roomMember.getProps();
+		Object.assign(entity, { ...rest });
+
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const { props } = roomMember;
+		roomMember.props = entity;
 
-		if (!(props instanceof RoomMemberEntity)) {
-			const entity = new RoomMemberEntity();
-			const { members, ...rest } = props;
-			Object.assign(entity, { ...rest });
-
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			roomMember.props = entity;
-
-			return entity;
-		}
-
-		return props;
+		return entity;
 	}
 }
