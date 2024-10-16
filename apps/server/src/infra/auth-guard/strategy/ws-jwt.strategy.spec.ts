@@ -11,10 +11,10 @@ jest.mock('../config', () => {
 	const authConfig = {
 		publicKey: 'mypublickey',
 		jwtOptions: {
-			header: { typ: 'JWT' },
+			header: { typ: 'mytyp' },
 			audience: 'myaudience',
 			issuer: 'myissuer',
-			algorithm: 'HS256',
+			algorithm: 'myalgorithm',
 			expiresIn: '1h',
 		},
 	};
@@ -28,10 +28,10 @@ const buildAuthConfig = () => {
 	return {
 		publicKey: 'mypublickey',
 		jwtOptions: {
-			header: { typ: 'JWT' },
+			header: { typ: 'mytyp' },
 			audience: 'myaudience',
 			issuer: 'myissuer',
-			algorithm: 'HS256',
+			algorithm: 'myalgorithm',
 			expiresIn: '1h',
 		},
 	};
