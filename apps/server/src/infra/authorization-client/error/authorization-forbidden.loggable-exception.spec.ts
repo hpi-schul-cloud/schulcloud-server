@@ -1,12 +1,12 @@
+import { AuthorizationBodyParamsReferenceType, AuthorizationContextParamsAction } from '../authorization-api-client';
 import { AuthorizationForbiddenLoggableException } from './authorization-forbidden.loggable-exception';
-import { Action, AuthorizationBodyParamsReferenceType } from '../authorization-api-client';
 
 describe('AuthorizationForbiddenLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const params = {
 				context: {
-					action: Action.READ,
+					action: AuthorizationContextParamsAction.READ,
 					requiredPermissions: [],
 				},
 				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
