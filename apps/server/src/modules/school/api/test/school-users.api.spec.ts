@@ -102,21 +102,35 @@ describe('School Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
 				const teacherRole = teacherUser.roles[0];
 				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
+				const publicTeachersOfSchool = userFactory.buildList(2, { school, roles: [teacherRole], discoverable: true });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool]);
+				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool, ...publicTeachersOfSchool]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, teacherUser, teachersOfSchool, school };
+				return { loggedInClient, teacherUser, teachersOfSchool, school, publicTeachersOfSchool };
 			};
 
-			it('should return 403', async () => {
-				const { loggedInClient, school } = await setup();
+			it('should return only public teachers', async () => {
+				const { loggedInClient, school, publicTeachersOfSchool } = await setup();
 
 				const response = await loggedInClient.get(`${school.id}/teachers`);
+				const body = response.body as SchoolUserListResponse;
 
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(body.total).toEqual(publicTeachersOfSchool.length);
+				expect(body.data).toEqual(
+					expect.arrayContaining([
+						...publicTeachersOfSchool.map((teacher) => {
+							return {
+								id: teacher.id,
+								firstName: teacher.firstName,
+								lastName: teacher.lastName,
+							};
+						}),
+					])
+				);
 			});
 		});
 
@@ -140,7 +154,7 @@ describe('School Controller (API)', () => {
 
 				const response = await loggedInClient.get(`${school.id}/teachers`);
 
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 

@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller';
+import { Page, UserDO } from '@shared/domain/domainobject';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserService } from '@src/modules/user';
@@ -17,6 +18,7 @@ import { SchoolUserListResponse } from './dto/response/school-user.response';
 import { SchoolResponseMapper, SystemResponseMapper } from './mapper';
 import { SchoolUserResponseMapper } from './mapper/school-user.response.mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
+import { User } from '@shared/domain/entity';
 
 @Injectable()
 export class SchoolUc {
@@ -142,13 +144,23 @@ export class SchoolUc {
 			this.authorizationService.getUserWithPermissions(userId),
 		]);
 
-		const authContext = AuthorizationContextBuilder.read([Permission.TEACHER_LIST]);
-		this.authorizationService.checkPermission(user, school, authContext);
+		this.checkHasPermissionToAccessTeachers(user);
 
-		const result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER, { pagination });
+		const authContext = AuthorizationContextBuilder.read([Permission.TEACHER_LIST]);
+		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
+
+		let result: Page<UserDO>;
+		if (isUserOfSchool) {
+			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER, { pagination });
+		} else {
+			result = await this.userService.findPublicTeachersBySchool(schoolId, { pagination });
+		}
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result, pagination);
-
 		return responseDto;
+	}
+
+	private checkHasPermissionToAccessTeachers(user: User) {
+		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
 	}
 }
