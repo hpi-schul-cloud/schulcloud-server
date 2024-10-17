@@ -38,20 +38,23 @@ export class CommonCartridgeExportService {
 
 	public async downloadFile(): Promise<GetFileResponse> {
 		// const fileRecords: FileDto[] = await this.filesService.listFilesOfParent(courseId);
-		const fileRecorde: FileRecord = new FileRecord({
+		const fileRecord: FileRecord = new FileRecord({
 			name: 'Mathe-2024-10-16T09_59_47.369Z.imscc',
 			size: 2358,
 			mimeType: 'application/zip',
 			parentType: FileRecordParentType.Task,
 			isUploading: false,
-			parentId: '59cce4171113d1132c98dc07',
+			// hard coded id from DB
+			parentId: '6710d7913d371c3101997959',
 			storageLocation: StorageLocation.SCHOOL,
 			// hard coded id from DB
 			storageLocationId: '5f2987e020834114b8efd6f8',
 		});
-		const fileResponse = await this.fileStorageService.download(fileRecorde, {
-			fileRecordId: '670f8eb18ba25d0a55ffbd75',
-			fileName: fileRecorde.name,
+
+		fileRecord.id = '6710d792bf75fec677b0e3df';
+		const fileResponse = await this.fileStorageService.download(fileRecord, {
+			fileRecordId: fileRecord.id,
+			fileName: fileRecord.name,
 		});
 
 		return fileResponse;
