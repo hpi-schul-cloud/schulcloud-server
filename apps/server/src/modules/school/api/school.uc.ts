@@ -2,6 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller';
 import { Page, UserDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserService } from '@src/modules/user';
@@ -18,7 +19,6 @@ import { SchoolUserListResponse } from './dto/response/school-user.response';
 import { SchoolResponseMapper, SystemResponseMapper } from './mapper';
 import { SchoolUserResponseMapper } from './mapper/school-user.response.mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
-import { User } from '@shared/domain/entity';
 
 @Injectable()
 export class SchoolUc {
@@ -146,8 +146,7 @@ export class SchoolUc {
 
 		this.checkHasPermissionToAccessTeachers(user);
 
-		const authContext = AuthorizationContextBuilder.read([Permission.TEACHER_LIST]);
-		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
+		const isUserOfSchool = this.isSchoolInternalUser(user, school);
 
 		let result: Page<UserDO>;
 		if (isUserOfSchool) {
@@ -162,5 +161,11 @@ export class SchoolUc {
 
 	private checkHasPermissionToAccessTeachers(user: User) {
 		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
+	}
+
+	private isSchoolInternalUser(user: User, school: School): boolean {
+		const authContext = AuthorizationContextBuilder.read([Permission.TEACHER_LIST]);
+		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
+		return isUserOfSchool;
 	}
 }
