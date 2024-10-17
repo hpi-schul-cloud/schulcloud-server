@@ -34,7 +34,7 @@ import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
+import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -130,6 +130,26 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	): Promise<Page<UserDO>> {
 		const role = await this.roleService.findByName(roleName);
 		const query = { schoolId, roleId: role.id };
+		const result = await this.findUsers(query, options);
+		return result;
+	}
+
+	async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		if (discoverabilitySetting === 'disabled') {
+			return new Page<UserDO>([], 0);
+		}
+
+		const role = await this.roleService.findByName(RoleName.TEACHER);
+		const query: UserQuery = { schoolId, roleId: role.id };
+
+		if (discoverabilitySetting === 'opt-out') {
+			query.discoverable = UserDiscoverableQuery.NOT_FALSE;
+		}
+		if (discoverabilitySetting === 'opt-in') {
+			query.discoverable = UserDiscoverableQuery.TRUE;
+		}
+
 		const result = await this.findUsers(query, options);
 		return result;
 	}

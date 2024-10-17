@@ -58,10 +58,10 @@ export class UserScope extends Scope<User> {
 	}
 
 	withDiscoverableTrue(query?: UserDiscoverableQuery): UserScope {
-		if (query === 'true') {
+		if (query === UserDiscoverableQuery.TRUE) {
 			this.addQuery({ discoverable: true });
 		}
-		if (query === 'not-false') {
+		if (query === UserDiscoverableQuery.NOT_FALSE) {
 			this.addQuery({ discoverable: { $ne: false } });
 		}
 		return this;

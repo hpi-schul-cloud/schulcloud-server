@@ -19,6 +19,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
@@ -27,8 +28,9 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { schoolFactory } from '@src/modules/school/testing';
 import { UserDto } from '../uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
+import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -462,6 +464,78 @@ describe('UserService', () => {
 			await service.findBySchoolRole(schoolId, role.name);
 
 			expect(userDORepo.find).toHaveBeenCalledWith({ schoolId, roleId: role.id }, undefined);
+		});
+	});
+
+	describe('findPublicTeachersBySchool', () => {
+		const setup = () => {
+			const school = schoolFactory.build();
+			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+			const teachers = userDoFactory.buildListWithId(2, { schoolId: school.id, roles: [role] });
+
+			const expectedResult = new Page<UserDO>(teachers, 2);
+			userDORepo.find.mockResolvedValue(expectedResult);
+			roleService.findByName.mockResolvedValue(role);
+
+			return { school, role, expectedResult };
+		};
+
+		it('should return result', async () => {
+			const { expectedResult, school } = setup();
+			const result = await service.findPublicTeachersBySchool(school.id);
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		//  "disabled", "opt-in", "opt-out", "enabled"
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "enabled"', () => {
+			it('should query all teachers', async () => {
+				const { school, role } = setup();
+				config.get.mockReturnValue('enabled');
+
+				await service.findPublicTeachersBySchool(school.id);
+
+				expect(userDORepo.find).toHaveBeenCalledWith({ schoolId: school.id, roleId: role.id }, undefined);
+			});
+		});
+
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-out"', () => {
+			it('should query teachers that did not specifically set discoverability to false', async () => {
+				const { school, role } = setup();
+				config.get.mockReturnValue('opt-out');
+
+				await service.findPublicTeachersBySchool(school.id);
+
+				expect(userDORepo.find).toHaveBeenCalledWith(
+					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.NOT_FALSE },
+					undefined
+				);
+			});
+		});
+
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-in"', () => {
+			it('should query only teachers that specifically set discoverability to true', async () => {
+				const { school, role } = setup();
+				config.get.mockReturnValue('opt-in');
+
+				await service.findPublicTeachersBySchool(school.id);
+
+				expect(userDORepo.find).toHaveBeenCalledWith(
+					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.TRUE },
+					undefined
+				);
+			});
+		});
+
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "disabled"', () => {
+			it('should return empty result', async () => {
+				const { school } = setup();
+				config.get.mockReturnValue('disabled');
+
+				const result = await service.findPublicTeachersBySchool(school.id);
+
+				expect(result).toEqual(expect.objectContaining({ data: [], total: 0 }));
+			});
 		});
 	});
 

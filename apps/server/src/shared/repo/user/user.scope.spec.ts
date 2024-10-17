@@ -1,3 +1,4 @@
+import { UserDiscoverableQuery } from '@src/modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 describe('UserScope', () => {
@@ -210,7 +211,7 @@ describe('UserScope', () => {
 
 		describe('when not false', () => {
 			it('should add query to find true and undefined', () => {
-				scope.withDiscoverableTrue('not-false');
+				scope.withDiscoverableTrue(UserDiscoverableQuery.NOT_FALSE);
 
 				expect(scope.query).toEqual({ discoverable: { $ne: false } });
 			});
@@ -218,7 +219,7 @@ describe('UserScope', () => {
 
 		describe('when tue', () => {
 			it('should add a query to find true', () => {
-				scope.withDiscoverableTrue('true');
+				scope.withDiscoverableTrue(UserDiscoverableQuery.TRUE);
 
 				expect(scope.query).toEqual({ discoverable: true });
 			});

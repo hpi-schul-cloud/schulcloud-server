@@ -4,7 +4,7 @@ import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-or
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { SystemEntity } from '@modules/system/entity';
-import { UserQuery } from '@modules/user/service/user-query.type';
+import { UserDiscoverableQuery, UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -486,7 +486,7 @@ describe('UserRepo', () => {
 					it('should find user with discoverable: true', async () => {
 						const { schoolId, roleId, userOptedIn } = await setup();
 
-						const result = await repo.find({ schoolId, roleId, discoverable: 'true' });
+						const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.TRUE });
 
 						expect(result.data).toContainEqual(expect.objectContaining({ id: userOptedIn.id }));
 					});
@@ -494,7 +494,7 @@ describe('UserRepo', () => {
 					it('should not find user with discoverable: false', async () => {
 						const { schoolId, roleId, userOptedOut } = await setup();
 
-						const result = await repo.find({ schoolId, roleId, discoverable: 'true' });
+						const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.TRUE });
 
 						expect(result.data).not.toContainEqual(expect.objectContaining({ id: userOptedOut.id }));
 					});
@@ -502,7 +502,7 @@ describe('UserRepo', () => {
 					it('should not find user with discoverable: undefined', async () => {
 						const { schoolId, roleId, userUndecided } = await setup();
 
-						const result = await repo.find({ schoolId, roleId, discoverable: 'true' });
+						const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.TRUE });
 
 						expect(result.data).not.toContainEqual(expect.objectContaining({ id: userUndecided.id }));
 					});
@@ -512,7 +512,7 @@ describe('UserRepo', () => {
 					it('should find user with discoverable: true', async () => {
 						const { schoolId, roleId, userOptedIn } = await setup();
 
-						const result = await repo.find({ schoolId, roleId, discoverable: 'not-false' });
+						const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.NOT_FALSE });
 
 						expect(result.data).toContainEqual(expect.objectContaining({ id: userOptedIn.id }));
 					});
@@ -520,7 +520,7 @@ describe('UserRepo', () => {
 					it('should find user with discoverable: undefined', async () => {
 						const { schoolId, roleId, userUndecided } = await setup();
 
-						const result = await repo.find({ schoolId, roleId, discoverable: 'not-false' });
+						const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.NOT_FALSE });
 
 						expect(result.data).toContainEqual(expect.objectContaining({ id: userUndecided.id }));
 					});
@@ -528,7 +528,7 @@ describe('UserRepo', () => {
 					it('should not find user with discoverable: false', async () => {
 						const { schoolId, roleId, userOptedOut } = await setup();
 
-						const result = await repo.find({ schoolId, roleId, discoverable: 'not-false' });
+						const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.NOT_FALSE });
 
 						expect(result.data).not.toContainEqual(expect.objectContaining({ id: userOptedOut.id }));
 					});
@@ -537,7 +537,7 @@ describe('UserRepo', () => {
 				it('should not find user with different role', async () => {
 					const { schoolId, roleId, userWithDifferentRole } = await setup();
 
-					const result = await repo.find({ schoolId, roleId, discoverable: 'true' });
+					const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.TRUE });
 
 					expect(result.data).not.toContainEqual(expect.objectContaining({ id: userWithDifferentRole.id }));
 				});
@@ -545,7 +545,7 @@ describe('UserRepo', () => {
 				it('should not find user with different school', async () => {
 					const { schoolId, roleId, userWithDifferentSchool } = await setup();
 
-					const result = await repo.find({ schoolId, roleId, discoverable: 'true' });
+					const result = await repo.find({ schoolId, roleId, discoverable: UserDiscoverableQuery.TRUE });
 
 					expect(result.data).not.toContainEqual(expect.objectContaining({ id: userWithDifferentSchool.id }));
 				});
