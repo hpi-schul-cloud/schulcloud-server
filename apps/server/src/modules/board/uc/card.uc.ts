@@ -5,6 +5,7 @@ import { LegacyLogger } from '@src/core/logger';
 
 import { AnyBoardNode, AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
+import { BoardNodeCreateHooksService } from '../service/internal/board-node-create-hooks.service';
 
 @Injectable()
 export class CardUc {
@@ -15,6 +16,7 @@ export class CardUc {
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardNodeCreateHooksService: BoardNodeCreateHooksService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CardUc.name);
@@ -81,13 +83,16 @@ export class CardUc {
 		toPosition?: number
 	): Promise<AnyContentElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
-
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
-		const element = this.boardNodeFactory.buildContentElement(type);
+		const sceletonElement = this.boardNodeFactory.buildContentElement(type);
+		await this.boardNodeService.addToParent(card, sceletonElement, toPosition);
 
-		await this.boardNodeService.addToParent(card, element, toPosition);
+		await this.boardNodeCreateHooksService.afterCreate(sceletonElement, user);
+
+		const element = await this.boardNodeService.findContentElementById(sceletonElement.id);
 
 		return element;
 	}

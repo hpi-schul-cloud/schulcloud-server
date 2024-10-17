@@ -18,6 +18,8 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {
 	AnyContentElementResponse,
+	AppointmentFinderElementContentBody,
+	AppointmentFinderElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
 	DrawingElementContentBody,
@@ -71,7 +73,8 @@ export class ElementController {
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
-		DrawingElementContentBody
+		DrawingElementContentBody,
+		AppointmentFinderElementContentBody
 	)
 	@ApiResponse({
 		status: 201,
@@ -83,6 +86,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(AppointmentFinderElementResponse) },
 			],
 		},
 	})
