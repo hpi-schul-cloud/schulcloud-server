@@ -7,8 +7,12 @@ module.exports = {
 		// entityId and service are never queried, but need to be provided otherwise the server doesn't start
 		entityId: 'id',
 		service: 'emptyService', // This service is registered in 'index.js'
+
 		// The idea to concatenate the keys is from this feathers issue: https://github.com/feathersjs/feathers/issues/1251
-		secret: Configuration.get('JWT_PRIVATE_KEY') + Configuration.get('JWT_PUBLIC_KEY'),
+		// Furthermore: Node's process.env escapes newlines. We need to reverse it for the keys to work.
+		secret:
+			Configuration.get('JWT_PRIVATE_KEY').replace(/\\n/g, '\n') +
+			Configuration.get('JWT_PUBLIC_KEY').replace(/\\n/g, '\n'),
 		authStrategies: ['jwt', 'tsp', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'JWT' },

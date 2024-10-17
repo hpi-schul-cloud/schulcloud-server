@@ -188,8 +188,11 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
 	JWT_EXTENDED_TIMEOUT_SECONDS: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS') as number,
-	JWT_PRIVATE_KEY: Configuration.get('JWT_PRIVATE_KEY') as string,
-	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
+
+	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
+	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
+	JWT_PRIVATE_KEY: (Configuration.get('JWT_PRIVATE_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
