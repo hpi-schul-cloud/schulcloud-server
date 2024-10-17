@@ -16,7 +16,7 @@ export class CommonCartridgeController {
 		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
 	}
 
-	@Get('export/download')
+	@Get('download')
 	public async exportJustFile(@Req() req: Request): Promise<StreamableFile> {
 		const files = await this.commonCartridgeUC.exportJustFile();
 
