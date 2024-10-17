@@ -1525,6 +1525,7 @@
 				"PING_TIMEOUT",
 				"FINALIZE_DELAY",
 				"SOCKET_PORT",
+				"WEBSOCKET_URL",
 				"GC_ENABLED",
 				"DB_COMPRESS_THRESHOLD",
 				"MAX_DOCUMENT_SIZE",
@@ -1537,6 +1538,10 @@
 				"SOCKET_PORT": {
 					"type": "number",
 					"description": "Web socket port for tldraw"
+				},
+				"WEBSOCKET_URL": {
+					"type": "string",
+					"description": "Web socket url for tldraw"
 				},
 				"PING_TIMEOUT": {
 					"type": "number",
@@ -1589,6 +1594,7 @@
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
+				"WEBSOCKET_URL": "ws://localhost:3345",
 				"PING_TIMEOUT": 30000,
 				"FINALIZE_DELAY": 5000,
 				"GC_ENABLED": true,
