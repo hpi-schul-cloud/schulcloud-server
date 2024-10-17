@@ -3,8 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RobjExportSchule } from '@infra/tsp-client';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { ProvisioningService } from '@src/modules/provisioning';
+import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
 import { schoolFactory } from '@src/modules/school/testing';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -15,6 +16,7 @@ describe(TspSyncStrategy.name, () => {
 	let module: TestingModule;
 	let sut: TspSyncStrategy;
 	let tspSyncService: DeepMocked<TspSyncService>;
+	let provisioningService: DeepMocked<ProvisioningService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,6 +58,7 @@ describe(TspSyncStrategy.name, () => {
 
 		sut = module.get(TspSyncStrategy);
 		tspSyncService = module.get(TspSyncService);
+		provisioningService = module.get(ProvisioningService);
 	});
 
 	afterEach(() => {
@@ -89,7 +92,20 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
-				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
+
+				const oauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.alpha(),
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: faker.string.alpha(),
+					}),
+				});
+
+				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([oauthDataDto]);
+
+				return { oauthDataDto };
 			};
 
 			it('should find the tsp system', async () => {
@@ -105,6 +121,40 @@ describe(TspSyncStrategy.name, () => {
 
 				expect(tspSyncService.fetchTspSchools).toHaveBeenCalled();
 			});
+
+			it('should fetch the data', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.fetchTspTeachers).toHaveBeenCalled();
+				expect(tspSyncService.fetchTspStudents).toHaveBeenCalled();
+				expect(tspSyncService.fetchTspClasses).toHaveBeenCalled();
+			});
+
+			it('should load all schools', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.findSchoolsForSystem).toHaveBeenCalled();
+			});
+
+			it('should map to OauthDataDto', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.mapTspDataToOauthData).toHaveBeenCalled();
+			});
+
+			it('should call provisioning service with mapped OauthDataDtos', async () => {
+				const { oauthDataDto } = setup();
+
+				await sut.sync();
+
+				expect(provisioningService.provisionData).toHaveBeenCalledWith(oauthDataDto);
+			});
 		});
 
 		describe('when school does not exist', () => {
@@ -117,6 +167,12 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspSchools.mockResolvedValueOnce(tspSchools);
 
 				tspSyncService.findSchool.mockResolvedValueOnce(undefined);
+
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should create the school', async () => {
@@ -139,6 +195,12 @@ describe(TspSyncStrategy.name, () => {
 
 				const school = schoolFactory.build();
 				tspSyncService.findSchool.mockResolvedValueOnce(school);
+
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should update the school', async () => {
@@ -158,6 +220,12 @@ describe(TspSyncStrategy.name, () => {
 				};
 				const tspSchools = [tspSchool];
 				tspSyncService.fetchTspSchools.mockResolvedValueOnce(tspSchools);
+
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should skip the school', async () => {

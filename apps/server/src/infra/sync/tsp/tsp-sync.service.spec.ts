@@ -11,10 +11,18 @@ import {
 import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory, schoolYearFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
+import {
+	ExternalClassDto,
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	ProvisioningSystemDto,
+} from '@src/modules/provisioning';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -23,8 +31,6 @@ import { systemFactory } from '@src/modules/system/testing';
 import { AxiosResponse } from 'axios';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspSyncService } from './tsp-sync.service';
-import { ExternalSchoolDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning';
-import { RoleName } from '@shared/domain/interface';
 
 describe(TspSyncService.name, () => {
 	let module: TestingModule;
@@ -599,27 +605,45 @@ describe(TspSyncService.name, () => {
 					},
 				];
 
-				const provisioningSystemDto: ProvisioningSystemDto = {
+				const provisioningSystemDto = new ProvisioningSystemDto({
 					systemId: system.id,
 					provisioningStrategy: SystemProvisioningStrategy.TSP,
-				};
+				});
 
-				const externalSchool: ExternalSchoolDto = {
+				const externalSchool = new ExternalSchoolDto({
 					externalId: school.externalId ?? '',
-				};
+				});
+
+				const externalClass = new ExternalClassDto({
+					externalId: klasseId,
+					name: tspClasses[0].klasseName,
+				});
 
 				const expected: OauthDataDto[] = [
-					{
+					new OauthDataDto({
 						system: provisioningSystemDto,
-						externalUser: {
+						externalUser: new ExternalUserDto({
 							externalId: tspTeachers[0].lehrerUid ?? '',
 							firstName: tspTeachers[0].lehrerNachname,
 							lastName: tspTeachers[0].lehrerNachname,
 							roles: [RoleName.TEACHER],
 							email: `tsp/${tspTeachers[0].lehrerUid ?? ''}@schul-cloud.org`,
-						},
+						}),
 						externalSchool,
-					},
+						externalClasses: [externalClass],
+					}),
+					new OauthDataDto({
+						system: provisioningSystemDto,
+						externalUser: new ExternalUserDto({
+							externalId: tspStudents[0].schuelerUid ?? '',
+							firstName: tspStudents[0].schuelerNachname,
+							lastName: tspStudents[0].schuelerNachname,
+							roles: [RoleName.STUDENT],
+							email: `tsp/${tspStudents[0].schuelerUid ?? ''}@schul-cloud.org`,
+						}),
+						externalSchool,
+						externalClasses: [externalClass],
+					}),
 				];
 
 				return { system, school, tspTeachers, tspStudents, tspClasses, expected };
@@ -630,7 +654,7 @@ describe(TspSyncService.name, () => {
 
 				const result = sut.mapTspDataToOauthData(system, [school], tspTeachers, tspStudents, tspClasses);
 
-				// TODO
+				expect(result).toStrictEqual(expected);
 			});
 		});
 

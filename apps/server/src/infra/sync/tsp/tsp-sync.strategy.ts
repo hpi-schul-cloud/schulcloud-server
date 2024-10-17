@@ -7,14 +7,14 @@ import { System } from '@src/modules/system';
 import pLimit from 'p-limit';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
+import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
+import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
-import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
-import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
-import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {

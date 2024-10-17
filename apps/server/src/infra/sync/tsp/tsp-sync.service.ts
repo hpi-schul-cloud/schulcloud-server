@@ -185,10 +185,10 @@ export class TspSyncService {
 				return;
 			}
 
-			const externalClass: ExternalClassDto = {
+			const externalClass = new ExternalClassDto({
 				externalId: tspClass.klasseId,
 				name: tspClass.klasseName,
-			};
+			});
 
 			externalClasses.set(tspClass.klasseId, externalClass);
 
