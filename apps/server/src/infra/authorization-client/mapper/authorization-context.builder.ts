@@ -1,22 +1,28 @@
-import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizationContextParams } from '../authorization-api-client';
+import {
+	AuthorizationContextParams,
+	AuthorizationContextParamsAction,
+	AuthorizationContextParamsRequiredPermissions,
+} from '../authorization-api-client';
 
 export class AuthorizationContextBuilder {
-	static build(requiredPermissions: Array<Permission>, action: Action): AuthorizationContextParams {
+	static build(
+		requiredPermissions: Array<AuthorizationContextParamsRequiredPermissions>,
+		action: AuthorizationContextParamsAction
+	): AuthorizationContextParams {
 		return {
 			action,
 			requiredPermissions,
 		};
 	}
 
-	static write(requiredPermissions: Permission[]): AuthorizationContextParams {
-		const context = this.build(requiredPermissions, Action.WRITE);
+	static write(requiredPermissions: AuthorizationContextParamsRequiredPermissions[]): AuthorizationContextParams {
+		const context = this.build(requiredPermissions, AuthorizationContextParamsAction.WRITE);
 
 		return context;
 	}
 
-	static read(requiredPermissions: Permission[]): AuthorizationContextParams {
-		const context = this.build(requiredPermissions, Action.READ);
+	static read(requiredPermissions: AuthorizationContextParamsRequiredPermissions[]): AuthorizationContextParams {
+		const context = this.build(requiredPermissions, AuthorizationContextParamsAction.READ);
 
 		return context;
 	}

@@ -314,6 +314,7 @@ describe('UserRepo', () => {
 					email: testEntity.email,
 					firstName: testEntity.firstName,
 					lastName: testEntity.lastName,
+					preferredName: testEntity.preferredName,
 					schoolId: testEntity.school.id,
 					roles: [
 						{
@@ -348,6 +349,7 @@ describe('UserRepo', () => {
 						email: 'email@email.email',
 						firstName: 'firstName',
 						lastName: 'lastName',
+						preferredName: 'preferredName',
 						schoolId: new ObjectId().toHexString(),
 						ldapDn: 'ldapDn',
 						externalId: 'externalId',
@@ -368,6 +370,7 @@ describe('UserRepo', () => {
 				email: testDO.email,
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,
+				preferredName: testDO.preferredName,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				school: expect.objectContaining<Partial<SchoolEntity>>({ id: testDO.schoolId }),
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
