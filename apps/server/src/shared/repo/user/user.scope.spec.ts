@@ -1,3 +1,4 @@
+import { UserDiscoverableQuery } from '@src/modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 describe('UserScope', () => {
@@ -48,6 +49,25 @@ describe('UserScope', () => {
 				scope.bySchoolId(schoolId);
 
 				expect(scope.query).toEqual({ school: schoolId });
+			});
+		});
+	});
+
+	describe('byRole is called', () => {
+		describe('when role parameter is undefined', () => {
+			it('should return scope without added role to query', () => {
+				scope.byRoleId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when role parameter is defined', () => {
+			it('should return scope with added role to query', () => {
+				const roleId = 'roleId';
+
+				scope.byRoleId(roleId);
+
+				expect(scope.query).toEqual({ roles: roleId });
 			});
 		});
 	});
@@ -176,6 +196,32 @@ describe('UserScope', () => {
 				expect(scope.query).toEqual({
 					$or: [{ firstName: new RegExp(name, 'i') }, { lastName: new RegExp(name, 'i') }],
 				});
+			});
+		});
+	});
+
+	describe('withDiscoverabilityTrue', () => {
+		describe('when undefined', () => {
+			it('should not add a query', () => {
+				scope.withDiscoverableTrue();
+
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when not false', () => {
+			it('should add query to find true and undefined', () => {
+				scope.withDiscoverableTrue(UserDiscoverableQuery.NOT_FALSE);
+
+				expect(scope.query).toEqual({ discoverable: { $ne: false } });
+			});
+		});
+
+		describe('when tue', () => {
+			it('should add a query to find true', () => {
+				scope.withDiscoverableTrue(UserDiscoverableQuery.TRUE);
+
+				expect(scope.query).toEqual({ discoverable: true });
 			});
 		});
 	});
