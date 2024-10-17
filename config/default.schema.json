@@ -1537,46 +1537,57 @@
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
+					"default": 3345,
 					"description": "Web socket port for tldraw"
 				},
 				"WEBSOCKET_URL": {
 					"type": "string",
+					"default": "ws://localhost:3345",
 					"description": "Web socket url for tldraw"
 				},
 				"PING_TIMEOUT": {
 					"type": "number",
+					"default": 30000,
 					"description": "Websocket ping timeout in ms"
 				},
 				"FINALIZE_DELAY": {
 					"type": "number",
+					"default": 5000,
 					"description": "Delay in milliseconds before checking if can finalize a tldraw board"
 				},
 				"GC_ENABLED": {
 					"type": "boolean",
+					"default": true,
 					"description": "If tldraw garbage collector should be enabled"
 				},
 				"DB_COMPRESS_THRESHOLD": {
 					"type": "integer",
+					"default": 400,
 					"description": "Mongo documents with same docName compress threshold size"
 				},
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
+					"default": 15000000,
 					"description": "Maximum size of a single tldraw document in mongo"
 				},
 				"ASSETS_ENABLED": {
 					"type": "boolean",
+					"default": true,
 					"description": "Enables uploading assets to tldraw board"
 				},
 				"ASSETS_SYNC_ENABLED": {
 					"type": "boolean",
+					"default": false,
 					"description": "Enables synchronization of tldraw board assets with file storage"
 				},
 				"ASSETS_MAX_SIZE_BYTES": {
 					"type": "integer",
+					"default": 10485760,
 					"description": "Maximum asset size in bytes"
 				},
 				"ASSETS_ALLOWED_MIME_TYPES_LIST": {
 					"type": "string",
+					"default": "image/png,image/jpeg,image/gif,image/svg+xml",
 					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
 					"examples": ["image/gif,image/jpeg,video/webm"]
 				},
@@ -1591,19 +1602,6 @@
 					"description": "Define log level for tldraw.",
 					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
-			},
-			"default": {
-				"SOCKET_PORT": 3345,
-				"WEBSOCKET_URL": "ws://localhost:3345",
-				"PING_TIMEOUT": 30000,
-				"FINALIZE_DELAY": 5000,
-				"GC_ENABLED": true,
-				"DB_COMPRESS_THRESHOLD": 400,
-				"MAX_DOCUMENT_SIZE": 15000000,
-				"ASSETS_ENABLED": true,
-				"ASSETS_SYNC_ENABLED": false,
-				"ASSETS_MAX_SIZE_BYTES": 10485760,
-				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
 		},
 		"TLDRAW_DB_URL": {
