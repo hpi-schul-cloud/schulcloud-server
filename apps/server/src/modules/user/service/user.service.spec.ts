@@ -453,6 +453,18 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('findBySchoolRole', () => {
+		it('should call the repo with given schoolId and roleName', async () => {
+			const schoolId = 'schoolId';
+			const role = roleFactory.buildWithId();
+			roleService.findByName.mockResolvedValue(role);
+
+			await service.findBySchoolRole(schoolId, role.name);
+
+			expect(userDORepo.find).toHaveBeenCalledWith({ schoolId, roleId: role.id }, undefined);
+		});
+	});
+
 	describe('saveAll is called', () => {
 		it('should call the repo with given users', async () => {
 			const users: UserDO[] = [userDoFactory.buildWithId()];

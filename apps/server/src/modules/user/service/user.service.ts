@@ -25,7 +25,7 @@ import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
+import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -121,6 +121,17 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const users: Page<UserDO> = await this.userDORepo.find(query, options);
 
 		return users;
+	}
+
+	async findBySchoolRole(
+		schoolId: EntityId,
+		roleName: RoleName,
+		options?: IFindOptions<UserDO>
+	): Promise<Page<UserDO>> {
+		const role = await this.roleService.findByName(roleName);
+		const query = { schoolId, roleId: role.id };
+		const result = await this.findUsers(query, options);
+		return result;
 	}
 
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {

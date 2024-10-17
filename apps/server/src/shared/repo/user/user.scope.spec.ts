@@ -52,6 +52,25 @@ describe('UserScope', () => {
 		});
 	});
 
+	describe('byRole is called', () => {
+		describe('when role parameter is undefined', () => {
+			it('should return scope without added role to query', () => {
+				scope.byRoleId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when role parameter is defined', () => {
+			it('should return scope with added role to query', () => {
+				const roleId = 'roleId';
+
+				scope.byRoleId(roleId);
+
+				expect(scope.query).toEqual({ roles: roleId });
+			});
+		});
+	});
+
 	describe('whereLastLoginSystemChangeSmallerThan is called', () => {
 		it('should return scope with added query where loginSystemChangeSmallerThan is given', () => {
 			const date: Date = new Date();
