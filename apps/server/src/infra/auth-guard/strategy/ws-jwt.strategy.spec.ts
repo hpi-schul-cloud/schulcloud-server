@@ -9,12 +9,12 @@ import { WsJwtStrategy } from './ws-jwt.strategy';
 
 jest.mock('../config', () => {
 	const authConfig = {
-		secret: 'mysecret',
+		publicKey: 'mypublickey',
 		jwtOptions: {
-			header: { typ: 'JWT' },
+			header: { typ: 'mytyp' },
 			audience: 'myaudience',
 			issuer: 'myissuer',
-			algorithm: 'HS256',
+			algorithm: 'myalgorithm',
 			expiresIn: '1h',
 		},
 	};
@@ -26,12 +26,12 @@ jest.mock('../config', () => {
 
 const buildAuthConfig = () => {
 	return {
-		secret: 'mysecret',
+		publicKey: 'mypublickey',
 		jwtOptions: {
-			header: { typ: 'JWT' },
+			header: { typ: 'mytyp' },
 			audience: 'myaudience',
 			issuer: 'myissuer',
-			algorithm: 'HS256',
+			algorithm: 'myalgorithm',
 			expiresIn: '1h',
 		},
 	};

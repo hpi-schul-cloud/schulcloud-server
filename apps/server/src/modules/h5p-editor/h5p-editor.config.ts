@@ -22,7 +22,7 @@ const h5pEditorConfig: H5PEditorConfig = {
 	ADMIN_API__ALLOWED_API_KEYS: [],
 	JWT_AUD: Configuration.get('JWT_AUD') as string,
 	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
-	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
+	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
 };
 
 export const translatorConfig = {

@@ -14,7 +14,7 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([JwtExtractor.fromCookie('jwt')]),
 			ignoreExpiration: false,
-			secretOrKey: authConfig.secret,
+			secretOrKey: authConfig.publicKey,
 			...authConfig.jwtOptions,
 		});
 	}

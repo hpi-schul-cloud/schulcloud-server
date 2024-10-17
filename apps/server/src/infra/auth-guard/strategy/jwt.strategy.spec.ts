@@ -1,22 +1,20 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UnauthorizedException } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
 import { jwtPayloadFactory, setupEntities } from '@shared/testing';
-
 import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
 import { JwtStrategy } from './jwt.strategy';
 
 jest.mock('../config', () => {
 	const authConfig = {
-		secret: 'mysecret',
+		publicKey: 'mypublickey',
 		jwtOptions: {
-			header: { typ: 'JWT' },
+			header: { typ: 'mytyp' },
 			audience: 'myaudience',
 			issuer: 'myissuer',
-			algorithm: 'HS256',
+			algorithm: 'myalgorithm',
 			expiresIn: '1h',
 		},
 	};
@@ -28,12 +26,12 @@ jest.mock('../config', () => {
 
 const buildAuthConfig = () => {
 	return {
-		secret: 'mysecret',
+		publicKey: 'mypublickey',
 		jwtOptions: {
-			header: { typ: 'JWT' },
+			header: { typ: 'mytyp' },
 			audience: 'myaudience',
 			issuer: 'myissuer',
-			algorithm: 'HS256',
+			algorithm: 'myalgorithm',
 			expiresIn: '1h',
 		},
 	};
