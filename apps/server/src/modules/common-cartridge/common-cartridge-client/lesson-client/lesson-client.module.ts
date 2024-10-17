@@ -1,11 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { LessonsClientConfig } from './lesson-client.config';
+import { LessonClientConfig } from './lesson-client.config';
 import { LessonClientAdapter } from './lesson-client.adapter';
 import { LessonApi, Configuration } from './lessons-api-client';
 
 @Module({})
-export class LessonsClientModule {
-	static register(config: LessonsClientConfig): DynamicModule {
+export class LessonClientModule {
+	static register(config: LessonClientConfig): DynamicModule {
 		const providers = [
 			LessonClientAdapter,
 			{
@@ -18,7 +18,7 @@ export class LessonsClientModule {
 		];
 
 		return {
-			module: LessonsClientModule,
+			module: LessonClientModule,
 			providers,
 			exports: [LessonClientAdapter],
 		};

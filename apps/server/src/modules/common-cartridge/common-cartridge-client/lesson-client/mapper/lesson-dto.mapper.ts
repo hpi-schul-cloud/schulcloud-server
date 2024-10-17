@@ -7,7 +7,7 @@ import {
 } from '../lessons-api-client';
 
 export class LessonDtoMapper {
-	static mapToLessonLinkedTaskDto(task: LessonLinkedTaskResponse): LessonLinkedTaskDto {
+	public static mapToLessonLinkedTaskDto(task: LessonLinkedTaskResponse): LessonLinkedTaskDto {
 		return new LessonLinkedTaskDto({
 			name: task.name,
 			description: task.description,

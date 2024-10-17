@@ -1,5 +1,5 @@
 import { ConfigurationParameters } from './lessons-api-client';
 
-export interface LessonsClientConfig extends ConfigurationParameters {
+export interface LessonClientConfig extends ConfigurationParameters {
 	basePath: string;
 }
