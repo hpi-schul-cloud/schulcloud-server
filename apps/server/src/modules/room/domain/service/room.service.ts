@@ -16,6 +16,12 @@ export class RoomService {
 		return rooms;
 	}
 
+	public async getRoomsByIds(roomIds: EntityId[], findOptions: IFindOptions<Room>): Promise<Page<Room>> {
+		const rooms: Page<Room> = await this.roomRepo.findRoomsByIds(roomIds, findOptions);
+
+		return rooms;
+	}
+
 	public async createRoom(props: RoomCreateProps): Promise<Room> {
 		const roomProps: RoomProps = {
 			id: new ObjectId().toHexString(),

@@ -9,6 +9,8 @@ export enum RoleName {
 	DEMOTEACHER = 'demoTeacher',
 	EXPERT = 'expert',
 	HELPDESK = 'helpdesk',
+	ROOM_VIEWER = 'room_viewer',
+	ROOM_EDITOR = 'room_editor',
 	STUDENT = 'student',
 	SUPERHERO = 'superhero',
 	TEACHER = 'teacher',

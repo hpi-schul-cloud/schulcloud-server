@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { RoomService } from './room.service';
+import { EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
-import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
 import { roomFactory } from '../../testing';
+import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
 import { RoomColor } from '../type';
+import { RoomService } from './room.service';
 
 describe('RoomService', () => {
 	let module: TestingModule;
@@ -145,6 +146,32 @@ describe('RoomService', () => {
 			await service.deleteRoom(room);
 
 			expect(roomRepo.delete).toHaveBeenCalledWith(room);
+		});
+	});
+
+	describe('getRoomsByIds', () => {
+		it('should return rooms for given ids', async () => {
+			const roomIds: EntityId[] = ['1', '2', '3'];
+			const mockRooms: Room[] = [
+				{ id: '1', name: 'Room 1' },
+				{ id: '2', name: 'Room 2' },
+				{ id: '3', name: 'Room 3' },
+			] as Room[];
+			const mockPage: Page<Room> = {
+				data: mockRooms,
+				total: 3,
+			};
+
+			jest.spyOn(roomRepo, 'findRoomsByIds').mockResolvedValue(mockPage);
+
+			const result = await service.getRoomsByIds(roomIds, {});
+
+			expect(roomRepo.findRoomsByIds).toHaveBeenCalledWith(roomIds, {});
+			expect(result).toEqual(mockPage);
+			expect(result.data.length).toBe(3);
+			expect(result.data[0].id).toBe('1');
+			expect(result.data[1].id).toBe('2');
+			expect(result.data[2].id).toBe('3');
 		});
 	});
 });

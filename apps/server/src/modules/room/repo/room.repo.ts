@@ -32,6 +32,26 @@ export class RoomRepo {
 		return page;
 	}
 
+	public async findRoomsByIds(roomIds: EntityId[], findOptions: IFindOptions<Room>): Promise<Page<Room>> {
+		const scope = new RoomScope();
+		scope.allowEmptyQuery(true);
+		scope.byIds(roomIds);
+
+		const options = {
+			offset: findOptions?.pagination?.skip,
+			limit: findOptions?.pagination?.limit,
+			orderBy: { name: QueryOrder.ASC },
+		};
+
+		const [entities, total] = await this.em.findAndCount(RoomEntity, scope.query, options);
+
+		const domainObjects: Room[] = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
+
+		const page = new Page<Room>(domainObjects, total);
+
+		return page;
+	}
+
 	public async findById(id: EntityId): Promise<Room> {
 		const entity = await this.em.findOneOrFail(RoomEntity, id);
 		const domainobject = RoomDomainMapper.mapEntityToDo(entity);

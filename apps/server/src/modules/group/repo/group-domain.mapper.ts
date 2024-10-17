@@ -9,12 +9,14 @@ import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmb
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
 	[GroupEntityTypes.COURSE]: GroupTypes.COURSE,
+	[GroupEntityTypes.ROOM]: GroupTypes.ROOM,
 	[GroupEntityTypes.OTHER]: GroupTypes.OTHER,
 };
 
 export const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntityTypes> = {
 	[GroupTypes.CLASS]: GroupEntityTypes.CLASS,
 	[GroupTypes.COURSE]: GroupEntityTypes.COURSE,
+	[GroupTypes.ROOM]: GroupEntityTypes.ROOM,
 	[GroupTypes.OTHER]: GroupEntityTypes.OTHER,
 };
 

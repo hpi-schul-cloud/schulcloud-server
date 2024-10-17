@@ -130,4 +130,44 @@ describe('RoomRepo', () => {
 			expect(remainingCount).toBe(0);
 		});
 	});
+
+	describe('findRoomsByIds', () => {
+		const setup = async () => {
+			const roomEntities = roomEntityFactory.buildListWithId(5);
+			await em.persistAndFlush(roomEntities);
+			em.clear();
+
+			const rooms = roomEntities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
+			const roomIds = rooms.map((room) => room.id);
+
+			return { rooms, roomIds };
+		};
+
+		it('should return rooms with matching ids', async () => {
+			const { roomIds } = await setup();
+
+			const result = await repo.findRoomsByIds(roomIds.slice(0, 3), {});
+
+			expect(result.data.length).toBe(3);
+			expect(result.data.map((room) => room.id)).toEqual(expect.arrayContaining(roomIds.slice(0, 3)));
+		});
+
+		it('should return paginated results', async () => {
+			const { roomIds } = await setup();
+
+			const result = await repo.findRoomsByIds(roomIds, { pagination: { skip: 2, limit: 2 } });
+
+			expect(result.data.length).toBe(2);
+			expect(result.total).toBe(5);
+		});
+
+		it('should return empty array if no matching ids', async () => {
+			await setup();
+
+			const result = await repo.findRoomsByIds(['nonexistent-id'], {});
+
+			expect(result.data).toEqual([]);
+			expect(result.total).toBe(0);
+		});
+	});
 });
