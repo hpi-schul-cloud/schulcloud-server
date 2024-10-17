@@ -189,6 +189,16 @@
 			"default": "1",
 			"description": "The amount of days for which the sync fetches schools from the TSP."
 		},
+		"TSP_SYNC_DATA_LIMIT": {
+			"type": "number",
+			"default": "150",
+			"description": "The amount of school data updates the sync handles at once."
+		},
+		"TSP_SYNC_DATA_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches school data from the TSP."
+		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
 			"default": false,
