@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { jwtPayloadFactory } from '@shared/testing';
 import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
@@ -17,6 +18,10 @@ describe('jwt strategy', () => {
 				{
 					provide: JwtValidationAdapter,
 					useValue: createMock<JwtValidationAdapter>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();
