@@ -151,5 +151,6 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		createdAt: new Date(2020, 1, 1),
 		restrictToContexts: undefined,
 		isPreferred: false,
+		iconName: undefined,
 	};
 });
