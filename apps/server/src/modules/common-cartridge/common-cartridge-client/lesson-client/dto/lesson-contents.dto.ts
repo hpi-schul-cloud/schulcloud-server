@@ -1,7 +1,6 @@
 export class LessonContentDto {
 	content: object;
 
-
 	title: string;
 
 	component: LessonContentDtoComponent;
