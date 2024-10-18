@@ -20,8 +20,6 @@ const h5pEditorConfig: H5PEditorConfig = {
 	...authorizationClientConfig,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	ADMIN_API__ALLOWED_API_KEYS: [],
-	JWT_AUD: Configuration.get('JWT_AUD') as string,
-	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
 	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
 };
 
