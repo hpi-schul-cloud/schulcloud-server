@@ -92,6 +92,8 @@ export class BoardNodeCopyService {
 			case BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT:
 				result = await this.copyMediaExternalToolElement(boardNode as MediaExternalToolElement, context);
 				break;
+			case BoardNodeType.APPOINTMENT_FINDER_ELEMENT:
+				throw new Error('AppointmentFinderElement is not implemented');
 			default:
 				/* istanbul ignore next */
 				handleNonExhaustiveSwitch(type);

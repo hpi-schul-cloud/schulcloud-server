@@ -3,6 +3,7 @@ import { sanitizeRichText } from '@shared/controller';
 import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
+	AppointmentFinderContentBody,
 	DrawingContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
@@ -12,9 +13,11 @@ import {
 } from '../../controller/dto';
 import {
 	AnyContentElement,
+	AppointmentFinderElement,
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	isAppointmentFinderElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
@@ -45,6 +48,8 @@ export class ContentElementUpdateService {
 			this.updateSubmissionContainerElement(element, content);
 		} else if (isExternalToolElement(element) && content instanceof ExternalToolContentBody) {
 			this.updateExternalToolElement(element, content);
+		} else if (isAppointmentFinderElement(element) && content instanceof AppointmentFinderContentBody) {
+			this.updateAppointmentFinderElement(element, content);
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
@@ -94,5 +99,10 @@ export class ContentElementUpdateService {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			element.contextExternalToolId = content.contextExternalToolId;
 		}
+	}
+
+	updateAppointmentFinderElement(element: AppointmentFinderElement, content: AppointmentFinderContentBody): void {
+		element.appointmentFinderId = content.appointmentFinderId;
+		element.adminId = content.adminId;
 	}
 }
