@@ -1,4 +1,11 @@
 import { DeepPartial } from '@mikro-orm/core';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, User } from '@shared/domain/entity';
@@ -11,13 +18,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-} from '@src/modules/authorization';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';

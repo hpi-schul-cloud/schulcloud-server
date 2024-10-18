@@ -6,7 +6,7 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 	Rule,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
 import { TaskRule } from './task.rule';
 
 @Injectable()

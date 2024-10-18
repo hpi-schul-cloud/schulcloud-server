@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo';
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderServiceGeneric,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { TeamEntity } from '@shared/domain/entity';
+import { TeamsRepo } from '@shared/repo';
 
 @Injectable()
 export class TeamAuthorisableService implements AuthorizationLoaderServiceGeneric<TeamEntity> {

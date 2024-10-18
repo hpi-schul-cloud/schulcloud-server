@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
-import { groupFactory, roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Action,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
-} from '@src/modules/authorization';
-import { Group } from '@src/modules/group';
-import { ObjectId } from '@mikro-orm/mongodb';
+} from '@modules/authorization';
+import { Group } from '@modules/group';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { groupFactory, roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { GroupRule } from './group.rule';
 
 describe('GroupRule', () => {

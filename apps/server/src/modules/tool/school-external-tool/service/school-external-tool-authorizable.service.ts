@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolRepo } from '@shared/repo';
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderServiceGeneric,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { SchoolExternalToolRepo } from '@shared/repo';
 import { SchoolExternalTool } from '../domain';
 
 @Injectable()

@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationInjectionService, AuthorizableReferenceType } from '@src/modules/authorization';
 import { ReferenceLoader } from './reference.loader';
 
 describe('reference.loader', () => {

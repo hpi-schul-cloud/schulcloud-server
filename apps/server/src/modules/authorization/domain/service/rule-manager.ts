@@ -10,7 +10,7 @@ export class RuleManager {
 	constructor(private readonly authorizationInjectionService: AuthorizationInjectionService) {}
 
 	public selectRule(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): Rule {
-		const rules = [...this.authorizationInjectionService.getAuthorizationRules()];
+		const rules = this.authorizationInjectionService.getAuthorizationRules();
 		const selectedRules = rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 

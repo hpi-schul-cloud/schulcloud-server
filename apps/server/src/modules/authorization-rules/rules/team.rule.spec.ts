@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, teamFactory, userFactory } from '@shared/testing';
 import {
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
+import { roleFactory, setupEntities, teamFactory, userFactory } from '@shared/testing';
 import { TeamRule } from './team.rule';
 
 describe('TeamRule', () => {

@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationReferenceService } from '@src/modules/authorization-reference';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportUc } from './course-export.uc';

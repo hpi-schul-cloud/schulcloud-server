@@ -1,14 +1,14 @@
 import { DeepMocked } from '@golevelup/ts-jest';
-import { instanceFactory } from '@modules/instance/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { setupEntities, userFactory } from '@shared/testing';
 import {
 	Action,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { instanceFactory } from '@modules/instance/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities, userFactory } from '@shared/testing';
 import { InstanceRule } from './instance.rule';
 
 describe(InstanceRule.name, () => {

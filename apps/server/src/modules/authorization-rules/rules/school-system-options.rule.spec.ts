@@ -1,5 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { SchoolSystemOptions } from '@modules/legacy-school';
 import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,11 +17,6 @@ import {
 	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import {
-	AuthorizationContextBuilder,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-} from '@src/modules/authorization';
 import { SchoolSystemOptionsRule } from './school-system-options.rule';
 
 describe(SchoolSystemOptionsRule.name, () => {

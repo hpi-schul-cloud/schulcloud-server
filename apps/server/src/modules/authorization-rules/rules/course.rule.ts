@@ -1,14 +1,14 @@
-import { Course } from '@modules/learnroom/domain';
-import { Injectable } from '@nestjs/common';
-import { Course as CourseEntity, User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
 import {
 	Action,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 	Rule,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { Course } from '@modules/learnroom/domain';
+import { Injectable } from '@nestjs/common';
+import { Course as CourseEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class CourseRule implements Rule<CourseEntity | Course> {

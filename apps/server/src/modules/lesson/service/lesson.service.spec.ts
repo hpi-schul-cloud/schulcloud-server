@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -15,7 +16,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizableReferenceType, AuthorizationInjectionService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 

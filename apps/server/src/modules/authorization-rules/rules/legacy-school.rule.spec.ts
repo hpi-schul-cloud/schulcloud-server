@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { legacySchoolDoFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
 import { LegacySchoolRule } from './legacy-school.rule';
 
 describe('LegacySchoolRule', () => {

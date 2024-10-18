@@ -5,7 +5,7 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 	AuthorizableReferenceType,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
 import { ReferenceLoader } from './reference.loader';
 
 /**

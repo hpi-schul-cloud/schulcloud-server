@@ -1,10 +1,10 @@
-import { AuthorizationContextBuilder, AuthorizableReferenceType } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationReferenceService } from '@src/modules/authorization-reference/domain';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 

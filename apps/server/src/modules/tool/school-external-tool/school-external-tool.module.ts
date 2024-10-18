@@ -1,5 +1,5 @@
+import { AuthorizationModule } from '@modules/authorization';
 import { forwardRef, Module } from '@nestjs/common';
-import { AuthorizationModule } from '@src/modules/authorization';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolRule } from './authorization/school-external-tool.rule';

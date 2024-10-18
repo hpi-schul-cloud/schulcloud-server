@@ -1,9 +1,9 @@
+import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { TeamsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { CqrsModule } from '@nestjs/cqrs';
 import { TeamAuthorisableService, TeamService } from './service';
-import { AuthorizationModule } from '../authorization';
 
 @Module({
 	imports: [CqrsModule, LoggerModule, AuthorizationModule],

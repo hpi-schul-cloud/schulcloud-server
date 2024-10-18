@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { Task, User } from '@shared/domain/entity';
 import {
 	Action,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 	Rule,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { Task, User } from '@shared/domain/entity';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 

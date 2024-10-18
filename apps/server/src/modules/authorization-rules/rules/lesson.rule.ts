@@ -1,12 +1,12 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
 import {
 	Action,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 	Rule,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 

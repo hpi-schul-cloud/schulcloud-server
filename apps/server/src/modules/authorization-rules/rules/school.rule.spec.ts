@@ -1,13 +1,13 @@
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { schoolFactory } from '@modules/school/testing/school.factory';
-import { Test, TestingModule } from '@nestjs/testing';
-import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
+import { schoolFactory } from '@modules/school/testing/school.factory';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface/permission.enum';
+import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {

@@ -1,11 +1,6 @@
+import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import {
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@src/modules/authorization';
 
 @Injectable()
 export class UserRule implements Rule<User> {

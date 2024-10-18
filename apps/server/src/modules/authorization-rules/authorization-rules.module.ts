@@ -18,7 +18,7 @@ import {
 } from './rules';
 
 @Module({
-	imports: [AuthorizationModule /* FeathersModule */ /* LoggerModule */],
+	imports: [AuthorizationModule],
 	providers: [
 		// rules
 		CourseGroupRule,

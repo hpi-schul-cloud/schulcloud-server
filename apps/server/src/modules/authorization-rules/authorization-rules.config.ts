@@ -1,3 +1,2 @@
-import { LoggerConfig } from '@src/core/logger';
-
-export interface AuthorizationRulesConfig extends LoggerConfig {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface AuthorizationRulesConfig {}

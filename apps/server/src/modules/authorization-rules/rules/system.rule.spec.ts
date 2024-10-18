@@ -1,4 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+	AuthorizationContextBuilder,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
 import { systemFactory } from '@modules/system/testing';
@@ -6,11 +11,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { schoolEntityFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
-import {
-	AuthorizationContextBuilder,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-} from '@src/modules/authorization';
 import { SystemRule } from './system.rule';
 
 describe(SystemRule.name, () => {

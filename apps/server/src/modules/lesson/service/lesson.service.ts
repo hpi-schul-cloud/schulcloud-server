@@ -21,7 +21,7 @@ import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderService,
-} from '@src/modules/authorization';
+} from '@modules/authorization';
 import { LessonRepo } from '../repository';
 
 @Injectable()
