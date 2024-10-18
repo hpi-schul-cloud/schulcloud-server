@@ -1,4 +1,5 @@
 import { EncryptionModule } from '@infra/encryption';
+import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
@@ -20,7 +21,15 @@ import {
 } from './service';
 
 @Module({
-	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule, InstanceModule],
+	imports: [
+		CommonToolModule,
+		LoggerModule,
+		OauthProviderServiceModule,
+		EncryptionModule,
+		HttpModule,
+		InstanceModule,
+		AuthorizationModule,
+	],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
@@ -40,7 +49,6 @@ import {
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		DatasheetPdfService,
-		ExternalToolAuthorizableService,
 		ExternalToolImageService,
 	],
 })

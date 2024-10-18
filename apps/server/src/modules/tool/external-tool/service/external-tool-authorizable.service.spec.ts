@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalToolRepo } from '@shared/repo';
 import { externalToolFactory } from '../testing';
@@ -9,6 +10,7 @@ describe(ExternalToolAuthorizableService.name, () => {
 	let service: ExternalToolAuthorizableService;
 
 	let externalToolRepo: DeepMocked<ExternalToolRepo>;
+	let authorizationInjectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -18,11 +20,13 @@ describe(ExternalToolAuthorizableService.name, () => {
 					provide: ExternalToolRepo,
 					useValue: createMock<ExternalToolRepo>(),
 				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		service = module.get(ExternalToolAuthorizableService);
 		externalToolRepo = module.get(ExternalToolRepo);
+		authorizationInjectionService = module.get(AuthorizationInjectionService);
 	});
 
 	afterAll(async () => {
@@ -31,6 +35,12 @@ describe(ExternalToolAuthorizableService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('constructor', () => {
+		it('should inject itself into the AuthorizationInjectionService', () => {
+			expect(authorizationInjectionService.getReferenceLoader(AuthorizableReferenceType.ExternalTool)).toEqual(service);
+		});
 	});
 
 	describe('findById', () => {

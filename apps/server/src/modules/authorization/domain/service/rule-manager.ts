@@ -2,71 +2,15 @@ import { Injectable, InternalServerErrorException, NotImplementedException } fro
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import {
-	ContextExternalToolRule,
-	CourseGroupRule,
-	CourseRule,
-	GroupRule,
-	InstanceRule,
-	LegacySchoolRule,
-	LessonRule,
-	SchoolExternalToolRule,
-	SchoolRule,
-	SchoolSystemOptionsRule,
-	SubmissionRule,
-	SystemRule,
-	TaskRule,
-	TeamRule,
-	UserLoginMigrationRule,
-	UserRule,
-} from '../rules';
-import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 
 @Injectable()
 export class RuleManager {
-	constructor(
-		contextExternalToolRule: ContextExternalToolRule,
-		courseGroupRule: CourseGroupRule,
-		courseRule: CourseRule,
-		groupRule: GroupRule,
-		legaySchoolRule: LegacySchoolRule,
-		lessonRule: LessonRule,
-		schoolExternalToolRule: SchoolExternalToolRule,
-		schoolRule: SchoolRule,
-		schoolSystemOptionsRule: SchoolSystemOptionsRule,
-		submissionRule: SubmissionRule,
-		systemRule: SystemRule,
-		taskRule: TaskRule,
-		teamRule: TeamRule,
-		userLoginMigrationRule: UserLoginMigrationRule,
-		userRule: UserRule,
-		externalToolRule: ExternalToolRule,
-		instanceRule: InstanceRule,
-		private readonly authorizationInjectionService: AuthorizationInjectionService
-	) {
-		this.authorizationInjectionService.injectAuthorizationRule(contextExternalToolRule);
-		this.authorizationInjectionService.injectAuthorizationRule(courseGroupRule);
-		this.authorizationInjectionService.injectAuthorizationRule(courseRule);
-		this.authorizationInjectionService.injectAuthorizationRule(groupRule);
-		this.authorizationInjectionService.injectAuthorizationRule(legaySchoolRule);
-		this.authorizationInjectionService.injectAuthorizationRule(lessonRule);
-		this.authorizationInjectionService.injectAuthorizationRule(schoolExternalToolRule);
-		this.authorizationInjectionService.injectAuthorizationRule(schoolRule);
-		this.authorizationInjectionService.injectAuthorizationRule(schoolSystemOptionsRule);
-		this.authorizationInjectionService.injectAuthorizationRule(submissionRule);
-		this.authorizationInjectionService.injectAuthorizationRule(systemRule);
-		this.authorizationInjectionService.injectAuthorizationRule(taskRule);
-		this.authorizationInjectionService.injectAuthorizationRule(teamRule);
-		this.authorizationInjectionService.injectAuthorizationRule(userLoginMigrationRule);
-		this.authorizationInjectionService.injectAuthorizationRule(userRule);
-		this.authorizationInjectionService.injectAuthorizationRule(externalToolRule);
-		this.authorizationInjectionService.injectAuthorizationRule(instanceRule);
-	}
+	constructor(private readonly authorizationInjectionService: AuthorizationInjectionService) {}
 
 	public selectRule(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): Rule {
-		const rules = [...this.authorizationInjectionService.getAuthorizationRules()];
+		const rules = this.authorizationInjectionService.getAuthorizationRules();
 		const selectedRules = rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 

@@ -1,5 +1,5 @@
 import { AuthorizationModule } from '@modules/authorization';
-import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LessonModule } from '@modules/lesson';
