@@ -2,9 +2,8 @@ import { Instance } from '@modules/instance';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { Action } from '@infra/authorization-client';
 import { AuthorizationHelper } from '../service/authorization.helper';
-import { AuthorizationContext, Rule } from '../type';
+import { Action, AuthorizationContext, Rule } from '../type';
 
 @Injectable()
 export class InstanceRule implements Rule<Instance> {
@@ -20,7 +19,7 @@ export class InstanceRule implements Rule<Instance> {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
 		// As temporary solution until the user with write access to instance added as group, we must check the role.
-		if (context.action === Action.WRITE) {
+		if (context.action === Action.write) {
 			const hasRole = this.authorizationHelper.hasRole(user, RoleName.SUPERHERO);
 
 			return hasPermission && hasRole;
