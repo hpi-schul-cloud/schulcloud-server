@@ -1,7 +1,6 @@
 export class LessonContentDto {
 	content: object;
 
-	contentId: string;
 
 	title: string;
 
@@ -11,7 +10,6 @@ export class LessonContentDto {
 
 	constructor(props: LessonContentDto) {
 		this.content = props.content;
-		this.contentId = props.contentId;
 		this.title = props.title;
 		this.component = props.component;
 		this.hidden = props.hidden;

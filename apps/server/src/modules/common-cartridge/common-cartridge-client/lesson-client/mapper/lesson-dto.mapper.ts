@@ -52,7 +52,6 @@ export class LessonDtoMapper {
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse) {
 		return new LessonContentDto({
 			content: lessonContentResponse.content,
-			contentId: lessonContentResponse.id,
 			title: lessonContentResponse.title,
 			component: lessonContentResponse.component,
 			hidden: lessonContentResponse.hidden,
