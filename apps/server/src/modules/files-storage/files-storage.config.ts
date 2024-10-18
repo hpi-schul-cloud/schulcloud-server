@@ -2,9 +2,10 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { CoreModuleConfig } from '@src/core';
+import { AuthGuardConfig } from '@src/infra/auth-guard';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
-export interface FileStorageConfig extends CoreModuleConfig, AuthorizationClientConfig {
+export interface FileStorageConfig extends CoreModuleConfig, AuthorizationClientConfig, AuthGuardConfig {
 	MAX_FILE_SIZE: number;
 	MAX_SECURITY_CHECK_FILE_SIZE: number;
 	USE_STREAM_TO_ANTIVIRUS: boolean;
@@ -19,12 +20,18 @@ export const authorizationClientConfig: AuthorizationClientConfig = {
 	basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 };
 
+const authGuardConfig: AuthGuardConfig = {
+	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string).split(','),
+	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
+};
+
 const fileStorageConfig: FileStorageConfig = {
 	MAX_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
 	MAX_SECURITY_CHECK_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
 	USE_STREAM_TO_ANTIVIRUS: Configuration.get('FILES_STORAGE__USE_STREAM_TO_ANTIVIRUS') as boolean,
 	...authorizationClientConfig,
 	...defaultConfig,
+	...authGuardConfig,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 };
 

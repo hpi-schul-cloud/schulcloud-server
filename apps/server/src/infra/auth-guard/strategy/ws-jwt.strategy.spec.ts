@@ -1,41 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
-import { jwtPayloadFactory, setupEntities } from '@shared/testing';
+import { jwtPayloadFactory } from '@shared/testing';
 import { JwtValidationAdapter } from '../adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
-
-jest.mock('../config', () => {
-	const authConfig = {
-		secret: 'mysecret',
-		jwtOptions: {
-			header: { typ: 'JWT' },
-			audience: 'myaudience',
-			issuer: 'myissuer',
-			algorithm: 'HS256',
-			expiresIn: '1h',
-		},
-	};
-
-	return {
-		authConfig,
-	};
-});
-
-const buildAuthConfig = () => {
-	return {
-		secret: 'mysecret',
-		jwtOptions: {
-			header: { typ: 'JWT' },
-			audience: 'myaudience',
-			issuer: 'myissuer',
-			algorithm: 'HS256',
-			expiresIn: '1h',
-		},
-	};
-};
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;
@@ -43,15 +12,16 @@ describe('jwt strategy', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
-			imports: [PassportModule, JwtModule.register(buildAuthConfig())],
 			providers: [
 				WsJwtStrategy,
 				{
 					provide: JwtValidationAdapter,
 					useValue: createMock<JwtValidationAdapter>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();

@@ -1,4 +1,4 @@
-import { authConfig, AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { AccountModule } from '@modules/account';
@@ -6,11 +6,13 @@ import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
-import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { SignOptions } from 'jsonwebtoken';
+import { AuthenticationConfig } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -18,25 +20,38 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
-const { algorithm, audience, expiresIn, issuer, header } = authConfig.jwtOptions;
-const signOptions: SignOptions = {
-	algorithm,
-	audience,
-	expiresIn,
-	issuer,
-	header: { ...header, alg: algorithm },
-};
-const jwtModuleOptions: JwtModuleOptions = {
-	secret: authConfig.secret,
-	signOptions,
-	verifyOptions: signOptions,
+const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) => {
+	const algorithm = 'RS256';
+
+	const signOptions: SignOptions = {
+		algorithm,
+		audience: configService.get<string>('JWT_AUD'),
+		expiresIn: configService.get<string>('JWT_LIFETIME'),
+		issuer: 'feathers',
+		header: { typ: 'JWT', alg: algorithm },
+	};
+
+	const privateKey = configService.get<string>('JWT_PRIVATE_KEY');
+	const publicKey = configService.get<string>('JWT_PUBLIC_KEY');
+
+	const options = {
+		privateKey,
+		publicKey,
+		signOptions,
+		verifyOptions: signOptions,
+	};
+
+	return options;
 };
 
 @Module({
 	imports: [
 		LoggerModule,
 		PassportModule,
-		JwtModule.register(jwtModuleOptions),
+		JwtModule.registerAsync({
+			useFactory: createJwtOptions,
+			inject: [ConfigService],
+		}),
 		AccountModule,
 		SystemModule,
 		OauthModule,
