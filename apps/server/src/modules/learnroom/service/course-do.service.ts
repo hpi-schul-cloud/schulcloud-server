@@ -4,14 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	type Course,
-	COURSE_REPO,
-	CourseAlreadySynchronizedLoggableException,
-	CourseFilter,
-	CourseNotSynchronizedLoggableException,
-	CourseRepo,
-} from '../domain';
+import { COURSE_REPO, CourseFilter, CourseRepo, type Course } from '../domain';
 
 @Injectable()
 export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course> {
@@ -33,26 +26,6 @@ export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course
 		const courses: Course[] = await this.courseRepo.findBySyncedGroup(group);
 
 		return courses;
-	}
-
-	public async stopSynchronization(course: Course): Promise<void> {
-		if (!course.syncedWithGroup) {
-			throw new CourseNotSynchronizedLoggableException(course.id);
-		}
-
-		course.syncedWithGroup = undefined;
-
-		await this.courseRepo.save(course);
-	}
-
-	public async startSynchronization(course: Course, group: Group): Promise<void> {
-		if (course.syncedWithGroup) {
-			throw new CourseAlreadySynchronizedLoggableException(course.id);
-		}
-
-		course.syncedWithGroup = group.id;
-
-		await this.courseRepo.save(course);
 	}
 
 	public async getCourseInfo(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
