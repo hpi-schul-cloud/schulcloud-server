@@ -1,4 +1,9 @@
-import { RobjExportSchule, TspClientFactory } from '@infra/tsp-client';
+import {
+	RobjExportLehrerMigration,
+	RobjExportSchuelerMigration,
+	RobjExportSchule,
+	TspClientFactory,
+} from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
@@ -106,6 +111,28 @@ export class TspSyncService {
 		const federalStateEntity = await this.federalStateService.findFederalStateByName(FederalStateNames.THUERINGEN);
 		this.federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 		return this.federalState;
+	}
+
+	public async fetchTspTeachers(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+		const teachers: RobjExportLehrerMigration[] = (await client.exportLehrerListMigration()).data;
+
+		return teachers;
+	}
+
+	public async fetchTspStudents(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+		const students: RobjExportSchuelerMigration[] = (await client.exportSchuelerListMigration()).data;
+
+		return students;
 	}
 
 	private formatChangeDate(daysToFetch: number): string {
