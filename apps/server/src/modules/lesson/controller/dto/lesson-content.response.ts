@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import {
 	ComponentEtherpadProperties,
@@ -11,6 +11,14 @@ import {
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
 
+@ApiExtraModels(
+	ComponentTextProperties,
+	ComponentEtherpadProperties,
+	ComponentGeogebraProperties,
+	ComponentInternalProperties,
+	ComponentLernstoreProperties,
+	ComponentNexboardProperties
+)
 export class LessonContentResponse {
 	constructor(lessonContent: ComponentProperties) {
 		this.id = lessonContent._id;
@@ -22,7 +30,17 @@ export class LessonContentResponse {
 		this.content = lessonContent.content;
 	}
 
-	@ApiProperty()
+	@ApiProperty({
+		description: '',
+		oneOf: [
+			{ $ref: getSchemaPath(ComponentTextProperties) },
+			{ $ref: getSchemaPath(ComponentEtherpadProperties) },
+			{ $ref: getSchemaPath(ComponentGeogebraProperties) },
+			{ $ref: getSchemaPath(ComponentInternalProperties) },
+			{ $ref: getSchemaPath(ComponentLernstoreProperties) },
+			{ $ref: getSchemaPath(ComponentNexboardProperties) },
+		],
+	})
 	content?:
 		| ComponentTextProperties
 		| ComponentEtherpadProperties
