@@ -19,7 +19,7 @@ export class CardResponseDto {
 		id: string,
 		title: string,
 		height: number,
-		elements: Array<CardResponseElementsInnerDto>,
+		elements: CardResponseElementsInnerDto[],
 		visibilitySettings: VisibilitySettingsResponseDto,
 		timeStamps: TimestampResponseDto
 	) {

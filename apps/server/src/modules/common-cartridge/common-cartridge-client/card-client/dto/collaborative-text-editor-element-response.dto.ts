@@ -10,7 +10,7 @@ export class CollaborativeTextEditorElementResponseDto {
 
 	content: object;
 
-	constructor(id: string, type: ContentElementType, timestamps: TimestampResponseDto, content: object) {
+	constructor(id: string, type: ContentElementType, content: object, timestamps: TimestampResponseDto) {
 		this.id = id;
 		this.type = type;
 		this.timestamps = timestamps;

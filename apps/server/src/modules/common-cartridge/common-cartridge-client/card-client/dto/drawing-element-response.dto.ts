@@ -14,8 +14,8 @@ export class DrawingElementResponseDto {
 	constructor(
 		id: string,
 		type: ContentElementType,
-		timestamps: TimestampResponseDto,
-		content: DrawingElementContentDto
+		content: DrawingElementContentDto,
+		timestamps: TimestampResponseDto
 	) {
 		this.id = id;
 		this.type = type;
