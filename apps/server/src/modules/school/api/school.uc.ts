@@ -16,8 +16,7 @@ import {
 } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolUserListResponse } from './dto/response/school-user.response';
-import { SchoolResponseMapper, SystemResponseMapper } from './mapper';
-import { SchoolUserResponseMapper } from './mapper/school-user.response.mapper';
+import { SchoolResponseMapper, SystemResponseMapper, SchoolUserResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
 
 @Injectable()
