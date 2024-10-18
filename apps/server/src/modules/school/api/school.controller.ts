@@ -2,10 +2,12 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
+import { PaginationParams } from '@shared/controller';
 import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
+import { SchoolUserListResponse } from './dto/response/school-user.response';
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
@@ -90,5 +92,16 @@ export class SchoolController {
 		@CurrentUser() user: ICurrentUser
 	): Promise<void> {
 		await this.schoolUc.removeSystemFromSchool(urlParams.schoolId, urlParams.systemId, user.userId);
+	}
+
+	@Get('/:schoolId/teachers')
+	@JwtAuthentication()
+	public async getTeachers(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser,
+		@Query() pagination: PaginationParams
+	): Promise<SchoolUserListResponse> {
+		const res = await this.schoolUc.getSchoolTeachers(urlParams.schoolId, user.userId, pagination);
+		return res;
 	}
 }
