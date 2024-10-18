@@ -1,6 +1,4 @@
 export class LessonMaterialsDto {
-	_id: string;
-
 	materialsId: string;
 
 	title: string;
@@ -16,7 +14,6 @@ export class LessonMaterialsDto {
 	merlinReference: string;
 
 	constructor(props: LessonMaterialsDto) {
-		this._id = props._id;
 		this.materialsId = props.materialsId;
 		this.title = props.title;
 		this.relatedResources = props.relatedResources;

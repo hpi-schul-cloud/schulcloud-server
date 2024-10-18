@@ -2,8 +2,6 @@ import { LessonContentDto } from './lesson-contents.dto';
 import { LessonMaterialsDto } from './lesson-materials.dto';
 
 export class LessonDto {
-	_id: string;
-
 	lessonId: string;
 
 	name: string;
@@ -21,7 +19,6 @@ export class LessonDto {
 	materials: LessonMaterialsDto[];
 
 	constructor(props: LessonDto) {
-		this._id = props._id;
 		this.lessonId = props.lessonId;
 		this.name = props.name;
 		this.courseId = props.courseId;

@@ -11,6 +11,7 @@ import { CoursesClientModule } from './common-cartridge-client/course-client';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
+import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 
 @Module({
 	imports: [
@@ -31,6 +32,9 @@ import { CourseRoomsModule } from './common-cartridge-client/room-client';
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 		CourseRoomsModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+		LessonClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 	],

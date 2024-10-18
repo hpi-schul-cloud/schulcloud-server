@@ -26,7 +26,6 @@ export class LessonDtoMapper {
 
 	public static mapToLessonDto(lessonResponse: LessonResponse): LessonDto {
 		return new LessonDto({
-			_id: lessonResponse._id,
 			lessonId: lessonResponse.id,
 			name: lessonResponse.name,
 			courseId: lessonResponse.courseId,
@@ -40,7 +39,6 @@ export class LessonDtoMapper {
 
 	private static mapToLessonMaterialDto(materialResponse: MaterialResponse): LessonMaterialsDto {
 		return new LessonMaterialsDto({
-			_id: materialResponse._id,
 			materialsId: materialResponse.id,
 			title: materialResponse.title,
 			relatedResources: materialResponse.relatedResources.map((resource) => resource),
@@ -54,7 +52,6 @@ export class LessonDtoMapper {
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse) {
 		return new LessonContentDto({
 			content: lessonContentResponse.content,
-			_id: lessonContentResponse._id,
 			contentId: lessonContentResponse.id,
 			title: lessonContentResponse.title,
 			component: lessonContentResponse.component,
