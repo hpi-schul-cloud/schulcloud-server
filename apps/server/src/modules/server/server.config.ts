@@ -188,6 +188,7 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
 	JWT_EXTENDED_TIMEOUT_SECONDS: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS') as number,
+	JWT_AUD: Configuration.get('JWT_AUD') as string,
 
 	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node

@@ -10,5 +10,6 @@ export interface AuthenticationConfig extends AccountConfig, XApiKeyConfig {
 	JWT_TIMEOUT_SECONDS: number;
 	JWT_LIFETIME_SUPPORT_SECONDS: number;
 	JWT_EXTENDED_TIMEOUT_SECONDS: number;
+	JWT_AUD: string;
 	LOGIN_BLOCK_TIME: number;
 }
