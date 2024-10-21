@@ -1,5 +1,4 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -7,8 +6,8 @@ import { RoomMember } from '../../do/room-member.do';
 
 export interface RoomMemberEntityProps extends AuthorizableObject {
 	id: EntityId;
-	roomId: ObjectId;
-	userGroupId: ObjectId;
+	roomId: EntityId;
+	userGroupId: EntityId;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -17,11 +16,11 @@ export interface RoomMemberEntityProps extends AuthorizableObject {
 export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMemberEntityProps {
 	@Property()
 	@Index()
-	roomId!: ObjectId;
+	roomId!: EntityId;
 
 	@Property()
 	@Index()
-	userGroupId!: ObjectId;
+	userGroupId!: EntityId;
 
 	@Property({ persist: false })
 	domainObject: RoomMember | undefined;
