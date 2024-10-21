@@ -4,8 +4,11 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { groupFactory } from '@shared/testing';
+import { groupFactory, roleDtoFactory, userDoFactory } from '@shared/testing';
+import { RoleService } from '@src/modules/role';
+import { UserService } from '@src/modules/user';
 import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
@@ -13,7 +16,8 @@ import { GroupService } from './group.service';
 describe('GroupService', () => {
 	let module: TestingModule;
 	let service: GroupService;
-
+	let roleService: DeepMocked<RoleService>;
+	let userService: DeepMocked<UserService>;
 	let groupRepo: DeepMocked<GroupRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -26,6 +30,14 @@ describe('GroupService', () => {
 					useValue: createMock<GroupRepo>(),
 				},
 				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
+				{
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
 				},
@@ -33,6 +45,8 @@ describe('GroupService', () => {
 		}).compile();
 
 		service = module.get(GroupService);
+		roleService = module.get(RoleService);
+		userService = module.get(UserService);
 		groupRepo = module.get(GroupRepo);
 		eventBus = module.get(EventBus);
 	});
@@ -421,6 +435,59 @@ describe('GroupService', () => {
 				expect(groupRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({ name: 'name', type: GroupTypes.CLASS, organizationId: 'schoolId' })
 				);
+			});
+		});
+	});
+
+	describe('addUserToGroup', () => {
+		const setup = () => {
+			const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+			roleService.findByName.mockResolvedValue(roleDto);
+
+			const userDo = userDoFactory.build();
+			userService.findById.mockResolvedValue(userDo);
+
+			const group = groupFactory.build();
+			groupRepo.findGroupById.mockResolvedValue(group);
+
+			return { group, userDo, roleDto };
+		};
+
+		describe('when adding a user to a group', () => {
+			it('should call roleService.findByName', async () => {
+				setup();
+				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
+
+				expect(roleService.findByName).toHaveBeenCalledWith(RoleName.STUDENT);
+			});
+
+			it('should call userService.findById', async () => {
+				setup();
+				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
+
+				expect(userService.findById).toHaveBeenCalledWith('userId');
+			});
+
+			it('should call groupRepo.findGroupById', async () => {
+				setup();
+				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
+
+				expect(groupRepo.findGroupById).toHaveBeenCalledWith('groupId');
+			});
+
+			it('should call group.addUser', async () => {
+				const { group, userDo, roleDto } = setup();
+				jest.spyOn(group, 'addUser');
+				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
+
+				expect(group.addUser).toHaveBeenCalledWith(expect.objectContaining({ userId: userDo.id, roleId: roleDto.id }));
+			});
+
+			it('should call groupRepo.save', async () => {
+				const { group } = setup();
+				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
+
+				expect(groupRepo.save).toHaveBeenCalledWith(group);
 			});
 		});
 	});
