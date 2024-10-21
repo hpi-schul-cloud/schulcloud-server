@@ -1,7 +1,7 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 module.exports = {
-	audience: Configuration.get('JWT_AUD'),
+	audience: Configuration.get('SC_DOMAIN'),
 	authConfig: {
 		entity: 'account', // name of the found user in the request context
 		// entityId and service are never queried, but need to be provided otherwise the server doesn't start
@@ -16,8 +16,8 @@ module.exports = {
 		authStrategies: ['jwt', 'tsp', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'JWT' },
-			audience: Configuration.get('JWT_AUD'),
-			issuer: 'feathers',
+			audience: Configuration.get('SC_DOMAIN'),
+			issuer: Configuration.get('SC_DOMAIN'),
 			algorithm: 'RS256',
 			expiresIn: Configuration.get('JWT_LIFETIME'),
 		},

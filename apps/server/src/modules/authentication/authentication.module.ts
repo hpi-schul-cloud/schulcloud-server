@@ -25,9 +25,9 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 
 	const signOptions: SignOptions = {
 		algorithm,
-		audience: configService.get<string>('JWT_AUD'),
 		expiresIn: configService.get<string>('JWT_LIFETIME'),
-		issuer: 'feathers',
+		issuer: configService.get<string>('SC_DOMAIN'),
+		audience: configService.get<string>('SC_DOMAIN'),
 		header: { typ: 'JWT', alg: algorithm },
 	};
 
