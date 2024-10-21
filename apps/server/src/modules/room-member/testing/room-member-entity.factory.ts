@@ -7,10 +7,10 @@ export const roomMemberEntityFactory = EntityFactory.define<RoomMemberEntity, Ro
 	() => {
 		return {
 			id: new ObjectId().toHexString(),
-			roomId: new ObjectId(),
+			roomId: new ObjectId().toHexString(),
+			userGroupId: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			userGroupId: new ObjectId(),
 		};
 	}
 );
