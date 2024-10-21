@@ -11,25 +11,14 @@ import {
 import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory, schoolYearFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
-import {
-	ExternalClassDto,
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	ProvisioningSystemDto,
-} from '@src/modules/provisioning';
-import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
 import { AxiosResponse } from 'axios';
-import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
@@ -40,7 +29,6 @@ describe(TspSyncService.name, () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
-	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -66,10 +54,6 @@ describe(TspSyncService.name, () => {
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
 				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
 			],
 		}).compile();
 
@@ -79,7 +63,6 @@ describe(TspSyncService.name, () => {
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
-		logger = module.get(Logger);
 	});
 
 	afterEach(() => {
@@ -130,38 +113,75 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
+	const setupTspClient = () => {
+		const clientId = faker.string.alpha();
+		const clientSecret = faker.string.alpha();
+		const tokenEndpoint = faker.internet.url();
+		const system = systemFactory.build({
+			oauthConfig: {
+				clientId,
+				clientSecret,
+				tokenEndpoint,
+			},
+		});
+
+		const tspSchool: RobjExportSchule = {
+			schuleName: faker.string.alpha(),
+			schuleNummer: faker.string.alpha(),
+		};
+		const schools = [tspSchool];
+		const responseSchools = createMock<AxiosResponse<Array<RobjExportSchule>>>({
+			data: schools,
+		});
+
+		const tspTeacher: RobjExportLehrer = {
+			schuleNummer: faker.string.alpha(),
+			lehrerVorname: faker.string.alpha(),
+			lehrerNachname: faker.string.alpha(),
+			lehrerUid: faker.string.alpha(),
+		};
+		const teachers = [tspTeacher];
+		const responseTeachers = createMock<AxiosResponse<Array<RobjExportLehrer>>>({
+			data: teachers,
+		});
+
+		const tspStudent: RobjExportSchueler = {
+			schuleNummer: faker.string.alpha(),
+			schuelerVorname: faker.string.alpha(),
+			schuelerNachname: faker.string.alpha(),
+			schuelerUid: faker.string.alpha(),
+		};
+		const students = [tspStudent];
+		const responseStudents = createMock<AxiosResponse<Array<RobjExportSchueler>>>({
+			data: students,
+		});
+
+		const tspClass: RobjExportKlasse = {
+			schuleNummer: faker.string.alpha(),
+			klasseId: faker.string.alpha(),
+			klasseName: faker.string.alpha(),
+			lehrerUid: faker.string.alpha(),
+		};
+		const classes = [tspClass];
+		const responseClasses = createMock<AxiosResponse<Array<RobjExportKlasse>>>({
+			data: classes,
+		});
+
+		const exportApiMock = createMock<ExportApiInterface>();
+		exportApiMock.exportSchuleList.mockResolvedValueOnce(responseSchools);
+		exportApiMock.exportLehrerList.mockResolvedValueOnce(responseTeachers);
+		exportApiMock.exportSchuelerList.mockResolvedValueOnce(responseStudents);
+		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
+
+		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
+
+		return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools, teachers, students, classes };
+	};
+
 	describe('fetchTspSchools', () => {
 		describe('when tsp schools are fetched', () => {
-			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
-				const tokenEndpoint = faker.internet.url();
-				const system = systemFactory.build({
-					oauthConfig: {
-						clientId,
-						clientSecret,
-						tokenEndpoint,
-					},
-				});
-
-				const tspSchool: RobjExportSchule = {
-					schuleName: faker.string.alpha(),
-					schuleNummer: faker.string.alpha(),
-				};
-				const schools = [tspSchool];
-				const response = createMock<AxiosResponse<Array<RobjExportSchule>>>({
-					data: schools,
-				});
-
-				const exportApiMock = createMock<ExportApiInterface>();
-				exportApiMock.exportSchuleList.mockResolvedValueOnce(response);
-				tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-				return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools };
-			};
-
 			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setup();
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
 
 				await sut.fetchTspSchools(system, 1);
 
@@ -173,7 +193,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should call exportSchuleList', async () => {
-				const { system, exportApiMock } = setup();
+				const { system, exportApiMock } = setupTspClient();
 
 				await sut.fetchTspSchools(system, 1);
 
@@ -181,7 +201,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should return an array of schools', async () => {
-				const { system } = setup();
+				const { system } = setupTspClient();
 
 				const schools = await sut.fetchTspSchools(system, 1);
 
@@ -193,38 +213,8 @@ describe(TspSyncService.name, () => {
 
 	describe('fetchTspTeachers', () => {
 		describe('when tsp teachers are fetched', () => {
-			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
-				const tokenEndpoint = faker.internet.url();
-				const system = systemFactory.build({
-					oauthConfig: {
-						clientId,
-						clientSecret,
-						tokenEndpoint,
-					},
-				});
-
-				const tspTeacher: RobjExportLehrer = {
-					schuleNummer: faker.string.alpha(),
-					lehrerVorname: faker.string.alpha(),
-					lehrerNachname: faker.string.alpha(),
-					lehrerUid: faker.string.alpha(),
-				};
-				const teachers = [tspTeacher];
-				const response = createMock<AxiosResponse<Array<RobjExportLehrer>>>({
-					data: teachers,
-				});
-
-				const exportApiMock = createMock<ExportApiInterface>();
-				exportApiMock.exportLehrerList.mockResolvedValueOnce(response);
-				tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-				return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, teachers };
-			};
-
 			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setup();
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
 
 				await sut.fetchTspTeachers(system, 1);
 
@@ -236,7 +226,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should call exportLehrerList', async () => {
-				const { system, exportApiMock } = setup();
+				const { system, exportApiMock } = setupTspClient();
 
 				await sut.fetchTspTeachers(system, 1);
 
@@ -244,7 +234,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should return an array of teachers', async () => {
-				const { system } = setup();
+				const { system } = setupTspClient();
 
 				const teachers = await sut.fetchTspTeachers(system, 1);
 
@@ -256,38 +246,8 @@ describe(TspSyncService.name, () => {
 
 	describe('fetchTspStudents', () => {
 		describe('when tsp students are fetched', () => {
-			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
-				const tokenEndpoint = faker.internet.url();
-				const system = systemFactory.build({
-					oauthConfig: {
-						clientId,
-						clientSecret,
-						tokenEndpoint,
-					},
-				});
-
-				const tspStudent: RobjExportSchueler = {
-					schuleNummer: faker.string.alpha(),
-					schuelerVorname: faker.string.alpha(),
-					schuelerNachname: faker.string.alpha(),
-					schuelerUid: faker.string.alpha(),
-				};
-				const students = [tspStudent];
-				const response = createMock<AxiosResponse<Array<RobjExportSchueler>>>({
-					data: students,
-				});
-
-				const exportApiMock = createMock<ExportApiInterface>();
-				exportApiMock.exportSchuelerList.mockResolvedValueOnce(response);
-				tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-				return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, students };
-			};
-
 			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setup();
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
 
 				await sut.fetchTspStudents(system, 1);
 
@@ -299,7 +259,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should call exportSchuelerList', async () => {
-				const { system, exportApiMock } = setup();
+				const { system, exportApiMock } = setupTspClient();
 
 				await sut.fetchTspStudents(system, 1);
 
@@ -307,7 +267,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should return an array of students', async () => {
-				const { system } = setup();
+				const { system } = setupTspClient();
 
 				const students = await sut.fetchTspStudents(system, 1);
 
@@ -319,38 +279,8 @@ describe(TspSyncService.name, () => {
 
 	describe('fetchTspClasses', () => {
 		describe('when tsp classes are fetched', () => {
-			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
-				const tokenEndpoint = faker.internet.url();
-				const system = systemFactory.build({
-					oauthConfig: {
-						clientId,
-						clientSecret,
-						tokenEndpoint,
-					},
-				});
-
-				const tspClass: RobjExportKlasse = {
-					schuleNummer: faker.string.alpha(),
-					klasseId: faker.string.alpha(),
-					klasseName: faker.string.alpha(),
-					lehrerUid: faker.string.alpha(),
-				};
-				const classes = [tspClass];
-				const response = createMock<AxiosResponse<Array<RobjExportKlasse>>>({
-					data: classes,
-				});
-
-				const exportApiMock = createMock<ExportApiInterface>();
-				exportApiMock.exportKlasseList.mockResolvedValueOnce(response);
-				tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-				return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, classes };
-			};
-
 			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setup();
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
 
 				await sut.fetchTspClasses(system, 1);
 
@@ -362,7 +292,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should call exportKlasseList', async () => {
-				const { system, exportApiMock } = setup();
+				const { system, exportApiMock } = setupTspClient();
 
 				await sut.fetchTspClasses(system, 1);
 
@@ -370,7 +300,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should return an array of classes', async () => {
-				const { system } = setup();
+				const { system } = setupTspClient();
 
 				const classes = await sut.fetchTspClasses(system, 1);
 
@@ -561,177 +491,6 @@ describe(TspSyncService.name, () => {
 					}) as Partial<SchoolProps>,
 				});
 				expect(federalStateService.findFederalStateByName).not.toHaveBeenCalled();
-			});
-		});
-	});
-
-	describe('mapTspDataToOauthData', () => {
-		describe('when mapping tsp data to oauth data', () => {
-			const setup = () => {
-				const system = systemFactory.build();
-
-				const school = schoolFactory.build({
-					externalId: faker.string.alpha(),
-				});
-
-				const lehrerUid = faker.string.alpha();
-
-				const tspTeachers: RobjExportLehrer[] = [
-					{
-						lehrerUid,
-						lehrerNachname: faker.string.alpha(),
-						lehrerVorname: faker.string.alpha(),
-						schuleNummer: school.externalId,
-					},
-				];
-
-				const klasseId = faker.string.alpha();
-
-				const tspClasses: RobjExportKlasse[] = [
-					{
-						klasseId,
-						klasseName: faker.string.alpha(),
-						lehrerUid,
-					},
-				];
-
-				const tspStudents: RobjExportSchueler[] = [
-					{
-						schuelerUid: faker.string.alpha(),
-						schuelerNachname: faker.string.alpha(),
-						schuelerVorname: faker.string.alpha(),
-						schuleNummer: school.externalId,
-						klasseId,
-					},
-				];
-
-				const provisioningSystemDto = new ProvisioningSystemDto({
-					systemId: system.id,
-					provisioningStrategy: SystemProvisioningStrategy.TSP,
-				});
-
-				const externalSchool = new ExternalSchoolDto({
-					externalId: school.externalId ?? '',
-				});
-
-				const externalClass = new ExternalClassDto({
-					externalId: klasseId,
-					name: tspClasses[0].klasseName,
-				});
-
-				const expected: OauthDataDto[] = [
-					new OauthDataDto({
-						system: provisioningSystemDto,
-						externalUser: new ExternalUserDto({
-							externalId: tspTeachers[0].lehrerUid ?? '',
-							firstName: tspTeachers[0].lehrerNachname,
-							lastName: tspTeachers[0].lehrerNachname,
-							roles: [RoleName.TEACHER],
-							email: `tsp/${tspTeachers[0].lehrerUid ?? ''}@schul-cloud.org`,
-						}),
-						externalSchool,
-						externalClasses: [externalClass],
-					}),
-					new OauthDataDto({
-						system: provisioningSystemDto,
-						externalUser: new ExternalUserDto({
-							externalId: tspStudents[0].schuelerUid ?? '',
-							firstName: tspStudents[0].schuelerNachname,
-							lastName: tspStudents[0].schuelerNachname,
-							roles: [RoleName.STUDENT],
-							email: `tsp/${tspStudents[0].schuelerUid ?? ''}@schul-cloud.org`,
-						}),
-						externalSchool,
-						externalClasses: [externalClass],
-					}),
-				];
-
-				return { system, school, tspTeachers, tspStudents, tspClasses, expected };
-			};
-
-			it('should return an array of oauth data dtos', () => {
-				const { system, school, tspTeachers, tspStudents, tspClasses, expected } = setup();
-
-				const result = sut.mapTspDataToOauthData(system, [school], tspTeachers, tspStudents, tspClasses);
-
-				expect(result).toStrictEqual(expected);
-			});
-		});
-
-		describe('when school has to externalId', () => {
-			const setup = () => {
-				const system = systemFactory.build();
-				const school = schoolFactory.build({
-					externalId: undefined,
-				});
-
-				return { system, school };
-			};
-
-			it('should throw BadDataLoggableException', () => {
-				const { system, school } = setup();
-
-				expect(() => sut.mapTspDataToOauthData(system, [school], [], [], [])).toThrow(BadDataLoggableException);
-			});
-		});
-
-		describe('when tsp class has to id', () => {
-			const setup = () => {
-				const system = systemFactory.build();
-
-				const tspClass: RobjExportKlasse = {
-					klasseId: undefined,
-				};
-
-				return { system, tspClass };
-			};
-
-			it('should log TspMissingExternalIdLoggable', () => {
-				const { system, tspClass } = setup();
-
-				sut.mapTspDataToOauthData(system, [], [], [], [tspClass]);
-
-				expect(logger.info).toHaveBeenCalledWith(new TspMissingExternalIdLoggable('class'));
-			});
-		});
-
-		describe('when tsp teacher has to id', () => {
-			const setup = () => {
-				const system = systemFactory.build();
-
-				const tspTeacher: RobjExportLehrer = {
-					lehrerUid: undefined,
-				};
-
-				return { system, tspTeacher };
-			};
-
-			it('should log TspMissingExternalIdLoggable', () => {
-				const { system, tspTeacher } = setup();
-
-				sut.mapTspDataToOauthData(system, [], [tspTeacher], [], []);
-
-				expect(logger.info).toHaveBeenCalledWith(new TspMissingExternalIdLoggable('teacher'));
-			});
-		});
-
-		describe('when tsp student has to id', () => {
-			const setup = () => {
-				const system = systemFactory.build();
-
-				const tspStudent: RobjExportSchueler = {
-					schuelerUid: undefined,
-				};
-
-				return { system, tspStudent };
-			};
-
-			it('should log TspMissingExternalIdLoggable', () => {
-				const { system, tspStudent } = setup();
-
-				sut.mapTspDataToOauthData(system, [], [], [tspStudent], []);
-
-				expect(logger.info).toHaveBeenCalledWith(new TspMissingExternalIdLoggable('student'));
 			});
 		});
 	});

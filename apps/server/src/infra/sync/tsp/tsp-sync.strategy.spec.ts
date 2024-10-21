@@ -8,6 +8,7 @@ import { Logger } from '@src/core/logger';
 import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
 import { schoolFactory } from '@src/modules/school/testing';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
@@ -17,6 +18,7 @@ describe(TspSyncStrategy.name, () => {
 	let sut: TspSyncStrategy;
 	let tspSyncService: DeepMocked<TspSyncService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
+	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,12 +55,17 @@ describe(TspSyncStrategy.name, () => {
 					provide: ProvisioningService,
 					useValue: createMock<ProvisioningService>(),
 				},
+				{
+					provide: TspOauthDataMapper,
+					useValue: createMock<TspOauthDataMapper>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspSyncStrategy);
 		tspSyncService = module.get(TspSyncService);
 		provisioningService = module.get(ProvisioningService);
+		tspOauthDataMapper = module.get(TspOauthDataMapper);
 	});
 
 	afterEach(() => {
@@ -103,7 +110,7 @@ describe(TspSyncStrategy.name, () => {
 					}),
 				});
 
-				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([oauthDataDto]);
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([oauthDataDto]);
 
 				return { oauthDataDto };
 			};
@@ -145,7 +152,7 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(tspSyncService.mapTspDataToOauthData).toHaveBeenCalled();
+				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalled();
 			});
 
 			it('should call provisioning service with mapped OauthDataDtos', async () => {
@@ -172,7 +179,7 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
-				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should create the school', async () => {
@@ -200,7 +207,7 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
-				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should update the school', async () => {
@@ -225,7 +232,7 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
-				tspSyncService.mapTspDataToOauthData.mockReturnValueOnce([]);
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
 			it('should skip the school', async () => {

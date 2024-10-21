@@ -13,6 +13,7 @@ import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
 import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
+import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 
@@ -29,6 +30,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	constructor(
 		private readonly logger: Logger,
 		private readonly tspSyncService: TspSyncService,
+		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		configService: ConfigService<TspSyncConfig, true>,
 		private readonly provisioningService: ProvisioningService
 	) {
@@ -102,7 +104,7 @@ export class TspSyncStrategy extends SyncStrategy {
 			new TspDataFetchedLoggable(tspTeachers.length, tspStudents.length, tspClasses.length, this.schoolDataDaysToFetch)
 		);
 
-		const oauthDataDtos = this.tspSyncService.mapTspDataToOauthData(
+		const oauthDataDtos = this.tspOauthDataMapper.mapTspDataToOauthData(
 			system,
 			schools,
 			tspTeachers,
@@ -116,7 +118,7 @@ export class TspSyncStrategy extends SyncStrategy {
 			this.dataLimit(() => this.provisioningService.provisionData(oauthDataDto))
 		);
 
-		const results = await Promise.all(dataPromises);
+		const results = await Promise.allSettled(dataPromises);
 
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
