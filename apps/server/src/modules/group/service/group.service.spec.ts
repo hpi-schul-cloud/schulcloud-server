@@ -406,4 +406,22 @@ describe('GroupService', () => {
 			});
 		});
 	});
+
+	describe('createGroup', () => {
+		describe('when creating a group with a school', () => {
+			it('should call repo.save', async () => {
+				await service.createGroup('name', GroupTypes.CLASS, 'schoolId');
+
+				expect(groupRepo.save).toHaveBeenCalledWith(expect.any(Group));
+			});
+
+			it('should save the group properties', async () => {
+				await service.createGroup('name', GroupTypes.CLASS, 'schoolId');
+
+				expect(groupRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({ name: 'name', type: GroupTypes.CLASS, organizationId: 'schoolId' })
+				);
+			});
+		});
+	});
 });
