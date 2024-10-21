@@ -22,7 +22,10 @@ export const authorizationClientConfig: AuthorizationClientConfig = {
 
 const authGuardConfig: AuthGuardConfig = {
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string).split(','),
-	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
+
+	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
+	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
+	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
 };
 
 const fileStorageConfig: FileStorageConfig = {

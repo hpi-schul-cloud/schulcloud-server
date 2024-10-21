@@ -20,7 +20,10 @@ const h5pEditorConfig: H5PEditorConfig = {
 	...authorizationClientConfig,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	ADMIN_API__ALLOWED_API_KEYS: [],
-	JWT_PUBLIC_KEY: Configuration.get('JWT_PUBLIC_KEY') as string,
+
+	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
+	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
+	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
 };
 
 export const translatorConfig = {
