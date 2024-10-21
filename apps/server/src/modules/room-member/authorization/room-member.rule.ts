@@ -7,7 +7,7 @@ import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 @Injectable()
 export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	constructor(private readonly authorisationInjectionService: AuthorizationInjectionService) {
-		authorisationInjectionService.injectAuthorizationRule(this);
+		this.authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {

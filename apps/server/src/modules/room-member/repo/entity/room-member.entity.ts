@@ -1,4 +1,4 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Property, Unique } from '@mikro-orm/core';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -13,13 +13,13 @@ export interface RoomMemberEntityProps extends AuthorizableObject {
 }
 
 @Entity({ tableName: 'room-members' })
+@Unique({ properties: ['roomId', 'userGroupId'] })
 export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMemberEntityProps {
 	@Property()
-	@Index()
+	@Unique()
 	roomId!: EntityId;
 
 	@Property()
-	@Index()
 	userGroupId!: EntityId;
 
 	@Property({ persist: false })

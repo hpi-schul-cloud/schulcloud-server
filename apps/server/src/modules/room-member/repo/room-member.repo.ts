@@ -10,9 +10,12 @@ import { RoomMemberDomainMapper } from './room-member-domain.mapper';
 export class RoomMemberRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findByRoomId(roomId: EntityId): Promise<RoomMember[]> {
-		const roomMemberEntities = await this.em.find(RoomMemberEntity, { roomId });
-		const roomMembers = roomMemberEntities.map((entity) => RoomMemberDomainMapper.mapEntityToDo(entity));
+	// TODO, update test
+	async findByRoomId(roomId: EntityId): Promise<RoomMember | null> {
+		const roomMemberEntities = await this.em.findOne(RoomMemberEntity, { roomId });
+		if (!roomMemberEntities) return null;
+
+		const roomMembers = RoomMemberDomainMapper.mapEntityToDo(roomMemberEntities);
 
 		return roomMembers;
 	}
