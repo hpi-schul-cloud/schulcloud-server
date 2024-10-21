@@ -8,12 +8,14 @@ export type UserWithRoomRoles = {
 };
 
 export class RoomMemberAuthorizable implements AuthorizableObject {
-	public readonly id: EntityId;
+	public readonly id: EntityId = '';
+
+	public readonly roomId: EntityId;
 
 	public readonly members: UserWithRoomRoles[];
 
-	public constructor(members: UserWithRoomRoles[]) {
-		this.id = '';
+	public constructor(roomId: EntityId, members: UserWithRoomRoles[]) {
 		this.members = members;
+		this.roomId = roomId;
 	}
 }

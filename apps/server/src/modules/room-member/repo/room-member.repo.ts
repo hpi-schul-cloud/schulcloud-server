@@ -27,6 +27,20 @@ export class RoomMemberRepo {
 		return roomMembers;
 	}
 
+	async findByGroupId(groupId: EntityId): Promise<RoomMember[]> {
+		const entities = await this.em.find(RoomMemberEntity, { userGroupId: groupId });
+		const roomMembers = entities.map((entity) => RoomMemberDomainMapper.mapEntityToDo(entity));
+
+		return roomMembers;
+	}
+
+	async findByGroupIds(groupIds: EntityId[]): Promise<RoomMember[]> {
+		const entities = await this.em.find(RoomMemberEntity, { userGroupId: { $in: groupIds } });
+		const roomMembers = entities.map((entity) => RoomMemberDomainMapper.mapEntityToDo(entity));
+
+		return roomMembers;
+	}
+
 	async save(roomMember: RoomMember | RoomMember[]): Promise<void> {
 		const roomMembers = Utils.asArray(roomMember);
 

@@ -1,4 +1,3 @@
-import { BadRequest } from '@feathersjs/errors';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -6,9 +5,8 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Action, AuthorizationService } from '@src/modules/authorization';
-import { RoomMemberRepo, RoomMemberService } from '@src/modules/room-member';
+import { RoomMemberService } from '@src/modules/room-member';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
-import { RoomAuthorizable } from '../domain/do/room-authorizable';
 import { RoomConfig } from '../room.config';
 
 @Injectable()
@@ -17,13 +15,12 @@ export class RoomUc {
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomService: RoomService,
 		private readonly roomMemberService: RoomMemberService,
-		private readonly authorizationService: AuthorizationService,
-		private readonly roomMembersRepo: RoomMemberRepo
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		this.checkFeatureEnabled();
-		const authorizedRoomIds = await this.getAuthorizedRoomIds(userId);
+		const authorizedRoomIds = await this.getAuthorizedRoomIds(userId, Action.read);
 		const rooms = await this.roomService.getRoomsByIds(authorizedRoomIds, findOptions);
 
 		return rooms;
@@ -36,10 +33,12 @@ export class RoomUc {
 		// NOTE: currently only teacher are allowed to create rooms. Could not find simpler way to check this.
 		this.authorizationService.checkOneOfPermissions(user, [Permission.COURSE_CREATE]);
 		const room = await this.roomService.createRoom(props);
-		await this.roomMemberService.addMemberToRoom(room.id, user, RoleName.ROOM_EDITOR).catch(async (err) => {
-			await this.roomService.deleteRoom(room);
-			throw err;
-		});
+		await this.roomMemberService
+			.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR, user.school.id)
+			.catch(async (err) => {
+				await this.roomService.deleteRoom(room);
+				throw err;
+			});
 		return room;
 	}
 
@@ -70,33 +69,21 @@ export class RoomUc {
 		await this.roomService.deleteRoom(room);
 	}
 
-	private async getAuthorizedRoomIds(userId: EntityId): Promise<EntityId[]> {
+	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const allRoomMembers = await this.roomMembersRepo.findByUserId(userId);
-		const permittedRoomIds = allRoomMembers
-			.filter((member) => {
-				const roomAuthorizable = new RoomAuthorizable({ id: '', roomMembers: [member] });
-				const hasPermission = this.authorizationService.hasPermission(user, roomAuthorizable, {
-					action: Action.read,
-					requiredPermissions: [],
-				});
+		const roomAuthorizables = await this.roomMemberService.getRoomMemberAuthorizablesByUserId(userId);
 
-				return hasPermission;
-			})
-			.map((member) => member.roomId.toHexString());
+		const authorizedRoomIds = roomAuthorizables.filter((item) =>
+			this.authorizationService.hasPermission(user, item, { action, requiredPermissions: [] })
+		);
 
-		return permittedRoomIds;
+		return authorizedRoomIds.map((item) => item.roomId);
 	}
 
 	private async checkRoomAuthorization(userId: EntityId, roomId: EntityId, action: Action): Promise<void> {
+		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
-		if (!roomMember) throw new BadRequest('Room members not found');
-		const roomAuthorizable = new RoomAuthorizable({ id: '', roomMembers: [roomMember] });
-		this.authorizationService.checkPermission(user, roomAuthorizable, {
-			action,
-			requiredPermissions: [],
-		});
+		this.authorizationService.checkPermission(user, roomMemberAuthorizable, { action, requiredPermissions: [] });
 	}
 
 	private checkFeatureEnabled(): void {
