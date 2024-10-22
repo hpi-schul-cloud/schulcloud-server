@@ -1,5 +1,5 @@
-import { ApiKeyGuard } from '@infra/auth-guard';
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { XApiKeyAuthentication } from '@infra/auth-guard';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
@@ -7,7 +7,7 @@ import { AdminApiSchoolExternalToolUc } from '../uc';
 import { SchoolExternalToolPostParams, SchoolExternalToolResponse } from './dto';
 
 @ApiTags('AdminApi: School External Tool')
-@UseGuards(ApiKeyGuard)
+@XApiKeyAuthentication()
 @Controller('admin/tools/school-external-tools')
 export class AdminApiSchoolExternalToolController {
 	constructor(private readonly adminApiSchoolExternalToolUc: AdminApiSchoolExternalToolUc) {}
