@@ -80,18 +80,42 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async migrateUserIds(system: System): Promise<void> {
-		const TspTeacherIds = await this.tspSyncService.fetchTspTeachers(system);
+		const TspTeacherIds = await this.tspSyncService.fetchTspTeacherMigrations(system);
 
-		const TspStudentIds = await this.tspSyncService.fetchTspStudents(system);
+		const TspStudentIds = await this.tspSyncService.fetchTspStudentMigrations(system);
 
 		for await (const { lehrerUidAlt, lehrerUidNeu } of TspTeacherIds) {
-			// migrateTeacherIds
+			if (lehrerUidAlt && lehrerUidNeu) {
+				await this.migrateTeacher(lehrerUidAlt, lehrerUidNeu);
+			}
 		}
 
 		for await (const { schuelerUidAlt, schuelerUidNeu } of TspStudentIds) {
-			// migrateStudentIds
+			// migrateStudent
 		}
 	}
 
-	private async migrateTeacherIds(lehrerUidAlt: string, lehrerUidNeu: string): Promise<void> {}
+	private async migrateTeacher(lehrerUidAlt: string, lehrerUidNeu: string) {
+		const newEmailAndUsername = `${lehrerUidNeu}@schul-cloud.org`;
+
+		const teacherUser = await this.tspSyncService.findUserByTspUid(lehrerUidAlt);
+
+		if (!teacherUser) {
+			throw new Error('Teacher not found');
+		}
+
+		const newEmail = newEmailAndUsername;
+		const updatedUser = await this.tspSyncService.updateUser(teacherUser, newEmail, lehrerUidNeu, lehrerUidAlt);
+
+		const teacherAccount = await this.tspSyncService.findAccountByTspUserId(lehrerUidAlt);
+
+		if (!teacherAccount) {
+			throw new Error('Account not found');
+		}
+
+		const newUsername = newEmailAndUsername;
+		const updatedAccount = await this.tspSyncService.updateAccount(teacherAccount, newUsername);
+
+		return { updatedUser, updatedAccount };
+	}
 }

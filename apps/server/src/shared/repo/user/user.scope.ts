@@ -55,4 +55,11 @@ export class UserScope extends Scope<User> {
 		}
 		return this;
 	}
+
+	byTspUid(tspUid?: string): UserScope {
+		if (tspUid !== undefined) {
+			this.addQuery({ sourceOptions: { tspUid } });
+		}
+		return this;
+	}
 }

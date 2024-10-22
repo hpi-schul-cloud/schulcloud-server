@@ -5,4 +5,5 @@ export type UserQuery = Partial<Pick<UserDO, 'schoolId' | 'outdatedSince'>> & {
 	lastLoginSystemChangeSmallerThan?: Date;
 	lastLoginSystemChangeBetweenStart?: Date;
 	lastLoginSystemChangeBetweenEnd?: Date;
+	tspUid?: string;
 };
