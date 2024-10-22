@@ -1,12 +1,13 @@
-import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@modules/server';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { TldrawService } from '../../service';
+import { AuthGuardModule, AuthGuardOptions } from '@src/infra/auth-guard';
 import { TldrawController } from '..';
 import { TldrawRepo } from '../../repo';
+import { TldrawService } from '../../service';
 import { tldrawEntityFactory } from '../../testing';
 
 const baseRouteName = '/tldraw-document';
@@ -18,7 +19,7 @@ describe('tldraw controller (api)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule],
+			imports: [ServerTestModule, AuthGuardModule.register([AuthGuardOptions.X_API_KEY])],
 			controllers: [TldrawController],
 			providers: [Logger, TldrawService, TldrawRepo],
 		}).compile();

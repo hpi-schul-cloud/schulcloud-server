@@ -1,4 +1,4 @@
-import { AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
@@ -43,7 +43,7 @@ const imports = [
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
-	AuthGuardModule,
+	AuthGuardModule.register([AuthGuardOptions.JWT]),
 ];
 
 const controllers = [H5PEditorController];
