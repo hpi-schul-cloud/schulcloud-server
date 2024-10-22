@@ -1,9 +1,4 @@
-import {
-	RobjExportLehrerMigration,
-	RobjExportSchuelerMigration,
-	RobjExportSchule,
-	TspClientFactory,
-} from '@infra/tsp-client';
+import { RobjExportLehrerMigration, RobjExportSchuelerMigration, TspClientFactory } from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
@@ -50,16 +45,43 @@ export class TspSyncService {
 	}
 
 	public async fetchTspSchools(system: System, daysToFetch: number) {
-		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
-		});
+		const client = this.createClient(system);
 
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const schools: RobjExportSchule[] = (await client.exportSchuleList(lastChangeDate)).data;
+		const schoolsResponse = await client.exportSchuleList(lastChangeDate);
+		const schools = schoolsResponse.data;
 
 		return schools;
+	}
+
+	public async fetchTspTeachers(system: System, daysToFetch: number) {
+		const client = this.createClient(system);
+
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
+		const teachersResponse = await client.exportLehrerList(lastChangeDate);
+		const teachers = teachersResponse.data;
+
+		return teachers;
+	}
+
+	public async fetchTspStudents(system: System, daysToFetch: number) {
+		const client = this.createClient(system);
+
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
+		const studentsResponse = await client.exportSchuelerList(lastChangeDate);
+		const students = studentsResponse.data;
+
+		return students;
+	}
+
+	public async fetchTspClasses(system: System, daysToFetch: number) {
+		const client = this.createClient(system);
+
+		const lastChangeDate = this.formatChangeDate(daysToFetch);
+		const classesResponse = await client.exportKlasseList(lastChangeDate);
+		const classes = classesResponse.data;
+
+		return classes;
 	}
 
 	public async findSchool(system: System, identifier: string): Promise<School | undefined> {
@@ -72,6 +94,14 @@ export class TspSyncService {
 			return undefined;
 		}
 		return schools[0];
+	}
+
+	public async findSchoolsForSystem(system: System): Promise<School[]> {
+		const schools = await this.schoolService.getSchools({
+			systemId: system.id,
+		});
+
+		return schools;
 	}
 
 	public async updateSchool(school: School, name?: string): Promise<School> {
@@ -142,6 +172,16 @@ export class TspSyncService {
 
 	private formatChangeDate(daysToFetch: number): string {
 		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+	}
+
+	private createClient(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+
+		return client;
 	}
 
 	public async findUserByTspUid(tspUid: string) {
