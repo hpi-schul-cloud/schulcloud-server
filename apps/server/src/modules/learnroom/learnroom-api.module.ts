@@ -1,5 +1,5 @@
 import { AuthorizationModule } from '@modules/authorization';
-import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { AuthorizationReferenceModule } from '@modules/authorization-reference';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { GroupModule } from '@modules/group';

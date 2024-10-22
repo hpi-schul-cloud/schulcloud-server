@@ -81,6 +81,7 @@ describe('user repo', () => {
 					'preferences',
 					'language',
 					'deletedAt',
+					'discoverable',
 					'lastLoginSystemChange',
 					'outdatedSince',
 					'previousExternalId',
@@ -220,6 +221,7 @@ describe('user repo', () => {
 					'consent',
 					'source',
 					'sourceOptions',
+					'discoverable',
 				].sort()
 			);
 		});
