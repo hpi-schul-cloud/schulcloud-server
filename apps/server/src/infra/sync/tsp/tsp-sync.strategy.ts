@@ -55,7 +55,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	public async sync(): Promise<void> {
 		const system = await this.tspSyncService.findTspSystemOrFail();
 
-		await this.migrateUserIds(system);
+		await this.migrateTspTeachersAndStudents(system);
 
 		await this.syncSchools(system);
 
@@ -129,42 +129,43 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
 
-	private async migrateUserIds(system: System): Promise<void> {
+	private async migrateTspTeachersAndStudents(system: System): Promise<void> {
 		const TspTeacherIds = await this.tspSyncService.fetchTspTeacherMigrations(system);
 
 		const TspStudentIds = await this.tspSyncService.fetchTspStudentMigrations(system);
 
 		for await (const { lehrerUidAlt, lehrerUidNeu } of TspTeacherIds) {
 			if (lehrerUidAlt && lehrerUidNeu) {
-				await this.migrateTeacher(lehrerUidAlt, lehrerUidNeu, system.id);
+				await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
 			}
 		}
 
 		for await (const { schuelerUidAlt, schuelerUidNeu } of TspStudentIds) {
-			// migrateStudent
+			if (schuelerUidAlt && schuelerUidNeu) {
+				await this.migrateTspUser(schuelerUidAlt, schuelerUidNeu, system.id);
+			}
 		}
 	}
 
-	private async migrateTeacher(lehrerUidAlt: string, lehrerUidNeu: string, systemId: string) {
-		const newEmailAndUsername = `${lehrerUidNeu}@schul-cloud.org`;
+	private async migrateTspUser(oldUid: string, newUid: string, systemId: string) {
+		const newEmailAndUsername = `${newUid}@schul-cloud.org`;
+		const user = await this.tspSyncService.findUserByTspUid(oldUid);
 
-		const teacherUser = await this.tspSyncService.findUserByTspUid(lehrerUidAlt);
-
-		if (!teacherUser) {
-			throw new Error('Teacher not found');
+		if (!user) {
+			throw new Error('User not found');
 		}
 
 		const newEmail = newEmailAndUsername;
-		const updatedUser = await this.tspSyncService.updateUser(teacherUser, newEmail, lehrerUidNeu, lehrerUidAlt);
+		const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
 
-		const teacherAccount = await this.tspSyncService.findAccountByTspUid(lehrerUidAlt);
+		const account = await this.tspSyncService.findAccountByTspUid(oldUid);
 
-		if (!teacherAccount) {
+		if (!account) {
 			throw new Error('Account not found');
 		}
 
 		const newUsername = newEmailAndUsername;
-		const updatedAccount = await this.tspSyncService.updateAccount(teacherAccount, newUsername, systemId);
+		const updatedAccount = await this.tspSyncService.updateAccount(account, newUsername, systemId);
 
 		return { updatedUser, updatedAccount };
 	}
