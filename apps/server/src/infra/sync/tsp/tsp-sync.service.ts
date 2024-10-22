@@ -214,9 +214,9 @@ export class TspSyncService {
 		return this.userService.save(user);
 	}
 
-	public async updateAccount(account: Account, username: string) {
+	public async updateAccount(account: Account, username: string, systemId: string) {
 		account.username = username;
-		account.systemId = (await this.findTspSystemOrFail()).id;
+		account.systemId = systemId;
 
 		return this.accountService.save(account);
 	}

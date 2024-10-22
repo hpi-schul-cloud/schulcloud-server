@@ -199,6 +199,11 @@
 			"default": "1",
 			"description": "The amount of days for which the sync fetches school data from the TSP."
 		},
+		"TSP_SYNC_MIGRATION_LIMIT": {
+			"type": "number",
+			"default": "100",
+			"description": "The amount of users the sync migrates at once."
+		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
 			"default": false,

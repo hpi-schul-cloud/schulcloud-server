@@ -23,6 +23,8 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	private readonly dataLimit: pLimit.Limit;
 
+	private readonly migrationLimit: pLimit.Limit;
+
 	private readonly schoolDaysToFetch: number;
 
 	private readonly schoolDataDaysToFetch: number;
@@ -42,6 +44,8 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.dataLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT'));
 		this.schoolDataDaysToFetch = configService.get<number>('TSP_SYNC_DATA_DAYS_TO_FETCH', 1);
+
+		this.migrationLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT'));
 	}
 
 	public override getType(): SyncStrategyTarget {
@@ -132,7 +136,7 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		for await (const { lehrerUidAlt, lehrerUidNeu } of TspTeacherIds) {
 			if (lehrerUidAlt && lehrerUidNeu) {
-				await this.migrateTeacher(lehrerUidAlt, lehrerUidNeu);
+				await this.migrateTeacher(lehrerUidAlt, lehrerUidNeu, system.id);
 			}
 		}
 
@@ -141,7 +145,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		}
 	}
 
-	private async migrateTeacher(lehrerUidAlt: string, lehrerUidNeu: string) {
+	private async migrateTeacher(lehrerUidAlt: string, lehrerUidNeu: string, systemId: string) {
 		const newEmailAndUsername = `${lehrerUidNeu}@schul-cloud.org`;
 
 		const teacherUser = await this.tspSyncService.findUserByTspUid(lehrerUidAlt);
@@ -160,7 +164,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		}
 
 		const newUsername = newEmailAndUsername;
-		const updatedAccount = await this.tspSyncService.updateAccount(teacherAccount, newUsername);
+		const updatedAccount = await this.tspSyncService.updateAccount(teacherAccount, newUsername, systemId);
 
 		return { updatedUser, updatedAccount };
 	}
