@@ -116,14 +116,14 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room does not exist', () => {
-				it('should return a 400 error', async () => {
+				it('should return a 403 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 					const params = { name: 'Room #101', color: 'green' };
 
 					const response = await loggedInClient.patch(someId, params);
 
-					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
 
@@ -308,25 +308,25 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room does not exist', () => {
-				it('should return a 400 error', async () => {
+				it('should return a 403 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 					const params = { name: 'Room #101', color: 'green' };
 
 					const response = await loggedInClient.patch(someId, params);
 
-					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
 
 			describe('when the required parameters are given', () => {
-				it('should return a 400 error', async () => {
+				it('should return a 403 error', async () => {
 					const { loggedInClient, room } = await setup();
 					const params = { name: 'Room #101', color: 'green' };
 
 					const response = await loggedInClient.patch(room.id, params);
 
-					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
 		});

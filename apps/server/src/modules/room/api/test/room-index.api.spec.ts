@@ -10,7 +10,7 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
-import { GroupEntityTypes } from '@src/modules/group';
+import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';

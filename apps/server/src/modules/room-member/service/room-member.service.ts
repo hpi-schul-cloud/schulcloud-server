@@ -38,6 +38,25 @@ export class RoomMemberService {
 		return roomMember;
 	}
 
+	private static buildRoomMemberAuthorizable(
+		roomId: EntityId,
+		group: Group,
+		roleSet: RoleDto[]
+	): RoomMemberAuthorizable {
+		const members = group.users.map((groupUser): UserWithRoomRoles => {
+			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
+			if (roleDto === undefined) throw new BadRequestException('Role not found');
+			return {
+				roles: [roleDto],
+				userId: groupUser.userId,
+			};
+		});
+
+		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomId, members);
+
+		return roomMemberAuthorizable;
+	}
+
 	public async deleteRoomMember(roomId: EntityId) {
 		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
 		if (roomMember === null) return;
@@ -63,36 +82,19 @@ export class RoomMemberService {
 		return roomMember.id;
 	}
 
-	private static buildRoomMemberAuthorizable(
-		roomId: EntityId,
-		group: Group,
-		roleSet: RoleDto[]
-	): RoomMemberAuthorizable {
-		const members = group.users.map((groupUser): UserWithRoomRoles => {
-			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
-			if (roleDto === undefined) throw new BadRequestException('Role not found');
-			return {
-				roles: [roleDto],
-				userId: groupUser.userId,
-			};
-		});
-
-		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomId, members);
-
-		return roomMemberAuthorizable;
-	}
-
 	public async getRoomMemberAuthorizablesByUserId(userId: EntityId): Promise<RoomMemberAuthorizable[]> {
 		const groupPage = await this.groupService.findGroups({ userId, groupTypes: [GroupTypes.ROOM] });
 		const groupIds = groupPage.data.map((group) => group.id);
 		const roomMembers = await this.roomMembersRepo.findByGroupIds(groupIds);
 		const roleIds = groupPage.data.flatMap((group) => group.users.map((groupUser) => groupUser.roleId));
 		const roleSet = await this.roleService.findByIds(roleIds);
-		const roomMemberAuthorizables = roomMembers.map((item) => {
-			const group = groupPage.data.find((g) => g.id === item.userGroupId);
-			if (!group) throw new BadRequestException('Group not found');
-			return RoomMemberService.buildRoomMemberAuthorizable(item.roomId, group, roleSet);
-		});
+		const roomMemberAuthorizables = roomMembers
+			.map((item) => {
+				const group = groupPage.data.find((g) => g.id === item.userGroupId);
+				if (!group) return null; // Return null instead of throwing error
+				return RoomMemberService.buildRoomMemberAuthorizable(item.roomId, group, roleSet);
+			})
+			.filter((item): item is RoomMemberAuthorizable => item !== null); // Filter out null values
 
 		return roomMemberAuthorizables;
 	}

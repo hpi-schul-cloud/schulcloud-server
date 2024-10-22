@@ -1,9 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { GroupRepo } from '@src/modules/group';
-import { roomMemberEntityFactory } from '../testing';
+import { RoomMember } from '../do/room-member.do';
+import { roomMemberEntityFactory, roomMemberFactory } from '../testing';
+import { RoomMemberEntity } from './entity';
 import { RoomMemberRepo } from './room-member.repo';
 
 describe('RoomMemberRepo', () => {
@@ -14,7 +16,7 @@ describe('RoomMemberRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [RoomMemberRepo, GroupRepo],
+			providers: [RoomMemberRepo],
 		}).compile();
 
 		repo = module.get(RoomMemberRepo);
@@ -41,9 +43,10 @@ describe('RoomMemberRepo', () => {
 		it('should find room member by roomId', async () => {
 			const { roomMemberEntity } = await setup();
 
-			const roomMembers = await repo.findByRoomId(roomMemberEntity.roomId);
+			const roomMember = await repo.findByRoomId(roomMemberEntity.roomId);
 
-			expect(roomMembers).toHaveLength(1);
+			expect(roomMember).toBeDefined();
+			expect(roomMember?.getProps()).toEqual(roomMemberEntity);
 		});
 	});
 
@@ -73,79 +76,56 @@ describe('RoomMemberRepo', () => {
 		});
 	});
 
-	// describe('save', () => {
-	// 	// const setup = async () => {
+	describe('save', () => {
+		const setup = () => {
+			const roomMembers = roomMemberFactory.buildList(3);
+			return { roomMembers };
+		};
 
-	// 	// 	await em.persistAndFlush([existingUser, existingRole, exisitingGroup]);
-	// 	// 	em.clear();
+		it('should be able to persist a single room member', async () => {
+			const { roomMembers } = setup();
 
-	// 	// 	return { existingUser, existingRole, exisitingGroup };
-	// 	// };
+			await repo.save(roomMembers[0]);
+			const result = await em.findOneOrFail(RoomMemberEntity, roomMembers[0].id);
 
-	// 	it('should save a single room member', async () => {
-	// 		// const { existingUser, existingRole, exisitingGroup } = await setup();
+			expect(roomMembers[0].getProps()).toMatchObject(result);
+		});
 
-	// 		const roomMemberEntity = roomMemberEntityFactory.build();
-	// 		const roomMember = RoomMemberDomainMapper.mapEntityToDo(roomMemberEntity);
-	// 		await repo.save(roomMember);
+		it('should be able to persist many room members', async () => {
+			const { roomMembers } = setup();
 
-	// 		const savedMember = await em.findOne(RoomMemberEntity, roomMember.id);
-	// 		expect(savedMember).toBeDefined();
-	// 		expect(savedMember).toEqual(roomMember);
-	// 	});
+			await repo.save(roomMembers);
+			const result = await em.find(RoomMemberEntity, { id: { $in: roomMembers.map((r) => r.id) } });
 
-	// 	// it('should save multiple room members', async () => {
-	// 	// 	const { existingUser, existingRole, exisitingGroup } = await setup();
-	// 	// 	const roomMemberEntityList = roomMemberEntityFactory.buildList(3, { userGroupId: exisitingGroup.id });
-	// 	// 	const groupUserEmbeddable = new GroupUserEmbeddable({ user: existingUser, role: existingRole });
-	// 	// 	const roomMemberList = roomMemberEntityList.map((member) =>
-	// 	// 		RoomMemberDomainMapper.mapEntityToDo(member, [groupUserEmbeddable])
-	// 	// 	);
-	// 	// 	await repo.save(roomMemberList);
+			expect(result.length).toBe(roomMembers.length);
+		});
+	});
 
-	// 	// 	const savedMembers = await Promise.all(
-	// 	// 		roomMemberList.map(async (member) => {
-	// 	// 			const savedMember = await em.findOne(RoomMemberEntity, member.id);
-	// 	// 			expect(savedMember).toBeDefined();
-	// 	// 			expect(savedMember?.id).toEqual(member.id);
-	// 	// 			return savedMember;
-	// 	// 		})
-	// 	// 	);
+	describe('delete', () => {
+		const setup = async () => {
+			const roomMemberEntities = roomMemberEntityFactory.buildListWithId(3);
+			await em.persistAndFlush(roomMemberEntities);
+			const roomMembers = roomMemberEntities.map((entity) => new RoomMember(entity));
+			em.clear();
 
-	// 	// 	expect(savedMembers).toHaveLength(roomMemberList.length);
-	// 	// 	expect(savedMembers.map((m) => m?.id)).toEqual(roomMemberList.map((m) => m.id));
-	// 	// });
-	// });
+			return { roomMembers };
+		};
 
-	// describe('delete', () => {
-	// 	it('should delete a single room member', async () => {
-	// 		const roomMemberEntity = roomMemberEntityFactory.build();
-	// 		await em.persistAndFlush(roomMemberEntity);
-	// 		em.clear();
+		it('should be able to delete a single room member', async () => {
+			const { roomMembers } = await setup();
 
-	// 		const roomMember = RoomMemberDomainMapper.mapEntityToDo(roomMemberEntity, []);
-	// 		await repo.delete(roomMember);
+			await repo.delete(roomMembers[0]);
 
-	// 		const deletedMember = await em.findOne(RoomMemberEntity, roomMember.id);
-	// 		expect(deletedMember).toBeNull();
-	// 	});
+			await expect(em.findOneOrFail(RoomMemberEntity, roomMembers[0].id)).rejects.toThrow(NotFoundError);
+		});
 
-	// 	it('should delete multiple room members', async () => {
-	// 		const roomMemberEntityList = roomMemberEntityFactory.buildList(3);
-	// 		await em.persistAndFlush(roomMemberEntityList);
-	// 		em.clear();
+		it('should be able to delete many rooms', async () => {
+			const { roomMembers } = await setup();
 
-	// 		const roomMemberList = roomMemberEntityList.map((member) => RoomMemberDomainMapper.mapEntityToDo(member, []));
-	// 		await repo.delete(roomMemberList);
+			await repo.delete(roomMembers);
 
-	// 		const deletedMembers = await Promise.all(
-	// 			roomMemberList.map(async (member) => {
-	// 				const deletedMember = await em.findOne(RoomMemberEntity, member.id);
-	// 				expect(deletedMember).toBeNull();
-	// 				return deletedMember;
-	// 			})
-	// 		);
-	// 		expect(deletedMembers).toHaveLength(roomMemberList.length);
-	// 	});
-	// });
+			const remainingCount = await em.count(RoomMemberEntity);
+			expect(remainingCount).toBe(0);
+		});
+	});
 });

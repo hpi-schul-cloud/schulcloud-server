@@ -2,6 +2,7 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
 export interface RoomMemberProps extends AuthorizableObject {
+	id: EntityId;
 	roomId: EntityId;
 	userGroupId: EntityId;
 	createdAt: Date;
