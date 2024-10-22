@@ -157,7 +157,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const newEmail = newEmailAndUsername;
 		const updatedUser = await this.tspSyncService.updateUser(teacherUser, newEmail, lehrerUidNeu, lehrerUidAlt);
 
-		const teacherAccount = await this.tspSyncService.findAccountByTspUserId(lehrerUidAlt);
+		const teacherAccount = await this.tspSyncService.findAccountByTspUid(lehrerUidAlt);
 
 		if (!teacherAccount) {
 			throw new Error('Account not found');

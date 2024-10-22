@@ -1,4 +1,4 @@
-import { RobjExportLehrerMigration, RobjExportSchuelerMigration, TspClientFactory } from '@infra/tsp-client';
+import { TspClientFactory } from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
@@ -149,39 +149,21 @@ export class TspSyncService {
 	}
 
 	public async fetchTspTeacherMigrations(system: System) {
-		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
-		});
-		const teachers: RobjExportLehrerMigration[] = (await client.exportLehrerListMigration()).data;
+		const client = this.createClient(system);
 
-		return teachers;
+		const teacherMigrationsResponse = await client.exportLehrerListMigration();
+		const teacherMigrations = teacherMigrationsResponse.data;
+
+		return teacherMigrations;
 	}
 
 	public async fetchTspStudentMigrations(system: System) {
-		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
-		});
-		const students: RobjExportSchuelerMigration[] = (await client.exportSchuelerListMigration()).data;
+		const client = this.createClient(system);
 
-		return students;
-	}
+		const studentMigrationsResponse = await client.exportSchuelerListMigration();
+		const studentMigrations = studentMigrationsResponse.data;
 
-	private formatChangeDate(daysToFetch: number): string {
-		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
-	}
-
-	private createClient(system: System) {
-		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
-		});
-
-		return client;
+		return studentMigrations;
 	}
 
 	public async findUserByTspUid(tspUid: string) {
@@ -194,7 +176,7 @@ export class TspSyncService {
 		return tspUser.data[0];
 	}
 
-	public async findAccountByTspUserId(tspUid: string) {
+	public async findAccountByTspUid(tspUid: string) {
 		const user = await this.findUserByTspUid(tspUid);
 
 		if (!user || !user.id) {
@@ -219,5 +201,19 @@ export class TspSyncService {
 		account.systemId = systemId;
 
 		return this.accountService.save(account);
+	}
+
+	private formatChangeDate(daysToFetch: number): string {
+		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+	}
+
+	private createClient(system: System) {
+		const client = this.tspClientFactory.createExportClient({
+			clientId: system.oauthConfig?.clientId ?? '',
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
+			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+		});
+
+		return client;
 	}
 }
