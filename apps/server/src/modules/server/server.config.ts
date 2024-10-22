@@ -119,8 +119,9 @@ export interface ServerConfig
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
+	TLDRAW__WEBSOCKET_URL: string;
 	TLDRAW__ASSETS_ENABLED: boolean;
-	TLDRAW__ASSETS_MAX_SIZE: number;
+	TLDRAW__ASSETS_MAX_SIZE_BYTES: number;
 	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: string[];
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 	I18N__DEFAULT_LANGUAGE: LanguageType;
@@ -230,8 +231,9 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	TLDRAW__WEBSOCKET_URL: Configuration.get('TLDRAW__WEBSOCKET_URL') as string,
 	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
-	TLDRAW__ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
+	TLDRAW__ASSETS_MAX_SIZE_BYTES: Configuration.get('TLDRAW__ASSETS_MAX_SIZE_BYTES') as number,
 	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: (Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string).split(
 		','
 	),
