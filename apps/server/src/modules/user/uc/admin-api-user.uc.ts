@@ -22,11 +22,17 @@ export class AdminApiUserUc {
 		roleNames: RoleName[];
 		schoolId: EntityId;
 	}): Promise<CreateddUserAndAccount> {
+		console.log('roleNames', props.roleNames);
+
 		const roleDtos = await this.roleService.findByNames(props.roleNames);
+		console.log('roleDtos', roleDtos);
+
 		const roles = roleDtos.map((r) => {
 			if (!r.id) throw new Error();
 			return new RoleReference({ ...r, id: r.id });
 		});
+
+		console.log('roles', roles);
 		const user = await this.userService.save({ ...props, roles });
 		if (!user.id) throw new Error();
 		const initialPassword = nanoid(12);
