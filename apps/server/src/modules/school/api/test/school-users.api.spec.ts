@@ -29,7 +29,7 @@ describe('School Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		await em.clearCache('roles-cache');
+		await em.clearCache('roles-cache-teacher');
 	});
 
 	afterAll(async () => {

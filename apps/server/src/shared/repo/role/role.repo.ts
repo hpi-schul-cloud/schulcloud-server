@@ -16,17 +16,13 @@ export class RoleRepo extends BaseRepo<Role> {
 		const promise: Promise<Role> = this._em.findOneOrFail(
 			Role,
 			{ name },
-			{ cache: ['roles-cache', this.cacheExpiration] }
+			{ cache: [`roles-cache-${name}`, this.cacheExpiration] }
 		);
 		return promise;
 	}
 
 	async findById(id: EntityId): Promise<Role> {
-		const promise: Promise<Role> = this._em.findOneOrFail(
-			Role,
-			{ id },
-			{ cache: ['roles-cache', this.cacheExpiration] }
-		);
+		const promise: Promise<Role> = this._em.findOneOrFail(Role, { id }, { cache: this.cacheExpiration });
 		return promise;
 	}
 
@@ -34,17 +30,13 @@ export class RoleRepo extends BaseRepo<Role> {
 		const promise: Promise<Role[]> = this._em.find(
 			Role,
 			{ name: { $in: names } },
-			{ cache: ['roles-cache', this.cacheExpiration] }
+			{ cache: [`roles-cache-${names.join('-')}`, this.cacheExpiration] }
 		);
 		return promise;
 	}
 
 	async findByIds(ids: string[]): Promise<Role[]> {
-		const promise: Promise<Role[]> = this._em.find(
-			Role,
-			{ id: { $in: ids } },
-			{ cache: ['roles-cache', this.cacheExpiration] }
-		);
+		const promise: Promise<Role[]> = this._em.find(Role, { id: { $in: ids } }, { cache: this.cacheExpiration });
 		return promise;
 	}
 }
