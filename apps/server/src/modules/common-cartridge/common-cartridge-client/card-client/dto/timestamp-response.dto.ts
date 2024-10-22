@@ -3,7 +3,7 @@ export class TimestampResponseDto {
 
 	createdAt: string;
 
-	deletedAt: string;
+	deletedAt: string | undefined;
 
 	constructor(lastUpdatedAt: string, createdAt: string, deletedAt: string) {
 		this.lastUpdatedAt = lastUpdatedAt;

@@ -1,5 +1,5 @@
 export class VisibilitySettingsResponseDto {
-	publishedAt: string;
+	publishedAt: string | undefined;
 
 	constructor(publishedAt: string) {
 		this.publishedAt = publishedAt;
