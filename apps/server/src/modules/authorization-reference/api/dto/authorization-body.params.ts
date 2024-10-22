@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizableReferenceType, AuthorizationContext } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsMongoId, ValidateNested } from 'class-validator';
 
