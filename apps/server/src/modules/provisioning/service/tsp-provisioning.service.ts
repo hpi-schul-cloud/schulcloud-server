@@ -14,7 +14,7 @@ import { BadDataLoggableException } from '../loggable';
 export class TspProvisioningService {
 	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 
-	private TSP_EMAIL_DOMAIN = 'tsp.de';
+	private TSP_EMAIL_DOMAIN = 'schul-cloud.org';
 
 	constructor(
 		private readonly schoolService: SchoolService,

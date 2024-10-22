@@ -82,7 +82,6 @@ export class TspOauthDataMapper {
 				firstName: tspTeacher.lehrerNachname,
 				lastName: tspTeacher.lehrerNachname,
 				roles: [RoleName.TEACHER],
-				email: `tsp/${tspTeacher.lehrerUid}@schul-cloud.org`,
 			});
 
 			const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
@@ -113,7 +112,6 @@ export class TspOauthDataMapper {
 				firstName: tspStudent.schuelerNachname,
 				lastName: tspStudent.schuelerNachname,
 				roles: [RoleName.STUDENT],
-				email: `tsp/${tspStudent.schuelerUid}@schul-cloud.org`,
 			});
 
 			const classStudent = tspStudent.klasseId == null ? undefined : externalClasses.get(tspStudent.klasseId);
