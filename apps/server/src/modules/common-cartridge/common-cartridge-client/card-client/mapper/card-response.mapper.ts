@@ -1,4 +1,5 @@
 import {
+	CardListResponse,
 	CardResponse,
 	CardResponseElementsInner,
 	VisibilitySettingsResponse,
@@ -11,7 +12,6 @@ import {
 	LinkElementResponse,
 	RichTextElementResponse,
 } from '../cards-api-client';
-import { CardResponseElementsInnerDto } from '../dto/card-response-elements-inner.dto';
 import { CardResponseDto } from '../dto/card-response.dto';
 import { CollaborativeTextEditorElementResponseDto } from '../dto/collaborative-text-editor-element-response.dto';
 import { DeletedElementResponseDto } from '../dto/deleted-element-response.dto';
@@ -32,12 +32,22 @@ import { DeletedElementContentDto } from '../dto/deleted-element-content.dto';
 import { VisibilitySettingsResponseDto } from '../dto/visibility-settings-response.dto';
 import { TimestampResponseDto } from '../dto/timestamp-response.dto';
 import { CardContentElementInner } from '../types/card-content-elements-inner.type';
+import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
+import { CardListResponseDto } from '../dto/card-list-response.dto';
 
 export class CardResponseMapper {
-	public static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {
+	public static mapToCardListResponseDto(cardListResponse: CardListResponse) {
+		const cardListResponseDto: CardListResponseDto = new CardListResponseDto([]);
+
+		cardListResponse.data.forEach((cardResponse) => {
+			cardListResponseDto.data.push(this.mapToCardResponseDto(cardResponse));
+		});
+	}
+
+	private static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {
 		return new CardResponseDto(
 			cardResponse.id,
-			cardResponse.title!,
+			cardResponse.title as string,
 			cardResponse.height,
 			this.mapToCardResponseElementsInnerDto(cardResponse.elements),
 			this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
@@ -179,7 +189,7 @@ export class CardResponseMapper {
 				return new LinkElementContentDto(
 					linkElementResponse.content.url,
 					linkElementResponse.content.title,
-					linkElementResponse.content.description!,
+					linkElementResponse.content.description as string,
 					linkElementResponse.content.imageUrl as string
 				);
 			}
@@ -200,6 +210,6 @@ export class CardResponseMapper {
 	}
 
 	private static mapToTimestampDto(timestamp: TimestampsResponse): TimestampResponseDto {
-		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt!);
+		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt as string);
 	}
 }

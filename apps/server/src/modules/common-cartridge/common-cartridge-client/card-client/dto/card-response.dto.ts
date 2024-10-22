@@ -1,4 +1,4 @@
-import { CardResponseElementsInnerDto } from './card-response-elements-inner.dto';
+import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
 import { TimestampResponseDto } from './timestamp-response.dto';
 import { VisibilitySettingsResponseDto } from './visibility-settings-response.dto';
 
