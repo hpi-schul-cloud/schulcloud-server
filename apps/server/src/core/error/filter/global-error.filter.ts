@@ -11,7 +11,7 @@ import { ErrorUtils } from '../utils';
 
 // We are receiving rmq instead of rpc and rmq is missing in context type.
 // @nestjs/common export type ContextType = 'http' | 'ws' | 'rpc';
-enum UseableContextType {
+export enum UseableContextType {
 	http = 'http',
 	rpc = 'rpc',
 	ws = 'ws',
