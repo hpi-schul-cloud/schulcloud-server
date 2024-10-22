@@ -36,12 +36,13 @@ import { CardResponseElementsInnerDto } from '../types/card-response-elements-in
 import { CardListResponseDto } from '../dto/card-list-response.dto';
 
 export class CardResponseMapper {
-	public static mapToCardListResponseDto(cardListResponse: CardListResponse) {
+	public static mapToCardListResponseDto(cardListResponse: CardListResponse): CardListResponseDto {
 		const cardListResponseDto: CardListResponseDto = new CardListResponseDto([]);
 
 		cardListResponse.data.forEach((cardResponse) => {
 			cardListResponseDto.data.push(this.mapToCardResponseDto(cardResponse));
 		});
+		return cardListResponseDto;
 	}
 
 	private static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {

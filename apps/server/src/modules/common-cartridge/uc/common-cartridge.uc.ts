@@ -4,6 +4,7 @@ import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
+import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -21,5 +22,11 @@ export class CommonCartridgeUc {
 		});
 
 		return response;
+	}
+
+	public async exportCardList(cardIds: Array<string>): Promise<CardListResponseDto> {
+		const lesson = await this.exportService.getAllCardsByIds(cardIds);
+
+		return lesson;
 	}
 }
