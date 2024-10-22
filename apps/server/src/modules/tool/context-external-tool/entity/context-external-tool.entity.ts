@@ -1,6 +1,7 @@
 import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameterEntryEntity } from '../../common/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
@@ -10,7 +11,7 @@ export interface ContextExternalToolEntityProps {
 
 	schoolTool: SchoolExternalToolEntity;
 
-	contextId: string;
+	contextId: EntityId | ObjectId;
 
 	contextType: ContextExternalToolType;
 
@@ -25,7 +26,7 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	schoolTool: SchoolExternalToolEntity;
 
 	@Property()
-	contextId: string;
+	contextId: ObjectId;
 
 	@Property()
 	contextType: ContextExternalToolType;
@@ -42,7 +43,7 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 			this.id = props.id;
 		}
 		this.schoolTool = props.schoolTool;
-		this.contextId = props.contextId;
+		this.contextId = new ObjectId(props.contextId);
 		this.contextType = props.contextType;
 		this.displayName = props.displayName;
 		this.parameters = props.parameters ?? [];

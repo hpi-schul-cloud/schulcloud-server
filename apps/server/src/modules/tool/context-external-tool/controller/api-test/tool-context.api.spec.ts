@@ -310,7 +310,7 @@ describe('ToolContextController (API)', () => {
 				expect(result.statusCode).toEqual(HttpStatus.NO_CONTENT);
 
 				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
-					contextId: contextExternalToolEntity.id,
+					contextId: new ObjectId(contextExternalToolEntity.id),
 				});
 
 				expect(deleted).toBeNull();
@@ -433,7 +433,7 @@ describe('ToolContextController (API)', () => {
 					await setup();
 
 				const response = await loggedInClient.get(
-					`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+					`${contextExternalTool1.contextType}/${contextExternalTool1.contextId.toHexString()}`
 				);
 
 				expect(response.status).toEqual(HttpStatus.OK);
@@ -448,7 +448,7 @@ describe('ToolContextController (API)', () => {
 							],
 							id: contextExternalTool1.id,
 							schoolToolId: contextExternalTool1.schoolTool.id,
-							contextId: contextExternalTool1.contextId,
+							contextId: contextExternalTool1.contextId.toHexString(),
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalTool1.displayName,
 						},
@@ -461,7 +461,7 @@ describe('ToolContextController (API)', () => {
 							],
 							id: contextExternalTool2.id,
 							schoolToolId: contextExternalTool2.schoolTool.id,
-							contextId: contextExternalTool2.contextId,
+							contextId: contextExternalTool2.contextId.toHexString(),
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalTool2.displayName,
 						},
@@ -478,7 +478,7 @@ describe('ToolContextController (API)', () => {
 							],
 							id: contextExternalToolFromOtherSchool.id,
 							schoolToolId: contextExternalToolFromOtherSchool.schoolTool.id,
-							contextId: contextExternalToolFromOtherSchool.contextId,
+							contextId: contextExternalToolFromOtherSchool.contextId.toHexString(),
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalToolFromOtherSchool.displayName,
 						},
@@ -491,7 +491,7 @@ describe('ToolContextController (API)', () => {
 					const { contextExternalTool1 } = await setup();
 
 					const response = await testApiClient.get(
-						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId.toHexString()}`
 					);
 
 					expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
@@ -503,7 +503,7 @@ describe('ToolContextController (API)', () => {
 					const { contextExternalTool1, otherLoggedInClient } = await setup();
 
 					const response = await otherLoggedInClient.get(
-						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId.toHexString()}`
 					);
 
 					expect(response.status).toEqual(HttpStatus.OK);
@@ -568,7 +568,7 @@ describe('ToolContextController (API)', () => {
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
 					schoolToolId: contextExternalTool.schoolTool.id,
-					contextId: contextExternalTool.contextId,
+					contextId: contextExternalTool.contextId.toHexString(),
 					contextType: ToolContextType.COURSE,
 					id: contextExternalTool.id,
 					displayName: contextExternalTool.displayName,
@@ -638,7 +638,9 @@ describe('ToolContextController (API)', () => {
 			it('should return unauthorized', async () => {
 				const { contextExternalTool } = await setup();
 
-				const response = await testApiClient.get(`${contextExternalTool.contextType}/${contextExternalTool.contextId}`);
+				const response = await testApiClient.get(
+					`${contextExternalTool.contextType}/${contextExternalTool.contextId.toHexString()}`
+				);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
