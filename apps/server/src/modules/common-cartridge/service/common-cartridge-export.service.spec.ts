@@ -6,6 +6,7 @@ import { BoardClientAdapter } from '../common-cartridge-client/board-client';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -13,6 +14,9 @@ describe('CommonCartridgeExportService', () => {
 	let filesStorageServiceMock: DeepMocked<FilesStorageClientAdapterService>;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let courseRoomsClientAdapterMock: DeepMocked<CourseRoomsClientAdapter>;
+	// TODO: this should be removed after review testing
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,6 +38,10 @@ describe('CommonCartridgeExportService', () => {
 					provide: CourseRoomsClientAdapter,
 					useValue: createMock<CourseRoomsClientAdapter>(),
 				},
+				{
+					provide: LessonClientAdapter,
+					useValue: createMock<LessonClientAdapter>(),
+				},
 			],
 		}).compile();
 
@@ -41,6 +49,7 @@ describe('CommonCartridgeExportService', () => {
 		filesStorageServiceMock = module.get(FilesStorageClientAdapterService);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		courseRoomsClientAdapterMock = module.get(CourseRoomsClientAdapter);
+		lessonClientAdapterMock = module.get(LessonClientAdapter);
 	});
 
 	afterAll(async () => {
