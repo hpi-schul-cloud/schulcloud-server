@@ -24,10 +24,12 @@ import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
+import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
+import { RoomParticipantListResponse, RoomParticipantResponse } from './dto/response/room-participant.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
-import { RoomItemResponse } from './dto/response/room-item.response';
+import { mockusers } from './mock-participants';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -123,5 +125,30 @@ export class RoomController {
 	@HttpCode(204)
 	async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
+	}
+
+	@Get(':roomId/participants')
+	@ApiOperation({ summary: 'Get a list of rooms.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of the participants of the room.',
+		type: RoomParticipantListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async getParticipants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() pagination: RoomPaginationParams
+	): Promise<RoomParticipantListResponse> {
+		const response = new RoomParticipantListResponse(
+			mockusers.map((user) => new RoomParticipantResponse(user)),
+			0,
+			pagination.skip,
+			pagination.limit
+		);
+
+		return Promise.resolve(response);
 	}
 }
