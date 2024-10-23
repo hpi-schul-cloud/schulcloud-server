@@ -12,6 +12,9 @@ export class RoomParticipantResponse {
 	fullName!: string;
 
 	@ApiProperty()
+	roleName!: string;
+
+	@ApiProperty()
 	schoolName!: string;
 
 	@ApiProperty()
@@ -22,6 +25,7 @@ export class RoomParticipantResponse {
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
 		this.fullName = props.fullName;
+		this.roleName = props.roleName;
 		this.schoolName = props.schoolName;
 	}
 }
