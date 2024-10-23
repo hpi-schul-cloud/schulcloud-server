@@ -1,10 +1,10 @@
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthGuardModule, AuthGuardOptions } from '@src/infra/auth-guard';
 import { TldrawController } from '..';
 import { TldrawRepo } from '../../repo';
 import { TldrawService } from '../../service';
