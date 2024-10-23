@@ -48,7 +48,6 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.schoolDataDaysToFetch = configService.get<number>('TSP_SYNC_DATA_DAYS_TO_FETCH', 1);
 
 		this.migrationLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT'));
-
 		this.migrationEnabled = configService.get<boolean>('FEATURE_TSP_MIGRATION_ENABLED');
 	}
 

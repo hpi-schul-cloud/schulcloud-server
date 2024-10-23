@@ -13,4 +13,5 @@ export interface UserConfig
 		CalendarConfig,
 		LegacySchoolConfig {
 	AVAILABLE_LANGUAGES: string[];
+	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: string;
 }
