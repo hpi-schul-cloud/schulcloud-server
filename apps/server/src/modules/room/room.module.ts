@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { RoomRepo } from './repo';
 import { RoomService } from './domain/service';
+import { RoomRepo } from './repo';
 
 @Module({
 	imports: [CqrsModule],
