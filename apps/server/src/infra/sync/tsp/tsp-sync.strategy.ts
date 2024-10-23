@@ -2,13 +2,18 @@ import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
+import { ProvisioningService } from '@src/modules/provisioning';
 import { System } from '@src/modules/system';
 import pLimit from 'p-limit';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
+import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
+import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
+import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 
@@ -16,17 +21,27 @@ import { TspSyncService } from './tsp-sync.service';
 export class TspSyncStrategy extends SyncStrategy {
 	private readonly schoolLimit: pLimit.Limit;
 
+	private readonly dataLimit: pLimit.Limit;
+
 	private readonly schoolDaysToFetch: number;
+
+	private readonly schoolDataDaysToFetch: number;
 
 	constructor(
 		private readonly logger: Logger,
 		private readonly tspSyncService: TspSyncService,
-		configService: ConfigService<TspSyncConfig, true>
+		private readonly tspOauthDataMapper: TspOauthDataMapper,
+		configService: ConfigService<TspSyncConfig, true>,
+		private readonly provisioningService: ProvisioningService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
+
 		this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
 		this.schoolDaysToFetch = configService.get<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', 1);
+
+		this.dataLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT'));
+		this.schoolDataDaysToFetch = configService.get<number>('TSP_SYNC_DATA_DAYS_TO_FETCH', 1);
 	}
 
 	public override getType(): SyncStrategyTarget {
@@ -37,6 +52,10 @@ export class TspSyncStrategy extends SyncStrategy {
 		const system = await this.tspSyncService.findTspSystemOrFail();
 
 		await this.syncSchools(system);
+
+		const schools = await this.tspSyncService.findSchoolsForSystem(system);
+
+		await this.syncData(system, schools);
 	}
 
 	private async syncSchools(system: System): Promise<School[]> {
@@ -46,7 +65,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const schoolPromises = tspSchools.map((tspSchool) =>
 			this.schoolLimit(async () => {
 				if (!tspSchool.schuleNummer) {
-					this.logger.warning(new TspSchulnummerMissingLoggable());
+					this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
 					return null;
 				}
 
@@ -75,5 +94,32 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.logger.info(new TspSchoolsSyncedLoggable(total, totalProcessed, createdSchools, updatedSchools));
 
 		return scSchools.filter((scSchool) => scSchool != null).map((scSchool) => scSchool.school);
+	}
+
+	private async syncData(system: System, schools: School[]): Promise<void> {
+		const tspTeachers = await this.tspSyncService.fetchTspTeachers(system, this.schoolDataDaysToFetch);
+		const tspStudents = await this.tspSyncService.fetchTspStudents(system, this.schoolDataDaysToFetch);
+		const tspClasses = await this.tspSyncService.fetchTspClasses(system, this.schoolDataDaysToFetch);
+		this.logger.info(
+			new TspDataFetchedLoggable(tspTeachers.length, tspStudents.length, tspClasses.length, this.schoolDataDaysToFetch)
+		);
+
+		const oauthDataDtos = this.tspOauthDataMapper.mapTspDataToOauthData(
+			system,
+			schools,
+			tspTeachers,
+			tspStudents,
+			tspClasses
+		);
+
+		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
+
+		const dataPromises = oauthDataDtos.map((oauthDataDto) =>
+			this.dataLimit(() => this.provisioningService.provisionData(oauthDataDto))
+		);
+
+		const results = await Promise.allSettled(dataPromises);
+
+		this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
 }

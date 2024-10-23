@@ -1,6 +1,7 @@
 import { ToolContextType } from '@modules/tool/common/enum';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 describe('CourseExternalToolScope', () => {
@@ -63,7 +64,7 @@ describe('CourseExternalToolScope', () => {
 
 				scope.byContextId(schoolExternalToolEntity.id);
 
-				expect(scope.query).toEqual({ contextId: schoolExternalToolEntity.id });
+				expect(scope.query).toEqual({ contextId: new ObjectId(schoolExternalToolEntity.id) });
 			});
 		});
 	});
