@@ -37,7 +37,6 @@ describe(RoomMemberRule.name, () => {
 
 			it('should return true', () => {
 				const { user, roomMemberAuthorizable } = setup();
-				console.log(roomMemberAuthorizable instanceof RoomMemberAuthorizable);
 				const result = service.isApplicable(user, roomMemberAuthorizable);
 
 				expect(result).toStrictEqual(true);
