@@ -102,6 +102,39 @@ describe('RoomMemberService', () => {
 		});
 	});
 
+	describe('deleteRoomMember', () => {
+		describe('when room member does not exist', () => {
+			const setup = () => {
+				roomMemberRepo.findByRoomId.mockResolvedValue(null);
+			};
+
+			it('no nothing', async () => {
+				setup();
+				await service.deleteRoomMember('roomId');
+				expect(groupService.delete).not.toHaveBeenCalled();
+				expect(roomMemberRepo.delete).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when room member exists', () => {
+			const setup = () => {
+				const group = groupFactory.build();
+				const roomMember = roomMemberFactory.build({ userGroupId: group.id });
+				roomMemberRepo.findByRoomId.mockResolvedValue(roomMember);
+				groupService.findById.mockResolvedValue(group);
+
+				return { roomMember, group };
+			};
+
+			it('should call delete group and room member', async () => {
+				const { roomMember, group } = setup();
+				await service.deleteRoomMember(roomMember.roomId);
+				expect(groupService.delete).toHaveBeenCalledWith(group);
+				expect(roomMemberRepo.delete).toHaveBeenCalledWith(roomMember);
+			});
+		});
+	});
+
 	describe('getRoomMemberAuthorizable', () => {
 		const setup = () => {
 			const roomId = 'room123';

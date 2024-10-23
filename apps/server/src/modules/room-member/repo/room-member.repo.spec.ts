@@ -76,6 +76,30 @@ describe('RoomMemberRepo', () => {
 		});
 	});
 
+	describe('findByGroupId', () => {
+		const setup = async () => {
+			const groupId = new ObjectId().toHexString();
+			const roomMemberEntities = [
+				roomMemberEntityFactory.build({ userGroupId: groupId }),
+				roomMemberEntityFactory.build({ userGroupId: groupId }),
+				roomMemberEntityFactory.build({ userGroupId: new ObjectId().toHexString() }),
+			];
+
+			await em.persistAndFlush(roomMemberEntities);
+			em.clear();
+
+			return { roomMemberEntities, groupId };
+		};
+
+		it('should find room members by groupId', async () => {
+			const { groupId } = await setup();
+
+			const roomMembers = await repo.findByGroupId(groupId);
+
+			expect(roomMembers).toHaveLength(2);
+		});
+	});
+
 	describe('save', () => {
 		const setup = () => {
 			const roomMembers = roomMemberFactory.buildList(3);

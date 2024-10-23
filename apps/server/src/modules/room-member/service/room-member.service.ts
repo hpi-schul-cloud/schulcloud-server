@@ -91,10 +91,10 @@ export class RoomMemberService {
 		const roomMemberAuthorizables = roomMembers
 			.map((item) => {
 				const group = groupPage.data.find((g) => g.id === item.userGroupId);
-				if (!group) return null; // Return null instead of throwing error
+				if (!group) return null;
 				return RoomMemberService.buildRoomMemberAuthorizable(item.roomId, group, roleSet);
 			})
-			.filter((item): item is RoomMemberAuthorizable => item !== null); // Filter out null values
+			.filter((item): item is RoomMemberAuthorizable => item !== null);
 
 		return roomMemberAuthorizables;
 	}
