@@ -14,13 +14,22 @@ import { TspOauthDataMapper } from './tsp/tsp-oauth-data.mapper';
 import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
+import { EncryptionModule } from '../encryption';
 
 @Module({
 	imports: [
 		LoggerModule,
 		ConsoleWriterModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspClientModule, SystemModule, SchoolModule, LegacySchoolModule, RabbitMQWrapperModule, ProvisioningModule]
+			? [
+					TspClientModule,
+					SystemModule,
+					SchoolModule,
+					LegacySchoolModule,
+					RabbitMQWrapperModule,
+					ProvisioningModule,
+					EncryptionModule,
+			  ]
 			: []),
 	],
 	providers: [
