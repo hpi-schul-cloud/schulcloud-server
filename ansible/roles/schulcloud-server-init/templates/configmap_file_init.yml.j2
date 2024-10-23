@@ -559,5 +559,43 @@ data:
 
         # ========== End of the Instance seed data configuration section.
 
+    # ========== Start of TSP system creation
+    if [[ $SC_THEME == "thr" ]]; then
+      echo "Adding TSP system to systems collection"
+
+      TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $TSP_SYSTEM_OAUTH_CLIENT_SECRET)
+      mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
+          {
+            "_id": ObjectId("66d707f5c5202ba10c5e6256"),
+            "alias": "TSP",
+            "displayName": "Thüringer Schulportal",
+            "type": "oauth",
+            "provisioningStrategy": "tsp",
+            "oauthConfig": {
+              "clientId": "'$TSP_SYSTEM_OAUTH_CLIENT_ID'",
+              "clientSecret": "'$TSP_SYSTEM_OAUTH_CLIENT_SECRET'",
+              "tokenEndpoint": "https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/token",
+              "grantType": "authorization_code",
+              "scope": "openid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.thr.dbildungscloud.dev/api/v3/sso/oauth",
+              "authEndpoint": "https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/auth",
+              "provider": "tsp",
+              "jwksEndpoint": "https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/certs",
+              "issuer": "https://test2.schulportal-thueringen.de/auth/realms/TIS"
+            }
+          }
+      );'
+
+      echo "Successfully added TSP system"
+
+      echo "Running TSP Sync"
+      npm run nest:start:sync tsp
+
+      echo "Successfully ran TSP sync"
+    fi
+
+    # ========== End of TSP system creation
+
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
