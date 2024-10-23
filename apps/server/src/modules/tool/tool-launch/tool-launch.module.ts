@@ -1,4 +1,5 @@
 import { EncryptionModule } from '@infra/encryption';
+import { CacheWrapperModule } from '@infra/cache';
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -34,6 +35,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		BoardModule,
 		GroupModule,
 		EncryptionModule,
+		CacheWrapperModule,
 	],
 	providers: [
 		ToolLaunchService,

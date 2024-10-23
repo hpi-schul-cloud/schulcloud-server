@@ -1,6 +1,6 @@
-import { PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
-import { ToolLaunchRequestResponse } from '../controller/dto';
 import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
+import { ToolLaunchRequestResponse } from '../controller/dto';
+import { PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 
 const customToParameterLocationMapping: Record<CustomParameterLocation, PropertyLocation> = {
 	[CustomParameterLocation.PATH]: PropertyLocation.PATH,
@@ -37,13 +37,14 @@ export class ToolLaunchMapper {
 	}
 
 	static mapToToolLaunchRequestResponse(toolLaunchRequest: ToolLaunchRequest): ToolLaunchRequestResponse {
-		const { method, url, payload, openNewTab } = toolLaunchRequest;
+		const { method, url, payload, openNewTab, isDeepLink } = toolLaunchRequest;
 
 		const response = new ToolLaunchRequestResponse({
 			method,
 			url,
 			payload,
 			openNewTab,
+			isDeepLink,
 		});
 		return response;
 	}

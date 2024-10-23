@@ -29,10 +29,16 @@ export class ToolLaunchRequestResponse {
 	})
 	openNewTab?: boolean;
 
+	@ApiProperty({
+		description: 'Specifies whether the Tool should be launched in a new tab',
+	})
+	isDeepLink: boolean;
+
 	constructor(props: ToolLaunchRequestResponse) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;
 		this.openNewTab = props.openNewTab;
+		this.isDeepLink = props.isDeepLink;
 	}
 }
