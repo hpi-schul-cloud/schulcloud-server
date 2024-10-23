@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { Logger } from '@src/core/logger';
 import { HealthService } from '../service';
 import { HealthConfig } from '../health.config';
 import { HealthStatuses, HealthStatusCheck, HealthStatus } from '../domain';
@@ -25,9 +27,28 @@ function hasMessage(error: unknown): error is { message: string } {
 	);
 }
 
+class HealthCheckErrorLoggable implements Loggable {
+	constructor(private readonly error: unknown) {}
+
+	getLogMessage(): LoggableMessage {
+		if (this.error instanceof Error) {
+			return {
+				message: this.error.message,
+				stack: this.error.stack,
+			};
+		}
+		return {
+			message: String(this.error),
+			stack: undefined,
+		};
+	}
+}
+
 @Injectable()
 export class HealthUC {
-	constructor(private readonly healthService: HealthService) {}
+	constructor(private readonly healthService: HealthService, private readonly logger: Logger) {
+		this.logger.setContext(HealthUC.name);
+	}
 
 	checkSelfHealth(): HealthStatus {
 		// This health check verifies just the correct module setup and doesn't include
@@ -43,7 +64,7 @@ export class HealthUC {
 	async checkOverallHealth(): Promise<HealthStatus> {
 		// The below check allows for turning off the MongoDB dependency on the health check -
 		// it shouldn't be typically used, but if this health check will be used e.g. in the k8s
-		// liveness or readiness probes and, for any reason, there would be a need to stop
+		// liveliness or readiness probes and, for any reason, there would be a need to stop
 		// including MongoDB check in the overall API health checks, the HEALTH_CHECKS_EXCLUDE_MONGODB
 		// config var can be set to 'true' to disable it. This way, as currently only this single
 		// MongoDB check is included in the overall API health checks, the whole health check will
@@ -70,6 +91,7 @@ export class HealthUC {
 
 			await this.healthService.upsertHealthCheckById(healthCheckID);
 		} catch (error) {
+			this.logger.warning(new HealthCheckErrorLoggable(error));
 			// If any error occurred in the database operation execution it should be indicated
 			// as a MongoDB check failure (and thus the whole health check should fail).
 
