@@ -10,7 +10,8 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { HydraSsoService, OauthAdapterService, OAuthService } from './service';
+import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
+import { HydraSsoService, OauthAdapterService, OAuthService, OauthSessionTokenService } from './service';
 
 @Module({
 	imports: [
@@ -25,7 +26,14 @@ import { HydraSsoService, OauthAdapterService, OAuthService } from './service';
 		UserLoginMigrationModule,
 		LegacySchoolModule,
 	],
-	providers: [OAuthService, OauthAdapterService, HydraSsoService, LtiToolRepo],
-	exports: [OAuthService, HydraSsoService, OauthAdapterService],
+	providers: [
+		OAuthService,
+		OauthAdapterService,
+		HydraSsoService,
+		LtiToolRepo,
+		{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo },
+		OauthSessionTokenService,
+	],
+	exports: [OAuthService, HydraSsoService, OauthAdapterService, OauthSessionTokenService],
 })
 export class OauthModule {}

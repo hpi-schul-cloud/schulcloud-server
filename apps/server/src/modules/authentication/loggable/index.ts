@@ -3,3 +3,4 @@ export * from './school-in-migration.loggable-exception';
 export * from './shd-user-create-token.loggable';
 export * from './user-authenticated.loggable';
 export * from './user-could-not-be-authenticated.loggable.exception';
+export { UserAccountDeactivatedLoggableException } from './user-account-deactivated-exception';
