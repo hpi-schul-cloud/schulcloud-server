@@ -58,13 +58,14 @@ export class TspSyncStrategy extends SyncStrategy {
 	public async sync(): Promise<void> {
 		const system = await this.tspSyncService.findTspSystemOrFail();
 
-		if (this.migrationEnabled) {
-			await this.migrateTspTeachersAndStudents(system);
-		}
-
 		await this.syncSchools(system);
 
 		const schools = await this.tspSyncService.findSchoolsForSystem(system);
+
+		if (this.migrationEnabled) {
+			await this.migrateTspTeachers(system);
+			await this.migrateTspStudents(system);
+		}
 
 		await this.syncData(system, schools);
 	}
@@ -134,31 +135,32 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
 
-	private async migrateTspTeachersAndStudents(system: System): Promise<void> {
-		const TspTeacherIds = await this.tspSyncService.fetchTspTeacherMigrations(system);
-		const TspStudentIds = await this.tspSyncService.fetchTspStudentMigrations(system);
+	private async migrateTspTeachers(system: System): Promise<void> {
+		const tspTeacherIds = await this.tspSyncService.fetchTspTeacherMigrations(system);
 
-		for await (const { lehrerUidAlt, lehrerUidNeu } of TspTeacherIds) {
-			await this.migrationLimit(async () => {
+		const teacherMigrationPromises = tspTeacherIds.map(({ lehrerUidAlt, lehrerUidNeu }) =>
+			this.migrationLimit(async () => {
 				if (lehrerUidAlt && lehrerUidNeu) {
 					await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
 				}
-			});
-		}
+			})
+		);
 
-		for await (const { schuelerUidAlt, schuelerUidNeu } of TspStudentIds) {
-			await this.migrationLimit(async () => {
+		await Promise.allSettled(teacherMigrationPromises);
+	}
+
+	private async migrateTspStudents(system: System): Promise<void> {
+		const tspStudentIds = await this.tspSyncService.fetchTspStudentMigrations(system);
+
+		const studentMigrationPromises = tspStudentIds.map(({ schuelerUidAlt, schuelerUidNeu }) =>
+			this.migrationLimit(async () => {
 				if (schuelerUidAlt && schuelerUidNeu) {
 					await this.migrateTspUser(schuelerUidAlt, schuelerUidNeu, system.id);
 				}
-			});
-		}
-	}
+			})
+		);
 
-	private async migrateTspTeacher(system: System): Promise<void> {
-		const TspTeacherIds = await this.tspSyncService.fetchTspTeacherMigrations(system);
-
-		const;
+		await Promise.allSettled(studentMigrationPromises);
 	}
 
 	private async migrateTspUser(oldUid: string, newUid: string, systemId: string) {
