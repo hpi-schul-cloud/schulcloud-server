@@ -1,6 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExportApiInterface, RobjExportSchule, TspClientFactory } from '@infra/tsp-client';
+import {
+	ExportApiInterface,
+	RobjExportKlasse,
+	RobjExportLehrer,
+	RobjExportSchueler,
+	RobjExportSchule,
+	TspClientFactory,
+} from '@infra/tsp-client';
 import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -106,38 +113,75 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
+	const setupTspClient = () => {
+		const clientId = faker.string.alpha();
+		const clientSecret = faker.string.alpha();
+		const tokenEndpoint = faker.internet.url();
+		const system = systemFactory.build({
+			oauthConfig: {
+				clientId,
+				clientSecret,
+				tokenEndpoint,
+			},
+		});
+
+		const tspSchool: RobjExportSchule = {
+			schuleName: faker.string.alpha(),
+			schuleNummer: faker.string.alpha(),
+		};
+		const schools = [tspSchool];
+		const responseSchools = createMock<AxiosResponse<Array<RobjExportSchule>>>({
+			data: schools,
+		});
+
+		const tspTeacher: RobjExportLehrer = {
+			schuleNummer: faker.string.alpha(),
+			lehrerVorname: faker.string.alpha(),
+			lehrerNachname: faker.string.alpha(),
+			lehrerUid: faker.string.alpha(),
+		};
+		const teachers = [tspTeacher];
+		const responseTeachers = createMock<AxiosResponse<Array<RobjExportLehrer>>>({
+			data: teachers,
+		});
+
+		const tspStudent: RobjExportSchueler = {
+			schuleNummer: faker.string.alpha(),
+			schuelerVorname: faker.string.alpha(),
+			schuelerNachname: faker.string.alpha(),
+			schuelerUid: faker.string.alpha(),
+		};
+		const students = [tspStudent];
+		const responseStudents = createMock<AxiosResponse<Array<RobjExportSchueler>>>({
+			data: students,
+		});
+
+		const tspClass: RobjExportKlasse = {
+			schuleNummer: faker.string.alpha(),
+			klasseId: faker.string.alpha(),
+			klasseName: faker.string.alpha(),
+			lehrerUid: faker.string.alpha(),
+		};
+		const classes = [tspClass];
+		const responseClasses = createMock<AxiosResponse<Array<RobjExportKlasse>>>({
+			data: classes,
+		});
+
+		const exportApiMock = createMock<ExportApiInterface>();
+		exportApiMock.exportSchuleList.mockResolvedValueOnce(responseSchools);
+		exportApiMock.exportLehrerList.mockResolvedValueOnce(responseTeachers);
+		exportApiMock.exportSchuelerList.mockResolvedValueOnce(responseStudents);
+		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
+
+		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
+
+		return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools, teachers, students, classes };
+	};
+
 	describe('fetchTspSchools', () => {
 		describe('when tsp schools are fetched', () => {
-			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
-				const tokenEndpoint = faker.internet.url();
-				const system = systemFactory.build({
-					oauthConfig: {
-						clientId,
-						clientSecret,
-						tokenEndpoint,
-					},
-				});
-
-				const tspSchool: RobjExportSchule = {
-					schuleName: faker.string.alpha(),
-					schuleNummer: faker.string.alpha(),
-				};
-				const schools = [tspSchool];
-				const response = createMock<AxiosResponse<Array<RobjExportSchule>>>({
-					data: schools,
-				});
-
-				const exportApiMock = createMock<ExportApiInterface>();
-				exportApiMock.exportSchuleList.mockResolvedValueOnce(response);
-				tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-				return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools };
-			};
-
 			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setup();
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
 
 				await sut.fetchTspSchools(system, 1);
 
@@ -149,7 +193,7 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should call exportSchuleList', async () => {
-				const { system, exportApiMock } = setup();
+				const { system, exportApiMock } = setupTspClient();
 
 				await sut.fetchTspSchools(system, 1);
 
@@ -157,12 +201,111 @@ describe(TspSyncService.name, () => {
 			});
 
 			it('should return an array of schools', async () => {
-				const { system } = setup();
+				const { system } = setupTspClient();
 
 				const schools = await sut.fetchTspSchools(system, 1);
 
 				expect(schools).toBeDefined();
 				expect(schools).toBeInstanceOf(Array);
+			});
+		});
+	});
+
+	describe('fetchTspTeachers', () => {
+		describe('when tsp teachers are fetched', () => {
+			it('should use the oauthConfig to create the client', async () => {
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
+
+				await sut.fetchTspTeachers(system, 1);
+
+				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				});
+			});
+
+			it('should call exportLehrerList', async () => {
+				const { system, exportApiMock } = setupTspClient();
+
+				await sut.fetchTspTeachers(system, 1);
+
+				expect(exportApiMock.exportLehrerList).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return an array of teachers', async () => {
+				const { system } = setupTspClient();
+
+				const teachers = await sut.fetchTspTeachers(system, 1);
+
+				expect(teachers).toBeDefined();
+				expect(teachers).toBeInstanceOf(Array);
+			});
+		});
+	});
+
+	describe('fetchTspStudents', () => {
+		describe('when tsp students are fetched', () => {
+			it('should use the oauthConfig to create the client', async () => {
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
+
+				await sut.fetchTspStudents(system, 1);
+
+				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				});
+			});
+
+			it('should call exportSchuelerList', async () => {
+				const { system, exportApiMock } = setupTspClient();
+
+				await sut.fetchTspStudents(system, 1);
+
+				expect(exportApiMock.exportSchuelerList).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return an array of students', async () => {
+				const { system } = setupTspClient();
+
+				const students = await sut.fetchTspStudents(system, 1);
+
+				expect(students).toBeDefined();
+				expect(students).toBeInstanceOf(Array);
+			});
+		});
+	});
+
+	describe('fetchTspClasses', () => {
+		describe('when tsp classes are fetched', () => {
+			it('should use the oauthConfig to create the client', async () => {
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
+
+				await sut.fetchTspClasses(system, 1);
+
+				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				});
+			});
+
+			it('should call exportKlasseList', async () => {
+				const { system, exportApiMock } = setupTspClient();
+
+				await sut.fetchTspClasses(system, 1);
+
+				expect(exportApiMock.exportKlasseList).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return an array of classes', async () => {
+				const { system } = setupTspClient();
+
+				const classes = await sut.fetchTspClasses(system, 1);
+
+				expect(classes).toBeDefined();
+				expect(classes).toBeInstanceOf(Array);
 			});
 		});
 	});
@@ -204,6 +347,27 @@ describe(TspSyncService.name, () => {
 				const result = await sut.findSchool(system, externalId);
 
 				expect(result).toBeUndefined();
+			});
+		});
+	});
+
+	describe('findSchoolsForSystem', () => {
+		describe('when findSchoolsForSystem is called', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+				const school = schoolFactory.build();
+
+				schoolService.getSchools.mockResolvedValueOnce([school]);
+
+				return { system, school };
+			};
+
+			it('should return an array of schools', async () => {
+				const { system, school } = setup();
+
+				const schools = await sut.findSchoolsForSystem(system);
+
+				expect(schools).toEqual([school]);
 			});
 		});
 	});

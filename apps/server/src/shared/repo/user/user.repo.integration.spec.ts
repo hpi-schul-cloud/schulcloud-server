@@ -64,6 +64,7 @@ describe('user repo', () => {
 					'firstNameSearchValues',
 					'lastName',
 					'lastNameSearchValues',
+					'preferredName',
 					'lastSyncedAt',
 					'email',
 					'emailSearchValues',
@@ -80,6 +81,7 @@ describe('user repo', () => {
 					'preferences',
 					'language',
 					'deletedAt',
+					'discoverable',
 					'lastLoginSystemChange',
 					'outdatedSince',
 					'previousExternalId',
@@ -197,6 +199,7 @@ describe('user repo', () => {
 					'firstNameSearchValues',
 					'lastName',
 					'lastNameSearchValues',
+					'preferredName',
 					'lastSyncedAt',
 					'email',
 					'emailSearchValues',
@@ -218,6 +221,7 @@ describe('user repo', () => {
 					'consent',
 					'source',
 					'sourceOptions',
+					'discoverable',
 				].sort()
 			);
 		});
