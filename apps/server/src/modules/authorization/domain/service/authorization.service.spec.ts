@@ -9,7 +9,6 @@ import { AuthorizationContextBuilder } from '../mapper';
 import { Rule } from '../type';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 class TestRule implements Rule {
@@ -41,10 +40,6 @@ describe('AuthorizationService', () => {
 				{
 					provide: RuleManager,
 					useValue: createMock<RuleManager>(),
-				},
-				{
-					provide: ReferenceLoader,
-					useValue: createMock<ReferenceLoader>(),
 				},
 				{
 					provide: AuthorizationHelper,

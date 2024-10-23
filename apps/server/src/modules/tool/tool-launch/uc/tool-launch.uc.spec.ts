@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';
