@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
+import { RoleName } from '@shared/domain/interface';
 
 export class RoomParticipantResponse {
 	@ApiProperty()
@@ -12,7 +13,7 @@ export class RoomParticipantResponse {
 	fullName!: string;
 
 	@ApiProperty()
-	roleName!: string;
+	roleName!: RoleName;
 
 	@ApiProperty()
 	schoolName!: string;

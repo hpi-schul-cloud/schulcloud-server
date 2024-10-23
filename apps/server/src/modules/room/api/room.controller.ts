@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { IFindOptions } from '@shared/domain/interface';
+import { IFindOptions, RoleName } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { Room } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -142,12 +142,15 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: RoomPaginationParams
 	): Promise<RoomParticipantListResponse> {
-		const response = new RoomParticipantListResponse(
-			mockusers.map((user) => new RoomParticipantResponse(user)),
-			0,
-			pagination.skip,
-			pagination.limit
-		);
+		const participants = mockusers.map((user) => {
+			const mapRole = <Record<string, RoleName>>{
+				teacher: RoleName.TEACHER,
+				student: RoleName.STUDENT,
+			};
+			const data = { ...user, roleName: mapRole[user.roleName] };
+			return new RoomParticipantResponse(data);
+		});
+		const response = new RoomParticipantListResponse(participants, 0, pagination.skip, pagination.limit);
 
 		return Promise.resolve(response);
 	}
