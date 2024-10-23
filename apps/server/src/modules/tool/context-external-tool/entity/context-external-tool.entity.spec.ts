@@ -33,7 +33,7 @@ describe(ExternalToolEntity.name, () => {
 				const contextExternalToolEntity: ContextExternalToolEntity = new ContextExternalToolEntity({
 					id: new ObjectId().toHexString(),
 					schoolTool: schoolExternalToolEntityFactory.buildWithId(),
-					contextId: 'mockContextId',
+					contextId: new ObjectId(),
 					contextType: ContextExternalToolType.MEDIA_BOARD,
 					parameters: [],
 				});
