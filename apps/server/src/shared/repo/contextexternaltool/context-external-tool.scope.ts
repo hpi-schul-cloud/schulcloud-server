@@ -2,6 +2,7 @@ import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 	byId(id: EntityId | undefined): ContextExternalToolScope {
@@ -21,7 +22,7 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 
 	byContextId(contextId: EntityId | undefined): ContextExternalToolScope {
 		if (contextId !== undefined) {
-			this.addQuery({ contextId });
+			this.addQuery({ contextId: new ObjectId(contextId) });
 		}
 
 		return this;

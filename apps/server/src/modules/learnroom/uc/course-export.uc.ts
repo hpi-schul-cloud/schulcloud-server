@@ -1,5 +1,5 @@
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

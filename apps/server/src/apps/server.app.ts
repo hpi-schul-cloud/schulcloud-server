@@ -4,8 +4,7 @@ import { Mail, MailService } from '@infra/mail';
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
-import { SystemRule } from '@modules/authorization/domain/rules';
-
+import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
 import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
