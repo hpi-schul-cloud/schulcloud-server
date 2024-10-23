@@ -9,12 +9,16 @@ export class RoomParticipantResponse {
 	lastName!: string;
 
 	@ApiProperty()
+	schoolName!: string;
+
+	@ApiProperty()
 	id!: string;
 
 	constructor(props: RoomParticipantResponse) {
 		this.id = props.id;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
+		this.schoolName = props.schoolName;
 	}
 }
 
