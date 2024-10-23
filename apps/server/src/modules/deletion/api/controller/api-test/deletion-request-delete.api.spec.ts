@@ -1,4 +1,4 @@
-import { ApiKeyGuard } from '@infra/auth-guard';
+import { XApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -20,7 +20,7 @@ describe(`deletionRequest delete (api)`, () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
-			.overrideGuard(ApiKeyGuard)
+			.overrideGuard(XApiKeyGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();

@@ -1,4 +1,4 @@
-import { ApiKeyGuard } from '@infra/auth-guard';
+import { XApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -24,7 +24,7 @@ describe('tldraw controller (api)', () => {
 			controllers: [TldrawController],
 			providers: [Logger, TldrawService, TldrawRepo],
 		})
-			.overrideGuard(ApiKeyGuard)
+			.overrideGuard(XApiKeyGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();

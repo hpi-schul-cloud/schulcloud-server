@@ -1,4 +1,4 @@
-import { AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { AccountModule } from '@modules/account';
@@ -58,7 +58,7 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
-		AuthGuardModule,
+		AuthGuardModule.register([AuthGuardOptions.JWT, AuthGuardOptions.WS_JWT]),
 	],
 	providers: [
 		UserRepo,

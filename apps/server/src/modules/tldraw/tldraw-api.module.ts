@@ -1,4 +1,4 @@
-import { AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
@@ -31,7 +31,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: [TldrawDrawing],
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
-		AuthGuardModule,
+		AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
 	],
 	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
 	controllers: [TldrawController],

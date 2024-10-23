@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { FileEntity } from '@modules/files/entity';
@@ -16,8 +16,8 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infr
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { AdminApiRegistrationPinModule } from '../registration-pin/admin-api-registration-pin.module';
-import { defaultMikroOrmOptions } from './server.module';
 import { adminApiServerConfig } from './admin-api-server.config';
+import { defaultMikroOrmOptions } from './server.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
@@ -30,7 +30,7 @@ const serverModules = [
 		apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,
 		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
 	}),
-	AuthGuardModule,
+	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
 ];
 
 @Module({

@@ -1,4 +1,4 @@
-import { AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { defaultMikroOrmOptions } from '@modules/server';
 import { Module } from '@nestjs/common';
@@ -28,7 +28,7 @@ import { BoardModule } from './board.module';
 		BoardModule,
 		AuthorizationModule,
 		BoardWsApiModule,
-		AuthGuardModule,
+		AuthGuardModule.register([AuthGuardOptions.WS_JWT]),
 	],
 	providers: [],
 	exports: [],
