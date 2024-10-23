@@ -30,9 +30,9 @@ export class RoomUc {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const room = await this.roomService.createRoom(props);
 		// NOTE: currently only teacher are allowed to create rooms. Could not find simpler way to check this.
 		this.authorizationService.checkOneOfPermissions(user, [Permission.COURSE_CREATE]);
-		const room = await this.roomService.createRoom(props);
 		await this.roomMemberService
 			.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR, user.school.id)
 			.catch(async (err) => {
@@ -44,17 +44,17 @@ export class RoomUc {
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<Room> {
 		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(userId, roomId, Action.read);
-
 		const room = await this.roomService.getSingleRoom(roomId);
+
+		await this.checkRoomAuthorization(userId, roomId, Action.read);
 		return room;
 	}
 
 	public async updateRoom(userId: EntityId, roomId: EntityId, props: RoomUpdateProps): Promise<Room> {
 		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(userId, roomId, Action.write);
-
 		const room = await this.roomService.getSingleRoom(roomId);
+
+		await this.checkRoomAuthorization(userId, roomId, Action.write);
 		await this.roomService.updateRoom(room, props);
 
 		return room;
@@ -62,10 +62,9 @@ export class RoomUc {
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(userId, roomId, Action.write);
-
 		const room = await this.roomService.getSingleRoom(roomId);
 
+		await this.checkRoomAuthorization(userId, roomId, Action.write);
 		await this.roomService.deleteRoom(room);
 	}
 

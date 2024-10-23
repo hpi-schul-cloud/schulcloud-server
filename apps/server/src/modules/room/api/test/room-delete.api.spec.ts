@@ -123,13 +123,13 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 404 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.delete(someId);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
 			});
 		});
@@ -157,13 +157,13 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 403 error', async () => {
+				it('should return a 404 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.delete(someId);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
 			});
 		});
