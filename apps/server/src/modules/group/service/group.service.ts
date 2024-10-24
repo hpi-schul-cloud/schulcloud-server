@@ -1,16 +1,23 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
+import type { ProvisioningConfig } from '@modules/provisioning';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupDeletedEvent, GroupFilter } from '../domain';
+import { Group, GroupAggregateScope, GroupDeletedEvent, GroupFilter, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
-	constructor(private readonly groupRepo: GroupRepo, private readonly eventBus: EventBus) {}
+	constructor(
+		private readonly groupRepo: GroupRepo,
+		private readonly eventBus: EventBus,
+		private readonly configService: ConfigService<ProvisioningConfig, true>
+	) {}
 
 	public async findById(id: EntityId): Promise<Group> {
 		const group: Group | null = await this.groupRepo.findGroupById(id);
@@ -40,8 +47,21 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return groups;
 	}
 
-	public async findAvailableGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
-		const groups: Page<Group> = await this.groupRepo.findAvailableGroups(filter, options);
+	public async findGroupsForUser(
+		user: User,
+		permission: GroupVisibilityPermission,
+		availableGroupsForCourseSync: boolean,
+		nameQuery?: string,
+		options?: IFindOptions<Group>
+	): Promise<Page<Group>> {
+		const scope = new GroupAggregateScope(options)
+			.byUserPermission(user.id, user.school.id, permission)
+			.byName(nameQuery)
+			.byAvailableForSync(
+				availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')
+			);
+
+		const groups: Page<Group> = await this.groupRepo.findGroupsForScope(scope);
 
 		return groups;
 	}
