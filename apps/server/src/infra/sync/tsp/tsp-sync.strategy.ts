@@ -23,9 +23,13 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	private readonly dataLimit: pLimit.Limit;
 
+	private readonly migrationLimit: pLimit.Limit;
+
 	private readonly schoolDaysToFetch: number;
 
 	private readonly schoolDataDaysToFetch: number;
+
+	private readonly migrationEnabled: boolean;
 
 	constructor(
 		private readonly logger: Logger,
@@ -42,6 +46,9 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.dataLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT'));
 		this.schoolDataDaysToFetch = configService.get<number>('TSP_SYNC_DATA_DAYS_TO_FETCH', 1);
+
+		this.migrationLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT'));
+		this.migrationEnabled = configService.get<boolean>('FEATURE_TSP_MIGRATION_ENABLED');
 	}
 
 	public override getType(): SyncStrategyTarget {
@@ -54,6 +61,11 @@ export class TspSyncStrategy extends SyncStrategy {
 		await this.syncSchools(system);
 
 		const schools = await this.tspSyncService.findSchoolsForSystem(system);
+
+		if (this.migrationEnabled) {
+			await this.migrateTspTeachers(system);
+			await this.migrateTspStudents(system);
+		}
 
 		await this.syncData(system, schools);
 	}
@@ -121,5 +133,56 @@ export class TspSyncStrategy extends SyncStrategy {
 		const results = await Promise.allSettled(dataPromises);
 
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
+	}
+
+	private async migrateTspTeachers(system: System): Promise<void> {
+		const tspTeacherIds = await this.tspSyncService.fetchTspTeacherMigrations(system);
+
+		const teacherMigrationPromises = tspTeacherIds.map(({ lehrerUidAlt, lehrerUidNeu }) =>
+			this.migrationLimit(async () => {
+				if (lehrerUidAlt && lehrerUidNeu) {
+					await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
+				}
+			})
+		);
+
+		await Promise.allSettled(teacherMigrationPromises);
+	}
+
+	private async migrateTspStudents(system: System): Promise<void> {
+		const tspStudentIds = await this.tspSyncService.fetchTspStudentMigrations(system);
+
+		const studentMigrationPromises = tspStudentIds.map(({ schuelerUidAlt, schuelerUidNeu }) =>
+			this.migrationLimit(async () => {
+				if (schuelerUidAlt && schuelerUidNeu) {
+					await this.migrateTspUser(schuelerUidAlt, schuelerUidNeu, system.id);
+				}
+			})
+		);
+
+		await Promise.allSettled(studentMigrationPromises);
+	}
+
+	private async migrateTspUser(oldUid: string, newUid: string, systemId: string) {
+		const newEmailAndUsername = `${newUid}@schul-cloud.org`;
+		const user = await this.tspSyncService.findUserByTspUid(oldUid);
+
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		const newEmail = newEmailAndUsername;
+		const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
+
+		const account = await this.tspSyncService.findAccountByTspUid(oldUid);
+
+		if (!account) {
+			throw new Error('Account not found');
+		}
+
+		const newUsername = newEmailAndUsername;
+		const updatedAccount = await this.tspSyncService.updateAccount(account, newUsername, systemId);
+
+		return { updatedUser, updatedAccount };
 	}
 }
