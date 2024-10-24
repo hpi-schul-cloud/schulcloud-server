@@ -128,7 +128,7 @@ const setPosition = async (context) => {
 	const { courseId, courseGroupId } = context.data;
 	if (courseId || courseGroupId) {
 		const query = courseId ? { courseId } : { courseGroupId };
-		context.data.position = await LessonModel.count(query).exec(); // next free position
+		context.data.position = await LessonModel.countDocuments(query).exec(); // next free position
 	}
 
 	return context;
