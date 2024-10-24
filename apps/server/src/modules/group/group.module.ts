@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { RoleModule } from '../role';
+import { UserModule } from '../user';
 import { GroupRepo } from './repo';
 import { GroupService } from './service';
 
 @Module({
-	imports: [CqrsModule],
+	imports: [forwardRef(() => UserModule), RoleModule, CqrsModule],
 	providers: [GroupRepo, GroupService],
 	exports: [GroupService],
 })
