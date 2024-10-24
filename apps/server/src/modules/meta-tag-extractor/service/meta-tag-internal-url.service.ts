@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../interface/url-handler';
 import { MetaData } from '../types';
-import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
+import { BoardUrlHandler, CourseUrlHandler, H5pUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
 @Injectable()
 export class MetaTagInternalUrlService {
@@ -12,9 +12,16 @@ export class MetaTagInternalUrlService {
 		private readonly taskUrlHandler: TaskUrlHandler,
 		private readonly lessonUrlHandler: LessonUrlHandler,
 		private readonly courseUrlHandler: CourseUrlHandler,
-		private readonly boardUrlHandler: BoardUrlHandler
+		private readonly boardUrlHandler: BoardUrlHandler,
+		private readonly h5pUrlHandler: H5pUrlHandler
 	) {
-		this.handlers = [this.taskUrlHandler, this.lessonUrlHandler, this.courseUrlHandler, this.boardUrlHandler];
+		this.handlers = [
+			this.taskUrlHandler,
+			this.lessonUrlHandler,
+			this.courseUrlHandler,
+			this.boardUrlHandler,
+			this.h5pUrlHandler,
+		];
 	}
 
 	async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
