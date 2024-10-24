@@ -7,6 +7,7 @@ import { HealthUC } from './health.uc';
 import { HealthService } from '../service';
 import { HealthStatuses } from '../domain';
 import { HealthConfig } from '../health.config';
+import { Logger } from '@src/core/logger';
 
 describe(HealthUC.name, () => {
 	let configBefore: IConfig;
@@ -22,6 +23,10 @@ describe(HealthUC.name, () => {
 				{
 					provide: HealthService,
 					useValue: createMock<HealthService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
