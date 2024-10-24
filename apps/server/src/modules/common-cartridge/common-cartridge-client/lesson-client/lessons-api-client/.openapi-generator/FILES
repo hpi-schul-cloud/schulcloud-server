@@ -1,0 +1,17 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+api/lesson-api.ts
+base.ts
+common.ts
+configuration.ts
+git_push.sh
+index.ts
+models/index.ts
+models/lesson-content-response.ts
+models/lesson-linked-task-response.ts
+models/lesson-metadata-list-response.ts
+models/lesson-metadata-response.ts
+models/lesson-response.ts
+models/material-response.ts
