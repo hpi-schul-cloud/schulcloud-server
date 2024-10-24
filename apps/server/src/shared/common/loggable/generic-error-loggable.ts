@@ -1,4 +1,4 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { Loggable, LoggableMessage } from '@shared/common/loggable/index';
 
 export class GenericErrorLoggable implements Loggable {
 	constructor(private readonly error: unknown) {}
