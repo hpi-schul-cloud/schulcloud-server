@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { Logger } from '@src/core/logger';
+import { GenericErrorLoggable } from '@src/core/logger/loggables';
 import { HealthService } from '../service';
 import { HealthConfig } from '../health.config';
 import { HealthStatuses, HealthStatusCheck, HealthStatus } from '../domain';
@@ -25,23 +25,6 @@ function hasMessage(error: unknown): error is { message: string } {
 		'message' in error &&
 		typeof (error as Record<string, unknown>).message === 'string'
 	);
-}
-
-class HealthCheckErrorLoggable implements Loggable {
-	constructor(private readonly error: unknown) {}
-
-	getLogMessage(): LoggableMessage {
-		if (this.error instanceof Error) {
-			return {
-				message: this.error.message,
-				stack: this.error.stack,
-			};
-		}
-		return {
-			message: String(this.error),
-			stack: undefined,
-		};
-	}
 }
 
 @Injectable()
@@ -91,7 +74,7 @@ export class HealthUC {
 
 			await this.healthService.upsertHealthCheckById(healthCheckID);
 		} catch (error) {
-			this.logger.warning(new HealthCheckErrorLoggable(error));
+			this.logger.warning(new GenericErrorLoggable(error));
 			// If any error occurred in the database operation execution it should be indicated
 			// as a MongoDB check failure (and thus the whole health check should fail).
 
