@@ -16,9 +16,6 @@ import { LessonClientModule } from './common-cartridge-client/lesson-client/less
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		CoursesClientModule.register({
-			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
-		}),
 		FilesStorageClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -32,6 +29,9 @@ import { LessonClientModule } from './common-cartridge-client/lesson-client/less
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 		CourseRoomsModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+		CoursesClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 		LessonClientModule.register({

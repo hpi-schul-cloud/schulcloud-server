@@ -22,6 +22,7 @@ describe('LessonClientModule', () => {
 	describe('when module is initialized', () => {
 		it('should have the LessonClientAdapter defined', () => {
 			const lessonClientAdapter = module.get(LessonClientAdapter);
+
 			expect(lessonClientAdapter).toBeDefined();
 		});
 	});

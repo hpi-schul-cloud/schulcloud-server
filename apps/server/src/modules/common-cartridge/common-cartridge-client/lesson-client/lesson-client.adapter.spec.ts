@@ -8,12 +8,11 @@ import { Request } from 'express';
 import { LessonClientAdapter } from './lesson-client.adapter';
 import { LessonApi, LessonLinkedTaskResponse, LessonResponse } from './lessons-api-client';
 
-const jwtToken = 'someJwtToken';
-
 describe(LessonClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: LessonClientAdapter;
 	let lessonApiMock: DeepMocked<LessonApi>;
+	const jwtToken = faker.string.alphanumeric(20);
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -91,6 +90,7 @@ describe(LessonClientAdapter.name, () => {
 
 				return { lessonId: response.data.id };
 			};
+
 			it('should call lessonControllerGetLesson', async () => {
 				const { lessonId } = setup();
 
@@ -104,12 +104,13 @@ describe(LessonClientAdapter.name, () => {
 			const setup = () => {
 				const lessonResponseId = faker.string.uuid();
 
+				lessonApiMock.lessonControllerGetLesson.mockRejectedValueOnce(new Error('error'));
+
 				return { lessonResponseId };
 			};
+
 			it('should throw an error', async () => {
 				const { lessonResponseId } = setup();
-
-				lessonApiMock.lessonControllerGetLesson.mockRejectedValueOnce(new Error('error'));
 
 				const result = sut.getLessonById(lessonResponseId);
 
@@ -128,6 +129,7 @@ describe(LessonClientAdapter.name, () => {
 
 				return { lessonResponseId, adapter };
 			};
+
 			it('should throw an UnauthorizedError', async () => {
 				const { lessonResponseId, adapter } = setup();
 
@@ -159,6 +161,7 @@ describe(LessonClientAdapter.name, () => {
 
 				return { lessonId };
 			};
+
 			it('should call lessonControllerGetLessonTasks', async () => {
 				const { lessonId } = setup();
 
@@ -172,12 +175,12 @@ describe(LessonClientAdapter.name, () => {
 			const setup = () => {
 				const lessonResponseId = faker.string.uuid();
 
+				lessonApiMock.lessonControllerGetLessonTasks.mockRejectedValueOnce(new Error('error'));
+
 				return { lessonResponseId };
 			};
 			it('should throw an error', async () => {
 				const { lessonResponseId } = setup();
-
-				lessonApiMock.lessonControllerGetLessonTasks.mockRejectedValueOnce(new Error('error'));
 
 				const result = sut.getLessonTasks(lessonResponseId);
 
@@ -196,6 +199,7 @@ describe(LessonClientAdapter.name, () => {
 
 				return { lessonResponseId, adapter };
 			};
+
 			it('should throw an UnauthorizedError', async () => {
 				const { lessonResponseId, adapter } = setup();
 

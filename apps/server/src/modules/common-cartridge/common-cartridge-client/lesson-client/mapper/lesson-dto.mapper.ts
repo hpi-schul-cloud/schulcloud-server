@@ -8,7 +8,7 @@ import {
 
 export class LessonDtoMapper {
 	public static mapToLessonLinkedTaskDto(task: LessonLinkedTaskResponse): LessonLinkedTaskDto {
-		return new LessonLinkedTaskDto({
+		const lessonLinkedTaskDto = new LessonLinkedTaskDto({
 			name: task.name,
 			description: task.description,
 			descriptionInputFormat: task.descriptionInputFormat,
@@ -22,10 +22,12 @@ export class LessonDtoMapper {
 			submissionIds: task.submissionIds,
 			finishedIds: task.finishedIds,
 		});
+
+		return lessonLinkedTaskDto;
 	}
 
 	public static mapToLessonDto(lessonResponse: LessonResponse): LessonDto {
-		return new LessonDto({
+		const lessonDto = new LessonDto({
 			lessonId: lessonResponse.id,
 			name: lessonResponse.name,
 			courseId: lessonResponse.courseId,
@@ -35,10 +37,12 @@ export class LessonDtoMapper {
 			contents: lessonResponse.contents.map((content) => this.mapToLessenContentDto(content)),
 			materials: lessonResponse.materials.map((material) => this.mapToLessonMaterialDto(material)),
 		});
+
+		return lessonDto;
 	}
 
 	private static mapToLessonMaterialDto(materialResponse: MaterialResponse): LessonMaterialsDto {
-		return new LessonMaterialsDto({
+		const lessonMaterialsDto = new LessonMaterialsDto({
 			materialsId: materialResponse.id,
 			title: materialResponse.title,
 			relatedResources: materialResponse.relatedResources.map((resource) => resource),
@@ -47,14 +51,18 @@ export class LessonDtoMapper {
 			license: materialResponse.license,
 			merlinReference: materialResponse.merlinReference,
 		});
+
+		return lessonMaterialsDto;
 	}
 
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse) {
-		return new LessonContentDto({
+		const lessonContentDto = new LessonContentDto({
 			content: lessonContentResponse.content,
 			title: lessonContentResponse.title,
 			component: lessonContentResponse.component,
 			hidden: lessonContentResponse.hidden,
 		});
+
+		return lessonContentDto;
 	}
 }

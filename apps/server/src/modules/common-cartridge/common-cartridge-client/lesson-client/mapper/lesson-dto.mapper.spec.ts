@@ -4,6 +4,7 @@ import {
 	LessonContentResponse,
 	LessonResponse,
 	LessonLinkedTaskResponse,
+	LessonLinkedTaskResponseDescriptionInputFormat,
 } from '../lessons-api-client';
 import { LessonDtoMapper } from './lesson-dto.mapper';
 
@@ -45,6 +46,7 @@ describe('LessonDtoMapper', () => {
 
 				return { lessonResponse };
 			};
+
 			it('should return LessonDto', () => {
 				const { lessonResponse } = setup();
 
@@ -84,10 +86,10 @@ describe('LessonDtoMapper', () => {
 	describe('mapToLessonLinkedTaskDto', () => {
 		describe('when mapping to LessonLinkedTaskResponse', () => {
 			const setup = () => {
-				const lessonLinkedTaskResponse = {
+				const lessonLinkedTaskResponse: LessonLinkedTaskResponse = {
 					name: faker.lorem.sentence(),
 					description: faker.lorem.sentence(),
-					descriptionInputFormat: faker.lorem.sentence(),
+					descriptionInputFormat: LessonLinkedTaskResponseDescriptionInputFormat.PLAIN_TEXT,
 					availableDate: faker.date.recent().toString(),
 					dueDate: faker.date.future().toString(),
 					private: faker.datatype.boolean(),
@@ -97,10 +99,11 @@ describe('LessonDtoMapper', () => {
 					courseId: faker.string.uuid(),
 					submissionIds: [faker.string.uuid()],
 					finishedIds: [faker.string.uuid()],
-				} as LessonLinkedTaskResponse;
+				};
 
 				return { lessonLinkedTaskResponse };
 			};
+
 			it('should return LessonLinkedTaskDto', () => {
 				const { lessonLinkedTaskResponse } = setup();
 

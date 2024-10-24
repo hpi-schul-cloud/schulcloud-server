@@ -13,22 +13,17 @@ export class LessonClientAdapter {
 
 	public async getLessonById(lessonId: string): Promise<LessonDto> {
 		const options = this.createOptionParams();
-		const lessonResponse = await this.lessonApi
-			.lessonControllerGetLesson(lessonId, options)
-			.then((response) => response.data);
-
-		const lessonDto = LessonDtoMapper.mapToLessonDto(lessonResponse);
+		const response = await this.lessonApi.lessonControllerGetLesson(lessonId, options);
+		const lessonDto = LessonDtoMapper.mapToLessonDto(response.data);
 
 		return lessonDto;
 	}
 
 	public async getLessonTasks(lessonId: string): Promise<LessonLinkedTaskDto[]> {
 		const options = this.createOptionParams();
-		const lessonTasksResponse = await this.lessonApi
-			.lessonControllerGetLessonTasks(lessonId, options)
-			.then((response) => response.data);
+		const response = await this.lessonApi.lessonControllerGetLessonTasks(lessonId, options);
 
-		const lessonTasksDtoList = lessonTasksResponse.map((task) => LessonDtoMapper.mapToLessonLinkedTaskDto(task));
+		const lessonTasksDtoList = response.data.map((task) => LessonDtoMapper.mapToLessonLinkedTaskDto(task));
 
 		return lessonTasksDtoList;
 	}
