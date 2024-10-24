@@ -1,7 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
+import {
+	TestApiClient,
+	UserAndAccountTestFactory,
+	cleanupCollections,
+	groupEntityFactory,
+	roleFactory,
+} from '@shared/testing';
+import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing';
@@ -90,8 +98,16 @@ describe('Room Controller (API)', () => {
 					startDate: new Date('2024-10-01'),
 					endDate: new Date('2024-10-20'),
 				});
+				const role = roleFactory.buildWithId({
+					name: RoleName.ROOM_EDITOR,
+					permissions: [Permission.ROOM_EDIT],
+				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				const userGroup = groupEntityFactory.buildWithId({
+					users: [{ role, user: teacherUser }],
+				});
+				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -272,6 +288,45 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.patch(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+		});
+
+		describe('when the user has not the required permissions', () => {
+			const setup = async () => {
+				const room = roomEntityFactory.build({
+					startDate: new Date('2024-10-01'),
+					endDate: new Date('2024-10-20'),
+				});
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, room };
+			};
+
+			describe('when the room does not exist', () => {
+				it('should return a 404 error', async () => {
+					const { loggedInClient } = await setup();
+					const someId = new ObjectId().toHexString();
+					const params = { name: 'Room #101', color: 'green' };
+
+					const response = await loggedInClient.patch(someId, params);
+
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
+				});
+			});
+
+			describe('when the required parameters are given', () => {
+				it('should return a 403 error', async () => {
+					const { loggedInClient, room } = await setup();
+					const params = { name: 'Room #101', color: 'green' };
+
+					const response = await loggedInClient.patch(room.id, params);
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
 		});
