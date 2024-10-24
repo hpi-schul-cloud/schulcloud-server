@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, InputFormat } from '@shared/domain/types';
+import { AppointmentFinderElement } from './appointment-finder.do';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -83,6 +84,11 @@ export class BoardNodeFactory {
 				throw new UnprocessableEntityException('Deleted elements cannot be created from the outside');
 			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
 				element = new CollaborativeTextEditorElement({
+					...this.getBaseProps(),
+				});
+				break;
+			case ContentElementType.APPOINTMENT_FINDER:
+				element = new AppointmentFinderElement({
 					...this.getBaseProps(),
 				});
 				break;
