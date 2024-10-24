@@ -11,7 +11,7 @@ export class XApiKeyStrategy extends PassportStrategy(Strategy, StrategyType.API
 
 	constructor(private readonly configService: ConfigService<XApiKeyConfig, true>) {
 		super({ header: 'X-API-KEY' }, false);
-		this.allowedApiKeys = this.configService.get<string[]>('ADMIN_API__ALLOWED_API_KEYS');
+		this.allowedApiKeys = this.configService.getOrThrow<string[]>('ADMIN_API__ALLOWED_API_KEYS');
 	}
 
 	public validate = (apiKey: string, done: (error: Error | null, data: boolean | null) => void) => {

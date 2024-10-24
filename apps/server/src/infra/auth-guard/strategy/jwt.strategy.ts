@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
 		configService: ConfigService<AuthGuardConfig>
 	) {
-		const publicKey = configService.get<string>('JWT_PUBLIC_KEY');
+		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 
 		super({
 			jwtFromRequest: extractJwtFromHeader,
