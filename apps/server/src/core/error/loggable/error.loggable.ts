@@ -1,12 +1,12 @@
+import { ValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { getMetadataStorage } from 'class-validator';
-import { ValidationError } from '@nestjs/common';
 import { Loggable } from '../../logger/interfaces';
-import { ErrorLogMessage, ValidationErrorLogMessage } from '../../logger/types';
+import { ErrorLogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '../../logger/types';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class ErrorLoggable implements Loggable {
-	constructor(private readonly error: Error) {}
+	constructor(private readonly error: Error, private readonly data?: LogMessageDataObject) {}
 
 	private readonly classValidatorMetadataStorage = getMetadataStorage();
 
@@ -14,6 +14,7 @@ export class ErrorLoggable implements Loggable {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.error,
 			type: '',
+			data: this.data,
 		};
 
 		if (this.error instanceof ApiValidationError) {
