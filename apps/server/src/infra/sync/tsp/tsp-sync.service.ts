@@ -2,10 +2,9 @@ import { TspClientFactory } from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
-import { DefaultEncryptionService, EncryptionService } from '@src/infra/encryption';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
@@ -23,8 +22,7 @@ export class TspSyncService {
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly federalStateService: FederalStateService,
-		private readonly schoolYearService: SchoolYearService,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	public async findTspSystemOrFail(): Promise<System> {
@@ -152,7 +150,7 @@ export class TspSyncService {
 	private createClient(system: System) {
 		const client = this.tspClientFactory.createExportClient({
 			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: this.encryptionService.decrypt(system.oauthConfig?.clientSecret ?? ''),
+			clientSecret: system.oauthConfig?.clientSecret ?? '',
 			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
 		});
 

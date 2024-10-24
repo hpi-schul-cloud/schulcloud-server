@@ -13,7 +13,6 @@ import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory, schoolYearFactory } from '@shared/testing';
-import { DefaultEncryptionService, EncryptionService } from '@src/infra/encryption';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
 import { SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -30,7 +29,6 @@ describe(TspSyncService.name, () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
-	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,10 +54,6 @@ describe(TspSyncService.name, () => {
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
 				},
-				{
-					provide: DefaultEncryptionService,
-					useValue: createMock<EncryptionService>(),
-				},
 			],
 		}).compile();
 
@@ -69,7 +63,6 @@ describe(TspSyncService.name, () => {
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
-		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterEach(() => {
@@ -181,8 +174,6 @@ describe(TspSyncService.name, () => {
 		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
 
 		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-		encryptionService.decrypt.mockImplementation((secret) => secret);
 
 		return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools, teachers, students, classes };
 	};
