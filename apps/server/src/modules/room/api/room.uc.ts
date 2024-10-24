@@ -68,6 +68,17 @@ export class RoomUc {
 		await this.roomService.deleteRoom(room);
 	}
 
+	public async getRoomParticipants(userId: EntityId, roomId: EntityId): Promise<void> {
+		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+			action: Action.read,
+			requiredPermissions: [],
+		});
+
+		return Promise.resolve();
+	}
+
 	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMemberService.getRoomMemberAuthorizablesByUserId(userId);

@@ -140,8 +140,11 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	async getParticipants(
 		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
 		@Query() pagination: RoomPaginationParams
 	): Promise<RoomParticipantListResponse> {
+		await this.roomUc.getRoomParticipants(currentUser.userId, urlParams.roomId);
+
 		const participants = mockusers.map((user) => {
 			const mapRole = <Record<string, RoleName>>{
 				teacher: RoleName.TEACHER,
