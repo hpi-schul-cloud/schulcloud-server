@@ -25,8 +25,8 @@ export class CommonCartridgeUc {
 	}
 
 	public async exportCardList(cardIds: Array<string>): Promise<CardListResponseDto> {
-		const lesson = await this.exportService.findAllCardsByIds(cardIds);
+		const cardList = await this.exportService.findAllCardsByIds(cardIds);
 
-		return lesson;
+		return cardList;
 	}
 }
