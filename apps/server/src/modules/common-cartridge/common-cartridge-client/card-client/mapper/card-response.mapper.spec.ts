@@ -14,6 +14,7 @@ import {
 } from '../cards-api-client';
 import { ContentElementType } from '../enums/content-element-type.enum';
 import { CardContentElementInner } from '../types/card-content-elements-inner.type';
+import { CardResponseDto } from '../dto/card-response.dto';
 
 describe('CardResponseMapper', () => {
 	describe('mapToCardListResponseDto', () => {
@@ -145,6 +146,36 @@ describe('CardResponseMapper', () => {
 			expect(cardResponseDto.title).toBe('Card 2');
 			expect(cardResponseDto.height).toBe(150);
 			expect(cardResponseDto.elements).toHaveLength(0);
+		});
+		it('should return an empty list of elements when CardResponse has no elements', () => {
+			const mockCardListResponse: CardListResponse = {
+				data: [
+					{
+						id: 'card-3',
+						title: 'Card 3',
+						height: 100,
+						elements: [],
+						visibilitySettings: { publishedAt: '2024-10-03T12:00:00Z' },
+						timestamps: {
+							lastUpdatedAt: '2024-10-03T11:00:00Z',
+							createdAt: '2024-10-03T10:00:00Z',
+							deletedAt: faker.date.recent().toString(),
+						},
+					},
+				],
+			};
+
+			const result = CardResponseMapper.mapToCardListResponseDto(mockCardListResponse);
+			expect(result).toBeDefined();
+			expect(result.data).toHaveLength(1);
+
+			const cardResponse: CardResponseDto = result.data[0];
+			expect(cardResponse.id).toBe('card-3');
+			expect(cardResponse.title).toBe('Card 3');
+			expect(cardResponse.height).toBe(100);
+			expect(cardResponse.elements).toHaveLength(0);
+			expect(cardResponse.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
+			expect(cardResponse.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
 		});
 	});
 });
