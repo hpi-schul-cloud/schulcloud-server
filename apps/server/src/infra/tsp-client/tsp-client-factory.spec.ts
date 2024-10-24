@@ -5,6 +5,7 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
+import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
 
 describe('TspClientFactory', () => {
@@ -12,6 +13,7 @@ describe('TspClientFactory', () => {
 	let sut: TspClientFactory;
 	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
 	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,12 +38,17 @@ describe('TspClientFactory', () => {
 						},
 					}),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspClientFactory);
 		configServiceMock = module.get(ConfigService);
 		oauthAdapterServiceMock = module.get(OauthAdapterService);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -118,6 +125,7 @@ describe('TspClientFactory', () => {
 
 			expect(response).toBeDefined();
 			expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
+			expect(encryptionService.decrypt).toHaveBeenCalled();
 		});
 	});
 
