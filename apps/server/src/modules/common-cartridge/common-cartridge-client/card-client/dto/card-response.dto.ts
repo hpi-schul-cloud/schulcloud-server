@@ -21,13 +21,13 @@ export class CardResponseDto {
 		height: number,
 		elements: CardResponseElementsInnerDto[],
 		visibilitySettings: VisibilitySettingsResponseDto,
-		timeStamps: TimestampResponseDto
+		timestamps: TimestampResponseDto
 	) {
 		this.id = id;
 		this.title = title;
 		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;
-		this.timeStamps = timeStamps;
+		this.timeStamps = timestamps;
 	}
 }
