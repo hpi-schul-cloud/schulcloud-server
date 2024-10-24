@@ -101,8 +101,7 @@ describe('CardResponseMapper', () => {
 			expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-01T12:00:00Z');
 			expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-01T11:00:00Z');
 
-			// Check elements
-			expect(cardResponseDto.elements).toHaveLength(8); // Should include all valid elements
+			expect(cardResponseDto.elements).toHaveLength(8);
 			expect(cardResponseDto.elements[0].type).toBe(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
 			expect(cardResponseDto.elements[1].type).toBe(ContentElementType.DELETED);
 			expect(cardResponseDto.elements[2].type).toBe(ContentElementType.SUBMISSION_CONTAINER);
