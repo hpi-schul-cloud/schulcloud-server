@@ -7,7 +7,8 @@ import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { Group, GroupFilter, GroupTypes } from '../domain';
+import { ScopeAggregateResult } from '@shared/repo/mongodb-scope';
+import { Group, GroupAggregateScope, GroupFilter, GroupTypes } from '../domain';
 import { GroupEntity } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
@@ -82,60 +83,11 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return page;
 	}
 
-	public async findAvailableGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
-		const pipeline: unknown[] = [];
-		let nameRegexFilter = {};
-
-		const escapedName = filter.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-		if (StringValidator.isNotEmptyString(escapedName, true)) {
-			nameRegexFilter = { name: { $regex: escapedName, $options: 'i' } };
-		}
-
-		if (filter.userId) {
-			pipeline.push({ $match: { users: { $elemMatch: { user: new ObjectId(filter.userId) } } } });
-		}
-
-		if (filter.schoolId) {
-			pipeline.push({ $match: { organization: new ObjectId(filter.schoolId) } });
-		}
-
-		pipeline.push(
-			{ $match: nameRegexFilter },
-			{
-				$lookup: {
-					from: 'courses',
-					localField: '_id',
-					foreignField: 'syncedWithGroup',
-					as: 'syncedCourses',
-				},
-			},
-			{
-				$match: {
-					$or: [{ syncedCourses: { $size: 0 } }, { type: { $eq: GroupTypes.CLASS } }],
-				},
-			},
-			{ $sort: { name: 1 } }
-		);
-
-		if (options?.pagination?.limit) {
-			pipeline.push({
-				$facet: {
-					total: [{ $count: 'count' }],
-					data: [{ $skip: options.pagination?.skip }, { $limit: options.pagination.limit }],
-				},
-			});
-		} else {
-			pipeline.push({
-				$facet: {
-					total: [{ $count: 'count' }],
-					data: [{ $skip: options?.pagination?.skip }],
-				},
-			});
-		}
-
-		const mongoEntitiesFacet = (await this.em.aggregate(GroupEntity, pipeline)) as [
-			{ total: [{ count: number }]; data: EntityDictionary<GroupEntity>[] }
-		];
+	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
+		const mongoEntitiesFacet = (await this.em.aggregate(
+			GroupEntity,
+			scope.build()
+		)) as ScopeAggregateResult<GroupEntity>;
 
 		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
 
