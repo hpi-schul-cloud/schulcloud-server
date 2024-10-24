@@ -1,4 +1,5 @@
 export { BoardConfig } from './board.config';
+export { MediaBoardConfig } from './media-board.config';
 export { BoardModule } from './board.module';
 export { AnyElementContentBody, LinkContentBody, RichTextContentBody } from './controller/dto';
 export {
