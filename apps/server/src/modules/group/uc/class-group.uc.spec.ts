@@ -182,7 +182,7 @@ describe('ClassGroupUc', () => {
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
 
-				const startDate = schoolYearDo.getProps().startDate;
+				const { startDate } = schoolYearDo.getProps();
 				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({ startDate });
 				const nextSchoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({
 					startDate: schoolYear.endDate,

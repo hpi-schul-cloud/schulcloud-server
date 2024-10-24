@@ -258,13 +258,13 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const query: ContextExternalToolQuery = {
 					context: {
-						id: contextExternalTool1.contextId,
+						id: contextExternalTool1.contextId.toHexString(),
 					},
 				};
 
 				const result: ContextExternalTool[] = await repo.find(query);
 
-				expect(result[0].contextRef.id).toEqual(contextExternalTool1.contextId);
+				expect(result[0].contextRef.id).toEqual(contextExternalTool1.contextId.toHexString());
 			});
 		});
 
@@ -303,7 +303,7 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const query: ContextExternalToolQuery = {
 					context: {
-						id: contextExternalTool1.contextId,
+						id: contextExternalTool1.contextId.toHexString(),
 					},
 				};
 
@@ -373,7 +373,7 @@ describe(ContextExternalToolRepo.name, () => {
 				expect(result.getProps()).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
 					contextRef: {
-						id: contextExternalTool.contextId,
+						id: contextExternalTool.contextId.toHexString(),
 						type: ToolContextType.COURSE,
 					},
 					displayName: contextExternalTool.displayName,
@@ -417,7 +417,7 @@ describe(ContextExternalToolRepo.name, () => {
 				expect(result?.getProps()).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
 					contextRef: {
-						id: contextExternalTool.contextId,
+						id: contextExternalTool.contextId.toHexString(),
 						type: ToolContextType.COURSE,
 					},
 					displayName: contextExternalTool.displayName,

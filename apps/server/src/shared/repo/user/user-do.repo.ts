@@ -22,6 +22,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
+			.byRoleId(query.roleId)
+			.withDiscoverableTrue(query.discoverable)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.whereLastLoginSystemChangeIsBetween(
@@ -116,6 +118,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
+			preferredName: entity.preferredName,
 			roles: [],
 			schoolId: entity.school.id,
 			ldapDn: entity.ldapDn,
@@ -147,6 +150,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
+			preferredName: entityDO.preferredName,
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
 			ldapDn: entityDO.ldapDn,

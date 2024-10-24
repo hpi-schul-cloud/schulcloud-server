@@ -9,6 +9,7 @@ import { GroupValidPeriodEmbeddable } from './group-valid-period.embeddable';
 export enum GroupEntityTypes {
 	CLASS = 'class',
 	COURSE = 'course',
+	ROOM = 'room',
 	OTHER = 'other',
 }
 
