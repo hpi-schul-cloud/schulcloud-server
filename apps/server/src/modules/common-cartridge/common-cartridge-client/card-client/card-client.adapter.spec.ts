@@ -9,7 +9,7 @@ import { CardListResponse, CardResponse } from './cards-api-client/models';
 import { CardClientAdapter } from './card-client.adapter';
 import { BoardCardApi } from './cards-api-client';
 
-const jwtToken = 'someJwtToken';
+const jwtToken = faker.string.uuid();
 
 describe(CardClientAdapter.name, () => {
 	let module: TestingModule;
