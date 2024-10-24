@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { Logger } from '@src/core/logger';
-import { GenericErrorLoggable } from '@shared/common/loggable';
+import { ErrorLoggable } from '@src/core/error/loggable';
 import { HealthService } from '../service';
 import { HealthConfig } from '../health.config';
 import { HealthStatuses, HealthStatusCheck, HealthStatus } from '../domain';
@@ -74,7 +74,7 @@ export class HealthUC {
 
 			await this.healthService.upsertHealthCheckById(healthCheckID);
 		} catch (error) {
-			this.logger.warning(new GenericErrorLoggable(error));
+			this.logger.warning(new ErrorLoggable(error));
 			// If any error occurred in the database operation execution it should be indicated
 			// as a MongoDB check failure (and thus the whole health check should fail).
 
