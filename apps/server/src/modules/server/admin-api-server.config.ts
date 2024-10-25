@@ -1,11 +1,12 @@
-import { DeletionConfig } from '@modules/deletion';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardConfig } from '@infra/auth-guard';
+import { DeletionConfig } from '@modules/deletion';
 import { LegacySchoolConfig } from '@modules/legacy-school';
-import { UserConfig } from '@modules/user';
 import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
+import { Algorithm } from 'jsonwebtoken';
 
 export interface AdminApiServerConfig
 	extends DeletionConfig,
@@ -60,6 +61,7 @@ const config: AdminApiServerConfig = {
 	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	LOGIN_BLOCK_TIME: 0,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
@@ -67,6 +69,10 @@ const config: AdminApiServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
+	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
+		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
+	) as string,
+	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 };
 
 export const adminApiServerConfig = () => config;

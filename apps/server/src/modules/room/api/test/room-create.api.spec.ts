@@ -1,8 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, roleFactory } from '@shared/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
+import { RoomMemberEntity } from '@src/modules/room-member';
+import { GroupEntity } from '@src/modules/group/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { RoomEntity } from '../../repo';
 
 describe('Room Controller (API)', () => {
@@ -65,12 +68,16 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				const role = roleFactory.buildWithId({
+					name: RoleName.ROOM_EDITOR,
+					permissions: [Permission.ROOM_EDIT, Permission.ROOM_VIEW],
+				});
+				await em.persistAndFlush([teacherAccount, teacherUser, role]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient };
+				return { loggedInClient, teacherUser, role };
 			};
 
 			describe('when the required parameters are given', () => {
@@ -80,9 +87,27 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
-
 					expect(response.status).toBe(HttpStatus.CREATED);
 					await expect(em.findOneOrFail(RoomEntity, roomId)).resolves.toMatchObject({ id: roomId, color: 'red' });
+				});
+
+				it('should have room creator as room editor', async () => {
+					const { loggedInClient, teacherUser } = await setup();
+
+					const params = { name: 'Room #1', color: 'red' };
+
+					const response = await loggedInClient.post(undefined, params);
+					const roomId = (response.body as { id: string }).id;
+					const roomMember = await em.findOneOrFail(RoomMemberEntity, { roomId });
+
+					const userGroup = await em.findOneOrFail(GroupEntity, {
+						id: roomMember.userGroupId,
+					});
+
+					expect(roomMember).toBeDefined();
+					expect(userGroup).toBeDefined();
+					expect(userGroup.users).toHaveLength(1);
+					expect(userGroup.users[0].user.id).toBe(teacherUser.id);
 				});
 			});
 
@@ -171,6 +196,28 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.post(undefined, params);
 
 					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+		});
+
+		describe('when the user has not required permissions', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient, studentUser };
+			};
+
+			describe('when the required parameters are given', () => {
+				it('should not create the room', async () => {
+					const { loggedInClient } = await setup();
+					const params = { name: 'Room #1', color: 'red' };
+
+					const response = await loggedInClient.post(undefined, params);
+					expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 				});
 			});
 		});

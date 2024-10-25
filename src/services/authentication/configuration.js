@@ -18,7 +18,7 @@ module.exports = {
 			header: { typ: 'JWT' },
 			audience: Configuration.get('SC_DOMAIN'),
 			issuer: Configuration.get('SC_DOMAIN'),
-			algorithm: 'RS256',
+			algorithm: Configuration.get('JWT_SIGNING_ALGORITHM'),
 			expiresIn: Configuration.get('JWT_LIFETIME'),
 		},
 		tsp: {},

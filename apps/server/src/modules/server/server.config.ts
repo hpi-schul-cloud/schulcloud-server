@@ -31,6 +31,7 @@ import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
+import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -119,8 +120,9 @@ export interface ServerConfig
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
+	TLDRAW__WEBSOCKET_URL: string;
 	TLDRAW__ASSETS_ENABLED: boolean;
-	TLDRAW__ASSETS_MAX_SIZE: number;
+	TLDRAW__ASSETS_MAX_SIZE_BYTES: number;
 	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: string[];
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 	I18N__DEFAULT_LANGUAGE: LanguageType;
@@ -193,6 +195,7 @@ const config: ServerConfig = {
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 	JWT_PRIVATE_KEY: (Configuration.get('JWT_PRIVATE_KEY') as string).replace(/\\n/g, '\n'),
 	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
@@ -209,6 +212,9 @@ const config: ServerConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
+	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
+		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
+	) as string,
 	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
 	) as boolean,
@@ -231,8 +237,9 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	TLDRAW__WEBSOCKET_URL: Configuration.get('TLDRAW__WEBSOCKET_URL') as string,
 	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
-	TLDRAW__ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
+	TLDRAW__ASSETS_MAX_SIZE_BYTES: Configuration.get('TLDRAW__ASSETS_MAX_SIZE_BYTES') as number,
 	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: (Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string).split(
 		','
 	),
@@ -318,6 +325,8 @@ const config: ServerConfig = {
 	TSP_API_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
+	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
+	TSP_SYNC_DATA_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_DATA_DAYS_TO_FETCH') as number,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,

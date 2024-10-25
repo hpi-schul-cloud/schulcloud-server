@@ -16,11 +16,15 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		configService: ConfigService<AuthGuardConfig>
 	) {
 		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
+		const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');
 
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([JwtExtractor.fromCookie('jwt')]),
 			ignoreExpiration: false,
 			secretOrKey: publicKey,
+			algorithms: [algorithm],
+			issuer: configService.get<string>('SC_DOMAIN'),
+			audience: configService.get<string>('SC_DOMAIN'),
 		});
 	}
 
