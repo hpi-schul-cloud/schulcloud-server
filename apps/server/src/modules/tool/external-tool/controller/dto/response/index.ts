@@ -13,3 +13,5 @@ export {
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
 } from './external-tool-import-result-response';
+export * from './preferred-tool.response';
+export * from './preferred-tool-list.response';

@@ -7,4 +7,5 @@ export interface ToolConfig {
 	CTL_TOOLS_RELOAD_TIME_MS: number;
 	FILES_STORAGE__SERVICE_BASE_URL: string;
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: number;
+	FEATURE_PREFERRED_CTL_TOOLS_ENABLED: boolean;
 }
