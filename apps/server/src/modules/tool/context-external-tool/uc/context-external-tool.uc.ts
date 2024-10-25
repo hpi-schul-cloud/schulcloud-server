@@ -15,9 +15,7 @@ import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { Lti11DeepLinkParams } from '../controller/dto';
 import { ContextExternalTool, ContextRef } from '../domain';
-import { LtiDeepLink } from '../domain/lti-deep-link';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
@@ -147,38 +145,5 @@ export class ContextExternalToolUc {
 		);
 
 		return toolsWithPermission;
-	}
-
-	public async updateLtiDeepLink(
-		body: Lti11DeepLinkParams,
-		contextExternalToolId: EntityId,
-		deepLink?: LtiDeepLink
-	): Promise<void> {
-		// TODO validate oauth1
-
-		const state: string = body.data;
-		const userId: string | undefined = await this.cacheManager.get<string>(state);
-		await this.cacheManager.del(state);
-
-		if (!userId) {
-			throw new Error('unknown user');
-		}
-
-		if (!deepLink) {
-			return;
-		}
-
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
-			contextExternalToolId
-		);
-
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
-
-		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
-
-		contextExternalTool.ltiDeepLink = new LtiDeepLink({ ...deepLink });
-
-		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 	}
 }

@@ -1,16 +1,26 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UUID } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { LtiPrivacyPermission, LtiRole } from '../../../common/enum';
-import { ExternalTool } from '../../../external-tool/domain';
+import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
+import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
-import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import {
+	AuthenticationValues,
+	LaunchRequestMethod,
+	PropertyData,
+	PropertyLocation,
+	ToolLaunchRequest,
+} from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
@@ -67,12 +77,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			!data.contextExternalTool.ltiDeepLink
 		) {
 			properties = await this.buildToolLaunchDataForContentItemSelectionRequest(userId, data, config);
-		} else if (
-			data.contextExternalTool.ltiDeepLink &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltilink' &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltiassignment'
-		) {
-			properties = [];
 		} else {
 			properties = await this.buildToolLaunchDataForLtiLaunch(
 				userId,
@@ -170,7 +174,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			new PropertyData({ name: 'key', value: config.key }),
 			new PropertyData({ name: 'secret', value: decrypted }),
 
-			new PropertyData({ name: 'lti_message_type', value: config.lti_message_type, location: PropertyLocation.BODY }),
+			new PropertyData({ name: 'lti_message_type', value: lti_message_type, location: PropertyLocation.BODY }),
 			new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
 			// When there is no persistent link to a resource, then generate a new one every time
 			new PropertyData({
@@ -250,29 +254,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			// Don't add a user_id, when the privacy is anonymous
 		}
 
-		if (data.contextExternalTool.ltiDeepLink) {
-			additionalProperties.push(...this.buildToolLaunchDataFromDeepLink(data.contextExternalTool.ltiDeepLink));
-		}
-
 		return additionalProperties;
-	}
-
-	private buildToolLaunchDataFromDeepLink(deepLink: LtiDeepLink): PropertyData[] {
-		const deepLinkProperties: PropertyData[] = [];
-
-		deepLink.parameters.forEach((parameter: CustomParameterEntry): void => {
-			if (parameter.value) {
-				deepLinkProperties.push(
-					new PropertyData({
-						name: `custom_${parameter.name}`,
-						value: parameter.value,
-						location: PropertyLocation.BODY,
-					})
-				);
-			}
-		});
-
-		return deepLinkProperties;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -331,18 +313,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		) {
 			request.openNewTab = true;
 			request.isDeepLink = true;
-		}
-
-		if (data.contextExternalTool.ltiDeepLink?.url) {
-			request.url = data.contextExternalTool.ltiDeepLink.url;
-		}
-
-		if (
-			data.contextExternalTool.ltiDeepLink &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltilink' &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltiassignment'
-		) {
-			request.method = LaunchRequestMethod.GET;
 		}
 
 		return request;

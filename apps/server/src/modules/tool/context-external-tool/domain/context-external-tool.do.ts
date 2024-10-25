@@ -42,8 +42,4 @@ export class ContextExternalTool extends DomainObject<ContextExternalToolProps> 
 	get ltiDeepLink(): LtiDeepLink | undefined {
 		return this.props.ltiDeepLink;
 	}
-
-	set ltiDeepLink(value: LtiDeepLink | undefined) {
-		this.props.ltiDeepLink = value;
-	}
 }
