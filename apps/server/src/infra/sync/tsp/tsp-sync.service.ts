@@ -166,7 +166,7 @@ export class TspSyncService {
 		return studentMigrations;
 	}
 
-	public async findUserByTspUid(tspUid: string) {
+	public async findUserByTspUid(tspUid: string): Promise<UserDO | null> {
 		const tspUser = await this.userService.findUsers({ tspUid });
 
 		if (tspUser.data.length === 0) {
@@ -176,7 +176,7 @@ export class TspSyncService {
 		return tspUser.data[0];
 	}
 
-	public async findAccountByTspUid(tspUid: string) {
+	public async findAccountByTspUid(tspUid: string): Promise<Account | null> {
 		const user = await this.findUserByTspUid(tspUid);
 
 		if (!user || !user.id) {
@@ -188,7 +188,12 @@ export class TspSyncService {
 		return account;
 	}
 
-	public async updateUser(user: UserDO, email: string, externalId: string, previousExternalId: string) {
+	public async updateUser(
+		user: UserDO,
+		email: string,
+		externalId: string,
+		previousExternalId: string
+	): Promise<UserDO> {
 		user.email = email;
 		user.externalId = externalId;
 		user.previousExternalId = previousExternalId;
@@ -196,7 +201,7 @@ export class TspSyncService {
 		return this.userService.save(user);
 	}
 
-	public async updateAccount(account: Account, username: string, systemId: string) {
+	public async updateAccount(account: Account, username: string, systemId: string): Promise<Account> {
 		account.username = username;
 		account.systemId = systemId;
 
