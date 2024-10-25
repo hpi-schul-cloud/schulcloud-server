@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { XApiKeyConfig } from '@infra/auth-guard';
+import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -11,12 +11,12 @@ import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
 import type { MediaBoardConfig } from '@modules/board/media-board.config';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import { DeletionConfig } from '@modules/deletion';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { ProvisioningConfig } from '@modules/provisioning';
+import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
@@ -51,7 +51,8 @@ export interface ServerConfig
 		IdentityManagementConfig,
 		SchoolConfig,
 		MailConfig,
-		XApiKeyConfig,
+		JwtAuthGuardConfig,
+		RocketChatUserConfig,
 		LearnroomConfig,
 		AuthenticationConfig,
 		ToolConfig,
@@ -64,7 +65,6 @@ export interface ServerConfig
 		UserImportConfig,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
-		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		RoomConfig,
@@ -226,14 +226,6 @@ const config: ServerConfig = {
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
-	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
-	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: Configuration.get(
-		'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
-	) as number,
-	ADMIN_API__DELETION_DELAY_MILLISECONDS: Configuration.get('ADMIN_API__DELETION_DELAY_MILLISECONDS') as number,
-	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
-		.split(',')
-		.map((part) => (part.split(':').pop() ?? '').trim()),
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),

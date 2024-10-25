@@ -1,21 +1,23 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { JwtAuthGuardConfig } from '@infra/auth-guard';
+import { Algorithm } from 'jsonwebtoken';
 import { env } from 'process';
 
-export interface TldrawConfig {
+export interface TldrawConfig extends JwtAuthGuardConfig {
 	TLDRAW_DB_URL: string;
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
-	TLDRAW_DB_COMPRESS_THRESHOLD: string;
+	TLDRAW_DB_COMPRESS_THRESHOLD: number;
 	CONNECTION_STRING: string;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW_PING_TIMEOUT: number;
-	TLDRAW_GC_ENABLED: number;
-	REDIS_URI: string;
+	TLDRAW_GC_ENABLED: boolean;
+	REDIS_URI: string | null;
 	TLDRAW_ASSETS_ENABLED: boolean;
 	TLDRAW_ASSETS_SYNC_ENABLED: boolean;
 	TLDRAW_ASSETS_MAX_SIZE_BYTES: number;
 	ASSETS_ALLOWED_MIME_TYPES_LIST: string;
-	API_HOST: number;
+	API_HOST: string;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
 	TLDRAW_FINALIZE_DELAY: number;
 	PERFORMANCE_MEASURE_ENABLED: boolean;
@@ -38,7 +40,15 @@ export const tldrawS3Config = {
 	secretAccessKey: env.S3_SECRET_KEY as string,
 };
 
-const tldrawConfig = {
+const jwtAuthGuardConfig: JwtAuthGuardConfig = {
+	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
+	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
+	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
+	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
+};
+
+const tldrawConfig: TldrawConfig = {
 	TLDRAW_DB_URL,
 	NEST_LOG_LEVEL: Configuration.get('TLDRAW__LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
@@ -56,6 +66,7 @@ const tldrawConfig = {
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
 	TLDRAW_FINALIZE_DELAY: Configuration.get('TLDRAW__FINALIZE_DELAY') as number,
 	PERFORMANCE_MEASURE_ENABLED: Configuration.get('TLDRAW__PERFORMANCE_MEASURE_ENABLED') as boolean,
+	...jwtAuthGuardConfig,
 };
 
 export const config = () => tldrawConfig;

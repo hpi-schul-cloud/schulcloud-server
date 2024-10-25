@@ -5,7 +5,7 @@ import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
-import { AuthGuardConfig } from '../auth-guard.config';
+import { JwtAuthGuardConfig } from '../config';
 import { ICurrentUser, JwtPayload, StrategyType } from '../interface';
 import { CurrentUserBuilder } from '../mapper';
 
@@ -13,7 +13,7 @@ import { CurrentUserBuilder } from '../mapper';
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
 	constructor(
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<AuthGuardConfig>
+		configService: ConfigService<JwtAuthGuardConfig>
 	) {
 		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 		const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');

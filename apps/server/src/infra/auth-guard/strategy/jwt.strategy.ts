@@ -5,7 +5,7 @@ import { extractJwtFromHeader } from '@shared/common';
 import { Algorithm } from 'jsonwebtoken';
 import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
-import { AuthGuardConfig } from '../auth-guard.config';
+import { JwtAuthGuardConfig } from '../config';
 import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserBuilder } from '../mapper';
 
@@ -13,7 +13,7 @@ import { CurrentUserBuilder } from '../mapper';
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<AuthGuardConfig>
+		configService: ConfigService<JwtAuthGuardConfig>
 	) {
 		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 		const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');
