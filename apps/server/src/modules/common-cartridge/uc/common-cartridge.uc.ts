@@ -4,7 +4,6 @@ import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
-import { LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -22,17 +21,5 @@ export class CommonCartridgeUc {
 		});
 
 		return response;
-	}
-
-	public async exportLesson(lessonId: string): Promise<LessonDto> {
-		const lesson = await this.exportService.getLessonById(lessonId);
-
-		return lesson;
-	}
-
-	public async exportLessonTasks(lessonId: string): Promise<LessonLinkedTaskDto[]> {
-		const lessonLinkedTasks = await this.exportService.getLessonTasks(lessonId);
-
-		return lessonLinkedTasks;
 	}
 }

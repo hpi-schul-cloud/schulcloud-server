@@ -4,7 +4,6 @@ import { BoardClientAdapter } from '../common-cartridge-client/board-client';
 import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -12,8 +11,7 @@ export class CommonCartridgeExportService {
 		private readonly filesService: FilesStorageClientAdapterService,
 		private readonly boardClientAdapter: BoardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
-		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
-		private readonly lessonClientAdapter: LessonClientAdapter
+		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter
 	) {}
 
 	public async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
@@ -32,17 +30,5 @@ export class CommonCartridgeExportService {
 		const courseRooms = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		return courseRooms;
-	}
-
-	public async getLessonById(lessonId: string) {
-		const lesson = await this.lessonClientAdapter.getLessonById(lessonId);
-
-		return lesson;
-	}
-
-	public async getLessonTasks(lessonId: string) {
-		const lessonTasks = await this.lessonClientAdapter.getLessonTasks(lessonId);
-
-		return lessonTasks;
 	}
 }

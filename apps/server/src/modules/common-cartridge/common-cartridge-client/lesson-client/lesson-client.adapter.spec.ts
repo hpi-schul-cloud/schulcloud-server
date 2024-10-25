@@ -179,6 +179,7 @@ describe(LessonClientAdapter.name, () => {
 
 				return { lessonResponseId };
 			};
+
 			it('should throw an error', async () => {
 				const { lessonResponseId } = setup();
 

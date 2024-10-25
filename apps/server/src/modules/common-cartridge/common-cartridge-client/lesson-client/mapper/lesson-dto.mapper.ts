@@ -55,7 +55,7 @@ export class LessonDtoMapper {
 		return lessonMaterialsDto;
 	}
 
-	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse) {
+	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto {
 		const lessonContentDto = new LessonContentDto({
 			content: lessonContentResponse.content,
 			title: lessonContentResponse.title,
