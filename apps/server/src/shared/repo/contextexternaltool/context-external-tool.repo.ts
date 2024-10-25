@@ -136,7 +136,7 @@ export class ContextExternalToolRepo {
 		});
 
 		const contextRef: ContextRef = new ContextRef({
-			id: entity.contextId,
+			id: entity.contextId.toHexString(),
 			type: this.mapContextTypeToDomainObjectType(entity.contextType),
 		});
 

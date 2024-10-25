@@ -21,6 +21,7 @@ export {
 	UserWithBoardRoles,
 	isCard,
 	isColumn,
+	isColumnBoard,
 	isDrawingElement,
 	isLinkElement,
 	isRichTextElement,
