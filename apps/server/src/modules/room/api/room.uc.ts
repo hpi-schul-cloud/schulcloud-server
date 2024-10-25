@@ -86,6 +86,7 @@ export class RoomUc {
 		const participantResponses = users.map((user) => {
 			const member = roomMemberAuthorizable.members.find((item) => item.userId === user.id);
 			if (!member) {
+				/* istanbul ignore next */
 				throw new Error('User not found in room members');
 			}
 			return this.mapToParticipant(member, user);
