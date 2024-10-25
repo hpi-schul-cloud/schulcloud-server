@@ -4,13 +4,13 @@ import {
 	CardResponseElementsInner,
 	VisibilitySettingsResponse,
 	TimestampsResponse,
-	DeletedElementResponse,
-	SubmissionContainerElementResponse,
-	DrawingElementResponse,
-	ExternalToolElementResponse,
-	FileElementResponse,
-	LinkElementResponse,
-	RichTextElementResponse,
+	DeletedElementContent,
+	SubmissionContainerElementContent,
+	DrawingElementContent,
+	ExternalToolElementContent,
+	FileElementContent,
+	LinkElementContent,
+	RichTextElementContent,
 } from '../cards-api-client';
 import { CardResponseDto } from '../dto/card-response.dto';
 import { CollaborativeTextEditorElementResponseDto } from '../dto/collaborative-text-editor-element-response.dto';
@@ -31,7 +31,6 @@ import { SubmissionContainerElementContentDto } from '../dto/submission-containe
 import { DeletedElementContentDto } from '../dto/deleted-element-content.dto';
 import { VisibilitySettingsResponseDto } from '../dto/visibility-settings-response.dto';
 import { TimestampResponseDto } from '../dto/timestamp-response.dto';
-import { CardContentElementInner } from '../types/card-content-elements-inner.type';
 import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
 import { CardListResponseDto } from '../dto/card-list-response.dto';
 
@@ -68,138 +67,105 @@ export class CardResponseMapper {
 						new CollaborativeTextEditorElementResponseDto(
 							element.id,
 							ContentElementType.COLLABORATIVE_TEXT_EDITOR,
-							this.mapToElementsContent(element, ContentElementType.COLLABORATIVE_TEXT_EDITOR),
+							{},
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.DELETED:
+				case ContentElementType.DELETED: {
+					const content: DeletedElementContent = element.content as DeletedElementContent;
 					elements.push(
 						new DeletedElementResponseDto(
 							element.id,
 							ContentElementType.DELETED,
-							this.mapToElementsContent(element, ContentElementType.DELETED) as DeletedElementContentDto,
+							new DeletedElementContentDto(content.title, ContentElementType.DELETED, content.description),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.SUBMISSION_CONTAINER:
+				}
+				case ContentElementType.SUBMISSION_CONTAINER: {
+					const content: SubmissionContainerElementContent = element.content as SubmissionContainerElementContent;
 					elements.push(
 						new SubmissionContainerElementResponseDto(
 							element.id,
 							ContentElementType.SUBMISSION_CONTAINER,
-							this.mapToElementsContent(
-								element,
-								ContentElementType.SUBMISSION_CONTAINER
-							) as SubmissionContainerElementContentDto,
+							new SubmissionContainerElementContentDto(content.dueDate),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.DRAWING:
+				}
+				case ContentElementType.DRAWING: {
+					const content: DrawingElementContent = element.content as DrawingElementContent;
 					elements.push(
 						new DrawingElementResponseDto(
 							element.id,
 							ContentElementType.DRAWING,
-							this.mapToElementsContent(element, ContentElementType.DRAWING) as DrawingElementContentDto,
+							new DrawingElementContentDto(content.description),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.EXTERNAL_TOOL:
+				}
+				case ContentElementType.EXTERNAL_TOOL: {
+					const content: ExternalToolElementContent = element.content as ExternalToolElementContent;
 					elements.push(
 						new ExternalToolElementResponseDto(
 							element.id,
 							ContentElementType.EXTERNAL_TOOL,
-							this.mapToElementsContent(element, ContentElementType.EXTERNAL_TOOL) as ExternalToolElementContentDto,
+							new ExternalToolElementContentDto(content.contextExternalToolId),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.FILE:
+				}
+				case ContentElementType.FILE: {
+					const content: FileElementContent = element.content as FileElementContent;
 					elements.push(
 						new FileElementResponseDto(
 							element.id,
 							ContentElementType.FILE,
-							this.mapToElementsContent(element, ContentElementType.FILE) as FileElementContentDto,
+							new FileElementContentDto(content.caption, content.alternativeText),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.LINK:
+				}
+				case ContentElementType.LINK: {
+					const content: LinkElementContent = element.content as LinkElementContent;
 					elements.push(
 						new LinkElementResponseDto(
 							element.id,
 							ContentElementType.LINK,
-							this.mapToElementsContent(element, ContentElementType.LINK) as LinkElementContentDto,
+							new LinkElementContentDto(
+								content.url,
+								content.title,
+								content.description as string,
+								content.imageUrl as string
+							),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
-				case ContentElementType.RICH_TEXT:
+				}
+				case ContentElementType.RICH_TEXT: {
+					const content: RichTextElementContent = element.content as RichTextElementContent;
 					elements.push(
 						new RichTextElementResponseDto(
 							element.id,
 							ContentElementType.RICH_TEXT,
-							this.mapToElementsContent(element, ContentElementType.RICH_TEXT) as RichTextElementContentDto,
+							new RichTextElementContentDto(content.text, content.inputFormat),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
 					break;
+				}
 				default:
 					break;
 			}
 		});
 		return elements;
-	}
-
-	private static mapToElementsContent(
-		response: CardResponseElementsInner,
-		elementType: ContentElementType
-	): CardContentElementInner {
-		// eslint-disable-next-line default-case
-		switch (elementType) {
-			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
-				return {};
-			case ContentElementType.DELETED: {
-				const deletedElementContent: DeletedElementResponse = response as DeletedElementResponse;
-				return new DeletedElementContentDto(
-					deletedElementContent.content.title,
-					ContentElementType.DELETED,
-					deletedElementContent.content.description
-				);
-			}
-			case ContentElementType.SUBMISSION_CONTAINER: {
-				const submissionContainerResponse: SubmissionContainerElementResponse =
-					response as SubmissionContainerElementResponse;
-				return new SubmissionContainerElementContentDto(submissionContainerResponse.content.dueDate);
-			}
-			case ContentElementType.DRAWING: {
-				const drawingResponse: DrawingElementResponse = response as DrawingElementResponse;
-				return new DrawingElementContentDto(drawingResponse.content.description);
-			}
-			case ContentElementType.EXTERNAL_TOOL: {
-				const externalToolResponse: ExternalToolElementResponse = response as ExternalToolElementResponse;
-				return new ExternalToolElementContentDto(externalToolResponse.content.contextExternalToolId);
-			}
-			case ContentElementType.FILE: {
-				const fileResponse: FileElementResponse = response as FileElementResponse;
-				return new FileElementContentDto(fileResponse.content.caption, fileResponse.content.alternativeText);
-			}
-			case ContentElementType.LINK: {
-				const linkElementResponse: LinkElementResponse = response as LinkElementResponse;
-				return new LinkElementContentDto(
-					linkElementResponse.content.url,
-					linkElementResponse.content.title,
-					linkElementResponse.content.description as string,
-					linkElementResponse.content.imageUrl as string
-				);
-			}
-			case ContentElementType.RICH_TEXT: {
-				const richTextResponse: RichTextElementResponse = response as RichTextElementResponse;
-				return new RichTextElementContentDto(richTextResponse.content.text, richTextResponse.content.inputFormat);
-			}
-		}
 	}
 
 	private static mapToVisibilitySettingsDto(
