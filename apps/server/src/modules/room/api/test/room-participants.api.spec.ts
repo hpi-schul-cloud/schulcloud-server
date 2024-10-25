@@ -9,6 +9,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	userFactory,
 } from '@shared/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
@@ -48,24 +49,44 @@ describe('Room Controller (API)', () => {
 		const setupRoomWithMembers = async () => {
 			const room = roomEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const role = roleFactory.buildWithId({
+			const editRole = roleFactory.buildWithId({
+				name: RoleName.ROOM_EDITOR,
+				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
+			});
+			const viewerRole = roleFactory.buildWithId({
 				name: RoleName.ROOM_VIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
 			// TODO: add more than one user
+			const students = userFactory.buildList(2);
+			const teachers = userFactory.buildList(2);
 			const userGroupEntity = groupEntityFactory.buildWithId({
-				users: [{ role, user: teacherUser }],
+				users: [
+					{ role: editRole, user: teacherUser },
+					{ role: editRole, user: teachers[0] },
+					{ role: editRole, user: teachers[1] },
+					{ role: viewerRole, user: students[0] },
+					{ role: viewerRole, user: students[1] },
+				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
 				externalSource: undefined,
 			});
 			const roomMembers = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
-			await em.persistAndFlush([room, roomMembers, teacherAccount, teacherUser, userGroupEntity]);
+			await em.persistAndFlush([
+				room,
+				roomMembers,
+				teacherAccount,
+				teacherUser,
+				userGroupEntity,
+				...students,
+				...teachers,
+			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room };
+			return { loggedInClient, room, students, teachers, teacherUser, viewerRole, editRole };
 		};
 
 		const setupLoggedInUser = async () => {
@@ -94,37 +115,33 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
-		// TODO: test when the feature is disabled
-		/* describe('when the feature is disabled', () => {
-			const setup = async () => {
+		describe('when the feature is disabled', () => {
+			it('should return a 403 error', async () => {
+				const { loggedInClient, room } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const response = await loggedInClient.get();
+				const response = await loggedInClient.get(`/${room.id}/members`);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
-		}); */
+		});
 
 		describe('when the user has the required permissions', () => {
 			it('should return a list of members', async () => {
-				const { loggedInClient, room } = await setupRoomWithMembers();
+				const { loggedInClient, room, students, teachers, teacherUser, editRole, viewerRole } =
+					await setupRoomWithMembers();
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
 
 				expect(response.status).toBe(HttpStatus.OK);
 				const body = response.body as RoomParticipantListResponse;
-				// TODO: check for actual data
-				expect(body.data.length).toBeGreaterThanOrEqual(1);
+				expect(body.data.length).toEqual(5);
+				expect(body.data).toContainEqual(expect.objectContaining({ userId: teacherUser.id, roleName: editRole.name }));
+				students.forEach((student) => {
+					expect(body.data).toContainEqual(expect.objectContaining({ userId: student.id, roleName: viewerRole.name }));
+				});
+				teachers.forEach((teacher) => {
+					expect(body.data).toContainEqual(expect.objectContaining({ userId: teacher.id, roleName: editRole.name }));
+				});
 			});
 		});
 	});

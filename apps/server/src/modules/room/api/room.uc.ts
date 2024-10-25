@@ -72,6 +72,7 @@ export class RoomUc {
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomParticipantResponse[]> {
+		this.checkFeatureEnabled();
 		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(currentUser, roomMemberAuthorizable, {
