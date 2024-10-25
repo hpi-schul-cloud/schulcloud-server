@@ -1,5 +1,5 @@
 export class SubmissionContainerElementContentDto {
-	dueDate: string;
+	dueDate?: string;
 
 	constructor(dueDate: string) {
 		this.dueDate = dueDate;
