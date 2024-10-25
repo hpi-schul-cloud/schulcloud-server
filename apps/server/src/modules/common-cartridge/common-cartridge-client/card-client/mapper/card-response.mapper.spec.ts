@@ -81,7 +81,7 @@ describe('CardResponseMapper', () => {
 								{}
 							) as CardResponseElementsInner,
 						],
-						visibilitySettings: { publishedAt: faker.date.past().toISOString() },
+						visibilitySettings: { publishedAt: '2024-10-01T12:00:00Z' },
 						timestamps: {
 							lastUpdatedAt: '2024-10-01T11:00:00Z',
 							createdAt: '2024-10-01T10:00:00Z',
