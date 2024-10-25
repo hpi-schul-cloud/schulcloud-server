@@ -3,6 +3,7 @@ import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { CoreModuleConfig } from '@src/core';
 import { AuthGuardConfig } from '@src/infra/auth-guard';
+import { Algorithm } from 'jsonwebtoken';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';
 export interface FileStorageConfig extends CoreModuleConfig, AuthorizationClientConfig, AuthGuardConfig {
@@ -26,6 +27,7 @@ const authGuardConfig: AuthGuardConfig = {
 	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 };
 
 const fileStorageConfig: FileStorageConfig = {
