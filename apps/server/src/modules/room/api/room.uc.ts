@@ -1,13 +1,15 @@
+import { Action, AuthorizationService } from '@modules/authorization';
+import { RoomMemberService, UserWithRoomRoles } from '@modules/room-member';
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, Permission, RoleName } from '@shared/domain/interface';
+import { Page, UserDO } from '@shared/domain/domainobject';
+import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { RoomMemberService } from '@src/modules/room-member';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
+import { RoomParticipantResponse } from './dto/response/room-participant.response';
 
 @Injectable()
 export class RoomUc {
@@ -15,6 +17,7 @@ export class RoomUc {
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomService: RoomService,
 		private readonly roomMemberService: RoomMemberService,
+		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService
 	) {}
 
@@ -34,7 +37,7 @@ export class RoomUc {
 		// NOTE: currently only teacher are allowed to create rooms. Could not find simpler way to check this.
 		this.authorizationService.checkOneOfPermissions(user, [Permission.COURSE_CREATE]);
 		await this.roomMemberService
-			.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR, user.school.id)
+			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }], user.school.id)
 			.catch(async (err) => {
 				await this.roomService.deleteRoom(room);
 				throw err;
@@ -68,15 +71,46 @@ export class RoomUc {
 		await this.roomService.deleteRoom(room);
 	}
 
-	public async getRoomParticipants(userId: EntityId, roomId: EntityId): Promise<void> {
+	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomParticipantResponse[]> {
 		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(currentUser, roomMemberAuthorizable, {
 			action: Action.read,
 			requiredPermissions: [],
 		});
 
-		return Promise.resolve();
+		const userIds = roomMemberAuthorizable.members.map((member) => member.userId);
+		const users = await this.userService.findByIds(userIds);
+
+		const participantResponses = users.map((user) => {
+			const member = roomMemberAuthorizable.members.find((item) => item.userId === user.id);
+			if (!member) {
+				throw new Error('User not found in room members');
+			}
+			return this.mapToParticipant(member, user);
+		});
+
+		return participantResponses;
+	}
+
+	public async addMembersToRoom(
+		currentUserId: EntityId,
+		roomId: EntityId,
+		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoomRole }>
+	): Promise<void> {
+		this.checkFeatureEnabled();
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write);
+		await this.roomMemberService.addMembersToRoom(roomId, userIdsAndRoles);
+	}
+
+	private mapToParticipant(member: UserWithRoomRoles, user: UserDO) {
+		return new RoomParticipantResponse({
+			userId: member.userId,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			roleName: member.roles[0].name,
+			schoolName: user.schoolName ?? '',
+		});
 	}
 
 	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {

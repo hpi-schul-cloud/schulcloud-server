@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { IFindOptions, RoleName } from '@shared/domain/interface';
+import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { Room } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -26,10 +26,10 @@ import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
-import { RoomParticipantListResponse, RoomParticipantResponse } from './dto/response/room-participant.response';
+import { RoomParticipantListResponse } from './dto/response/room-participant.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
-import { mockusers } from './mock-participants';
+import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -127,33 +127,38 @@ export class RoomController {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
 	}
 
-	@Get(':roomId/participants')
-	@ApiOperation({ summary: 'Get a list of rooms.' })
+	@Post(':roomId/members')
+	@ApiOperation({ summary: 'Add members to a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async addMembers(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: AddRoomMembersBodyParams
+	): Promise<void> {
+		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIdsAndRoles);
+	}
+
+	@Get(':roomId/members')
+	@ApiOperation({ summary: 'Get a list of room members.' })
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: 'Returns a list of the participants of the room.',
+		description: 'Returns a list of the members of the room.',
 		type: RoomParticipantListResponse,
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getParticipants(
+	async getMembers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomUrlParams,
-		@Query() pagination: RoomPaginationParams
+		@Param() urlParams: RoomUrlParams
 	): Promise<RoomParticipantListResponse> {
-		await this.roomUc.getRoomParticipants(currentUser.userId, urlParams.roomId);
-
-		const participants = mockusers.map((user) => {
-			const mapRole = <Record<string, RoleName>>{
-				teacher: RoleName.TEACHER,
-				student: RoleName.STUDENT,
-			};
-			const data = { ...user, roleName: mapRole[user.roleName] };
-			return new RoomParticipantResponse(data);
-		});
-		const response = new RoomParticipantListResponse(participants, 0, pagination.skip, pagination.limit);
+		const members = await this.roomUc.getRoomMembers(currentUser.userId, urlParams.roomId);
+		const response = new RoomParticipantListResponse(members);
 
 		return Promise.resolve(response);
 	}

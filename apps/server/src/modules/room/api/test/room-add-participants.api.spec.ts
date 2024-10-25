@@ -14,7 +14,6 @@ import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { RoomParticipantListResponse } from '../dto/response/room-participant.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -44,13 +43,15 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('GET /rooms/:roomId/members', () => {
+	describe('POST /rooms/:roomId/members', () => {
 		const setupRoomWithMembers = async () => {
 			const room = roomEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
+				UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const role = roleFactory.buildWithId({
-				name: RoleName.ROOM_VIEWER,
-				permissions: [Permission.ROOM_VIEW],
+				name: RoleName.ROOM_EDITOR,
+				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			// TODO: add more than one user
 			const userGroupEntity = groupEntityFactory.buildWithId({
@@ -59,72 +60,70 @@ describe('Room Controller (API)', () => {
 				organization: teacherUser.school,
 				externalSource: undefined,
 			});
+
 			const roomMembers = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
-			await em.persistAndFlush([room, roomMembers, teacherAccount, teacherUser, userGroupEntity]);
+			await em.persistAndFlush([
+				room,
+				roomMembers,
+				teacherAccount,
+				teacherUser,
+				otherTeacherUser,
+				otherTeacherAccount,
+				userGroupEntity,
+			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room };
-		};
-
-		const setupLoggedInUser = async () => {
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
-			const loggedInClient = await testApiClient.login(teacherAccount);
-			return { loggedInClient };
+			return { loggedInClient, room, otherTeacherUser };
 		};
 
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithMembers();
-				const response = await testApiClient.get(`/${room.id}/members`);
+				const response = await testApiClient.post(`/${room.id}/members`);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
 
 		describe('when the user has not the required permissions', () => {
+			const setupLoggedInUser = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				const loggedInClient = await testApiClient.login(teacherAccount);
+				return { loggedInClient };
+			};
+
 			it('should return forbidden error', async () => {
 				const { room } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
 
-				const response = await loggedInClient.get(`/${room.id}/members`);
+				const response = await loggedInClient.post(`/${room.id}/members`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
-		// TODO: test when the feature is disabled
-		/* describe('when the feature is disabled', () => {
-			const setup = async () => {
+		describe('when the feature is disabled', () => {
+			it('should return a 403 error', async () => {
+				const { loggedInClient, room } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
+				const response = await loggedInClient.post(`/${room.id}/members`);
 
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const response = await loggedInClient.get();
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
-		}); */
+		});
 
 		describe('when the user has the required permissions', () => {
-			it('should return a list of members', async () => {
-				const { loggedInClient, room } = await setupRoomWithMembers();
+			it('should return OK', async () => {
+				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 
-				const response = await loggedInClient.get(`/${room.id}/members`);
+				const response = await loggedInClient.post(`/${room.id}/members`, {
+					userIdsAndRoles: [{ userId: otherTeacherUser.id, roleName: RoleName.ROOM_EDITOR }],
+				});
 
-				expect(response.status).toBe(HttpStatus.OK);
-				const body = response.body as RoomParticipantListResponse;
-				// TODO: check for actual data
-				expect(body.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.status).toBe(HttpStatus.CREATED);
 			});
 		});
 	});

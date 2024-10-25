@@ -52,7 +52,7 @@ describe('RoomMemberService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('addMemberToRoom', () => {
+	describe('addMembersToRoom', () => {
 		describe('when room member does not exist', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -72,8 +72,16 @@ describe('RoomMemberService', () => {
 
 			it('should create new room member when not exists', async () => {
 				const { user, room } = setup();
-				await service.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR);
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
 				expect(roomMemberRepo.save).toHaveBeenCalled();
+			});
+
+			describe('when no user is provided', () => {
+				it('should throw an exception', async () => {
+					roomMemberRepo.findByRoomId.mockResolvedValue(null);
+
+					await expect(service.addMembersToRoom('not-existing-room', [])).rejects.toThrow();
+				});
 			});
 		});
 
@@ -96,8 +104,12 @@ describe('RoomMemberService', () => {
 
 			it('should add user to existing room member', async () => {
 				const { user, room, group } = setup();
-				await service.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR);
-				expect(groupService.addUserToGroup).toHaveBeenCalledWith(group.id, user.id, RoleName.ROOM_EDITOR);
+
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
+
+				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
+					{ userId: user.id, roleName: RoleName.ROOM_EDITOR },
+				]);
 			});
 		});
 	});

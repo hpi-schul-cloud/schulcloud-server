@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
 import { RoleName } from '@shared/domain/interface';
 
 export class RoomParticipantResponse {
@@ -10,30 +9,25 @@ export class RoomParticipantResponse {
 	lastName!: string;
 
 	@ApiProperty()
-	fullName!: string;
-
-	@ApiProperty()
 	roleName!: RoleName;
 
 	@ApiProperty()
 	schoolName!: string;
 
 	@ApiProperty()
-	id!: string;
+	userId!: string;
 
 	constructor(props: RoomParticipantResponse) {
-		this.id = props.id;
+		this.userId = props.userId;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
-		this.fullName = props.fullName;
 		this.roleName = props.roleName;
 		this.schoolName = props.schoolName;
 	}
 }
 
-export class RoomParticipantListResponse extends PaginationResponse<RoomParticipantResponse[]> {
-	constructor(data: RoomParticipantResponse[], total: number, skip?: number, limit?: number) {
-		super(total, skip, limit);
+export class RoomParticipantListResponse {
+	constructor(data: RoomParticipantResponse[]) {
 		this.data = data;
 	}
 

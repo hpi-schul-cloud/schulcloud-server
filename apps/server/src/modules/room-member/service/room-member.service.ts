@@ -23,7 +23,7 @@ export class RoomMemberService {
 		schoolId?: EntityId
 	) {
 		const group = await this.groupService.createGroup(`Room Members for Room ${roomId}`, GroupTypes.ROOM, schoolId);
-		await this.groupService.addUserToGroup(group.id, userId, roleName);
+		await this.groupService.addUsersToGroup(group.id, [{ userId, roleName }]);
 
 		const roomMember = new RoomMember({
 			id: new ObjectId().toHexString(),
@@ -66,19 +66,22 @@ export class RoomMemberService {
 		await this.roomMembersRepo.delete(roomMember);
 	}
 
-	public async addMemberToRoom(
+	public async addMembersToRoom(
 		roomId: EntityId,
-		userId: EntityId,
-		roleName: RoleName.ROOM_EDITOR | RoleName.ROOM_VIEWER,
+		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOM_EDITOR | RoleName.ROOM_VIEWER }>,
 		schoolId?: EntityId
 	): Promise<EntityId> {
 		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
 		if (roomMember === null) {
-			const newRoomMember = await this.createNewRoomMember(roomId, userId, roleName, schoolId);
+			const firstUser = userIdsAndRoles.pop();
+			if (firstUser === undefined) {
+				throw new BadRequestException('No user provided');
+			}
+			const newRoomMember = await this.createNewRoomMember(roomId, firstUser.userId, firstUser.roleName, schoolId);
 			return newRoomMember.id;
 		}
 
-		await this.groupService.addUserToGroup(roomMember.userGroupId, userId, roleName);
+		await this.groupService.addUsersToGroup(roomMember.userGroupId, userIdsAndRoles);
 		return roomMember.id;
 	}
 
