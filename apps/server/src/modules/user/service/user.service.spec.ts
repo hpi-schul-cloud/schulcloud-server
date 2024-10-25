@@ -219,6 +219,27 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('findByIds', () => {
+		beforeEach(() => {
+			const userDO: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				externalId: 'externalUserId',
+			});
+			userDORepo.findByIds.mockResolvedValue([userDO]);
+		});
+
+		it('should provide the userDOs', async () => {
+			const result = await service.findByIds(['id']);
+
+			expect(result).toBeDefined();
+			expect(result).toHaveLength(1);
+			expect(result[0]).toBeInstanceOf(UserDO);
+		});
+	});
+
 	describe('findByIdOrNull', () => {
 		describe('when a user with this id exists', () => {
 			const setup = () => {
