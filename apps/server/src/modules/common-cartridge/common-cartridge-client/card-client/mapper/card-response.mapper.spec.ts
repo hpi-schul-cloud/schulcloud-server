@@ -177,5 +177,40 @@ describe('CardResponseMapper', () => {
 			expect(cardResponse.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
 			expect(cardResponse.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
 		});
+
+		it('should cover default switch case and return an empty object', () => {
+			const mockCardListResponse: CardListResponse = {
+				data: [
+					{
+						id: faker.datatype.uuid(),
+						title: faker.lorem.sentence(),
+						height: faker.datatype.number({ min: 100, max: 500 }),
+						elements: [
+							createMockElement(
+								faker.datatype.uuid(),
+								'UNKNOWN_TYPE' as ContentElementType,
+								{}
+							) as CardResponseElementsInner,
+						],
+						visibilitySettings: { publishedAt: faker.date.past().toISOString() },
+						timestamps: {
+							lastUpdatedAt: faker.date.recent().toISOString(),
+							createdAt: faker.date.past().toISOString(),
+							deletedAt: faker.date.future().toISOString(),
+						},
+					},
+				],
+			};
+
+			const result = CardResponseMapper.mapToCardListResponseDto(mockCardListResponse);
+			expect(result).toBeDefined();
+			expect(result.data).toHaveLength(1);
+
+			const cardResponseDto = result.data[0];
+			expect(cardResponseDto.id).toBe(mockCardListResponse.data[0].id);
+			expect(cardResponseDto.title).toBe(mockCardListResponse.data[0].title);
+			expect(cardResponseDto.height).toBe(mockCardListResponse.data[0].height);
+			expect(cardResponseDto.elements).toHaveLength(0);
+		});
 	});
 });
