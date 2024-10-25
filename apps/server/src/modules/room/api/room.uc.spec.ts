@@ -6,8 +6,8 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { RoomMemberRepo, RoomMemberService } from '@src/modules/room-member';
+import { AuthorizationService } from '@modules/authorization';
+import { RoomMemberRepo, RoomMemberService } from '@modules/room-member';
 import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';

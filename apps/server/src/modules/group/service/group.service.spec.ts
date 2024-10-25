@@ -9,6 +9,8 @@ import { Page } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { groupFactory, roleDtoFactory, userDoFactory } from '@shared/testing';
+import { RoleService } from '@src/modules/role';
+import { UserService } from '@src/modules/user';
 import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
