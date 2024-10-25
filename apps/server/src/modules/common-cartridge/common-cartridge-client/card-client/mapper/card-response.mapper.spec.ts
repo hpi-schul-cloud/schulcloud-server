@@ -81,7 +81,7 @@ describe('CardResponseMapper', () => {
 								{}
 							) as CardResponseElementsInner,
 						],
-						visibilitySettings: { publishedAt: '2024-10-01T12:00:00Z' },
+						visibilitySettings: { publishedAt: faker.date.past().toISOString() },
 						timestamps: {
 							lastUpdatedAt: '2024-10-01T11:00:00Z',
 							createdAt: '2024-10-01T10:00:00Z',
@@ -127,10 +127,10 @@ describe('CardResponseMapper', () => {
 								{}
 							) as CardResponseElementsInner,
 						],
-						visibilitySettings: { publishedAt: '2024-10-02T12:00:00Z' },
+						visibilitySettings: { publishedAt: faker.date.past().toISOString() },
 						timestamps: {
-							lastUpdatedAt: '2024-10-02T11:00:00Z',
-							createdAt: '2024-10-02T10:00:00Z',
+							lastUpdatedAt: faker.date.past().toISOString(),
+							createdAt: faker.date.past().toISOString(),
 							deletedAt: faker.date.recent().toString(),
 						},
 					},
@@ -182,12 +182,12 @@ describe('CardResponseMapper', () => {
 			const mockCardListResponse: CardListResponse = {
 				data: [
 					{
-						id: faker.datatype.uuid(),
+						id: faker.string.uuid(),
 						title: faker.lorem.sentence(),
-						height: faker.datatype.number({ min: 100, max: 500 }),
+						height: faker.number.int(),
 						elements: [
 							createMockElement(
-								faker.datatype.uuid(),
+								faker.string.uuid(),
 								'UNKNOWN_TYPE' as ContentElementType,
 								{}
 							) as CardResponseElementsInner,
