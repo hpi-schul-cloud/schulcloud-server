@@ -1,14 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import type { ProvisioningConfig } from '@modules/provisioning';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, SortOrder, RoleName } from '@shared/domain/interface';
+import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { groupFactory, schoolEntityFactory, setupEntities, userFactory, roleDtoFactory, userDoFactory } from '@shared/testing';
-import type { ProvisioningConfig } from '@modules/provisioning';
+import {
+	groupFactory,
+	roleDtoFactory,
+	schoolEntityFactory,
+	setupEntities,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
 import { RoleService } from '@src/modules/role';
 import { UserService } from '@src/modules/user';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
