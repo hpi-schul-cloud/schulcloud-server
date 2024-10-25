@@ -36,7 +36,7 @@ export class CommonCartridgeExportService {
 	}
 
 	public async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
-		const cards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
+		const cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
 
 		return cards;
 	}
