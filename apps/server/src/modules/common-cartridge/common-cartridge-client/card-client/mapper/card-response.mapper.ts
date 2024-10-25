@@ -156,7 +156,7 @@ export class CardResponseMapper {
 	private static mapToElementsContent(
 		response: CardResponseElementsInner,
 		elementType: ContentElementType
-	): CardContentElementInner | undefined {
+	): CardContentElementInner {
 		// eslint-disable-next-line default-case
 		switch (elementType) {
 			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
