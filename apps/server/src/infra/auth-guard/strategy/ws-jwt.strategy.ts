@@ -17,12 +17,16 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 	) {
 		const publicKey = configService.get<string>('JWT_PUBLIC_KEY');
 		const algorithm = configService.get<Algorithm>('JWT_SIGNING_ALGORITHM');
+		const issuer = configService.get<string>('SC_DOMAIN');
+		const audience = configService.get<string>('SC_DOMAIN');
 
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([JwtExtractor.fromCookie('jwt')]),
 			ignoreExpiration: false,
 			secretOrKey: publicKey,
 			algorithms: [algorithm],
+			issuer,
+			audience,
 		});
 	}
 

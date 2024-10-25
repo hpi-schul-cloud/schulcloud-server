@@ -26,6 +26,7 @@ const h5pEditorConfig: H5PEditorConfig = {
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
 	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
+	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 };
 
 export const translatorConfig = {
