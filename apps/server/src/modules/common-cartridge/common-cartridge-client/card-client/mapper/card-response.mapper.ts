@@ -157,6 +157,7 @@ export class CardResponseMapper {
 		response: CardResponseElementsInner,
 		elementType: ContentElementType
 	): CardContentElementInner {
+		// eslint-disable-next-line default-case
 		switch (elementType) {
 			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
 				return {};
@@ -199,9 +200,8 @@ export class CardResponseMapper {
 				return new RichTextElementContentDto(richTextResponse.content.text, richTextResponse.content.inputFormat);
 			}
 			default:
-				break;
+				return this.assertUnreachableCode(elementType);
 		}
-		return {};
 	}
 
 	private static mapToVisibilitySettingsDto(
@@ -212,5 +212,10 @@ export class CardResponseMapper {
 
 	private static mapToTimestampDto(timestamp: TimestampsResponse): TimestampResponseDto {
 		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt as string);
+	}
+
+	private static assertUnreachableCode(anyObject: never): never {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		throw new Error(`Unexpected object: ${anyObject}`);
 	}
 }

@@ -125,48 +125,4 @@ describe('CommonCartridgeExportService', () => {
 			expect(result).toEqual(expected);
 		});
 	});
-
-	// describe('findAllCardsByIds', () => {
-	// 	const setup = () => {
-	// 		const cardsIds: Array<string> = new Array<string>(faker.string.uuid());
-	// 		const mockCard: CardResponseDto = {
-	// 			id: cardsIds[0],
-	// 			title: faker.lorem.word(),
-	// 			height: faker.number.int(),
-	// 			elements: [
-	// 				{
-	// 					id: 'element-1',
-	// 					type: ContentElementType.RICH_TEXT,
-	// 					content: {
-	// 						text: faker.string.alphanumeric.toString(),
-	// 						inputFormat: 'HTML',
-	// 					},
-	// 					timestamps: {
-	// 						lastUpdatedAt: faker.date.anytime.toString(),
-	// 						createdAt: faker.date.anytime.toString(),
-	// 						deletedAt: '',
-	// 					},
-	// 				},
-	// 			],
-	// 			visibilitySettings: {
-	// 				publishedAt: '2024-10-01T12:00:00Z',
-	// 			},
-	// 			timeStamps: {
-	// 				lastUpdatedAt: '2024-10-01T11:00:00Z',
-	// 				createdAt: faker.date.anytime.toString(),
-	// 				deletedAt: faker.date.anytime.toString(),
-	// 			},
-	// 		};
-	// 		const expected: CardListResponseDto = new CardListResponseDto(new Array<CardResponseDto>(mockCard));
-	// 		cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(expected);
-
-	// 		return { cardsIds, expected };
-	// 	};
-	// 	it('should return a card', () => {
-	// 		const { cardsIds, expected } = setup();
-	// 		const result = sut.findAllCardsByIds(cardsIds);
-
-	// 		expect(result).toEqual(expected);
-	// 	});
-	// });
 });
