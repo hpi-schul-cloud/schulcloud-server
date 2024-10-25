@@ -83,7 +83,7 @@ export class RoomMemberService {
 
 		await this.groupService.addUsersToGroup(roomMember.userGroupId, userIdsAndRoles);
 
-    return roomMember.id;
+		return roomMember.id;
 	}
 
 	public async getRoomMemberAuthorizablesByUserId(userId: EntityId): Promise<RoomMemberAuthorizable[]> {

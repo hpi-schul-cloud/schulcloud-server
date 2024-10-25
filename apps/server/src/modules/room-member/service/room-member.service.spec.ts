@@ -52,7 +52,6 @@ describe('RoomMemberService', () => {
 		jest.resetAllMocks();
 	});
 
-
 	describe('addMembersToRoom', () => {
 		describe('when room member does not exist', () => {
 			const setup = () => {
