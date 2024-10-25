@@ -29,8 +29,8 @@ export class TspClientFactory {
 		configService: ConfigService<TspClientConfig, true>,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {
-		this.baseUrl = configService.getOrThrow<string>('TSP_API_BASE_URL');
-		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_TOKEN_LIFETIME_MS');
+		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
+		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
 	}
 
 	public createExportClient(params: FactoryParams): ExportApiInterface {

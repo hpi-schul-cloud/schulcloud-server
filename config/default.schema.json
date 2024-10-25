@@ -174,7 +174,12 @@
 			"default": "",
 			"description": "The key used to sign/verify TSP request tokens."
 		},
-		"TSP_API_TOKEN_LIFETIME_MS": {
+		"TSP_API_CLIENT_BASE_URL": {
+			"type": "string",
+			"default": "",
+			"description": "The TSP API base URL."
+		},
+		"TSP_API_CLIENT_TOKEN_LIFETIME_MS": {
 			"type": "number",
 			"default": "30000",
 			"description": "The TSP token lifetime in milliseconds."
