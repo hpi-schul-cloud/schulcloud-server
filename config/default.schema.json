@@ -127,6 +127,11 @@
 			"type": "string",
 			"description": "The public key used to verify JWTs."
 		},
+		"JWT_SIGNING_ALGORITHM": {
+			"type": "string",
+			"default": "RS256",
+			"description": "The algorithm used to sign JWTs. Must be an asymmetric algorithm."
+		},
 		"JWT_LIFETIME": {
 			"type": "string",
 			"default": "30d",

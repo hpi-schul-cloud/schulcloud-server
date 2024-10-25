@@ -11,7 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SignOptions } from 'jsonwebtoken';
+import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -20,7 +20,7 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
 const createJwtOptions = () => {
-	const algorithm = 'RS256';
+	const algorithm = Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm;
 
 	const signOptions: SignOptions = {
 		algorithm,
