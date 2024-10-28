@@ -225,6 +225,7 @@ export class TspSyncService {
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}
+
 		const client = this.tspClientFactory.createExportClient({
 			clientId: system.oauthConfig.clientId,
 			clientSecret: system.oauthConfig.clientSecret,
