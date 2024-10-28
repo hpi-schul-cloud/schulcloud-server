@@ -46,7 +46,15 @@ const imports = [
 	imports,
 	exports: [RabbitMQModule],
 })
-export class RabbitMQWrapperModule {}
+export class RabbitMQWrapperModule implements OnModuleDestroy {
+	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
+
+	async onModuleDestroy() {
+		await Promise.all(
+			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
+		);
+	}
+}
 
 @Global()
 @Module({
