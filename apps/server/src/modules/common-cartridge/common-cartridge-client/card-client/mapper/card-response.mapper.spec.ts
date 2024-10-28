@@ -45,7 +45,7 @@ describe('CardResponseMapper', () => {
 						visibilitySettings: { publishedAt: '2024-10-03T12:00:00Z' },
 						timestamps: {
 							lastUpdatedAt: '2024-10-03T11:00:00Z',
-							createdAt: '2024-10-03T10:00:00Z',
+							createdAt: faker.date.recent().toISOString(),
 							deletedAt: faker.date.recent().toString(),
 						},
 					},
