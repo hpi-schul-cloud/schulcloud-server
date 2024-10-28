@@ -33,6 +33,7 @@ describe('CardResponseMapper', () => {
 			},
 		};
 	};
+
 	describe('mapToCardListResponseDto', () => {
 		const setup = (elementsArray: CardResponseElementsInner[]) => {
 			const mockCardListResponse: CardListResponse = {
@@ -55,43 +56,43 @@ describe('CardResponseMapper', () => {
 		};
 
 		describe("when various elements' responses are sent to mapper", () => {
-			it('should map CardListResponse to CardListResponseDto with all types of elements', () => {
-				const mockList: CardListResponse = setup([
-					createMockElement(
-						faker.string.uuid(),
-						ContentElementType.COLLABORATIVE_TEXT_EDITOR,
-						{}
-					) as CollaborativeTextEditorElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.DELETED, {
-						title: faker.lorem.sentence(),
-						description: faker.lorem.words(),
-					}) as DeletedElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.SUBMISSION_CONTAINER, {
-						dueDate: faker.date.soon().toISOString(),
-					}) as SubmissionContainerElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.DRAWING, {
-						description: faker.lorem.word(),
-					}) as DrawingElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.EXTERNAL_TOOL, {
-						contextExternalToolId: faker.string.uuid(),
-					}) as ExternalToolElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.FILE, {
-						caption: faker.lorem.sentence(),
-						alternativeText: faker.lorem.word(),
-					}) as FileElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.LINK, {
-						url: faker.internet.url(),
-						title: faker.lorem.word(),
-						description: faker.lorem.sentence(),
-						imageUrl: faker.internet.url(),
-					}) as LinkElementResponse,
-					createMockElement(faker.string.uuid(), ContentElementType.RICH_TEXT, {
-						text: faker.lorem.paragraph(),
-						inputFormat: faker.internet.domainName(),
-					}) as RichTextElementResponse,
-					createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
-				]);
+			const mockList: CardListResponse = setup([
+				createMockElement(
+					faker.string.uuid(),
+					ContentElementType.COLLABORATIVE_TEXT_EDITOR,
+					{}
+				) as CollaborativeTextEditorElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.DELETED, {
+					title: faker.lorem.sentence(),
+					description: faker.lorem.words(),
+				}) as DeletedElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.SUBMISSION_CONTAINER, {
+					dueDate: faker.date.soon().toISOString(),
+				}) as SubmissionContainerElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.DRAWING, {
+					description: faker.lorem.word(),
+				}) as DrawingElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.EXTERNAL_TOOL, {
+					contextExternalToolId: faker.string.uuid(),
+				}) as ExternalToolElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.FILE, {
+					caption: faker.lorem.sentence(),
+					alternativeText: faker.lorem.word(),
+				}) as FileElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.LINK, {
+					url: faker.internet.url(),
+					title: faker.lorem.word(),
+					description: faker.lorem.sentence(),
+					imageUrl: faker.internet.url(),
+				}) as LinkElementResponse,
+				createMockElement(faker.string.uuid(), ContentElementType.RICH_TEXT, {
+					text: faker.lorem.paragraph(),
+					inputFormat: faker.internet.domainName(),
+				}) as RichTextElementResponse,
+				createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
+			]);
 
+			it('should map CardListResponse to CardListResponseDto with all types of elements', () => {
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
@@ -116,11 +117,10 @@ describe('CardResponseMapper', () => {
 		});
 
 		describe('when there is an unknown element response to handle', () => {
+			const mockList: CardListResponse = setup([
+				createMockElement('element-unknown', 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
+			]);
 			it('should handle unknown element types without breaking', () => {
-				const mockList: CardListResponse = setup([
-					createMockElement('element-unknown', 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
-				]);
-
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
@@ -134,9 +134,8 @@ describe('CardResponseMapper', () => {
 		});
 
 		describe('when CardResponse has no elements', () => {
+			const mockList: CardListResponse = setup([]);
 			it('should return an empty list of elements', () => {
-				const mockList: CardListResponse = setup([]);
-
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
