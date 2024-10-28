@@ -14,11 +14,8 @@ const bootstrap = new BootstrapConsole({
 void bootstrap.init().then(async (app) => {
 	try {
 		await app.init();
-		console.log('init');
 		await bootstrap.boot();
-		console.log('boot');
 		await app.close();
-		console.log('closed');
 		process.exit(0);
 	} catch (e) {
 		// eslint-disable-next-line no-console
