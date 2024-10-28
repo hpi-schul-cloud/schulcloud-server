@@ -9,7 +9,7 @@ import { ErrorUtils } from '../utils/error.utils';
 export class ErrorLoggable implements Loggable {
 	readonly actualError: Error;
 
-	constructor(private readonly error: unknown, private readonly data?: LogMessageDataObject) {
+	constructor(private readonly error: unknown) {
 		if (this.error instanceof Error) {
 			this.actualError = <Error>error;
 		} else {
