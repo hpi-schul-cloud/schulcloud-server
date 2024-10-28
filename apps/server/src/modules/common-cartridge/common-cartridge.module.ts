@@ -32,6 +32,7 @@ import { LessonClientModule } from './common-cartridge-client/lesson-client/less
 		CourseRoomsModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
+
 		CardClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
