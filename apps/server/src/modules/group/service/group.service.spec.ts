@@ -562,4 +562,54 @@ describe('GroupService', () => {
 			});
 		});
 	});
+
+	describe('removeUsersFromGroup', () => {
+		const setup = (roleDtos: RoleDto[] = []) => {
+			roleService.findByNames.mockResolvedValue(roleDtos);
+
+			const userDo = userDoFactory.buildWithId();
+			userService.findById.mockResolvedValue(userDo);
+			userService.findByIds.mockResolvedValue([userDo]);
+
+			const group = groupFactory.build();
+			groupRepo.findGroupById.mockResolvedValue(group);
+
+			return { group, userDo };
+		};
+
+		describe('when removing a user from a group', () => {
+			it('should call group.removeUser', async () => {
+				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+				const { group, userDo } = setup([roleDto]);
+				jest.spyOn(group, 'removeUser');
+				const userId = userDo.id ?? '';
+
+				await service.removeUsersFromGroup('groupId', [userId]);
+
+				expect(group.removeUser).toHaveBeenCalledWith(expect.objectContaining({ id: userDo.id }));
+			});
+
+			it('should call groupRepo.save', async () => {
+				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+				const { group, userDo } = setup([roleDto]);
+				const userId = userDo.id ?? '';
+
+				await service.removeUsersFromGroup('groupId', [userId]);
+
+				expect(groupRepo.save).toHaveBeenCalledWith(group);
+			});
+
+			describe('when user does not exist', () => {
+				it('should fail', async () => {
+					const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+					setup([roleDto]);
+					userService.findByIds.mockResolvedValue([]);
+
+					const method = () => service.removeUsersFromGroup('groupId', ['unknown-userid']);
+
+					await expect(method).rejects.toThrow();
+				});
+			});
+		});
+	});
 });

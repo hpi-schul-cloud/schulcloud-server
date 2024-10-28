@@ -30,6 +30,7 @@ import { RoomParticipantListResponse } from './dto/response/room-participant.res
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
+import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -140,6 +141,21 @@ export class RoomController {
 		@Body() bodyParams: AddRoomMembersBodyParams
 	): Promise<void> {
 		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIdsAndRoles);
+	}
+
+	@Delete(':roomId/members')
+	@ApiOperation({ summary: 'Remove members from a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async removeMembers(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: RemoveRoomMembersBodyParams
+	): Promise<void> {
+		await this.roomUc.removeMembersFromRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
 	}
 
 	@Get(':roomId/members')

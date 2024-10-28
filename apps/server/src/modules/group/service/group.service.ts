@@ -120,4 +120,19 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 		return group;
 	}
+
+	public async removeUsersFromGroup(groupId: EntityId, userIds: EntityId[]): Promise<Group> {
+		const group = await this.findById(groupId);
+		const users = await this.userService.findByIds(userIds);
+
+		for (const userId of userIds) {
+			const user = users.find((u) => u.id === userId);
+			if (!user) throw new BadRequestException('Unknown userId.');
+			group.removeUser(user);
+		}
+
+		await this.save(group);
+
+		return group;
+	}
 }

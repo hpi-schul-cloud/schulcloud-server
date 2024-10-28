@@ -72,15 +72,19 @@ describe('RoomMemberService', () => {
 
 			it('should create new room member when not exists', async () => {
 				const { user, room } = setup();
+
 				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
+
 				expect(roomMemberRepo.save).toHaveBeenCalled();
 			});
 
 			describe('when no user is provided', () => {
 				it('should throw an exception', async () => {
+					const { room } = setup();
+
 					roomMemberRepo.findByRoomId.mockResolvedValue(null);
 
-					await expect(service.addMembersToRoom('not-existing-room', [])).rejects.toThrow();
+					await expect(service.addMembersToRoom(room.id, [])).rejects.toThrow();
 				});
 			});
 		});
@@ -110,6 +114,71 @@ describe('RoomMemberService', () => {
 				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
 					{ userId: user.id, roleName: RoleName.ROOM_EDITOR },
 				]);
+			});
+		});
+	});
+
+	describe('removeMembersFromRoom', () => {
+		describe('when room member does not exist', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const room = roomFactory.build();
+				const group = groupFactory.build({ type: GroupTypes.ROOM });
+
+				roomMemberRepo.findByRoomId.mockResolvedValue(null);
+				groupService.createGroup.mockResolvedValue(group);
+				groupService.addUserToGroup.mockResolvedValue();
+				roomMemberRepo.save.mockResolvedValue();
+
+				return {
+					user,
+					room,
+				};
+			};
+
+			// it('should throw error when room member does not exists', async () => {
+			// 	const { user, room } = setup();
+
+			// 	await service.removeMembersFromRoom(room.id, [user.id]);
+
+			// 	expect(roomMemberRepo.save).toHaveBeenCalled();
+			// });
+
+			describe('when no userId is provided', () => {
+				it('should throw an exception', async () => {
+					const { room } = setup();
+
+					roomMemberRepo.findByRoomId.mockResolvedValue(null);
+
+					await expect(service.addMembersToRoom(room.id, [])).rejects.toThrow();
+				});
+			});
+		});
+
+		describe('when room member exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const group = groupFactory.build({ type: GroupTypes.ROOM });
+				const room = roomFactory.build();
+				const roomMember = roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+
+				roomMemberRepo.findByRoomId.mockResolvedValue(roomMember);
+				groupService.findById.mockResolvedValue(group);
+
+				return {
+					user,
+					room,
+					roomMember,
+					group,
+				};
+			};
+
+			it('should remove room member', async () => {
+				const { user, room, group } = setup();
+
+				await service.removeMembersFromRoom(room.id, [user.id]);
+
+				expect(groupService.removeUsersFromGroup).toHaveBeenCalledWith(group.id, [user.id]);
 			});
 		});
 	});

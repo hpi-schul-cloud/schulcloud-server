@@ -115,6 +115,12 @@ export class RoomUc {
 		});
 	}
 
+	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
+		this.checkFeatureEnabled();
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write);
+		await this.roomMemberService.removeMembersFromRoom(roomId, userIds);
+	}
+
 	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMemberService.getRoomMemberAuthorizablesByUserId(userId);

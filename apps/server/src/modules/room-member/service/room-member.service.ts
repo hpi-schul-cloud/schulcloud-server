@@ -86,6 +86,16 @@ export class RoomMemberService {
 		return roomMember.id;
 	}
 
+	public async removeMembersFromRoom(roomId: EntityId, userIds: EntityId[]): Promise<void> {
+		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
+		if (roomMember === null) {
+			throw new BadRequestException('Room member not found');
+		}
+
+		const group = await this.groupService.findById(roomMember.userGroupId);
+		await this.groupService.removeUsersFromGroup(group.id, userIds);
+	}
+
 	public async getRoomMemberAuthorizablesByUserId(userId: EntityId): Promise<RoomMemberAuthorizable[]> {
 		const groupPage = await this.groupService.findGroups({ userId, groupTypes: [GroupTypes.ROOM] });
 		const groupIds = groupPage.data.map((group) => group.id);
