@@ -76,6 +76,7 @@ describe('course repo', () => {
 				'classes',
 				'groups',
 				'syncedWithGroup',
+				'syncExcludedFields',
 			].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});

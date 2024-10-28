@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CourseFeatures } from '@shared/domain/entity';
+import { CourseFeatures, SyncAttribute } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 export interface CourseProps extends AuthorizableObject {
@@ -34,6 +34,8 @@ export interface CourseProps extends AuthorizableObject {
 	groupIds: EntityId[];
 
 	syncedWithGroup?: EntityId;
+
+	syncExcludedFields?: SyncAttribute[];
 }
 
 export class Course extends DomainObject<CourseProps> {
@@ -95,5 +97,13 @@ export class Course extends DomainObject<CourseProps> {
 
 	get syncedWithGroup(): EntityId | undefined {
 		return this.props.syncedWithGroup;
+	}
+
+	set syncExcludedFields(values: SyncAttribute[] | undefined) {
+		this.props.syncExcludedFields = values ? [...new Set(values)] : undefined;
+	}
+
+	get syncExcludedFields(): SyncAttribute[] | undefined {
+		return this.props.syncExcludedFields;
 	}
 }

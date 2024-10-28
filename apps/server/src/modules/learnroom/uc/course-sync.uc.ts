@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { GroupService } from '@modules/group';
 import { Injectable } from '@nestjs/common';
+import { SyncAttribute } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseDoService, CourseSyncService } from '../service';
@@ -29,7 +30,12 @@ export class CourseSyncUc {
 		await this.courseSyncService.stopSynchronization(course);
 	}
 
-	public async startSynchronization(userId: string, courseId: string, groupId: string) {
+	public async startSynchronization(
+		userId: string,
+		courseId: string,
+		groupId: string,
+		excludedFields?: SyncAttribute[]
+	) {
 		const [course, group, user] = await Promise.all([
 			this.courseService.findById(courseId),
 			this.groupService.findById(groupId),
@@ -42,6 +48,6 @@ export class CourseSyncUc {
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
 
-		await this.courseSyncService.startSynchronization(course, group);
+		await this.courseSyncService.startSynchronization(course, group, excludedFields);
 	}
 }

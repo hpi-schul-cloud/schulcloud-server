@@ -8,6 +8,7 @@ import { CourseDoService } from '../service';
 import { CourseSyncService } from '../service/course-sync.service';
 import { courseFactory } from '../testing';
 import { CourseSyncUc } from './course-sync.uc';
+import { SyncAttribute } from '../../../shared/domain/entity';
 
 describe(CourseSyncUc.name, () => {
 	let module: TestingModule;
@@ -143,9 +144,24 @@ describe(CourseSyncUc.name, () => {
 			it('should start the synchronization', async () => {
 				const { user, course, group } = setup();
 
+				await uc.startSynchronization(user.id, course.id, group.id, []);
+
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, []);
+			});
+
+			it('should start the synchronization', async () => {
+				const { user, course, group } = setup();
+
 				await uc.startSynchronization(user.id, course.id, group.id);
 
-				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group);
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, undefined);
+			});
+			it('should start partial synchronization', async () => {
+				const { user, course, group } = setup();
+
+				await uc.startSynchronization(user.id, course.id, group.id, [SyncAttribute.TEACHERS]);
+
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, [SyncAttribute.TEACHERS]);
 			});
 		});
 	});

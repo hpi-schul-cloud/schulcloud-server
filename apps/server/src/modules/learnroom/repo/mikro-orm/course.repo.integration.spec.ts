@@ -6,7 +6,7 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { Group } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course as CourseEntity, CourseFeatures, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
+import { Course as CourseEntity, CourseFeatures, CourseGroup, SchoolEntity, SyncAttribute, User } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
@@ -154,6 +154,7 @@ describe(CourseMikroOrmRepo.name, () => {
 					color: '#ACACAC',
 					copyingSince: new Date(),
 					syncedWithGroup: groupEntity.id,
+					syncExcludedFields: [SyncAttribute.TEACHERS],
 					shareToken: 'shareToken',
 					untilDate: new Date(),
 					startDate: new Date(),
