@@ -207,7 +207,6 @@ describe(TspSyncStrategy.name, () => {
 
 				it('find user by tsp Uid', async () => {
 					setup();
-					console.log(setup());
 
 					await sut.sync();
 
@@ -320,7 +319,6 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
-				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
 
 				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
@@ -360,13 +358,36 @@ describe(TspSyncStrategy.name, () => {
 				expect(tspSyncService.fetchTspStudentMigrations).toHaveBeenCalled();
 			});
 
-			it('find user by tsp Uid', async () => {
+			it('should find user by tsp Uid', async () => {
 				setup();
-				console.log(setup());
 
 				await sut.sync();
 
 				expect(tspSyncService.findUserByTspUid).toHaveBeenCalled();
+			});
+
+			it('should update user', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.updateUser).toHaveBeenCalled();
+			});
+
+			it('should find account by tsp Uid', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.findAccountByTspUid).toHaveBeenCalled();
+			});
+
+			it('should update account', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.updateAccount).toHaveBeenCalled();
 			});
 		});
 	});
