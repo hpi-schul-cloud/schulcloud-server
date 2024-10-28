@@ -14,5 +14,6 @@ export class SyncConsole {
 	})
 	public async startSync(target: string): Promise<void> {
 		await this.syncUc.startSync(target);
+		console.log('End of sync reached');
 	}
 }
