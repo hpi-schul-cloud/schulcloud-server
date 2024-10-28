@@ -12,6 +12,7 @@ import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { UserService } from '@src/modules/user';
+import { AxiosError } from 'axios';
 import { ObjectId } from 'bson';
 import moment from 'moment/moment';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
@@ -160,10 +161,17 @@ export class TspSyncService {
 	public async fetchTspStudentMigrations(system: System) {
 		const client = this.createClient(system);
 
-		const studentMigrationsResponse = await client.exportSchuelerListMigration();
-		const studentMigrations = studentMigrationsResponse.data;
+		try {
+			const studentMigrationsResponse = await client.exportSchuelerListMigration();
+			const studentMigrations = studentMigrationsResponse.data;
 
-		return studentMigrations;
+			return studentMigrations;
+		} catch (error) {
+			if (error instanceof AxiosError) {
+				console.log(error.response?.data);
+			}
+			return [];
+		}
 	}
 
 	public async findUserByTspUid(tspUid: string): Promise<UserDO | null> {
