@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SyncAttribute } from '@shared/domain/entity';
 import { groupFactory, roleDtoFactory } from '@shared/testing';
 import {
 	Course,
@@ -13,7 +14,6 @@ import {
 } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseSyncService } from './course-sync.service';
-import { SyncAttribute } from '../../../shared/domain/entity';
 
 describe(CourseSyncService.name, () => {
 	let module: TestingModule;
