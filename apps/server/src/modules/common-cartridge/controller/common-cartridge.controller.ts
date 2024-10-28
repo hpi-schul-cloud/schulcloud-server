@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseArrayPipe, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { ExportCourseParams } from './dto';
@@ -15,9 +15,11 @@ export class CommonCartridgeController {
 		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
 	}
 
-	@Get('export/cards/:parentId')
-	public async exportCards(@Param() exportCourseParams: ExportCourseParams): Promise<CardListResponseDto> {
-		const ids: Array<string> = new Array<string>(exportCourseParams.parentId);
-		return this.commonCartridgeUC.exportCardList(ids);
+	@Get('export/cards')
+	public async exportCards(
+		@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]
+	): Promise<CardListResponseDto> {
+		const response: CardListResponseDto = await this.commonCartridgeUC.exportCardList(ids);
+		return response;
 	}
 }

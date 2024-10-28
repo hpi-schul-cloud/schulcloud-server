@@ -47,7 +47,7 @@ export class CardResponseMapper {
 	private static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {
 		return new CardResponseDto(
 			cardResponse.id,
-			cardResponse.title as string,
+			cardResponse.title ?? '',
 			cardResponse.height,
 			this.mapToCardResponseElementsInnerDto(cardResponse.elements),
 			this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
@@ -138,12 +138,7 @@ export class CardResponseMapper {
 						new LinkElementResponseDto(
 							element.id,
 							ContentElementType.LINK,
-							new LinkElementContentDto(
-								content.url,
-								content.title,
-								content.description as string,
-								content.imageUrl as string
-							),
+							new LinkElementContentDto(content.url, content.title, content.description ?? '', content.imageUrl ?? ''),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
@@ -171,10 +166,10 @@ export class CardResponseMapper {
 	private static mapToVisibilitySettingsDto(
 		visibilitySettings: VisibilitySettingsResponse
 	): VisibilitySettingsResponseDto {
-		return new VisibilitySettingsResponseDto(visibilitySettings.publishedAt as string);
+		return new VisibilitySettingsResponseDto(visibilitySettings.publishedAt ?? '');
 	}
 
 	private static mapToTimestampDto(timestamp: TimestampsResponse): TimestampResponseDto {
-		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt as string);
+		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt ?? '');
 	}
 }
