@@ -4,7 +4,9 @@ import { RobjExportSchule } from '@infra/tsp-client';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { accountDoFactory } from '@src/modules/account/testing';
 import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
 import { schoolFactory } from '@src/modules/school/testing';
 import { SyncStrategyTarget } from '../sync-strategy.types';
@@ -45,6 +47,10 @@ describe(TspSyncStrategy.name, () => {
 									return 10;
 								case 'TSP_SYNC_DATA_DAYS_TO_FETCH':
 									return 1;
+								case 'TSP_SYNC_MIGRATION_LIMIT':
+									return 10;
+								case 'FEATURE_TSP_MIGRATION_ENABLED':
+									return true;
 								default:
 									throw new Error(`Unknown key: ${key}`);
 							}
@@ -99,6 +105,12 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
+				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
+				tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
 
 				const oauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
@@ -162,6 +174,24 @@ describe(TspSyncStrategy.name, () => {
 
 				expect(provisioningService.provisionData).toHaveBeenCalledWith(oauthDataDto);
 			});
+
+			describe('when feature tsp migration is enabled', () => {
+				it('should fetch teacher migrations', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.fetchTspTeacherMigrations).toHaveBeenCalled();
+				});
+
+				it('should fetch student migrations', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.fetchTspStudentMigrations).toHaveBeenCalled();
+				});
+			});
 		});
 
 		describe('when school does not exist', () => {
@@ -179,6 +209,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
@@ -207,6 +239,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
@@ -232,6 +266,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
