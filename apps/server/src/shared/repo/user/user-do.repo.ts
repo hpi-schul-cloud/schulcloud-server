@@ -134,6 +134,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
+			sessionToken: entity.sessionToken,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -162,6 +163,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
 			birthday: entityDO.birthday,
+			sessionToken: entityDO.sessionToken,
 		};
 	}
 

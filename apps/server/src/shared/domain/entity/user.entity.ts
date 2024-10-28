@@ -34,6 +34,7 @@ export interface UserProperties {
 	consent?: ConsentEntity;
 	source?: string;
 	sourceOptions?: UserSourceOptionsEntity;
+	sessionToken?: string;
 }
 
 interface UserInfo {
@@ -139,6 +140,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Embedded(() => UserSourceOptionsEntity, { object: true, nullable: true })
 	sourceOptions?: UserSourceOptionsEntity;
 
+	@Property({ nullable: true })
+	sessionToken?: string;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -169,6 +173,8 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		if (props.sourceOptions !== undefined) {
 			this.sourceOptions = props.sourceOptions;
 		}
+
+		this.sessionToken = props.sessionToken;
 	}
 
 	public resolvePermissions(): string[] {

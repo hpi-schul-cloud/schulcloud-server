@@ -80,6 +80,7 @@ export class SchulconnexUserProvisioningService {
 		user.roles = roleRefs ?? foundUser.roles;
 		user.schoolId = schoolId ?? foundUser.schoolId;
 		user.birthday = externalUser.birthday ?? foundUser.birthday;
+		user.sessionToken = externalUser.sessionToken;
 
 		return user;
 	}
@@ -93,6 +94,7 @@ export class SchulconnexUserProvisioningService {
 			roles: roleRefs ?? [],
 			schoolId,
 			birthday: externalUser.birthday,
+			sessionToken: externalUser.sessionToken,
 		});
 
 		return user;
