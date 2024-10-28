@@ -26,6 +26,6 @@ export type LogMessageWithContext = {
 
 export type LogMessageData = LogMessageDataObject | string | number | boolean | undefined;
 
-type LogMessageDataObject = {
+export type LogMessageDataObject = {
 	[key: string]: LogMessageData;
 };

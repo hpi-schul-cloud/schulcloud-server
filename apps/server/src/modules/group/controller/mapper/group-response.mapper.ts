@@ -17,6 +17,7 @@ import { PeriodResponse } from '../dto/response/period.response';
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
 	[GroupTypes.COURSE]: GroupTypeResponse.COURSE,
+	[GroupTypes.ROOM]: GroupTypeResponse.ROOM,
 	[GroupTypes.OTHER]: GroupTypeResponse.OTHER,
 };
 
