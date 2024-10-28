@@ -94,16 +94,15 @@ describe('CardResponseMapper', () => {
 
 			it('should map CardListResponse to CardListResponseDto with all types of elements', () => {
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
+				const cardResponseDto = result.data[0];
+
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
-
-				const cardResponseDto = result.data[0];
 				expect(cardResponseDto.id).toBe('card-1');
 				expect(cardResponseDto.title).toBe('Card 1');
 				expect(cardResponseDto.height).toBe(100);
 				expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
 				expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
-
 				expect(cardResponseDto.elements).toHaveLength(8);
 				expect(cardResponseDto.elements[0].type).toBe(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
 				expect(cardResponseDto.elements[1].type).toBe(ContentElementType.DELETED);
@@ -122,10 +121,10 @@ describe('CardResponseMapper', () => {
 			]);
 			it('should handle unknown element types without breaking', () => {
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
+				const cardResponseDto = result.data[0];
+
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
-
-				const cardResponseDto = result.data[0];
 				expect(cardResponseDto.id).toBe('card-1');
 				expect(cardResponseDto.title).toBe('Card 1');
 				expect(cardResponseDto.height).toBe(100);
@@ -137,10 +136,10 @@ describe('CardResponseMapper', () => {
 			const mockList: CardListResponse = setup([]);
 			it('should return an empty list of elements', () => {
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
+				const cardResponse: CardResponseDto = result.data[0];
+
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
-
-				const cardResponse: CardResponseDto = result.data[0];
 				expect(cardResponse.id).toBe('card-1');
 				expect(cardResponse.title).toBe('Card 1');
 				expect(cardResponse.height).toBe(100);
