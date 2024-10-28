@@ -9,6 +9,7 @@ import { Logger } from '@src/core/logger';
 import { accountDoFactory } from '@src/modules/account/testing';
 import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
 import { schoolFactory } from '@src/modules/school/testing';
+import { systemFactory } from '@src/modules/system/testing';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -121,6 +122,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
 				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
 				tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
+
+				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
 
 				const oauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
@@ -323,6 +326,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
 				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
 				tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
+
+				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
 
 				const oauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
