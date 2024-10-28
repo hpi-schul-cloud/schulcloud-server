@@ -17,90 +17,91 @@ import { CardContentElementInner } from '../types/card-content-elements-inner.ty
 import { CardResponseDto } from '../dto/card-response.dto';
 
 describe('CardResponseMapper', () => {
-	describe('mapToCardListResponseDto', () => {
-		const createMockElement = (
-			id: string,
-			type: ContentElementType,
-			content: CardContentElementInner
-		): CardContentElementInner => {
-			return {
-				id,
-				type,
-				content,
-				timestamps: {
-					lastUpdatedAt: faker.date.recent().toISOString(),
-					createdAt: faker.date.soon().toISOString(),
-					deletedAt: null,
-				},
-			};
+	const createMockElement = (
+		id: string,
+		type: ContentElementType,
+		content: CardContentElementInner
+	): CardContentElementInner => {
+		return {
+			id,
+			type,
+			content,
+			timestamps: {
+				lastUpdatedAt: faker.date.recent().toISOString(),
+				createdAt: faker.date.soon().toISOString(),
+				deletedAt: null,
+			},
 		};
+	};
+	describe('mapToCardListResponseDto', () => {
+		const setup = (elementsArray: CardResponseElementsInner[]) => {
+			const mockCardListResponse: CardListResponse = {
+				data: [
+					{
+						id: 'card-1',
+						title: 'Card 1',
+						height: 100,
+						elements: elementsArray,
+						visibilitySettings: { publishedAt: '2024-10-03T12:00:00Z' },
+						timestamps: {
+							lastUpdatedAt: '2024-10-03T11:00:00Z',
+							createdAt: '2024-10-03T10:00:00Z',
+							deletedAt: faker.date.recent().toString(),
+						},
+					},
+				],
+			};
+			return mockCardListResponse;
+		};
+
 		describe("when various elements' responses are sent to mapper", () => {
 			it('should map CardListResponse to CardListResponseDto with all types of elements', () => {
-				const mockCardListResponse: CardListResponse = {
-					data: [
-						{
-							id: 'card-1',
-							title: 'Card 1',
-							height: 200,
-							elements: [
-								createMockElement(
-									faker.string.uuid(),
-									ContentElementType.COLLABORATIVE_TEXT_EDITOR,
-									{}
-								) as CollaborativeTextEditorElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.DELETED, {
-									title: faker.lorem.sentence(),
-									description: faker.lorem.words(),
-								}) as DeletedElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.SUBMISSION_CONTAINER, {
-									dueDate: faker.date.soon().toISOString(),
-								}) as SubmissionContainerElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.DRAWING, {
-									description: faker.lorem.word(),
-								}) as DrawingElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.EXTERNAL_TOOL, {
-									contextExternalToolId: faker.string.uuid(),
-								}) as ExternalToolElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.FILE, {
-									caption: faker.lorem.sentence(),
-									alternativeText: faker.lorem.word(),
-								}) as FileElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.LINK, {
-									url: faker.internet.url(),
-									title: faker.lorem.word(),
-									description: faker.lorem.sentence(),
-									imageUrl: faker.internet.url(),
-								}) as LinkElementResponse,
-								createMockElement(faker.string.uuid(), ContentElementType.RICH_TEXT, {
-									text: faker.lorem.paragraph(),
-									inputFormat: faker.internet.domainName(),
-								}) as RichTextElementResponse,
-								createMockElement(
-									faker.string.uuid(),
-									'UNKNOWN_TYPE' as ContentElementType,
-									{}
-								) as CardResponseElementsInner,
-							],
-							visibilitySettings: { publishedAt: '2024-10-01T12:00:00Z' },
-							timestamps: {
-								lastUpdatedAt: '2024-10-01T11:00:00Z',
-								createdAt: faker.date.past().toString(),
-								deletedAt: faker.date.recent().toString(),
-							},
-						},
-					],
-				};
+				const mockList: CardListResponse = setup([
+					createMockElement(
+						faker.string.uuid(),
+						ContentElementType.COLLABORATIVE_TEXT_EDITOR,
+						{}
+					) as CollaborativeTextEditorElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.DELETED, {
+						title: faker.lorem.sentence(),
+						description: faker.lorem.words(),
+					}) as DeletedElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.SUBMISSION_CONTAINER, {
+						dueDate: faker.date.soon().toISOString(),
+					}) as SubmissionContainerElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.DRAWING, {
+						description: faker.lorem.word(),
+					}) as DrawingElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.EXTERNAL_TOOL, {
+						contextExternalToolId: faker.string.uuid(),
+					}) as ExternalToolElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.FILE, {
+						caption: faker.lorem.sentence(),
+						alternativeText: faker.lorem.word(),
+					}) as FileElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.LINK, {
+						url: faker.internet.url(),
+						title: faker.lorem.word(),
+						description: faker.lorem.sentence(),
+						imageUrl: faker.internet.url(),
+					}) as LinkElementResponse,
+					createMockElement(faker.string.uuid(), ContentElementType.RICH_TEXT, {
+						text: faker.lorem.paragraph(),
+						inputFormat: faker.internet.domainName(),
+					}) as RichTextElementResponse,
+					createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
+				]);
 
-				const result = CardResponseMapper.mapToCardListResponseDto(mockCardListResponse);
+				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
 
 				const cardResponseDto = result.data[0];
 				expect(cardResponseDto.id).toBe('card-1');
 				expect(cardResponseDto.title).toBe('Card 1');
-				expect(cardResponseDto.height).toBe(200);
-				expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-01T12:00:00Z');
-				expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-01T11:00:00Z');
+				expect(cardResponseDto.height).toBe(100);
+				expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
+				expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
 
 				expect(cardResponseDto.elements).toHaveLength(8);
 				expect(cardResponseDto.elements[0].type).toBe(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
@@ -116,67 +117,33 @@ describe('CardResponseMapper', () => {
 
 		describe('when there is an unknown element response to handle', () => {
 			it('should handle unknown element types without breaking', () => {
-				const mockCardListResponse: CardListResponse = {
-					data: [
-						{
-							id: 'card-2',
-							title: 'Card 2',
-							height: 150,
-							elements: [
-								createMockElement(
-									'element-unknown',
-									'UNKNOWN_TYPE' as ContentElementType,
-									{}
-								) as CardResponseElementsInner,
-							],
-							visibilitySettings: { publishedAt: faker.date.past().toISOString() },
-							timestamps: {
-								lastUpdatedAt: faker.date.past().toISOString(),
-								createdAt: faker.date.past().toISOString(),
-								deletedAt: faker.date.recent().toString(),
-							},
-						},
-					],
-				};
+				const mockList: CardListResponse = setup([
+					createMockElement('element-unknown', 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
+				]);
 
-				const result = CardResponseMapper.mapToCardListResponseDto(mockCardListResponse);
+				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
 
 				const cardResponseDto = result.data[0];
-				expect(cardResponseDto.id).toBe('card-2');
-				expect(cardResponseDto.title).toBe('Card 2');
-				expect(cardResponseDto.height).toBe(150);
+				expect(cardResponseDto.id).toBe('card-1');
+				expect(cardResponseDto.title).toBe('Card 1');
+				expect(cardResponseDto.height).toBe(100);
 				expect(cardResponseDto.elements).toHaveLength(0);
 			});
 		});
 
 		describe('when CardResponse has no elements', () => {
 			it('should return an empty list of elements', () => {
-				const mockCardListResponse: CardListResponse = {
-					data: [
-						{
-							id: 'card-3',
-							title: 'Card 3',
-							height: 100,
-							elements: [],
-							visibilitySettings: { publishedAt: '2024-10-03T12:00:00Z' },
-							timestamps: {
-								lastUpdatedAt: '2024-10-03T11:00:00Z',
-								createdAt: '2024-10-03T10:00:00Z',
-								deletedAt: faker.date.recent().toString(),
-							},
-						},
-					],
-				};
+				const mockList: CardListResponse = setup([]);
 
-				const result = CardResponseMapper.mapToCardListResponseDto(mockCardListResponse);
+				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				expect(result).toBeDefined();
 				expect(result.data).toHaveLength(1);
 
 				const cardResponse: CardResponseDto = result.data[0];
-				expect(cardResponse.id).toBe('card-3');
-				expect(cardResponse.title).toBe('Card 3');
+				expect(cardResponse.id).toBe('card-1');
+				expect(cardResponse.title).toBe('Card 1');
 				expect(cardResponse.height).toBe(100);
 				expect(cardResponse.elements).toHaveLength(0);
 				expect(cardResponse.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');

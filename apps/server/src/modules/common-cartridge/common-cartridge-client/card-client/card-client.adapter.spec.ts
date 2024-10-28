@@ -51,23 +51,26 @@ describe(CardClientAdapter.name, () => {
 	});
 
 	describe('getAllBoardCardsByIds', () => {
-		const setup = () => {
-			const cardResponseData: CardResponse[] = [];
-			const data: CardListResponse = { data: cardResponseData };
-			const response = createMock<AxiosResponse<CardListResponse>>({
-				data,
+		describe('when getAllBoardCardsByIds is called', () => {
+			const setup = () => {
+				const cardResponseData: CardResponse[] = [];
+				const data: CardListResponse = { data: cardResponseData };
+				const response = createMock<AxiosResponse<CardListResponse>>({
+					data,
+				});
+
+				cardApiMock.cardControllerGetCards.mockResolvedValue(response);
+
+				return faker.string.uuid();
+			};
+			it('it should return a list of card response', async () => {
+				const ids: Array<string> = new Array<string>(setup());
+				await adapterUnderTest.getAllBoardCardsByIds(ids);
+				expect(cardApiMock.cardControllerGetCards).toHaveBeenCalled();
 			});
-
-			cardApiMock.cardControllerGetCards.mockResolvedValue(response);
-
-			return faker.string.uuid();
-		};
-		it('it should return a list of card response', async () => {
-			const ids: Array<string> = new Array<string>(setup());
-			await adapterUnderTest.getAllBoardCardsByIds(ids);
-			expect(cardApiMock.cardControllerGetCards).toHaveBeenCalled();
 		});
 	});
+
 	describe('When no JWT token is found', () => {
 		const setup = () => {
 			const ids: Array<string> = new Array<string>(faker.string.uuid());
