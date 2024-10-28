@@ -67,7 +67,7 @@ export class CardResponseMapper {
 						new CollaborativeTextEditorElementResponseDto(
 							element.id,
 							ContentElementType.COLLABORATIVE_TEXT_EDITOR,
-							{},
+							{ ...element.content },
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
