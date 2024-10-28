@@ -100,14 +100,23 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
+				const tspUser = userDoFactory.buildWithId();
+				const tspAccount = accountDoFactory.build();
+
+				tspAccount.userId = tspUser.id;
+
 				tspSyncService.fetchTspSchools.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
-				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
-				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
-				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([
+					{ lehrerUidAlt: tspUser.id, lehrerUidNeu: faker.string.alpha() },
+				]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([
+					{ schuelerUidAlt: faker.string.alpha(), schuelerUidNeu: faker.string.alpha() },
+				]);
+				tspSyncService.findUserByTspUid.mockResolvedValueOnce(tspUser);
 				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
 				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
 				tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
@@ -124,7 +133,7 @@ describe(TspSyncStrategy.name, () => {
 
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([oauthDataDto]);
 
-				return { oauthDataDto };
+				return { oauthDataDto, tspUser, tspAccount };
 			};
 
 			it('should find the tsp system', async () => {
@@ -190,6 +199,15 @@ describe(TspSyncStrategy.name, () => {
 					await sut.sync();
 
 					expect(tspSyncService.fetchTspStudentMigrations).toHaveBeenCalled();
+				});
+
+				it('find user by tsp Uid', async () => {
+					setup();
+					console.log(setup());
+
+					await sut.sync();
+
+					expect(tspSyncService.findUserByTspUid).toHaveBeenCalled();
 				});
 			});
 		});
