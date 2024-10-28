@@ -98,24 +98,11 @@ export class ExternalToolConfigurationUc {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.ensureContextPermissions(user, contextExternalToolsInUse, context);
 
-		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
-			this.externalToolConfigurationService.filterForAvailableExternalTools(externalTools.data, schoolExternalTools);
-
-		availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
-			availableToolsForContext,
+		const availableToolsForContext: ContextExternalToolTemplateInfo[] = this.prepareAvailableToolsForContext(
+			externalTools.data,
+			schoolExternalTools,
 			contextType
 		);
-
-		availableToolsForContext.forEach((toolTemplateInfo) => {
-			this.externalToolConfigurationService.filterParametersForScope(
-				toolTemplateInfo.externalTool,
-				CustomParameterScope.CONTEXT
-			);
-		});
-
-		availableToolsForContext.forEach((toolTemplateInfo) => {
-			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(toolTemplateInfo.externalTool);
-		});
 
 		return availableToolsForContext;
 	}
@@ -170,6 +157,62 @@ export class ExternalToolConfigurationUc {
 			externalTool,
 			schoolExternalTool,
 		};
+	}
+
+	public async getPreferedToolsForContext(
+		userId: EntityId,
+		schoolId: EntityId,
+		contextType?: ToolContextType
+	): Promise<ContextExternalToolTemplateInfo[]> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.CONTEXT_TOOL_ADMIN]);
+
+		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({ isPreferred: true });
+
+		const schoolExternalTools: SchoolExternalTool[] = (
+			await Promise.all(
+				externalTools.data.map((externalTool) =>
+					this.schoolExternalToolService.findSchoolExternalTools({
+						toolId: externalTool.id,
+						schoolId,
+					})
+				)
+			)
+		).flat();
+
+		const preferedTools: ContextExternalToolTemplateInfo[] = this.prepareAvailableToolsForContext(
+			externalTools.data,
+			schoolExternalTools,
+			contextType
+		);
+
+		return preferedTools;
+	}
+
+	private prepareAvailableToolsForContext(
+		externalTools: ExternalTool[],
+		schoolExternalTools: SchoolExternalTool[],
+		contextType?: ToolContextType
+	): ContextExternalToolTemplateInfo[] {
+		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
+			this.externalToolConfigurationService.filterForAvailableExternalTools(externalTools, schoolExternalTools);
+
+		if (contextType) {
+			availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
+				availableToolsForContext,
+				contextType
+			);
+		}
+
+		availableToolsForContext.forEach((toolTemplateInfo) => {
+			this.externalToolConfigurationService.filterParametersForScope(
+				toolTemplateInfo.externalTool,
+				CustomParameterScope.CONTEXT
+			);
+			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(toolTemplateInfo.externalTool);
+		});
+
+		return availableToolsForContext;
 	}
 
 	private async ensureSchoolPermissions(

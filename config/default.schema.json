@@ -1421,6 +1421,11 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
+		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables preferred external tools on the column board"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
