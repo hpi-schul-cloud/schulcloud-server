@@ -8,6 +8,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { SchoolFeature } from '@shared/domain/types';
 import { Account, AccountService } from '@src/modules/account';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
+import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
 import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -221,10 +222,13 @@ export class TspSyncService {
 	}
 
 	private createClient(system: System) {
+		if (!system.oauthConfig) {
+			throw new OauthConfigMissingLoggableException(system.id);
+		}
 		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+			clientId: system.oauthConfig.clientId,
+			clientSecret: system.oauthConfig.clientSecret,
+			tokenEndpoint: system.oauthConfig.tokenEndpoint,
 		});
 
 		return client;
