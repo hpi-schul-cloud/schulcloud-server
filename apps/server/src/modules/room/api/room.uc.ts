@@ -5,6 +5,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Action, AuthorizationService } from '@src/modules/authorization';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@src/modules/board';
 import { RoomMemberService } from '@src/modules/room-member';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
@@ -15,6 +16,7 @@ export class RoomUc {
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomService: RoomService,
 		private readonly roomMemberService: RoomMemberService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly authorizationService: AuthorizationService
 	) {}
 
@@ -48,6 +50,23 @@ export class RoomUc {
 
 		await this.checkRoomAuthorization(userId, roomId, Action.read);
 		return room;
+	}
+
+	public async getRoomContent(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
+		this.checkFeatureEnabled();
+
+		await this.roomService.getSingleRoom(roomId);
+		await this.checkRoomAuthorization(userId, roomId, Action.read);
+
+		const boards = await this.columnBoardService.findByExternalReference(
+			{
+				type: BoardExternalReferenceType.Room,
+				id: roomId,
+			},
+			0
+		);
+
+		return boards;
 	}
 
 	public async updateRoom(userId: EntityId, roomId: EntityId, props: RoomUpdateProps): Promise<Room> {
