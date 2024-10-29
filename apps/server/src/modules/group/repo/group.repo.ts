@@ -73,7 +73,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
-			orderBy: { name: QueryOrder.ASC },
+			orderBy: { name: QueryOrder.ASC_NULLS_FIRST },
 		});
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));

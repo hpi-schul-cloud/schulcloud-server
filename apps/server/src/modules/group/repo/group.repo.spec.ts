@@ -107,7 +107,7 @@ describe(GroupRepo.name, () => {
 				groups[2].type = GroupEntityTypes.OTHER;
 				groups[3].type = GroupEntityTypes.ROOM;
 
-				const nameQuery = groups[1].name.slice(-3);
+				const nameQuery = groups[2].name.slice(-3);
 
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
 
@@ -147,7 +147,7 @@ describe(GroupRepo.name, () => {
 				const result: Page<Group> = await repo.findGroups({ userId, nameQuery });
 
 				expect(result.data.length).toEqual(1);
-				expect(result.data[0].id).toEqual(groups[1].id);
+				expect(result.data[0].id).toEqual(groups[2].id);
 			});
 
 			it('should return only groups of the given group types', async () => {
