@@ -1,6 +1,6 @@
 
 @baseUrl = http://localhost
-@realm = test
+@realm = master
 
 ###
 
@@ -8,18 +8,8 @@ GET {{baseUrl}}/realms/{{realm}}/.well-known/openid-configuration
 
 ###
 
-POST {{baseUrl}}/realms/master/protocol/openid-connect/token
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=client_credentials
-&client_id=test-client
-&client_secret=Sp4cknKfvEQluDBRsnqcU0LAuRRxlHq9
-
-
-###
-
 # @name login
-POST {{baseUrl}}/realms/master/protocol/openid-connect/token
+POST {{baseUrl}}/realms/{{realm}}/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials
@@ -32,11 +22,6 @@ grant_type=client_credentials
 
 ###
 
-GET {{baseUrl}}/admin/realms/master/identity-provider/instances
+GET {{baseUrl}}/admin/realms/{{realm}}/identity-provider/instances
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
-
-###
-
-GET https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/userinfo
-Authorization: Bearer "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJfbGFGbUdOTUM1cXZ1bVNLcC00T3h1UWFROE0yQmZtY2t6WlpTT3JkTF84In0.eyJleHAiOjE3MzA4ODM5NDQsImlhdCI6MTczMDg4MzY0NCwiYXV0aF90aW1lIjoxNzMwODgzNjQ0LCJqdGkiOiIxMDI1ODM3NC1kZjM5LTQ0MTQtODE5ZC0xY2IwNjEwMDA1MjMiLCJpc3MiOiJodHRwczovL3Rlc3QyLnNjaHVscG9ydGFsLXRodWVyaW5nZW4uZGUvYXV0aC9yZWFsbXMvVElTIiwiYXVkIjoidGlzLWNpLXNjaHVsY2xvdWQtYWQ1MjE1MGE1ZTQ4Iiwic3ViIjoiMjRlZTVlOWEtYjRhMy00NTk4LWE0NWMtNTU1YWE0MzBkYTUwIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGVzdC1jbGllbnQiLCJub25jZSI6IjdfX05aUnY1c3VFMzFRUml0TzJXaXciLCJzZXNzaW9uX3N0YXRlIjoiYTZmZjcwN2EtNjYxMy00NWVjLWJlZWItNDkzZjAxNzk1NDRjIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIvKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiU2NodWxjbG91ZG51dHplciIsIlVudGVyc3TDvHR6ZXJwcm9maWwiLCJBbGxlIFBlcnNvbmVuIiwiSW50ZXJlc3NlbmJla3VuZHVuZ3N2ZXJmYWhyZW5hc3Npc3RlbnQiLCJCZXJhdGVycHJvZmlsIiwiVW50ZXJzdMO8dHplcnByb2ZpbCBiZWFyYmVpdGVuIiwiTmljaHQgYW5nZW1lbGRldGUgQmVudXR6ZXIiLCJhbmdlbWVsZGV0ZSBCZW51dHplciIsIkFsbGUiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ0aXMtY2ktc2NodWxjbG91ZC1hZDUyMTUwYTVlNDgiOnsicm9sZXMiOlsiTGVocmVyIl19fSwic2NvcGUiOiJvcGVuaWQiLCJzaWQiOiJhNmZmNzA3YS02NjEzLTQ1ZWMtYmVlYi00OTNmMDE3OTU0NGMifQ.n2sgF7U4KpkNfO1ZqNAVOQ4jTOJssbJ7TqDJ4P9bX9mO8CCfJgItGrAKSPPBbSmpvISXn1Rhh-4jw-KctugIEXM45_fpSN4O1V1Syz_xQirRkpVsYn95Iu6K-O3fD07MFV-5CFfnY35GBncv8dDQaIwU91JJUTFOL_b5IoD4QrgWelhb1dcz_389tSHuu-wl5h-lnbZ4OvUmiuDAQ8fUFK5k7ZuB3GirsCJboZlUNDH0I9NQqQtz-TOadfQmtijL2d50W86eVBmu_m0fXBwzLuF20YwqbY108hKWCajxquJafd4XptMmmNSvF3c8VWkwHqtRl-SwkeqHQqoIM-fCnA"
