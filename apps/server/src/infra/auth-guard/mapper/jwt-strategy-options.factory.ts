@@ -7,7 +7,7 @@ export class JwtStrategyOptionsFactory {
 		jwtFromRequestFunction: JwtFromRequestFunction,
 		configService: ConfigService<AuthGuardConfig>
 	): StrategyOptions {
-		const publicKey = configService.get<string>('JWT_PUBLIC_KEY');
+		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 		const algorithm = configService.getOrThrow<string>('JWT_SIGNING_ALGORITHM');
 
 		const options = {
@@ -15,8 +15,8 @@ export class JwtStrategyOptionsFactory {
 			secretOrKey: publicKey,
 			ignoreExpiration: false,
 			algorithms: [algorithm],
-			issuer: configService.get<string>('SC_DOMAIN'),
-			audience: configService.get<string>('SC_DOMAIN'),
+			issuer: configService.getOrThrow<string>('SC_DOMAIN'),
+			audience: configService.getOrThrow<string>('SC_DOMAIN'),
 		};
 
 		return options;
