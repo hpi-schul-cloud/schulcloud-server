@@ -12,7 +12,7 @@ data:
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
     git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm install --include=dev
+    npm install
     until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
@@ -588,13 +588,7 @@ data:
       );'
 
       echo "Successfully added TSP system"
-
-      echo "Running TSP Sync"
-      npm run nest:start:sync tsp
-
-      echo "Successfully ran TSP sync"
     fi
-
     # ========== End of TSP system creation
 
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.

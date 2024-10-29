@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-tsp-sync-init
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-tsp-sync-init
+spec:
+  template:
+    metadata:
+      labels:
+        app: api-tsp-sync-init
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: api-tsp-sync-init
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: api-tsp-sync-cronjob-configmap
+        - secretRef:
+            name: api-secret
+        command: ['/bin/sh', '-c']
+        args: ['npm run nest:start:sync tsp']
+        resources:
+          limits:
+            cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+          requests:
+            cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+      restartPolicy: Never
+  backoffLimit: 5

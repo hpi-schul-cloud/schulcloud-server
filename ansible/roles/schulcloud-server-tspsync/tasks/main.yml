@@ -111,3 +111,12 @@
       state: "{{ 'present' if WITH_TSP_SYNC|bool else 'absent'}}"
     tags:
       - configmap
+
+  - name: API TSP Sync Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-tsp-sync-init.yml.j2
+      state: "{{ 'present' if WITH_TSP_SYNC|bool else 'absent'}}"
+    tags:
+      - job
