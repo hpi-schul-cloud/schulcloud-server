@@ -1,12 +1,19 @@
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import { Injectable } from '@nestjs/common';
+import { UserService } from '@modules/user';
+import { System, SystemService } from '@modules/system';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@shared/domain/entity';
+import { UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { firstValueFrom } from 'rxjs';
+import { AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -21,6 +28,10 @@ export class AuthenticationService {
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<AuthenticationConfig, true>,
+		private readonly userService: UserService,
+		private readonly systemService: SystemService,
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(AuthenticationService.name);
@@ -122,5 +133,59 @@ export class AuthenticationService {
 
 	public normalizePassword(password: string): string {
 		return password.trim();
+	}
+
+	public async logoutFromExternalSystem(userId: string, systemId: string): Promise<void> {
+		const user: UserDO = await this.userService.findById(userId);
+		const system: System | null = await this.systemService.findById(systemId);
+
+		if (!user.sessionToken) {
+			return;
+		}
+
+		if (this.hasSessionTokenExpired(user.sessionToken)) {
+			return;
+		}
+
+		const endSessionDto = {
+			refresh_token: user.sessionToken,
+		};
+
+		const headers: AxiosHeaders = new AxiosHeaders();
+		headers.setContentType('application/x-www-form-urlencoded');
+
+		const config: AxiosRequestConfig = {
+			auth: {
+				username: system?.oauthConfig?.clientId as string,
+				password: this.oAuthEncryptionService.decrypt(system?.oauthConfig?.clientSecret as string),
+			},
+			headers,
+		};
+
+		if (!system?.oauthConfig?.endSessionEndpoint) {
+			return;
+		}
+
+		const response = await firstValueFrom(
+			this.httpService.post(system?.oauthConfig?.endSessionEndpoint, endSessionDto, config)
+		);
+
+		if (response.status !== 204) {
+			// TODO throw error
+			return;
+		}
+
+		user.sessionToken = undefined;
+		await this.userService.save(user);
+	}
+
+	private hasSessionTokenExpired(sessionToken: string): boolean {
+		const decodedJwt: JwtPayload | null = jwt.decode(sessionToken, { json: true });
+		const now: number = new Date().getTime();
+		if (!decodedJwt?.exp) {
+			return true;
+		}
+
+		return decodedJwt.exp > now;
 	}
 }
