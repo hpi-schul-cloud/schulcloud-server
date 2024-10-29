@@ -65,7 +65,7 @@ export class CommonCartridgeExportMapper {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(task.id),
 			title: task.name,
-			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
+			html: `<p>${task.description}</p>`,
 			intendedUse,
 		};
 	}
@@ -79,7 +79,7 @@ export class CommonCartridgeExportMapper {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: createIdentifier(content._id),
 					title: content.title,
-					html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
+					html: `<p>${content.content.text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				};
 			case ComponentType.GEOGEBRA:

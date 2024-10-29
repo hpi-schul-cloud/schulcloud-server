@@ -69,7 +69,7 @@ export class CommonCartridgeImportMapper {
 		const body = new RichTextContentBody();
 
 		body.text = resource.html;
-		body.inputFormat = InputFormat.RICH_TEXT_CK5_SIMPLE;
+		body.inputFormat = InputFormat.RICH_TEXT_CK4;
 
 		return body;
 	}
