@@ -57,7 +57,6 @@ describe('Room Controller (API)', () => {
 				name: RoleName.ROOM_VIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
-			// TODO: add more than one user
 			const students = userFactory.buildList(2);
 			const teachers = userFactory.buildList(2);
 			const userGroupEntity = groupEntityFactory.buildWithId({
