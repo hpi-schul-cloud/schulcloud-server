@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { ProvisioningConfig } from '@modules/provisioning';
+import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -559,6 +560,16 @@ describe('GroupService', () => {
 				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
 
 				expect(groupRepo.save).toHaveBeenCalledWith(group);
+			});
+		});
+
+		describe('when the role id is undefined', () => {
+			it('should throw', async () => {
+				roleService.findByName.mockResolvedValue(roleDtoFactory.build({ id: undefined }));
+
+				await expect(service.addUserToGroup('groupId', 'userId', RoleName.STUDENT)).rejects.toThrow(
+					BadRequestException
+				);
 			});
 		});
 	});
