@@ -44,29 +44,51 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('POST /rooms/:roomId/members/remove', () => {
-		const setupRoomWithMembers = async () => {
-			const room = roomEntityFactory.buildWithId();
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const { teacherUser: otherTeacherUser } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
-			const role = roleFactory.buildWithId({
+		const setupRoomRoles = () => {
+			const editorRole = roleFactory.buildWithId({
 				name: RoleName.ROOM_EDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
-			// TODO: remove more than one user
+			const viewerRole = roleFactory.buildWithId({
+				name: RoleName.ROOM_VIEWER,
+				permissions: [Permission.ROOM_VIEW],
+			});
+			return { editorRole, viewerRole };
+		};
+
+		const setupRoomWithMembers = async () => {
+			const room = roomEntityFactory.buildWithId();
+
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const { teacherUser: inRoomEditor2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: inRoomEditor3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: outTeacher } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+
+			const users = { teacherUser, inRoomEditor2, inRoomEditor3, inRoomViewer, outTeacher };
+
+			const { editorRole, viewerRole } = setupRoomRoles();
+
+			const roomUsers = [teacherUser, inRoomEditor2, inRoomEditor3].map((user) => {
+				return { role: editorRole, user };
+			});
+			roomUsers.push({ role: viewerRole, user: inRoomViewer });
+
 			const userGroupEntity = groupEntityFactory.buildWithId({
-				users: [{ role, user: teacherUser }],
+				users: roomUsers,
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
 				externalSource: undefined,
 			});
 
 			const roomMembers = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
-			await em.persistAndFlush([room, roomMembers, teacherAccount, teacherUser, otherTeacherUser, userGroupEntity]);
+
+			await em.persistAndFlush([...Object.values(users), room, roomMembers, teacherAccount, userGroupEntity]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, teacherUser, otherTeacherUser };
+			return { loggedInClient, room, ...users };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -107,12 +129,38 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user has the required permissions', () => {
-			it('should return OK', async () => {
-				const { loggedInClient, room, teacherUser } = await setupRoomWithMembers();
+			describe('when removing a user from the room', () => {
+				it('should return OK', async () => {
+					const { loggedInClient, room, inRoomEditor2 } = await setupRoomWithMembers();
 
-				const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
+					const userIds = [inRoomEditor2.id];
+					const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds });
 
-				expect(response.status).toBe(HttpStatus.CREATED);
+					expect(response.status).toBe(HttpStatus.CREATED);
+				});
+			});
+
+			describe('when removing several users from the room', () => {
+				it('should return OK', async () => {
+					const { loggedInClient, room, inRoomEditor2, inRoomEditor3 } = await setupRoomWithMembers();
+
+					const userIds = [inRoomEditor2.id, inRoomEditor3.id];
+					const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds });
+
+					expect(response.status).toBe(HttpStatus.CREATED);
+				});
+			});
+
+			describe('when trying to remove a user not in room', () => {
+				it('should return OK', async () => {
+					// TODO: discuss with Thomas
+					const { loggedInClient, room, outTeacher } = await setupRoomWithMembers();
+
+					const userIds = [outTeacher.id];
+					const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds });
+
+					expect(response.status).toBe(HttpStatus.CREATED);
+				});
 			});
 		});
 	});

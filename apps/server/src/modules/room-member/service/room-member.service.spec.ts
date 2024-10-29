@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { groupFactory, roleDtoFactory, userFactory } from '@shared/testing';
@@ -6,10 +7,10 @@ import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { GroupService, GroupTypes } from '@src/modules/group';
 import { RoleService } from '@src/modules/role';
 import { roomFactory } from '@src/modules/room/testing';
+import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomMemberRepo } from '../repo/room-member.repo';
 import { roomMemberFactory } from '../testing';
 import { RoomMemberService } from './room-member.service';
-import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 
 describe('RoomMemberService', () => {
 	let module: TestingModule;
@@ -136,21 +137,12 @@ describe('RoomMemberService', () => {
 				};
 			};
 
-			// it('should throw error when room member does not exists', async () => {
-			// 	const { user, room } = setup();
-
-			// 	await service.removeMembersFromRoom(room.id, [user.id]);
-
-			// 	expect(roomMemberRepo.save).toHaveBeenCalled();
-			// });
-
-			describe('when no userId is provided', () => {
+			describe('when roomMember does not exist', () => {
 				it('should throw an exception', async () => {
 					const { room } = setup();
-
 					roomMemberRepo.findByRoomId.mockResolvedValue(null);
 
-					await expect(service.addMembersToRoom(room.id, [])).rejects.toThrow();
+					await expect(service.removeMembersFromRoom(room.id, [])).rejects.toThrowError(BadRequestException);
 				});
 			});
 		});
