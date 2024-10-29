@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
 import { AuthGuardConfig } from '../auth-guard.config';
 import { ICurrentUser, JwtPayload, StrategyType } from '../interface';
-import { CurrentUserBuilder } from '../mapper';
+import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 @Injectable()
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
@@ -15,17 +15,9 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
 		configService: ConfigService<AuthGuardConfig>
 	) {
-		const publicKey = configService.get<string>('JWT_PUBLIC_KEY');
-		const algorithm = configService.get<Algorithm>('JWT_SIGNING_ALGORITHM');
+		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), configService);
 
-		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([JwtExtractor.fromCookie('jwt')]),
-			ignoreExpiration: false,
-			secretOrKey: publicKey,
-			algorithms: [algorithm],
-			issuer: configService.get<string>('SC_DOMAIN'),
-			audience: configService.get<string>('SC_DOMAIN'),
-		});
+		super(strategyOptions);
 	}
 
 	async validate(payload: JwtPayload): Promise<ICurrentUser> {
