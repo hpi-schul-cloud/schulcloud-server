@@ -63,6 +63,7 @@ describe(CardClientAdapter.name, () => {
 
 				return faker.string.uuid();
 			};
+
 			it('it should return a list of card response', async () => {
 				const ids: Array<string> = new Array<string>(setup());
 				await adapterUnderTest.getAllBoardCardsByIds(ids);

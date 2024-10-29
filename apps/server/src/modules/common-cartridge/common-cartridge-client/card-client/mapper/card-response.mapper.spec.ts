@@ -62,33 +62,41 @@ describe('CardResponseMapper', () => {
 					ContentElementType.COLLABORATIVE_TEXT_EDITOR,
 					{}
 				) as CollaborativeTextEditorElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.DELETED, {
 					title: faker.lorem.sentence(),
 					description: faker.lorem.words(),
 				}) as DeletedElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.SUBMISSION_CONTAINER, {
 					dueDate: faker.date.soon().toISOString(),
 				}) as SubmissionContainerElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.DRAWING, {
 					description: faker.lorem.word(),
 				}) as DrawingElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.EXTERNAL_TOOL, {
 					contextExternalToolId: faker.string.uuid(),
 				}) as ExternalToolElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.FILE, {
 					caption: faker.lorem.sentence(),
 					alternativeText: faker.lorem.word(),
 				}) as FileElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.LINK, {
 					url: faker.internet.url(),
 					title: faker.lorem.word(),
 					description: faker.lorem.sentence(),
 					imageUrl: faker.internet.url(),
 				}) as LinkElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.RICH_TEXT, {
 					text: faker.lorem.paragraph(),
 					inputFormat: faker.internet.domainName(),
 				}) as RichTextElementResponse,
+
 				createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
 			]);
 
@@ -119,6 +127,7 @@ describe('CardResponseMapper', () => {
 			const mockList: CardListResponse = setup([
 				createMockElement('element-unknown', 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
 			]);
+
 			it('should handle unknown element types without breaking', () => {
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				const cardResponseDto = result.data[0];
@@ -134,6 +143,7 @@ describe('CardResponseMapper', () => {
 
 		describe('when CardResponse has no elements', () => {
 			const mockList: CardListResponse = setup([]);
+
 			it('should return an empty list of elements', () => {
 				const result = CardResponseMapper.mapToCardListResponseDto(mockList);
 				const cardResponse: CardResponseDto = result.data[0];
