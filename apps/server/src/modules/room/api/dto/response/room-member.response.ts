@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RoleName } from '@shared/domain/interface';
 
-export class RoomParticipantResponse {
+export class RoomMemberResponse {
 	@ApiProperty()
 	firstName!: string;
 
@@ -17,7 +17,7 @@ export class RoomParticipantResponse {
 	@ApiProperty()
 	userId!: string;
 
-	constructor(props: RoomParticipantResponse) {
+	constructor(props: RoomMemberResponse) {
 		this.userId = props.userId;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
@@ -26,11 +26,11 @@ export class RoomParticipantResponse {
 	}
 }
 
-export class RoomParticipantListResponse {
-	constructor(data: RoomParticipantResponse[]) {
+export class RoomMemberListResponse {
+	constructor(data: RoomMemberResponse[]) {
 		this.data = data;
 	}
 
-	@ApiProperty({ type: [RoomParticipantResponse] })
-	data: RoomParticipantResponse[];
+	@ApiProperty({ type: [RoomMemberResponse] })
+	data: RoomMemberResponse[];
 }

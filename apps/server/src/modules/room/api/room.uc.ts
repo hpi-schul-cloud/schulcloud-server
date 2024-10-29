@@ -9,7 +9,7 @@ import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/int
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
-import { RoomParticipantResponse } from './dto/response/room-participant.response';
+import { RoomMemberResponse } from './dto/response/room-member.response';
 
 @Injectable()
 export class RoomUc {
@@ -71,7 +71,7 @@ export class RoomUc {
 		await this.roomService.deleteRoom(room);
 	}
 
-	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomParticipantResponse[]> {
+	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
 		this.checkFeatureEnabled();
 		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
@@ -83,16 +83,16 @@ export class RoomUc {
 		const userIds = roomMemberAuthorizable.members.map((member) => member.userId);
 		const users = await this.userService.findByIds(userIds);
 
-		const participantResponses = users.map((user) => {
+		const memberResponses = users.map((user) => {
 			const member = roomMemberAuthorizable.members.find((item) => item.userId === user.id);
 			if (!member) {
 				/* istanbul ignore next */
 				throw new Error('User not found in room members');
 			}
-			return this.mapToParticipant(member, user);
+			return this.mapToMember(member, user);
 		});
 
-		return participantResponses;
+		return memberResponses;
 	}
 
 	public async addMembersToRoom(
@@ -105,8 +105,8 @@ export class RoomUc {
 		await this.roomMemberService.addMembersToRoom(roomId, userIdsAndRoles);
 	}
 
-	private mapToParticipant(member: UserWithRoomRoles, user: UserDO) {
-		return new RoomParticipantResponse({
+	private mapToMember(member: UserWithRoomRoles, user: UserDO) {
+		return new RoomMemberResponse({
 			userId: member.userId,
 			firstName: user.firstName,
 			lastName: user.lastName,

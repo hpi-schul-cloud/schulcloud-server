@@ -15,7 +15,7 @@ import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { RoomParticipantListResponse } from '../dto/response/room-participant.response';
+import { RoomMemberListResponse } from '../dto/response/room-member.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -132,7 +132,7 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get(`/${room.id}/members`);
 
 				expect(response.status).toBe(HttpStatus.OK);
-				const body = response.body as RoomParticipantListResponse;
+				const body = response.body as RoomMemberListResponse;
 				expect(body.data.length).toEqual(5);
 				expect(body.data).toContainEqual(expect.objectContaining({ userId: teacherUser.id, roleName: editRole.name }));
 				students.forEach((student) => {

@@ -26,7 +26,7 @@ import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
-import { RoomParticipantListResponse } from './dto/response/room-participant.response';
+import { RoomMemberListResponse } from './dto/response/room-member.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
@@ -163,7 +163,7 @@ export class RoomController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns a list of the members of the room.',
-		type: RoomParticipantListResponse,
+		type: RoomMemberListResponse,
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
@@ -172,9 +172,9 @@ export class RoomController {
 	async getMembers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
-	): Promise<RoomParticipantListResponse> {
+	): Promise<RoomMemberListResponse> {
 		const members = await this.roomUc.getRoomMembers(currentUser.userId, urlParams.roomId);
-		const response = new RoomParticipantListResponse(members);
+		const response = new RoomMemberListResponse(members);
 
 		return Promise.resolve(response);
 	}
