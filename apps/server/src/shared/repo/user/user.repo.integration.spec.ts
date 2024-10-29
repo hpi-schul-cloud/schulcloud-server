@@ -87,6 +87,7 @@ describe('user repo', () => {
 					'previousExternalId',
 					'birthday',
 					'consent',
+					'sessionToken',
 				].sort()
 			);
 		});
@@ -222,6 +223,7 @@ describe('user repo', () => {
 					'source',
 					'sourceOptions',
 					'discoverable',
+					'sessionToken',
 				].sort()
 			);
 		});
