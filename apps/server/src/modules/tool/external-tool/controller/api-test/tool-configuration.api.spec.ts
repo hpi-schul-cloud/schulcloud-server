@@ -34,6 +34,7 @@ import {
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
+	PreferredToolListResponse,
 } from '../dto';
 
 describe('ToolConfigurationController (API)', () => {
@@ -740,6 +741,177 @@ describe('ToolConfigurationController (API)', () => {
 				const response = await loggedInClient.get('context-types');
 
 				expect(response.body).toEqual(contextTypeList);
+			});
+		});
+	});
+
+	describe('[GET] tools/preferred-tools', () => {
+		describe('when the user is not authorized', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
+
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					isPreferred: true,
+					iconName: 'iconName',
+				});
+
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalTool,
+				});
+
+				await em.persistAndFlush([school, adminUser, adminAccount, externalTool, schoolExternalTool]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return a unauthorized status', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.get(`/preferred-tools`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when preferred tools are available for a context', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
+
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					restrictToContexts: [],
+					isPreferred: true,
+					iconName: 'iconName',
+				});
+
+				const externalToolWithContextRestriction: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					restrictToContexts: [ToolContextType.COURSE],
+					isPreferred: true,
+					iconName: 'iconName',
+				});
+
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalTool,
+				});
+
+				const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalToolWithContextRestriction,
+				});
+
+				await em.persistAndFlush([
+					school,
+					teacherUser,
+					teacherAccount,
+					externalTool,
+					externalToolWithContextRestriction,
+					schoolExternalTool,
+					schoolExternalTool2,
+				]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return {
+					externalTool,
+					externalToolWithContextRestriction,
+					schoolExternalTool,
+					schoolExternalTool2,
+					loggedInClient,
+				};
+			};
+
+			it('should return an array of preferred tools', async () => {
+				const {
+					externalTool,
+					externalToolWithContextRestriction,
+					schoolExternalTool,
+					schoolExternalTool2,
+					loggedInClient,
+				} = await setup();
+
+				const response: Response = await loggedInClient.get('/preferred-tools');
+
+				expect(response.body).toEqual<PreferredToolListResponse>({
+					data: [
+						{
+							schoolExternalToolId: schoolExternalTool.id,
+							name: externalTool.name,
+							iconName: 'iconName',
+						},
+						{
+							schoolExternalToolId: schoolExternalTool2.id,
+							name: externalToolWithContextRestriction.name,
+							iconName: 'iconName',
+						},
+					],
+				});
+			});
+
+			it('should not return the context restricted tool', async () => {
+				const { loggedInClient, externalTool, schoolExternalTool } = await setup();
+
+				const response: Response = await loggedInClient.get('/preferred-tools').query({ contextType: 'board-element' });
+
+				expect(response.body).toEqual<PreferredToolListResponse>({
+					data: [
+						{
+							schoolExternalToolId: schoolExternalTool.id,
+							name: externalTool.name,
+							iconName: 'iconName',
+						},
+					],
+				});
+			});
+		});
+
+		describe('when no preferred tools are available', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({}, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
+
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					isPreferred: false,
+				});
+
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalTool,
+				});
+
+				await em.persistAndFlush([teacherUser, school, teacherAccount, externalTool, schoolExternalTool]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.get('/preferred-tools');
+
+				expect(response.body).toEqual<PreferredToolListResponse>({
+					data: [],
+				});
 			});
 		});
 	});

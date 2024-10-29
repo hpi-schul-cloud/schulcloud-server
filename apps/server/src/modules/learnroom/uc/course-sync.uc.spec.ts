@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { GroupService } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SyncAttribute } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { groupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseDoService } from '../service';
@@ -143,9 +144,24 @@ describe(CourseSyncUc.name, () => {
 			it('should start the synchronization', async () => {
 				const { user, course, group } = setup();
 
+				await uc.startSynchronization(user.id, course.id, group.id, []);
+
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, []);
+			});
+
+			it('should start the synchronization', async () => {
+				const { user, course, group } = setup();
+
 				await uc.startSynchronization(user.id, course.id, group.id);
 
-				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group);
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, undefined);
+			});
+			it('should start partial synchronization', async () => {
+				const { user, course, group } = setup();
+
+				await uc.startSynchronization(user.id, course.id, group.id, [SyncAttribute.TEACHERS]);
+
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, [SyncAttribute.TEACHERS]);
 			});
 		});
 	});

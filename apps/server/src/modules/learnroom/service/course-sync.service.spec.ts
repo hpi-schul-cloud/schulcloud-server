@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SyncAttribute } from '@shared/domain/entity';
 import { groupFactory, roleDtoFactory } from '@shared/testing';
 import {
 	Course,
@@ -68,6 +69,7 @@ describe(CourseSyncService.name, () => {
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: undefined,
+						syncExcludedFields: undefined,
 					})
 				);
 			});
@@ -94,10 +96,12 @@ describe(CourseSyncService.name, () => {
 		describe('when a course is not synchronized with a group', () => {
 			const setup = () => {
 				const teacherId = new ObjectId().toHexString();
+				const courseTeacherId = new ObjectId().toHexString();
 				const course: Course = courseFactory.build({
 					classIds: [new ObjectId().toHexString()],
 					groupIds: [new ObjectId().toHexString()],
 					substitutionTeacherIds: [teacherId],
+					teacherIds: [courseTeacherId],
 				});
 				const studentRole = roleDtoFactory.build({ id: 'student-role-id' });
 				const teacherRole = roleDtoFactory.build({ id: 'teacher-role-id' });
@@ -114,6 +118,7 @@ describe(CourseSyncService.name, () => {
 					teachers,
 					groupWithoutTeachers,
 					teacherId,
+					courseTeacherId,
 				};
 			};
 
@@ -155,6 +160,79 @@ describe(CourseSyncService.name, () => {
 						classIds: [],
 						groupIds: [],
 						substitutionTeacherIds: [teacherId],
+					}),
+				]);
+			});
+		});
+
+		describe('when a course is not synchronized with a group (partial sync)', () => {
+			const setup = () => {
+				const teacherId = new ObjectId().toHexString();
+				const courseTeacherId = new ObjectId().toHexString();
+				const course: Course = courseFactory.build({
+					classIds: [new ObjectId().toHexString()],
+					groupIds: [new ObjectId().toHexString()],
+					substitutionTeacherIds: [teacherId],
+					teacherIds: [courseTeacherId],
+				});
+				const studentRole = roleDtoFactory.build({ id: 'student-role-id' });
+				const teacherRole = roleDtoFactory.build({ id: 'teacher-role-id' });
+				const students: GroupUser[] = [{ roleId: 'student-role-id', userId: 'student-user-id' }];
+				const teachers: GroupUser[] = [{ roleId: 'teacher-role-id', userId: 'teacher-user-id' }];
+				const group: Group = groupFactory.build({ users: [...students, ...teachers] });
+				const groupWithoutTeachers: Group = groupFactory.build({ users: [...students] });
+				roleService.findByName.mockResolvedValueOnce(studentRole).mockResolvedValueOnce(teacherRole);
+
+				return {
+					course,
+					group,
+					students,
+					teachers,
+					groupWithoutTeachers,
+					teacherId,
+					courseTeacherId,
+				};
+			};
+
+			it('should save a course with synchronized group, students, and teachers ', async () => {
+				const { course, group, students, teachers, teacherId } = setup();
+
+				await service.startSynchronization(course, group, []);
+
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: group.id,
+						name: course.name,
+						startDate: group.validPeriod?.from,
+						untilDate: group.validPeriod?.until,
+						studentIds: students.map((student) => student.userId),
+						teacherIds: teachers.map((teacher) => teacher.userId),
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [teacherId],
+					}),
+				]);
+			});
+
+			it('should save a course with synchronized group, students, and not teachers (partial sync)', async () => {
+				const { course, group, students, teacherId, courseTeacherId } = setup();
+
+				await service.startSynchronization(course, group, [SyncAttribute.TEACHERS]);
+
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: group.id,
+						name: course.name,
+						startDate: group.validPeriod?.from,
+						untilDate: group.validPeriod?.until,
+						studentIds: students.map((student) => student.userId),
+						teacherIds: [courseTeacherId],
+						classIds: [],
+						groupIds: [],
+						substitutionTeacherIds: [teacherId],
+						syncExcludedFields: [SyncAttribute.TEACHERS],
 					}),
 				]);
 			});
@@ -350,7 +428,7 @@ describe(CourseSyncService.name, () => {
 			});
 		});
 
-		describe('when the last teacher gets removed from a synced group', () => {
+		describe('when the teachers are not synced from group (partial sync)', () => {
 			const setup = () => {
 				const substituteTeacherId = new ObjectId().toHexString();
 				const studentUserId = new ObjectId().toHexString();
@@ -358,11 +436,16 @@ describe(CourseSyncService.name, () => {
 				const studentRoleId: string = new ObjectId().toHexString();
 				const studentRole: RoleDto = roleDtoFactory.build({ id: studentRoleId });
 				const teacherRole: RoleDto = roleDtoFactory.build();
+				const teacherRoleId: string = new ObjectId().toHexString();
 				const newGroup: Group = groupFactory.build({
 					users: [
 						new GroupUser({
 							userId: studentUserId,
 							roleId: studentRoleId,
+						}),
+						new GroupUser({
+							userId: substituteTeacherId,
+							roleId: teacherRoleId,
 						}),
 					],
 				});
@@ -372,6 +455,7 @@ describe(CourseSyncService.name, () => {
 					studentIds: [studentUserId],
 					syncedWithGroup: newGroup.id,
 					substitutionTeacherIds: [substituteTeacherId],
+					syncExcludedFields: [SyncAttribute.TEACHERS],
 				});
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
@@ -382,11 +466,12 @@ describe(CourseSyncService.name, () => {
 					newGroup,
 					teacherUserId,
 					substituteTeacherId,
+					studentUserId,
 				};
 			};
 
-			it('should keep the last teacher, remove all students', async () => {
-				const { course, newGroup, teacherUserId, substituteTeacherId } = setup();
+			it('should not sync group teachers', async () => {
+				const { course, newGroup, substituteTeacherId, teacherUserId, studentUserId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -395,7 +480,7 @@ describe(CourseSyncService.name, () => {
 						name: course.name,
 						startDate: newGroup.validPeriod?.from,
 						untilDate: newGroup.validPeriod?.until,
-						studentIds: [],
+						studentIds: [studentUserId],
 						teacherIds: [teacherUserId],
 						syncedWithGroup: course.syncedWithGroup,
 						classIds: [],
