@@ -38,11 +38,7 @@ export class RoomMemberService {
 		return roomMember;
 	}
 
-	private static buildRoomMemberAuthorizable(
-		roomId: EntityId,
-		group: Group,
-		roleSet: RoleDto[]
-	): RoomMemberAuthorizable {
+	private buildRoomMemberAuthorizable(roomId: EntityId, group: Group, roleSet: RoleDto[]): RoomMemberAuthorizable {
 		const members = group.users.map((groupUser): UserWithRoomRoles => {
 			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
 			if (roleDto === undefined) throw new BadRequestException('Role not found');
@@ -92,7 +88,7 @@ export class RoomMemberService {
 			.map((item) => {
 				const group = groupPage.data.find((g) => g.id === item.userGroupId);
 				if (!group) return null;
-				return RoomMemberService.buildRoomMemberAuthorizable(item.roomId, group, roleSet);
+				return this.buildRoomMemberAuthorizable(item.roomId, group, roleSet);
 			})
 			.filter((item): item is RoomMemberAuthorizable => item !== null);
 
