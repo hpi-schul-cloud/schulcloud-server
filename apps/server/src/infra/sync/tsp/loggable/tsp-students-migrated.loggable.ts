@@ -3,7 +3,7 @@ import { Loggable, LogMessage } from '@src/core/logger';
 export class TspStudentsMigratedLoggable implements Loggable {
 	constructor(private readonly migratedStudents: number) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		const message: LogMessage = {
 			message: `Migrated students: ${this.migratedStudents} students migrated`,
 			data: {
