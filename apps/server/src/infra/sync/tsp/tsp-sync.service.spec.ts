@@ -18,6 +18,7 @@ import { federalStateFactory, schoolYearFactory, userDoFactory } from '@shared/t
 import { AccountService } from '@src/modules/account';
 import { accountDoFactory } from '@src/modules/account/testing';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
+import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
 import { SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
@@ -736,6 +737,22 @@ describe(TspSyncService.name, () => {
 				const result = await sut.updateAccount(account, username, systemId);
 
 				expect(result).toBe(account);
+			});
+		});
+	});
+
+	describe('createClient', () => {
+		describe('when oauthConfig is missing', () => {
+			const setup = () => {
+				const system = systemFactory.build({ oauthConfig: undefined });
+
+				return { system };
+			};
+
+			it('should throw an OauthConfigMissingLoggableException', async () => {
+				const { system } = setup();
+
+				await expect(async () => sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
 			});
 		});
 	});
