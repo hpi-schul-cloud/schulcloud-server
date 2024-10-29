@@ -52,8 +52,8 @@ export class OAuthService {
 		return oauthTokens;
 	}
 
-	async provisionUser(systemId: string, tokenDto: OAuthTokenDto): Promise<UserDO | null> {
-		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
+	async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDO | null> {
+		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
 		const externalUserId: string = data.externalUser.externalId;
 		const officialSchoolNumber: string | undefined = data.externalSchool?.officialSchoolNumber;
@@ -76,11 +76,6 @@ export class OAuthService {
 					return null;
 				}
 			}
-		}
-
-		const isSessionTokenSavingEnabled = true;
-		if (isSessionTokenSavingEnabled) {
-			data.externalUser.sessionToken = tokenDto.refreshToken;
 		}
 
 		if (isProvisioningEnabled) {

@@ -13,8 +13,6 @@ export class ExternalUserDto {
 
 	birthday?: Date;
 
-	sessionToken?: string;
-
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;
 		this.firstName = props.firstName;
@@ -22,6 +20,5 @@ export class ExternalUserDto {
 		this.email = props.email;
 		this.roles = props.roles;
 		this.birthday = props.birthday;
-		this.sessionToken = props.sessionToken;
 	}
 }

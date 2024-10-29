@@ -48,8 +48,6 @@ export class UserDO extends BaseDO {
 
 	birthday?: Date;
 
-	sessionToken?: string;
-
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
 
@@ -75,6 +73,5 @@ export class UserDO extends BaseDO {
 		this.outdatedSince = domainObject.outdatedSince;
 		this.previousExternalId = domainObject.previousExternalId;
 		this.birthday = domainObject.birthday;
-		this.sessionToken = domainObject.sessionToken;
 	}
 }
