@@ -128,7 +128,7 @@ export class RoomController {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
 	}
 
-	@Post(':roomId/members')
+	@Patch(':roomId/members/add')
 	@ApiOperation({ summary: 'Add members to a room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: String })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
@@ -143,7 +143,7 @@ export class RoomController {
 		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIdsAndRoles);
 	}
 
-	@Post(':roomId/members/remove')
+	@Patch(':roomId/members/remove')
 	@ApiOperation({ summary: 'Remove members from a room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })

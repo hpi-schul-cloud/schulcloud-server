@@ -43,7 +43,7 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('POST /rooms/:roomId/members/remove', () => {
+	describe('PATCH /rooms/:roomId/members/remove', () => {
 		const setupRoomRoles = () => {
 			const editorRole = roleFactory.buildWithId({
 				name: RoleName.ROOM_EDITOR,
@@ -94,7 +94,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithMembers();
-				const response = await testApiClient.post(`/${room.id}/members/remove`);
+				const response = await testApiClient.patch(`/${room.id}/members/remove`);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -111,7 +111,7 @@ describe('Room Controller (API)', () => {
 				const { room } = await setupRoomWithMembers();
 				const { loggedInClient, teacherUser } = await setupLoggedInUser();
 
-				const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
+				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -122,7 +122,7 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient, room, teacherUser } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
+				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -134,9 +134,9 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room, inRoomEditor2 } = await setupRoomWithMembers();
 
 					const userIds = [inRoomEditor2.id];
-					const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds });
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
-					expect(response.status).toBe(HttpStatus.CREATED);
+					expect(response.status).toBe(HttpStatus.OK);
 				});
 			});
 
@@ -145,21 +145,20 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room, inRoomEditor2, inRoomEditor3 } = await setupRoomWithMembers();
 
 					const userIds = [inRoomEditor2.id, inRoomEditor3.id];
-					const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds });
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
-					expect(response.status).toBe(HttpStatus.CREATED);
+					expect(response.status).toBe(HttpStatus.OK);
 				});
 			});
 
 			describe('when trying to remove a user not in room', () => {
 				it('should return OK', async () => {
-					// TODO: discuss with Thomas
 					const { loggedInClient, room, outTeacher } = await setupRoomWithMembers();
 
 					const userIds = [outTeacher.id];
-					const response = await loggedInClient.post(`/${room.id}/members/remove`, { userIds });
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
-					expect(response.status).toBe(HttpStatus.CREATED);
+					expect(response.status).toBe(HttpStatus.OK);
 				});
 			});
 		});

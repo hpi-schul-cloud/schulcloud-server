@@ -43,7 +43,7 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('POST /rooms/:roomId/members', () => {
+	describe('PATCH /rooms/:roomId/members/add', () => {
 		const setupRoomWithMembers = async () => {
 			const room = roomEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -81,7 +81,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithMembers();
-				const response = await testApiClient.post(`/${room.id}/members`);
+				const response = await testApiClient.patch(`/${room.id}/members/add`);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -98,7 +98,7 @@ describe('Room Controller (API)', () => {
 				const { room } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
 
-				const response = await loggedInClient.post(`/${room.id}/members`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -109,7 +109,7 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient, room } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const response = await loggedInClient.post(`/${room.id}/members`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -119,11 +119,11 @@ describe('Room Controller (API)', () => {
 			it('should return OK', async () => {
 				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 
-				const response = await loggedInClient.post(`/${room.id}/members`, {
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
 					userIdsAndRoles: [{ userId: otherTeacherUser.id, roleName: RoleName.ROOM_EDITOR }],
 				});
 
-				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(response.status).toBe(HttpStatus.OK);
 			});
 		});
 	});
