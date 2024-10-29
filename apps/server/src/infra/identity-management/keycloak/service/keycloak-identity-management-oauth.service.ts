@@ -6,6 +6,7 @@ import { Logger } from '@src/core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
+import { IdentityProviderDto } from '../../identity-management.types';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { IDMLoginError } from '../errors/idm-login-error.loggable';
 
@@ -82,5 +83,25 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 
 			return undefined;
 		}
+	}
+
+	public async getIdentityProviders(realmName: string): Promise<IdentityProviderDto[]> {
+		const kcAdminClient = await this.kcAdminService.callKcAdminClient();
+		const realm = await kcAdminClient.realms.findOne({ realm: realmName });
+		const identityProviders = realm?.identityProviders
+			?.filter((idp) => idp.enabled)
+			?.map((idp) => {
+				const alias = idp.alias || '';
+				const displayName = idp.displayName || null;
+				const href = `${kcAdminClient.baseUrl}/realms/${realmName}/identity-provider/${alias}/broker/login`;
+
+				return new IdentityProviderDto({
+					alias,
+					displayName,
+					href,
+				});
+			});
+
+		return identityProviders || [];
 	}
 }

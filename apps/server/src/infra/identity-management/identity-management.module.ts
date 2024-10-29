@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { EncryptionModule } from '../encryption';
 import { IdentityManagementOauthService } from './identity-management-oauth.service';
+import { IdentityManagementController } from './identity-management.controller';
 import { IdentityManagementService } from './identity-management.service';
 import { KeycloakAdministrationModule } from './keycloak-administration/keycloak-administration.module';
 import { KeycloakModule } from './keycloak/keycloak.module';
@@ -11,6 +12,7 @@ import { KeycloakIdentityManagementService } from './keycloak/service/keycloak-i
 
 @Module({
 	imports: [KeycloakModule, KeycloakAdministrationModule, HttpModule, EncryptionModule, LoggerModule],
+	controllers: [IdentityManagementController],
 	providers: [
 		{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 		{ provide: IdentityManagementOauthService, useClass: KeycloakIdentityManagementOauthService },
