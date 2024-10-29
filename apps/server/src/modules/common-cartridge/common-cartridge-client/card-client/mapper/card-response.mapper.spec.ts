@@ -160,5 +160,29 @@ describe('CardResponseMapper', () => {
 				expect(cardResponse.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
 			});
 		});
+
+		describe('when the publishedAt in visibilitySettings is null', () => {
+			const mockList: CardListResponse = setup([]);
+			mockList.data[0].visibilitySettings.publishedAt = undefined;
+
+			it('should return an empty string', () => {
+				const mapperResult = CardResponseMapper.mapToCardListResponseDto(mockList);
+				const cardResponse: CardResponseDto = mapperResult.data[0];
+
+				expect(cardResponse.visibilitySettings.publishedAt).toBe('');
+			});
+		});
+
+		describe('when deletedAt in TimestampsResponse is null', () => {
+			const mockList: CardListResponse = setup([]);
+			mockList.data[0].timestamps.deletedAt = undefined;
+
+			it('should return an empty string', () => {
+				const mapperResult = CardResponseMapper.mapToCardListResponseDto(mockList);
+				const cardResponse: CardResponseDto = mapperResult.data[0];
+
+				expect(cardResponse.timeStamps.deletedAt).toBe('');
+			});
+		});
 	});
 });
