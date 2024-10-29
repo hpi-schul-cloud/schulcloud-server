@@ -22,7 +22,7 @@ describe('CardResponseMapper', () => {
 		type: ContentElementType,
 		content: CardContentElementInner
 	): CardContentElementInner => {
-		return {
+		const element: CardContentElementInner = {
 			id,
 			type,
 			content,
@@ -32,6 +32,8 @@ describe('CardResponseMapper', () => {
 				deletedAt: null,
 			},
 		};
+
+		return element;
 	};
 
 	describe('mapToCardListResponseDto', () => {
