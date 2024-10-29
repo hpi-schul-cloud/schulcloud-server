@@ -581,5 +581,24 @@
 		],
 		"permissions": [],
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6720b8621b61c9dd7ebd193b"
+		},
+		"name": "room_viewer",
+		"permissions": [
+			"ROOM_VIEW"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "6720b8621b61c9dd7ebd193c"
+		},
+		"name": "room_editor",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT"
+		]
 	}
 ]
