@@ -2,8 +2,8 @@ import { Page } from '@shared/domain/domainobject';
 import { ColumnBoard } from '@src/modules/board';
 import { Room } from '../../domain/do/room.do';
 import { RoomPaginationParams } from '../dto/request/room-pagination.params';
-import { RoomContentItemResponse, RoomContentItemType } from '../dto/response/room-content-item.response';
-import { RoomContentResponse } from '../dto/response/room-content.response';
+import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
+import { RoomBoardListResponse } from '../dto/response/room-board-list.response';
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
@@ -46,11 +46,10 @@ export class RoomMapper {
 		return response;
 	}
 
-	static mapToRoomContentItemReponse(board: ColumnBoard): RoomContentItemResponse {
-		const response = new RoomContentItemResponse({
-			type: RoomContentItemType.COLUMN_BOARD,
+	static mapToRoomBoardItemReponse(board: ColumnBoard): RoomBoardItemResponse {
+		const response = new RoomBoardItemResponse({
 			id: board.id,
-			name: board.title,
+			title: board.title,
 			createdAt: board.createdAt,
 			updatedAt: board.updatedAt,
 		});
@@ -58,10 +57,10 @@ export class RoomMapper {
 		return response;
 	}
 
-	static mapToRoomContentResponse(columnBoards: ColumnBoard[]): RoomContentResponse {
-		const itemData = columnBoards.map((board) => this.mapToRoomContentItemReponse(board));
+	static mapToRoomBoardListResponse(columnBoards: ColumnBoard[]): RoomBoardListResponse {
+		const itemData = columnBoards.map((board) => this.mapToRoomBoardItemReponse(board));
 
-		const response = new RoomContentResponse(itemData, columnBoards.length);
+		const response = new RoomBoardListResponse(itemData, columnBoards.length);
 
 		return response;
 	}

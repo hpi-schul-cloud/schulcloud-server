@@ -28,7 +28,7 @@ import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
 import { RoomItemResponse } from './dto/response/room-item.response';
-import { RoomContentResponse } from './dto/response/room-content.response';
+import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -93,21 +93,21 @@ export class RoomController {
 		return response;
 	}
 
-	@Get(':roomId/content')
-	@ApiOperation({ summary: 'Get the content of a room' })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the content of a  room', type: RoomContentResponse })
+	@Get(':roomId/boards')
+	@ApiOperation({ summary: 'Get the boards of a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the boards of a room', type: RoomBoardListResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getRoomContent(
+	async getRoomBoards(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
-	): Promise<RoomContentResponse> {
-		const boards = await this.roomUc.getRoomContent(currentUser.userId, urlParams.roomId);
+	): Promise<RoomBoardListResponse> {
+		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
 
-		const response = RoomMapper.mapToRoomContentResponse(boards);
+		const response = RoomMapper.mapToRoomBoardListResponse(boards);
 
 		return response;
 	}

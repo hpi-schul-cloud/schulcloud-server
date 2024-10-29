@@ -15,7 +15,6 @@ import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing';
-import { RoomContentItemType } from '../dto/response/room-content-item.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -45,7 +44,7 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('GET /rooms/:id/content', () => {
+	describe('GET /rooms/:id/boards', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const someId = new ObjectId().toHexString();
@@ -70,7 +69,7 @@ describe('Room Controller (API)', () => {
 			it('should return a 403 error', async () => {
 				const { loggedInClient } = await setup();
 				const someId = new ObjectId().toHexString();
-				const response = await loggedInClient.get(`${someId}/content`);
+				const response = await loggedInClient.get(`${someId}/boards`);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
@@ -88,7 +87,7 @@ describe('Room Controller (API)', () => {
 
 			it('should return a 400 error', async () => {
 				const { loggedInClient } = await setup();
-				const response = await loggedInClient.get('42/content');
+				const response = await loggedInClient.get('42/boards');
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
@@ -123,12 +122,11 @@ describe('Room Controller (API)', () => {
 				it('should return a room', async () => {
 					const { loggedInClient, room, board } = await setup();
 
-					const response = await loggedInClient.get(`${room.id}/content`);
+					const response = await loggedInClient.get(`${room.id}/boards`);
 					expect(response.status).toBe(HttpStatus.OK);
 					expect((response.body as { data: Record<string, unknown> }).data[0]).toEqual({
-						type: RoomContentItemType.COLUMN_BOARD,
 						id: board.id,
-						name: board.title,
+						title: board.title,
 						createdAt: board.createdAt.toISOString(),
 						updatedAt: board.updatedAt.toISOString(),
 					});

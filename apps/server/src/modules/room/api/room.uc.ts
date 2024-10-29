@@ -52,7 +52,7 @@ export class RoomUc {
 		return room;
 	}
 
-	public async getRoomContent(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
+	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
 		this.checkFeatureEnabled();
 
 		await this.roomService.getSingleRoom(roomId);
