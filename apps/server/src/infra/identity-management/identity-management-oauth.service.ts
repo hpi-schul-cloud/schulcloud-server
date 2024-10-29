@@ -1,4 +1,5 @@
 import type { OauthConfig } from '@modules/system';
+import { IdentityProviderDto } from './identity-management.types';
 
 export abstract class IdentityManagementOauthService {
 	/**
@@ -21,4 +22,11 @@ export abstract class IdentityManagementOauthService {
 	 * @returns the JWT as string or undefined on failure.
 	 */
 	abstract resourceOwnerPasswordGrant(username: string, password: string): Promise<string | undefined>;
+
+	/**
+	 * Get the identity providers of the given realm.
+	 * @param realmName the realm name to get the identity providers for. NOT the realm id.
+	 * @returns the identity providers of the given realm.
+	 */
+	abstract getIdentityProviders(realmName: string): Promise<IdentityProviderDto[]>;
 }
