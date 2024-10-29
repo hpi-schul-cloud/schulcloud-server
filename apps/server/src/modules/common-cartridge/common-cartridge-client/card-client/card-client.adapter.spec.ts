@@ -9,9 +9,8 @@ import { CardListResponse, CardResponse } from './cards-api-client/models';
 import { CardClientAdapter } from './card-client.adapter';
 import { BoardCardApi } from './cards-api-client';
 
-const jwtToken = faker.string.uuid();
-
 describe(CardClientAdapter.name, () => {
+	const jwtToken = faker.string.alphanumeric(20);
 	let module: TestingModule;
 	let adapterUnderTest: CardClientAdapter;
 	let cardApiMock: DeepMocked<BoardCardApi>;
