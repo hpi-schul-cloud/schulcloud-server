@@ -348,25 +348,16 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
-
-				// tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
-				// tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
-				// tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
-				// tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
-
 				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
-			it('should return false', async () => {
+			it('should return false and not call findUserByTspUid', async () => {
 				setup();
-
-				// const result = await sut.sync();
 
 				await sut.sync();
 
 				expect(tspSyncService.findUserByTspUid).not.toHaveBeenCalled();
-				// expect(result).toBeUndefined();
 			});
 		});
 
@@ -384,27 +375,19 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
-
 				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
-				// tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
-				// tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
-				// tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
-
 				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 
 				return { tspTeacher };
 			};
 
-			it('should return false', async () => {
+			it('should throw and not call updateUser', async () => {
 				setup();
-
-				// const result = await sut.sync();
 
 				await sut.sync();
 
 				expect(tspSyncService.updateUser).not.toHaveBeenCalled();
-				// expect(result).toBeUndefined();
 			});
 		});
 
@@ -426,21 +409,16 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
 				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
-				// tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
-
 				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
-			it('should return false', async () => {
+			it('should throw and not call updateAccount', async () => {
 				setup();
-
-				// const result = await sut.sync();
 
 				await sut.sync();
 
 				expect(tspSyncService.updateAccount).not.toHaveBeenCalled();
-				// expect(result).toBeUndefined();
 			});
 		});
 	});
