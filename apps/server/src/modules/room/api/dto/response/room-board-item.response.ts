@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BoardLayout } from '@src/modules/board';
 
 export class RoomBoardItemResponse {
 	@ApiProperty()
@@ -6,6 +7,9 @@ export class RoomBoardItemResponse {
 
 	@ApiProperty()
 	title: string;
+
+	@ApiProperty({ enum: BoardLayout })
+	layout: BoardLayout;
 
 	@ApiProperty({ type: Date })
 	createdAt: Date;
@@ -16,6 +20,7 @@ export class RoomBoardItemResponse {
 	constructor(item: RoomBoardItemResponse) {
 		this.id = item.id;
 		this.title = item.title;
+		this.layout = item.layout;
 		this.createdAt = item.createdAt;
 		this.updatedAt = item.updatedAt;
 	}

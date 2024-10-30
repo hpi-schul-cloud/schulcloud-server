@@ -50,6 +50,7 @@ export class RoomMapper {
 		const response = new RoomBoardItemResponse({
 			id: board.id,
 			title: board.title,
+			layout: board.layout,
 			createdAt: board.createdAt,
 			updatedAt: board.updatedAt,
 		});
