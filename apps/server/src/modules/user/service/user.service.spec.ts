@@ -1,9 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Account, AccountService } from '@modules/account';
 import {
 	DataDeletedEvent,
 	DeletionErrorLoggableException,
@@ -41,7 +39,6 @@ describe('UserService', () => {
 	let userDORepo: DeepMocked<UserDORepo>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
-	let accountService: DeepMocked<AccountService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let eventBus: DeepMocked<EventBus>;
@@ -73,10 +70,6 @@ describe('UserService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: AccountService,
-					useValue: createMock<AccountService>(),
-				},
-				{
 					provide: RegistrationPinService,
 					useValue: createMock<RegistrationPinService>(),
 				},
@@ -106,7 +99,6 @@ describe('UserService', () => {
 		userDORepo = module.get(UserDORepo);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
-		accountService = module.get(AccountService);
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 		calendarService = module.get(CalendarService);
@@ -257,54 +249,6 @@ describe('UserService', () => {
 				const result: UserDO | null = await service.findByIdOrNull(userId);
 
 				expect(result).toBeNull();
-			});
-		});
-	});
-
-	describe('getResolvedUser is called', () => {
-		describe('when a resolved user is requested', () => {
-			const setup = () => {
-				const systemId = 'systemId';
-				const role: Role = roleFactory.buildWithId({
-					name: RoleName.STUDENT,
-					permissions: [Permission.DASHBOARD_VIEW],
-				});
-				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
-				const account: Account = new Account({
-					id: 'accountId',
-					systemId,
-					username: 'username',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					activated: true,
-				});
-
-				userDORepo.findById.mockResolvedValue(user);
-				accountService.findByUserIdOrFail.mockResolvedValue(account);
-
-				return {
-					userId: user.id as string,
-					user,
-					account,
-					role,
-					systemId,
-				};
-			};
-
-			it('should return the current user', async () => {
-				const { userId, user, account, role, systemId } = setup();
-
-				const result = await service.getResolvedUser(userId);
-
-				expect(result).toEqual<ICurrentUser>({
-					userId,
-					systemId,
-					schoolId: user.schoolId,
-					accountId: account.id,
-					roles: [role.id],
-					isExternalUser: false,
-					support: false,
-				});
 			});
 		});
 	});

@@ -1,4 +1,3 @@
-import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { forwardRef, Module } from '@nestjs/common';
@@ -14,7 +13,6 @@ import { UserService } from './service';
 	imports: [
 		forwardRef(() => LegacySchoolModule),
 		RoleModule,
-		AccountModule,
 		LoggerModule,
 		CqrsModule,
 		RegistrationPinModule,
