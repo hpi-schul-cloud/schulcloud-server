@@ -128,12 +128,7 @@ export class CourseController {
 		@Param() params: CourseUrlParams,
 		@Body() bodyParams: CourseSyncBodyParams
 	): Promise<void> {
-		await this.courseSyncUc.startSynchronization(
-			currentUser.userId,
-			params.courseId,
-			bodyParams.groupId,
-			bodyParams.excludedFields
-		);
+		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
 	}
 
 	@Get(':courseId/user-permissions')

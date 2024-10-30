@@ -1,7 +1,7 @@
 import { Group, GroupUser } from '@modules/group';
 import { RoleService } from '@modules/role';
 import { Inject, Injectable } from '@nestjs/common';
-import { SyncAttribute } from '@shared/domain/entity';
+import { Role, SyncAttribute, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import {
 	Course,
@@ -18,13 +18,17 @@ export class CourseSyncService {
 		private readonly roleService: RoleService
 	) {}
 
-	public async startSynchronization(course: Course, group: Group, excludedFields?: SyncAttribute[]): Promise<void> {
+	public async startSynchronization(course: Course, group: Group, user: User): Promise<void> {
 		if (course.syncedWithGroup) {
 			throw new CourseAlreadySynchronizedLoggableException(course.id);
 		}
 
-		if (excludedFields) {
-			course.syncExcludedFields = excludedFields;
+		const isInGroup = group.users.some((groupUser) => groupUser.userId === user.id);
+		const isTeacher = user.getRoles().some((role: Role) => role.name === RoleName.TEACHER);
+
+		if (!isInGroup && isTeacher) {
+			course.syncExcludedFields = [SyncAttribute.TEACHERS];
+			course.teachers = [user.id];
 		}
 
 		await this.synchronize([course], group);
@@ -65,20 +69,17 @@ export class CourseSyncService {
 			course.untilDate = group.validPeriod?.until;
 			course.classes = [];
 			course.groups = [];
+			course.students = studentIds;
 
 			if (oldGroup?.name === course.name) {
 				course.name = group.name;
 			}
 
 			const excludedAtributes = new Set(course.syncExcludedFields || []);
+
+			// always sync teachers unless explicitly excluded
 			if (!excludedAtributes.has(SyncAttribute.TEACHERS)) {
 				course.teachers = teacherIds;
-			}
-
-			if (!course.teachers.length) {
-				course.students = [];
-			} else {
-				course.students = studentIds;
 			}
 		}
 

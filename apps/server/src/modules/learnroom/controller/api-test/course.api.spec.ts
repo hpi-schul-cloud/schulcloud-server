@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course as CourseEntity, SyncAttribute } from '@shared/domain/entity';
+import { Course as CourseEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
@@ -281,30 +281,9 @@ describe('Course Controller (API)', () => {
 				expect(result.syncedWithGroup?.id).toBe(group.id);
 			});
 
-			it('should not start the synchronization with validation errord', async () => {
+			it('should not start the synchronization with validation error', async () => {
 				const { loggedInClient, course } = await setup();
 				const params = { groupId: 'not-mongo-id' };
-
-				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
-
-				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
-			});
-
-			it('should start partial synchronization', async () => {
-				const { loggedInClient, course, group } = await setup();
-				const params = { groupId: group.id, excludedFields: ['teachers'] };
-
-				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
-
-				const result: CourseEntity = await em.findOneOrFail(CourseEntity, course.id);
-				expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
-				expect(result.syncedWithGroup?.id).toBe(group.id);
-				expect(result.syncExcludedFields).toEqual([SyncAttribute.TEACHERS]);
-			});
-
-			it('should not start partial synchronization with validation error', async () => {
-				const { loggedInClient, course, group } = await setup();
-				const params = { groupId: group.id, excludedFields: ['not-teachers'] };
 
 				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
 
