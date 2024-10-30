@@ -10,7 +10,11 @@ export class IdentityManagementController {
 	@Get('providers/:realmName')
 	@ApiOkResponse({ type: [IdentityProviderDto], description: 'Get available identity providers' })
 	async getIdentityProviders(@Param('realmName') realmName: string) {
+		console.info('Getting identity providers for realm:', realmName);
+
 		const identityProviders = await this.identityManagementService.getIdentityProviders(realmName);
+
+		console.info('Identity providers:', identityProviders);
 
 		return identityProviders;
 	}
