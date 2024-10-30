@@ -1,23 +1,15 @@
-import { LegacySchoolModule } from '@modules/legacy-school';
+import { CalendarModule } from '@infra/calendar';
+import { RegistrationPinModule } from '@modules/registration-pin';
 import { RoleModule } from '@modules/role';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
-import { CqrsModule } from '@nestjs/cqrs';
-import { RegistrationPinModule } from '@modules/registration-pin';
-import { CalendarModule } from '@infra/calendar';
 import { UserService } from './service';
 
 @Module({
-	imports: [
-		forwardRef(() => LegacySchoolModule),
-		RoleModule,
-		LoggerModule,
-		CqrsModule,
-		RegistrationPinModule,
-		CalendarModule,
-	],
+	imports: [RoleModule, LoggerModule, CqrsModule, RegistrationPinModule, CalendarModule],
 	providers: [UserRepo, UserDORepo, UserService],
 	exports: [UserService, UserRepo],
 })
