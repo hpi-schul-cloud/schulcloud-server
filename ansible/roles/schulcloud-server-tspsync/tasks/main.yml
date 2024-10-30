@@ -112,11 +112,23 @@
     tags:
       - configmap
 
+  - name: remove old API TSP Sync Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: Job
+      name: api-tsp-sync-init
+      state: absent
+      wait: yes
+    tags:
+      - job
+
   - name: API TSP Sync Init Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-init.yml.j2
-      state: "{{ 'present' if WITH_TSP_SYNC|bool else 'absent'}}"
+      state: present
     tags:
       - job
