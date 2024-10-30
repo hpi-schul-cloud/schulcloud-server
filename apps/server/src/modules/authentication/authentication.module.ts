@@ -24,14 +24,14 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn: configService.get<string>('JWT_LIFETIME'),
-		issuer: configService.get<string>('SC_DOMAIN'),
-		audience: configService.get<string>('SC_DOMAIN'),
+		expiresIn: configService.getOrThrow<string>('JWT_LIFETIME'),
+		issuer: configService.getOrThrow<string>('SC_DOMAIN'),
+		audience: configService.getOrThrow<string>('SC_DOMAIN'),
 		header: { typ: 'JWT', alg: algorithm },
 	};
 
-	const privateKey = configService.get<string>('JWT_PRIVATE_KEY');
-	const publicKey = configService.get<string>('JWT_PUBLIC_KEY');
+	const privateKey = configService.getOrThrow<string>('JWT_PRIVATE_KEY');
+	const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 
 	const options = {
 		privateKey,
