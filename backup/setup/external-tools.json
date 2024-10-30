@@ -1115,12 +1115,11 @@
 		"updatedAt": {
 			"$date": "2024-10-25T02:16:42.959Z"
 		},
-		"name": "ContenSelect Tool",
+		"name": "Merlin Bibliothek",
 		"url": "https://nds.edupool.de",
 		"config_type": "lti11",
 		"config_baseUrl": "https://nds.edupool.de",
 		"config_key": "xvD0eMHxEPsKI198",
-		"config_secret": "U2FsdGVkX1/8oiJj28ym0QTKC+I8EIKLaAtrnTeMBc7y7MZNGZ9eKaGAXPAF//Pm4F0chFpfmy7/Sp0nz7ebnw==",
 		"config_lti_message_type": "ContentItemSelectionRequest",
 		"config_privacy_permission": "anonymous",
 		"config_launch_presentation_locale": "de-DE",
