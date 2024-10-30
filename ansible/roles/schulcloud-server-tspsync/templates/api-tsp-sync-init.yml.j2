@@ -23,6 +23,8 @@ spec:
         envFrom:
         - configMapRef:
             name: api-tsp-sync-cronjob-configmap
+        - configMapRef:
+            name: api-configmap
         - secretRef:
             name: api-secret
         command: ['/bin/sh', '-c']
