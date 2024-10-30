@@ -3,8 +3,6 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
@@ -24,10 +22,10 @@ import {
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
@@ -40,7 +38,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
@@ -72,10 +69,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		let properties: PropertyData[];
-		if (
-			config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST &&
-			!data.contextExternalTool.ltiDeepLink
-		) {
+		if (config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST) {
 			properties = await this.buildToolLaunchDataForContentItemSelectionRequest(userId, data, config);
 		} else {
 			properties = await this.buildToolLaunchDataForLtiLaunch(
@@ -105,16 +99,15 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		);
 
-		const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
-		const callbackUrl = `${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`;
+		const clientUrl = Configuration.get('HOST') as string;
+		const callbackUrl = new URL('/dashboard', clientUrl);
 
 		const state = new UUID().toString();
-		await this.cacheManager.set(state, userId, 600000);
 
 		additionalProperties.push(
 			new PropertyData({
 				name: 'content_item_return_url',
-				value: callbackUrl,
+				value: callbackUrl.toString(),
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
@@ -308,8 +301,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 		if (
 			ExternalTool.isLti11Config(data.externalTool.config) &&
-			data.externalTool.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST &&
-			!data.contextExternalTool.ltiDeepLink
+			data.externalTool.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		) {
 			request.openNewTab = true;
 			request.isDeepLink = true;

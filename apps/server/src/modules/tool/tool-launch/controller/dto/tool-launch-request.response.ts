@@ -30,7 +30,7 @@ export class ToolLaunchRequestResponse {
 	openNewTab?: boolean;
 
 	@ApiProperty({
-		description: 'Specifies whether the Tool should be launched in a new tab',
+		description: 'Specifies whether the request is an LTI Deep linking content item selection request',
 	})
 	isDeepLink: boolean;
 

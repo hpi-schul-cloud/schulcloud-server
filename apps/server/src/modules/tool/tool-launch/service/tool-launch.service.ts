@@ -56,6 +56,7 @@ export class ToolLaunchService {
 			schoolExternalTool,
 			contextExternalTool,
 		});
+
 		return launchRequest;
 	}
 
