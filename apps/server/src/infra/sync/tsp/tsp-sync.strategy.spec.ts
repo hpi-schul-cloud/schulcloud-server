@@ -424,8 +424,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 
 				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
-				// tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
-				// tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
 				// tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
 
 				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
