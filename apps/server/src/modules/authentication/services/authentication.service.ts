@@ -1,14 +1,13 @@
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
+import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { System, SystemService } from '@modules/system';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@shared/domain/entity';
-import { UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -28,7 +27,7 @@ export class AuthenticationService {
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<AuthenticationConfig, true>,
-		private readonly userService: UserService,
+		private readonly oauthSessionTokenService: OauthSessionTokenService,
 		private readonly systemService: SystemService,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
@@ -136,20 +135,18 @@ export class AuthenticationService {
 	}
 
 	public async logoutFromExternalSystem(userId: string, systemId: string): Promise<void> {
-		const user: UserDO = await this.userService.findById(userId);
 		const system: System | null = await this.systemService.findById(systemId);
+		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(userId);
 
-		if (!user.sessionToken) {
+		if (!sessionToken) {
 			return;
 		}
 
-		if (this.hasSessionTokenExpired(user.sessionToken)) {
+		const now = new Date();
+		if (now > sessionToken.expiresAt) {
+			// TODO dispose token
 			return;
 		}
-
-		const endSessionDto = {
-			refresh_token: user.sessionToken,
-		};
 
 		const headers: AxiosHeaders = new AxiosHeaders();
 		headers.setContentType('application/x-www-form-urlencoded');
@@ -167,25 +164,17 @@ export class AuthenticationService {
 		}
 
 		const response = await firstValueFrom(
-			this.httpService.post(system?.oauthConfig?.endSessionEndpoint, endSessionDto, config)
+			this.httpService.post(
+				system?.oauthConfig?.endSessionEndpoint,
+				{
+					refresh_token: sessionToken.refreshToken,
+				},
+				config
+			)
 		);
 
 		if (response.status !== 204) {
 			// TODO throw error
-			return;
 		}
-
-		user.sessionToken = undefined;
-		await this.userService.save(user);
-	}
-
-	private hasSessionTokenExpired(sessionToken: string): boolean {
-		const decodedJwt: JwtPayload | null = jwt.decode(sessionToken, { json: true });
-		const now: number = new Date().getTime();
-		if (!decodedJwt?.exp) {
-			return true;
-		}
-
-		return decodedJwt.exp > now;
 	}
 }

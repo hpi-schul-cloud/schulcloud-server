@@ -1,7 +1,8 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections, userFactory } from '@shared/testing';
+import { SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { OauthSessionTokenEntity } from '../../entity';
 import { oauthSessionTokenEntityFactory, oauthSessionTokenFactory } from '../../testing';
 import { OAUTH_SESSION_TOKEN_REPO } from '../oauth-session-token.repo.interface';
@@ -91,6 +92,102 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 				const result = await repo.save(oauthSessionToken);
 
 				expect(result).toEqual(oauthSessionToken);
+			});
+		});
+	});
+
+	describe('findOneByUserId', () => {
+		describe('when a user with a saved session token is provided', () => {
+			const setup = async () => {
+				const sessionTokens = oauthSessionTokenEntityFactory.buildListWithId(3);
+
+				await em.persistAndFlush(sessionTokens);
+
+				const expectedTokenEntity: OauthSessionTokenEntity = sessionTokens[0];
+				const userId: string = expectedTokenEntity.user.id;
+
+				const expectedToken = oauthSessionTokenFactory.build({
+					id: expectedTokenEntity.id,
+					refreshToken: expectedTokenEntity.refreshToken,
+					systemId: expectedTokenEntity.system.id,
+					expiresAt: expectedTokenEntity.expiresAt,
+					userId,
+				});
+
+				return {
+					expectedToken,
+					userId,
+				};
+			};
+
+			it('should return a session token domain object', async () => {
+				const { expectedToken, userId } = await setup();
+
+				const result = await repo.findOneByUserId(userId);
+
+				expect(result).toEqual(expectedToken);
+			});
+		});
+
+		describe('when a user without a saved session token is provided', () => {
+			const setup = async () => {
+				const sessionTokens = oauthSessionTokenEntityFactory.buildListWithId(3);
+
+				await em.persistAndFlush(sessionTokens);
+
+				const user = userFactory.build();
+				const userId = user.id;
+
+				return {
+					userId,
+				};
+			};
+
+			it('should return null', async () => {
+				const { userId } = await setup();
+
+				const result = await repo.findOneByUserId(userId);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when a user with a saved session token and a sort option is provided ', () => {
+			const setup = async () => {
+				const sessionTokens = [1, 5, 10].map((i) =>
+					oauthSessionTokenEntityFactory.build({
+						expiresAt: new Date(Date.now() + i * 3600 * 1000),
+					})
+				);
+
+				await em.persistAndFlush(sessionTokens);
+
+				const sortOption: SortOrderMap<OauthSessionTokenEntity> = { expiresAt: SortOrder.asc };
+				const expectedTokenEntity: OauthSessionTokenEntity = sessionTokens[sessionTokens.length - 1];
+
+				const userId: string = expectedTokenEntity.user.id;
+
+				const expectedToken = oauthSessionTokenFactory.build({
+					id: expectedTokenEntity.id,
+					refreshToken: expectedTokenEntity.refreshToken,
+					systemId: expectedTokenEntity.system.id,
+					expiresAt: expectedTokenEntity.expiresAt,
+					userId,
+				});
+
+				return {
+					expectedToken,
+					userId,
+					sortOption,
+				};
+			};
+
+			it('should return the first session token based on the sort option', async () => {
+				const { expectedToken, userId, sortOption } = await setup();
+
+				const result = await repo.findOneByUserId(userId, sortOption);
+
+				expect(result).toEqual(expectedToken);
 			});
 		});
 	});

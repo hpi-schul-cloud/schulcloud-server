@@ -2,7 +2,6 @@ import { authConfig, AuthGuardModule } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
-import { UserModule } from '@modules/user';
 import { AccountModule } from '@modules/account';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
@@ -47,7 +46,6 @@ const jwtModuleOptions: JwtModuleOptions = {
 		IdentityManagementModule,
 		CacheWrapperModule,
 		AuthGuardModule,
-		UserModule,
 		HttpModule,
 		EncryptionModule,
 	],
