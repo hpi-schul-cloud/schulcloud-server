@@ -14,6 +14,10 @@ export class MetaTagExtractorService {
 		if (url.length === 0) {
 			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
 		}
+		const urlObject = new URL(url);
+		if (urlObject.protocol !== 'https:') {
+			throw new Error(`MetaTagExtractorService requires https-protocol. Given URL: ${url}`);
+		}
 
 		const metaData =
 			(await this.tryInternalLinkMetaTags(url)) ??
