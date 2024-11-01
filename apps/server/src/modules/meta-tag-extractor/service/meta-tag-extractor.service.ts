@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import axios from 'axios';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 import { basename } from 'path';
@@ -29,16 +30,14 @@ export class MetaTagExtractorService {
 
 	private async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
 		try {
-			const data = await ogs({ url, fetchOptions: { headers: { 'User-Agent': 'Open Graph Scraper' } } });
-
-			const title = data.result?.ogTitle ?? '';
-			const description = data.result?.ogDescription ?? '';
-			const image = data.result?.ogImage ? this.pickImage(data?.result?.ogImage) : undefined;
+			const html = await this.fetchHtmlPartly(url);
+			const { result } = await ogs({ html });
+			const { ogTitle, ogDescription, ogImage } = result;
 
 			return {
-				title,
-				description,
-				image,
+				title: ogTitle ?? '',
+				description: ogDescription ?? '',
+				image: ogImage ? this.pickImage(ogImage) : undefined,
 				url,
 				type: 'external',
 			};
@@ -50,9 +49,8 @@ export class MetaTagExtractorService {
 	private tryFilenameAsFallback(url: string): MetaData | undefined {
 		try {
 			const urlObject = new URL(url);
-			const title = basename(urlObject.pathname);
 			return {
-				title,
+				title: basename(urlObject.pathname),
 				description: '',
 				url,
 				type: 'unknown',
@@ -72,5 +70,38 @@ export class MetaTagExtractorService {
 		const smallestBigEnoughImage = sortedImages.find((i) => i.width && i.width >= minWidth);
 		const fallbackImage = images[0] && images[0].width === undefined ? images[0] : undefined;
 		return smallestBigEnoughImage ?? fallbackImage;
+	}
+
+	private async fetchHtmlPartly(url: string, maxLength = 50000): Promise<string> {
+		const source = axios.CancelToken.source();
+		let html = '';
+
+		try {
+			const response = await axios.get(url, {
+				headers: { 'User-Agent': 'Open Graph Scraper' },
+				responseType: 'stream',
+				cancelToken: source.token,
+			});
+
+			const stream = response.data as NodeJS.ReadableStream;
+			stream.on('data', (chunk: Buffer) => {
+				html += chunk.toString('utf-8');
+				if (html.length >= maxLength) {
+					source.cancel(`Request canceled after receiving ${maxLength} characters.`);
+				}
+			});
+
+			await new Promise((resolve, reject) => {
+				stream.on('end', resolve);
+				stream.on('error', reject);
+			});
+
+			return html.slice(0, maxLength);
+		} catch (error) {
+			if (!axios.isCancel(error)) {
+				throw error;
+			}
+			return html;
+		}
 	}
 }
