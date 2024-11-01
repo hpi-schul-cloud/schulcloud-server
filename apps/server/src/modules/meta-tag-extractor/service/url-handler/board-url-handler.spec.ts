@@ -34,7 +34,7 @@ describe(BoardUrlHandler.name, () => {
 	describe('getMetaData', () => {
 		describe('when url fits', () => {
 			it('should call courseService with the correct id', async () => {
-				const id = 'af322312feae';
+				const id = '671a5bdf0995ace8cbc6f899';
 				const url = `https://localhost/boards/${id}`;
 
 				await boardUrlHandler.getMetaData(url);
@@ -43,7 +43,7 @@ describe(BoardUrlHandler.name, () => {
 			});
 
 			it('should take the title from the board name', async () => {
-				const id = 'af322312feae';
+				const id = '671a5bdf0995ace8cbc6f899';
 				const url = `https://localhost/boards/${id}`;
 				const boardName = 'My Board';
 				columnBoardService.findById.mockResolvedValue({
@@ -57,7 +57,17 @@ describe(BoardUrlHandler.name, () => {
 			});
 		});
 
-		describe('when url does not fit', () => {
+		describe('when path in url does not fit', () => {
+			it('should return undefined', async () => {
+				const url = `https://localhost/invalid/671a5bdf0995ace8cbc6f899`;
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when mongoId in url is invalid', () => {
 			it('should return undefined', async () => {
 				const url = `https://localhost/invalid/ef2345abe4e3b`;
 

@@ -6,7 +6,7 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 
 @Injectable()
 export class TaskUrlHandler extends AbstractUrlHandler implements UrlHandler {
-	patterns: RegExp[] = [/\/homework\/([0-9a-z]+)$/i];
+	patterns: RegExp[] = [/\/homework\/([0-9a-fA-F]{24})$/i];
 
 	constructor(private readonly taskService: TaskService) {
 		super();
