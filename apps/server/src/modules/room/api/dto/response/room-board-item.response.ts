@@ -11,6 +11,9 @@ export class RoomBoardItemResponse {
 	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
 	layout: BoardLayout;
 
+	@ApiProperty({ type: Boolean })
+	isVisible: boolean;
+
 	@ApiProperty({ type: Date })
 	createdAt: Date;
 
@@ -21,6 +24,7 @@ export class RoomBoardItemResponse {
 		this.id = item.id;
 		this.title = item.title;
 		this.layout = item.layout;
+		this.isVisible = item.isVisible;
 		this.createdAt = item.createdAt;
 		this.updatedAt = item.updatedAt;
 	}

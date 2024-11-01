@@ -119,7 +119,7 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
-				it('should return a room', async () => {
+				it('should return the room boards', async () => {
 					const { loggedInClient, room, board } = await setup();
 
 					const response = await loggedInClient.get(`${room.id}/boards`);
@@ -127,6 +127,8 @@ describe('Room Controller (API)', () => {
 					expect((response.body as { data: Record<string, unknown> }).data[0]).toEqual({
 						id: board.id,
 						title: board.title,
+						layout: board.layout,
+						isVisible: board.isVisible,
 						createdAt: board.createdAt.toISOString(),
 						updatedAt: board.updatedAt.toISOString(),
 					});

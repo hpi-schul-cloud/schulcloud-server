@@ -51,6 +51,7 @@ export class RoomMapper {
 			id: board.id,
 			title: board.title,
 			layout: board.layout,
+			isVisible: board.isVisible,
 			createdAt: board.createdAt,
 			updatedAt: board.updatedAt,
 		});
