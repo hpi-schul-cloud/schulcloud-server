@@ -8,7 +8,7 @@ export class RoomBoardItemResponse {
 	@ApiProperty()
 	title: string;
 
-	@ApiProperty({ enum: BoardLayout })
+	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
 	layout: BoardLayout;
 
 	@ApiProperty({ type: Date })
