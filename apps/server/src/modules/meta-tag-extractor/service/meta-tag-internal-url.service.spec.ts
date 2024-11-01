@@ -81,6 +81,16 @@ describe(MetaTagExtractorService.name, () => {
 
 			expect(service.isInternalUrl(EXTERNAL_URL)).toBe(false);
 		});
+
+		it('should return false for external urls that partially contain the domain', () => {
+			setup();
+
+			const urlObject = new URL(INTERNAL_URL);
+			urlObject.hostname += '.phishing.de';
+			const phishingUrl = urlObject.toString();
+
+			expect(service.isInternalUrl(phishingUrl)).toBe(false);
+		});
 	});
 
 	describe('tryInternalLinkMetaTags', () => {

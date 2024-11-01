@@ -27,7 +27,8 @@ export class MetaTagInternalUrlService {
 	isInternalUrl(url: string) {
 		let domain = Configuration.get('SC_DOMAIN') as string;
 		domain = domain === '' ? 'nothing-configured-for-internal-url.de' : domain;
-		const isInternal = url.toLowerCase().includes(domain.toLowerCase());
+		const urlObject = new URL(url);
+		const isInternal = urlObject.hostname.toLowerCase() === domain.toLowerCase();
 		return isInternal;
 	}
 
