@@ -95,13 +95,12 @@ export class MetaTagExtractorService {
 				stream.on('end', resolve);
 				stream.on('error', reject);
 			});
-
-			return html.slice(0, maxLength);
 		} catch (error) {
 			if (!axios.isCancel(error)) {
+				// log error
 				throw error;
 			}
-			return html;
 		}
+		return html.slice(0, maxLength);
 	}
 }
