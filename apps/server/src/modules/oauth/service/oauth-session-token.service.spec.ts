@@ -65,6 +65,28 @@ describe(OauthSessionTokenService.name, () => {
 		});
 	});
 
+	describe('delete', () => {
+		describe('when removing a session token', () => {
+			const setup = () => {
+				const oauthSessionToken = oauthSessionTokenFactory.build();
+
+				jest.spyOn(repo, 'delete');
+
+				return {
+					oauthSessionToken,
+				};
+			};
+
+			it('should call the repo to delete the token', async () => {
+				const { oauthSessionToken } = setup();
+
+				await service.delete(oauthSessionToken);
+
+				expect(repo.delete).toHaveBeenCalledWith(oauthSessionToken);
+			});
+		});
+	});
+
 	describe('findLatestByUserId', () => {
 		describe('when an user id is provided', () => {
 			const setup = () => {

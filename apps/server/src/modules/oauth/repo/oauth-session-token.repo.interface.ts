@@ -5,6 +5,7 @@ import { OauthSessionTokenEntity } from '../entity';
 
 export interface OauthSessionTokenRepo {
 	save(domainObject: OauthSessionToken): Promise<OauthSessionToken>;
+	delete(domainObject: OauthSessionToken): Promise<void>;
 	findOneByUserId(
 		userId: EntityId,
 		sortOption?: SortOrderMap<OauthSessionTokenEntity>

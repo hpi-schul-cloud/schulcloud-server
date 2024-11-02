@@ -14,6 +14,10 @@ export class OauthSessionTokenService {
 		return oauthSessionToken;
 	}
 
+	async delete(domainObject: OauthSessionToken): Promise<void> {
+		await this.oauthSessionTokenRepo.delete(domainObject);
+	}
+
 	async findLatestByUserId(userId: EntityId): Promise<OauthSessionToken | null> {
 		const sortByLatestUpdate: SortOrderMap<OauthSessionTokenEntity> = { updatedAt: SortOrder.desc };
 		const oauthSessionToken: OauthSessionToken | null = await this.oauthSessionTokenRepo.findOneByUserId(

@@ -12,7 +12,7 @@ import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { firstValueFrom } from 'rxjs';
-import { AxiosHeaders, AxiosRequestConfig } from 'axios';
+import { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -144,7 +144,7 @@ export class AuthenticationService {
 
 		const now = new Date();
 		if (now > sessionToken.expiresAt) {
-			// TODO dispose token
+			await this.oauthSessionTokenService.delete(sessionToken);
 			return;
 		}
 
@@ -160,10 +160,11 @@ export class AuthenticationService {
 		};
 
 		if (!system?.oauthConfig?.endSessionEndpoint) {
+			// TODO throw error
 			return;
 		}
 
-		const response = await firstValueFrom(
+		const response: AxiosResponse = await firstValueFrom(
 			this.httpService.post(
 				system?.oauthConfig?.endSessionEndpoint,
 				{
@@ -176,5 +177,7 @@ export class AuthenticationService {
 		if (response.status !== 204) {
 			// TODO throw error
 		}
+
+		await this.oauthSessionTokenService.delete(sessionToken);
 	}
 }
