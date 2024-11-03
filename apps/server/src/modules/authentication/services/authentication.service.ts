@@ -2,6 +2,7 @@ import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-g
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
 import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { System, SystemService } from '@modules/system';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
@@ -12,13 +13,17 @@ import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { firstValueFrom } from 'rxjs';
-import { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosError, AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { AuthenticationConfig } from '../authentication-config';
-import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
-import { ShdUserCreateTokenLoggable } from '../loggable';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
+import {
+	BruteForceError,
+	UnauthorizedLoggableException,
+	EndSessionEndpointNotFoundLoggableException,
+	ExternalSystemLogoutFailedLoggableException,
+} from '../errors';
 
 @Injectable()
 export class AuthenticationService {
@@ -30,7 +35,7 @@ export class AuthenticationService {
 		private readonly oauthSessionTokenService: OauthSessionTokenService,
 		private readonly systemService: SystemService,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
+		@Inject(DefaultEncryptionService) private readonly oauthEncryptionService: EncryptionService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(AuthenticationService.name);
@@ -138,8 +143,12 @@ export class AuthenticationService {
 		const system: System | null = await this.systemService.findById(systemId);
 		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(userId);
 
-		if (!sessionToken) {
+		if (!sessionToken || system?.alias !== 'SANIS') {
 			return;
+		}
+
+		if (!system.oauthConfig) {
+			throw new OauthConfigMissingLoggableException(systemId);
 		}
 
 		const now = new Date();
@@ -148,34 +157,39 @@ export class AuthenticationService {
 			return;
 		}
 
+		if (!system?.oauthConfig.endSessionEndpoint) {
+			throw new EndSessionEndpointNotFoundLoggableException(systemId);
+		}
+
 		const headers: AxiosHeaders = new AxiosHeaders();
 		headers.setContentType('application/x-www-form-urlencoded');
 
 		const config: AxiosRequestConfig = {
 			auth: {
-				username: system?.oauthConfig?.clientId as string,
-				password: this.oAuthEncryptionService.decrypt(system?.oauthConfig?.clientSecret as string),
+				username: system?.oauthConfig.clientId,
+				password: this.oauthEncryptionService.decrypt(system?.oauthConfig.clientSecret),
 			},
 			headers,
 		};
 
-		if (!system?.oauthConfig?.endSessionEndpoint) {
-			// TODO throw error
-			return;
-		}
-
-		const response: AxiosResponse = await firstValueFrom(
-			this.httpService.post(
-				system?.oauthConfig?.endSessionEndpoint,
-				{
-					refresh_token: sessionToken.refreshToken,
-				},
-				config
-			)
-		);
-
-		if (response.status !== 204) {
-			// TODO throw error
+		try {
+			await firstValueFrom(
+				this.httpService.post(
+					system?.oauthConfig?.endSessionEndpoint,
+					{
+						refresh_token: sessionToken.refreshToken,
+					},
+					config
+				)
+			);
+		} catch (err) {
+			let errorResponseData: string;
+			if (err instanceof AxiosError && err.response) {
+				errorResponseData = JSON.stringify(err.response);
+			} else {
+				errorResponseData = JSON.stringify(err);
+			}
+			throw new ExternalSystemLogoutFailedLoggableException(userId, systemId, errorResponseData);
 		}
 
 		await this.oauthSessionTokenService.delete(sessionToken);

@@ -1,15 +1,35 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadFactory } from '@infra/auth-guard';
+import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
+import { OauthConfig, SystemService } from '@modules/system';
+import { OauthSessionTokenService } from '@modules/oauth';
 import { accountDoFactory } from '@modules/account/testing';
+import { systemFactory } from '@modules/system/testing';
+import { oauthSessionTokenFactory } from '@modules/oauth/testing';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { currentUserFactory, setupEntities, userFactory } from '@shared/testing';
+import { HttpService } from '@nestjs/axios';
+import {
+	axiosErrorFactory,
+	axiosResponseFactory,
+	currentUserFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ObjectId } from '@mikro-orm/mongodb';
 import jwt from 'jsonwebtoken';
-import { BruteForceError } from '../errors/brute-force.error';
+import { AxiosHeaders, AxiosRequestConfig } from 'axios';
+import { of, throwError } from 'rxjs';
+import {
+	BruteForceError,
+	EndSessionEndpointNotFoundLoggableException,
+	ExternalSystemLogoutFailedLoggableException,
+} from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 import { CurrentUserMapper } from '../mapper';
@@ -25,6 +45,10 @@ describe('AuthenticationService', () => {
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 	let configService: DeepMocked<ConfigService>;
+	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
+	let systemService: DeepMocked<SystemService>;
+	let httpService: DeepMocked<HttpService>;
+	let oauthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 
 	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
@@ -32,6 +56,11 @@ describe('AuthenticationService', () => {
 		updatedAt: new Date(),
 		username: 'mockedUsername',
 	});
+
+	const createAxiosResponse = <T>(data: T) =>
+		axiosResponseFactory.build({
+			data,
+		});
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -59,6 +88,22 @@ describe('AuthenticationService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: OauthSessionTokenService,
+					useValue: createMock<OauthSessionTokenService>(),
+				},
+				{
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
@@ -67,6 +112,10 @@ describe('AuthenticationService', () => {
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
 		configService = module.get(ConfigService);
+		oauthSessionTokenService = module.get(OauthSessionTokenService);
+		systemService = module.get(SystemService);
+		httpService = module.get(HttpService);
+		oauthEncryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterEach(() => {
@@ -284,6 +333,298 @@ describe('AuthenticationService', () => {
 				const password = '  password  ';
 				const result = authenticationService.normalizePassword(password);
 				expect(result).toEqual('password');
+			});
+		});
+	});
+
+	describe('logoutFromExternalSystem', () => {
+		const setupAxiosConfig = (clientId: string, clientSecret: string): AxiosRequestConfig => {
+			const headers: AxiosHeaders = new AxiosHeaders();
+			headers.setContentType('application/x-www-form-urlencoded');
+
+			const config: AxiosRequestConfig = {
+				auth: {
+					username: clientId,
+					password: clientSecret,
+				},
+				headers,
+			};
+
+			return config;
+		};
+
+		describe('when "SANIS" system is provided', () => {
+			describe('when the user has a saved valid oauth session token', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const sessionToken = oauthSessionTokenFactory.build({
+						userId: user.id,
+					});
+
+					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+					const oauthConfig = system.oauthConfig as OauthConfig;
+
+					const decryptedClientSecret = 'mock-secret';
+
+					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+					systemService.findById.mockResolvedValue(system);
+					oauthEncryptionService.decrypt.mockReturnValue(decryptedClientSecret);
+					httpService.post.mockReturnValue(of(createAxiosResponse({})));
+
+					jest.spyOn(oauthSessionTokenService, 'delete');
+
+					const axiosConfig: AxiosRequestConfig = setupAxiosConfig(oauthConfig.clientId, decryptedClientSecret);
+
+					return {
+						userId: user.id,
+						systemId: system.id,
+						sessionToken,
+						oauthConfig,
+						axiosConfig,
+					};
+				};
+
+				it('should decrypt the client secret of the external system', async () => {
+					const { userId, systemId, oauthConfig } = setup();
+
+					await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					expect(oauthEncryptionService.decrypt).toHaveBeenCalledWith(oauthConfig.clientSecret);
+				});
+
+				it('should send a end session http request to the external system', async () => {
+					const { userId, systemId, sessionToken, oauthConfig, axiosConfig } = setup();
+
+					await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					expect(httpService.post).toHaveBeenCalledWith(
+						oauthConfig.endSessionEndpoint,
+						{ refresh_token: sessionToken.refreshToken },
+						axiosConfig
+					);
+				});
+
+				it('should delete the session token', async () => {
+					const { userId, systemId, sessionToken } = setup();
+
+					await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					expect(oauthSessionTokenService.delete).toHaveBeenCalledWith(sessionToken);
+				});
+			});
+
+			describe('when the user has an expired oauth session token', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const sessionToken = oauthSessionTokenFactory.build({
+						userId: user.id,
+						expiresAt: new Date(Date.now() - 1000),
+					});
+
+					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+
+					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+					systemService.findById.mockResolvedValue(system);
+
+					jest.spyOn(oauthSessionTokenService, 'delete');
+					jest.spyOn(httpService, 'post');
+
+					return {
+						userId: user.id,
+						systemId: system.id,
+						sessionToken,
+					};
+				};
+
+				it('should delete the expired token', async () => {
+					const { userId, systemId, sessionToken } = setup();
+
+					await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					expect(oauthSessionTokenService.delete).toHaveBeenCalledWith(sessionToken);
+				});
+
+				it('should not send an end session http request', async () => {
+					const { userId, systemId } = setup();
+
+					await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					expect(httpService.post).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when the user has no saved oauth session token', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+
+					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(null);
+					systemService.findById.mockResolvedValue(system);
+
+					jest.spyOn(httpService, 'post');
+
+					return {
+						userId: user.id,
+						systemId: system.id,
+					};
+				};
+
+				it('should not send an end session http request', async () => {
+					const { userId, systemId } = setup();
+
+					await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					expect(httpService.post).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when no oauth config is found from the system', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const sessionToken = oauthSessionTokenFactory.build({
+						userId: user.id,
+					});
+
+					const system = systemFactory.build({ alias: 'SANIS' });
+
+					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+					systemService.findById.mockResolvedValue(system);
+
+					jest.spyOn(httpService, 'post');
+
+					return {
+						userId: user.id,
+						systemId: new ObjectId().toHexString(),
+					};
+				};
+
+				it('should throw an OauthConfigMissingLoggableException', async () => {
+					const { userId, systemId } = setup();
+
+					const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					await expect(promise).rejects.toThrow(new OauthConfigMissingLoggableException(systemId));
+				});
+			});
+
+			describe('when the end session endpoint is missing in the oauth config', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const sessionToken = oauthSessionTokenFactory.build({
+						userId: user.id,
+					});
+
+					const system = systemFactory.withOauthConfig({ endSessionEndpoint: undefined }).build({ alias: 'SANIS' });
+
+					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+					systemService.findById.mockResolvedValue(system);
+
+					jest.spyOn(httpService, 'post');
+
+					return {
+						userId: user.id,
+						systemId: new ObjectId().toHexString(),
+					};
+				};
+
+				it('should throw an EndSessionEndpointNotFoundLoggableException', async () => {
+					const { userId, systemId } = setup();
+
+					const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					await expect(promise).rejects.toThrow(new EndSessionEndpointNotFoundLoggableException(systemId));
+				});
+			});
+
+			describe('when there is an error from the external system', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const sessionToken = oauthSessionTokenFactory.build({
+						userId: user.id,
+					});
+
+					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+
+					const axiosError = axiosErrorFactory.build();
+					const errorResponseData = JSON.stringify(axiosError.response);
+
+					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+					systemService.findById.mockResolvedValue(system);
+					oauthEncryptionService.decrypt.mockReturnValue('mock-secret');
+					httpService.post.mockReturnValueOnce(throwError(() => axiosError));
+
+					return {
+						userId: user.id,
+						systemId: system.id,
+						errorResponseData,
+					};
+				};
+
+				it('should throw an ExternalSystemLogoutFailedLoggableException', async () => {
+					const { userId, systemId, errorResponseData } = setup();
+
+					const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
+
+					await expect(promise).rejects.toThrow(
+						new ExternalSystemLogoutFailedLoggableException(userId, systemId, errorResponseData)
+					);
+				});
+			});
+		});
+
+		describe('when a system other than "SANIS" is provided', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const sessionToken = oauthSessionTokenFactory.build({
+					userId: user.id,
+				});
+
+				const system = systemFactory.withOauthConfig().build({ alias: 'MOCK-OAUTH' });
+
+				oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+				systemService.findById.mockResolvedValue(system);
+
+				jest.spyOn(httpService, 'post');
+
+				return {
+					userId: user.id,
+					systemId: new ObjectId().toHexString(),
+				};
+			};
+
+			it('should not send an end session http request', async () => {
+				const { userId, systemId } = setup();
+
+				await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+				expect(httpService.post).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when no system is found with given id', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const sessionToken = oauthSessionTokenFactory.build({
+					userId: user.id,
+				});
+
+				oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+				systemService.findById.mockResolvedValue(null);
+
+				jest.spyOn(httpService, 'post');
+
+				return {
+					userId: user.id,
+					systemId: new ObjectId().toHexString(),
+				};
+			};
+
+			it('should not send an end session http request', async () => {
+				const { userId, systemId } = setup();
+
+				await authenticationService.logoutFromExternalSystem(userId, systemId);
+
+				expect(httpService.post).not.toHaveBeenCalled();
 			});
 		});
 	});

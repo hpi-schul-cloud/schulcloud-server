@@ -11,9 +11,9 @@ export class LogoutUc {
 	}
 
 	async externalSystemLogout(user: ICurrentUser): Promise<void> {
-		if (!user.systemId) return;
-		// TODO support for now only moin.schule
-		// TODO check if user logged in from external system
+		if (!user.systemId) {
+			return;
+		}
 
 		await this.authenticationService.logoutFromExternalSystem(user.userId, user.systemId);
 	}

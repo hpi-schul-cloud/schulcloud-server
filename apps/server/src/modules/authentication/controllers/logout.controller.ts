@@ -1,6 +1,12 @@
 import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+	ApiInternalServerErrorResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { LogoutUc } from '../uc';
 
 @ApiTags('Authentication')
@@ -21,7 +27,12 @@ export class LogoutController {
 	@JwtAuthentication()
 	@Post('/external')
 	@HttpCode(HttpStatus.OK)
-	async logoutTest(@CurrentUser() user: ICurrentUser): Promise<void> {
+	@ApiOperation({ summary: 'Logs out a user from the external system.' })
+	@ApiOkResponse({ description: 'External system logout was successful.' })
+	@ApiInternalServerErrorResponse({
+		description: 'There has been an error while logging out from the external system.',
+	})
+	async externalSystemLogout(@CurrentUser() user: ICurrentUser): Promise<void> {
 		await this.logoutUc.externalSystemLogout(user);
 	}
 }
