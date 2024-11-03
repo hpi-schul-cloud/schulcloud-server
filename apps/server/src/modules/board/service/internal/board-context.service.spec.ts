@@ -213,6 +213,7 @@ describe(`${BoardContextService.name}`, () => {
 				});
 			});
 		});
+
 		describe('when node has a room context', () => {
 			describe('when user with editor role is associated with the room', () => {
 				const setup = () => {
