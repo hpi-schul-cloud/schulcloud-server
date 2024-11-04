@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { ErrorLogMessage } from '@src/core/logger/types';
+import { AccountService } from '@src/modules/account';
 import { SynchronizationConfig } from '../interface';
 import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
 import {
@@ -20,6 +21,7 @@ export class SynchronizationUc {
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,
+		private readonly accountService: AccountService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(SynchronizationUc.name);
@@ -70,11 +72,13 @@ export class SynchronizationUc {
 
 	public async updateLastSyncedAt(usersToCheck: string[], systemId: string): Promise<number> {
 		try {
-			const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(usersToCheck, systemId);
+			const foundUsers = await this.userService.findMultipleByExternalIds(usersToCheck);
 
-			await this.userService.updateLastSyncedAt(usersToSync);
+			const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
 
-			return usersToSync.length;
+			await this.userService.updateLastSyncedAt(verifiedUsers);
+
+			return verifiedUsers.length;
 		} catch {
 			throw new FailedUpdateLastSyncedAtLoggableException(systemId);
 		}
