@@ -21,6 +21,7 @@ import { UserService } from '@src/modules/user';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
+import { BadRequestException } from '@nestjs/common';
 
 describe('GroupService', () => {
 	let module: TestingModule;
@@ -559,6 +560,16 @@ describe('GroupService', () => {
 				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
 
 				expect(groupRepo.save).toHaveBeenCalledWith(group);
+			});
+
+			describe('when the role id is undefined', () => {
+				it('should throw', async () => {
+					roleService.findByName.mockResolvedValue(roleDtoFactory.build({ id: undefined }));
+
+					await expect(service.addUserToGroup('groupId', 'userId', RoleName.STUDENT)).rejects.toThrow(
+						BadRequestException
+					);
+				});
 			});
 		});
 	});
