@@ -282,7 +282,7 @@ describe('Course Controller (API)', () => {
 			});
 		});
 
-		describe('when a course id is invalid', () => {
+		describe('when a groupId parameter is invalid', () => {
 			const setup = async () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
