@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { RoomMemberRepo, RoomMemberService } from '@src/modules/room-member';
+import { AuthorizationService } from '@modules/authorization';
+import { RoomMemberRepo, RoomMemberService } from '@modules/room-member';
 import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
@@ -42,6 +43,10 @@ describe('RoomUc', () => {
 				{
 					provide: RoomMemberRepo,
 					useValue: createMock<RoomMemberRepo>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 			],
 		}).compile();
@@ -107,7 +112,7 @@ describe('RoomUc', () => {
 			authorizationService.checkOneOfPermissions.mockReturnValue(undefined);
 			const room = roomFactory.build();
 			roomService.createRoom.mockResolvedValue(room);
-			roomMemberService.addMemberToRoom.mockRejectedValue(new Error('test'));
+			roomMemberService.addMembersToRoom.mockRejectedValue(new Error('test'));
 			return { user, room };
 		};
 

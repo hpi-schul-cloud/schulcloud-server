@@ -23,8 +23,8 @@ import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
@@ -83,6 +83,12 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const userDO = await this.userDORepo.findById(id, true);
 
 		return userDO;
+	}
+
+	async findByIds(ids: string[]): Promise<UserDO[]> {
+		const userDOs = await this.userDORepo.findByIds(ids, true);
+
+		return userDOs;
 	}
 
 	public async findByIdOrNull(id: string): Promise<UserDO | null> {

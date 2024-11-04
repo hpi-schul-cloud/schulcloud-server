@@ -57,6 +57,21 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return this.mapEntityToDO(userEntity);
 	}
 
+	async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
+		const users = await this._em.find(User, { id: { $in: ids } });
+
+		if (populate) {
+			await Promise.all(
+				users.map((user) => this._em.populate(user, ['roles', 'school.systems', 'school.currentYear', 'school.name']))
+			);
+			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
+		}
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
+	}
+
 	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
 		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
 
@@ -121,6 +136,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			preferredName: entity.preferredName,
 			roles: [],
 			schoolId: entity.school.id,
+			schoolName: entity.school.name,
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
 			importHash: entity.importHash,
@@ -176,8 +192,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
-		for (let i = 0; i < roles.length; i += 1) {
-			const role = roles[i];
+		for (const role of roles) {
 			if (!role.roles.isInitialized(true)) {
 				// eslint-disable-next-line no-await-in-loop
 				await this._em.populate(role, ['roles']);
