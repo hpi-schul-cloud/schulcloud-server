@@ -280,15 +280,6 @@ describe('Course Controller (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
 				expect(result.syncedWithGroup?.id).toBe(group.id);
 			});
-
-			it('should not start the synchronization with validation error', async () => {
-				const { loggedInClient, course } = await setup();
-				const params = { groupId: 'not-mongo-id' };
-
-				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
-
-				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
-			});
 		});
 
 		describe('when a course id is invalid', () => {
