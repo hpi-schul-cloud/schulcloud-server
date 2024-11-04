@@ -7,7 +7,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReferenceType, ColumnBoardService } from '@src/modules/board';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@src/modules/board';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
 import { RoomMemberResponse } from './dto/response/room-member.response';
