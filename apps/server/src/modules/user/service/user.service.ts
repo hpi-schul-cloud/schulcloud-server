@@ -1,8 +1,4 @@
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { Account, AccountService } from '@modules/account';
-// invalid import
-import { OauthCurrentUser } from '@modules/authentication/interface';
-import { CurrentUserMapper } from '@modules/authentication/mapper';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -44,7 +40,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
@@ -82,15 +77,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 
 		return userDto;
-	}
-
-	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
-		const user: UserDO = await this.findById(userId);
-		const account: Account = await this.accountService.findByUserIdOrFail(userId);
-
-		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
-
-		return resolvedUser;
 	}
 
 	async findById(id: string): Promise<UserDO> {
@@ -259,14 +245,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
 
 		return users;
-	}
-
-	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
-		const foundUsers = await this.findMultipleByExternalIds(externalIds);
-
-		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
-
-		return verifiedUsers;
 	}
 
 	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {
