@@ -161,7 +161,7 @@ describe(CourseMikroOrmRepo.name, () => {
 					color: '#ACACAC',
 					copyingSince: new Date(),
 					syncedWithGroup: groupEntity.id,
-					syncExcludedFields: [SyncAttribute.TEACHERS],
+					excludeFromSync: [SyncAttribute.TEACHERS],
 					shareToken: 'shareToken',
 					untilDate: new Date(),
 					startDate: new Date(),

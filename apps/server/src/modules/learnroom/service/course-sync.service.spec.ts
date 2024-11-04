@@ -70,7 +70,7 @@ describe(CourseSyncService.name, () => {
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: undefined,
-						syncExcludedFields: undefined,
+						excludeFromSync: undefined,
 					})
 				);
 			});
@@ -145,7 +145,7 @@ describe(CourseSyncService.name, () => {
 						teacherIds: [syncingUser.id],
 						classIds: [],
 						groupIds: [],
-						syncExcludedFields: [SyncAttribute.TEACHERS],
+						excludeFromSync: [SyncAttribute.TEACHERS],
 					}),
 				]);
 			});
@@ -424,7 +424,7 @@ describe(CourseSyncService.name, () => {
 					studentIds: [studentUserId],
 					syncedWithGroup: newGroup.id,
 					substitutionTeacherIds: [substituteTeacherId],
-					syncExcludedFields: [SyncAttribute.TEACHERS],
+					excludeFromSync: [SyncAttribute.TEACHERS],
 				});
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
@@ -454,7 +454,64 @@ describe(CourseSyncService.name, () => {
 						syncedWithGroup: course.syncedWithGroup,
 						classIds: [],
 						groupIds: [],
-						syncExcludedFields: [SyncAttribute.TEACHERS],
+						excludeFromSync: [SyncAttribute.TEACHERS],
+						substitutionTeacherIds: [substituteTeacherId],
+					}),
+				]);
+			});
+		});
+
+		describe('when there teachers are no teachers synced from group', () => {
+			const setup = () => {
+				const substituteTeacherId = new ObjectId().toHexString();
+				const studentUserId = new ObjectId().toHexString();
+				const teacherUserId = new ObjectId().toHexString();
+				const studentRoleId: string = new ObjectId().toHexString();
+				const studentRole: RoleDto = roleDtoFactory.build({ id: studentRoleId });
+				const teacherRole: RoleDto = roleDtoFactory.build();
+				const newGroup: Group = groupFactory.build({
+					users: [
+						new GroupUser({
+							userId: studentUserId,
+							roleId: studentRoleId,
+						}),
+					],
+				});
+
+				const course: Course = courseFactory.build({
+					syncedWithGroup: newGroup.id,
+					substitutionTeacherIds: [substituteTeacherId],
+					excludeFromSync: [],
+				});
+				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				roleService.findByName.mockResolvedValueOnce(studentRole);
+				roleService.findByName.mockResolvedValueOnce(teacherRole);
+
+				return {
+					course,
+					newGroup,
+					teacherUserId,
+					substituteTeacherId,
+					studentUserId,
+				};
+			};
+
+			it('should not sync group students', async () => {
+				const { course, newGroup, substituteTeacherId } = setup();
+
+				await service.synchronizeCourseWithGroup(newGroup, newGroup);
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						name: course.name,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
+						studentIds: [],
+						teacherIds: [],
+						syncedWithGroup: course.syncedWithGroup,
+						classIds: [],
+						groupIds: [],
+						excludeFromSync: [],
 						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);

@@ -291,6 +291,37 @@ describe('Course Controller (API)', () => {
 			});
 		});
 
+		describe('when a course id is invalid', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacher.account);
+				const params = { groupId: 'not-mongo-id' };
+
+				return {
+					loggedInClient,
+					course,
+					group,
+					params,
+				};
+			};
+
+			it('should not start the synchronization with validation error', async () => {
+				const { loggedInClient, course, params } = await setup();
+
+				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
 		describe('when a course is already synchronized', () => {
 			const setup = async () => {
 				const teacher = createTeacher();

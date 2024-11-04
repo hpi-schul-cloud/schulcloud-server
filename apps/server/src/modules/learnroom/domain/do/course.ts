@@ -35,7 +35,7 @@ export interface CourseProps extends AuthorizableObject {
 
 	syncedWithGroup?: EntityId;
 
-	syncExcludedFields?: SyncAttribute[];
+	excludeFromSync?: SyncAttribute[];
 }
 
 export class Course extends DomainObject<CourseProps> {
@@ -99,11 +99,11 @@ export class Course extends DomainObject<CourseProps> {
 		return this.props.syncedWithGroup;
 	}
 
-	set syncExcludedFields(values: SyncAttribute[] | undefined) {
-		this.props.syncExcludedFields = values ? [...new Set(values)] : undefined;
+	set excludeFromSync(values: SyncAttribute[] | undefined) {
+		this.props.excludeFromSync = values ? [...new Set(values)] : undefined;
 	}
 
-	get syncExcludedFields(): SyncAttribute[] | undefined {
-		return this.props.syncExcludedFields;
+	get excludeFromSync(): SyncAttribute[] | undefined {
+		return this.props.excludeFromSync;
 	}
 }

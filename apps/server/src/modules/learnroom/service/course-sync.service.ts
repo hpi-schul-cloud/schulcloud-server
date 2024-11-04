@@ -27,7 +27,7 @@ export class CourseSyncService {
 		const isTeacher = user.getRoles().some((role: Role) => role.name === RoleName.TEACHER);
 
 		if (!isInGroup && isTeacher) {
-			course.syncExcludedFields = [SyncAttribute.TEACHERS];
+			course.excludeFromSync = [SyncAttribute.TEACHERS];
 			course.teachers = [user.id];
 		}
 
@@ -40,7 +40,7 @@ export class CourseSyncService {
 		}
 
 		course.syncedWithGroup = undefined;
-		course.syncExcludedFields = undefined;
+		course.excludeFromSync = undefined;
 
 		await this.courseRepo.save(course);
 	}
@@ -69,17 +69,23 @@ export class CourseSyncService {
 			course.untilDate = group.validPeriod?.until;
 			course.classes = [];
 			course.groups = [];
-			course.students = studentIds;
 
 			if (oldGroup?.name === course.name) {
 				course.name = group.name;
 			}
 
-			const excludedAtributes = new Set(course.syncExcludedFields || []);
+			const excludedFromSync = new Set(course.excludeFromSync || []);
 
 			// always sync teachers unless explicitly excluded
-			if (!excludedAtributes.has(SyncAttribute.TEACHERS)) {
+			if (!excludedFromSync.has(SyncAttribute.TEACHERS)) {
 				course.teachers = teacherIds;
+			}
+
+			// only sync students if teachers are present
+			if (course.teachers.length > 0) {
+				course.students = studentIds;
+			} else {
+				course.students = [];
 			}
 		}
 

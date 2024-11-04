@@ -32,7 +32,7 @@ export interface CourseProperties {
 	classes?: ClassEntity[];
 	groups?: GroupEntity[];
 	syncedWithGroup?: GroupEntity;
-	syncExcludedFields?: SyncAttribute[];
+	excludeFromSync?: SyncAttribute[];
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -112,7 +112,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 	syncedWithGroup?: GroupEntity;
 
 	@Enum({ nullable: true, array: true })
-	syncExcludedFields?: SyncAttribute[];
+	excludeFromSync?: SyncAttribute[];
 
 	constructor(props: CourseProperties) {
 		super();
@@ -130,7 +130,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		this.classes.set(props.classes || []);
 		this.groups.set(props.groups || []);
 		if (props.syncedWithGroup) this.syncedWithGroup = props.syncedWithGroup;
-		if (props.syncExcludedFields) this.syncExcludedFields = props.syncExcludedFields;
+		if (props.excludeFromSync) this.excludeFromSync = props.excludeFromSync;
 	}
 
 	public getStudentIds(): EntityId[] {
