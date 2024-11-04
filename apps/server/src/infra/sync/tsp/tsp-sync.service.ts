@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
+// TODO: do not deep import from modules. These things should probably be publicly exported by the school module.
 import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
@@ -39,7 +40,10 @@ export class TspSyncService {
 		return systems[0];
 	}
 
+	// TODO: move these functions into a tsp adapter
+
 	public async fetchTspSchools(system: System, daysToFetch: number) {
+		// HINT: lots of duplicated code. could be done with currying or functions as parameters
 		const client = this.createClient(system);
 
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
@@ -116,6 +120,10 @@ export class TspSyncService {
 		const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 		const federalState = await this.findFederalState();
 
+		// TODO: look at current db entries and check if the newly created ones look similar. If any things change, make sure its consistent with all code and migrate
+		// TODO: filestorage provider seems to be missing, maybe also others? schoolModule should probably handle that...
+		// TODO: what about permissions? anyway, compare freshly created db entries for old and new sync :)
+
 		const school = SchoolFactory.build({
 			externalId: identifier,
 			name,
@@ -133,6 +141,10 @@ export class TspSyncService {
 		return savedSchool;
 	}
 
+	/*
+	TODO: when tsp stuff is out of this file, this can be a "TspSchoolService" (in preperation of a refactoring in the school module).
+	It would greatly help us if tsp specific details like FederalStateNames.THUERINGEN could be moved into a parameter or otherwise out of this file.
+	*/
 	private async findFederalState(): Promise<FederalState> {
 		if (this.federalState) {
 			return this.federalState;

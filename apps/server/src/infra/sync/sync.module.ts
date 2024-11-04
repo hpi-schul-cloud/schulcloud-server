@@ -15,6 +15,8 @@ import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 
+// TODO: Config File. that should extend tsp-sync.config.ts
+
 @Module({
 	imports: [
 		LoggerModule,

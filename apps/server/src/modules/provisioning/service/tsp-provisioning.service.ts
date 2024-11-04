@@ -43,10 +43,12 @@ export class TspProvisioningService {
 	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
 		if (!user.id) throw new BadDataLoggableException('User ID is missing', { user });
 
+		// TODO: do parallel (as much as Node.... :P)
 		for await (const clazz of classes) {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(school.id, clazz.externalId);
 
 			if (currentClass) {
+				// HINT: seperate function, so you dont need comments :)
 				// Case: Class exists -> update class
 				currentClass.schoolId = school.id;
 				currentClass.name = clazz.name ?? currentClass.name;

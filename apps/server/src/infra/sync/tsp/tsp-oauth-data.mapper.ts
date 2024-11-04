@@ -28,6 +28,7 @@ export class TspOauthDataMapper {
 		tspStudents: RobjExportSchueler[],
 		tspClasses: RobjExportKlasse[]
 	): OauthDataDto[] {
+		// NOTE: very easy to split into multiple functions
 		const systemDto = new ProvisioningSystemDto({
 			systemId: system.id,
 			provisioningStrategy: SystemProvisioningStrategy.TSP,
@@ -72,6 +73,7 @@ export class TspOauthDataMapper {
 		});
 
 		tspTeachers.forEach((tspTeacher) => {
+			// HINT: lots of duplicated code. could be done with currying or functions as parameters
 			if (!tspTeacher.lehrerUid) {
 				this.logger.info(new TspMissingExternalIdLoggable('teacher'));
 				return;

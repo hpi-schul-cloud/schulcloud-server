@@ -28,6 +28,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
+		// HINT: very big function, can be split
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
 
 		if (!decodedAccessToken) {
