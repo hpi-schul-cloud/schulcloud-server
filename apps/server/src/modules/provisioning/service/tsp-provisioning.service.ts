@@ -165,6 +165,7 @@ export class TspProvisioningService {
 	}
 
 	private createTspEmail(externalId: string): string {
+		// TODO: check if this is still valid
 		const email = `${externalId}@${this.TSP_EMAIL_DOMAIN}`;
 
 		return email.toLowerCase();
