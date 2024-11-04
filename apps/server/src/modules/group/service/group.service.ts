@@ -92,4 +92,47 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		group.addUser(groupUser);
 		await this.save(group);
 	}
+
+	public async addUsersToGroup(
+		groupId: EntityId,
+		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName }>
+	): Promise<Group> {
+		const uniqueRoleNames = [...new Set(userIdsAndRoles.map((user) => user.roleName))];
+		const roleNamesSet = await this.roleService.findByNames(uniqueRoleNames);
+		const userIds = userIdsAndRoles.map((user) => user.userId);
+		const users = await this.userService.findByIds(userIds);
+		const group = await this.findById(groupId);
+
+		for (const { userId, roleName } of userIdsAndRoles) {
+			const role = roleNamesSet.find((r) => r.name === roleName);
+			if (!role) throw new BadRequestException(`Role ${roleName} not found.`);
+			if (!role.id) throw new BadRequestException('Role has no id.');
+			const user = users.find((u) => u.id === userId);
+			// user must have an id, because we are fetching it by id -> fix in service
+			if (!user) throw new BadRequestException('Unknown userId.');
+
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			const groupUser = new GroupUser({ roleId: role.id, userId: user.id! });
+
+			group.addUser(groupUser);
+		}
+		await this.save(group);
+
+		return group;
+	}
+
+	public async removeUsersFromGroup(groupId: EntityId, userIds: EntityId[]): Promise<Group> {
+		const group = await this.findById(groupId);
+		const users = await this.userService.findByIds(userIds);
+
+		for (const userId of userIds) {
+			const user = users.find((u) => u.id === userId);
+			if (!user) throw new BadRequestException('Unknown userId.');
+			group.removeUser(user);
+		}
+
+		await this.save(group);
+
+		return group;
+	}
 }

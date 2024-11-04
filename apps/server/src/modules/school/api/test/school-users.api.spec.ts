@@ -127,6 +127,7 @@ describe('School Controller (API)', () => {
 								id: teacher.id,
 								firstName: teacher.firstName,
 								lastName: teacher.lastName,
+								schoolName: school.name,
 							};
 						}),
 					])
@@ -196,6 +197,7 @@ describe('School Controller (API)', () => {
 								id: teacher.id,
 								firstName: teacher.firstName,
 								lastName: teacher.lastName,
+								schoolName: school.name,
 							};
 						}),
 					])
