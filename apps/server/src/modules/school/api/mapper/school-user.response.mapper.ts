@@ -8,6 +8,7 @@ export class SchoolUserResponseMapper {
 			id: user.id || '',
 			firstName: user.firstName,
 			lastName: user.lastName,
+			schoolName: user.schoolName || '',
 		});
 
 		return res;
