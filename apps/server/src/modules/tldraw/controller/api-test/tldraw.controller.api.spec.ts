@@ -1,15 +1,11 @@
 import { XApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { TestApiClient } from '@shared/testing';
 import { Request } from 'express';
-import { TldrawController } from '..';
-import { TldrawRepo } from '../../repo';
-import { TldrawService } from '../../service';
 import { tldrawEntityFactory } from '../../testing';
+import { TldrawApiTestModule } from '../../tldraw-api-test.module';
 
 const baseRouteName = '/tldraw-document';
 describe('tldraw controller (api)', () => {
@@ -20,9 +16,7 @@ describe('tldraw controller (api)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule],
-			controllers: [TldrawController],
-			providers: [Logger, TldrawService, TldrawRepo],
+			imports: [TldrawApiTestModule.forRoot()],
 		})
 			.overrideGuard(XApiKeyGuard)
 			.useValue({
@@ -46,16 +40,12 @@ describe('tldraw controller (api)', () => {
 
 	describe('with valid user', () => {
 		const setup = async () => {
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
-
 			const drawingItemData = tldrawEntityFactory.build();
 
 			await em.persistAndFlush([drawingItemData]);
 			em.clear();
 
-			return { teacherUser, drawingItemData };
+			return { drawingItemData };
 		};
 
 		it('should return status 200 for delete', async () => {

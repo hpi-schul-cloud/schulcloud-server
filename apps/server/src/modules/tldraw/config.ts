@@ -1,9 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { JwtAuthGuardConfig } from '@infra/auth-guard';
-import { Algorithm } from 'jsonwebtoken';
+import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { env } from 'process';
 
-export interface TldrawConfig extends JwtAuthGuardConfig {
+export interface TldrawConfig extends XApiKeyAuthGuardConfig {
 	TLDRAW_DB_URL: string;
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
@@ -40,12 +39,8 @@ export const tldrawS3Config = {
 	secretAccessKey: env.S3_SECRET_KEY as string,
 };
 
-const jwtAuthGuardConfig: JwtAuthGuardConfig = {
-	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
-	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
-	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
-	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
-	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
+const apiKeyAuthGuardConfig: XApiKeyAuthGuardConfig = {
+	ADMIN_API__ALLOWED_API_KEYS: Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string[],
 };
 
 const tldrawConfig: TldrawConfig = {
@@ -66,7 +61,7 @@ const tldrawConfig: TldrawConfig = {
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
 	TLDRAW_FINALIZE_DELAY: Configuration.get('TLDRAW__FINALIZE_DELAY') as number,
 	PERFORMANCE_MEASURE_ENABLED: Configuration.get('TLDRAW__PERFORMANCE_MEASURE_ENABLED') as boolean,
-	...jwtAuthGuardConfig,
+	...apiKeyAuthGuardConfig,
 };
 
 export const config = () => tldrawConfig;
