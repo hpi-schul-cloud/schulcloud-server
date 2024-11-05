@@ -157,9 +157,9 @@ describe('role repo', () => {
 			await em.persistAndFlush([roleA, roleB]);
 
 			const firstResult = await repo.findByName(roleA.name);
-			expect(firstResult).toEqual(roleA.name);
+			expect(firstResult).toEqual(roleA);
 			const secondResult = await repo.findByNames([roleA.name]);
-			expect(secondResult).toEqual([roleA.name]);
+			expect(secondResult).toEqual([roleA]);
 		});
 	});
 });
