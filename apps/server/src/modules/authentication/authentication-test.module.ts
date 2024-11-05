@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardModule } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
 import { IdentityManagementModule } from '@infra/identity-management';
@@ -6,13 +7,11 @@ import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { AuthenticationConfig } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -20,19 +19,19 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
-const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) => {
-	const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');
+const createJwtOptions = () => {
+	const algorithm = Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm;
 
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn: configService.getOrThrow<string>('JWT_LIFETIME'),
-		issuer: configService.getOrThrow<string>('SC_DOMAIN'),
-		audience: configService.getOrThrow<string>('SC_DOMAIN'),
+		expiresIn: Configuration.get('JWT_LIFETIME') as string,
+		issuer: Configuration.get('SC_DOMAIN') as string,
+		audience: Configuration.get('SC_DOMAIN') as string,
 		header: { typ: 'JWT', alg: algorithm },
 	};
 
-	const privateKey = configService.getOrThrow<string>('JWT_PRIVATE_KEY');
-	const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
+	const privateKey = Configuration.get('JWT_PRIVATE_KEY') as string;
+	const publicKey = Configuration.get('JWT_PUBLIC_KEY') as string;
 
 	const options = {
 		privateKey,
@@ -44,13 +43,14 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 	return options;
 };
 
+// This module is for use by the AuthenticationApiTestModule, i.e. for use in api tests of other apps than the core server.
+// In those tests the configService can't be used, because the core server's config is not available.
 @Module({
 	imports: [
 		LoggerModule,
 		PassportModule,
 		JwtModule.registerAsync({
 			useFactory: createJwtOptions,
-			inject: [ConfigService],
 		}),
 		AccountModule,
 		SystemModule,
@@ -72,4 +72,4 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 	],
 	exports: [AuthenticationService],
 })
-export class AuthenticationModule {}
+export class AuthenticationTestModule {}
