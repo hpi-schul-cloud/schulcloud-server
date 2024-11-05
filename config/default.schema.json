@@ -119,9 +119,18 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
-		"AUTHENTICATION": {
+		"JWT_PRIVATE_KEY": {
 			"type": "string",
-			"description": "The secret that is used for create and validate the jwt."
+			"description": "The private key used to sign JWTs."
+		},
+		"JWT_PUBLIC_KEY": {
+			"type": "string",
+			"description": "The public key used to verify JWTs."
+		},
+		"JWT_SIGNING_ALGORITHM": {
+			"type": "string",
+			"default": "RS256",
+			"description": "The algorithm used to sign JWTs. Must be an asymmetric algorithm."
 		},
 		"JWT_LIFETIME": {
 			"type": "string",
@@ -1124,11 +1133,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
-		},
-		"JWT_AUD": {
-			"type": "string",
-			"default": "https://dbildungscloud.de",
-			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
