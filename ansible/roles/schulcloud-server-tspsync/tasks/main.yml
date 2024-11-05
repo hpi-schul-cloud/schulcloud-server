@@ -120,7 +120,7 @@
       kind: Job
       name: api-tsp-sync-init
       state: absent
-      wait: yes
+    when: not WITH_TSP_SYNC
     tags:
       - job
 
@@ -130,5 +130,6 @@
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-init.yml.j2
       state: present
+    when: WITH_TSP_SYNC
     tags:
       - job
