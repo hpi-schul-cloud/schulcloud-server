@@ -120,7 +120,6 @@
       kind: Job
       name: api-tsp-sync-init
       state: absent
-    when: not WITH_TSP_SYNC
     tags:
       - job
 
