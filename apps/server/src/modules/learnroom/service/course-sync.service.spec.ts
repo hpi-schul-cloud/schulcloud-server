@@ -461,7 +461,7 @@ describe(CourseSyncService.name, () => {
 			});
 		});
 
-		describe('when there teachers are no teachers synced from group', () => {
+		describe('when no teachers are synced from group', () => {
 			const setup = () => {
 				const substituteTeacherId = new ObjectId().toHexString();
 				const studentUserId = new ObjectId().toHexString();
@@ -469,6 +469,7 @@ describe(CourseSyncService.name, () => {
 				const studentRoleId: string = new ObjectId().toHexString();
 				const studentRole: RoleDto = roleDtoFactory.build({ id: studentRoleId });
 				const teacherRole: RoleDto = roleDtoFactory.build();
+
 				const newGroup: Group = groupFactory.build({
 					users: [
 						new GroupUser({
@@ -481,6 +482,7 @@ describe(CourseSyncService.name, () => {
 				const course: Course = courseFactory.build({
 					syncedWithGroup: newGroup.id,
 					substitutionTeacherIds: [substituteTeacherId],
+					teacherIds: [teacherUserId],
 					excludeFromSync: [],
 				});
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
@@ -497,7 +499,7 @@ describe(CourseSyncService.name, () => {
 			};
 
 			it('should not sync group students', async () => {
-				const { course, newGroup, substituteTeacherId } = setup();
+				const { course, newGroup, teacherUserId, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -507,7 +509,7 @@ describe(CourseSyncService.name, () => {
 						startDate: newGroup.validPeriod?.from,
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
-						teacherIds: [],
+						teacherIds: [teacherUserId],
 						syncedWithGroup: course.syncedWithGroup,
 						classIds: [],
 						groupIds: [],

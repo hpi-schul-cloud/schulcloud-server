@@ -23,10 +23,10 @@ export class CourseSyncService {
 			throw new CourseAlreadySynchronizedLoggableException(course.id);
 		}
 
-		const isInGroup = group.users.some((groupUser) => groupUser.userId === user.id);
 		const isTeacher = user.getRoles().some((role: Role) => role.name === RoleName.TEACHER);
+		const isInGroup = group.users.some((groupUser) => groupUser.userId === user.id);
 
-		if (!isInGroup && isTeacher) {
+		if (isTeacher && !isInGroup) {
 			course.excludeFromSync = [SyncAttribute.TEACHERS];
 			course.teachers = [user.id];
 		}
@@ -76,16 +76,13 @@ export class CourseSyncService {
 
 			const excludedFromSync = new Set(course.excludeFromSync || []);
 
-			// always sync teachers unless explicitly excluded
-			if (!excludedFromSync.has(SyncAttribute.TEACHERS)) {
-				course.teachers = teacherIds;
-			}
-
-			// only sync students if teachers are present
-			if (course.teachers.length > 0) {
+			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
 				course.students = studentIds;
-			} else {
+			} else if (teacherIds.length === 0) {
 				course.students = [];
+			} else {
+				course.teachers = teacherIds;
+				course.students = studentIds;
 			}
 		}
 
