@@ -29,3 +29,6 @@ export type IUserRoleName =
 	| RoleName.EXPERT
 	| RoleName.DEMOSTUDENT
 	| RoleName.DEMOTEACHER;
+
+export const RoomRoleArray = [RoleName.ROOM_EDITOR, RoleName.ROOM_VIEWER] as const;
+export type RoomRole = typeof RoomRoleArray[number];

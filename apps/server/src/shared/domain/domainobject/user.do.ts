@@ -20,6 +20,8 @@ export class UserDO extends BaseDO {
 
 	schoolId: EntityId;
 
+	schoolName?: string;
+
 	ldapDn?: string;
 
 	externalId?: string;
@@ -59,6 +61,7 @@ export class UserDO extends BaseDO {
 		this.preferredName = domainObject.preferredName;
 		this.roles = domainObject.roles;
 		this.schoolId = domainObject.schoolId;
+		this.schoolName = domainObject.schoolName;
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;
 		this.importHash = domainObject.importHash;
