@@ -1,11 +1,12 @@
-import { DeletionConfig } from '@modules/deletion';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardConfig } from '@infra/auth-guard';
+import { DeletionConfig } from '@modules/deletion';
 import { LegacySchoolConfig } from '@modules/legacy-school';
-import { UserConfig } from '@modules/user';
 import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
+import { Algorithm } from 'jsonwebtoken';
 
 export interface AdminApiServerConfig
 	extends DeletionConfig,
@@ -56,9 +57,11 @@ const config: AdminApiServerConfig = {
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),
-	JWT_AUD: Configuration.get('JWT_AUD') as string,
-	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
-	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
+
+	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
+	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
+	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	LOGIN_BLOCK_TIME: 0,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
@@ -70,6 +73,7 @@ const config: AdminApiServerConfig = {
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
+	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 };
 
 export const adminApiServerConfig = () => config;
