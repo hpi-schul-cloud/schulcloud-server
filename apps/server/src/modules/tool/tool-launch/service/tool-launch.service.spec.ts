@@ -3,9 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
-import { userDoFactory, userFactory } from '@shared/testing';
+import { userDoFactory } from '@shared/testing';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolConfigurationStatusService } from '../../context-external-tool/service';
@@ -22,11 +20,7 @@ describe('ToolLaunchService', () => {
 	let module: TestingModule;
 	let service: ToolLaunchService;
 
-	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
-	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
-	let lti11ToolLaunchStrategy: DeepMocked<Lti11ToolLaunchStrategy>;
-	let oAuth2ToolLaunchStrategy: DeepMocked<OAuth2ToolLaunchStrategy>;
 
 	let toolConfigurationStatusService: DeepMocked<ToolConfigurationStatusService>;
 
@@ -62,11 +56,7 @@ describe('ToolLaunchService', () => {
 		}).compile();
 
 		service = module.get(ToolLaunchService);
-		schoolExternalToolService = module.get(SchoolExternalToolService);
-		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
-		lti11ToolLaunchStrategy = module.get(Lti11ToolLaunchStrategy);
-		oAuth2ToolLaunchStrategy = module.get(OAuth2ToolLaunchStrategy);
 
 		toolConfigurationStatusService = module.get(ToolConfigurationStatusService);
 	});
@@ -83,23 +73,6 @@ describe('ToolLaunchService', () => {
 		describe('when type basic', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const userEmail = 'user@email.com';
-				const user: UserDO = userDoFactory.buildWithId(
-					{
-						email: userEmail,
-						roles: [
-							{
-								id: 'roleId1',
-								name: RoleName.TEACHER,
-							},
-							{
-								id: 'roleId2',
-								name: RoleName.USER,
-							},
-						],
-					},
-					userId
-				);
 
 				const externalTool = externalToolFactory.buildWithId();
 				externalTool.config.type = ToolConfigType.BASIC;

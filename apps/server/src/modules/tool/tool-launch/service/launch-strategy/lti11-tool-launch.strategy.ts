@@ -89,7 +89,9 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		config: Lti11ToolConfig
 	): Promise<PropertyData[]> {
 		if (!data.contextExternalTool.id) {
-			throw new Error('Cannot lauch a content selection request with a non-permanent context external tool');
+			throw new UnprocessableEntityException(
+				'Cannot lauch a content selection request with a non-permanent context external tool'
+			);
 		}
 
 		const additionalProperties: PropertyData[] = await this.buildToolLaunchDataForLtiLaunch(
@@ -99,8 +101,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		);
 
-		const clientUrl = Configuration.get('HOST') as string;
-		const callbackUrl = new URL('/dashboard', clientUrl);
+		const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const callbackUrl = new URL(
+			`${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`
+		);
 
 		const state = new UUID().toString();
 

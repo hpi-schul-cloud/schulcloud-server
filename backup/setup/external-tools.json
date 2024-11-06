@@ -1074,7 +1074,9 @@
 		"openNewTab": true,
 		"version": 1,
 		"isDeactivated": false,
-		"restrictToContexts": ["course"],
+		"restrictToContexts": [
+			"course"
+		],
 		"isPreferred": true,
 		"iconName": "mdiFileQuestionOutline"
 	},
@@ -1097,59 +1099,35 @@
 		"openNewTab": true,
 		"version": 1,
 		"isDeactivated": false,
-		"restrictToContexts": ["board-element"],
+		"restrictToContexts": [
+			"board-element"
+		],
 		"isPreferred": true,
 		"iconName": "mdiEyeOutline"
 	},
-
-  {
-    "_id": {
-    "$oid":"667e52a4162707ce02b9ac05"
-  },
-    "createdAt": {
-      "$date":"2024-10-25T02:16:42.959Z"
-    },
-    "updatedAt": {
-      "$date":"2024-10-25T02:16:42.959Z"
-    },
-    "name":"ContenSelect Tool",
-    "url":"https://nds.edupool.de",
-    "config_type":"lti11",
-    "config_baseUrl":"https://nds.edupool.de",
-    "config_key":"xvD0eMHxEPsKI198",
-    "config_secret":"U2FsdGVkX1/8oiJj28ym0QTKC+I8EIKLaAtrnTeMBc7y7MZNGZ9eKaGAXPAF//Pm4F0chFpfmy7/Sp0nz7ebnw==",
-    "config_lti_message_type":"ContentItemSelectionRequest",
-    "config_privacy_permission":"anonymous",
-    "config_launch_presentation_locale":"de-DE",
-    "parameters":[],"isHidden":false,
-    "isDeactivated":false,
-    "openNewTab":false,
-    "restrictToContexts":[],
-    "isPreferred":true
-  },
-  {
-    "_id": {
-      "$oid": "667e52a4162707ce02b9ac06"
-    },
-    "createdAt": {
-      "$date": "2024-10-25T02:16:42.959Z"
-    },
-    "updatedAt": {
-      "$date": "2024-10-25T02:16:42.959Z"
-    },
-    "name": "Merlin Bibliothek",
-    "url": "https://nds.edupool.de",
-    "config_type": "lti11",
-    "config_baseUrl": "https://nds.edupool.de",
-    "config_key": "xvD0eMHxEPsKI198",
-    "config_lti_message_type": "ContentItemSelectionRequest",
-    "config_privacy_permission": "anonymous",
-    "config_launch_presentation_locale": "de-DE",
-    "parameters": [],
-    "isHidden": false,
-    "isDeactivated": false,
-    "openNewTab": false,
-    "restrictToContexts": [],
-    "isPreferred": true
-  }
+	{
+		"_id": {
+			"$oid": "667e52a4162707ce02b9ac06"
+		},
+		"createdAt": {
+			"$date": "2024-10-25T02:16:42.959Z"
+		},
+		"updatedAt": {
+			"$date": "2024-10-25T02:16:42.959Z"
+		},
+		"name": "Merlin Bibliothek",
+		"url": "https://nds.edupool.de",
+		"config_type": "lti11",
+		"config_baseUrl": "https://nds.edupool.de",
+		"config_key": "xvD0eMHxEPsKI198",
+		"config_lti_message_type": "ContentItemSelectionRequest",
+		"config_privacy_permission": "anonymous",
+		"config_launch_presentation_locale": "de-DE",
+		"parameters": [],
+		"isHidden": false,
+		"isDeactivated": false,
+		"openNewTab": false,
+		"restrictToContexts": [],
+		"isPreferred": true
+	}
 ]
