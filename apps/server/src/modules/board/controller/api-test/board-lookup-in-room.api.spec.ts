@@ -157,14 +157,14 @@ describe(`board lookup in room (api)`, () => {
 	});
 
 	describe('When user has only view rights in room', () => {
-		it('should return status 403', async () => {
+		it('should return status 200', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
 
 			const loggedInClient = await testApiClient.login(accountWithViewRole);
 
 			const response = await loggedInClient.get(columnBoardNode.id);
 
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(200);
 		});
 	});
 

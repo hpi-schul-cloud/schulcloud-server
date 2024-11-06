@@ -12,6 +12,7 @@ import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, Colu
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
+import { RoomMemberService } from '@src/modules/room-member';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
@@ -50,6 +51,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: BoardNodeFactory,
 					useValue: createMock<BoardNodeFactory>(),
+				},
+				{
+					provide: RoomMemberService,
+					useValue: createMock<RoomMemberService>(),
 				},
 				{
 					provide: LegacyLogger,
