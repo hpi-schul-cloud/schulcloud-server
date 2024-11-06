@@ -33,15 +33,17 @@ describe('ToolLaunchMapper', () => {
 				url: 'url',
 				openNewTab: true,
 				payload: 'payload',
+				isDeepLink: false,
 			});
 
 			const result: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
 
-			expect(result).toEqual({
+			expect(result).toEqual<ToolLaunchRequestResponse>({
 				method: toolLaunchRequest.method,
 				url: toolLaunchRequest.url,
 				payload: toolLaunchRequest.payload,
 				openNewTab: toolLaunchRequest.openNewTab,
+				isDeepLink: toolLaunchRequest.isDeepLink,
 			});
 		});
 	});
