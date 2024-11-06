@@ -260,7 +260,6 @@ describe(CourseSyncService.name, () => {
 					classIds: [new ObjectId().toHexString()],
 					groupIds: [new ObjectId().toHexString()],
 					substitutionTeacherIds: [substituteTeacherId],
-					syncedWithGroup: newGroup.id,
 				});
 
 				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
@@ -421,7 +420,6 @@ describe(CourseSyncService.name, () => {
 
 				const course: Course = courseFactory.build({
 					teacherIds: [teacherUserId],
-					studentIds: [studentUserId],
 					syncedWithGroup: newGroup.id,
 					substitutionTeacherIds: [substituteTeacherId],
 					excludeFromSync: [SyncAttribute.TEACHERS],
@@ -442,7 +440,7 @@ describe(CourseSyncService.name, () => {
 			it('should not sync group teachers', async () => {
 				const { course, newGroup, substituteTeacherId, teacherUserId, studentUserId } = setup();
 
-				await service.synchronizeCourseWithGroup(newGroup, newGroup);
+				await service.synchronizeCourseWithGroup(newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
@@ -461,7 +459,7 @@ describe(CourseSyncService.name, () => {
 			});
 		});
 
-		describe('when no teachers are synced from group', () => {
+		describe('when teachers are synced from course (fallback)', () => {
 			const setup = () => {
 				const substituteTeacherId = new ObjectId().toHexString();
 				const studentUserId = new ObjectId().toHexString();
@@ -498,10 +496,69 @@ describe(CourseSyncService.name, () => {
 				};
 			};
 
-			it('should not sync group students', async () => {
-				const { course, newGroup, teacherUserId, substituteTeacherId } = setup();
+			it('should sync group students', async () => {
+				const { course, newGroup, teacherUserId, studentUserId, substituteTeacherId } = setup();
 
-				await service.synchronizeCourseWithGroup(newGroup, newGroup);
+				await service.synchronizeCourseWithGroup(newGroup);
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						name: course.name,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
+						studentIds: [studentUserId],
+						teacherIds: [teacherUserId],
+						syncedWithGroup: course.syncedWithGroup,
+						classIds: [],
+						groupIds: [],
+						excludeFromSync: [],
+						substitutionTeacherIds: [substituteTeacherId],
+					}),
+				]);
+			});
+		});
+
+		describe('when no teachers are synced', () => {
+			const setup = () => {
+				const substituteTeacherId = new ObjectId().toHexString();
+				const studentUserId = new ObjectId().toHexString();
+				const teacherUserId = new ObjectId().toHexString();
+				const studentRoleId: string = new ObjectId().toHexString();
+				const studentRole: RoleDto = roleDtoFactory.build({ id: studentRoleId });
+				const teacherRole: RoleDto = roleDtoFactory.build();
+
+				const newGroup: Group = groupFactory.build({
+					users: [
+						new GroupUser({
+							userId: studentUserId,
+							roleId: studentRoleId,
+						}),
+					],
+				});
+
+				const course: Course = courseFactory.build({
+					syncedWithGroup: newGroup.id,
+					substitutionTeacherIds: [substituteTeacherId],
+					teacherIds: [],
+					excludeFromSync: [],
+				});
+				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				roleService.findByName.mockResolvedValueOnce(studentRole);
+				roleService.findByName.mockResolvedValueOnce(teacherRole);
+
+				return {
+					course,
+					newGroup,
+					teacherUserId,
+					substituteTeacherId,
+					studentUserId,
+				};
+			};
+
+			it('should not sync students', async () => {
+				const { course, newGroup, substituteTeacherId } = setup();
+
+				await service.synchronizeCourseWithGroup(newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
@@ -509,7 +566,7 @@ describe(CourseSyncService.name, () => {
 						startDate: newGroup.validPeriod?.from,
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [],
-						teacherIds: [teacherUserId],
+						teacherIds: [],
 						syncedWithGroup: course.syncedWithGroup,
 						classIds: [],
 						groupIds: [],

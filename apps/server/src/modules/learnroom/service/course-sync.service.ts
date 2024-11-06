@@ -78,11 +78,9 @@ export class CourseSyncService {
 
 			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
 				course.students = studentIds;
-			} else if (teacherIds.length === 0) {
-				course.students = [];
 			} else {
-				course.teachers = teacherIds;
-				course.students = studentIds;
+				course.teachers = teacherIds.length > 0 ? teacherIds : course.teachers;
+				course.students = course.teachers.length > 0 ? studentIds : [];
 			}
 		}
 
