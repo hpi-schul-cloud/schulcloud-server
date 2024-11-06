@@ -4,8 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
+import { AuthGuardModule, AuthGuardOptions } from '@src/infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
+import { RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { AuthorizationModule } from '../authorization';
 import { config as boardCollaborationConfig } from './board-collaboration.config';
@@ -20,7 +21,7 @@ const config = () => {
 	imports: [
 		CoreModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
-		RabbitMQWrapperModule,
+		RabbitMQWrapperTestModule,
 		MongoMemoryDatabaseModule.forRoot({
 			...defaultMikroOrmOptions,
 			entities: ALL_ENTITIES,
@@ -29,6 +30,7 @@ const config = () => {
 		AuthorizationModule,
 		AuthenticationApiModule,
 		BoardWsApiModule,
+		AuthGuardModule.register([AuthGuardOptions.WS_JWT]),
 	],
 	providers: [],
 	exports: [],

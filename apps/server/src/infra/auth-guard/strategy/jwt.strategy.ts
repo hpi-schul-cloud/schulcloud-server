@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { extractJwtFromHeader } from '@shared/common';
 import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
-import { AuthGuardConfig } from '../auth-guard.config';
+import { JwtAuthGuardConfig } from '../config';
 import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
@@ -12,7 +12,7 @@ import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<AuthGuardConfig>
+		configService: ConfigService<JwtAuthGuardConfig>
 	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(extractJwtFromHeader, configService);
 
