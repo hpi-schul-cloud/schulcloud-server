@@ -185,13 +185,14 @@ describe('AuthenticationService', () => {
 			};
 
 			it('should pass the correct parameters', async () => {
-				const { mockCurrentUser, expectedPayload } = setup();
+				const { mockCurrentUser, expectedPayload, expiresIn } = setup();
 				await authenticationService.generateCurrentUserJwt(mockCurrentUser);
 				expect(jwtService.sign).toBeCalledWith(
 					expectedPayload,
 					expect.objectContaining({
 						subject: mockCurrentUser.accountId,
 						jwtid: expect.any(String),
+						expiresIn,
 					})
 				);
 			});

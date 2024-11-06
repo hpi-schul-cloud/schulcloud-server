@@ -31,7 +31,6 @@ import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
-import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -139,6 +138,7 @@ export interface ServerConfig
 }
 
 const config: ServerConfig = {
+	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
@@ -190,12 +190,6 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
 	JWT_EXTENDED_TIMEOUT_SECONDS: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS') as number,
-
-	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
-	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
-	JWT_PRIVATE_KEY: (Configuration.get('JWT_PRIVATE_KEY') as string).replace(/\\n/g, '\n'),
-	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
-	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,

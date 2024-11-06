@@ -2,7 +2,7 @@ import { AuthorizationClientModule } from '@infra/authorization-client';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { AuthenticationApiTestModule } from '@modules/authentication/authentication-api-test.module';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
@@ -20,7 +20,7 @@ import { H5PEditorUc } from './uc/h5p.uc';
 const imports = [
 	H5PEditorModule,
 	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
-	AuthenticationApiTestModule,
+	AuthenticationApiModule,
 	AuthorizationClientModule.register(authorizationClientConfig),
 	UserModule,
 	CoreModule,
