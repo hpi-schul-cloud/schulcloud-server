@@ -1,24 +1,26 @@
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
-import { defaultMikroOrmOptions } from '@modules/server';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { Logger, LoggerModule } from '@src/core/logger';
-import { TldrawRedisFactory, TldrawRedisService } from './redis';
+import { CoreModule } from '@src/core';
+import { LoggerModule } from '@src/core/logger';
+import { AuthGuardModule, AuthGuardOptions } from '@src/infra/auth-guard';
 import { config } from './config';
 import { TldrawController } from './controller';
-import { MetricsService } from './metrics';
-import { TldrawRepo } from './repo';
+import { TldrawDrawing } from './entities';
+import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawService } from './service';
 
 const imports = [
-	MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	HttpModule,
+	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
+	CoreModule,
 ];
-const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory, TldrawRedisService];
+const providers = [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb];
 @Module({
 	imports,
 	providers,
@@ -27,7 +29,7 @@ export class TldrawApiTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: TldrawApiTestModule,
-			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
+			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options })],
 			controllers: [TldrawController],
 			providers,
 		};

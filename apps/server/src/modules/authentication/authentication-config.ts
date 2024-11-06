@@ -1,8 +1,7 @@
-import { XApiKeyConfig } from '@infra/auth-guard';
 import { AccountConfig } from '@modules/account';
 import { Algorithm } from 'jsonwebtoken';
 
-export interface AuthenticationConfig extends AccountConfig, XApiKeyConfig {
+export interface AuthenticationConfig extends AccountConfig {
 	DISABLED_BRUTE_FORCE_CHECK: boolean;
 	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: boolean;
 	JWT_PRIVATE_KEY: string;

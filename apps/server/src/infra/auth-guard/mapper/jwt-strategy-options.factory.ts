@@ -1,11 +1,11 @@
 import { ConfigService } from '@nestjs/config';
 import { JwtFromRequestFunction, StrategyOptions } from 'passport-jwt';
-import { AuthGuardConfig } from '../auth-guard.config';
+import { JwtAuthGuardConfig } from '../config';
 
 export class JwtStrategyOptionsFactory {
 	static build(
 		jwtFromRequestFunction: JwtFromRequestFunction,
-		configService: ConfigService<AuthGuardConfig>
+		configService: ConfigService<JwtAuthGuardConfig>
 	): StrategyOptions {
 		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 		const algorithm = configService.getOrThrow<string>('JWT_SIGNING_ALGORITHM');

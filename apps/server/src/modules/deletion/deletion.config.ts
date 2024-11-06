@@ -1,12 +1,12 @@
+import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
+import { ClassConfig } from '@modules/class';
+import { FilesConfig } from '@modules/files';
+import { NewsConfig } from '@modules/news';
+import { PseudonymConfig } from '@modules/pseudonym';
+import { RocketChatUserConfig } from '@modules/rocketchat-user';
+import { TeamsConfig } from '@modules/teams';
 import { LoggerConfig } from '@src/core/logger';
 import { CalendarConfig } from '@src/infra/calendar';
-import { ClassConfig } from '@modules/class';
-import { XApiKeyConfig } from '@infra/auth-guard';
-import { NewsConfig } from '@modules/news';
-import { TeamsConfig } from '@modules/teams';
-import { PseudonymConfig } from '@modules/pseudonym';
-import { FilesConfig } from '@modules/files';
-import { RocketChatUserConfig } from '@modules/rocketchat-user';
 
 export interface DeletionConfig
 	extends LoggerConfig,
@@ -17,7 +17,7 @@ export interface DeletionConfig
 		PseudonymConfig,
 		FilesConfig,
 		RocketChatUserConfig,
-		XApiKeyConfig {
+		XApiKeyAuthGuardConfig {
 	ADMIN_API__MODIFICATION_THRESHOLD_MS: number;
 	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: number;
 	ADMIN_API__DELETION_DELAY_MILLISECONDS: number;
