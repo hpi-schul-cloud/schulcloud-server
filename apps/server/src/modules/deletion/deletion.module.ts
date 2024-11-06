@@ -1,4 +1,4 @@
-import { XApiKeyConfig } from '@infra/auth-guard';
+import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeletionLogService, DeletionRequestService } from './domain/service';
@@ -8,7 +8,7 @@ import { DeletionLogRepo, DeletionRequestRepo } from './repo';
 	providers: [
 		DeletionRequestRepo,
 		DeletionLogRepo,
-		ConfigService<XApiKeyConfig, true>,
+		ConfigService<XApiKeyAuthGuardConfig, true>,
 		DeletionLogService,
 		DeletionRequestService,
 	],
