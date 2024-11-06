@@ -148,4 +148,18 @@ describe('role repo', () => {
 			expect(result).toContainEqual(roleB);
 		});
 	});
+
+	describe('roles cache', () => {
+		it('should successfully use different caches in sequence', async () => {
+			const roleA = roleFactory.build();
+			const roleB = roleFactory.build();
+
+			await em.persistAndFlush([roleA, roleB]);
+
+			const firstResult = await repo.findByName(roleA.name);
+			expect(firstResult).toEqual(roleA);
+			const secondResult = await repo.findByNames([roleA.name]);
+			expect(secondResult).toEqual([roleA]);
+		});
+	});
 });
