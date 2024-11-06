@@ -1,4 +1,3 @@
-import { AuthGuardModule } from '@infra/auth-guard';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { HttpModule } from '@nestjs/axios';
@@ -35,7 +34,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: [TldrawDrawing],
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
-		AuthGuardModule,
 	],
 	providers: [
 		TldrawWs,
