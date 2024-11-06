@@ -175,7 +175,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/.cache/trivy
-          key: cache-trivy-${{ steps.date.outputs.date }}
+          key: cache-trivy
       - name: run trivy vulnerability scanner
         uses: aquasecurity/trivy-action@1f6384b6ceecbbc6673526f865b818a2a06b07c9
         with:
