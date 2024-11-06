@@ -7,12 +7,12 @@ import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
+import { RoomMemberService } from '@src/modules/room-member';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
-import { RoomMemberService } from '@src/modules/room-member';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
