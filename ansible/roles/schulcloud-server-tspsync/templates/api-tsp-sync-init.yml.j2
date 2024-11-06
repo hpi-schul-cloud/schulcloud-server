@@ -36,9 +36,9 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: api-tsp-sync-init-configmap
-        - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: api-tsp-sync-init-configmap
         - secretRef:
             name: api-secret
         command: ['/bin/sh', '-c']
