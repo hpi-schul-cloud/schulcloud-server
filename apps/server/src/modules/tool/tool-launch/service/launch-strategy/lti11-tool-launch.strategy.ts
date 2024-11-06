@@ -128,7 +128,9 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 				name: 'accept_unsigned',
 				value: 'false',
 				location: PropertyLocation.BODY,
-			}),
+			})
+		);
+		additionalProperties.push(
 			new PropertyData({
 				name: 'accept_multiple',
 				value: 'false',
