@@ -1,10 +1,10 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { DeletionConfig } from '@modules/deletion';
-import { AuthGuardConfig } from '@infra/auth-guard';
 import { LegacySchoolConfig } from '@modules/legacy-school';
-import { UserConfig } from '@modules/user';
 import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
 
 export interface AdminApiServerConfig
@@ -13,7 +13,7 @@ export interface AdminApiServerConfig
 		UserConfig,
 		RegistrationPinConfig,
 		ToolConfig,
-		AuthGuardConfig {
+		XApiKeyAuthGuardConfig {
 	ETHERPAD__API_KEY?: string;
 	ETHERPAD__URI?: string;
 }
@@ -56,9 +56,6 @@ const config: AdminApiServerConfig = {
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),
-	JWT_AUD: Configuration.get('JWT_AUD') as string,
-	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
-	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
 	LOGIN_BLOCK_TIME: 0,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'

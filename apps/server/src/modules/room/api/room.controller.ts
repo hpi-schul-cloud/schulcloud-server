@@ -24,10 +24,13 @@ import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
+import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
+import { RoomMemberListResponse } from './dto/response/room-member.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
-import { RoomItemResponse } from './dto/response/room-item.response';
+import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
+import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -123,5 +126,56 @@ export class RoomController {
 	@HttpCode(204)
 	async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
+	}
+
+	@Patch(':roomId/members/add')
+	@ApiOperation({ summary: 'Add members to a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async addMembers(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: AddRoomMembersBodyParams
+	): Promise<void> {
+		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIdsAndRoles);
+	}
+
+	@Patch(':roomId/members/remove')
+	@ApiOperation({ summary: 'Remove members from a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async removeMembers(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: RemoveRoomMembersBodyParams
+	): Promise<void> {
+		await this.roomUc.removeMembersFromRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+	}
+
+	@Get(':roomId/members')
+	@ApiOperation({ summary: 'Get a list of room members.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of the members of the room.',
+		type: RoomMemberListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async getMembers(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomMemberListResponse> {
+		const members = await this.roomUc.getRoomMembers(currentUser.userId, urlParams.roomId);
+		const response = new RoomMemberListResponse(members);
+
+		return Promise.resolve(response);
 	}
 }

@@ -29,7 +29,8 @@ describe('School Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		await em.clearCache('roles-cache-teacher');
+		await em.clearCache('roles-cache-byname-teacher');
+		await em.clearCache('roles-cache-bynames-teacher');
 	});
 
 	afterAll(async () => {
@@ -127,6 +128,7 @@ describe('School Controller (API)', () => {
 								id: teacher.id,
 								firstName: teacher.firstName,
 								lastName: teacher.lastName,
+								schoolName: school.name,
 							};
 						}),
 					])
@@ -196,6 +198,7 @@ describe('School Controller (API)', () => {
 								id: teacher.id,
 								firstName: teacher.firstName,
 								lastName: teacher.lastName,
+								schoolName: school.name,
 							};
 						}),
 					])
