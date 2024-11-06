@@ -16,6 +16,6 @@ export class ToolLaunchRequest {
 		this.method = props.method;
 		this.payload = props.payload;
 		this.openNewTab = props.openNewTab;
-		this.isDeepLink = props.openNewTab;
+		this.isDeepLink = props.isDeepLink;
 	}
 }

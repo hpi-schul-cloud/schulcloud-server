@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContextExternalToolConfigurationStatusResponse } from '../../../common/controller/dto';
-import { LtiDeepLinkResponse } from './lti11-deep-link/lti-deep-link.response';
 
 export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })
@@ -29,9 +28,6 @@ export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'Whether the tool should be opened in a new tab' })
 	openInNewTab: boolean;
 
-	@ApiPropertyOptional({ type: LtiDeepLinkResponse })
-	ltiDeepLink?: LtiDeepLinkResponse;
-
 	@ApiProperty({
 		type: ContextExternalToolConfigurationStatusResponse,
 		nullable: false,
@@ -47,7 +43,6 @@ export class ToolReferenceResponse {
 		this.thumbnailUrl = toolReferenceResponse.thumbnailUrl;
 		this.displayName = toolReferenceResponse.displayName;
 		this.openInNewTab = toolReferenceResponse.openInNewTab;
-		this.ltiDeepLink = toolReferenceResponse.ltiDeepLink;
 		this.status = toolReferenceResponse.status;
 	}
 }

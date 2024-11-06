@@ -21,6 +21,9 @@ export class ContextExternalToolResponse {
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[] = [];
 
+	@ApiPropertyOptional()
+	logoUrl?: string;
+
 	constructor(response: ContextExternalToolResponse) {
 		this.id = response.id;
 		this.schoolToolId = response.schoolToolId;
@@ -28,5 +31,6 @@ export class ContextExternalToolResponse {
 		this.contextType = response.contextType;
 		this.displayName = response.displayName;
 		this.parameters = response.parameters;
+		this.logoUrl = response.logoUrl;
 	}
 }
