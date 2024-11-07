@@ -22,6 +22,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
+			.byRoleId(query.roleId)
+			.withDiscoverableTrue(query.discoverable)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.whereLastLoginSystemChangeIsBetween(
@@ -53,6 +55,21 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		}
 
 		return this.mapEntityToDO(userEntity);
+	}
+
+	async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
+		const users = await this._em.find(User, { id: { $in: ids } });
+
+		if (populate) {
+			await Promise.all(
+				users.map((user) => this._em.populate(user, ['roles', 'school.systems', 'school.currentYear', 'school.name']))
+			);
+			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
+		}
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
 	}
 
 	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
@@ -116,8 +133,10 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
+			preferredName: entity.preferredName,
 			roles: [],
 			schoolId: entity.school.id,
+			schoolName: entity.school.name,
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
 			importHash: entity.importHash,
@@ -147,6 +166,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
+			preferredName: entityDO.preferredName,
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
 			ldapDn: entityDO.ldapDn,
@@ -172,8 +192,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
-		for (let i = 0; i < roles.length; i += 1) {
-			const role = roles[i];
+		for (const role of roles) {
 			if (!role.roles.isInitialized(true)) {
 				// eslint-disable-next-line no-await-in-loop
 				await this._em.populate(role, ['roles']);

@@ -119,9 +119,18 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
-		"AUTHENTICATION": {
+		"JWT_PRIVATE_KEY": {
 			"type": "string",
-			"description": "The secret that is used for create and validate the jwt."
+			"description": "The private key used to sign JWTs."
+		},
+		"JWT_PUBLIC_KEY": {
+			"type": "string",
+			"description": "The public key used to verify JWTs."
+		},
+		"JWT_SIGNING_ALGORITHM": {
+			"type": "string",
+			"default": "RS256",
+			"description": "The algorithm used to sign JWTs. Must be an asymmetric algorithm."
 		},
 		"JWT_LIFETIME": {
 			"type": "string",
@@ -173,6 +182,31 @@
 			"type": "string",
 			"default": "",
 			"description": "The key used to sign/verify TSP request tokens."
+		},
+		"TSP_API_TOKEN_LIFETIME_MS": {
+			"type": "number",
+			"default": "30000",
+			"description": "The TSP token lifetime in milliseconds."
+		},
+		"TSP_SYNC_SCHOOL_LIMIT": {
+			"type": "number",
+			"default": "10",
+			"description": "The amount of schools the sync handles at once."
+		},
+		"TSP_SYNC_SCHOOL_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches schools from the TSP."
+		},
+		"TSP_SYNC_DATA_LIMIT": {
+			"type": "number",
+			"default": "150",
+			"description": "The amount of school data updates the sync handles at once."
+		},
+		"TSP_SYNC_DATA_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches school data from the TSP."
 		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
@@ -1100,11 +1134,6 @@
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
 		},
-		"JWT_AUD": {
-			"type": "string",
-			"default": "https://dbildungscloud.de",
-			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
-		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
 			"default": "ticketsystem@dbildungscloud.de",
@@ -1391,6 +1420,11 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
+		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables preferred external tools on the column board"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
@@ -1399,6 +1433,11 @@
 					"type": "integer",
 					"default": 300000,
 					"description": "Maximum size of the logo of an external tool in bytes"
+				},
+				"PREFERRED_TOOLS_LIMIT": {
+					"type": "integer",
+					"default": 5,
+					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
 		},
@@ -1505,53 +1544,69 @@
 				"PING_TIMEOUT",
 				"FINALIZE_DELAY",
 				"SOCKET_PORT",
+				"WEBSOCKET_URL",
 				"GC_ENABLED",
 				"DB_COMPRESS_THRESHOLD",
 				"MAX_DOCUMENT_SIZE",
 				"ASSETS_ENABLED",
 				"ASSETS_SYNC_ENABLED",
-				"ASSETS_MAX_SIZE",
+				"ASSETS_MAX_SIZE_BYTES",
 				"ASSETS_ALLOWED_MIME_TYPES_LIST"
 			],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
+					"default": 3345,
 					"description": "Web socket port for tldraw"
+				},
+				"WEBSOCKET_URL": {
+					"type": "string",
+					"default": "ws://localhost:3345",
+					"description": "Web socket url for tldraw"
 				},
 				"PING_TIMEOUT": {
 					"type": "number",
+					"default": 30000,
 					"description": "Websocket ping timeout in ms"
 				},
 				"FINALIZE_DELAY": {
 					"type": "number",
+					"default": 5000,
 					"description": "Delay in milliseconds before checking if can finalize a tldraw board"
 				},
 				"GC_ENABLED": {
 					"type": "boolean",
+					"default": true,
 					"description": "If tldraw garbage collector should be enabled"
 				},
 				"DB_COMPRESS_THRESHOLD": {
 					"type": "integer",
+					"default": 400,
 					"description": "Mongo documents with same docName compress threshold size"
 				},
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
+					"default": 15000000,
 					"description": "Maximum size of a single tldraw document in mongo"
 				},
 				"ASSETS_ENABLED": {
 					"type": "boolean",
+					"default": true,
 					"description": "Enables uploading assets to tldraw board"
 				},
 				"ASSETS_SYNC_ENABLED": {
 					"type": "boolean",
+					"default": false,
 					"description": "Enables synchronization of tldraw board assets with file storage"
 				},
-				"ASSETS_MAX_SIZE": {
+				"ASSETS_MAX_SIZE_BYTES": {
 					"type": "integer",
+					"default": 10485760,
 					"description": "Maximum asset size in bytes"
 				},
 				"ASSETS_ALLOWED_MIME_TYPES_LIST": {
 					"type": "string",
+					"default": "image/png,image/jpeg,image/gif,image/svg+xml",
 					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
 					"examples": ["image/gif,image/jpeg,video/webm"]
 				},
@@ -1566,18 +1621,6 @@
 					"description": "Define log level for tldraw.",
 					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
-			},
-			"default": {
-				"SOCKET_PORT": 3345,
-				"PING_TIMEOUT": 30000,
-				"FINALIZE_DELAY": 5000,
-				"GC_ENABLED": true,
-				"DB_COMPRESS_THRESHOLD": 400,
-				"MAX_DOCUMENT_SIZE": 15000000,
-				"ASSETS_ENABLED": true,
-				"ASSETS_SYNC_ENABLED": false,
-				"ASSETS_MAX_SIZE": 10485760,
-				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
 		},
 		"TLDRAW_DB_URL": {

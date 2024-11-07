@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchulconnexResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import {
 	Synchronization,
 	synchronizationFactory,
@@ -12,6 +13,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger } from '@src/core/logger';
+import { AccountService } from '@src/modules/account';
 import { ObjectId } from 'bson';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
@@ -24,6 +26,7 @@ describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
 	let uc: SynchronizationUc;
 	let userService: DeepMocked<UserService>;
+	let accountService: DeepMocked<AccountService>;
 	let synchronizationService: DeepMocked<SynchronizationService>;
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
 
@@ -45,6 +48,10 @@ describe(SynchronizationUc.name, () => {
 					useValue: createMock<UserService>(),
 				},
 				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
 					provide: SchulconnexRestClient,
 					useValue: createMock<SchulconnexRestClient>(),
 				},
@@ -54,6 +61,7 @@ describe(SynchronizationUc.name, () => {
 		uc = module.get(SynchronizationUc);
 		synchronizationService = module.get(SynchronizationService);
 		userService = module.get(UserService);
+		accountService = module.get(AccountService);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
 		await setupEntities();
 	});
@@ -353,26 +361,39 @@ describe(SynchronizationUc.name, () => {
 				const systemId = new ObjectId().toHexString();
 				const userAId = new ObjectId().toHexString();
 				const userBId = new ObjectId().toHexString();
-				const usersToCheck = [userAId, userBId];
+				const userCId = new ObjectId().toHexString();
+				const userDId = new ObjectId().toHexString();
+				const usersToCheck = [userAId, userBId, userCId, userDId];
+				const usersFound = [userAId, userBId, userCId];
 				const usersToSync = [userAId, userBId];
 				const userSyncCount = 2;
 
-				userService.findByExternalIdsAndProvidedBySystemId.mockResolvedValueOnce(usersToSync);
+				userService.findMultipleByExternalIds.mockResolvedValueOnce(usersFound);
+				accountService.findByUserIdsAndSystemId.mockResolvedValueOnce(usersToSync);
 
 				return {
 					systemId,
 					userSyncCount,
 					usersToCheck,
+					usersFound,
 					usersToSync,
 				};
 			};
 
-			it('should call the userService.findByExternalIdsAndProvidedBySystemId to get array of users to sync', async () => {
+			it('should call the userService.findMultipleByExternalIds to get array of users to sync', async () => {
 				const { systemId, usersToCheck } = setup();
 
 				await uc.updateLastSyncedAt(usersToCheck, systemId);
 
-				expect(userService.findByExternalIdsAndProvidedBySystemId).toHaveBeenCalledWith(usersToCheck, systemId);
+				expect(userService.findMultipleByExternalIds).toHaveBeenCalledWith(usersToCheck);
+			});
+
+			it('should call the accountService.findByUserIdsAndSystemId confirm users', async () => {
+				const { systemId, usersToCheck, usersFound } = setup();
+
+				await uc.updateLastSyncedAt(usersToCheck, systemId);
+
+				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(usersFound, systemId);
 			});
 
 			it('should call the userService.updateLastSyncedAt to update users', async () => {
@@ -400,7 +421,7 @@ describe(SynchronizationUc.name, () => {
 				const usersToCheck = [userAId, userBId];
 				const usersToSync = [userAId, userBId];
 
-				userService.findByExternalIdsAndProvidedBySystemId.mockResolvedValueOnce(usersToSync);
+				userService.findMultipleByExternalIds.mockResolvedValueOnce(usersToSync);
 
 				const error = new Error('testError');
 				const expectedError = new FailedUpdateLastSyncedAtLoggableException(systemId);

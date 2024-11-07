@@ -1,15 +1,16 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AuthGuardModule } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { SchulconnexClientModule } from '@infra/schulconnex-client';
+import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
 import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
-import { AuthorizationReferenceApiModule } from '@modules/authorization/authorization-reference.api.module';
+import { AuthorizationReferenceApiModule } from '@modules/authorization-reference/authorization-reference.api.module';
+import { AuthorizationRulesModule } from '@modules/authorization-rules';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
@@ -30,6 +31,7 @@ import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing.module';
+import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamsApiModule } from '@modules/teams/teams-api.module';
@@ -46,7 +48,6 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -54,8 +55,9 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
-	AuthGuardModule,
+	AuthGuardModule.register([AuthGuardOptions.JWT]),
 	AuthorizationReferenceApiModule,
+	AuthorizationRulesModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,

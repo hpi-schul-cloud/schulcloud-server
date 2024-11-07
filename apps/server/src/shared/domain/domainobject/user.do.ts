@@ -14,9 +14,13 @@ export class UserDO extends BaseDO {
 
 	lastName: string;
 
+	preferredName?: string;
+
 	roles: RoleReference[];
 
 	schoolId: EntityId;
+
+	schoolName?: string;
 
 	ldapDn?: string;
 
@@ -33,6 +37,8 @@ export class UserDO extends BaseDO {
 	language?: LanguageType;
 
 	forcePasswordChange?: boolean;
+
+	discoverable?: boolean;
 
 	preferences?: Record<string, unknown>;
 
@@ -52,8 +58,10 @@ export class UserDO extends BaseDO {
 		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;
+		this.preferredName = domainObject.preferredName;
 		this.roles = domainObject.roles;
 		this.schoolId = domainObject.schoolId;
+		this.schoolName = domainObject.schoolName;
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;
 		this.importHash = domainObject.importHash;
@@ -62,6 +70,7 @@ export class UserDO extends BaseDO {
 		this.emailSearchValues = domainObject.emailSearchValues;
 		this.language = domainObject.language;
 		this.forcePasswordChange = domainObject.forcePasswordChange;
+		this.discoverable = domainObject.discoverable;
 		this.preferences = domainObject.preferences;
 		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
 		this.outdatedSince = domainObject.outdatedSince;

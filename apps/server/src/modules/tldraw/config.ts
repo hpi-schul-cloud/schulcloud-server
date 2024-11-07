@@ -1,21 +1,22 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { env } from 'process';
 
-export interface TldrawConfig {
+export interface TldrawConfig extends XApiKeyAuthGuardConfig {
 	TLDRAW_DB_URL: string;
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
-	TLDRAW_DB_COMPRESS_THRESHOLD: string;
+	TLDRAW_DB_COMPRESS_THRESHOLD: number;
 	CONNECTION_STRING: string;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW_PING_TIMEOUT: number;
-	TLDRAW_GC_ENABLED: number;
-	REDIS_URI: string;
+	TLDRAW_GC_ENABLED: boolean;
+	REDIS_URI: string | null;
 	TLDRAW_ASSETS_ENABLED: boolean;
 	TLDRAW_ASSETS_SYNC_ENABLED: boolean;
-	TLDRAW_ASSETS_MAX_SIZE: number;
+	TLDRAW_ASSETS_MAX_SIZE_BYTES: number;
 	ASSETS_ALLOWED_MIME_TYPES_LIST: string;
-	API_HOST: number;
+	API_HOST: string;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
 	TLDRAW_FINALIZE_DELAY: number;
 	PERFORMANCE_MEASURE_ENABLED: boolean;
@@ -38,7 +39,11 @@ export const tldrawS3Config = {
 	secretAccessKey: env.S3_SECRET_KEY as string,
 };
 
-const tldrawConfig = {
+const apiKeyAuthGuardConfig: XApiKeyAuthGuardConfig = {
+	ADMIN_API__ALLOWED_API_KEYS: Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string[],
+};
+
+const tldrawConfig: TldrawConfig = {
 	TLDRAW_DB_URL,
 	NEST_LOG_LEVEL: Configuration.get('TLDRAW__LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
@@ -50,12 +55,13 @@ const tldrawConfig = {
 	REDIS_URI: Configuration.has('REDIS_URI') ? (Configuration.get('REDIS_URI') as string) : null,
 	TLDRAW_ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
 	TLDRAW_ASSETS_SYNC_ENABLED: Configuration.get('TLDRAW__ASSETS_SYNC_ENABLED') as boolean,
-	TLDRAW_ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
+	TLDRAW_ASSETS_MAX_SIZE_BYTES: Configuration.get('TLDRAW__ASSETS_MAX_SIZE_BYTES') as number,
 	ASSETS_ALLOWED_MIME_TYPES_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string,
 	API_HOST: Configuration.get('API_HOST') as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
 	TLDRAW_FINALIZE_DELAY: Configuration.get('TLDRAW__FINALIZE_DELAY') as number,
 	PERFORMANCE_MEASURE_ENABLED: Configuration.get('TLDRAW__PERFORMANCE_MEASURE_ENABLED') as boolean,
+	...apiKeyAuthGuardConfig,
 };
 
 export const config = () => tldrawConfig;

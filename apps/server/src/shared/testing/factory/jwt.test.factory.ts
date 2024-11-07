@@ -9,6 +9,7 @@ interface CreateJwtParams {
 	sub?: string;
 	iss?: string;
 	aud?: string;
+	exp?: number;
 	accountId?: string;
 	external_sub?: string;
 }
@@ -21,14 +22,15 @@ export class JwtTestFactory {
 	public static createJwt(params?: CreateJwtParams): string {
 		const validJwt = jwt.sign(
 			{
-				sub: params?.sub ?? 'testUser',
-				iss: params?.iss ?? 'issuer',
-				aud: params?.aud ?? 'audience',
+				sub: 'testUser',
+				iss: 'issuer',
+				aud: 'audience',
 				jti: 'jti',
-				iat: Date.now(),
-				exp: Date.now() + 100000,
-				accountId: params?.accountId ?? 'accountId',
-				external_sub: params?.external_sub ?? 'externalSub',
+				iat: Date.now() / 1000,
+				exp: (Date.now() + 1000000) / 1000,
+				accountId: 'accountId',
+				external_sub: 'externalSub',
+				...params,
 			},
 			privateKey,
 			{

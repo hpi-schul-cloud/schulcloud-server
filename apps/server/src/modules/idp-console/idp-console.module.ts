@@ -1,7 +1,8 @@
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { SchulconnexClientModule } from '@infra/schulconnex-client';
+import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { AccountModule } from '@modules/account';
 import { defaultMikroOrmOptions } from '@modules/server';
 import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';
 import { UserModule } from '@modules/user';
@@ -30,6 +31,7 @@ import { SynchronizationUc } from './uc';
 			// debug: true, // use it for locally debugging of queries
 		}),
 		UserModule,
+		AccountModule,
 		LoggerModule,
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,

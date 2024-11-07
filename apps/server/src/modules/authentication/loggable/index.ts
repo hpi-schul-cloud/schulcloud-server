@@ -5,3 +5,4 @@ export * from './user-authenticated.loggable';
 export { InvalidTokenLoggableException } from './invalid-token.loggable-exception';
 export { AccountSystemMismatchLoggableException } from './account-system-mismatch.loggable-exception';
 export * from './user-could-not-be-authenticated.loggable.exception';
+export { UserAccountDeactivatedLoggableException } from './user-account-deactivated-exception';

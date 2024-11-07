@@ -14,12 +14,14 @@ export interface UserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
+	preferredName?: string;
 	school: SchoolEntity;
 	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
 	language?: LanguageType;
 	forcePasswordChange?: boolean;
+	discoverable?: boolean;
 	preferences?: Record<string, unknown>;
 	deletedAt?: Date;
 	lastLoginSystemChange?: Date;
@@ -59,6 +61,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property()
 	lastName: string;
 
+	@Property({ nullable: true })
+	preferredName?: string;
+
 	@Index()
 	@ManyToMany({ fieldName: 'roles', entity: () => Role })
 	roles = new Collection<Role>(this);
@@ -95,6 +100,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
+
+	@Property({ nullable: true })
+	discoverable?: boolean;
 
 	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
@@ -135,12 +143,14 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		super();
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
+		this.preferredName = props.preferredName;
 		this.email = props.email;
 		this.school = props.school;
 		this.roles.set(props.roles);
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;
 		this.forcePasswordChange = props.forcePasswordChange;
+		this.discoverable = props.discoverable;
 		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 		this.deletedAt = props.deletedAt;

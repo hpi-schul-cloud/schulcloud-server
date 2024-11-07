@@ -100,11 +100,12 @@ describe('GroupRepo', () => {
 			const setup = async () => {
 				const userEntity: User = userFactory.buildWithId();
 				const userId: EntityId = userEntity.id;
-				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(4, {
 					users: [{ user: userEntity, role: roleFactory.buildWithId() }],
 				});
 				groups[1].type = GroupEntityTypes.COURSE;
 				groups[2].type = GroupEntityTypes.OTHER;
+				groups[3].type = GroupEntityTypes.ROOM;
 
 				const nameQuery = groups[1].name.slice(-3);
 
@@ -137,7 +138,6 @@ describe('GroupRepo', () => {
 
 				expect(result.total).toEqual(groups.length);
 				expect(result.data.length).toEqual(1);
-				expect(result.data[0].id).toEqual(groups[1].id);
 			});
 
 			it('should return groups according to name query', async () => {
@@ -152,9 +152,11 @@ describe('GroupRepo', () => {
 			it('should return only groups of the given group types', async () => {
 				const { userId } = await setup();
 
-				const result: Page<Group> = await repo.findGroups({ userId, groupTypes: [GroupTypes.CLASS] });
+				const resultClass: Page<Group> = await repo.findGroups({ userId, groupTypes: [GroupTypes.CLASS] });
+				expect(resultClass.data).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.CLASS })]);
 
-				expect(result.data).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.CLASS })]);
+				const resultRoom: Page<Group> = await repo.findGroups({ userId, groupTypes: [GroupTypes.ROOM] });
+				expect(resultRoom.data).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.ROOM })]);
 			});
 		});
 
@@ -513,7 +515,7 @@ describe('GroupRepo', () => {
 
 				expect(result.total).toEqual(availableGroupsCount);
 				expect(result.data.length).toEqual(1);
-				expect(result.data[0].id).toEqual(groups[2].id);
+				expect(result.data[0].id).toEqual(groups[1].id);
 			});
 
 			it('should return groups according to name query', async () => {

@@ -13,8 +13,8 @@ describe(TokenInvalidLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				type: 'ID_TOKEN_INVALID',
-				message: 'Failed to validate idToken',
+				type: 'TOKEN_INVALID',
+				message: 'Failed to validate token',
 				stack: expect.any(String),
 			});
 		});

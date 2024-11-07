@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorLoggable } from '@src/core/error/loggable';
 import { Logger } from '@src/core/logger';
+import { JwtTestFactory } from '@shared/testing';
 import { AuthenticationService, LogoutService } from '../services';
 import { LogoutUc } from './logout.uc';
 
@@ -38,6 +39,26 @@ describe(LogoutUc.name, () => {
 		authenticationService = await module.get(AuthenticationService);
 		logoutService = await module.get(LogoutService);
 		logger = await module.get(Logger);
+	});
+
+	describe('logout', () => {
+		describe('when a jwt is given', () => {
+			const setup = () => {
+				const jwt = JwtTestFactory.createJwt();
+
+				return {
+					jwt,
+				};
+			};
+
+			it('should remove the user from the whitelist', async () => {
+				const { jwt } = setup();
+
+				await logoutUc.logout(jwt);
+
+				expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith(jwt);
+			});
+		});
 	});
 
 	describe('logoutOidc', () => {

@@ -8,11 +8,13 @@ import { RoleName } from '@shared/domain/interface';
 import { School, SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
-import { BadDataLoggableException } from '../strategy/loggable';
+import { BadDataLoggableException } from '../loggable';
 
 @Injectable()
 export class TspProvisioningService {
 	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
+
+	private TSP_EMAIL_DOMAIN = 'schul-cloud.org';
 
 	constructor(
 		private readonly schoolService: SchoolService,
@@ -47,7 +49,7 @@ export class TspProvisioningService {
 			if (currentClass) {
 				// Case: Class exists -> update class
 				currentClass.schoolId = school.id;
-				currentClass.name = clazz.name;
+				currentClass.name = clazz.name ?? currentClass.name;
 				currentClass.year = school.currentYear?.id;
 				currentClass.source = this.ENTITY_SOURCE;
 				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
@@ -113,8 +115,8 @@ export class TspProvisioningService {
 		roleRefs: RoleReference[],
 		schoolId: string
 	): Promise<UserDO> {
-		if (!externalUser.firstName || !externalUser.lastName || !externalUser.email) {
-			throw new BadDataLoggableException('User firstname, lastname or email is missing', { externalUser });
+		if (!externalUser.firstName || !externalUser.lastName) {
+			throw new BadDataLoggableException('User firstname or lastname is missing', { externalUser });
 		}
 
 		const newUser = new UserDO({
@@ -122,8 +124,9 @@ export class TspProvisioningService {
 			schoolId,
 			firstName: externalUser.firstName,
 			lastName: externalUser.lastName,
-			email: externalUser.email,
+			email: this.createTspEmail(externalUser.externalId),
 			birthday: externalUser.birthday,
+			externalId: externalUser.externalId,
 		});
 		const savedUser = await this.userService.save(newUser);
 
@@ -135,7 +138,12 @@ export class TspProvisioningService {
 
 		const account = await this.accountService.findByUserId(user.id);
 
-		if (!account) {
+		if (account) {
+			// Updates account with new systemId and username
+			await account.update(new AccountSave({ userId: user.id, systemId, username: user.email, activated: true }));
+			await this.accountService.save(account);
+		} else {
+			// Creates new account for user
 			await this.accountService.saveWithValidation(
 				new AccountSave({
 					userId: user.id,
@@ -144,10 +152,6 @@ export class TspProvisioningService {
 					activated: true,
 				})
 			);
-		} else {
-			account.username = user.email;
-
-			await this.accountService.saveWithValidation(account);
 		}
 	}
 
@@ -156,5 +160,11 @@ export class TspProvisioningService {
 		const roleRefs = rolesDtos.map((role) => new RoleReference({ id: role.id || '', name: role.name }));
 
 		return roleRefs;
+	}
+
+	private createTspEmail(externalId: string): string {
+		const email = `${externalId}@${this.TSP_EMAIL_DOMAIN}`;
+
+		return email.toLowerCase();
 	}
 }

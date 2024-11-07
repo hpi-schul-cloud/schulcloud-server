@@ -1,3 +1,4 @@
+import { EncryptionModule } from '@infra/encryption';
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -32,6 +33,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		LearnroomModule,
 		BoardModule,
 		GroupModule,
+		EncryptionModule,
 	],
 	providers: [
 		ToolLaunchService,

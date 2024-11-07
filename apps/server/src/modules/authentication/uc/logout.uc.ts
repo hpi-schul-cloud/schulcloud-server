@@ -12,6 +12,10 @@ export class LogoutUc {
 		private readonly logger: Logger
 	) {}
 
+	async logout(jwt: string): Promise<void> {
+		await this.authenticationService.removeJwtFromWhitelist(jwt);
+	}
+
 	async logoutOidc(logoutToken: string): Promise<void> {
 		// Do not publish any information (like the users existence) before validating the logout tokens origin
 		try {

@@ -1,6 +1,6 @@
 import { CalendarModule } from '@infra/calendar';
 import { AuthorizationModule } from '@modules/authorization';
-import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';

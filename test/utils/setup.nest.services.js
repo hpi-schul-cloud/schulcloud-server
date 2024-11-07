@@ -13,7 +13,7 @@ const { ALL_ENTITIES } = require('../../dist/apps/server/shared/domain/entity/al
 const { TeamService } = require('../../dist/apps/server/modules/teams/service/team.service');
 const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
-const { SystemRule } = require('../../dist/apps/server/modules/authorization');
+const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
 const { createConfigModuleOptions } = require('../../dist/apps/server/config/config-module-options');
 const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
 
@@ -33,6 +33,7 @@ const setupNestServices = async (app) => {
 			AccountApiModule,
 			TeamsApiModule,
 			AuthorizationModule,
+			AuthorizationRulesModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();

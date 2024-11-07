@@ -2,7 +2,7 @@ import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-g
 import { Account, AccountService } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { User } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
@@ -46,13 +46,22 @@ export class AuthenticationService {
 		return account;
 	}
 
-	private async generateJwt(createJwtPayload: CreateJwtPayload, expiresIn?: number | string): Promise<string> {
+	private async generateJwtAndAddToWhitelist(
+		createJwtPayload: CreateJwtPayload,
+		expiresIn?: number | string
+	): Promise<string> {
 		const jti = randomUUID();
-		const accessToken = this.jwtService.sign(createJwtPayload, {
+		const options: JwtSignOptions = {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
-			expiresIn,
-		});
+		};
+
+		// It is necessary to set expiresIn conditionally like this, because setting it to undefined in the JwtSignOptions overwrites the value from the JwtModuleOptions.
+		if (expiresIn) {
+			options.expiresIn = expiresIn;
+		}
+
+		const accessToken = this.jwtService.sign(createJwtPayload, options);
 
 		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
 
@@ -61,8 +70,7 @@ export class AuthenticationService {
 
 	public async generateCurrentUserJwt(currentUser: ICurrentUser): Promise<string> {
 		const createJwtPayload = JwtPayloadFactory.buildFromCurrentUser(currentUser);
-		const expiresIn = this.configService.get<string>('JWT_LIFETIME');
-		const jwtToken = await this.generateJwt(createJwtPayload, expiresIn);
+		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload);
 
 		return jwtToken;
 	}
@@ -78,7 +86,7 @@ export class AuthenticationService {
 		const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUser.id);
 		const expiresIn = this.configService.get<number>('JWT_LIFETIME_SUPPORT_SECONDS');
 
-		const jwtToken = await this.generateJwt(createJwtPayload, expiresIn);
+		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);
 
 		this.logger.info(new ShdUserCreateTokenLoggable(supportUser.id, targetUser.id, expiresIn));
 

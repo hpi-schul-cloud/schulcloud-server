@@ -1,8 +1,4 @@
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { Account, AccountService } from '@modules/account';
-// invalid import
-import { OauthCurrentUser } from '@modules/authentication/interface';
-import { CurrentUserMapper } from '@modules/authentication/mapper';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -25,16 +21,16 @@ import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
+import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
+import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -44,7 +40,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
@@ -84,19 +79,16 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return userDto;
 	}
 
-	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
-		const user: UserDO = await this.findById(userId);
-		const account: Account = await this.accountService.findByUserIdOrFail(userId);
-
-		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
-
-		return resolvedUser;
-	}
-
 	async findById(id: string): Promise<UserDO> {
 		const userDO = await this.userDORepo.findById(id, true);
 
 		return userDO;
+	}
+
+	async findByIds(ids: string[]): Promise<UserDO[]> {
+		const userDOs = await this.userDORepo.findByIds(ids, true);
+
+		return userDOs;
 	}
 
 	public async findByIdOrNull(id: string): Promise<UserDO | null> {
@@ -121,6 +113,37 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const users: Page<UserDO> = await this.userDORepo.find(query, options);
 
 		return users;
+	}
+
+	async findBySchoolRole(
+		schoolId: EntityId,
+		roleName: RoleName,
+		options?: IFindOptions<UserDO>
+	): Promise<Page<UserDO>> {
+		const role = await this.roleService.findByName(roleName);
+		const query = { schoolId, roleId: role.id };
+		const result = await this.findUsers(query, options);
+		return result;
+	}
+
+	async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		if (discoverabilitySetting === 'disabled') {
+			return new Page<UserDO>([], 0);
+		}
+
+		const role = await this.roleService.findByName(RoleName.TEACHER);
+		const query: UserQuery = { schoolId, roleId: role.id };
+
+		if (discoverabilitySetting === 'opt-out') {
+			query.discoverable = UserDiscoverableQuery.NOT_FALSE;
+		}
+		if (discoverabilitySetting === 'opt-in') {
+			query.discoverable = UserDiscoverableQuery.TRUE;
+		}
+
+		const result = await this.findUsers(query, options);
+		return result;
 	}
 
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
@@ -228,14 +251,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
 
 		return users;
-	}
-
-	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
-		const foundUsers = await this.findMultipleByExternalIds(externalIds);
-
-		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
-
-		return verifiedUsers;
 	}
 
 	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {

@@ -10,13 +10,13 @@ import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CoursesClientModule } from './common-cartridge-client/course-client';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
+import { CourseRoomsModule } from './common-cartridge-client/room-client';
+import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
+import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		CoursesClientModule.register({
-			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
-		}),
 		FilesStorageClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -27,6 +27,19 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 			entities: ALL_ENTITIES,
 		}),
 		BoardClientModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+		CourseRoomsModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+
+		CardClientModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+		CoursesClientModule.register({
+			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+		}),
+		LessonClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 	],
