@@ -22,9 +22,9 @@ describe.skip('TspClientFactory Integration', () => {
 				createMock<ConfigService>({
 					getOrThrow: (key: string) => {
 						switch (key) {
-							case 'TSP_API_BASE_URL':
+							case 'TSP_API_CLIENT_BASE_URL':
 								return 'https://test2.schulportal-thueringen.de/tip-ms/api';
-							case 'TSP_API_TOKEN_LIFETIME_MS':
+							case 'TSP_API_CLIENT_TOKEN_LIFETIME_MS':
 								return 30_000;
 							default:
 								throw new Error(`Unknown key: ${key}`);
