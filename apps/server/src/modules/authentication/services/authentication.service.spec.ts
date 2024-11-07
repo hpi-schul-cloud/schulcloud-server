@@ -9,16 +9,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import jwt from 'jsonwebtoken';
-import { accountDoFactory } from '../../account/testing';
-import { BruteForceError } from '../errors/brute-force.error';
+import { BruteForceError } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { UserAccountDeactivatedLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
 
-describe('AuthenticationService', () => {
+describe(AuthenticationService.name, () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 
