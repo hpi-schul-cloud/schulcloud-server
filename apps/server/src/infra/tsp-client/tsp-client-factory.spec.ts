@@ -5,6 +5,7 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
+import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
 
 describe('TspClientFactory', () => {
@@ -12,6 +13,7 @@ describe('TspClientFactory', () => {
 	let sut: TspClientFactory;
 	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
 	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,9 +28,9 @@ describe('TspClientFactory', () => {
 					useValue: createMock<ConfigService<ServerConfig, true>>({
 						getOrThrow: (key: string) => {
 							switch (key) {
-								case 'TSP_API_BASE_URL':
+								case 'TSP_API_CLIENT_BASE_URL':
 									return faker.internet.url();
-								case 'TSP_API_TOKEN_LIFETIME_MS':
+								case 'TSP_API_CLIENT_TOKEN_LIFETIME_MS':
 									return faker.number.int();
 								default:
 									throw new Error(`Unknown key: ${key}`);
@@ -36,12 +38,17 @@ describe('TspClientFactory', () => {
 						},
 					}),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspClientFactory);
 		configServiceMock = module.get(ConfigService);
 		oauthAdapterServiceMock = module.get(OauthAdapterService);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -118,6 +125,7 @@ describe('TspClientFactory', () => {
 
 			expect(response).toBeDefined();
 			expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
+			expect(encryptionService.decrypt).toHaveBeenCalled();
 		});
 	});
 
