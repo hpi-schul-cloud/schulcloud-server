@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OauthAdapterService } from '@src/modules/oauth';
 import { OAuthGrantType } from '@src/modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@src/modules/oauth/service/dto';
 import * as jwt from 'jsonwebtoken';
+import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 import { TspClientConfig } from './tsp-client-config';
 
@@ -25,10 +26,11 @@ export class TspClientFactory {
 
 	constructor(
 		private readonly oauthAdapterService: OauthAdapterService,
-		configService: ConfigService<TspClientConfig, true>
+		configService: ConfigService<TspClientConfig, true>,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {
-		this.baseUrl = configService.getOrThrow<string>('TSP_API_BASE_URL');
-		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_TOKEN_LIFETIME_MS');
+		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
+		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
 	}
 
 	public createExportClient(params: FactoryParams): ExportApiInterface {
@@ -51,9 +53,10 @@ export class TspClientFactory {
 			return this.cachedToken;
 		}
 
+		const clientSecret = this.encryptionService.decrypt(params.clientSecret);
 		const payload = new ClientCredentialsGrantTokenRequest({
 			client_id: params.clientId,
-			client_secret: params.clientSecret,
+			client_secret: clientSecret,
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
