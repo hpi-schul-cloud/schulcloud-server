@@ -29,6 +29,7 @@ import {
 	BruteForceError,
 	EndSessionEndpointNotFoundLoggableException,
 	ExternalSystemLogoutFailedLoggableException,
+	ExternalSystemLogoutIsDisabledLoggableException,
 } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
@@ -352,6 +353,29 @@ describe('AuthenticationService', () => {
 			return config;
 		};
 
+		describe('when the feature flag is not enabled', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					userId: user.id,
+					systemId: system.id,
+				};
+			};
+
+			it('should throw an ExternalSystemLogoutIsDisabledLoggableException', async () => {
+				const { userId, systemId } = setup();
+
+				const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
+
+				await expect(promise).rejects.toThrow(new ExternalSystemLogoutIsDisabledLoggableException());
+			});
+		});
+
 		describe('when "SANIS" system is provided', () => {
 			describe('when the user has a saved valid oauth session token', () => {
 				const setup = () => {
@@ -365,6 +389,7 @@ describe('AuthenticationService', () => {
 
 					const decryptedClientSecret = 'mock-secret';
 
+					configService.get.mockReturnValueOnce(true);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 					systemService.findById.mockResolvedValue(system);
 					oauthEncryptionService.decrypt.mockReturnValue(decryptedClientSecret);
@@ -422,6 +447,7 @@ describe('AuthenticationService', () => {
 
 					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
 
+					configService.get.mockReturnValueOnce(true);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 					systemService.findById.mockResolvedValue(system);
 
@@ -457,6 +483,7 @@ describe('AuthenticationService', () => {
 					const user = userFactory.buildWithId();
 					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
 
+					configService.get.mockReturnValueOnce(true);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(null);
 					systemService.findById.mockResolvedValue(system);
 
@@ -486,6 +513,7 @@ describe('AuthenticationService', () => {
 
 					const system = systemFactory.build({ alias: 'SANIS' });
 
+					configService.get.mockReturnValueOnce(true);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 					systemService.findById.mockResolvedValue(system);
 
@@ -515,6 +543,7 @@ describe('AuthenticationService', () => {
 
 					const system = systemFactory.withOauthConfig({ endSessionEndpoint: undefined }).build({ alias: 'SANIS' });
 
+					configService.get.mockReturnValueOnce(true);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 					systemService.findById.mockResolvedValue(system);
 
@@ -549,6 +578,7 @@ describe('AuthenticationService', () => {
 
 						const errorResponseData = JSON.stringify(axiosError.response);
 
+						configService.get.mockReturnValueOnce(true);
 						oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 						systemService.findById.mockResolvedValue(system);
 						oauthEncryptionService.decrypt.mockReturnValue('mock-secret');
@@ -619,6 +649,7 @@ describe('AuthenticationService', () => {
 
 				const system = systemFactory.withOauthConfig().build({ alias: 'MOCK-OAUTH' });
 
+				configService.get.mockReturnValueOnce(true);
 				oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 				systemService.findById.mockResolvedValue(system);
 
@@ -646,6 +677,7 @@ describe('AuthenticationService', () => {
 					userId: user.id,
 				});
 
+				configService.get.mockReturnValueOnce(true);
 				oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 				systemService.findById.mockResolvedValue(null);
 

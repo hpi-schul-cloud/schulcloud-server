@@ -25,6 +25,7 @@ describe(ExternalSystemLogoutFailedLoggableException.name, () => {
 			expect(message).toEqual({
 				type: 'INTERNAL_SERVER_ERROR',
 				stack: exception.stack,
+				message: `Request to logout external system ${systemId} for user ${userId} had failed`,
 				data: {
 					userId,
 					systemId,

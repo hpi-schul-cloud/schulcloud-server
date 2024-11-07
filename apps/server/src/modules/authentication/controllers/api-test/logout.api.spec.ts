@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { JwtAuthGuard } from '@infra/auth-guard';
 import { ServerTestModule } from '@modules/server/server.module';
+import { serverConfig, ServerConfig } from '@modules/server';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
 import { OauthConfig } from '@modules/system';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -152,13 +153,29 @@ describe('Logout Controller (api)', () => {
 		});
 
 		describe('when the user is logged in with "SANIS" system', () => {
+			describe('when the feature flag is not enabled', () => {
+				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = false;
+					await setupTestWithMocks();
+				});
+
+				it('should return status 403', async () => {
+					const response: Response = await testApiClient.post('/external');
+
+					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				});
+			});
+
 			describe('when the external logout can be successfully done', () => {
 				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
 					await setupTestWithMocks();
 				});
 
 				const setup = async () => {
-					const user = userFactory.build({});
+					const user = userFactory.build();
 					user.id = mockedUserId;
 					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
 						user,
@@ -182,11 +199,13 @@ describe('Logout Controller (api)', () => {
 
 			describe('when the external system returns an error', () => {
 				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
 					await setupTestWithMocks(false);
 				});
 
 				const setup = async () => {
-					const user = userFactory.build({});
+					const user = userFactory.build();
 					user.id = mockedUserId;
 					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
 						user,
@@ -210,11 +229,13 @@ describe('Logout Controller (api)', () => {
 
 			describe('when no oauth config can be found for the system', () => {
 				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
 					await setupTestWithMocks();
 				});
 
 				const setup = async () => {
-					const user = userFactory.build({});
+					const user = userFactory.build();
 					user.id = mockedUserId;
 					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
 						user,
@@ -238,11 +259,13 @@ describe('Logout Controller (api)', () => {
 
 			describe('when the oauth config has no end session endpoint', () => {
 				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
 					await setupTestWithMocks();
 				});
 
 				const setup = async () => {
-					const user = userFactory.build({});
+					const user = userFactory.build();
 					user.id = mockedUserId;
 					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
 						user,

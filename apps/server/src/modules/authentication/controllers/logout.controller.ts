@@ -1,6 +1,7 @@
 import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import {
+	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -31,6 +32,9 @@ export class LogoutController {
 	@ApiOkResponse({ description: 'External system logout was successful.' })
 	@ApiInternalServerErrorResponse({
 		description: 'There has been an error while logging out from the external system.',
+	})
+	@ApiForbiddenResponse({
+		description: 'The feature is not enabled on this server',
 	})
 	async externalSystemLogout(@CurrentUser() user: ICurrentUser): Promise<void> {
 		await this.logoutUc.externalSystemLogout(user);

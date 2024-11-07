@@ -21,6 +21,7 @@ describe(EndSessionEndpointNotFoundLoggableException.name, () => {
 			expect(message).toEqual({
 				type: 'INTERNAL_SERVER_ERROR',
 				stack: exception.stack,
+				message: `End session endpoint for system ${systemId} could not be found`,
 				data: {
 					systemId,
 				},

@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class EndSessionEndpointNotFoundLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly systemId: string) {
@@ -10,15 +10,14 @@ export class EndSessionEndpointNotFoundLoggableException extends InternalServerE
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,
+			message: `End session endpoint for system ${this.systemId} could not be found`,
 			data: {
 				systemId: this.systemId,
 			},
 		};
-
-		return message;
 	}
 }

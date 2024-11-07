@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class ExternalSystemLogoutFailedLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(
@@ -14,17 +14,16 @@ export class ExternalSystemLogoutFailedLoggableException extends InternalServerE
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,
+			message: `Request to logout external system ${this.systemId} for user ${this.userId} had failed`,
 			data: {
 				userId: this.userId,
 				systemId: this.systemId,
 				externalSystemResponse: this.externalSystemResponse,
 			},
 		};
-
-		return message;
 	}
 }

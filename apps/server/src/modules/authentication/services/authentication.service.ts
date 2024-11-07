@@ -23,6 +23,7 @@ import {
 	UnauthorizedLoggableException,
 	EndSessionEndpointNotFoundLoggableException,
 	ExternalSystemLogoutFailedLoggableException,
+	ExternalSystemLogoutIsDisabledLoggableException,
 } from '../errors';
 
 @Injectable()
@@ -148,6 +149,10 @@ export class AuthenticationService {
 	}
 
 	public async logoutFromExternalSystem(userId: string, systemId: string): Promise<void> {
+		if (!this.configService.get<boolean>('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED')) {
+			throw new ExternalSystemLogoutIsDisabledLoggableException();
+		}
+
 		const system: System | null = await this.systemService.findById(systemId);
 		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(userId);
 
