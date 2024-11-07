@@ -137,7 +137,9 @@ export class OAuthService {
 		return decodedJWT;
 	}
 
-	// https://openid.net/specs/openid-connect-backchannel-1_0.html#Validation
+	/**
+	 * @see https://openid.net/specs/openid-connect-backchannel-1_0.html#Validation
+	 */
 	async validateLogoutToken(logoutToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
 		const validatedJwt: JwtPayload = await this.validateToken(logoutToken, oauthConfig);
 

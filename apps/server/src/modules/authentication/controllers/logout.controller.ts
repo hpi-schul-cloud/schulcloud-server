@@ -19,6 +19,9 @@ export class LogoutController {
 		await this.logoutUc.logout(jwt);
 	}
 
+	/**
+	 * @see https://openid.net/specs/openid-connect-backchannel-1_0.html
+	 */
 	@HttpCode(HttpStatus.OK)
 	@Header('Cache-Control', 'no-store')
 	@Post('oidc')
