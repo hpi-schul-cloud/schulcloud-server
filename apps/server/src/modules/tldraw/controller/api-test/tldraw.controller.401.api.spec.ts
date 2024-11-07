@@ -1,13 +1,9 @@
-import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@modules/server';
-import { Logger } from '@src/core/logger';
-import { TldrawService } from '../../service';
-import { TldrawController } from '..';
-import { TldrawRepo } from '../../repo';
+import { TestApiClient } from '@shared/testing';
 import { tldrawEntityFactory } from '../../testing';
+import { TldrawApiTestModule } from '../../tldraw-api-test.module';
 
 const baseRouteName = '/tldraw-document';
 describe('tldraw controller (api)', () => {
@@ -18,9 +14,7 @@ describe('tldraw controller (api)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule],
-			controllers: [TldrawController],
-			providers: [Logger, TldrawService, TldrawRepo],
+			imports: [TldrawApiTestModule.forRoot()],
 		}).compile();
 
 		app = module.createNestApplication();
@@ -35,16 +29,12 @@ describe('tldraw controller (api)', () => {
 
 	describe('when request does not contain token', () => {
 		const setup = async () => {
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
-
 			const drawingItemData = tldrawEntityFactory.build();
 
 			await em.persistAndFlush([drawingItemData]);
 			em.clear();
 
-			return { teacherUser, drawingItemData };
+			return { drawingItemData };
 		};
 
 		it('should return status 401 for delete', async () => {

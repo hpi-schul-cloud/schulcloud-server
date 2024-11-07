@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { XApiKeyConfig } from '@infra/auth-guard';
+import { JwtAuthGuardConfig } from '@infra/auth-guard';
+import { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -8,15 +9,15 @@ import type { TspClientConfig } from '@infra/tsp-client';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
-import type { BoardConfig } from '@modules/board';
-import type { MediaBoardConfig } from '@modules/board/media-board.config';
+import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import { DeletionConfig } from '@modules/deletion';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
+import { OauthConfig } from '@modules/oauth';
 import { ProvisioningConfig } from '@modules/provisioning';
+import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
@@ -29,8 +30,9 @@ import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { VideoConferenceConfig } from '@modules/video-conference';
 import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
-import type { SchulcloudTheme } from '@shared/domain/types';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
+import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -50,7 +52,8 @@ export interface ServerConfig
 		IdentityManagementConfig,
 		SchoolConfig,
 		MailConfig,
-		XApiKeyConfig,
+		JwtAuthGuardConfig,
+		RocketChatUserConfig,
 		LearnroomConfig,
 		AuthenticationConfig,
 		ToolConfig,
@@ -63,7 +66,6 @@ export interface ServerConfig
 		UserImportConfig,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
-		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		RoomConfig,
@@ -73,7 +75,9 @@ export interface ServerConfig
 		TspClientConfig,
 		TspSyncConfig,
 		AlertConfig,
-		ShdConfig {
+		ShdConfig,
+		OauthConfig,
+		EncryptionConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -97,9 +101,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
-	FEATURE_LOGIN_LINK_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
-	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
 	GHOST_BASE_URL: string;
 	ROCKETCHAT_SERVICE_ENABLED: boolean;
@@ -110,14 +112,10 @@ export interface ServerConfig
 	SC_THEME: SchulcloudTheme;
 	SC_TITLE: string;
 	TRAINING_URL: string;
-	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED: boolean;
-	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
-	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
-	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__WEBSOCKET_URL: string;
 	TLDRAW__ASSETS_ENABLED: boolean;
@@ -128,17 +126,12 @@ export interface ServerConfig
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
-	SCHULCONNEX_CLIENT__API_URL: string | undefined;
-	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
-	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
-	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
-	AUTHENTICATION: Configuration.get('AUTHENTICATION') as string,
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
@@ -190,6 +183,12 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
 	JWT_EXTENDED_TIMEOUT_SECONDS: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS') as number,
+
+	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
+	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
+	JWT_PRIVATE_KEY: (Configuration.get('JWT_PRIVATE_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
+	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
@@ -220,14 +219,6 @@ const config: ServerConfig = {
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
-	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
-	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: Configuration.get(
-		'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
-	) as number,
-	ADMIN_API__DELETION_DELAY_MILLISECONDS: Configuration.get('ADMIN_API__DELETION_DELAY_MILLISECONDS') as number,
-	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
-		.split(',')
-		.map((part) => (part.split(':').pop() ?? '').trim()),
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
@@ -316,8 +307,8 @@ const config: ServerConfig = {
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
-	TSP_API_BASE_URL: Configuration.get('TSP_API_BASE_URL') as string,
-	TSP_API_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_TOKEN_LIFETIME_MS') as number,
+	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,
+	TSP_API_CLIENT_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_CLIENT_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
@@ -328,6 +319,8 @@ const config: ServerConfig = {
 	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
+	AES_KEY: Configuration.get('AES_KEY') as string,
+	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 };
 
 export const serverConfig = () => config;
