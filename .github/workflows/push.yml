@@ -185,6 +185,7 @@ jobs:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          scan-type: 'image'
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
         env:
