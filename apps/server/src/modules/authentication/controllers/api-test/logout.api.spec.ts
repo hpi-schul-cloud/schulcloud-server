@@ -118,15 +118,17 @@ describe('Logout Controller (api)', () => {
 				return {
 					system,
 					logoutToken,
+					studentAccount,
 				};
 			};
 
 			it('should log out the user', async () => {
-				const { logoutToken } = await setup();
+				const { logoutToken, studentAccount } = await setup();
 
 				const response: Response = await testApiClient.post('/oidc', { logout_token: logoutToken });
 
 				expect(response.status).toEqual(HttpStatus.OK);
+				expect(await cacheManager.store.keys(`jwt:${studentAccount.id}:*`)).toHaveLength(0);
 			});
 		});
 	});

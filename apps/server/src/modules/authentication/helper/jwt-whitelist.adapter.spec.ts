@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Cache } from 'cache-manager';
+import { Cache, Store } from 'cache-manager';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 
 describe(JwtWhitelistAdapter.name, () => {
@@ -11,6 +11,7 @@ describe(JwtWhitelistAdapter.name, () => {
 	let jwtWhitelistAdapter: JwtWhitelistAdapter;
 
 	let cacheManager: DeepMocked<Cache>;
+	let store: DeepMocked<Store>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -18,7 +19,9 @@ describe(JwtWhitelistAdapter.name, () => {
 				JwtWhitelistAdapter,
 				{
 					provide: CACHE_MANAGER,
-					useValue: createMock<Cache>(),
+					useValue: createMock<Cache>({
+						store: (store = createMock<Store>()),
+					}),
 				},
 			],
 		}).compile();
@@ -93,18 +96,25 @@ describe(JwtWhitelistAdapter.name, () => {
 		describe('when removing a token from the whitelist', () => {
 			const setup = () => {
 				const accountId = new ObjectId().toHexString();
+				const jwtKey1 = `jwt:${accountId}:jti1`;
+				const jwtKey2 = `jwt:${accountId}:jti2`;
+
+				store.keys.mockResolvedValueOnce([jwtKey1, jwtKey2]);
 
 				return {
 					accountId,
+					jwtKey1,
+					jwtKey2,
 				};
 			};
 
 			it('should call the cache manager to delete all jwt entries from the cache', async () => {
-				const { accountId } = setup();
+				const { accountId, jwtKey1, jwtKey2 } = setup();
 
 				await jwtWhitelistAdapter.removeFromWhitelist(accountId);
 
-				expect(cacheManager.del).toHaveBeenCalledWith(`jwt:${accountId}:*`);
+				expect(cacheManager.del).toHaveBeenNthCalledWith(1, jwtKey1);
+				expect(cacheManager.del).toHaveBeenNthCalledWith(2, jwtKey2);
 			});
 		});
 	});
