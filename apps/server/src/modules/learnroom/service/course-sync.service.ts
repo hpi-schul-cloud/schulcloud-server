@@ -80,7 +80,7 @@ export class CourseSyncService {
 				course.students = studentIds;
 			} else {
 				course.teachers = teacherIds.length > 0 ? teacherIds : course.teachers;
-				course.students = course.teachers.length > 0 ? studentIds : [];
+				course.students = teacherIds.length > 0 ? studentIds : [];
 			}
 		}
 
