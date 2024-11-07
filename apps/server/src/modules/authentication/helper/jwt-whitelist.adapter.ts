@@ -15,7 +15,7 @@ export class JwtWhitelistAdapter {
 		await this.cacheManager.set(redisIdentifier, redisData, expirationInMilliseconds);
 	}
 
-	async removeFromWhitelist(accountId: string, jti: string): Promise<void> {
+	async removeFromWhitelist(accountId: string, jti?: string): Promise<void> {
 		let keys: string[];
 
 		if (jti) {
