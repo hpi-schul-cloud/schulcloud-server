@@ -537,37 +537,76 @@ describe('AuthenticationService', () => {
 			});
 
 			describe('when there is an error from the external system', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const sessionToken = oauthSessionTokenFactory.build({
-						userId: user.id,
-					});
+				describe('when the error has a response body', () => {
+					const setup = () => {
+						const user = userFactory.buildWithId();
+						const sessionToken = oauthSessionTokenFactory.build({
+							userId: user.id,
+						});
 
-					const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+						const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
 
-					const axiosError = axiosErrorFactory.build();
-					const errorResponseData = JSON.stringify(axiosError.response);
+						const axiosError = axiosErrorFactory.build();
 
-					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
-					systemService.findById.mockResolvedValue(system);
-					oauthEncryptionService.decrypt.mockReturnValue('mock-secret');
-					httpService.post.mockReturnValueOnce(throwError(() => axiosError));
+						const errorResponseData = JSON.stringify(axiosError.response);
 
-					return {
-						userId: user.id,
-						systemId: system.id,
-						errorResponseData,
+						oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+						systemService.findById.mockResolvedValue(system);
+						oauthEncryptionService.decrypt.mockReturnValue('mock-secret');
+						httpService.post.mockReturnValue(throwError(() => axiosError));
+
+						return {
+							userId: user.id,
+							systemId: system.id,
+							errorResponseData,
+						};
 					};
-				};
 
-				it('should throw an ExternalSystemLogoutFailedLoggableException', async () => {
-					const { userId, systemId, errorResponseData } = setup();
+					it('should throw an ExternalSystemLogoutFailedLoggableException with the response data', async () => {
+						const { userId, systemId, errorResponseData } = setup();
 
-					const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
+						const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
 
-					await expect(promise).rejects.toThrow(
-						new ExternalSystemLogoutFailedLoggableException(userId, systemId, errorResponseData)
-					);
+						await expect(promise).rejects.toThrow(
+							new ExternalSystemLogoutFailedLoggableException(userId, systemId, errorResponseData)
+						);
+					});
+				});
+
+				describe('when the error has no response body', () => {
+					const setup = () => {
+						const user = userFactory.buildWithId();
+						const sessionToken = oauthSessionTokenFactory.build({
+							userId: user.id,
+						});
+
+						const system = systemFactory.withOauthConfig().build({ alias: 'SANIS' });
+
+						const axiosError = axiosErrorFactory.build({ response: undefined });
+
+						const errorResponseData = JSON.stringify(axiosError);
+
+						oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
+						systemService.findById.mockResolvedValue(system);
+						oauthEncryptionService.decrypt.mockReturnValue('mock-secret');
+						httpService.post.mockReturnValue(throwError(() => axiosError));
+
+						return {
+							userId: user.id,
+							systemId: system.id,
+							errorResponseData,
+						};
+					};
+
+					it('should throw an ExternalSystemLogoutFailedLoggableException with whole error from external system', async () => {
+						const { userId, systemId, errorResponseData } = setup();
+
+						const promise = authenticationService.logoutFromExternalSystem(userId, systemId);
+
+						await expect(promise).rejects.toThrow(
+							new ExternalSystemLogoutFailedLoggableException(userId, systemId, errorResponseData)
+						);
+					});
 				});
 			});
 		});

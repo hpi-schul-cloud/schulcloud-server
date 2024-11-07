@@ -183,11 +183,12 @@ export class AuthenticationService {
 				)
 			);
 		} catch (err) {
+			const axiosError = err as AxiosError;
 			let errorResponseData: string;
-			if (err instanceof AxiosError && err.response) {
-				errorResponseData = JSON.stringify(err.response);
+			if (axiosError.response) {
+				errorResponseData = JSON.stringify({ code: axiosError.code, response: axiosError.response.data });
 			} else {
-				errorResponseData = JSON.stringify(err);
+				errorResponseData = JSON.stringify({ code: axiosError.code, response: axiosError.message });
 			}
 			throw new ExternalSystemLogoutFailedLoggableException(userId, systemId, errorResponseData);
 		}

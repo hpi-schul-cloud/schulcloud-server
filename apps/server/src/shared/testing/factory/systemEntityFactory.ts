@@ -28,6 +28,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 				logoutEndpoint: 'https://mock.de/logout',
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'https://mock.de/jwks',
+				endSessionEndpoint: 'https://mock.de/logout',
 			}),
 		};
 		return this.params(params);
