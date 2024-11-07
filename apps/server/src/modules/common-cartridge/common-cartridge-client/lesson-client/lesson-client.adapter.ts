@@ -15,6 +15,7 @@ export class LessonClientAdapter {
 		const options = this.createOptionParams();
 		const response = await this.lessonApi.lessonControllerGetLesson(lessonId, options);
 		const lessonDto = LessonDtoMapper.mapToLessonDto(response.data);
+		lessonDto.linkedTasks = await this.getLessonTasks(lessonId);
 
 		return lessonDto;
 	}

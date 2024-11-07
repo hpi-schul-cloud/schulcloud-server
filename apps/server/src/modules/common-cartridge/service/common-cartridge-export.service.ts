@@ -10,7 +10,7 @@ import { ExportedCourse } from '../dto/exported-course.dto';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
 import { BoardColumnBoardDto } from '../common-cartridge-client/room-client/dto/board-column-board.dto';
 import { BoardLessonDto } from '../common-cartridge-client/room-client/dto/board-lesson.dto';
-import { LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
+import { LessonDto } from '../common-cartridge-client/lesson-client/dto';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -35,11 +35,8 @@ export class CommonCartridgeExportService {
 			.filter((element) => element.content instanceof BoardLessonDto)
 			.map((element) => element.content.id);
 
-		// get lessons
+		// get lessons and lesson tasks
 		const lessons = await Promise.all(lessonsIds.map((elementId) => this.findLessonById(elementId)));
-
-		// get lessons tasks
-		const lessonsTasks = await Promise.all(lessonsIds.map((elementId) => this.findLessonTasks(elementId)));
 
 		// get column boards ids
 		const columnBoardsIds = roomBoard.elements
@@ -66,7 +63,6 @@ export class CommonCartridgeExportService {
 			roomBoard,
 			cards,
 			lessons,
-			linkedTasks: lessonsTasks.flat(1),
 		};
 
 		return exportedCourse;
@@ -102,15 +98,9 @@ export class CommonCartridgeExportService {
 		return cards;
 	}
 
-	public async findLessonById(lessonId: string): Promise<LessonDto> {
+	private async findLessonById(lessonId: string): Promise<LessonDto> {
 		const lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
 
 		return lesson;
-	}
-
-	public async findLessonTasks(lessonId: string): Promise<LessonLinkedTaskDto[]> {
-		const lessonTasks = await this.lessonClinetAdapter.getLessonTasks(lessonId);
-
-		return lessonTasks;
 	}
 }
