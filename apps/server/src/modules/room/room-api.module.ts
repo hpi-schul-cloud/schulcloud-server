@@ -1,13 +1,14 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { BoardModule } from '../board';
 import { RoomMemberModule } from '../room-member/room-member.module';
+import { UserModule } from '../user';
 import { RoomController, RoomUc } from './api';
 import { RoomModule } from './room.module';
-import { UserModule } from '../user';
 
 @Module({
-	imports: [RoomModule, AuthorizationModule, LoggerModule, RoomMemberModule, UserModule],
+	imports: [RoomModule, AuthorizationModule, LoggerModule, RoomMemberModule, BoardModule, UserModule],
 	controllers: [RoomController],
 	providers: [RoomUc],
 })
