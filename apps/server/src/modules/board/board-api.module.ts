@@ -13,9 +13,16 @@ import {
 } from './controller';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { RoomMemberModule } from '../room-member';
 
 @Module({
-	imports: [BoardModule, LoggerModule, MetaTagExtractorAdapterModule, forwardRef(() => AuthorizationModule)],
+	imports: [
+		BoardModule,
+		LoggerModule,
+		MetaTagExtractorAdapterModule,
+		RoomMemberModule,
+		forwardRef(() => AuthorizationModule),
+	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
 	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CourseRepo],
 })

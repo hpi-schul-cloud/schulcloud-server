@@ -32,6 +32,6 @@ export class BoardColumnBoardResponse {
 	@ApiProperty()
 	columnBoardId: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
 	layout: BoardLayout;
 }

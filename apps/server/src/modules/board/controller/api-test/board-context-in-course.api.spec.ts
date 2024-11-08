@@ -8,7 +8,7 @@ import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 
-describe('board get context (api)', () => {
+describe('board get context in course (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;

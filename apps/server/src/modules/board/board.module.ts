@@ -1,3 +1,4 @@
+import { MetaTagExtractorAdapterModule } from '@infra/meta-tag-extractor-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
@@ -9,8 +10,8 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { MetaTagExtractorAdapterModule } from '@src/infra/meta-tag-extractor-client';
 import { AuthorizationModule } from '../authorization';
+import { RoomMemberModule } from '../room-member';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
@@ -47,6 +48,7 @@ import {
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		MetaTagExtractorAdapterModule,
+		RoomMemberModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
