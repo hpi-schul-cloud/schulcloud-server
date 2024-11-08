@@ -1,23 +1,25 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { FilesStorageClientModule as FilesStorageApiClientModule } from '@infra/files-storage-client';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { defaultMikroOrmOptions } from '../server';
 import { BoardClientModule } from './common-cartridge-client/board-client';
+import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { CoursesClientModule } from './common-cartridge-client/course-client';
+import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
+import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
-import { CourseRoomsModule } from './common-cartridge-client/room-client';
-import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
-import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
 		FilesStorageClientModule,
+		FilesStorageApiClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
