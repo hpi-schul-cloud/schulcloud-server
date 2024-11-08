@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig } from '@modules/system/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
+import axios from 'axios';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
@@ -77,6 +82,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 					data: qs.stringify(data),
 				})
 			);
+
 			return response.data.access_token;
 		} catch (err) {
 			this.logger.warning(new IDMLoginError(err as Error));
@@ -86,14 +92,38 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	}
 
 	public async getIdentityProviders(realmName: string): Promise<IdentityProviderDto[]> {
-		const kcAdminClient = await this.kcAdminService.callKcAdminClient();
-		const realm = await kcAdminClient.realms.findOne({ realm: realmName });
-		const identityProviders = realm?.identityProviders
+		const tokenResponse = await axios.request({
+			method: 'post',
+			url: `http://localhost:8080/realms/master/protocol/openid-connect/token`,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			data: qs.stringify({
+				grant_type: 'client_credentials',
+				client_id: 'test-client',
+				client_secret: 'Sp4cknKfvEQluDBRsnqcU0LAuRRxlHq9',
+			}),
+		});
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const token = tokenResponse.data.access_token as string;
+		const idpResponse = await axios.request({
+			method: 'get',
+			url: `http://localhost:8080/admin/realms/${realmName}/identity-provider/instances`,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+		});
+
+		const identityProviders = idpResponse.data
 			?.filter((idp) => idp.enabled)
 			?.map((idp) => {
 				const alias = idp.alias || '';
 				const displayName = idp.displayName || null;
-				const href = `${kcAdminClient.baseUrl}/realms/${realmName}/identity-provider/${alias}/broker/login`;
+				const href = this.loginUrl(realmName, alias as string);
+
+				console.log('idp', idp);
 
 				return new IdentityProviderDto({
 					alias,
@@ -103,5 +133,20 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			});
 
 		return identityProviders || [];
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	private loginUrl(realm: string, alias: string): string {
+		const url = `http://localhost:8080/realms/${realm}/protocol/openid-connect/auth`;
+		const query = qs.stringify({
+			client_id: 'login-client',
+			redirect_uri: 'http://localhost:4000/login/oauth2-callback',
+			state: '123456',
+			response_type: 'code',
+			scope: 'openid',
+			kc_idp_hint: alias,
+		});
+
+		return `${url}?${query}`;
 	}
 }
