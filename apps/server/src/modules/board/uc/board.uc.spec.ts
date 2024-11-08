@@ -193,6 +193,20 @@ describe(BoardUc.name, () => {
 
 				expect(result).toEqual(board);
 			});
+			describe('when context type is not supported', () => {
+				it('should throw an error', async () => {
+					const { user } = setup();
+
+					await expect(
+						uc.createBoard(user.id, {
+							title: 'new board',
+							layout: BoardLayout.COLUMNS,
+							parentId: new ObjectId().toHexString(),
+							parentType: BoardExternalReferenceType.User,
+						})
+					).rejects.toThrowError('Unsupported context type user');
+				});
+			});
 		});
 	});
 

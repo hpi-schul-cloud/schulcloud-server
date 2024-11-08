@@ -161,8 +161,6 @@ export class BoardUc {
 				action: Action.write,
 				requiredPermissions: [],
 			});
-		} else if (context.type === BoardExternalReferenceType.User) {
-			this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
 		} else {
 			throw new Error(`Unsupported context type ${context.type as string}`);
 		}
