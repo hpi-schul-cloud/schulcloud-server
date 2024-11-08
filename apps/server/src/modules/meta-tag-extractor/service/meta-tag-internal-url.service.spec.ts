@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { MetaData } from '../types';
-import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
@@ -12,7 +11,7 @@ const INTERNAL_URL = `https://${INTERNAL_DOMAIN}/my-article`;
 const UNKNOWN_INTERNAL_URL = `https://${INTERNAL_DOMAIN}/playground/23hafe23234`;
 const EXTERNAL_URL = 'https://de.wikipedia.org/example-article';
 
-describe(MetaTagExtractorService.name, () => {
+describe(MetaTagInternalUrlService.name, () => {
 	let module: TestingModule;
 	let taskUrlHandler: DeepMocked<TaskUrlHandler>;
 	let lessonUrlHandler: DeepMocked<LessonUrlHandler>;
