@@ -19,18 +19,19 @@ import { ApiValidationError } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { Room } from '../domain';
+import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
+import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
+import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
-import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
-import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -91,6 +92,25 @@ export class RoomController {
 		const room = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
 		const response = RoomMapper.mapToRoomDetailsResponse(room);
+
+		return response;
+	}
+
+	@Get(':roomId/boards')
+	@ApiOperation({ summary: 'Get the boards of a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the boards of a room', type: RoomBoardListResponse })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	async getRoomBoards(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomBoardListResponse> {
+		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
+
+		const response = RoomMapper.mapToRoomBoardListResponse(boards);
 
 		return response;
 	}

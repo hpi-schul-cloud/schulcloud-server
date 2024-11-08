@@ -9,7 +9,7 @@ import { CreateBoardBodyParams } from '../dto';
 
 const baseRouteName = '/boards';
 
-describe(`create board (api)`, () => {
+describe(`create board in course (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
