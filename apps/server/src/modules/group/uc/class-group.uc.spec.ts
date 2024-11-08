@@ -414,7 +414,7 @@ describe('ClassGroupUc', () => {
 
 					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({
 						userId: teacherUser.id,
-						groupTypes: [GroupTypes.CLASS],
+						groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
 					});
 				});
 			});
@@ -777,7 +777,7 @@ describe('ClassGroupUc', () => {
 
 					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({
 						schoolId: teacherUser.school.id,
-						groupTypes: [GroupTypes.CLASS],
+						groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
 					});
 				});
 			});
