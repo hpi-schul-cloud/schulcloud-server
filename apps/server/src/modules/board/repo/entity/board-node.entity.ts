@@ -37,6 +37,12 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ persist: false })
 	domainObject: AnyBoardNode | undefined;
 
+	@Property({ type: 'string', nullable: true })
+	externalId: string | undefined;
+
+	@Property({ type: 'string', nullable: true })
+	externalAdminId: string | undefined;
+
 	// Card, Column, ColumnBoard, LinkElement, MedialLine, DeletedElement
 	// --------------------------------------------------------------------------
 	@Property({ nullable: true })
