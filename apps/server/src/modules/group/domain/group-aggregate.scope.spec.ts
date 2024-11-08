@@ -100,6 +100,15 @@ describe(GroupAggregateScope.name, () => {
 
 				expect(result).toEqual([
 					{
+						$match: {
+							$or: [
+								{ type: { $eq: GroupTypes.CLASS } },
+								{ type: { $eq: GroupTypes.COURSE } },
+								{ type: { $eq: GroupTypes.OTHER } },
+							],
+						},
+					},
+					{
 						$lookup: {
 							from: 'courses',
 							localField: '_id',
