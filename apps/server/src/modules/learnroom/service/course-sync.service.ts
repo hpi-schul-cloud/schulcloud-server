@@ -1,8 +1,8 @@
 import { Group, GroupUser } from '@modules/group';
 import { RoleService } from '@modules/role';
 import { Inject, Injectable } from '@nestjs/common';
+import { Role, SyncAttribute, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import {
 	Course,
 	COURSE_REPO,
@@ -18,9 +18,17 @@ export class CourseSyncService {
 		private readonly roleService: RoleService
 	) {}
 
-	public async startSynchronization(course: Course, group: Group): Promise<void> {
+	public async startSynchronization(course: Course, group: Group, user: User): Promise<void> {
 		if (course.syncedWithGroup) {
 			throw new CourseAlreadySynchronizedLoggableException(course.id);
+		}
+
+		const isTeacher = user.getRoles().some((role: Role) => role.name === RoleName.TEACHER);
+		const isInGroup = group.users.some((groupUser) => groupUser.userId === user.id);
+
+		if (isTeacher && !isInGroup) {
+			course.excludeFromSync = [SyncAttribute.TEACHERS];
+			course.teachers = [user.id];
 		}
 
 		await this.synchronize([course], group);
@@ -32,6 +40,7 @@ export class CourseSyncService {
 		}
 
 		course.syncedWithGroup = undefined;
+		course.excludeFromSync = undefined;
 
 		await this.courseRepo.save(course);
 	}
@@ -42,36 +51,39 @@ export class CourseSyncService {
 	}
 
 	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
-		if (courses.length) {
-			const [studentRole, teacherRole] = await Promise.all([
-				this.roleService.findByName(RoleName.STUDENT),
-				this.roleService.findByName(RoleName.TEACHER),
-			]);
-			const students = group.users.filter((groupUser: GroupUser) => groupUser.roleId === studentRole.id);
-			const teachers = group.users.filter((groupUser: GroupUser) => groupUser.roleId === teacherRole.id);
+		const [studentRole, teacherRole] = await Promise.all([
+			this.roleService.findByName(RoleName.STUDENT),
+			this.roleService.findByName(RoleName.TEACHER),
+		]);
 
-			const coursesToSync = courses.map((course) => {
-				course.syncedWithGroup = group.id;
-				if (oldGroup && oldGroup.name === course.name) {
-					course.name = group.name;
-				}
-				course.startDate = group.validPeriod?.from;
-				course.untilDate = group.validPeriod?.until;
+		const studentIds = group.users
+			.filter((user: GroupUser) => user.roleId === studentRole.id)
+			.map((student) => student.userId);
+		const teacherIds = group.users
+			.filter((user: GroupUser) => user.roleId === teacherRole.id)
+			.map((teacher) => teacher.userId);
 
-				if (teachers.length >= 1) {
-					course.students = students.map((user: GroupUser): EntityId => user.userId);
-					course.teachers = teachers.map((user: GroupUser): EntityId => user.userId);
-				} else {
-					course.students = [];
-				}
+		for (const course of courses) {
+			course.syncedWithGroup = group.id;
+			course.startDate = group.validPeriod?.from;
+			course.untilDate = group.validPeriod?.until;
+			course.classes = [];
+			course.groups = [];
 
-				course.classes = [];
-				course.groups = [];
+			if (oldGroup?.name === course.name) {
+				course.name = group.name;
+			}
 
-				return course;
-			});
+			const excludedFromSync = new Set(course.excludeFromSync || []);
 
-			await this.courseRepo.saveAll(coursesToSync);
+			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
+				course.students = studentIds;
+			} else {
+				course.teachers = teacherIds.length > 0 ? teacherIds : course.teachers;
+				course.students = teacherIds.length > 0 ? studentIds : [];
+			}
 		}
+
+		await this.courseRepo.saveAll(courses);
 	}
 }

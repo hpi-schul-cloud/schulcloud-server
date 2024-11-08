@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { groupFactory, roleDtoFactory, userFactory } from '@shared/testing';
@@ -6,10 +7,10 @@ import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { GroupService, GroupTypes } from '@src/modules/group';
 import { RoleService } from '@src/modules/role';
 import { roomFactory } from '@src/modules/room/testing';
+import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomMemberRepo } from '../repo/room-member.repo';
 import { roomMemberFactory } from '../testing';
 import { RoomMemberService } from './room-member.service';
-import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 
 describe('RoomMemberService', () => {
 	let module: TestingModule;
@@ -52,7 +53,7 @@ describe('RoomMemberService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('addMemberToRoom', () => {
+	describe('addMembersToRoom', () => {
 		describe('when room member does not exist', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -72,8 +73,20 @@ describe('RoomMemberService', () => {
 
 			it('should create new room member when not exists', async () => {
 				const { user, room } = setup();
-				await service.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR);
+
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
+
 				expect(roomMemberRepo.save).toHaveBeenCalled();
+			});
+
+			describe('when no user is provided', () => {
+				it('should throw an exception', async () => {
+					const { room } = setup();
+
+					roomMemberRepo.findByRoomId.mockResolvedValue(null);
+
+					await expect(service.addMembersToRoom(room.id, [])).rejects.toThrow();
+				});
 			});
 		});
 
@@ -96,8 +109,68 @@ describe('RoomMemberService', () => {
 
 			it('should add user to existing room member', async () => {
 				const { user, room, group } = setup();
-				await service.addMemberToRoom(room.id, user.id, RoleName.ROOM_EDITOR);
-				expect(groupService.addUserToGroup).toHaveBeenCalledWith(group.id, user.id, RoleName.ROOM_EDITOR);
+
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
+
+				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
+					{ userId: user.id, roleName: RoleName.ROOM_EDITOR },
+				]);
+			});
+		});
+	});
+
+	describe('removeMembersFromRoom', () => {
+		describe('when room member does not exist', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const room = roomFactory.build();
+				const group = groupFactory.build({ type: GroupTypes.ROOM });
+
+				roomMemberRepo.findByRoomId.mockResolvedValue(null);
+				groupService.createGroup.mockResolvedValue(group);
+				groupService.addUserToGroup.mockResolvedValue();
+				roomMemberRepo.save.mockResolvedValue();
+
+				return {
+					user,
+					room,
+				};
+			};
+
+			describe('when roomMember does not exist', () => {
+				it('should throw an exception', async () => {
+					const { room } = setup();
+					roomMemberRepo.findByRoomId.mockResolvedValue(null);
+
+					await expect(service.removeMembersFromRoom(room.id, [])).rejects.toThrowError(BadRequestException);
+				});
+			});
+		});
+
+		describe('when room member exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const group = groupFactory.build({ type: GroupTypes.ROOM });
+				const room = roomFactory.build();
+				const roomMember = roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+
+				roomMemberRepo.findByRoomId.mockResolvedValue(roomMember);
+				groupService.findById.mockResolvedValue(group);
+
+				return {
+					user,
+					room,
+					roomMember,
+					group,
+				};
+			};
+
+			it('should remove room member', async () => {
+				const { user, room, group } = setup();
+
+				await service.removeMembersFromRoom(room.id, [user.id]);
+
+				expect(groupService.removeUsersFromGroup).toHaveBeenCalledWith(group.id, [user.id]);
 			});
 		});
 	});

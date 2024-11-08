@@ -42,6 +42,6 @@ export class CourseSyncUc {
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
 
-		await this.courseSyncService.startSynchronization(course, group);
+		await this.courseSyncService.startSynchronization(course, group, user);
 	}
 }
