@@ -2,7 +2,7 @@ export enum SchoolFeature {
 	ROCKET_CHAT = 'rocketChat',
 	VIDEOCONFERENCE = 'videoconference',
 	NEXTCLOUD = 'nextcloud',
-	/** @deprecated */
+	/** @deprecated use STUDENT_LIST Permission instead */
 	STUDENTVISIBILITY = 'studentVisibility',
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
