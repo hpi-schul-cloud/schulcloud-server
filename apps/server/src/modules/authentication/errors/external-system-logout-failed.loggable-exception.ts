@@ -1,11 +1,12 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { AxiosError } from 'axios';
 
 export class ExternalSystemLogoutFailedLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(
 		private readonly userId: string,
 		private readonly systemId: string,
-		private readonly externalSystemResponse: string
+		private readonly axiosError: AxiosError
 	) {
 		super({
 			type: 'INTERNAL_SERVER_ERROR',
@@ -22,7 +23,10 @@ export class ExternalSystemLogoutFailedLoggableException extends InternalServerE
 			data: {
 				userId: this.userId,
 				systemId: this.systemId,
-				externalSystemResponse: this.externalSystemResponse,
+				axiosError: JSON.stringify({
+					status: this.axiosError.status,
+					data: this.axiosError.response?.data ?? this.axiosError.message,
+				}),
 			},
 		};
 	}

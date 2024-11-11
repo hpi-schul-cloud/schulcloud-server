@@ -8,10 +8,7 @@ import { systemOauthConfigFactory } from '@modules/system/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpService } from '@nestjs/axios';
 import {
-	axiosErrorFactory,
-	axiosResponseFactory,
 	cleanupCollections,
 	currentUserFactory,
 	systemEntityFactory,
@@ -21,7 +18,8 @@ import {
 import { Cache } from 'cache-manager';
 import { Response } from 'supertest';
 import { Request } from 'express';
-import { of, throwError } from 'rxjs';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
 
 describe('Logout Controller (api)', () => {
 	const baseRouteName = '/logout';
@@ -30,6 +28,7 @@ describe('Logout Controller (api)', () => {
 	let em: EntityManager;
 	let cacheManager: Cache;
 	let testApiClient: TestApiClient;
+	let axiosMock: MockAdapter;
 
 	afterAll(async () => {
 		await app.close();
@@ -89,11 +88,7 @@ describe('Logout Controller (api)', () => {
 	describe('externalSystemLogout', () => {
 		let currentUser: ICurrentUser;
 
-		const setupTestWithMocks = async (mockHttpPostSuccess = true) => {
-			const postMockReturnValue = mockHttpPostSuccess
-				? of(axiosResponseFactory.build())
-				: throwError(() => axiosErrorFactory.build());
-
+		const setupTestWithMocks = async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
 				imports: [ServerTestModule],
 			})
@@ -105,10 +100,6 @@ describe('Logout Controller (api)', () => {
 						return true;
 					},
 				})
-				.overrideProvider(HttpService)
-				.useValue({
-					post: () => postMockReturnValue,
-				})
 				.compile();
 
 			app = moduleFixture.createNestApplication();
@@ -116,6 +107,7 @@ describe('Logout Controller (api)', () => {
 			em = app.get(EntityManager);
 			cacheManager = app.get(CACHE_MANAGER);
 			testApiClient = new TestApiClient(app, baseRouteName);
+			axiosMock = new MockAdapter(axios);
 		};
 
 		beforeEach(async () => {
@@ -166,6 +158,8 @@ describe('Logout Controller (api)', () => {
 					isExternalUser: true,
 				});
 
+				axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.NO_CONTENT);
+
 				return {
 					loggedInClient,
 				};
@@ -205,6 +199,8 @@ describe('Logout Controller (api)', () => {
 						isExternalUser: true,
 					});
 
+					axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.NO_CONTENT);
+
 					return {
 						loggedInClient,
 						user: studentUser,
@@ -226,7 +222,7 @@ describe('Logout Controller (api)', () => {
 				beforeAll(async () => {
 					const config: ServerConfig = serverConfig();
 					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks(false);
+					await setupTestWithMocks();
 				});
 
 				const setup = async () => {
@@ -245,6 +241,8 @@ describe('Logout Controller (api)', () => {
 						systemId: system.id,
 						isExternalUser: true,
 					});
+
+					axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.BAD_REQUEST);
 
 					return {
 						loggedInClient,
@@ -286,6 +284,8 @@ describe('Logout Controller (api)', () => {
 						systemId: system.id,
 						isExternalUser: true,
 					});
+
+					axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.NO_CONTENT);
 
 					return {
 						loggedInClient,
@@ -330,6 +330,8 @@ describe('Logout Controller (api)', () => {
 						isExternalUser: true,
 					});
 
+					axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.NO_CONTENT);
+
 					return {
 						loggedInClient,
 						user: studentUser,
@@ -371,6 +373,8 @@ describe('Logout Controller (api)', () => {
 						isExternalUser: true,
 					});
 
+					axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.NO_CONTENT);
+
 					return {
 						loggedInClient,
 					};
@@ -409,6 +413,8 @@ describe('Logout Controller (api)', () => {
 						systemId: system.id,
 						isExternalUser: true,
 					});
+
+					axiosMock.onPost(system.oauthConfig?.endSessionEndpoint).reply(HttpStatus.NO_CONTENT);
 
 					return {
 						loggedInClient,

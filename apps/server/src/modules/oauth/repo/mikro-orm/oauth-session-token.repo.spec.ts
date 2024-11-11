@@ -2,7 +2,6 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, userFactory } from '@shared/testing';
-import { SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { OauthSessionTokenEntity } from '../../entity';
 import { oauthSessionTokenEntityFactory, oauthSessionTokenFactory } from '../../testing';
 import { OAUTH_SESSION_TOKEN_REPO } from '../oauth-session-token.repo.interface';
@@ -96,44 +95,13 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 		});
 	});
 
-	describe('findOneByUserId', () => {
-		describe('when a user with a saved session token is provided', () => {
-			const setup = async () => {
-				const sessionTokens = oauthSessionTokenEntityFactory.buildListWithId(3);
-
-				await em.persistAndFlush(sessionTokens);
-
-				const expectedTokenEntity: OauthSessionTokenEntity = sessionTokens[0];
-				const userId: string = expectedTokenEntity.user.id;
-
-				const expectedToken = oauthSessionTokenFactory.build({
-					id: expectedTokenEntity.id,
-					refreshToken: expectedTokenEntity.refreshToken,
-					systemId: expectedTokenEntity.system.id,
-					expiresAt: expectedTokenEntity.expiresAt,
-					userId,
-				});
-
-				return {
-					expectedToken,
-					userId,
-				};
-			};
-
-			it('should return a session token domain object', async () => {
-				const { expectedToken, userId } = await setup();
-
-				const result = await repo.findOneByUserId(userId);
-
-				expect(result).toEqual(expectedToken);
-			});
-		});
-
+	describe('findLatestByUserId', () => {
 		describe('when a user without a saved session token is provided', () => {
 			const setup = async () => {
 				const sessionTokens = oauthSessionTokenEntityFactory.buildListWithId(3);
 
 				await em.persistAndFlush(sessionTokens);
+				em.clear();
 
 				const user = userFactory.build();
 				const userId = user.id;
@@ -146,48 +114,56 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 			it('should return null', async () => {
 				const { userId } = await setup();
 
-				const result = await repo.findOneByUserId(userId);
+				const result = await repo.findLatestByUserId(userId);
 
 				expect(result).toBeNull();
 			});
 		});
 
-		describe('when a user with a saved session token and a sort option is provided ', () => {
+		describe('when a user with several saved session tokens is provided', () => {
 			const setup = async () => {
+				const user = userFactory.build();
+
 				const sessionTokens = [1, 5, 10].map((i) =>
 					oauthSessionTokenEntityFactory.build({
 						expiresAt: new Date(Date.now() + i * 3600 * 1000),
+						user,
 					})
 				);
 
-				await em.persistAndFlush(sessionTokens);
+				const latestSessionToken = oauthSessionTokenEntityFactory.build({
+					expiresAt: new Date(Date.now() + 100 * 3600 * 1000),
+					user,
+				});
 
-				const sortOption: SortOrderMap<OauthSessionTokenEntity> = { expiresAt: SortOrder.asc };
-				const expectedTokenEntity: OauthSessionTokenEntity = sessionTokens[sessionTokens.length - 1];
+				await em.persistAndFlush([user, ...sessionTokens, latestSessionToken]);
+				em.clear();
 
-				const userId: string = expectedTokenEntity.user.id;
+				const expectedTokenEntity: OauthSessionTokenEntity = latestSessionToken;
+				const latestExpiredAt = latestSessionToken.expiresAt;
 
 				const expectedToken = oauthSessionTokenFactory.build({
 					id: expectedTokenEntity.id,
 					refreshToken: expectedTokenEntity.refreshToken,
 					systemId: expectedTokenEntity.system.id,
 					expiresAt: expectedTokenEntity.expiresAt,
-					userId,
+					userId: user.id,
 				});
 
 				return {
 					expectedToken,
-					userId,
-					sortOption,
+					latestExpiredAt,
+					userId: user.id,
 				};
 			};
 
-			it('should return the first session token based on the sort option', async () => {
-				const { expectedToken, userId, sortOption } = await setup();
+			it('should return the latest session token domain object', async () => {
+				const { expectedToken, latestExpiredAt, userId } = await setup();
 
-				const result = await repo.findOneByUserId(userId, sortOption);
+				const result = await repo.findLatestByUserId(userId);
 
 				expect(result).toEqual(expectedToken);
+				expect(result?.expiresAt).toEqual(latestExpiredAt);
 			});
 		});
 	});

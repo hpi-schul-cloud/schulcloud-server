@@ -1,36 +1,92 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
 import { ExternalSystemLogoutFailedLoggableException } from './external-system-logout-failed.loggable-exception';
 
 describe(ExternalSystemLogoutFailedLoggableException.name, () => {
 	describe('getLogMessage', () => {
-		const setup = () => {
-			const userId = new ObjectId().toHexString();
-			const systemId = new ObjectId().toHexString();
-			const externalSystemResponse = 'testing';
-			const exception = new ExternalSystemLogoutFailedLoggableException(userId, systemId, externalSystemResponse);
+		describe('when the provided axios error does not has response data', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const systemId = new ObjectId().toHexString();
+				const axiosError = axiosErrorFactory.build({
+					response: axiosResponseFactory.build({
+						data: undefined,
+						status: 400,
+					}),
+				});
+				const exception = new ExternalSystemLogoutFailedLoggableException(userId, systemId, axiosError);
 
-			return {
-				exception,
-				userId,
-				systemId,
-				externalSystemResponse,
-			};
-		};
+				const expectedAxiosErrorData = JSON.stringify({
+					status: axiosError.status,
+					data: axiosError.message,
+				});
 
-		it('should return the correct log message', () => {
-			const { exception, userId, systemId, externalSystemResponse } = setup();
-
-			const message = exception.getLogMessage();
-
-			expect(message).toEqual({
-				type: 'INTERNAL_SERVER_ERROR',
-				stack: exception.stack,
-				message: `Request to logout external system ${systemId} for user ${userId} had failed`,
-				data: {
+				return {
+					exception,
 					userId,
 					systemId,
-					externalSystemResponse,
-				},
+					expectedAxiosErrorData,
+				};
+			};
+
+			it('should return the correct log message', () => {
+				const { exception, userId, systemId, expectedAxiosErrorData } = setup();
+
+				const message = exception.getLogMessage();
+
+				expect(message).toEqual({
+					type: 'INTERNAL_SERVER_ERROR',
+					stack: exception.stack,
+					message: `Request to logout external system ${systemId} for user ${userId} had failed`,
+					data: {
+						userId,
+						systemId,
+						axiosError: expectedAxiosErrorData,
+					},
+				});
+			});
+		});
+
+		describe('when the provided axios error has response data', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const systemId = new ObjectId().toHexString();
+				const axiosError = axiosErrorFactory.build({
+					response: axiosResponseFactory.build({
+						data: 'test error',
+						status: 400,
+					}),
+				});
+				const exception = new ExternalSystemLogoutFailedLoggableException(userId, systemId, axiosError);
+
+				const expectedAxiosErrorData = JSON.stringify({
+					status: axiosError.status,
+					data: axiosError.response?.data,
+				});
+
+				return {
+					exception,
+					userId,
+					systemId,
+					expectedAxiosErrorData,
+				};
+			};
+
+			it('should return the correct log message', () => {
+				const { exception, userId, systemId, expectedAxiosErrorData } = setup();
+
+				const message = exception.getLogMessage();
+
+				expect(message).toEqual({
+					type: 'INTERNAL_SERVER_ERROR',
+					stack: exception.stack,
+					message: `Request to logout external system ${systemId} for user ${userId} had failed`,
+					data: {
+						userId,
+						systemId,
+						axiosError: expectedAxiosErrorData,
+					},
+				});
 			});
 		});
 	});

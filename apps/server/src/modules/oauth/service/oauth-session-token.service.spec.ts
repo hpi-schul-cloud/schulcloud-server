@@ -1,9 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenRepo } from '../repo';
 import { oauthSessionTokenFactory } from '../testing';
-import { OauthSessionTokenEntity } from '../entity';
 import { OauthSessionTokenService } from './oauth-session-token.service';
 
 describe(OauthSessionTokenService.name, () => {
@@ -92,24 +90,22 @@ describe(OauthSessionTokenService.name, () => {
 			const setup = () => {
 				const sessionToken = oauthSessionTokenFactory.build();
 				const userId: string = sessionToken.userId;
-				const expectedSortOption: SortOrderMap<OauthSessionTokenEntity> = { updatedAt: SortOrder.desc };
 
-				repo.findOneByUserId.mockResolvedValue(sessionToken);
+				repo.findLatestByUserId.mockResolvedValue(sessionToken);
 
 				return {
 					sessionToken,
 					userId,
-					expectedSortOption,
 				};
 			};
 
 			it('should return the latest session token of the user', async () => {
-				const { sessionToken, userId, expectedSortOption } = setup();
+				const { sessionToken, userId } = setup();
 
 				const result = await service.findLatestByUserId(userId);
 
 				expect(result).toEqual(sessionToken);
-				expect(repo.findOneByUserId).toHaveBeenCalledWith(userId, expectedSortOption);
+				expect(repo.findLatestByUserId).toHaveBeenCalledWith(userId);
 			});
 		});
 	});
