@@ -7,6 +7,7 @@ import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
+import { RoomMemberService } from '@src/modules/room-member';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -50,6 +51,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: BoardNodeFactory,
 					useValue: createMock<BoardNodeFactory>(),
+				},
+				{
+					provide: RoomMemberService,
+					useValue: createMock<RoomMemberService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -187,6 +192,20 @@ describe(BoardUc.name, () => {
 				});
 
 				expect(result).toEqual(board);
+			});
+			describe('when context type is not supported', () => {
+				it('should throw an error', async () => {
+					const { user } = setup();
+
+					await expect(
+						uc.createBoard(user.id, {
+							title: 'new board',
+							layout: BoardLayout.COLUMNS,
+							parentId: new ObjectId().toHexString(),
+							parentType: BoardExternalReferenceType.User,
+						})
+					).rejects.toThrowError('Unsupported context type user');
+				});
 			});
 		});
 	});
