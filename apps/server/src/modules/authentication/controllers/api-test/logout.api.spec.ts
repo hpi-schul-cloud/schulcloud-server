@@ -1,9 +1,10 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { JwtAuthGuard } from '@infra/auth-guard';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { serverConfig, ServerConfig } from '@modules/server';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
-import { OauthConfig } from '@modules/system';
+import { OauthSessionTokenEntity } from '@modules/oauth/entity';
+import { systemOauthConfigFactory } from '@modules/system/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -16,9 +17,7 @@ import {
 	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
-	userFactory,
 } from '@shared/testing';
-import { EntityId } from '@shared/domain/types';
 import { Cache } from 'cache-manager';
 import { Response } from 'supertest';
 import { Request } from 'express';
@@ -88,20 +87,7 @@ describe('Logout Controller (api)', () => {
 	});
 
 	describe('externalSystemLogout', () => {
-		const mockedUserId: EntityId = new ObjectId().toHexString();
-		const mockedSystemId: EntityId = new ObjectId().toHexString();
-
-		const setupTest = async () => {
-			const moduleFixture: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			}).compile();
-
-			app = moduleFixture.createNestApplication();
-			await app.init();
-			em = app.get(EntityManager);
-			cacheManager = app.get(CACHE_MANAGER);
-			testApiClient = new TestApiClient(app, baseRouteName);
-		};
+		let currentUser: ICurrentUser;
 
 		const setupTestWithMocks = async (mockHttpPostSuccess = true) => {
 			const postMockReturnValue = mockHttpPostSuccess
@@ -115,11 +101,7 @@ describe('Logout Controller (api)', () => {
 				.useValue({
 					canActivate(context: ExecutionContext) {
 						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUserFactory.build({
-							userId: mockedUserId,
-							systemId: mockedSystemId,
-							isExternalUser: true,
-						});
+						req.user = currentUser;
 						return true;
 					},
 				})
@@ -142,7 +124,15 @@ describe('Logout Controller (api)', () => {
 
 		describe('when the user is not logged in', () => {
 			beforeAll(async () => {
-				await setupTest();
+				const moduleFixture: TestingModule = await Test.createTestingModule({
+					imports: [ServerTestModule],
+				}).compile();
+
+				app = moduleFixture.createNestApplication();
+				await app.init();
+				em = app.get(EntityManager);
+				cacheManager = app.get(CACHE_MANAGER);
+				testApiClient = new TestApiClient(app, baseRouteName);
 			});
 
 			it('should return unauthorized', async () => {
@@ -152,22 +142,46 @@ describe('Logout Controller (api)', () => {
 			});
 		});
 
-		describe('when the user is logged in with "SANIS" system', () => {
-			describe('when the feature flag is not enabled', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = false;
-					await setupTestWithMocks();
-				});
-
-				it('should return status 403', async () => {
-					const response: Response = await testApiClient.post('/external');
-
-					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
-				});
+		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is false', () => {
+			beforeAll(async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = false;
+				await setupTestWithMocks();
 			});
 
-			describe('when the external logout can be successfully done', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const system = systemEntityFactory.withOauthConfig().build();
+				const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
+
+				await em.persistAndFlush([studentAccount, studentUser, system, token]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				currentUser = currentUserFactory.build({
+					userId: studentUser.id,
+					accountId: studentAccount.id,
+					systemId: system.id,
+					isExternalUser: true,
+				});
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return status 403', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post('/external');
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is true', () => {
+			describe('when the external system does not return an error', () => {
 				beforeAll(async () => {
 					const config: ServerConfig = serverConfig();
 					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
@@ -175,25 +189,36 @@ describe('Logout Controller (api)', () => {
 				});
 
 				const setup = async () => {
-					const user = userFactory.build();
-					user.id = mockedUserId;
-					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
-						user,
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const system = systemEntityFactory.withOauthConfig().build();
+					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
+
+					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					currentUser = currentUserFactory.build({
+						userId: studentUser.id,
+						accountId: studentAccount.id,
+						systemId: system.id,
+						isExternalUser: true,
 					});
 
-					const system = systemEntityFactory.withOauthConfig().build({ alias: 'SANIS' });
-					system.id = mockedSystemId;
-
-					await em.persistAndFlush([user, system, sessionToken]);
-					em.clear();
+					return {
+						loggedInClient,
+						user: studentUser,
+					};
 				};
 
-				it('should return status 200', async () => {
-					await setup();
+				it('should return status 200 and remove the session token', async () => {
+					const { loggedInClient, user } = await setup();
 
-					const response: Response = await testApiClient.post('/external');
+					const response: Response = await loggedInClient.post('/external');
+					const token = await em.findOne(OauthSessionTokenEntity, { user });
 
 					expect(response.status).toEqual(HttpStatus.OK);
+					expect(token).toBeNull();
 				});
 			});
 
@@ -205,25 +230,36 @@ describe('Logout Controller (api)', () => {
 				});
 
 				const setup = async () => {
-					const user = userFactory.build();
-					user.id = mockedUserId;
-					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
-						user,
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const system = systemEntityFactory.withOauthConfig().build();
+					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
+
+					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					currentUser = currentUserFactory.build({
+						userId: studentUser.id,
+						accountId: studentAccount.id,
+						systemId: system.id,
+						isExternalUser: true,
 					});
 
-					const system = systemEntityFactory.withOauthConfig().build({ alias: 'SANIS' });
-					system.id = mockedSystemId;
-
-					await em.persistAndFlush([user, system, sessionToken]);
-					em.clear();
+					return {
+						loggedInClient,
+						user: studentUser,
+					};
 				};
 
 				it('should return status 500', async () => {
-					await setup();
+					const { loggedInClient, user } = await setup();
 
-					const response: Response = await testApiClient.post('/external');
+					const response: Response = await loggedInClient.post('/external');
+					const token = await em.findOne(OauthSessionTokenEntity, { user });
 
 					expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+					expect(token).not.toBeNull();
 				});
 			});
 
@@ -235,25 +271,37 @@ describe('Logout Controller (api)', () => {
 				});
 
 				const setup = async () => {
-					const user = userFactory.build();
-					user.id = mockedUserId;
-					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
-						user,
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const system = systemEntityFactory.build();
+					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
+
+					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					currentUser = currentUserFactory.build({
+						userId: studentUser.id,
+						accountId: studentAccount.id,
+						systemId: system.id,
+						isExternalUser: true,
 					});
 
-					const system = systemEntityFactory.build({ alias: 'SANIS' });
-					system.id = mockedSystemId;
-
-					await em.persistAndFlush([user, system, sessionToken]);
-					em.clear();
+					return {
+						loggedInClient,
+						user: studentUser,
+					};
 				};
 
 				it('should return status 500', async () => {
-					await setup();
+					const { loggedInClient, user } = await setup();
 
-					const response: Response = await testApiClient.post('/external');
+					const response: Response = await loggedInClient.post('/external');
+
+					const token = await em.findOne(OauthSessionTokenEntity, { user });
 
 					expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+					expect(token).not.toBeNull();
 				});
 			});
 
@@ -265,27 +313,117 @@ describe('Logout Controller (api)', () => {
 				});
 
 				const setup = async () => {
-					const user = userFactory.build();
-					user.id = mockedUserId;
-					const sessionToken = oauthSessionTokenEntityFactory.buildWithId({
-						user,
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
+					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
+
+					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					currentUser = currentUserFactory.build({
+						userId: studentUser.id,
+						accountId: studentAccount.id,
+						systemId: system.id,
+						isExternalUser: true,
 					});
 
-					const system = systemEntityFactory.withOauthConfig().build({ alias: 'SANIS' });
-					system.id = mockedSystemId;
-					const oauthConfig = system.oauthConfig as OauthConfig;
-					oauthConfig.endSessionEndpoint = undefined;
-
-					await em.persistAndFlush([user, system, sessionToken]);
-					em.clear();
+					return {
+						loggedInClient,
+						user: studentUser,
+					};
 				};
 
 				it('should return status 500', async () => {
-					await setup();
+					const { loggedInClient, user } = await setup();
 
-					const response: Response = await testApiClient.post('/external');
+					const response: Response = await loggedInClient.post('/external');
+					const token = await em.findOne(OauthSessionTokenEntity, { user });
 
 					expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+					expect(token).not.toBeNull();
+				});
+			});
+
+			describe('when the session token of the user is deleted or could not be found', () => {
+				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
+					await setupTestWithMocks();
+				});
+
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
+
+					await em.persistAndFlush([studentAccount, studentUser, system]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					currentUser = currentUserFactory.build({
+						userId: studentUser.id,
+						accountId: studentAccount.id,
+						systemId: system.id,
+						isExternalUser: true,
+					});
+
+					return {
+						loggedInClient,
+					};
+				};
+
+				it('should return status 200', async () => {
+					const { loggedInClient } = await setup();
+
+					const response: Response = await loggedInClient.post('/external');
+
+					expect(response.status).toEqual(HttpStatus.OK);
+				});
+			});
+
+			describe('when the session token of the user is expired', () => {
+				beforeAll(async () => {
+					const config: ServerConfig = serverConfig();
+					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
+					await setupTestWithMocks();
+				});
+
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
+					const token = oauthSessionTokenEntityFactory.build({ expiresAt: new Date(Date.now() - 5000) });
+
+					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					currentUser = currentUserFactory.build({
+						userId: studentUser.id,
+						accountId: studentAccount.id,
+						systemId: system.id,
+						isExternalUser: true,
+					});
+
+					return {
+						loggedInClient,
+						user: studentUser,
+					};
+				};
+
+				it('should return status 200 and remove the expired token', async () => {
+					const { loggedInClient, user } = await setup();
+
+					const response: Response = await loggedInClient.post('/external');
+					const token = await em.findOne(OauthSessionTokenEntity, { user });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(token).toBeNull();
 				});
 			});
 		});

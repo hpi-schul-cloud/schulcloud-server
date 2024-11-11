@@ -156,7 +156,7 @@ export class AuthenticationService {
 		const system: System | null = await this.systemService.findById(systemId);
 		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(userId);
 
-		if (!sessionToken || system?.alias !== 'SANIS') {
+		if (!sessionToken || !system) {
 			return;
 		}
 
