@@ -8,8 +8,10 @@ import { Page, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@src/modules/board';
-import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
+import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
+import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
+import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
 
 @Injectable()
@@ -31,11 +33,11 @@ export class RoomUc {
 		return rooms;
 	}
 
-	public async createRoom(userId: EntityId, props: RoomCreateProps): Promise<Room> {
+	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const room = await this.roomService.createRoom(props);
+		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 		// NOTE: currently only teacher are allowed to create rooms. Could not find simpler way to check this.
 		this.authorizationService.checkOneOfPermissions(user, [Permission.COURSE_CREATE]);
 		await this.roomMemberService
@@ -72,7 +74,7 @@ export class RoomUc {
 		return boards;
 	}
 
-	public async updateRoom(userId: EntityId, roomId: EntityId, props: RoomUpdateProps): Promise<Room> {
+	public async updateRoom(userId: EntityId, roomId: EntityId, props: UpdateRoomBodyParams): Promise<Room> {
 		this.checkFeatureEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 

@@ -114,6 +114,7 @@ describe('Room Controller (API)', () => {
 					id: room.id,
 					name: room.name,
 					color: room.color,
+					schoolId: room.schoolId,
 					startDate: room.startDate?.toISOString(),
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),

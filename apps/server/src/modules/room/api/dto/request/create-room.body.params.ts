@@ -4,7 +4,7 @@ import { RoomCreateProps } from '@src/modules/room/domain';
 import { RoomColor } from '@src/modules/room/domain/type';
 import { IsDate, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class CreateRoomBodyParams implements RoomCreateProps {
+export class CreateRoomBodyParams implements Omit<RoomCreateProps, 'schoolId'> {
 	@ApiProperty({
 		description: 'The name of the room',
 		required: true,

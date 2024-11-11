@@ -9,12 +9,13 @@ export interface RoomProps extends AuthorizableObject {
 	color: RoomColor;
 	startDate?: Date;
 	endDate?: Date;
+	schoolId: EntityId;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate'>;
-export type RoomUpdateProps = RoomCreateProps; // will probably change in the future
+export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId'>;
+export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 
 export class Room extends DomainObject<RoomProps> {
 	public constructor(props: RoomProps) {
@@ -46,6 +47,10 @@ export class Room extends DomainObject<RoomProps> {
 
 	public set color(value: RoomColor) {
 		this.props.color = value;
+	}
+
+	public get schoolId(): EntityId {
+		return this.props.schoolId;
 	}
 
 	public get startDate(): Date | undefined {
