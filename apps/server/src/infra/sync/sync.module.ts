@@ -10,6 +10,7 @@ import { LoggerModule } from '@src/core/logger';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { SyncConsole } from './console/sync.console';
 import { SyncService } from './service/sync.service';
+import { TspLegacyMigrationService } from './tsp/tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp/tsp-oauth-data.mapper';
 import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
@@ -28,7 +29,7 @@ import { SyncUc } from './uc/sync.uc';
 		SyncUc,
 		SyncService,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper]
+			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspLegacyMigrationService]
 			: []),
 	],
 	exports: [SyncConsole],

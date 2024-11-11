@@ -16,6 +16,7 @@ import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
+import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
@@ -31,6 +32,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly logger: Logger,
 		private readonly tspSyncService: TspSyncService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
+		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		configService: ConfigService<TspSyncConfig, true>,
 		private readonly provisioningService: ProvisioningService
 	) {
@@ -50,6 +52,8 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	public async sync(): Promise<void> {
 		const system = await this.tspSyncService.findTspSystemOrFail();
+
+		await this.tspLegacyMigrationService.migrateLegacyData(system.id);
 
 		await this.syncSchools(system);
 
