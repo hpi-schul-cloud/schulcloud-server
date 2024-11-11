@@ -9,7 +9,7 @@ import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 
 const baseRouteName = '/boards';
 
-describe(`board delete (api)`, () => {
+describe(`board delete in course (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;

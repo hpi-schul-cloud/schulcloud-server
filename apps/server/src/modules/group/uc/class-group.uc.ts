@@ -217,7 +217,7 @@ export class ClassGroupUc {
 	}
 
 	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
-		const filter: GroupFilter = { schoolId, groupTypes: [GroupTypes.CLASS] };
+		const filter: GroupFilter = { schoolId, groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER] };
 
 		const groups: Page<Group> = await this.groupService.findGroups(filter);
 
@@ -227,7 +227,7 @@ export class ClassGroupUc {
 	}
 
 	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
-		const filter: GroupFilter = { userId, groupTypes: [GroupTypes.CLASS] };
+		const filter: GroupFilter = { userId, groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER] };
 
 		const groups: Page<Group> = await this.groupService.findGroups(filter);
 
