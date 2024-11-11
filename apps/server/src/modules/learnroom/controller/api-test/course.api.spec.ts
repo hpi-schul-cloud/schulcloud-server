@@ -49,6 +49,10 @@ describe('Course Controller (API)', () => {
 		await app.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('[GET] /courses/', () => {
 		const setup = () => {
 			const student = createStudent();
@@ -275,6 +279,37 @@ describe('Course Controller (API)', () => {
 				const result: CourseEntity = await em.findOneOrFail(CourseEntity, course.id);
 				expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
 				expect(result.syncedWithGroup?.id).toBe(group.id);
+			});
+		});
+
+		describe('when a groupId parameter is invalid', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacher.account);
+				const params = { groupId: 'not-mongo-id' };
+
+				return {
+					loggedInClient,
+					course,
+					group,
+					params,
+				};
+			};
+
+			it('should not start the synchronization with validation error', async () => {
+				const { loggedInClient, course, params } = await setup();
+
+				const response = await loggedInClient.post(`${course.id}/start-sync`).send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 			});
 		});
 

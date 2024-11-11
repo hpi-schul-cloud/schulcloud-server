@@ -39,6 +39,7 @@ export class CourseEntityMapper {
 			copyingSince: entity.copyingSince,
 			shareToken: entity.shareToken,
 			syncedWithGroup: entity.syncedWithGroup?.id,
+			excludeFromSync: entity.excludeFromSync,
 		});
 
 		return course;
@@ -77,6 +78,7 @@ export class CourseEntityMapper {
 			copyingSince: props.copyingSince,
 			shareToken: props.shareToken,
 			syncedWithGroup: props.syncedWithGroup,
+			excludeFromSync: props.excludeFromSync,
 		};
 
 		return courseEntityData;
