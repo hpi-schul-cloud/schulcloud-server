@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import net from 'net';
 import axios from 'axios';
+import net from 'net';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 import { MetaData } from '../types';
@@ -8,30 +8,37 @@ import { MetaData } from '../types';
 @Injectable()
 export class MetaTagExternalUrlService {
 	async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
-		try {
-			if (this.isValidNetworkAddress(url)) {
-				const html = await this.fetchHtmlPartly(url);
-				const { result } = await ogs({ html });
-				const { ogTitle, ogDescription, ogImage } = result;
-
-				return {
-					title: ogTitle ?? '',
-					description: ogDescription ?? '',
-					image: ogImage ? this.pickImage(ogImage) : undefined,
-					url,
-					type: 'external',
-				};
-			}
-		} catch (error) {
-			// log error
+		if (!this.isValidNetworkAddress(url)) {
+			return undefined;
 		}
-		return undefined;
+		const html = await this.fetchHtmlPartly(url);
+		const { result, error } = await ogs({ html });
+		if (error) {
+			// unable to parse html
+			return undefined;
+		}
+		const { ogTitle, ogDescription, ogImage } = result;
+
+		return {
+			title: ogTitle ?? '',
+			description: ogDescription ?? '',
+			image: ogImage ? this.pickImage(ogImage) : undefined,
+			url,
+			type: 'external',
+		};
 	}
 
 	private isValidNetworkAddress(url: string): boolean {
-		const urlObject = new URL(url);
+		let urlObject: URL;
+		try {
+			urlObject = new URL(url);
+		} catch (error) {
+			return false;
+		}
+
 		if (net.isIPv4(urlObject.hostname) || net.isIPv6(urlObject.hostname)) {
-			throw new Error(`Invalid url - IP adress as hostname is not allowed for external urls: ${url}`);
+			//  Invalid url - IP adress as hostname is not allowed for external urls
+			return false;
 		}
 		return true;
 	}
@@ -60,8 +67,10 @@ export class MetaTagExternalUrlService {
 				stream.on('error', reject);
 			});
 		} catch (error) {
+			// due to the fact, that it is very hard to mock the internal axios cancelation mechanism (including throwing this cancelation error),
+			// the next line is not covered by tests
+			// istanbul ignore next
 			if (!axios.isCancel(error)) {
-				// log error
 				throw error;
 			}
 		}
