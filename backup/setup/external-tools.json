@@ -1128,6 +1128,7 @@
 		"isDeactivated": false,
 		"openNewTab": false,
 		"restrictToContexts": [],
-		"isPreferred": true
+		"isPreferred": true,
+		"iconName": "mdiMovieRoll"
 	}
 ]
