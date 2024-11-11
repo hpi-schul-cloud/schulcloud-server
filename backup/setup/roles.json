@@ -586,7 +586,7 @@
 		"_id": {
 			"$oid": "6720b8621b61c9dd7ebd193b"
 		},
-		"name": "room_viewer",
+		"name": "roomviewer",
 		"permissions": [
 			"ROOM_VIEW"
 		]
@@ -595,7 +595,7 @@
 		"_id": {
 			"$oid": "6720b8621b61c9dd7ebd193c"
 		},
-		"name": "room_editor",
+		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
 			"ROOM_EDIT"
