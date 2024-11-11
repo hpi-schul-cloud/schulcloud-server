@@ -1,10 +1,11 @@
 import type { EntityId } from '@shared/domain/types';
 
 export enum BoardExternalReferenceType {
-	'Course' = 'course',
-	'User' = 'user',
+	Course = 'course',
+	Room = 'room',
+	User = 'user',
 	// TODO
-	// 'ExternalTool' = 'external-tool',
+	// ExternalTool = 'external-tool',
 }
 
 export interface BoardExternalReference {
