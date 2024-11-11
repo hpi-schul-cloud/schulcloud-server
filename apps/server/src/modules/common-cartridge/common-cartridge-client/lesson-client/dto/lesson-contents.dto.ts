@@ -1,4 +1,6 @@
 export class LessonContentDto {
+	id: string | undefined;
+
 	content: object;
 
 	title: string;
@@ -22,6 +24,7 @@ export const LessonContentDtoComponentValues = {
 	RESOURCES: 'resources',
 	TEXT: 'text',
 	NE_XBOARD: 'neXboard',
+	LERNSTORE: 'lernstore',
 } as const;
 
 export type LessonContentDtoComponent =

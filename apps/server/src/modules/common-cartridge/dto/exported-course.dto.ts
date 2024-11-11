@@ -4,6 +4,7 @@ import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/cou
 import { LessonDto } from '../common-cartridge-client/lesson-client/dto';
 import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
 
+// TODO to be removed
 export class ExportedCourse {
 	metadata: CourseCommonCartridgeMetadataDto;
 

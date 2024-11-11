@@ -4,7 +4,7 @@ import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
-import { ExportedCourse } from '../dto/exported-course.dto';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -24,8 +24,8 @@ export class CommonCartridgeUc {
 		return response;
 	}
 
-	public async exportCourseToCommonCartridge(courseId: EntityId): Promise<ExportedCourse> {
-		const exportedCourse = await this.exportService.exportCourse(courseId);
+	public async exportCourseToCommonCartridge(courseId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
+		const exportedCourse = await this.exportService.exportCourse(courseId, version);
 
 		return exportedCourse;
 	}
