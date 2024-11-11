@@ -145,7 +145,7 @@ describe(CourseSyncUc.name, () => {
 
 				await uc.startSynchronization(user.id, course.id, group.id);
 
-				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group);
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, user);
 			});
 		});
 	});

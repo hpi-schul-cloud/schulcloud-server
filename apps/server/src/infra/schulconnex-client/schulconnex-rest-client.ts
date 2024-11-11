@@ -62,7 +62,8 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		const response: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[] =
 			await this.getRequest<(SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]>(
 				url,
-				accessToken
+				accessToken,
+				this.options.policiesInfoTimeoutInMs
 			);
 
 		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };
