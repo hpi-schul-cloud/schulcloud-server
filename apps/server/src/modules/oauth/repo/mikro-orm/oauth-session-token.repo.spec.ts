@@ -1,7 +1,7 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections, userFactory } from '@shared/testing';
 import { OauthSessionTokenEntity } from '../../entity';
 import { oauthSessionTokenEntityFactory, oauthSessionTokenFactory } from '../../testing';
 import { OAUTH_SESSION_TOKEN_REPO } from '../oauth-session-token.repo.interface';
@@ -91,6 +91,79 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 				const result = await repo.save(oauthSessionToken);
 
 				expect(result).toEqual(oauthSessionToken);
+			});
+		});
+	});
+
+	describe('findLatestByUserId', () => {
+		describe('when a user without a saved session token is provided', () => {
+			const setup = async () => {
+				const sessionTokens = oauthSessionTokenEntityFactory.buildListWithId(3);
+
+				await em.persistAndFlush(sessionTokens);
+				em.clear();
+
+				const user = userFactory.build();
+				const userId = user.id;
+
+				return {
+					userId,
+				};
+			};
+
+			it('should return null', async () => {
+				const { userId } = await setup();
+
+				const result = await repo.findLatestByUserId(userId);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when a user with several saved session tokens is provided', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+
+				const sessionTokens = [1, 5, 10].map((i) =>
+					oauthSessionTokenEntityFactory.build({
+						expiresAt: new Date(Date.now() + i * 3600 * 1000),
+						user,
+					})
+				);
+
+				const latestSessionToken = oauthSessionTokenEntityFactory.build({
+					expiresAt: new Date(Date.now() + 100 * 3600 * 1000),
+					user,
+				});
+
+				await em.persistAndFlush([user, ...sessionTokens, latestSessionToken]);
+				em.clear();
+
+				const expectedTokenEntity: OauthSessionTokenEntity = latestSessionToken;
+				const latestExpiredAt = latestSessionToken.expiresAt;
+
+				const expectedToken = oauthSessionTokenFactory.build({
+					id: expectedTokenEntity.id,
+					refreshToken: expectedTokenEntity.refreshToken,
+					systemId: expectedTokenEntity.system.id,
+					expiresAt: expectedTokenEntity.expiresAt,
+					userId: user.id,
+				});
+
+				return {
+					expectedToken,
+					latestExpiredAt,
+					userId: user.id,
+				};
+			};
+
+			it('should return the latest session token domain object', async () => {
+				const { expectedToken, latestExpiredAt, userId } = await setup();
+
+				const result = await repo.findLatestByUserId(userId);
+
+				expect(result).toEqual(expectedToken);
+				expect(result?.expiresAt).toEqual(latestExpiredAt);
 			});
 		});
 	});

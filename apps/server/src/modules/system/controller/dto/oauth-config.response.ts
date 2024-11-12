@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class OauthConfigResponse {
 	@ApiProperty({
@@ -85,6 +85,11 @@ export class OauthConfigResponse {
 	})
 	jwksEndpoint: string;
 
+	@ApiPropertyOptional({
+		description: 'End session endpoint',
+	})
+	endSessionEndpoint?: string;
+
 	constructor(oauthConfigResponse: OauthConfigResponse) {
 		this.clientId = oauthConfigResponse.clientId;
 		this.idpHint = oauthConfigResponse.idpHint;
@@ -98,5 +103,6 @@ export class OauthConfigResponse {
 		this.logoutEndpoint = oauthConfigResponse.logoutEndpoint;
 		this.issuer = oauthConfigResponse.issuer;
 		this.jwksEndpoint = oauthConfigResponse.jwksEndpoint;
+		this.endSessionEndpoint = oauthConfigResponse.endSessionEndpoint;
 	}
 }
