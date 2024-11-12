@@ -1,12 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { accountDoFactory } from '@modules/account/testing';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ErrorLoggable } from '@src/core/error/loggable';
+import { Logger } from '@src/core/logger';
 import { currentUserFactory, JwtTestFactory } from '@shared/testing';
 import { ConfigService } from '@nestjs/config';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { OauthSessionTokenService } from '@modules/oauth';
 import { oauthSessionTokenFactory } from '@modules/oauth/testing';
-import { AuthenticationService } from '../services';
+import { AuthenticationService, LogoutService } from '../services';
 import { ExternalSystemLogoutIsDisabledLoggableException } from '../errors';
 import { LogoutUc } from './logout.uc';
 
@@ -15,6 +19,8 @@ describe(LogoutUc.name, () => {
 	let logoutUc: LogoutUc;
 
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let logoutService: DeepMocked<LogoutService>;
+	let logger: DeepMocked<Logger>;
 	let configService: DeepMocked<ConfigService>;
 	let systemService: DeepMocked<SystemService>;
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
@@ -26,6 +32,14 @@ describe(LogoutUc.name, () => {
 				{
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
+				},
+				{
+					provide: LogoutService,
+					useValue: createMock<LogoutService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ConfigService,
@@ -44,6 +58,8 @@ describe(LogoutUc.name, () => {
 
 		logoutUc = await module.get(LogoutUc);
 		authenticationService = await module.get(AuthenticationService);
+		logoutService = await module.get(LogoutService);
+		logger = await module.get(Logger);
 		configService = await module.get(ConfigService);
 		systemService = module.get(SystemService);
 		oauthSessionTokenService = module.get(OauthSessionTokenService);
@@ -69,6 +85,66 @@ describe(LogoutUc.name, () => {
 				await logoutUc.logout(jwt);
 
 				expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith(jwt);
+			});
+		});
+	});
+
+	describe('logoutOidc', () => {
+		describe('when the logout token is valid', () => {
+			const setup = () => {
+				const logoutToken = 'logoutToken';
+				const account = accountDoFactory.build();
+
+				logoutService.getAccountFromLogoutToken.mockResolvedValueOnce(account);
+
+				return {
+					logoutToken,
+					account,
+				};
+			};
+
+			it('should validate the logout token and get the account', async () => {
+				const { logoutToken } = setup();
+
+				await logoutUc.logoutOidc(logoutToken);
+
+				expect(logoutService.getAccountFromLogoutToken).toHaveBeenCalledWith(logoutToken);
+			});
+
+			it('should remove the user from the whitelist', async () => {
+				const { logoutToken, account } = setup();
+
+				await logoutUc.logoutOidc(logoutToken);
+
+				expect(authenticationService.removeUserFromWhitelist).toHaveBeenCalledWith(account);
+			});
+		});
+
+		describe('when the logout token is invalid', () => {
+			const setup = () => {
+				const logoutToken = 'logoutToken';
+				const error = new Error('Validation error');
+
+				logoutService.getAccountFromLogoutToken.mockRejectedValueOnce(error);
+
+				return {
+					logoutToken,
+					error,
+				};
+			};
+
+			it('should throw a generic error', async () => {
+				const { logoutToken } = setup();
+
+				await expect(logoutUc.logoutOidc(logoutToken)).rejects.toThrow(BadRequestException);
+			});
+
+			it('should log the original error', async () => {
+				const { logoutToken, error } = setup();
+
+				await expect(logoutUc.logoutOidc(logoutToken)).rejects.toThrow(BadRequestException);
+
+				expect(logger.warning).toHaveBeenCalledWith(new ErrorLoggable(error));
 			});
 		});
 	});
