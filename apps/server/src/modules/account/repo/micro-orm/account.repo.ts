@@ -109,7 +109,6 @@ export class AccountRepo {
 	}
 
 	public async searchByUsernameExactMatch(username: string, offset = 0, limit = 1): Promise<Counted<Account[]>> {
-		// const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&').toLowerCase();
 		const [entities, count] = await this.em.findAndCount(
 			this.entityName,
 			{
@@ -126,6 +125,9 @@ export class AccountRepo {
 		return [accounts, count];
 	}
 
+	/**
+	 * @deprecated causes slow query, do not use
+	 */
 	public async searchByUsernamePartialMatch(username: string, offset = 0, limit = 10): Promise<Counted<Account[]>> {
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
 		const [entities, count] = await this.em.findAndCount(
