@@ -14,7 +14,9 @@ import { HttpModule } from '@nestjs/axios';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
+import { UserModule } from '../user';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
@@ -61,6 +63,7 @@ const createJwtOptions = () => {
 		IdentityManagementModule,
 		CacheWrapperModule,
 		AuthGuardModule.register([AuthGuardOptions.JWT]),
+		UserModule,
 		HttpModule,
 		EncryptionModule,
 	],
@@ -73,7 +76,8 @@ const createJwtOptions = () => {
 		LdapStrategy,
 		Oauth2Strategy,
 		JwtWhitelistAdapter,
+		LogoutService,
 	],
-	exports: [AuthenticationService],
+	exports: [AuthenticationService, LogoutService],
 })
 export class AuthenticationTestModule {}

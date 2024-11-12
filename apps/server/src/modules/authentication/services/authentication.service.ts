@@ -115,6 +115,10 @@ export class AuthenticationService {
 		}
 	}
 
+	public async removeUserFromWhitelist(account: Account): Promise<void> {
+		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
+	}
+
 	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
 		return typeof decodedJwt?.jti === 'string' && typeof decodedJwt?.accountId === 'string';
 	}
