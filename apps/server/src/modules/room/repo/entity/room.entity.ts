@@ -13,7 +13,7 @@ export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
 	@Property({ nullable: false })
 	color!: RoomColor;
 
-	@Property({ type: ObjectIdType, nullable: false })
+	@Property({ type: ObjectIdType, fieldName: 'school', nullable: false })
 	schoolId!: EntityId;
 
 	@Property({ nullable: true })
