@@ -16,12 +16,11 @@ export interface RoomMemberEntityProps extends AuthorizableObject {
 @Entity({ tableName: 'room-members' })
 @Unique({ properties: ['roomId', 'userGroupId'] })
 export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMemberEntityProps {
-	@Property()
 	@Unique()
-	@Property({ type: ObjectIdType })
+	@Property({ type: ObjectIdType, fieldName: 'room' })
 	roomId!: EntityId;
 
-	@Property({ type: ObjectIdType })
+	@Property({ type: ObjectIdType, fieldName: 'userGroup' })
 	userGroupId!: EntityId;
 
 	@Property({ persist: false })
