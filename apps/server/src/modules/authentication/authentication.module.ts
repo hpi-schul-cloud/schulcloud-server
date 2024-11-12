@@ -1,10 +1,12 @@
 import { CacheWrapperModule } from '@infra/cache';
+import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { AccountModule } from '@modules/account';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -57,6 +59,8 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
+		HttpModule,
+		EncryptionModule,
 	],
 	providers: [
 		UserRepo,
