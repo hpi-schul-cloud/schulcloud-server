@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
-import { FederalState } from '@src/modules/school/domain';
+import { FederalState, FileStorageType } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { ObjectId } from 'bson';
@@ -126,6 +126,7 @@ export class TspSyncService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			id: new ObjectId().toHexString(),
+			fileStorageType: FileStorageType.AWS_S3,
 		});
 
 		const savedSchool = await this.schoolService.save(school);

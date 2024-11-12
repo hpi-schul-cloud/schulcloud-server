@@ -14,7 +14,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory, schoolYearFactory } from '@shared/testing';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
-import { SchoolProps } from '@src/modules/school/domain';
+import { FileStorageType, SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
@@ -451,6 +451,7 @@ describe(TspSyncService.name, () => {
 						systemIds: [system.id],
 						federalState,
 						currentYear: schoolYear,
+						fileStorageType: FileStorageType.AWS_S3,
 					}) as Partial<SchoolProps>,
 				});
 			});
@@ -488,6 +489,7 @@ describe(TspSyncService.name, () => {
 						systemIds: [system.id],
 						federalState,
 						currentYear: schoolYear,
+						fileStorageType: FileStorageType.AWS_S3,
 					}) as Partial<SchoolProps>,
 				});
 				expect(federalStateService.findFederalStateByName).not.toHaveBeenCalled();
