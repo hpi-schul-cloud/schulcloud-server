@@ -108,12 +108,44 @@ export class AccountRepo {
 		await this.em.flush();
 	}
 
-	public async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<Counted<Account[]>> {
-		return this.searchByUsername(username, skip, limit, true);
+	public async searchByUsernameExactMatch(username: string, offset = 0, limit = 1): Promise<Counted<Account[]>> {
+		// const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&').toLowerCase();
+		const [entities, count] = await this.em.findAndCount(
+			this.entityName,
+			{
+				username,
+			},
+			{
+				offset,
+				limit,
+				orderBy: { username: 1 },
+			}
+		);
+		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
+
+		return [accounts, count];
 	}
 
-	public async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<Counted<Account[]>> {
-		return this.searchByUsername(username, skip, limit, false);
+	public async searchByUsernamePartialMatch(username: string, offset = 0, limit = 10): Promise<Counted<Account[]>> {
+		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
+		const [entities, count] = await this.em.findAndCount(
+			this.entityName,
+			{
+				// NOTE: The default behavior of the MongoDB driver allows
+				// to pass regular expressions directly into the where clause
+				// without the need of using the $re operator, this will NOT
+				// work with SQL drivers.
+				username: new RegExp(escapedUsername, 'i'),
+			},
+			{
+				offset,
+				limit,
+				orderBy: { username: 1 },
+			}
+		);
+		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
+
+		return [accounts, count];
 	}
 
 	public async deleteById(accountId: EntityId | ObjectId): Promise<void> {
@@ -153,32 +185,5 @@ export class AccountRepo {
 		const result = foundUsers.filter((user) => user.userId !== undefined).map(({ userId }) => userId!.toHexString());
 
 		return result;
-	}
-
-	private async searchByUsername(
-		username: string,
-		offset: number,
-		limit: number,
-		exactMatch: boolean
-	): Promise<Counted<Account[]>> {
-		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
-		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
-		const [entities, count] = await this.em.findAndCount(
-			this.entityName,
-			{
-				// NOTE: The default behavior of the MongoDB driver allows
-				// to pass regular expressions directly into the where clause
-				// without the need of using the $re operator, this will NOT
-				// work with SQL drivers
-				username: new RegExp(searchUsername, 'i'),
-			},
-			{
-				offset,
-				limit,
-				orderBy: { username: 1 },
-			}
-		);
-		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
-		return [accounts, count];
 	}
 }
