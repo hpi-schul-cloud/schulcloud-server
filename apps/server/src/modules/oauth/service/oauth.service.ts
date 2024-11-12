@@ -8,6 +8,7 @@ import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { isObject } from '@nestjs/common/utils/shared.utils';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
@@ -134,6 +135,26 @@ export class OAuthService {
 		}
 
 		return decodedJWT;
+	}
+
+	/**
+	 * @see https://openid.net/specs/openid-connect-backchannel-1_0.html#Validation
+	 */
+	async validateLogoutToken(logoutToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
+		const validatedJwt: JwtPayload = await this.validateToken(logoutToken, oauthConfig);
+
+		if (
+			!isObject(validatedJwt.events) ||
+			!Object.keys(validatedJwt.events).includes('http://schemas.openid.net/event/backchannel-logout')
+		) {
+			throw new TokenInvalidLoggableException();
+		}
+
+		if (validatedJwt.nonce !== undefined) {
+			throw new TokenInvalidLoggableException();
+		}
+
+		return validatedJwt;
 	}
 
 	private buildTokenRequestPayload(

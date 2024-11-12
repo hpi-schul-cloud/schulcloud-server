@@ -15,9 +15,21 @@ export class JwtWhitelistAdapter {
 		await this.cacheManager.set(redisIdentifier, redisData, expirationInMilliseconds);
 	}
 
-	async removeFromWhitelist(accountId: string, jti: string): Promise<void> {
-		const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, jti);
+	async removeFromWhitelist(accountId: string, jti?: string): Promise<void> {
+		let keys: string[];
 
-		await this.cacheManager.del(redisIdentifier);
+		if (jti) {
+			const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, jti);
+			keys = [redisIdentifier];
+		} else {
+			const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, '*');
+			keys = await this.cacheManager.store.keys(redisIdentifier);
+		}
+
+		const deleteKeysPromise: Promise<void>[] = keys.map(
+			async (key: string): Promise<void> => this.cacheManager.del(key)
+		);
+
+		await Promise.all(deleteKeysPromise);
 	}
 }

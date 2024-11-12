@@ -30,13 +30,13 @@ import {
 	ExternalSystemLogoutFailedLoggableException,
 } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { UserAccountDeactivatedLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
 
-describe('AuthenticationService', () => {
+describe(AuthenticationService.name, () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 
@@ -262,6 +262,18 @@ describe('AuthenticationService', () => {
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
 				expect(jwtWhitelistAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('removeUserFromWhitelist', () => {
+		describe('when an account was provided', () => {
+			it('should call the jwtValidationAdapter to remove the jwt', async () => {
+				const account = accountDoFactory.build();
+
+				await authenticationService.removeUserFromWhitelist(account);
+
+				expect(jwtWhitelistAdapter.removeFromWhitelist).toHaveBeenCalledWith(account.id);
 			});
 		});
 	});
