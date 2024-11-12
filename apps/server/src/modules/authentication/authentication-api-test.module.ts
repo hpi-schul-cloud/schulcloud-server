@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '../../core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { AuthenticationTestModule } from './authentication-test.module';
 import { LoginController, LogoutController } from './controllers';
 import { LoginUc, LogoutUc } from './uc';
