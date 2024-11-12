@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { LessonContentResponseContentInner } from './lesson-content-response-content-inner';
 
 /**
  * 
@@ -22,10 +25,10 @@
 export interface LessonContentResponse {
     /**
      * 
-     * @type {object}
+     * @type {Array<LessonContentResponseContentInner>}
      * @memberof LessonContentResponse
      */
-    'content': object;
+    'content': Array<LessonContentResponseContentInner>;
     /**
      * The id of the Material entity
      * @type {string}

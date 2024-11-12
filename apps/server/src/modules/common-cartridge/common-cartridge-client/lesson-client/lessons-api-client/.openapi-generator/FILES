@@ -8,7 +8,14 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
+models/component-etherpad-props-impl.ts
+models/component-geogebra-props-impl.ts
+models/component-internal-props-impl.ts
+models/component-lernstore-props-impl.ts
+models/component-nexboard-props-impl.ts
+models/component-text-props-impl.ts
 models/index.ts
+models/lesson-content-response-content-inner.ts
 models/lesson-content-response.ts
 models/lesson-linked-task-response.ts
 models/lesson-metadata-list-response.ts
