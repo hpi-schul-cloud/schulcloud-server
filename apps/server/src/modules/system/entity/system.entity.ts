@@ -31,6 +31,7 @@ export class OauthConfigEntity {
 		this.logoutEndpoint = oauthConfig.logoutEndpoint;
 		this.issuer = oauthConfig.issuer;
 		this.jwksEndpoint = oauthConfig.jwksEndpoint;
+		this.endSessionEndpoint = oauthConfig.endSessionEndpoint;
 	}
 
 	@Property()
@@ -71,6 +72,9 @@ export class OauthConfigEntity {
 
 	@Property()
 	jwksEndpoint: string;
+
+	@Property({ nullable: true })
+	endSessionEndpoint?: string;
 }
 
 @Embeddable()

@@ -157,6 +157,7 @@ describe(SystemMikroOrmRepo.name, () => {
 						tokenEndpoint: oauthConfig.tokenEndpoint,
 						clientId: oauthConfig.clientId,
 						scope: oauthConfig.scope,
+						endSessionEndpoint: oauthConfig.endSessionEndpoint,
 					},
 					ldapConfig: {
 						url: ldapConfig.url,
