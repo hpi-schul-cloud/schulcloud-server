@@ -1669,6 +1669,11 @@
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
 					"default": 120000
+				},
+				"POLICIES_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching policies info from schulconnex",
+					"default": 4000
 				}
 			},
 			"default": {
@@ -1742,6 +1747,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the rooms feature"
+		},
+		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the external system logout feature"
 		}
 	},
 	"required": []

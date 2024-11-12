@@ -48,6 +48,7 @@ describe('System Entity', () => {
 						logoutEndpoint: 'https://mock.de/logout',
 						issuer: 'mock_issuer',
 						jwksEndpoint: 'https://mock.de/jwks',
+						endSessionEndpoint: 'https://mock.de/logout',
 					},
 				})
 			);

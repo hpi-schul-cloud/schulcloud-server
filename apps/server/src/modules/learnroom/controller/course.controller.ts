@@ -122,6 +122,7 @@ export class CourseController {
 	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
 	@ApiNoContentResponse({ description: 'The course was successfully synchronized to a group.' })
 	@ApiUnprocessableEntityResponse({ description: 'The course is already synchronized with a group.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	public async startSynchronization(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: CourseUrlParams,

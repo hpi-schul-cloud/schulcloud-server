@@ -7,6 +7,10 @@ const { Schema } = mongoose;
 const COURSE_FEATURES = {
 	VIDEOCONFERENCE: 'videoconference',
 };
+
+const SYNC_ATTRIBUTE = {
+	TEACHERS: 'teachers',
+};
 // not all pros exist in new entity
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
@@ -62,6 +66,7 @@ const courseSchema = getUserGroupSchema({
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 	features: [{ type: String, enum: Object.values(COURSE_FEATURES) }],
 	syncedWithGroup: { type: Schema.Types.ObjectId },
+	excludeFromSync: [{ type: String, enum: Object.values(SYNC_ATTRIBUTE) }],
 	...externalSourceSchema,
 });
 
@@ -154,4 +159,5 @@ module.exports = {
 	courseGroupModel,
 	classModel,
 	getClassDisplayName,
+	SYNC_ATTRIBUTE,
 };
