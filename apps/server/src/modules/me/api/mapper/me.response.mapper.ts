@@ -1,22 +1,31 @@
 import { Role, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { School } from '@src/modules/school';
+import { System } from '@src/modules/system';
 import {
 	MeAccountResponse,
 	MeResponse,
 	MeRoleResponse,
 	MeSchoolLogoResponse,
 	MeSchoolResponse,
+	MeSystemResponse,
 	MeUserResponse,
 } from '../dto';
 
 export class MeResponseMapper {
-	public static mapToResponse(school: School, user: User, accountId: EntityId, permissions: string[]): MeResponse {
+	public static mapToResponse(
+		school: School,
+		user: User,
+		accountId: EntityId,
+		permissions: string[],
+		system: System | null
+	): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user);
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
 		const language = user.getInfo().language || school.getInfo().language;
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
+		const systemResponse = system ? MeResponseMapper.mapSystem(system) : undefined;
 
 		const res = new MeResponse({
 			school: schoolResponse,
@@ -25,6 +34,7 @@ export class MeResponseMapper {
 			permissions,
 			language,
 			account: accountResponse,
+			system: systemResponse,
 		});
 
 		return res;
@@ -83,5 +93,15 @@ export class MeResponseMapper {
 		});
 
 		return accountResponse;
+	}
+
+	private static mapSystem(system: System): MeSystemResponse {
+		const systemResponse = new MeSystemResponse({
+			id: system.id,
+			name: system.displayName,
+			hasEndSessionEndpoint: !!system.oauthConfig?.endSessionEndpoint,
+		});
+
+		return systemResponse;
 	}
 }
