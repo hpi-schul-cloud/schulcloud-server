@@ -5,6 +5,7 @@ import { AccountModule } from '@modules/account';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +16,7 @@ import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { AuthenticationConfig } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
@@ -59,6 +61,7 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
+		UserModule,
 		HttpModule,
 		EncryptionModule,
 	],
@@ -71,7 +74,8 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		LdapStrategy,
 		Oauth2Strategy,
 		JwtWhitelistAdapter,
+		LogoutService,
 	],
-	exports: [AuthenticationService],
+	exports: [AuthenticationService, LogoutService],
 })
 export class AuthenticationModule {}
