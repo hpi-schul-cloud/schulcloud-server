@@ -81,16 +81,14 @@ export class LessonContentResponse {
 	}
 
 	@ApiProperty({
-		items: {
-			oneOf: [
-				{ $ref: getSchemaPath(ComponentTextPropsImpl) },
-				{ $ref: getSchemaPath(ComponentEtherpadPropsImpl) },
-				{ $ref: getSchemaPath(ComponentGeogebraPropsImpl) },
-				{ $ref: getSchemaPath(ComponentInternalPropsImpl) },
-				{ $ref: getSchemaPath(ComponentLernstorePropsImpl) },
-				{ $ref: getSchemaPath(ComponentNexboardPropsImpl) },
-			],
-		},
+		oneOf: [
+			{ $ref: getSchemaPath(ComponentTextPropsImpl) },
+			{ $ref: getSchemaPath(ComponentEtherpadPropsImpl) },
+			{ $ref: getSchemaPath(ComponentGeogebraPropsImpl) },
+			{ $ref: getSchemaPath(ComponentInternalPropsImpl) },
+			{ $ref: getSchemaPath(ComponentLernstorePropsImpl) },
+			{ $ref: getSchemaPath(ComponentNexboardPropsImpl) },
+		],
 	})
 	content?:
 		| ComponentTextPropsImpl
