@@ -1,7 +1,9 @@
+import { LessonContentResponseContentInnerDto } from './lesson-content-response-inner.dto';
+
 export class LessonContentDto {
 	id: string | undefined;
 
-	content: object;
+	content: Array<LessonContentResponseContentInnerDto>;
 
 	title: string;
 
