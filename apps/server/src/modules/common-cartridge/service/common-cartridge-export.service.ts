@@ -1,6 +1,7 @@
 import { FileApiInterface, FilesStorageClientFactory } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
@@ -53,11 +54,13 @@ export class CommonCartridgeExportService {
 		return downloadedFiles;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
 	private async getFile(client: FileApiInterface, file: FileDto): Promise<[FileDto, Buffer]> {
-		// const response = await client.download(file.id, file.name, undefined, { responseType: 'stream' });
-		// const buffer = Buffer.from(response.data.pipe());
+		const response = (await client.download(file.id, file.name, undefined, {
+			responseType: 'blob',
+		})) as AxiosResponse<Blob>;
+		const arrayBuffer = await response.data.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
 
-		throw new Error('Not implemented');
+		return [file, buffer];
 	}
 }
