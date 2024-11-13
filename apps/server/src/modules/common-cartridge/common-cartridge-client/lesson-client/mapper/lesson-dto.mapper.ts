@@ -5,7 +5,6 @@ import { ComponentInternalPropsDto } from '../dto/component-internal-props.dto';
 import { ComponentLernstorePropsDto } from '../dto/component-lernstore-props.dto';
 import { ComponentNexboardPropsDto } from '../dto/component-nexboard-props-dto';
 import { ComponentTextPropsDto } from '../dto/component-text-props.dto';
-import { LessonContentResponseContentInnerDto } from '../dto/lesson-content-response-inner.dto';
 import {
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
@@ -15,7 +14,6 @@ import {
 	ComponentTextPropsImpl,
 	LessonContentResponse,
 	LessonContentResponseComponent,
-	LessonContentResponseContentInner,
 	LessonLinkedTaskResponse,
 	LessonResponse,
 	MaterialResponse,
@@ -71,38 +69,95 @@ export class LessonDtoMapper {
 	}
 
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto {
-		const lessonContentDto = new LessonContentDto({
-			id: lessonContentResponse.id,
-			title: lessonContentResponse.title,
-			component: lessonContentResponse.component,
-			hidden: lessonContentResponse.hidden,
-			content: lessonContentResponse.content.map((contentInner) =>
-				this.mapToLessonContentResponseInner(lessonContentResponse.component, contentInner)
-			),
-		});
-
-		return lessonContentDto;
-	}
-
-	private static mapToLessonContentResponseInner(
-		component: LessonContentResponseComponent,
-		contentResponseInner: LessonContentResponseContentInner
-	): LessonContentResponseContentInnerDto {
-		switch (component) {
+		switch (lessonContentResponse.component) {
 			case LessonContentResponseComponent.TEXT:
-				return new ComponentTextPropsDto(contentResponseInner as ComponentTextPropsImpl);
+				return new LessonContentDto({
+					id: lessonContentResponse.id,
+					title: lessonContentResponse.title,
+					component: lessonContentResponse.component,
+					hidden: lessonContentResponse.hidden,
+					content: lessonContentResponse.content.map((contentInner) =>
+						this.mapToComponentTextPropsDto(contentInner as ComponentTextPropsImpl)
+					),
+				});
 			case LessonContentResponseComponent.ETHERPAD:
-				return new ComponentEtherpadPropsDto(contentResponseInner as ComponentEtherpadPropsImpl);
+				return new LessonContentDto({
+					id: lessonContentResponse.id,
+					title: lessonContentResponse.title,
+					component: lessonContentResponse.component,
+					hidden: lessonContentResponse.hidden,
+					content: lessonContentResponse.content.map((contentInner) =>
+						this.mapToComponentEtherpadPropsDto(contentInner as ComponentEtherpadPropsImpl)
+					),
+				});
 			case LessonContentResponseComponent.GEO_GEBRA:
-				return new ComponentGeogebraPropsDto(contentResponseInner as ComponentGeogebraPropsImpl);
+				return new LessonContentDto({
+					id: lessonContentResponse.id,
+					title: lessonContentResponse.title,
+					component: lessonContentResponse.component,
+					hidden: lessonContentResponse.hidden,
+					content: lessonContentResponse.content.map((contentInner) =>
+						this.mapToComponentGeogebraPropsDto(contentInner as ComponentGeogebraPropsImpl)
+					),
+				});
 			case LessonContentResponseComponent.INTERNAL:
-				return new ComponentInternalPropsDto(contentResponseInner as ComponentInternalPropsImpl);
+				return new LessonContentDto({
+					id: lessonContentResponse.id,
+					title: lessonContentResponse.title,
+					component: lessonContentResponse.component,
+					hidden: lessonContentResponse.hidden,
+					content: lessonContentResponse.content.map((contentInner) =>
+						this.mapToComponentInternalPropsDto(contentInner as ComponentInternalPropsImpl)
+					),
+				});
 			case LessonContentResponseComponent.RESOURCES:
-				return new ComponentLernstorePropsDto(contentResponseInner as ComponentLernstorePropsImpl);
+				return new LessonContentDto({
+					id: lessonContentResponse.id,
+					title: lessonContentResponse.title,
+					component: lessonContentResponse.component,
+					hidden: lessonContentResponse.hidden,
+					content: lessonContentResponse.content.map((contentInner) =>
+						this.mapToComponentLernstorePropsDto(contentInner as ComponentLernstorePropsImpl)
+					),
+				});
 			case LessonContentResponseComponent.NE_XBOARD:
-				return new ComponentNexboardPropsDto(contentResponseInner as ComponentNexboardPropsImpl);
+				return new LessonContentDto({
+					id: lessonContentResponse.id,
+					title: lessonContentResponse.title,
+					component: lessonContentResponse.component,
+					hidden: lessonContentResponse.hidden,
+					content: lessonContentResponse.content.map((contentInner) =>
+						this.mapToComponentNexboardPropsDto(contentInner as ComponentNexboardPropsImpl)
+					),
+				});
 			default:
 				throw new Error(`Unknown component type of lesson content`);
 		}
+	}
+
+	private static mapToComponentTextPropsDto(contentInner: ComponentTextPropsImpl): ComponentTextPropsDto {
+		return new ComponentTextPropsDto(contentInner);
+	}
+
+	private static mapToComponentEtherpadPropsDto(contentInner: ComponentEtherpadPropsImpl): ComponentEtherpadPropsDto {
+		return new ComponentEtherpadPropsDto(contentInner);
+	}
+
+	private static mapToComponentGeogebraPropsDto(contentInner: ComponentGeogebraPropsImpl): ComponentGeogebraPropsDto {
+		return new ComponentGeogebraPropsDto(contentInner);
+	}
+
+	private static mapToComponentInternalPropsDto(contentInner: ComponentInternalPropsImpl): ComponentInternalPropsDto {
+		return new ComponentInternalPropsDto(contentInner);
+	}
+
+	private static mapToComponentLernstorePropsDto(
+		contentInner: ComponentLernstorePropsImpl
+	): ComponentLernstorePropsDto {
+		return new ComponentLernstorePropsDto(contentInner);
+	}
+
+	private static mapToComponentNexboardPropsDto(contentInner: ComponentNexboardPropsImpl): ComponentNexboardPropsDto {
+		return new ComponentNexboardPropsDto(contentInner);
 	}
 }
