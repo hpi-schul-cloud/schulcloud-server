@@ -30,7 +30,9 @@ export interface GroupEntityProps {
 }
 
 @Entity({ tableName: 'groups' })
-@Index({ properties: ['users', 'organization', 'type'] })
+@Index({ properties: ['users'] })
+@Index({ properties: ['organization'] })
+@Index({ properties: ['type'] })
 export class GroupEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
