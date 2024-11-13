@@ -69,7 +69,6 @@ export class LessonDtoMapper {
 	}
 
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto {
-		console.log(lessonContentResponse.content);
 		switch (lessonContentResponse.component) {
 			case LessonContentResponseComponent.TEXT:
 				return new LessonContentDto({

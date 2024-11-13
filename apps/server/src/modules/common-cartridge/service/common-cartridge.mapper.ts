@@ -19,6 +19,10 @@ import { CommonCartridgeResourceProps } from '../export/resources/common-cartrid
 import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
 import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
 import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
+import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
+import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
+import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
+import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -58,7 +62,7 @@ export class CommonCartridgeExportMapper {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: createIdentifier(lessonContent.id),
 					title: lessonContent.title,
-					html: `<h1>${lessonContent.title}</h1><p>${lessonContent.content.toString()}</p>`,
+					html: `<h1>${lessonContent.title}</h1><p>${(lessonContent.content as ComponentTextPropsDto).text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				};
 			case LessonContentDtoComponentValues.GEO_GEBRA:
@@ -66,25 +70,25 @@ export class CommonCartridgeExportMapper {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
 					title: lessonContent.title,
-					// TODO - check if the url is correct
-					url: `${CommonCartridgeExportMapper.GEOGEBRA_BASE_URL}/m/${lessonContent.content.toString()}`,
+					url: `${CommonCartridgeExportMapper.GEOGEBRA_BASE_URL}/m/${
+						(lessonContent.content as ComponentGeogebraPropsDto).materialId
+					}`,
 				};
 			case LessonContentDtoComponentValues.ETHERPAD:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
-					// TODO - better solution for title
-					title: `${lessonContent.title} - ${lessonContent.content.toString()}`,
-					// TODO better solution for url
-					url: lessonContent.content.toString(),
+					title: `${(lessonContent.content as ComponentEtherpadPropsDto).title} - ${
+						(lessonContent.content as ComponentEtherpadPropsDto).description
+					}`,
+					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				};
 			case LessonContentDtoComponentValues.LERNSTORE:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
-					title: lessonContent.title,
-					// TODO better solution for url
-					url: lessonContent.content.toString(),
+					title: (lessonContent.content as ComponentLernstorePropsDto).resources.join(', '),
+					url: (lessonContent.content as ComponentLernstorePropsDto & { url: string }).url,
 				};
 			default:
 				return [];
