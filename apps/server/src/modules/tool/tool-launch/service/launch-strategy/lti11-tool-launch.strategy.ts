@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
@@ -6,18 +7,25 @@ import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityEx
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UUID } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { LtiPrivacyPermission, LtiRole } from '../../../common/enum';
-import { ExternalTool } from '../../../external-tool/domain';
+import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
+import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
-import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import {
+	AuthenticationValues,
+	LaunchRequestMethod,
+	PropertyData,
+	PropertyLocation,
+	ToolLaunchRequest,
+} from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
@@ -60,6 +68,100 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
+		let properties: PropertyData[];
+		if (config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST) {
+			properties = await this.buildToolLaunchDataForContentItemSelectionRequest(userId, data, config);
+		} else {
+			properties = await this.buildToolLaunchDataForLtiLaunch(
+				userId,
+				data,
+				config,
+				LtiMessageType.BASIC_LTI_LAUNCH_REQUEST
+			);
+		}
+
+		return properties;
+	}
+
+	private async buildToolLaunchDataForContentItemSelectionRequest(
+		userId: EntityId,
+		data: ToolLaunchParams,
+		config: Lti11ToolConfig
+	): Promise<PropertyData[]> {
+		if (!data.contextExternalTool.id) {
+			throw new UnprocessableEntityException(
+				'Cannot lauch a content selection request with a non-permanent context external tool'
+			);
+		}
+
+		const additionalProperties: PropertyData[] = await this.buildToolLaunchDataForLtiLaunch(
+			userId,
+			data,
+			config,
+			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
+		);
+
+		const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const callbackUrl = new URL(
+			`${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`
+		);
+
+		const state = new UUID().toString();
+
+		additionalProperties.push(
+			new PropertyData({
+				name: 'content_item_return_url',
+				value: callbackUrl.toString(),
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'accept_media_types',
+				value: '*/*',
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'accept_presentation_document_targets',
+				value: 'window',
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'accept_unsigned',
+				value: 'false',
+				location: PropertyLocation.BODY,
+			})
+		);
+		additionalProperties.push(
+			new PropertyData({
+				name: 'accept_multiple',
+				value: 'false',
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'accept_copy_advice',
+				value: 'false',
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'auto_create',
+				value: 'true',
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'data',
+				value: state,
+				location: PropertyLocation.BODY,
+			})
+		);
+
+		return additionalProperties;
+	}
+
+	private async buildToolLaunchDataForLtiLaunch(
+		userId: EntityId,
+		data: ToolLaunchParams,
+		config: Lti11ToolConfig,
+		lti_message_type: LtiMessageType
+	): Promise<PropertyData[]> {
 		const user: UserDO = await this.userService.findById(userId);
 
 		const roleNames: RoleName[] = user.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
@@ -71,7 +173,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			new PropertyData({ name: 'key', value: config.key }),
 			new PropertyData({ name: 'secret', value: decrypted }),
 
-			new PropertyData({ name: 'lti_message_type', value: config.lti_message_type, location: PropertyLocation.BODY }),
+			new PropertyData({ name: 'lti_message_type', value: lti_message_type, location: PropertyLocation.BODY }),
 			new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
 			// When there is no persistent link to a resource, then generate a new one every time
 			new PropertyData({
@@ -198,5 +300,19 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
 		return LaunchRequestMethod.POST;
+	}
+
+	public override async createLaunchRequest(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchRequest> {
+		const request: ToolLaunchRequest = await super.createLaunchRequest(userId, data);
+
+		if (
+			ExternalTool.isLti11Config(data.externalTool.config) &&
+			data.externalTool.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
+		) {
+			request.openNewTab = true;
+			request.isDeepLink = true;
+		}
+
+		return request;
 	}
 }
