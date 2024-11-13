@@ -13,4 +13,5 @@ export interface AuthenticationConfig extends AccountConfig {
 	JWT_EXTENDED_TIMEOUT_SECONDS: number;
 	SC_DOMAIN: string;
 	LOGIN_BLOCK_TIME: number;
+	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: boolean;
 }

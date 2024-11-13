@@ -1,17 +1,15 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleDto, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { Group, GroupFilter, GroupUser } from '../domain';
+import { Group, GroupUser, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
 import { ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
@@ -24,7 +22,6 @@ export class GroupUc {
 		private readonly roleService: RoleService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
 
@@ -74,7 +71,7 @@ export class GroupUc {
 	public async getAllGroups(
 		userId: EntityId,
 		schoolId: EntityId,
-		options: IFindOptions<Group> = { pagination: { skip: 0 } },
+		options: IFindOptions<Group> = {},
 		nameQuery?: string,
 		availableGroupsForCourseSync?: boolean
 	): Promise<Page<ResolvedGroupDto>> {
@@ -83,18 +80,17 @@ export class GroupUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.GROUP_VIEW]));
 
-		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
+		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user, school);
 
-		const filter: GroupFilter = { nameQuery };
 		options.order = { name: SortOrder.asc };
 
-		if (canSeeFullList) {
-			filter.schoolId = schoolId;
-		} else {
-			filter.userId = userId;
-		}
-
-		const groups: Page<Group> = await this.getGroups(filter, options, availableGroupsForCourseSync);
+		const groups: Page<Group> = await this.groupService.findGroupsForUser(
+			user,
+			groupVisibilityPermission,
+			!!availableGroupsForCourseSync,
+			nameQuery,
+			options
+		);
 
 		const resolvedGroups: ResolvedGroupDto[] = await Promise.all(
 			groups.data.map(async (group: Group) => {
@@ -110,18 +106,21 @@ export class GroupUc {
 		return page;
 	}
 
-	private async getGroups(
-		filter: GroupFilter,
-		options: IFindOptions<Group>,
-		availableGroupsForCourseSync?: boolean
-	): Promise<Page<Group>> {
-		let foundGroups: Page<Group>;
-		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			foundGroups = await this.groupService.findAvailableGroups(filter, options);
-		} else {
-			foundGroups = await this.groupService.findGroups(filter, options);
+	private getGroupVisibilityPermission(user: User, school: School): GroupVisibilityPermission {
+		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
+		if (canSeeFullList) {
+			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
 		}
 
-		return foundGroups;
+		const canSeeAllClasses: boolean = this.authorizationService.hasPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
+		);
+		if (canSeeAllClasses) {
+			return GroupVisibilityPermission.ALL_SCHOOL_CLASSES;
+		}
+
+		return GroupVisibilityPermission.OWN_GROUPS;
 	}
 }
