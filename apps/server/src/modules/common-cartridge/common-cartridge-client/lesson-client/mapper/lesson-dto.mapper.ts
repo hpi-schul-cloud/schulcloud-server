@@ -73,12 +73,12 @@ export class LessonDtoMapper {
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto {
 		const lessonContentDto = new LessonContentDto({
 			id: lessonContentResponse.id,
-			content: lessonContentResponse.content.map((contentInner) =>
-				this.mapToLessonContentResponseInner(lessonContentResponse.component, contentInner)
-			),
 			title: lessonContentResponse.title,
 			component: lessonContentResponse.component,
 			hidden: lessonContentResponse.hidden,
+			content: lessonContentResponse.content.map((contentInner) =>
+				this.mapToLessonContentResponseInner(lessonContentResponse.component, contentInner)
+			),
 		});
 
 		return lessonContentDto;
