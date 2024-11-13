@@ -41,6 +41,12 @@ export class SystemService {
 		return systems;
 	}
 
+	public async findByOauth2Issuer(issuer: EntityId): Promise<System | null> {
+		const system: System | null = await this.systemRepo.findByOauth2Issuer(issuer);
+
+		return system;
+	}
+
 	public async delete(domainObject: System): Promise<boolean> {
 		await this.systemRepo.delete(domainObject);
 

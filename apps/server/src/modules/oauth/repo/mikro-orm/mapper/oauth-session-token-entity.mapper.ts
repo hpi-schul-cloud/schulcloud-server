@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/entity';
 import { User } from '@shared/domain/entity';
 import { OauthSessionToken } from '../../../domain';
-import { OauthSessionTokenEntityProps } from '../../../entity';
+import { OauthSessionTokenEntity, OauthSessionTokenEntityProps } from '../../../entity';
 
 export class OauthSessionTokenEntityMapper {
 	public static mapDOToEntityProperties(
@@ -18,5 +18,17 @@ export class OauthSessionTokenEntityMapper {
 		};
 
 		return entityProps;
+	}
+
+	public static mapEntityToDo(entity: OauthSessionTokenEntity) {
+		const domainObject = new OauthSessionToken({
+			id: entity.id,
+			userId: entity.user.id,
+			systemId: entity.system.id,
+			refreshToken: entity.refreshToken,
+			expiresAt: entity.expiresAt,
+		});
+
+		return domainObject;
 	}
 }

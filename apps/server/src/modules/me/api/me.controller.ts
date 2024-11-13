@@ -14,7 +14,12 @@ export class MeController {
 	@ApiResponse({ status: 200, type: MeResponse })
 	@Get()
 	public async me(@CurrentUser() currentUser: ICurrentUser): Promise<MeResponse> {
-		const res = await this.meUc.getMe(currentUser.userId, currentUser.schoolId, currentUser.accountId);
+		const res = await this.meUc.getMe(
+			currentUser.userId,
+			currentUser.schoolId,
+			currentUser.accountId,
+			currentUser.systemId
+		);
 
 		return res;
 	}

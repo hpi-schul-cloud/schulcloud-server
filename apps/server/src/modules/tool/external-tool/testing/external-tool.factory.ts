@@ -1,6 +1,6 @@
-import { DeepPartial } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
+import { DeepPartial } from 'fishery';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -24,7 +24,7 @@ import { fileRecordRefFactory } from './file-record-ref.factory';
 export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
 	return {
 		type: ToolConfigType.BASIC,
-		baseUrl: 'https://www.basic-baseUrl.com/',
+		baseUrl: 'https://www.basic-baseurl.com/',
 	};
 });
 
@@ -86,10 +86,19 @@ export const customParameterFactory = CustomParameterFactory.define(CustomParame
 });
 
 class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
+	withBasicConfig(customParam?: DeepPartial<BasicToolConfig>): this {
+		const params: DeepPartial<ExternalTool> = {
+			config: basicToolConfigFactory.build(customParam),
+		};
+
+		return this.params(params);
+	}
+
 	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfig>): this {
 		const params: DeepPartial<ExternalTool> = {
 			config: oauth2ToolConfigFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
@@ -97,6 +106,7 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 		const params: DeepPartial<ExternalTool> = {
 			config: lti11ToolConfigFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
@@ -104,6 +114,7 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 		const params: DeepPartial<ExternalTool> = {
 			parameters: customParameterFactory.buildList(number, customParam),
 		};
+
 		return this.params(params);
 	}
 

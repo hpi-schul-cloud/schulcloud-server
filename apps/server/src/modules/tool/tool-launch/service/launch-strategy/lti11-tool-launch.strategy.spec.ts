@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
@@ -10,27 +11,27 @@ import { RoleName } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
 import { Authorization } from 'oauth-1.0a';
-import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
+import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 
-describe('Lti11ToolLaunchStrategy', () => {
+describe(Lti11ToolLaunchStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: Lti11ToolLaunchStrategy;
 
@@ -103,7 +104,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 	});
 
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
-		describe('when building the launch data', () => {
+		describe('when building the launch data for the encryption', () => {
 			const setup = () => {
 				const mockKey = 'mockKey';
 				const mockSecret = 'mockSecret';
@@ -118,9 +119,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 						privacy_permission: LtiPrivacyPermission.PUBLIC,
 						launch_presentation_locale: launchPresentationLocale,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -169,34 +170,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 					])
 				);
 			});
-
-			it('should contain mandatory lti attributes', async () => {
-				const { data, ltiMessageType, contextExternalTool, launchPresentationLocale } = setup();
-
-				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
-
-				expect(result).toEqual(
-					expect.arrayContaining([
-						new PropertyData({ name: 'lti_message_type', value: ltiMessageType, location: PropertyLocation.BODY }),
-						new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
-						new PropertyData({
-							name: 'resource_link_id',
-							value: contextExternalTool.id,
-							location: PropertyLocation.BODY,
-						}),
-						new PropertyData({
-							name: 'launch_presentation_document_target',
-							value: 'window',
-							location: PropertyLocation.BODY,
-						}),
-						new PropertyData({
-							name: 'launch_presentation_locale',
-							value: launchPresentationLocale,
-							location: PropertyLocation.BODY,
-						}),
-					])
-				);
-			});
 		});
 
 		describe('when lti privacyPermission is public', () => {
@@ -208,9 +181,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.PUBLIC,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -250,7 +223,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				};
 			};
 
-			it('should contain the all user related attributes', async () => {
+			it('should contain all user related attributes', async () => {
 				const { data, userId, userDisplayName, userEmail } = setup();
 
 				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
@@ -283,9 +256,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.NAME,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -353,9 +326,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.EMAIL,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -424,9 +397,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -491,9 +464,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -539,9 +512,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when tool config is not lti', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: ToolLaunchParams = {
 					contextExternalTool,
@@ -576,12 +549,15 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const pseudoContextExternalTool = {
+					...contextExternalToolFactory.build().getProps(),
+					id: undefined,
+				};
 
 				const data: ToolLaunchParams = {
-					contextExternalTool,
+					contextExternalTool: pseudoContextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
@@ -613,6 +589,191 @@ describe('Lti11ToolLaunchStrategy', () => {
 						value: expect.any(String),
 						location: PropertyLocation.BODY,
 					})
+				);
+			});
+		});
+
+		describe('when lti messageType is content item selection request', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+					})
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const userId: string = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId(
+					{
+						roles: [
+							{
+								id: 'roleId1',
+								name: RoleName.TEACHER,
+							},
+							{
+								id: 'roleId2',
+								name: RoleName.USER,
+							},
+						],
+					},
+					userId
+				);
+
+				const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+				const callbackUrl = `${publicBackendUrl}/v3/tools/context-external-tools/${contextExternalTool.id}/lti11-deep-link-callback`;
+
+				userService.findById.mockResolvedValue(user);
+				const decrypted = 'decryptedSecret';
+				encryptionService.decrypt.mockReturnValue(decrypted);
+
+				return {
+					data,
+					userId,
+					callbackUrl,
+				};
+			};
+
+			it('should contain all user related attributes', async () => {
+				const { data, userId, callbackUrl } = setup();
+
+				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+
+				expect(result).toEqual(
+					expect.arrayContaining([
+						new PropertyData({ name: 'key', value: 'mockKey' }),
+						new PropertyData({ name: 'secret', value: 'decryptedSecret' }),
+						new PropertyData({
+							name: 'lti_message_type',
+							value: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
+						new PropertyData({
+							name: 'resource_link_id',
+							value: data.contextExternalTool.id as string,
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'launch_presentation_document_target',
+							value: 'window',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							location: PropertyLocation.BODY,
+							name: 'launch_presentation_locale',
+							value: 'de-DE',
+						}),
+						new PropertyData({
+							name: 'content_item_return_url',
+							value: callbackUrl,
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'accept_media_types',
+							value: '*/*',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'accept_presentation_document_targets',
+							value: 'window',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'accept_unsigned',
+							value: 'false',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'accept_multiple',
+							value: 'false',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'accept_copy_advice',
+							value: 'false',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'auto_create',
+							value: 'true',
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
+							name: 'data',
+							value: expect.any(String),
+							location: PropertyLocation.BODY,
+						}),
+					])
+				);
+			});
+		});
+
+		describe('when a content item selection request is made without a permanent tool', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+					})
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const pseudoContextExternalTool = {
+					...contextExternalToolFactory.build().getProps(),
+					id: undefined,
+				};
+
+				const data: ToolLaunchParams = {
+					contextExternalTool: pseudoContextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const userId: string = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId(
+					{
+						roles: [
+							{
+								id: 'roleId1',
+								name: RoleName.TEACHER,
+							},
+							{
+								id: 'roleId2',
+								name: RoleName.USER,
+							},
+						],
+					},
+					userId
+				);
+
+				userService.findById.mockResolvedValue(user);
+				const decrypted = 'decryptedSecret';
+				encryptionService.decrypt.mockReturnValue(decrypted);
+
+				return {
+					data,
+					userId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { data, userId } = setup();
+
+				await expect(() => strategy.buildToolLaunchDataFromConcreteConfig(userId, data)).rejects.toThrow(
+					new UnprocessableEntityException(
+						'Cannot lauch a content selection request with a non-permanent context external tool'
+					)
 				);
 			});
 		});
@@ -742,6 +903,184 @@ describe('Lti11ToolLaunchStrategy', () => {
 			const result: LaunchRequestMethod = strategy.determineLaunchRequestMethod([]);
 
 			expect(result).toEqual(LaunchRequestMethod.POST);
+		});
+	});
+
+	describe('createLaunchRequest', () => {
+		describe('when lti message type is content item selection request', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+
+				const externalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+					})
+					.build();
+
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+
+				const contextExternalToolId = 'contextExternalToolId';
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					id: contextExternalToolId,
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+					contextRef: {
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.BODY,
+				});
+
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.BODY,
+				});
+
+				const signedPayload: Authorization = {
+					oauth_consumer_key: 'mockKey',
+					oauth_nonce: 'nonce',
+					oauth_signature: 'signature',
+					oauth_signature_method: 'HMAC-SHA1',
+					oauth_timestamp: 1,
+					oauth_version: '1.0',
+					[property1.name]: property1.value,
+					[property2.name]: property2.value,
+				};
+
+				const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
+					method: LaunchRequestMethod.POST,
+					url: 'https://www.lti11-baseurl.com/',
+					payload: JSON.stringify(signedPayload),
+					openNewTab: true,
+					isDeepLink: true,
+				});
+
+				userService.findById.mockResolvedValue(user);
+				const decrypted = 'decryptedSecret';
+				encryptionService.decrypt.mockReturnValue(decrypted);
+
+				return {
+					toolLaunchRequest,
+					data,
+					userId,
+				};
+			};
+
+			it('should create a LaunchRequest with the correct method, url and payload', async () => {
+				const { toolLaunchRequest, data, userId } = setup();
+
+				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+
+				expect(result).toEqual<ToolLaunchRequest>(toolLaunchRequest);
+			});
+		});
+
+		describe('when lti message type is not content item selection request and no deeplink', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+
+				const mockKey = 'mockKey';
+				const mockSecret = 'mockSecret';
+				const ltiMessageType = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
+				const launchPresentationLocale = 'de-DE';
+
+				const externalTool = externalToolFactory
+					.withLti11Config({
+						key: mockKey,
+						secret: mockSecret,
+						lti_message_type: ltiMessageType,
+						privacy_permission: LtiPrivacyPermission.PUBLIC,
+						launch_presentation_locale: launchPresentationLocale,
+					})
+					.build();
+
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+
+				const contextExternalToolId = 'contextExternalToolId';
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					id: contextExternalToolId,
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+					contextRef: {
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.BODY,
+				});
+
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.BODY,
+				});
+
+				const signedPayload: Authorization = {
+					oauth_consumer_key: 'mockKey',
+					oauth_nonce: 'nonce',
+					oauth_signature: 'signature',
+					oauth_signature_method: 'HMAC-SHA1',
+					oauth_timestamp: 1,
+					oauth_version: '1.0',
+					[property1.name]: property1.value,
+					[property2.name]: property2.value,
+				};
+
+				const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
+					method: LaunchRequestMethod.POST,
+					url: 'https://www.lti11-baseurl.com/',
+					payload: JSON.stringify(signedPayload),
+					openNewTab: false,
+					isDeepLink: false,
+				});
+
+				userService.findById.mockResolvedValue(user);
+				const decrypted = 'decryptedSecret';
+				encryptionService.decrypt.mockReturnValue(decrypted);
+
+				return {
+					toolLaunchRequest,
+					data,
+					userId,
+				};
+			};
+
+			it('should create a LaunchRequest with the correct method, url and payload', async () => {
+				const { toolLaunchRequest, data, userId } = setup();
+
+				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+
+				expect(result).toEqual<ToolLaunchRequest>(toolLaunchRequest);
+			});
 		});
 	});
 });
