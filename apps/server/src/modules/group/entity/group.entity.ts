@@ -30,13 +30,11 @@ export interface GroupEntityProps {
 }
 
 @Entity({ tableName: 'groups' })
-@Index({ properties: ['users'] })
-@Index({ properties: ['organization'] })
-@Index({ properties: ['type'] })
 export class GroupEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
+	@Index()
 	@Enum()
 	type: GroupEntityTypes;
 
@@ -46,9 +44,11 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => GroupValidPeriodEmbeddable, { nullable: true })
 	validPeriod?: GroupValidPeriodEmbeddable;
 
+	@Index()
 	@Embedded(() => GroupUserEmbeddable, { array: true })
 	users: GroupUserEmbeddable[];
 
+	@Index()
 	@ManyToOne(() => SchoolEntity, { nullable: true })
 	organization?: SchoolEntity;
 
