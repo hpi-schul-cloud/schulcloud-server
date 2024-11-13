@@ -3,7 +3,7 @@ import { LessonContentResponseContentInnerDto } from './lesson-content-response-
 export class LessonContentDto {
 	id: string | undefined;
 
-	content: LessonContentResponseContentInnerDto[];
+	content: LessonContentResponseContentInnerDto;
 
 	title: string;
 
