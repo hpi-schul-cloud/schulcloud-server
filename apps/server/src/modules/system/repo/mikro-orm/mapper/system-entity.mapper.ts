@@ -34,6 +34,7 @@ export class SystemEntityMapper {
 			grantType: oauthConfig.grantType,
 			tokenEndpoint: oauthConfig.tokenEndpoint,
 			redirectUri: oauthConfig.redirectUri,
+			endSessionEndpoint: oauthConfig.endSessionEndpoint,
 		});
 
 		return mapped;
