@@ -126,7 +126,8 @@ export class AccountRepo {
 	}
 
 	/**
-	 * @deprecated causes slow query, do not use
+	 * @deprecated we want to discourage the usage of this function, because it uses a regular expression
+	 *             for partial matching and this can have some serious performance implications. Use it with caution.
 	 */
 	public async searchByUsernamePartialMatch(username: string, offset = 0, limit = 10): Promise<Counted<Account[]>> {
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
