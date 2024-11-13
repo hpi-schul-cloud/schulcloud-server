@@ -2,6 +2,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { TspLegacyMigrationCountLoggable } from './loggable/tsp-legacy-migration-count.loggable';
+import { TspLegacyMigrationStartLoggable } from './loggable/tsp-legacy-migration-start.loggable';
+import { TspLegacyMigrationSuccessLoggable } from './loggable/tsp-legacy-migration-success.loggable';
+import { TspLegacyMigrationSystemMissingLoggable } from './loggable/tsp-legacy-migration-system-missing.loggable';
 
 type LegacyTspSchoolProperties = {
 	sourceOptions: {
@@ -21,17 +25,18 @@ export class TspLegacyMigrationService {
 	}
 
 	public async migrateLegacyData(newSystemId: EntityId): Promise<void> {
-		console.log('starting legacy migration');
+		this.logger.info(new TspLegacyMigrationStartLoggable());
+
 		const legacySystemId = await this.findLegacySystemId();
 
 		if (!legacySystemId) {
-			console.log('No legacy system found');
+			this.logger.info(new TspLegacyMigrationSystemMissingLoggable());
 			return;
 		}
 
 		const schoolIds = await this.findIdsOfLegacyTspSchools(legacySystemId);
 
-		console.log('Number of schools', schoolIds.length);
+		this.logger.info(new TspLegacyMigrationCountLoggable(schoolIds.length));
 
 		const promises = schoolIds.map(async (oldId): Promise<number> => {
 			const filter = {
@@ -60,7 +65,8 @@ export class TspLegacyMigrationService {
 			.filter((r) => r.status === 'fulfilled')
 			.map((r) => r.value)
 			.reduce((acc, c) => acc + c, 0);
-		console.log(`Migrated ${schoolIds.length} legacy schools to new system. ${success} succeeded.`);
+
+		this.logger.info(new TspLegacyMigrationSuccessLoggable(schoolIds.length, success));
 	}
 
 	private async findLegacySystemId() {
