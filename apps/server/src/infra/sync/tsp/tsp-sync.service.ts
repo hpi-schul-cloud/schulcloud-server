@@ -9,6 +9,7 @@ import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { FederalState, FileStorageType } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
+import { AxiosError } from 'axios';
 import { ObjectId } from 'bson';
 import moment from 'moment/moment';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
@@ -40,43 +41,75 @@ export class TspSyncService {
 	}
 
 	public async fetchTspSchools(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
+		try {
+			const client = this.createClient(system);
 
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const schoolsResponse = await client.exportSchuleList(lastChangeDate);
-		const schools = schoolsResponse.data;
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const schoolsResponse = await client.exportSchuleList(lastChangeDate);
+			const schools = schoolsResponse.data;
 
-		return schools;
+			return schools;
+		} catch (e) {
+			console.log('fetchTspSchools does not work');
+			if (e instanceof AxiosError) {
+				console.log(e.response?.data);
+			}
+		}
+		return [];
 	}
 
 	public async fetchTspTeachers(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
+		try {
+			const client = this.createClient(system);
 
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const teachersResponse = await client.exportLehrerList(lastChangeDate);
-		const teachers = teachersResponse.data;
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const teachersResponse = await client.exportLehrerList(lastChangeDate);
+			const teachers = teachersResponse.data;
 
-		return teachers;
+			return teachers;
+		} catch (e) {
+			console.log('fetchTspTeachers does not work');
+			if (e instanceof AxiosError) {
+				console.log(e.response?.data);
+			}
+		}
+		return [];
 	}
 
 	public async fetchTspStudents(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
+		try {
+			const client = this.createClient(system);
 
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const studentsResponse = await client.exportSchuelerList(lastChangeDate);
-		const students = studentsResponse.data;
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const studentsResponse = await client.exportSchuelerList(lastChangeDate);
+			const students = studentsResponse.data;
 
-		return students;
+			return students;
+		} catch (e) {
+			console.log('fetchTspStudents does not work');
+			if (e instanceof AxiosError) {
+				console.log(e.response?.data);
+			}
+		}
+		return [];
 	}
 
 	public async fetchTspClasses(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
+		try {
+			const client = this.createClient(system);
 
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const classesResponse = await client.exportKlasseList(lastChangeDate);
-		const classes = classesResponse.data;
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const classesResponse = await client.exportKlasseList(lastChangeDate);
+			const classes = classesResponse.data;
 
-		return classes;
+			return classes;
+		} catch (e) {
+			console.log('fetchTspClasses does not work');
+			if (e instanceof AxiosError) {
+				console.log(e.response?.data);
+			}
+		}
+		return [];
 	}
 
 	public async findSchool(system: System, identifier: string): Promise<School | undefined> {
