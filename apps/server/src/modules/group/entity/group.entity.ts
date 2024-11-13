@@ -1,4 +1,4 @@
-import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ExternalSourceEmbeddable } from '@modules/system/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
@@ -30,6 +30,7 @@ export interface GroupEntityProps {
 }
 
 @Entity({ tableName: 'groups' })
+@Index({ properties: ['users', 'organization', 'type'] })
 export class GroupEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
