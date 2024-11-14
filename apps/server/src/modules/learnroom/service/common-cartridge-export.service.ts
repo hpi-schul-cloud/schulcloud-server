@@ -101,13 +101,21 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(),
 		});
 
-		tasks.forEach((task) => {
+		const promises = tasks.map(async (task) => {
 			if (!exportedTasks.includes(task.id)) {
 				return;
 			}
 
 			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
+
+			const files = await this.downloadFiles(task.id);
+
+			files.forEach((file) => {
+				tasksOrganization.addResource(this.mapper.mapFileElementToResource(file));
+			});
 		});
+
+		await Promise.allSettled(promises);
 	}
 
 	private async addColumnBoards(
@@ -172,14 +180,7 @@ export class CommonCartridgeExportService {
 			title: card.title || '',
 			identifier: createIdentifier(card.id),
 		});
-		const fileRecords = await this.filesStorageClient.listFilesOfParent(card.id);
-		const filePromises = fileRecords.map(async (fileRecord) => {
-			const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-
-			return { fileRecord, file };
-		});
-		const results = await Promise.allSettled(filePromises);
-		const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
+		const files = await this.downloadFiles(card.id);
 
 		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization, files));
 	}
@@ -207,7 +208,7 @@ export class CommonCartridgeExportService {
 
 		if (isFileElement(element)) {
 			const file = files.find((f) => f.fileRecord.id === element.id)!;
-			const resource = this.mapper.mapFileElementToResource(element, file);
+			const resource = this.mapper.mapFileElementToResource(file, element);
 
 			cardOrganization.addResource(resource);
 		}
@@ -228,5 +229,18 @@ export class CommonCartridgeExportService {
 		} else {
 			lessonOrganization.addResource(resources);
 		}
+	}
+
+	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: Buffer }[]> {
+		const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
+		const filePromises = fileRecords.map(async (fileRecord) => {
+			const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+
+			return { fileRecord, file };
+		});
+		const results = await Promise.allSettled(filePromises);
+		const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
+
+		return files;
 	}
 }
