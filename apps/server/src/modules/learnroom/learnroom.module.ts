@@ -1,3 +1,4 @@
+import { FilesStorageRestClientModule } from '@infra/files-storage-client';
 import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -21,6 +22,7 @@ import {
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardNodeRepo } from '../board/repo';
+import { FilesStorageClientModule } from '../files-storage-client';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
@@ -59,6 +61,8 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		SchoolModule,
 		GroupModule,
 		RoleModule,
+		FilesStorageClientModule,
+		FilesStorageRestClientModule,
 	],
 	providers: [
 		{
