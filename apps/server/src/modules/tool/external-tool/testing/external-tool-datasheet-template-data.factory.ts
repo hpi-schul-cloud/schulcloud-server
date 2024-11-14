@@ -60,7 +60,7 @@ export const externalToolDatasheetTemplateDataFactory = ExternalToolDatasheetTem
 			creatorName: `John Doe ${sequence}`,
 			instance: 'dBildungscloud',
 			toolName: `external-tool-${sequence}`,
-			toolUrl: 'https://www.basic-baseUrl.com/',
+			toolUrl: 'https://www.basic-baseurl.com/',
 			toolType: 'Basic',
 		};
 	}

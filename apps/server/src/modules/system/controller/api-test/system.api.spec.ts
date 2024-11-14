@@ -74,6 +74,7 @@ describe('System (API)', () => {
 								tokenEndpoint: system2OauthConfig.tokenEndpoint,
 								redirectUri: system2OauthConfig.redirectUri,
 								scope: system2OauthConfig.scope,
+								endSessionEndpoint: system2OauthConfig.endSessionEndpoint,
 							},
 						},
 					],
