@@ -1,17 +1,18 @@
-import { LinkElement, RichTextElement } from '@modules/board/domain';
+import { FileElement, LinkElement, RichTextElement } from '@modules/board/domain';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
+	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 	createIdentifier,
 } from '@modules/common-cartridge';
-import { CommonCartridgeOrganizationProps } from '@modules/common-cartridge/export/builders/common-cartridge-file-builder';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
+import { FileDto } from '@src/modules/files-storage-client';
 import sanitizeHtml from 'sanitize-html';
 import { LearnroomConfig } from '../learnroom.config';
 
@@ -138,6 +139,19 @@ export class CommonCartridgeExportMapper {
 			identifier: createIdentifier(element.id),
 			title: element.title,
 			url: element.url,
+		};
+	}
+
+	public mapFileElementToResource(
+		element: FileElement,
+		file: { fileRecord: FileDto; file: Buffer }
+	): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.FILE,
+			identifier: createIdentifier(element.id),
+			title: element.caption || file.fileRecord.name,
+			fileName: file.fileRecord.name,
+			fileContent: file.file,
 		};
 	}
 

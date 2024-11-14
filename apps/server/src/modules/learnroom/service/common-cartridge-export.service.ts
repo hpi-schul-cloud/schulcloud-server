@@ -1,3 +1,4 @@
+import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
 import {
 	AnyBoardNode,
 	BoardExternalReferenceType,
@@ -15,11 +16,13 @@ import {
 	CommonCartridgeVersion,
 	createIdentifier,
 } from '@modules/common-cartridge';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { isFileElement } from '@src/modules/board/domain';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
@@ -30,7 +33,9 @@ export class CommonCartridgeExportService {
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly mapper: CommonCartridgeExportMapper
+		private readonly mapper: CommonCartridgeExportMapper,
+		private readonly filesStorageClient: FilesStorageClientAdapterService,
+		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter
 	) {}
 
 	public async exportCourse(
@@ -117,48 +122,92 @@ export class CommonCartridgeExportService {
 			})
 		).filter((cb) => exportedColumnBoards.includes(cb.id));
 
-		for (const columnBoard of columnBoards) {
+		// for (const columnBoard of columnBoards) {
+		// 	const columnBoardOrganization = builder.createOrganization({
+		// 		title: columnBoard.title,
+		// 		identifier: createIdentifier(columnBoard.id),
+		// 	});
+
+		// 	columnBoard.children
+		// 		.filter((child) => isColumn(child))
+		// 		.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
+		// }
+
+		// TODO: error handling
+		const promises = columnBoards.map(async (columnBoard) => {
 			const columnBoardOrganization = builder.createOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
 
-			columnBoard.children
+			const foo = columnBoard.children
 				.filter((child) => isColumn(child))
-				.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
-		}
+				.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
+
+			await Promise.allSettled(foo);
+		});
+
+		await Promise.allSettled(promises);
 	}
 
-	private addColumnToOrganization(column: Column, columnBoardOrganization: CommonCartridgeOrganizationNode): void {
+	private async addColumnToOrganization(
+		column: Column,
+		columnBoardOrganization: CommonCartridgeOrganizationNode
+	): Promise<void> {
 		const { id } = column;
 		const columnOrganization = columnBoardOrganization.createChild({
 			title: column.title || '',
 			identifier: createIdentifier(id),
 		});
 
-		column.children
+		const promises = column.children
 			.filter((child) => isCard(child))
-			.forEach((card) => this.addCardToOrganization(card, columnOrganization));
+			.map((card) => this.addCardToOrganization(card, columnOrganization));
+
+		await Promise.allSettled(promises);
 	}
 
-	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
+	private async addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
 			title: card.title || '',
 			identifier: createIdentifier(card.id),
 		});
+		const fileRecords = await this.filesStorageClient.listFilesOfParent(card.id);
+		const filePromises = fileRecords.map(async (fileRecord) => {
+			const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
-		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization));
+			return { fileRecord, file };
+		});
+		const results = await Promise.allSettled(filePromises);
+		const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
+
+		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization, files));
 	}
 
-	private addCardElementToOrganization(element: AnyBoardNode, cardOrganization: CommonCartridgeOrganizationNode): void {
+	private addCardElementToOrganization(
+		element: AnyBoardNode,
+		cardOrganization: CommonCartridgeOrganizationNode,
+		files: { fileRecord: FileDto; file: Buffer }[]
+	): void {
 		if (isRichTextElement(element)) {
 			const resource = this.mapper.mapRichTextElementToResource(element);
 
 			cardOrganization.addResource(resource);
+
+			return;
 		}
 
 		if (isLinkElement(element)) {
 			const resource = this.mapper.mapLinkElementToResource(element);
+
+			cardOrganization.addResource(resource);
+
+			return;
+		}
+
+		if (isFileElement(element)) {
+			const file = files.find((f) => f.fileRecord.id === element.id)!;
+			const resource = this.mapper.mapFileElementToResource(element, file);
 
 			cardOrganization.addResource(resource);
 		}

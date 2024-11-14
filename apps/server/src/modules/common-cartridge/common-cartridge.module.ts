@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { FilesStorageClientModule as FilesStorageApiClientModule } from '@infra/files-storage-client';
+import { FilesStorageRestClientModule } from '@infra/files-storage-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
@@ -19,7 +19,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 	imports: [
 		RabbitMQWrapperModule,
 		FilesStorageClientModule,
-		FilesStorageApiClientModule,
+		FilesStorageRestClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',

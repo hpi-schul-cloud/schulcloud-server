@@ -11,8 +11,6 @@ export class CommonCartridgeUc {
 
 	public async exportCourse(courseId: EntityId): Promise<CourseExportBodyResponse> {
 		const fileRecords = await this.exportService.findCourseFileRecords(courseId);
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const files = await this.exportService.getFiles(fileRecords);
 		const courseFileIds = new CourseFileIdsResponse(fileRecords.map((file) => file.id));
 		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
 			await this.exportService.findCourseCommonCartridgeMetadata(courseId);
