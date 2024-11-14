@@ -5,7 +5,7 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -14,6 +14,8 @@ import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool, ContextRef } from '../domain';
+import { LtiDeepLink } from '../domain/lti-deep-link';
+import { LtiDeepLinkAuthorizable } from '../domain/lti-deep-link-authorizable';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
@@ -142,5 +144,40 @@ export class ContextExternalToolUc {
 		);
 
 		return toolsWithPermission;
+	}
+
+	public async updateLtiDeepLink(
+		contextExternalToolId: EntityId,
+		authorizable: LtiDeepLinkAuthorizable,
+		deepLink?: LtiDeepLink
+	): Promise<void> {
+		// TODO validate oauth1
+		const { state } = authorizable;
+		/* TODO use new collection
+		const userId: string | undefined = await this.cacheManager.get<string>(state);
+		await this.cacheManager.del(state);
+		 */
+		const userId = 'TODO';
+
+		if (!userId) {
+			throw new UnauthorizedException('Unknown user'); // TODO
+		}
+
+		if (!deepLink) {
+			return;
+		}
+
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
+			contextExternalToolId
+		);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
+
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
+
+		contextExternalTool.ltiDeepLink = new LtiDeepLink({ ...deepLink });
+
+		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 	}
 }

@@ -1,6 +1,6 @@
 import { ToolStatusResponseMapper } from '../../common/mapper/tool-status-response.mapper';
 import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
-import { ContextExternalToolResponse, ToolReferenceResponse } from '../controller/dto';
+import { ContextExternalToolResponse, LtiDeepLinkResponse, ToolReferenceResponse } from '../controller/dto';
 import { ContextExternalTool, ToolReference } from '../domain';
 
 export class ContextExternalToolResponseMapper {
@@ -43,6 +43,13 @@ export class ContextExternalToolResponseMapper {
 	}
 
 	static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
+		const { ltiDeepLink } = toolReference;
+		const ltiDeepLinkResponse: LtiDeepLinkResponse | undefined = ltiDeepLink
+			? new LtiDeepLinkResponse({
+					title: ltiDeepLink.title,
+			  })
+			: undefined;
+
 		const response = new ToolReferenceResponse({
 			contextToolId: toolReference.contextToolId,
 			description: toolReference.description,
@@ -51,6 +58,7 @@ export class ContextExternalToolResponseMapper {
 			thumbnailUrl: toolReference.thumbnailUrl,
 			openInNewTab: toolReference.openInNewTab,
 			status: ToolStatusResponseMapper.mapToResponse(toolReference.status),
+			ltiDeepLink: ltiDeepLinkResponse,
 		});
 
 		return response;
