@@ -7,6 +7,7 @@ import { RoomBoardListResponse } from '../dto/response/room-board-list.response'
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
+import { Permission } from '@shared/domain/interface';
 
 export class RoomMapper {
 	static mapToRoomItemResponse(room: Room): RoomItemResponse {
@@ -33,7 +34,7 @@ export class RoomMapper {
 		return response;
 	}
 
-	static mapToRoomDetailsResponse(room: Room): RoomDetailsResponse {
+	static mapToRoomDetailsResponse(room: Room, permissions: Permission[]): RoomDetailsResponse {
 		const response = new RoomDetailsResponse({
 			id: room.id,
 			name: room.name,
@@ -43,6 +44,7 @@ export class RoomMapper {
 			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
+			permissions,
 		});
 
 		return response;

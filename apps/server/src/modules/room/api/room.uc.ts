@@ -1,5 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { RoomMemberService, UserWithRoomRoles } from '@modules/room-member';
+import { RoomMemberAuthorizable, RoomMemberService, UserWithRoomRoles } from '@modules/room-member';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -49,12 +49,14 @@ export class RoomUc {
 		return room;
 	}
 
-	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<Room> {
+	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
 		this.checkFeatureEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		await this.checkRoomAuthorization(userId, roomId, Action.read);
-		return room;
+		const roomMemberAuthorizable = await this.checkRoomAuthorization(userId, roomId, Action.read);
+		const permissions = this.getPermissions(userId, roomMemberAuthorizable);
+
+		return { room, permissions };
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
@@ -74,14 +76,20 @@ export class RoomUc {
 		return boards;
 	}
 
-	public async updateRoom(userId: EntityId, roomId: EntityId, props: UpdateRoomBodyParams): Promise<Room> {
+	public async updateRoom(
+		userId: EntityId,
+		roomId: EntityId,
+		props: UpdateRoomBodyParams
+	): Promise<{ room: Room; permissions: Permission[] }> {
 		this.checkFeatureEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		await this.checkRoomAuthorization(userId, roomId, Action.write);
+		const roomMemberAuthorizable = await this.checkRoomAuthorization(userId, roomId, Action.write);
+		const permissions = this.getPermissions(userId, roomMemberAuthorizable);
+
 		await this.roomService.updateRoom(room, props);
 
-		return room;
+		return { room, permissions };
 	}
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
@@ -158,10 +166,21 @@ export class RoomUc {
 		roomId: EntityId,
 		action: Action,
 		requiredPermissions: Permission[] = []
-	): Promise<void> {
+	): Promise<RoomMemberAuthorizable> {
 		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, roomMemberAuthorizable, { action, requiredPermissions });
+
+		return roomMemberAuthorizable;
+	}
+
+	private getPermissions(userId: EntityId, roomMemberAuthorizable: RoomMemberAuthorizable): Permission[] {
+		const permissions = roomMemberAuthorizable.members
+			.filter((member) => member.userId === userId)
+			.flatMap((member) => member.roles)
+			.flatMap((role) => role.permissions ?? []);
+
+		return permissions;
 	}
 
 	private checkFeatureEnabled(): void {

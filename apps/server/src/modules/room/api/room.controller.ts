@@ -89,9 +89,9 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
+		const { room, permissions } = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
 
 		return response;
 	}
@@ -128,9 +128,9 @@ export class RoomController {
 		@Param() urlParams: RoomUrlParams,
 		@Body() updateRoomParams: UpdateRoomBodyParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
+		const { room, permissions } = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
 
 		return response;
 	}

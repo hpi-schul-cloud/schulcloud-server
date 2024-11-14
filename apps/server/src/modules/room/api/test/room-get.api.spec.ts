@@ -119,6 +119,7 @@ describe('Room Controller (API)', () => {
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
+					permissions: [Permission.ROOM_VIEW],
 				};
 
 				return { loggedInClient, room, expectedResponse };

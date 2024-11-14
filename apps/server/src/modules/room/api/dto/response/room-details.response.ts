@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Permission } from '@shared/domain/interface';
 import { RoomColor } from '@src/modules/room/domain/type';
 import { IsEnum } from 'class-validator';
 
@@ -28,6 +29,9 @@ export class RoomDetailsResponse {
 	@ApiProperty({ type: Date })
 	updatedAt: Date;
 
+	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
+	permissions: Permission[];
+
 	constructor(room: RoomDetailsResponse) {
 		this.id = room.id;
 		this.name = room.name;
@@ -38,5 +42,7 @@ export class RoomDetailsResponse {
 		this.endDate = room.endDate;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
+
+		this.permissions = room.permissions;
 	}
 }
