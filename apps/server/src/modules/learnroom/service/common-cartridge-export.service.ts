@@ -22,6 +22,7 @@ import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
@@ -35,8 +36,11 @@ export class CommonCartridgeExportService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
-		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter
-	) {}
+		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(CommonCartridgeExportService.name);
+	}
 
 	public async exportCourse(
 		courseId: EntityId,
@@ -240,6 +244,15 @@ export class CommonCartridgeExportService {
 		});
 		const results = await Promise.allSettled(filePromises);
 		const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
+
+		this.logger.warning({
+			getLogMessage() {
+				return {
+					message: `Found ${files.length} files for parent ${parentId}`,
+					files: files.map((file) => file.fileRecord.name).join(', '),
+				};
+			},
+		});
 
 		return files;
 	}
