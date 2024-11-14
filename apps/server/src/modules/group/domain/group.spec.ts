@@ -193,7 +193,7 @@ describe(Group.name, () => {
 		});
 	});
 
-	describe('removeUser', () => {
+	describe('isMember', () => {
 		describe('when the user is a member of the group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();

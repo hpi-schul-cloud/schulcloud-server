@@ -108,8 +108,8 @@ export class Course extends DomainObject<CourseProps> {
 	}
 
 	public isTeacher(userId: EntityId): boolean {
-		const isMember: boolean = this.teachers.some((teacherId: EntityId) => teacherId === userId);
+		const isTeacher: boolean = this.teachers.some((teacherId: EntityId) => teacherId === userId);
 
-		return isMember;
+		return isTeacher;
 	}
 }
