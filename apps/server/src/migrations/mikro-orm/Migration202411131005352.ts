@@ -60,7 +60,7 @@ export class Migration20241113100535 extends Migration {
 			}
 		);
 
-		if (teacherRoleUpdate.modifiedCount > 0) {
+		if (roomEditorRoleUpdate.modifiedCount > 0) {
 			console.info('Rollback: Permission ROOM_DELETE added to role roomeditor.');
 		}
 	}
