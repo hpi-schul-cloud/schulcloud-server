@@ -24,8 +24,14 @@ export class CommonCartridgeUc {
 		return response;
 	}
 
-	public async exportCourseToCommonCartridge(courseId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
-		const exportedCourse = await this.exportService.exportCourse(courseId, version);
+	public async exportCourseToCommonCartridge(
+		courseId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[],
+		tasks: string[],
+		columnBoards: string[]
+	): Promise<Buffer> {
+		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
 
 		return exportedCourse;
 	}

@@ -23,10 +23,10 @@ import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-cl
 import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
 import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
 
-export const isRichTextElement = (reference: unknown): reference is RichTextElementResponseDto =>
+const isRichTextElement = (reference: unknown): reference is RichTextElementResponseDto =>
 	reference instanceof RichTextElementResponseDto;
 
-export const isLinkElement = (reference: unknown): reference is LinkElementResponseDto =>
+const isLinkElement = (reference: unknown): reference is LinkElementResponseDto =>
 	reference instanceof LinkElementResponseDto;
 
 @Injectable()
@@ -40,35 +40,6 @@ export class CommonCartridgeExportService {
 		private readonly lessonClinetAdapter: LessonClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper
 	) {}
-
-	public async exportCourse(courseId: string, version: CommonCartridgeVersion): Promise<Buffer> {
-		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifestNew(version, courseId));
-
-		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
-			await this.findCourseCommonCartridgeMetadata(courseId);
-
-		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
-
-		// get room board and the structure of the course
-		const roomBoard: RoomBoardDto = await this.findRoomBoardByCourseId(courseId);
-
-		// add lessons to organization
-		await this.addLessons(builder, version, roomBoard.elements);
-
-		// add tasks to organization
-		this.addTasks(builder, version, roomBoard.elements);
-
-		// add column boards and cards to organization
-		await this.addColumnBoards(builder, roomBoard.elements);
-
-		return builder.build();
-	}
-
-	public async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
-		const courseFiles = await this.filesService.listFilesOfParent(courseId);
-
-		return courseFiles;
-	}
 
 	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
@@ -100,6 +71,42 @@ export class CommonCartridgeExportService {
 		return lesson;
 	}
 
+	// export course to common cartridge
+	public async exportCourse(
+		courseId: string,
+		version: CommonCartridgeVersion,
+		exportedTopics: string[],
+		exportedTasks: string[],
+		exportedColumnBoards: string[]
+	): Promise<Buffer> {
+		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifestNew(version, courseId));
+
+		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
+			await this.findCourseCommonCartridgeMetadata(courseId);
+
+		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
+
+		// get room board and the structure of the course
+		const roomBoard: RoomBoardDto = await this.findRoomBoardByCourseId(courseId);
+
+		// add lessons to organization
+		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
+
+		// add tasks to organization
+		this.addTasks(builder, version, roomBoard.elements, exportedTasks);
+
+		// add column boards and cards to organization
+		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
+
+		return builder.build();
+	}
+
+	public async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
+		const courseFiles = await this.filesService.listFilesOfParent(courseId);
+
+		return courseFiles;
+	}
+
 	private addComponentToOrganization(
 		component: LessonContentDto,
 		lessonOrganization: CommonCartridgeOrganizationNode
@@ -120,13 +127,16 @@ export class CommonCartridgeExportService {
 	private async addLessons(
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementDto[]
+		elements: BoardElementDto[],
+		topics: string[]
 	): Promise<void> {
-		// get lessons ids from room board
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
-		const lessonsIds = filteredLessons.map((lesson) => lesson.id);
+		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
 
-		// get lessons and lesson's linked tasks from the server
+		if (!lessonsIds) {
+			return;
+		}
+
 		const lessons = await Promise.all(lessonsIds.map((elementId) => this.findLessonById(elementId)));
 
 		lessons.forEach((lesson) => {
@@ -145,13 +155,16 @@ export class CommonCartridgeExportService {
 	private addTasks(
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementDto[]
+		elements: BoardElementDto[],
+		exportedTasks: string[]
 	): void {
-		if (!elements) {
+		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements).filter((task) =>
+			exportedTasks.includes(task.id)
+		);
+
+		if (!tasks) {
 			return;
 		}
-
-		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements);
 
 		const tasksOrganization = builder.createOrganization({
 			title: 'Aufgaben',
@@ -163,11 +176,20 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	private async addColumnBoards(builder: CommonCartridgeFileBuilder, elements: BoardElementDto[]): Promise<void> {
+	private async addColumnBoards(
+		builder: CommonCartridgeFileBuilder,
+		elements: BoardElementDto[],
+		exportedColumnBoards: string[]
+	): Promise<void> {
 		const columnBoards = this.filterColumnBoardFromBoardElement(elements);
-		const columnBoardsIds = columnBoards.map((element) => element.columnBoardId);
+		const columnBoardsIds = columnBoards
+			.filter((columBoard) => exportedColumnBoards.includes(columBoard.columnBoardId))
+			.map((columBoard) => columBoard.columnBoardId);
 
-		// get board skeleton of columnm boards from the server
+		if (!columnBoardsIds) {
+			return;
+		}
+
 		const boardSkeletons: BoardSkeletonDto[] = await Promise.all(
 			columnBoardsIds.map((elementId) => this.findBoardSkeletonById(elementId))
 		);
@@ -196,7 +218,6 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(columnId),
 		});
 
-		// get cards ids by every column
 		const cardsIds = column.cards.map((card) => card.cardId);
 		const listOfCards: CardListResponseDto = await this.findAllCardsByIds(cardsIds);
 
