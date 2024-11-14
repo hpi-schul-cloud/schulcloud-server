@@ -7,7 +7,7 @@ import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { createIdentifier } from '../../utils';
 
-export type CommonCartridgeFileResourcePropsV110 = {
+export type CommonCartridgeFileResourcePropsV130 = {
 	type: CommonCartridgeResourceType.FILE;
 	version: CommonCartridgeVersion;
 	identifier: string;
@@ -17,13 +17,13 @@ export type CommonCartridgeFileResourcePropsV110 = {
 	title?: string;
 };
 
-export class CommonCartridgeFileResourceV110 extends CommonCartridgeResource {
-	constructor(private readonly props: CommonCartridgeFileResourcePropsV110) {
+export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
+	constructor(private readonly props: CommonCartridgeFileResourcePropsV130) {
 		super(props);
 	}
 
 	public getSupportedVersion(): CommonCartridgeVersion {
-		return CommonCartridgeVersion.V_1_1_0;
+		return CommonCartridgeVersion.V_1_3_0;
 	}
 
 	public getFilePath(): string {
