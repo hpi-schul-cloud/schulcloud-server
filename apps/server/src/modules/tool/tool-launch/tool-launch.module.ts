@@ -1,10 +1,10 @@
 import { EncryptionModule } from '@infra/encryption';
 import { BoardModule } from '@modules/board';
+import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { PseudonymModule } from '@modules/pseudonym';
 import { UserModule } from '@modules/user';
-import { GroupModule } from '@modules/group';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
@@ -14,10 +14,10 @@ import { Lti11EncryptionService, ToolLaunchService } from './service';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupExternalUuidStrategy,
 } from './service/auto-parameter-strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
 
