@@ -154,7 +154,7 @@ export class CommonCartridgeExportService {
 
 			const foo = columnBoard.children
 				.filter((child) => isColumn(child))
-				.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
+				.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization, courseId));
 
 			await Promise.allSettled(foo);
 		});
@@ -164,7 +164,8 @@ export class CommonCartridgeExportService {
 
 	private async addColumnToOrganization(
 		column: Column,
-		columnBoardOrganization: CommonCartridgeOrganizationNode
+		columnBoardOrganization: CommonCartridgeOrganizationNode,
+		courseId: string
 	): Promise<void> {
 		const { id } = column;
 		const columnOrganization = columnBoardOrganization.createChild({
@@ -174,17 +175,21 @@ export class CommonCartridgeExportService {
 
 		const promises = column.children
 			.filter((child) => isCard(child))
-			.map((card) => this.addCardToOrganization(card, columnOrganization));
+			.map((card) => this.addCardToOrganization(card, columnOrganization, courseId));
 
 		await Promise.allSettled(promises);
 	}
 
-	private async addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): Promise<void> {
+	private async addCardToOrganization(
+		card: Card,
+		columnOrganization: CommonCartridgeOrganizationNode,
+		courseId: string
+	): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
 			title: card.title || '',
 			identifier: createIdentifier(card.id),
 		});
-		const files = await this.downloadFiles(card.id);
+		const files = await this.downloadFiles(courseId);
 
 		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization, files));
 	}
