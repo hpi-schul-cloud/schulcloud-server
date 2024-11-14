@@ -1,11 +1,10 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { groupFactory, roleFactory, userDoFactory } from '@shared/testing';
-
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from './group';
 import { GroupUser } from './group-user';
 
-describe('Group (Domain Object)', () => {
+describe(Group.name, () => {
 	describe('removeUser', () => {
 		describe('when the user is in the group', () => {
 			const setup = () => {
@@ -190,6 +189,119 @@ describe('Group (Domain Object)', () => {
 
 				expect(group.users).toContain(newUser);
 				expect(group.users.length).toEqual(2);
+			});
+		});
+	});
+
+	describe('removeUser', () => {
+		describe('when the user is a member of the group', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const roleId = new ObjectId().toHexString();
+				const groupUser = new GroupUser({
+					userId,
+					roleId,
+				});
+				const group = groupFactory.build({
+					users: [groupUser],
+				});
+
+				return {
+					group,
+					userId,
+				};
+			};
+
+			it('should return true', () => {
+				const { group, userId } = setup();
+
+				const result = group.isMember(userId);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the user is a member of the group and has the requested role', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const roleId = new ObjectId().toHexString();
+				const groupUser = new GroupUser({
+					userId,
+					roleId,
+				});
+				const group = groupFactory.build({
+					users: [groupUser],
+				});
+
+				return {
+					group,
+					userId,
+					roleId,
+				};
+			};
+
+			it('should return true', () => {
+				const { group, userId, roleId } = setup();
+
+				const result = group.isMember(userId, roleId);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the user is a member of the group, but has a different role', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const roleId = new ObjectId().toHexString();
+				const groupUser = new GroupUser({
+					userId,
+					roleId: new ObjectId().toHexString(),
+				});
+				const group = groupFactory.build({
+					users: [groupUser],
+				});
+
+				return {
+					group,
+					userId,
+					roleId,
+				};
+			};
+
+			it('should return false', () => {
+				const { group, userId, roleId } = setup();
+
+				const result = group.isMember(userId, roleId);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the user is not a member of the group', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const roleId = new ObjectId().toHexString();
+				const groupUser = new GroupUser({
+					userId: new ObjectId().toHexString(),
+					roleId: new ObjectId().toHexString(),
+				});
+				const group = groupFactory.build({
+					users: [groupUser],
+				});
+
+				return {
+					group,
+					userId,
+					roleId,
+				};
+			};
+
+			it('should return false', () => {
+				const { group, userId } = setup();
+
+				const result = group.isMember(userId);
+
+				expect(result).toEqual(false);
 			});
 		});
 	});

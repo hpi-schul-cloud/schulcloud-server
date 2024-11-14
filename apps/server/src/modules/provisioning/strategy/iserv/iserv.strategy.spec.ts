@@ -94,6 +94,7 @@ describe('IservProvisioningStrategy', () => {
 				});
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
+					id: new ObjectId().toHexString(),
 					name: RoleName.STUDENT,
 				});
 
