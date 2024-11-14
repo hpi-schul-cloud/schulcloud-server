@@ -17,7 +17,7 @@ export class CommonCartridgeController {
 		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
 	}
 
-	@Get('testexport/:parentId')
+	@Get('newexport/:parentId')
 	public async exportCourseToCommonCartridge(
 		@Param() exportCourseParams: ExportCourseParams,
 		@Query() queryParams: CourseQueryParams,
