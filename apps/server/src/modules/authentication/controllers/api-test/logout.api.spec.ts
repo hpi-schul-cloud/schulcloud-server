@@ -10,8 +10,11 @@ import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	cleanupCollections,
+	JwtTestFactory,
 	currentUserFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
+	systemOauthConfigEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -20,6 +23,19 @@ import { Response } from 'supertest';
 import { Request } from 'express';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+
+jest.mock('jwks-rsa', () => () => {
+	return {
+		getKeys: jest.fn(),
+		getSigningKey: jest.fn().mockResolvedValue({
+			kid: 'kid',
+			alg: 'RS256',
+			getPublicKey: jest.fn().mockReturnValue(JwtTestFactory.getPublicKey()),
+			rsaPublicKey: JwtTestFactory.getPublicKey(),
+		}),
+		getSigningKeys: jest.fn(),
+	};
+});
 
 describe('Logout Controller (api)', () => {
 	const baseRouteName = '/logout';
@@ -81,6 +97,48 @@ describe('Logout Controller (api)', () => {
 				const response: Response = await testApiClient.post('');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('logoutOidc', () => {
+		describe('when a valid logout token is provided', () => {
+			const setup = async () => {
+				const userExternalId = 'userExternalId';
+
+				const oauthConfigEntity = systemOauthConfigEntityFactory.build();
+				const system = systemEntityFactory.withOauthConfig(oauthConfigEntity).buildWithId();
+
+				const school = schoolEntityFactory.buildWithId({ systems: [system] });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+					school,
+					externalId: userExternalId,
+					systemId: system.id,
+				});
+
+				await em.persistAndFlush([system, school, studentAccount, studentUser]);
+				em.clear();
+
+				const logoutToken = JwtTestFactory.createLogoutToken({
+					sub: userExternalId,
+					iss: oauthConfigEntity.issuer,
+					aud: oauthConfigEntity.clientId,
+				});
+
+				return {
+					system,
+					logoutToken,
+					studentAccount,
+				};
+			};
+
+			it('should log out the user', async () => {
+				const { logoutToken, studentAccount } = await setup();
+
+				const response: Response = await testApiClient.post('/oidc', { logout_token: logoutToken });
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(await cacheManager.store.keys(`jwt:${studentAccount.id}:*`)).toHaveLength(0);
 			});
 		});
 	});
