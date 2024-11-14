@@ -5,6 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
@@ -18,6 +19,7 @@ import { ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
+import { ToolConfig } from '../../../tool-config';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,
@@ -39,6 +41,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let lti11EncryptionService: DeepMocked<Lti11EncryptionService>;
 	let encryptionService: DeepMocked<EncryptionService>;
+	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -84,6 +87,10 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -93,6 +100,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		pseudonymService = module.get(PseudonymService);
 		lti11EncryptionService = module.get(Lti11EncryptionService);
 		encryptionService = module.get(DefaultEncryptionService);
+		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -101,6 +109,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+
+		configService.get.mockReturnValue('https://public-api-url.de/api');
 	});
 
 	describe('buildToolLaunchDataFromConcreteConfig', () => {

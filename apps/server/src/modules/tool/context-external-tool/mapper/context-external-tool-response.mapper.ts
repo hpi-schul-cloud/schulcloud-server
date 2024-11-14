@@ -46,6 +46,8 @@ export class ContextExternalToolResponseMapper {
 		const { ltiDeepLink } = toolReference;
 		const ltiDeepLinkResponse: LtiDeepLinkResponse | undefined = ltiDeepLink
 			? new LtiDeepLinkResponse({
+					mediaType: ltiDeepLink.mediaType,
+					url: ltiDeepLink.url,
 					title: ltiDeepLink.title,
 			  })
 			: undefined;

@@ -15,6 +15,7 @@ export class LtiDeepLinkRequestMapper {
 
 		const deepLink: LtiDeepLink | undefined = contentItem
 			? new LtiDeepLink({
+					mediaType: contentItem.mediaType,
 					title: contentItem.title,
 					parameters,
 			  })

@@ -1,16 +1,19 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UUID } from 'bson';
 import { Authorization } from 'oauth-1.0a';
+import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
+import { LtiDeepLink, LtiDeepLinkToken } from '../../../context-external-tool/domain';
+import { LtiDeepLinkTokenService } from '../../../context-external-tool/service/lti-deep-link-token.service';
 import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
+import { ToolConfig } from '../../../tool-config';
 import { LtiRoleMapper } from '../../mapper';
 import {
 	AuthenticationValues,
@@ -37,6 +40,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
+		private readonly configService: ConfigService<ToolConfig, true>,
+		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
@@ -69,8 +74,17 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		let properties: PropertyData[];
-		if (config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST) {
+		if (
+			config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST &&
+			!data.contextExternalTool.ltiDeepLink
+		) {
 			properties = await this.buildToolLaunchDataForContentItemSelectionRequest(userId, data, config);
+		} else if (
+			data.contextExternalTool.ltiDeepLink &&
+			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltilink' &&
+			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltiassignment'
+		) {
+			properties = [];
 		} else {
 			properties = await this.buildToolLaunchDataForLtiLaunch(
 				userId,
@@ -101,12 +115,12 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		);
 
-		const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const publicBackendUrl: string = this.configService.get<string>('PUBLIC_BACKEND_URL');
 		const callbackUrl = new URL(
 			`${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`
 		);
 
-		const state = new UUID().toString();
+		const ltiDeepLinkToken: LtiDeepLinkToken = await this.ltiDeepLinkTokenService.generateToken(userId);
 
 		additionalProperties.push(
 			new PropertyData({
@@ -148,7 +162,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: 'data',
-				value: state,
+				value: ltiDeepLinkToken.state,
 				location: PropertyLocation.BODY,
 			})
 		);
@@ -253,7 +267,29 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			// Don't add a user_id, when the privacy is anonymous
 		}
 
+		if (data.contextExternalTool.ltiDeepLink) {
+			additionalProperties.push(...this.buildToolLaunchDataFromDeepLink(data.contextExternalTool.ltiDeepLink));
+		}
+
 		return additionalProperties;
+	}
+
+	private buildToolLaunchDataFromDeepLink(deepLink: LtiDeepLink): PropertyData[] {
+		const deepLinkProperties: PropertyData[] = [];
+
+		deepLink.parameters.forEach((parameter: CustomParameterEntry): void => {
+			if (parameter.value) {
+				deepLinkProperties.push(
+					new PropertyData({
+						name: `custom_${parameter.name}`,
+						value: parameter.value,
+						location: PropertyLocation.BODY,
+					})
+				);
+			}
+		});
+
+		return deepLinkProperties;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -307,10 +343,23 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 		if (
 			ExternalTool.isLti11Config(data.externalTool.config) &&
-			data.externalTool.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
+			data.externalTool.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST &&
+			!data.contextExternalTool.ltiDeepLink
 		) {
 			request.openNewTab = true;
 			request.isDeepLink = true;
+		}
+
+		if (data.contextExternalTool.ltiDeepLink?.url) {
+			request.url = data.contextExternalTool.ltiDeepLink.url;
+		}
+
+		if (
+			data.contextExternalTool.ltiDeepLink &&
+			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltilink' &&
+			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltiassignment'
+		) {
+			request.method = LaunchRequestMethod.GET;
 		}
 
 		return request;

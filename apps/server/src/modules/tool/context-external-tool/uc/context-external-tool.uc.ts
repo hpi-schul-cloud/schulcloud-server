@@ -5,7 +5,7 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -13,11 +13,11 @@ import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { LtiDeepLink } from '../domain/lti-deep-link';
-import { LtiDeepLinkAuthorizable } from '../domain/lti-deep-link-authorizable';
+import { ContextExternalTool, ContextRef, LtiDeepLink, LtiDeepLinkAuthorizable, LtiDeepLinkToken } from '../domain';
+import { LtiDeepLinkTokenMissingLoggableException } from '../domain/error';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
+import { LtiDeepLinkTokenService } from '../service/lti-deep-link-token.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
 @Injectable()
@@ -27,7 +27,8 @@ export class ContextExternalToolUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService
 	) {}
 
 	async createContextExternalTool(
@@ -151,16 +152,14 @@ export class ContextExternalToolUc {
 		authorizable: LtiDeepLinkAuthorizable,
 		deepLink?: LtiDeepLink
 	): Promise<void> {
-		// TODO validate oauth1
 		const { state } = authorizable;
-		/* TODO use new collection
-		const userId: string | undefined = await this.cacheManager.get<string>(state);
-		await this.cacheManager.del(state);
-		 */
-		const userId = 'TODO';
 
-		if (!userId) {
-			throw new UnauthorizedException('Unknown user'); // TODO
+		// TODO validate oauth1
+
+		const ltiDeepLinkToken: LtiDeepLinkToken | null = await this.ltiDeepLinkTokenService.findByState(state);
+
+		if (!ltiDeepLinkToken) {
+			throw new LtiDeepLinkTokenMissingLoggableException(state, contextExternalToolId);
 		}
 
 		if (!deepLink) {
@@ -171,7 +170,7 @@ export class ContextExternalToolUc {
 			contextExternalToolId
 		);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const user: User = await this.authorizationService.getUserWithPermissions(ltiDeepLinkToken.userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
