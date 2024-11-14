@@ -112,7 +112,7 @@ export class CommonCartridgeExportService {
 
 			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 
-			const files = await this.downloadFiles(task.id);
+			const files = await this.downloadFiles(courseId);
 
 			files.forEach((file) => {
 				tasksOrganization.addResource(this.mapper.mapFileElementToResource(file));
