@@ -39,7 +39,7 @@ export class TspLegacyMigrationService {
 		this.logger.info(new TspLegacyMigrationCountLoggable(schoolIds.length));
 
 		const promises = schoolIds.map(async (oldId): Promise<number> => {
-			const filter = {
+			const legacySchoolFilter = {
 				systems: [legacySystemId],
 				source: TSP_LEGACY_SOURCE_TYPE,
 				sourceOptions: {
@@ -47,12 +47,12 @@ export class TspLegacyMigrationService {
 				},
 			};
 
-			const featureUpdateCount = await this.em.nativeUpdate(SCHOOLS_COLLECTION, filter, {
+			const featureUpdateCount = await this.em.nativeUpdate(SCHOOLS_COLLECTION, legacySchoolFilter, {
 				$addToSet: {
 					features: SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 				},
 			});
-			const idUpdateCount = await this.em.nativeUpdate(SCHOOLS_COLLECTION, filter, {
+			const idUpdateCount = await this.em.nativeUpdate(SCHOOLS_COLLECTION, legacySchoolFilter, {
 				ldapSchoolIdentifier: oldId,
 				systems: [new ObjectId(newSystemId)],
 			});
@@ -60,13 +60,13 @@ export class TspLegacyMigrationService {
 			return featureUpdateCount === 1 && idUpdateCount === 1 ? 1 : 0;
 		});
 
-		const res = await Promise.allSettled(promises);
-		const success = res
+		const results = await Promise.allSettled(promises);
+		const successfulMigrations = results
 			.filter((r) => r.status === 'fulfilled')
 			.map((r) => r.value)
-			.reduce((acc, c) => acc + c, 0);
+			.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 
-		this.logger.info(new TspLegacyMigrationSuccessLoggable(schoolIds.length, success));
+		this.logger.info(new TspLegacyMigrationSuccessLoggable(schoolIds.length, successfulMigrations));
 	}
 
 	private async findLegacySystemId() {
