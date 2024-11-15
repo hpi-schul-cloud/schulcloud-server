@@ -33,7 +33,7 @@ import { Configuration, FileApi } from './generated';
 
 				const config = new Configuration({
 					accessToken: extractJwtFromRequest(request),
-					basePath,
+					basePath: `${basePath}/api/v3`,
 				});
 
 				return new FileApi(config);
