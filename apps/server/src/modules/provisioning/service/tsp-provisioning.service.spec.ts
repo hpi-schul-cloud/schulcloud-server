@@ -339,5 +339,34 @@ describe('TspProvisioningService', () => {
 				expect(accountServiceMock.saveWithValidation).toHaveBeenCalledTimes(1);
 			});
 		});
+
+		describe('when user id is not set after create', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const data = new OauthDataDto({
+					system: setupExternalSystem(),
+					externalUser: setupExternalUser({
+						firstName: faker.person.firstName(),
+						lastName: faker.person.lastName(),
+						email: faker.internet.email(),
+					}),
+					externalSchool: setupExternalSchool(),
+				});
+				const user = userDoFactory.build({ id: undefined, roles: [] });
+
+				userServiceMock.findByExternalId.mockResolvedValue(null);
+				userServiceMock.save.mockResolvedValue(user);
+				schoolServiceMock.getSchools.mockResolvedValue([school]);
+				roleServiceMock.findByNames.mockResolvedValue([]);
+
+				return { data, school };
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				const { data, school } = setup();
+
+				await expect(() => sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
+			});
+		});
 	});
 });
