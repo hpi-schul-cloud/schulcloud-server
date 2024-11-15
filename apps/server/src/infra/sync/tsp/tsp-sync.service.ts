@@ -3,12 +3,16 @@ import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
+import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
+import { Account, AccountService } from '@src/modules/account';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
+import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
 import { FederalState, FileStorageType } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
+import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import moment from 'moment/moment';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
@@ -22,7 +26,9 @@ export class TspSyncService {
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly federalStateService: FederalStateService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly userService: UserService,
+		private readonly accountService: AccountService
 	) {}
 
 	public async findTspSystemOrFail(): Promise<System> {
@@ -144,15 +150,79 @@ export class TspSyncService {
 		return this.federalState;
 	}
 
+	public async fetchTspTeacherMigrations(system: System) {
+		const client = this.createClient(system);
+
+		const teacherMigrationsResponse = await client.exportLehrerListMigration();
+		const teacherMigrations = teacherMigrationsResponse.data;
+
+		return teacherMigrations;
+	}
+
+	public async fetchTspStudentMigrations(system: System) {
+		const client = this.createClient(system);
+
+		const studentMigrationsResponse = await client.exportSchuelerListMigration();
+		const studentMigrations = studentMigrationsResponse.data;
+
+		return studentMigrations;
+	}
+
+	public async findUserByTspUid(tspUid: string): Promise<UserDO | null> {
+		const tspUser = await this.userService.findUsers({ tspUid });
+
+		if (tspUser.data.length === 0) {
+			return null;
+		}
+
+		return tspUser.data[0];
+	}
+
+	public async findAccountByTspUid(tspUid: string): Promise<Account | null> {
+		const user = await this.findUserByTspUid(tspUid);
+
+		if (!user || !user.id) {
+			return null;
+		}
+
+		const account = await this.accountService.findByUserId(user.id);
+
+		return account;
+	}
+
+	public async updateUser(
+		user: UserDO,
+		email: string,
+		externalId: string,
+		previousExternalId: string
+	): Promise<UserDO> {
+		user.email = email;
+		user.externalId = externalId;
+		user.previousExternalId = previousExternalId;
+
+		return this.userService.save(user);
+	}
+
+	public async updateAccount(account: Account, username: string, systemId: string): Promise<Account> {
+		account.username = username;
+		account.systemId = systemId;
+
+		return this.accountService.save(account);
+	}
+
 	private formatChangeDate(daysToFetch: number): string {
 		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 
 	private createClient(system: System) {
+		if (!system.oauthConfig) {
+			throw new OauthConfigMissingLoggableException(system.id);
+		}
+
 		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
+			clientId: system.oauthConfig.clientId,
+			clientSecret: system.oauthConfig.clientSecret,
+			tokenEndpoint: system.oauthConfig.tokenEndpoint,
 		});
 
 		return client;

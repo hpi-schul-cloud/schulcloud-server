@@ -4,7 +4,9 @@ import {
 	ExportApiInterface,
 	RobjExportKlasse,
 	RobjExportLehrer,
+	RobjExportLehrerMigration,
 	RobjExportSchueler,
+	RobjExportSchuelerMigration,
 	RobjExportSchule,
 	TspClientFactory,
 } from '@infra/tsp-client';
@@ -12,12 +14,16 @@ import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { federalStateFactory, schoolYearFactory } from '@shared/testing';
+import { federalStateFactory, schoolYearFactory, userDoFactory } from '@shared/testing';
+import { AccountService } from '@src/modules/account';
+import { accountDoFactory } from '@src/modules/account/testing';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
+import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
 import { FileStorageType, SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
+import { UserService } from '@src/modules/user';
 import { AxiosResponse } from 'axios';
 import { TspSyncService } from './tsp-sync.service';
 
@@ -29,6 +35,8 @@ describe(TspSyncService.name, () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
+	let userService: DeepMocked<UserService>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -54,6 +62,14 @@ describe(TspSyncService.name, () => {
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
 			],
 		}).compile();
 
@@ -63,6 +79,8 @@ describe(TspSyncService.name, () => {
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
+		userService = module.get(UserService);
+		accountService = module.get(AccountService);
 	});
 
 	afterEach(() => {
@@ -167,15 +185,47 @@ describe(TspSyncService.name, () => {
 			data: classes,
 		});
 
+		const tspTeacherMigration: RobjExportLehrerMigration = {
+			lehrerUidAlt: faker.string.alpha(),
+			lehrerUidNeu: faker.string.alpha(),
+		};
+		const teacherMigrations = [tspTeacherMigration];
+		const responseTeacherMigrations = createMock<AxiosResponse<Array<RobjExportLehrerMigration>>>({
+			data: teacherMigrations,
+		});
+
+		const tspStudentMigration: RobjExportSchuelerMigration = {
+			schuelerUidAlt: faker.string.alpha(),
+			schuelerUidNeu: faker.string.alpha(),
+		};
+		const studentMigrations = [tspStudentMigration];
+		const responseStudentMigrations = createMock<AxiosResponse<Array<RobjExportSchuelerMigration>>>({
+			data: studentMigrations,
+		});
+
 		const exportApiMock = createMock<ExportApiInterface>();
 		exportApiMock.exportSchuleList.mockResolvedValueOnce(responseSchools);
 		exportApiMock.exportLehrerList.mockResolvedValueOnce(responseTeachers);
 		exportApiMock.exportSchuelerList.mockResolvedValueOnce(responseStudents);
 		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
+		exportApiMock.exportLehrerListMigration.mockResolvedValueOnce(responseTeacherMigrations);
+		exportApiMock.exportSchuelerListMigration.mockResolvedValueOnce(responseStudentMigrations);
 
 		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
 
-		return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools, teachers, students, classes };
+		return {
+			clientId,
+			clientSecret,
+			tokenEndpoint,
+			system,
+			exportApiMock,
+			schools,
+			teachers,
+			students,
+			classes,
+			teacherMigrations,
+			studentMigrations,
+		};
 	};
 
 	describe('fetchTspSchools', () => {
@@ -493,6 +543,218 @@ describe(TspSyncService.name, () => {
 					}) as Partial<SchoolProps>,
 				});
 				expect(federalStateService.findFederalStateByName).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('fetchTspTeacherMigrations', () => {
+		describe('when tsp teacher migrations are fetched', () => {
+			it('should create the client', async () => {
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
+
+				await sut.fetchTspTeacherMigrations(system);
+
+				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				});
+			});
+
+			it('should call exportLehrerListMigration', async () => {
+				const { system, exportApiMock } = setupTspClient();
+
+				await sut.fetchTspTeacherMigrations(system);
+
+				expect(exportApiMock.exportLehrerListMigration).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return an array of teacher migrations', async () => {
+				const { system } = setupTspClient();
+
+				const result = await sut.fetchTspTeacherMigrations(system);
+
+				expect(result).toBeDefined();
+				expect(result).toBeInstanceOf(Array);
+			});
+		});
+	});
+
+	describe('fetchTspStudentMigrations', () => {
+		describe('when tsp student migrations are fetched', () => {
+			it('should create the client', async () => {
+				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
+
+				await sut.fetchTspStudentMigrations(system);
+
+				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				});
+			});
+
+			it('should call exportSchuelerListMigration', async () => {
+				const { system, exportApiMock } = setupTspClient();
+
+				await sut.fetchTspStudentMigrations(system);
+
+				expect(exportApiMock.exportSchuelerListMigration).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return an array of student migrations', async () => {
+				const { system } = setupTspClient();
+
+				const result = await sut.fetchTspStudentMigrations(system);
+
+				expect(result).toBeDefined();
+				expect(result).toBeInstanceOf(Array);
+			});
+		});
+	});
+
+	describe('findUserByTspUid', () => {
+		describe('when user is found', () => {
+			const setup = () => {
+				const tspUid = faker.string.alpha();
+				const user = userDoFactory.build();
+
+				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 1 });
+
+				return { tspUid, user };
+			};
+
+			it('should return the user', async () => {
+				const { tspUid, user } = setup();
+
+				const result = await sut.findUserByTspUid(tspUid);
+
+				expect(result).toBe(user);
+			});
+		});
+
+		describe('when user is not found', () => {
+			const setup = () => {
+				const tspUid = faker.string.alpha();
+
+				userService.findUsers.mockResolvedValueOnce({ data: [], total: 0 });
+
+				return { tspUid };
+			};
+
+			it('should return null', async () => {
+				const { tspUid } = setup();
+
+				const result = await sut.findUserByTspUid(tspUid);
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findAccountByTspUid', () => {
+		describe('when account is found', () => {
+			const setup = () => {
+				const tspUid = faker.string.alpha();
+				const user = userDoFactory.build();
+				const account = accountDoFactory.build();
+
+				user.id = tspUid;
+				account.userId = user.id;
+
+				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 1 });
+				accountService.findByUserId.mockResolvedValueOnce(account);
+
+				return { tspUid, account };
+			};
+
+			it('should return the account', async () => {
+				const { tspUid, account } = setup();
+
+				const result = await sut.findAccountByTspUid(tspUid);
+
+				expect(result).toBe(account);
+			});
+		});
+
+		describe('when account is not found', () => {
+			const setup = () => {
+				const tspUid = faker.string.alpha();
+				const user = userDoFactory.build();
+
+				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 0 });
+				accountService.findByUserId.mockResolvedValueOnce(null);
+
+				return { tspUid };
+			};
+
+			it('should return null', async () => {
+				const { tspUid } = setup();
+
+				const result = await sut.findAccountByTspUid(tspUid);
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('updateUser', () => {
+		describe('when user is updated', () => {
+			const setup = () => {
+				const oldUid = faker.string.alpha();
+				const newUid = faker.string.alpha();
+				const email = faker.internet.email();
+				const user = userDoFactory.build();
+
+				userService.save.mockResolvedValueOnce(user);
+
+				return { oldUid, newUid, email, user };
+			};
+
+			it('should return the updated user', async () => {
+				const { oldUid, newUid, email, user } = setup();
+
+				const result = await sut.updateUser(user, email, newUid, oldUid);
+
+				expect(result).toBe(user);
+			});
+		});
+	});
+
+	describe('updateAccount', () => {
+		describe('when account is updated', () => {
+			const setup = () => {
+				const username = faker.internet.userName();
+				const systemId = faker.string.alpha();
+				const account = accountDoFactory.build();
+
+				accountService.save.mockResolvedValueOnce(account);
+
+				return { username, systemId, account };
+			};
+
+			it('should return the updated account', async () => {
+				const { username, systemId, account } = setup();
+
+				const result = await sut.updateAccount(account, username, systemId);
+
+				expect(result).toBe(account);
+			});
+		});
+	});
+
+	describe('createClient', () => {
+		describe('when oauthConfig is missing', () => {
+			const setup = () => {
+				const system = systemFactory.build({ oauthConfig: undefined });
+
+				return { system };
+			};
+
+			it('should throw an OauthConfigMissingLoggableException', async () => {
+				const { system } = setup();
+
+				await expect(async () => sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
 			});
 		});
 	});

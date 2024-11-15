@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RobjExportSchule } from '@infra/tsp-client';
+import { RobjExportLehrerMigration, RobjExportSchuelerMigration, RobjExportSchule } from '@infra/tsp-client';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { accountDoFactory } from '@src/modules/account/testing';
 import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
@@ -48,6 +50,10 @@ describe(TspSyncStrategy.name, () => {
 									return 10;
 								case 'TSP_SYNC_DATA_DAYS_TO_FETCH':
 									return 1;
+								case 'TSP_SYNC_MIGRATION_LIMIT':
+									return 10;
+								case 'FEATURE_TSP_MIGRATION_ENABLED':
+									return true;
 								default:
 									throw new Error(`Unknown key: ${key}`);
 							}
@@ -121,6 +127,25 @@ describe(TspSyncStrategy.name, () => {
 
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([oauthDataDto]);
 
+				const tspTeacher: RobjExportLehrerMigration = {
+					lehrerUidAlt: faker.string.alpha(),
+					lehrerUidNeu: faker.string.alpha(),
+				};
+
+				const tspStudent: RobjExportSchuelerMigration = {
+					schuelerUidAlt: faker.string.alpha(),
+					schuelerUidNeu: faker.string.alpha(),
+				};
+
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([tspTeacher]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([tspStudent]);
+				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
+				tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
+
+				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
+
 				return { oauthDataDto };
 			};
 
@@ -179,6 +204,56 @@ describe(TspSyncStrategy.name, () => {
 
 				expect(provisioningService.provisionData).toHaveBeenCalledWith(oauthDataDto);
 			});
+
+			describe('when feature tsp migration is enabled', () => {
+				it('should fetch teacher migrations', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.fetchTspTeacherMigrations).toHaveBeenCalled();
+				});
+
+				it('should fetch student migrations', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.fetchTspStudentMigrations).toHaveBeenCalled();
+				});
+
+				it('find user by tsp Uid', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.findUserByTspUid).toHaveBeenCalled();
+				});
+
+				it('should update user', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.updateUser).toHaveBeenCalled();
+				});
+
+				it('should find account by tsp Uid', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.findAccountByTspUid).toHaveBeenCalled();
+				});
+
+				it('should update account', async () => {
+					setup();
+
+					await sut.sync();
+
+					expect(tspSyncService.updateAccount).toHaveBeenCalled();
+				});
+			});
 		});
 
 		describe('when school does not exist', () => {
@@ -198,6 +273,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
@@ -228,6 +305,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
@@ -255,6 +334,8 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
 				tspSyncService.findSchoolsForSystem.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
 				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
 			};
 
@@ -266,6 +347,100 @@ describe(TspSyncStrategy.name, () => {
 				expect(tspSyncService.findSchool).not.toHaveBeenCalled();
 				expect(tspSyncService.updateSchool).not.toHaveBeenCalled();
 				expect(tspSyncService.createSchool).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when UidAlt or UidNeu is missing during migration', () => {
+			const setup = () => {
+				const tspTeacher: RobjExportLehrerMigration = {
+					lehrerUidAlt: undefined,
+					lehrerUidNeu: faker.string.alpha(),
+				};
+
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([tspTeacher]);
+
+				const tspStudent: RobjExportSchuelerMigration = {
+					schuelerUidAlt: faker.string.alpha(),
+					schuelerUidNeu: undefined,
+				};
+
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([tspStudent]);
+
+				tspSyncService.fetchTspSchools.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
+			};
+
+			it('should return false and not call findUserByTspUid', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.findUserByTspUid).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when no user is found during migration', () => {
+			const setup = () => {
+				const tspTeacher: RobjExportLehrerMigration = {
+					lehrerUidAlt: faker.string.alpha(),
+					lehrerUidNeu: faker.string.alpha(),
+				};
+
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([tspTeacher]);
+				tspSyncService.findUserByTspUid.mockResolvedValueOnce(null);
+
+				tspSyncService.fetchTspSchools.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
+				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
+
+				return { tspTeacher };
+			};
+
+			it('should throw and not call updateUser', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.updateUser).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when no account is found during migration', () => {
+			const setup = () => {
+				const tspTeacher: RobjExportLehrerMigration = {
+					lehrerUidAlt: faker.string.alpha(),
+					lehrerUidNeu: faker.string.alpha(),
+				};
+
+				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([tspTeacher]);
+				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(null);
+
+				tspSyncService.fetchTspSchools.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspStudents.mockResolvedValueOnce([]);
+				tspSyncService.fetchTspTeachers.mockResolvedValueOnce([]);
+
+				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([]);
+				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
+				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
+				tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce([]);
+			};
+
+			it('should throw and not call updateAccount', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspSyncService.updateAccount).not.toHaveBeenCalled();
 			});
 		});
 	});
