@@ -219,7 +219,7 @@ export class CommonCartridgeExportService {
 		}
 	}
 
-	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: Buffer }[]> {
+	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: string }[]> {
 		try {
 			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
 
@@ -232,7 +232,7 @@ export class CommonCartridgeExportService {
 				},
 			});
 
-			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
+			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
 				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name, this.logger);
