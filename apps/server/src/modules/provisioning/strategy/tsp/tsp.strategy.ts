@@ -74,8 +74,16 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
-		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
-		if (!data.externalClasses) throw new BadDataLoggableException('External classes are missing', { data });
+		if (!data.externalSchool) {
+			throw new BadDataLoggableException('External school is missing for user', {
+				externalId: data.externalUser.externalId,
+			});
+		}
+		if (!data.externalClasses) {
+			throw new BadDataLoggableException('External classes are missing for user', {
+				externalId: data.externalUser.externalId,
+			});
+		}
 
 		const school = await this.provisioningService.findSchoolOrFail(data.system, data.externalSchool);
 		const user = await this.provisioningService.provisionUser(data, school);

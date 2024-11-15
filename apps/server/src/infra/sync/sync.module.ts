@@ -16,6 +16,7 @@ import { TspOauthDataMapper } from './tsp/tsp-oauth-data.mapper';
 import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
+import { TspFetchService } from './tsp/tsp-fetch.service';
 
 @Module({
 	imports: [
@@ -39,7 +40,7 @@ import { SyncUc } from './uc/sync.uc';
 		SyncUc,
 		SyncService,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper]
+			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspFetchService]
 			: []),
 	],
 	exports: [SyncConsole],
