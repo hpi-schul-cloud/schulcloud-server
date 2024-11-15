@@ -90,7 +90,7 @@ export class ShareTokenController {
 			currentUser.userId,
 			urlParams.token,
 			body.newName,
-			body.destinationCourseId
+			body.destination
 		);
 
 		const response = CopyMapper.mapToResponse(copyStatus);

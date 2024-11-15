@@ -1,15 +1,24 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardNodeAuthorizableService,
+	ColumnBoardService,
+} from '@modules/board';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { BoardNodeAuthorizableService, BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { StorageLocationReference } from '@src/modules/board/service/internal';
+import { StorageLocation } from '@src/modules/files-storage/interface';
+import { RoomService } from '@src/modules/room';
+import { RoomMemberService } from '@src/modules/room-member';
 import { SchoolService } from '@src/modules/school';
 import {
 	ShareTokenContext,
@@ -21,6 +30,16 @@ import {
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
 
+export enum ImportDestinationType {
+	'Course' = 'course',
+	'Room' = 'room',
+}
+
+export type ImportDestination = {
+	type: ImportDestinationType;
+	id: EntityId;
+};
+
 @Injectable()
 export class ShareTokenUC {
 	constructor(
@@ -29,10 +48,12 @@ export class ShareTokenUC {
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly columnBoardService: ColumnBoardService,
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
+		private readonly roomService: RoomService,
+		private readonly roomMemberService: RoomMemberService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly schoolService: SchoolService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly logger: LegacyLogger
@@ -94,7 +115,7 @@ export class ShareTokenUC {
 		userId: EntityId,
 		token: string,
 		newName: string,
-		destinationCourseId?: string
+		destination?: ImportDestination
 	): Promise<CopyStatus> {
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
@@ -115,22 +136,31 @@ export class ShareTokenUC {
 				result = await this.copyCourse(user, shareToken.payload.parentId, newName);
 				break;
 			case ShareTokenParentType.Lesson:
-				if (destinationCourseId === undefined) {
-					throw new BadRequestException('Destination course id is required to copy lesson');
+				if (destination?.type !== ImportDestinationType.Course) {
+					throw new BadRequestException('Cannot copy lesson without destination course reference');
 				}
-				result = await this.copyLesson(user, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyLesson(user, shareToken.payload.parentId, destination.id, newName);
 				break;
 			case ShareTokenParentType.Task:
-				if (destinationCourseId === undefined) {
-					throw new BadRequestException('Destination course id is required to copy task');
+				if (destination?.type !== ImportDestinationType.Course) {
+					throw new BadRequestException('Cannot copy task without destination course reference');
 				}
-				result = await this.copyTask(user, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyTask(user, shareToken.payload.parentId, destination.id, newName);
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				if (destinationCourseId === undefined) {
-					throw new BadRequestException('Destination course id is required to copy task');
+				{
+					if (destination?.type !== ImportDestinationType.Course && destination?.type !== ImportDestinationType.Room) {
+						throw new BadRequestException('Cannot copy board without destination course or room reference');
+					}
+					const targetExternalReference: BoardExternalReference = {
+						id: destination.id,
+						type:
+							destination.type === ImportDestinationType.Course
+								? BoardExternalReferenceType.Course
+								: BoardExternalReferenceType.Room,
+					};
+					result = await this.copyColumnBoard(user, shareToken.payload.parentId, targetExternalReference, newName);
 				}
-				result = await this.copyColumnBoard(user, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
 		}
 
@@ -180,14 +210,25 @@ export class ShareTokenUC {
 	private async copyColumnBoard(
 		user: User,
 		originalColumnBoardId: string,
-		courseId: string,
+		targetExternalReference: BoardExternalReference,
 		copyTitle?: string
 	): Promise<CopyStatus> {
-		await this.checkCourseWritePermission(user, courseId, Permission.COURSE_EDIT);
+		await this.checkBoardReferenceWritePermission(user, targetExternalReference);
+
+		const originalBoard = await this.columnBoardService.findById(originalColumnBoardId);
+		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
+		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
+
+		// Maybe this check is not needed
+		// if (originalBoard.context.type !== targetExternalReference.type) {
+		// 	throw new BadRequestException('Cannot copy column board between different reference types');
+		// }
 
 		const copyStatus = this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
-			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
+			targetExternalReference,
+			sourceStorageLocationReference,
+			targetStorageLocationReference,
 			userId: user.id,
 			copyTitle,
 		});
@@ -225,6 +266,16 @@ export class ShareTokenUC {
 		};
 	}
 
+	private async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []) {
+		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
+
+		this.authorizationService.checkPermission(
+			user,
+			roomMemberAuthorizable,
+			AuthorizationContextBuilder.write(permissions)
+		);
+	}
+
 	private async checkLessonWritePermission(user: User, lessonId: EntityId, permission: Permission) {
 		const lesson = await this.lessonService.findById(lessonId);
 		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([permission]));
@@ -237,11 +288,11 @@ export class ShareTokenUC {
 
 	private async checkColumnBoardWritePermission(user: User, boardNodeId: EntityId, permission: Permission) {
 		const columBoard = await this.columnBoardService.findById(boardNodeId);
-		const boardNodeAuthorizableService = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
 
 		this.authorizationService.checkPermission(
 			user,
-			boardNodeAuthorizableService,
+			boardNodeAuthorizable,
 			AuthorizationContextBuilder.write([permission])
 		);
 	}
@@ -319,5 +370,33 @@ export class ShareTokenUC {
 			default:
 				throw new NotImplementedException('Import Feature not implemented');
 		}
+	}
+
+	// ---- Move to shared service? (see apps/server/src/modules/board/uc/board.uc.ts)
+
+	private async checkBoardReferenceWritePermission(user: User, boardExternalReference: BoardExternalReference) {
+		if (boardExternalReference.type === BoardExternalReferenceType.Course) {
+			await this.checkCourseWritePermission(user, boardExternalReference.id, Permission.COURSE_EDIT);
+		} else if (boardExternalReference.type === BoardExternalReferenceType.Room) {
+			await this.checkRoomWritePermission(user, boardExternalReference.id);
+		} else {
+			throw new Error(`Unsupported target reference type ${boardExternalReference.type as string}`);
+		}
+	}
+
+	private async getStorageLocationReference(context: BoardExternalReference): Promise<StorageLocationReference> {
+		if (context.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseService.findById(context.id);
+
+			return { id: course.school.id, type: StorageLocation.SCHOOL };
+		}
+
+		if (context.type === BoardExternalReferenceType.Room) {
+			const room = await this.roomService.getSingleRoom(context.id);
+
+			return { id: room.schoolId, type: StorageLocation.SCHOOL };
+		}
+
+		throw new Error(`Cannot get storage location reference for context type ${context.type as string}`);
 	}
 }
