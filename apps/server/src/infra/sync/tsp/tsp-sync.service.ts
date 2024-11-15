@@ -11,6 +11,7 @@ import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
 import { FederalState, FileStorageType } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
+import { SchoolPermissions } from '@src/modules/school/domain/type';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
@@ -122,6 +123,12 @@ export class TspSyncService {
 		const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 		const federalState = await this.findFederalState();
 
+		const permissions: SchoolPermissions = {
+			teacher: {
+				STUDENT_LIST: true,
+			},
+		};
+
 		const school = SchoolFactory.build({
 			externalId: identifier,
 			name,
@@ -133,6 +140,7 @@ export class TspSyncService {
 			updatedAt: new Date(),
 			id: new ObjectId().toHexString(),
 			fileStorageType: FileStorageType.AWS_S3,
+			permissions,
 		});
 
 		const savedSchool = await this.schoolService.save(school);
