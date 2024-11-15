@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
@@ -17,7 +17,7 @@ export class CommonCartridgeController {
 		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
 	}
 
-	@Get('newexport/:parentId')
+	@Post('newexport/:parentId')
 	public async exportCourseToCommonCartridge(
 		@Param() exportCourseParams: ExportCourseParams,
 		@Query() queryParams: CourseQueryParams,
