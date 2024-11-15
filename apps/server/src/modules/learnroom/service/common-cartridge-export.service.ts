@@ -246,7 +246,7 @@ export class CommonCartridgeExportService {
 					return {
 						message: `Found ${files.length} files for parent ${parentId}`,
 						files: files.map((file) => file.fileRecord.name).join(', '),
-						all: files,
+						file: files[0]?.file,
 					};
 				},
 			});
