@@ -79,7 +79,7 @@ export class TspOauthDataMapper {
 
 			const externalUser = new ExternalUserDto({
 				externalId: tspTeacher.lehrerUid,
-				firstName: tspTeacher.lehrerNachname,
+				firstName: tspTeacher.lehrerVorname,
 				lastName: tspTeacher.lehrerNachname,
 				roles: [RoleName.TEACHER],
 			});
@@ -109,7 +109,7 @@ export class TspOauthDataMapper {
 
 			const externalUser = new ExternalUserDto({
 				externalId: tspStudent.schuelerUid,
-				firstName: tspStudent.schuelerNachname,
+				firstName: tspStudent.schuelerVorname,
 				lastName: tspStudent.schuelerNachname,
 				roles: [RoleName.STUDENT],
 			});
