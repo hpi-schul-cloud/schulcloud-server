@@ -236,6 +236,16 @@ export class CommonCartridgeExportService {
 	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: Buffer }[]> {
 		try {
 			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
+
+			this.logger.warning({
+				getLogMessage() {
+					return {
+						message: `Found ${fileRecords.length} files for parent ${parentId}`,
+						files: fileRecords.map((fileRecord) => fileRecord.name).join(', '),
+					};
+				},
+			});
+
 			const filePromises = fileRecords.map(async (fileRecord) => {
 				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
