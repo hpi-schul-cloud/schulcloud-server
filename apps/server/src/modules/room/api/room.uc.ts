@@ -35,17 +35,18 @@ export class RoomUc {
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		this.checkFeatureEnabled();
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
-		// NOTE: currently only teachers are allowed to create rooms. Could not find simpler way to check this.
+
 		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
+
 		await this.roomMemberService
 			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }], user.school.id)
 			.catch(async (err) => {
 				await this.roomService.deleteRoom(room);
 				throw err;
 			});
+
 		return room;
 	}
 
