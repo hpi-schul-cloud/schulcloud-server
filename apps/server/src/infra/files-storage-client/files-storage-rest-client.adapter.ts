@@ -6,6 +6,16 @@ export class FilesStorageRestClientAdapter {
 	constructor(private readonly api: FileApi) {}
 
 	public async download(fileRecordId: string, fileName: string, logger: Logger): Promise<Buffer> {
+		logger.warning({
+			getLogMessage() {
+				return {
+					message: 'Downloading file',
+					fileRecordId,
+					fileName,
+				};
+			},
+		});
+
 		const response = (await this.api.download(fileRecordId, fileName, undefined, {
 			responseType: 'stream',
 		})) as AxiosResponse<Blob>;
