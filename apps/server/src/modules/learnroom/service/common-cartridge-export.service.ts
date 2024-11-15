@@ -147,22 +147,6 @@ export class CommonCartridgeExportService {
 
 			await Promise.allSettled(promises);
 		}
-
-		// TODO: error handling
-		// const promises = columnBoards.map(async (columnBoard) => {
-		// 	const columnBoardOrganization = builder.createOrganization({
-		// 		title: columnBoard.title,
-		// 		identifier: createIdentifier(columnBoard.id),
-		// 	});
-
-		// 	const foo = columnBoard.children
-		// 		.filter((child) => isColumn(child))
-		// 		.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
-
-		// 	await Promise.allSettled(foo);
-		// });
-
-		// await Promise.allSettled(promises);
 	}
 
 	private async addColumnToOrganization(
@@ -177,12 +161,6 @@ export class CommonCartridgeExportService {
 		for await (const card of column.children.filter((child) => isCard(child))) {
 			await this.addCardToOrganization(card, columnOrganization);
 		}
-
-		// const promises = column.children
-		// 	.filter((child) => isCard(child))
-		// 	.map((card) => this.addCardToOrganization(card, columnOrganization));
-
-		// await Promise.allSettled(promises);
 	}
 
 	private async addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): Promise<void> {
@@ -194,10 +172,6 @@ export class CommonCartridgeExportService {
 		for await (const child of card.children) {
 			await this.addCardElementToOrganization(child, cardOrganization);
 		}
-
-		// const promises = card.children.map((child) => this.addCardElementToOrganization(child, cardOrganization));
-
-		// await Promise.allSettled(promises);
 	}
 
 	private async addCardElementToOrganization(
@@ -265,14 +239,6 @@ export class CommonCartridgeExportService {
 
 				files.push({ fileRecord, file });
 			}
-
-			// const filePromises = fileRecords.map(async (fileRecord) => {
-			// 	const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-
-			// 	return { fileRecord, file };
-			// });
-			// const results = await Promise.allSettled(filePromises);
-			// const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
 
 			// TODO: change to info or debug
 			this.logger.warning({
