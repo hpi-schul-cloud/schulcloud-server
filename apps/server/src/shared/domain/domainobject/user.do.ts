@@ -1,6 +1,7 @@
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
+import { Consent } from './consent';
 import { RoleReference } from './role-reference';
 
 export class UserDO extends BaseDO {
@@ -50,6 +51,8 @@ export class UserDO extends BaseDO {
 
 	birthday?: Date;
 
+	consent?: Consent;
+
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
 
@@ -76,5 +79,6 @@ export class UserDO extends BaseDO {
 		this.outdatedSince = domainObject.outdatedSince;
 		this.previousExternalId = domainObject.previousExternalId;
 		this.birthday = domainObject.birthday;
+		this.consent = domainObject.consent;
 	}
 }
