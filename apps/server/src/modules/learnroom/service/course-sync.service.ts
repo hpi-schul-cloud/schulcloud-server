@@ -1,8 +1,9 @@
 import { Group, GroupUser } from '@modules/group';
-import { RoleService } from '@modules/role';
+import { RoleDto, RoleService } from '@modules/role';
 import { Inject, Injectable } from '@nestjs/common';
-import { Role, SyncAttribute, User } from '@shared/domain/entity';
+import { SyncAttribute, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
 	Course,
 	COURSE_REPO,
@@ -23,12 +24,16 @@ export class CourseSyncService {
 			throw new CourseAlreadySynchronizedLoggableException(course.id);
 		}
 
-		const isTeacher = user.getRoles().some((role: Role) => role.name === RoleName.TEACHER);
-		const isInGroup = group.users.some((groupUser) => groupUser.userId === user.id);
+		const teacherRole: RoleDto = await this.roleService.findByName(RoleName.TEACHER);
 
-		if (isTeacher && !isInGroup) {
+		const isInCourse: boolean = course.isTeacher(user.id);
+		const isTeacherInBoth: boolean = isInCourse && group.isMember(user.id, teacherRole.id);
+		const keepsAllTeachers: boolean =
+			!isInCourse && course.teachers.every((teacherId: EntityId) => group.isMember(teacherId, teacherRole.id));
+		const shouldSyncTeachers: boolean = isTeacherInBoth || keepsAllTeachers;
+
+		if (!shouldSyncTeachers) {
 			course.excludeFromSync = [SyncAttribute.TEACHERS];
-			course.teachers = [user.id];
 		}
 
 		await this.synchronize([course], group);
@@ -47,6 +52,7 @@ export class CourseSyncService {
 
 	public async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
 		const courses: Course[] = await this.courseRepo.findBySyncedGroup(newGroup);
+
 		await this.synchronize(courses, newGroup, oldGroup);
 	}
 
