@@ -14,7 +14,7 @@ export class TspSystemNotFoundLoggableException extends BusinessError implements
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage {
 		const message: LogMessage | ErrorLogMessage = {
 			message: this.message,
 			type: this.type,

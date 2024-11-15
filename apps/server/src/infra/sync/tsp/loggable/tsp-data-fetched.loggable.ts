@@ -8,7 +8,7 @@ export class TspDataFetchedLoggable implements Loggable {
 		private readonly daysFetched: number
 	) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		const message: LogMessage = {
 			message: `Fetched ${this.tspTeacherCount} teachers, ${this.tspStudentCount} students and ${this.tspClassesCount} classes for the last ${this.daysFetched} days from TSP`,
 			data: {
