@@ -50,17 +50,25 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.validPeriod;
 	}
 
-	removeUser(user: UserDO): void {
+	public removeUser(user: UserDO): void {
 		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== user.id);
 	}
 
-	isEmpty(): boolean {
+	public isEmpty(): boolean {
 		return this.props.users.length === 0;
 	}
 
-	addUser(user: GroupUser): void {
+	public addUser(user: GroupUser): void {
 		if (!this.users.find((u: GroupUser): boolean => u.userId === user.userId)) {
 			this.users.push(user);
 		}
+	}
+
+	public isMember(userId: EntityId, roleId?: EntityId): boolean {
+		const isMember: boolean = this.users.some(
+			(groupUser: GroupUser) => groupUser.userId === userId && (roleId ? groupUser.roleId === roleId : true)
+		);
+
+		return isMember;
 	}
 }
