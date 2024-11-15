@@ -22,7 +22,7 @@ import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
@@ -37,7 +37,8 @@ export class CommonCartridgeExportService {
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
 		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly errorLogger: ErrorLogger
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
 	}
@@ -112,7 +113,7 @@ export class CommonCartridgeExportService {
 
 			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 
-			const files = await this.downloadFiles(courseId);
+			const files = await this.downloadFiles(task.id);
 
 			files.forEach((file) => {
 				tasksOrganization.addResource(this.mapper.mapFileElementToResource(file));
@@ -154,7 +155,7 @@ export class CommonCartridgeExportService {
 
 			const foo = columnBoard.children
 				.filter((child) => isColumn(child))
-				.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization, courseId));
+				.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
 
 			await Promise.allSettled(foo);
 		});
@@ -164,41 +165,33 @@ export class CommonCartridgeExportService {
 
 	private async addColumnToOrganization(
 		column: Column,
-		columnBoardOrganization: CommonCartridgeOrganizationNode,
-		courseId: string
+		columnBoardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
-		const { id } = column;
 		const columnOrganization = columnBoardOrganization.createChild({
 			title: column.title || '',
-			identifier: createIdentifier(id),
+			identifier: createIdentifier(column.id),
 		});
-
 		const promises = column.children
 			.filter((child) => isCard(child))
-			.map((card) => this.addCardToOrganization(card, columnOrganization, courseId));
+			.map((card) => this.addCardToOrganization(card, columnOrganization));
 
 		await Promise.allSettled(promises);
 	}
 
-	private async addCardToOrganization(
-		card: Card,
-		columnOrganization: CommonCartridgeOrganizationNode,
-		courseId: string
-	): Promise<void> {
+	private async addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
 			title: card.title || '',
 			identifier: createIdentifier(card.id),
 		});
-		const files = await this.downloadFiles(courseId);
+		const promises = card.children.map((child) => this.addCardElementToOrganization(child, cardOrganization));
 
-		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization, files));
+		await Promise.allSettled(promises);
 	}
 
-	private addCardElementToOrganization(
+	private async addCardElementToOrganization(
 		element: AnyBoardNode,
-		cardOrganization: CommonCartridgeOrganizationNode,
-		files: { fileRecord: FileDto; file: Buffer }[]
-	): void {
+		cardOrganization: CommonCartridgeOrganizationNode
+	): Promise<void> {
 		if (isRichTextElement(element)) {
 			const resource = this.mapper.mapRichTextElementToResource(element);
 
@@ -216,10 +209,10 @@ export class CommonCartridgeExportService {
 		}
 
 		if (isFileElement(element)) {
-			const file = files.find((f) => f.fileRecord.id === element.id)!;
-			const resource = this.mapper.mapFileElementToResource(file, element);
+			const files = await this.downloadFiles(element.id);
+			const resources = files.map((f) => this.mapper.mapFileElementToResource(f, element));
 
-			cardOrganization.addResource(resource);
+			resources.forEach((resource) => cardOrganization.addResource(resource));
 		}
 	}
 
@@ -241,24 +234,38 @@ export class CommonCartridgeExportService {
 	}
 
 	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: Buffer }[]> {
-		const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
-		const filePromises = fileRecords.map(async (fileRecord) => {
-			const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+		try {
+			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
+			const filePromises = fileRecords.map(async (fileRecord) => {
+				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
-			return { fileRecord, file };
-		});
-		const results = await Promise.allSettled(filePromises);
-		const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
+				return { fileRecord, file };
+			});
+			const results = await Promise.allSettled(filePromises);
+			const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
 
-		this.logger.warning({
-			getLogMessage() {
-				return {
-					message: `Found ${files.length} files for parent ${parentId}`,
-					files: files.map((file) => file.fileRecord.name).join(', '),
-				};
-			},
-		});
+			// TODO: change to info or debug
+			this.logger.warning({
+				getLogMessage() {
+					return {
+						message: `Found ${files.length} files for parent ${parentId}`,
+						files: files.map((file) => file.fileRecord.name).join(', '),
+					};
+				},
+			});
 
-		return files;
+			return files;
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: `Failed to download files for parent ${parentId}`,
+						error,
+					};
+				},
+			});
+
+			return [];
+		}
 	}
 }
