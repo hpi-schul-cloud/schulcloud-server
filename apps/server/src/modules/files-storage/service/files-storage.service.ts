@@ -71,7 +71,11 @@ export class FilesStorageService {
 	}
 
 	public async getFileRecordsOfParent(parentId: EntityId): Promise<Counted<FileRecord[]>> {
+		this.logger.warn(`Searching for file records with parentId: ${parentId}`);
+
 		const countedFileRecords = await this.fileRecordRepo.findByParentId(parentId);
+
+		this.logger.warn(`Found ${countedFileRecords[1]} file records with parentId: ${parentId}`);
 
 		return countedFileRecords;
 	}
