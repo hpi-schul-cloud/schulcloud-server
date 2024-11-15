@@ -13,6 +13,7 @@ import { userDoFactory } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
 import { Authorization } from 'oauth-1.0a';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
+import { Lti11EncryptionService } from '../../../common/service';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalTool } from '../../../external-tool/domain';
@@ -29,7 +30,6 @@ import {
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
-import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 

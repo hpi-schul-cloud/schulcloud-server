@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToObject } from '@shared/controller/transformer';
 import { Type } from 'class-transformer';
-import { Equals, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Equals, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Lti11DeepLinkContentItemListParams } from './lti11-deep-link-content-item-list.params';
 
 export class Lti11DeepLinkParams {
@@ -32,8 +32,9 @@ export class Lti11DeepLinkParams {
 	@ApiProperty()
 	oauth_nonce!: string;
 
+	@IsNumber()
 	@ApiProperty()
-	oauth_timestamp!: string;
+	oauth_timestamp!: number;
 
 	@Equals('HMAC-SHA1')
 	@ApiProperty()

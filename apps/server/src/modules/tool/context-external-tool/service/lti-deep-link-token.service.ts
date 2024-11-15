@@ -14,7 +14,7 @@ export class LtiDeepLinkTokenService {
 		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
-	async generateToken(userId: EntityId): Promise<LtiDeepLinkToken> {
+	public async generateToken(userId: EntityId): Promise<LtiDeepLinkToken> {
 		const tokenDurationMs = this.configService.get<number>('CTL_TOOLS_RELOAD_TIME_MS');
 
 		const ltiDeepLinkToken: LtiDeepLinkToken = await this.ltiDeepLinkTokenRepo.save(
@@ -29,7 +29,7 @@ export class LtiDeepLinkTokenService {
 		return ltiDeepLinkToken;
 	}
 
-	async findByState(state: string): Promise<LtiDeepLinkToken | null> {
+	public async findByState(state: string): Promise<LtiDeepLinkToken | null> {
 		const ltiDeepLinkToken: LtiDeepLinkToken | null = await this.ltiDeepLinkTokenRepo.findByState(state);
 
 		return ltiDeepLinkToken;

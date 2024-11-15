@@ -10,7 +10,9 @@ import { EntityId } from '@shared/domain/types';
 import { Authorization } from 'oauth-1.0a';
 import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
+import { Lti11EncryptionService } from '../../../common/service';
 import { LtiDeepLink, LtiDeepLinkToken } from '../../../context-external-tool/domain';
+import { LtiDeepLinkingService } from '../../../context-external-tool/service';
 import { LtiDeepLinkTokenService } from '../../../context-external-tool/service/lti-deep-link-token.service';
 import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
 import { ToolConfig } from '../../../tool-config';
@@ -30,7 +32,6 @@ import {
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
-import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 
@@ -42,6 +43,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly lti11EncryptionService: Lti11EncryptionService,
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
+		private readonly ltiDeepLinkingService: LtiDeepLinkingService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
@@ -115,17 +117,14 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		);
 
-		const publicBackendUrl: string = this.configService.get<string>('PUBLIC_BACKEND_URL');
-		const callbackUrl = new URL(
-			`${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`
-		);
+		const callbackUrl: string = this.ltiDeepLinkingService.getCallbackUrl(data.contextExternalTool.id);
 
 		const ltiDeepLinkToken: LtiDeepLinkToken = await this.ltiDeepLinkTokenService.generateToken(userId);
 
 		additionalProperties.push(
 			new PropertyData({
 				name: 'content_item_return_url',
-				value: callbackUrl.toString(),
+				value: callbackUrl,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({

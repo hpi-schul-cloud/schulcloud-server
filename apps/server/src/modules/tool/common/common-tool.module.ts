@@ -4,7 +4,12 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
-import { CommonToolDeleteService, CommonToolService, CommonToolValidationService } from './service';
+import {
+	CommonToolDeleteService,
+	CommonToolService,
+	CommonToolValidationService,
+	Lti11EncryptionService,
+} from './service';
 import { CommonToolMetadataService } from './service/common-tool-metadata.service';
 
 @Module({
@@ -18,6 +23,7 @@ import { CommonToolMetadataService } from './service/common-tool-metadata.servic
 		ContextExternalToolRepo,
 		CommonToolMetadataService,
 		CommonToolDeleteService,
+		Lti11EncryptionService,
 	],
 	exports: [
 		CommonToolService,
@@ -27,6 +33,7 @@ import { CommonToolMetadataService } from './service/common-tool-metadata.servic
 		ContextExternalToolRepo,
 		CommonToolMetadataService,
 		CommonToolDeleteService,
+		Lti11EncryptionService,
 	],
 })
 export class CommonToolModule {}

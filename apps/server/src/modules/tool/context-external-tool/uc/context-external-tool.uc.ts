@@ -5,30 +5,36 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { Authorization } from 'oauth-1.0a';
 import { ToolContextType } from '../../common/enum';
+import { Lti11EncryptionService } from '../../common/service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ExternalToolService } from '../../external-tool';
+import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool, ContextRef, LtiDeepLink, LtiDeepLinkAuthorizable, LtiDeepLinkToken } from '../domain';
+import { ContextExternalTool, ContextRef, LtiDeepLink, LtiDeepLinkToken } from '../domain';
 import { LtiDeepLinkTokenMissingLoggableException } from '../domain/error';
-import { ContextExternalToolService } from '../service';
+import { ContextExternalToolService, LtiDeepLinkingService, LtiDeepLinkTokenService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
-import { LtiDeepLinkTokenService } from '../service/lti-deep-link-token.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
 @Injectable()
 export class ContextExternalToolUc {
 	constructor(
 		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService
+		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
+		private readonly ltiDeepLinkingService: LtiDeepLinkingService,
+		private readonly lti11EncryptionService: Lti11EncryptionService
 	) {}
 
 	async createContextExternalTool(
@@ -149,13 +155,10 @@ export class ContextExternalToolUc {
 
 	public async updateLtiDeepLink(
 		contextExternalToolId: EntityId,
-		authorizable: LtiDeepLinkAuthorizable,
+		payload: Authorization,
+		state: string,
 		deepLink?: LtiDeepLink
 	): Promise<void> {
-		const { state } = authorizable;
-
-		// TODO validate oauth1
-
 		const ltiDeepLinkToken: LtiDeepLinkToken | null = await this.ltiDeepLinkTokenService.findByState(state);
 
 		if (!ltiDeepLinkToken) {
@@ -170,6 +173,8 @@ export class ContextExternalToolUc {
 			contextExternalToolId
 		);
 
+		await this.checkOauthSignature(contextExternalTool, payload);
+
 		const user: User = await this.authorizationService.getUserWithPermissions(ltiDeepLinkToken.userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
@@ -178,5 +183,29 @@ export class ContextExternalToolUc {
 		contextExternalTool.ltiDeepLink = new LtiDeepLink({ ...deepLink });
 
 		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
+	}
+
+	private async checkOauthSignature(contextExternalTool: ContextExternalTool, payload: Authorization) {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (!ExternalTool.isLti11Config(externalTool.config)) {
+			throw new UnauthorizedException('wrong tool');
+		}
+
+		const url: string = this.ltiDeepLinkingService.getCallbackUrl(contextExternalTool.id);
+
+		const isValidSignature = this.lti11EncryptionService.verify(
+			externalTool.config.key,
+			externalTool.config.secret,
+			url,
+			payload
+		);
+
+		if (!isValidSignature) {
+			throw new BadRequestException('Invalid signature');
+		}
 	}
 }

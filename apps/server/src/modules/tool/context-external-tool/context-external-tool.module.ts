@@ -6,9 +6,15 @@ import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
-import { ContextExternalToolAuthorizableService, ContextExternalToolService, ToolReferenceService } from './service';
+import {
+	ContextExternalToolAuthorizableService,
+	ContextExternalToolService,
+	LtiDeepLinkingService,
+	LtiDeepLinkTokenService,
+	ToolConfigurationStatusService,
+	ToolReferenceService,
+} from './service';
 import { ContextExternalToolValidationService } from './service/context-external-tool-validation.service';
-import { ToolConfigurationStatusService } from './service/tool-configuration-status.service';
 
 @Module({
 	imports: [
@@ -26,12 +32,16 @@ import { ToolConfigurationStatusService } from './service/tool-configuration-sta
 		ToolReferenceService,
 		ToolConfigurationStatusService,
 		ContextExternalToolRule,
+		LtiDeepLinkTokenService,
+		LtiDeepLinkingService,
 	],
 	exports: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,
 		ToolReferenceService,
 		ToolConfigurationStatusService,
+		LtiDeepLinkTokenService,
+		LtiDeepLinkingService,
 	],
 })
 export class ContextExternalToolModule {}
