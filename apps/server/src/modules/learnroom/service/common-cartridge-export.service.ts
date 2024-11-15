@@ -135,32 +135,34 @@ export class CommonCartridgeExportService {
 			})
 		).filter((cb) => exportedColumnBoards.includes(cb.id));
 
-		// for (const columnBoard of columnBoards) {
-		// 	const columnBoardOrganization = builder.createOrganization({
-		// 		title: columnBoard.title,
-		// 		identifier: createIdentifier(columnBoard.id),
-		// 	});
-
-		// 	columnBoard.children
-		// 		.filter((child) => isColumn(child))
-		// 		.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
-		// }
-
-		// TODO: error handling
-		const promises = columnBoards.map(async (columnBoard) => {
+		for await (const columnBoard of columnBoards) {
 			const columnBoardOrganization = builder.createOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
 
-			const foo = columnBoard.children
+			const promises = columnBoard.children
 				.filter((child) => isColumn(child))
 				.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
 
-			await Promise.allSettled(foo);
-		});
+			await Promise.allSettled(promises);
+		}
 
-		await Promise.allSettled(promises);
+		// TODO: error handling
+		// const promises = columnBoards.map(async (columnBoard) => {
+		// 	const columnBoardOrganization = builder.createOrganization({
+		// 		title: columnBoard.title,
+		// 		identifier: createIdentifier(columnBoard.id),
+		// 	});
+
+		// 	const foo = columnBoard.children
+		// 		.filter((child) => isColumn(child))
+		// 		.map((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
+
+		// 	await Promise.allSettled(foo);
+		// });
+
+		// await Promise.allSettled(promises);
 	}
 
 	private async addColumnToOrganization(
@@ -171,11 +173,16 @@ export class CommonCartridgeExportService {
 			title: column.title || '',
 			identifier: createIdentifier(column.id),
 		});
-		const promises = column.children
-			.filter((child) => isCard(child))
-			.map((card) => this.addCardToOrganization(card, columnOrganization));
 
-		await Promise.allSettled(promises);
+		for await (const card of column.children.filter((child) => isCard(child))) {
+			await this.addCardToOrganization(card, columnOrganization);
+		}
+
+		// const promises = column.children
+		// 	.filter((child) => isCard(child))
+		// 	.map((card) => this.addCardToOrganization(card, columnOrganization));
+
+		// await Promise.allSettled(promises);
 	}
 
 	private async addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): Promise<void> {
@@ -183,9 +190,14 @@ export class CommonCartridgeExportService {
 			title: card.title || '',
 			identifier: createIdentifier(card.id),
 		});
-		const promises = card.children.map((child) => this.addCardElementToOrganization(child, cardOrganization));
 
-		await Promise.allSettled(promises);
+		for await (const child of card.children) {
+			await this.addCardElementToOrganization(child, cardOrganization);
+		}
+
+		// const promises = card.children.map((child) => this.addCardElementToOrganization(child, cardOrganization));
+
+		// await Promise.allSettled(promises);
 	}
 
 	private async addCardElementToOrganization(
@@ -246,13 +258,21 @@ export class CommonCartridgeExportService {
 				},
 			});
 
-			const filePromises = fileRecords.map(async (fileRecord) => {
+			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
+
+			for await (const fileRecord of fileRecords) {
 				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
-				return { fileRecord, file };
-			});
-			const results = await Promise.allSettled(filePromises);
-			const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
+				files.push({ fileRecord, file });
+			}
+
+			// const filePromises = fileRecords.map(async (fileRecord) => {
+			// 	const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+
+			// 	return { fileRecord, file };
+			// });
+			// const results = await Promise.allSettled(filePromises);
+			// const files = results.filter((result) => result.status === 'fulfilled').map((filePromise) => filePromise.value);
 
 			// TODO: change to info or debug
 			this.logger.warning({
