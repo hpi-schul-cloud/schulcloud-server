@@ -9,8 +9,8 @@ import { FilesStorageRestClientConfig } from './files-storage-rest-client.config
 import { Configuration, FileApi } from './generated';
 
 @Module({
+	imports: [LoggerModule],
 	providers: [
-		LoggerModule,
 		{
 			provide: FilesStorageRestClientAdapter,
 			scope: Scope.REQUEST,
