@@ -1,25 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
 import { IsOptional, IsString } from 'class-validator';
-import { ImportDestination, ImportDestinationType } from '../../uc';
-
-export class ImportDestinationBodyParams {
-	@IsString()
-	@ApiProperty({
-		description: 'The id of the destination object.',
-		required: true,
-		nullable: false,
-	})
-	id!: string;
-
-	@ApiProperty({
-		enum: ImportDestinationType,
-		description: 'The type of the destination object.',
-		required: true,
-		nullable: false,
-	})
-	type!: ImportDestinationType;
-}
 
 export class ShareTokenImportBodyParams {
 	@IsString()
@@ -32,12 +13,11 @@ export class ShareTokenImportBodyParams {
 	newName!: string;
 
 	@IsOptional()
+	@IsString()
 	@ApiProperty({
-		type: ImportDestinationBodyParams,
-		name: 'ImportDestination',
-		description: 'Destination of the share token import',
+		description: 'Id of the parent to which the imported object will be added.',
 		required: false,
 		nullable: true,
 	})
-	destination?: ImportDestination;
+	destinationId?: string;
 }

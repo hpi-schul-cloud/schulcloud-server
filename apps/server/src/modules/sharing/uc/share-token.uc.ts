@@ -30,16 +30,6 @@ import {
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
 
-export enum ImportDestinationType {
-	'Course' = 'course',
-	'Room' = 'room',
-}
-
-export type ImportDestination = {
-	type: ImportDestinationType;
-	id: EntityId;
-};
-
 @Injectable()
 export class ShareTokenUC {
 	constructor(
@@ -115,7 +105,7 @@ export class ShareTokenUC {
 		userId: EntityId,
 		token: string,
 		newName: string,
-		destination?: ImportDestination
+		destinationId?: EntityId
 	): Promise<CopyStatus> {
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
@@ -136,31 +126,22 @@ export class ShareTokenUC {
 				result = await this.copyCourse(user, shareToken.payload.parentId, newName);
 				break;
 			case ShareTokenParentType.Lesson:
-				if (destination?.type !== ImportDestinationType.Course) {
+				if (destinationId === undefined) {
 					throw new BadRequestException('Cannot copy lesson without destination course reference');
 				}
-				result = await this.copyLesson(user, shareToken.payload.parentId, destination.id, newName);
+				result = await this.copyLesson(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 			case ShareTokenParentType.Task:
-				if (destination?.type !== ImportDestinationType.Course) {
+				if (destinationId === undefined) {
 					throw new BadRequestException('Cannot copy task without destination course reference');
 				}
-				result = await this.copyTask(user, shareToken.payload.parentId, destination.id, newName);
+				result = await this.copyTask(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				{
-					if (destination?.type !== ImportDestinationType.Course && destination?.type !== ImportDestinationType.Room) {
-						throw new BadRequestException('Cannot copy board without destination course or room reference');
-					}
-					const targetExternalReference: BoardExternalReference = {
-						id: destination.id,
-						type:
-							destination.type === ImportDestinationType.Course
-								? BoardExternalReferenceType.Course
-								: BoardExternalReferenceType.Room,
-					};
-					result = await this.copyColumnBoard(user, shareToken.payload.parentId, targetExternalReference, newName);
+				if (destinationId === undefined) {
+					throw new BadRequestException('Cannot copy board without destination course or room reference');
 				}
+				result = await this.copyColumnBoard(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 		}
 
@@ -210,23 +191,20 @@ export class ShareTokenUC {
 	private async copyColumnBoard(
 		user: User,
 		originalColumnBoardId: string,
-		targetExternalReference: BoardExternalReference,
+		destinationId: EntityId,
 		copyTitle?: string
 	): Promise<CopyStatus> {
-		await this.checkBoardReferenceWritePermission(user, targetExternalReference);
+		const originalBoard = await this.columnBoardService.findById(originalColumnBoardId, 0);
+		const destinationBoard = await this.columnBoardService.findById(destinationId, 0);
 
-		const originalBoard = await this.columnBoardService.findById(originalColumnBoardId);
+		await this.checkBoardReferenceWritePermission(user, destinationBoard.context);
+
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
-		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
-
-		// Maybe this check is not needed
-		// if (originalBoard.context.type !== targetExternalReference.type) {
-		// 	throw new BadRequestException('Cannot copy column board between different reference types');
-		// }
+		const targetStorageLocationReference = await this.getStorageLocationReference(destinationBoard.context);
 
 		const copyStatus = this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
-			targetExternalReference,
+			targetExternalReference: destinationBoard.context,
 			sourceStorageLocationReference,
 			targetStorageLocationReference,
 			userId: user.id,
