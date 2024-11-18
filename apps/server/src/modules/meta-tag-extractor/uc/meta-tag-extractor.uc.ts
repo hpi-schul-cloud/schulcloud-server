@@ -1,23 +1,12 @@
-import { AuthorizationService } from '@modules/authorization';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { Injectable } from '@nestjs/common';
 import { MetaTagExtractorService } from '../service';
 import { MetaData } from '../types';
 
 @Injectable()
 export class MetaTagExtractorUc {
-	constructor(
-		private readonly authorizationService: AuthorizationService,
-		private readonly metaTagExtractorService: MetaTagExtractorService
-	) {}
+	constructor(private readonly metaTagExtractorService: MetaTagExtractorService) {}
 
-	async getMetaData(userId: EntityId, url: string): Promise<MetaData> {
-		try {
-			await this.authorizationService.getUserWithPermissions(userId);
-		} catch (error) {
-			throw new UnauthorizedException();
-		}
-
+	async getMetaData(url: string): Promise<MetaData> {
 		const result = await this.metaTagExtractorService.getMetaData(url);
 		return result;
 	}
