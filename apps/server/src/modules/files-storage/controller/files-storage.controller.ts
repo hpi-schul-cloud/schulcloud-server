@@ -22,7 +22,7 @@ import {
 	UnprocessableEntityException,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiHeader, ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { Request, Response } from 'express';
@@ -92,13 +92,14 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
+	@ApiProduces('application/octet-stream')
 	@ApiResponse({
 		status: 200,
-		content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } },
+		type: StreamableFile,
 	})
 	@ApiResponse({
 		status: 206,
-		content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } },
+		type: StreamableFile,
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
