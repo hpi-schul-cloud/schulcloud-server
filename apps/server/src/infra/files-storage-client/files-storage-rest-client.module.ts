@@ -2,7 +2,7 @@ import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { extractJwtFromRequest } from '@shared/common/utils/jwt';
-import { Logger, LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { Request } from 'express';
 import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
 import { FilesStorageRestClientConfig } from './files-storage-rest-client.config';
@@ -14,22 +14,8 @@ import { Configuration, FileApi } from './generated';
 		{
 			provide: FilesStorageRestClientAdapter,
 			scope: Scope.REQUEST,
-			useFactory: (
-				configService: ConfigService<FilesStorageRestClientConfig, true>,
-				request: Request,
-				logger: Logger
-			): FileApi => {
+			useFactory: (configService: ConfigService<FilesStorageRestClientConfig, true>, request: Request): FileApi => {
 				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
-
-				logger.setContext(FilesStorageRestClientAdapter.name);
-				logger.warning({
-					getLogMessage() {
-						return {
-							message: 'FilesStorageRestClientAdapter created',
-							basePath,
-						};
-					},
-				});
 
 				const config = new Configuration({
 					accessToken: extractJwtFromRequest(request),
@@ -38,7 +24,7 @@ import { Configuration, FileApi } from './generated';
 
 				return new FileApi(config);
 			},
-			inject: [ConfigService, REQUEST, Logger],
+			inject: [ConfigService, REQUEST],
 		},
 	],
 	exports: [FilesStorageRestClientAdapter],
