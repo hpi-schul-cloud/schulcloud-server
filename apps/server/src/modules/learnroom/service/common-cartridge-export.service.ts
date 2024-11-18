@@ -24,6 +24,7 @@ import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
+import { Stream } from 'stream';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
@@ -222,11 +223,23 @@ export class CommonCartridgeExportService {
 	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: string }[]> {
 		try {
 			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
+
 			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-				const file = await response.data.text();
+
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
+							type: typeof response.data,
+							data: response.data as unknown as string,
+						};
+					},
+				});
+
+				const file = response.data.toString();
 
 				files.push({ fileRecord, file });
 			}
@@ -244,5 +257,19 @@ export class CommonCartridgeExportService {
 
 			return [];
 		}
+	}
+
+	private async streamToString(stream: Stream): Promise<string> {
+		const chunks: Uint8Array[] = [];
+
+		return new Promise((resolve, reject) => {
+			stream.on('data', (chunk: Uint8Array) => {
+				chunks.push(chunk);
+			});
+			stream.on('end', () => {
+				resolve(Buffer.concat(chunks).toString('utf8'));
+			});
+			stream.on('error', reject);
+		});
 	}
 }
