@@ -29,7 +29,6 @@ import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
 import axios, { AxiosResponse } from 'axios';
 import { Request } from 'express';
-import { Stream } from 'stream';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
@@ -237,9 +236,9 @@ export class CommonCartridgeExportService {
 				// const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 				const response: AxiosResponse<Blob> = await axios.request({
 					method: 'GET',
-					url: `http://${this.configService.getOrThrow<string>(
-						'FILES_STORAGE__SERVICE_BASE_URL'
-					)}/api/v3/file/download/${fileRecord.id}/${fileRecord.name}`,
+					url: `${this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL')}/api/v3/file/download/${
+						fileRecord.id
+					}/${fileRecord.name}`,
 					responseType: 'blob',
 					headers: {
 						Authorization: `Bearer ${extractJwtFromRequest(this.req)}`,
@@ -274,19 +273,5 @@ export class CommonCartridgeExportService {
 
 			return [];
 		}
-	}
-
-	private async streamToString(stream: Stream): Promise<string> {
-		const chunks: Uint8Array[] = [];
-
-		return new Promise((resolve, reject) => {
-			stream.on('data', (chunk: Uint8Array) => {
-				chunks.push(chunk);
-			});
-			stream.on('end', () => {
-				resolve(Buffer.concat(chunks).toString('utf8'));
-			});
-			stream.on('error', reject);
-		});
 	}
 }
