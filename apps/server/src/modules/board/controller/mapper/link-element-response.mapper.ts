@@ -22,6 +22,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 				url: element.url,
 				title: element.title,
 				description: element.description,
+				originalImageUrl: element.originalImageUrl,
 				imageUrl: element.imageUrl,
 			}),
 		});
