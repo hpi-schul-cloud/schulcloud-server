@@ -24,16 +24,12 @@ import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
-import * as Fs from 'fs';
-import * as Path from 'path';
 import { Stream } from 'stream';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	private readonly tempDir: string;
-
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
@@ -46,11 +42,6 @@ export class CommonCartridgeExportService {
 		private readonly errorLogger: ErrorLogger
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
-		this.tempDir = Path.join('/tmp', 'downloads');
-
-		if (!Fs.existsSync(this.tempDir)) {
-			Fs.mkdirSync(this.tempDir, { recursive: true });
-		}
 	}
 
 	public async exportCourse(
@@ -245,31 +236,19 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
-				const writer = Fs.createWriteStream(Path.join(this.tempDir, fileRecord.name));
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
 				this.logger.warning({
 					getLogMessage() {
 						return {
 							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-							request: response.request as unknown as string,
-						};
-					},
-				});
-
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
 							type: typeof response.data,
-							data: writer as unknown as string,
+							data: response.data as unknown as string,
 						};
 					},
 				});
 
-				response.data.pipe(writer);
-
-				const file = await this.streamToString(writer);
+				const file = response.data.toString();
 
 				this.logger.warning({
 					getLogMessage() {

@@ -1,6 +1,5 @@
 import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
-import { Stream } from 'stream';
 import { FileApi } from './generated';
 
 export class FilesStorageRestClientAdapter {
@@ -8,14 +7,14 @@ export class FilesStorageRestClientAdapter {
 		this.logger.setContext(FilesStorageRestClientAdapter.name);
 	}
 
-	public async download(fileRecordId: string, fileName: string): Promise<AxiosResponse<Stream>> {
+	public async download(fileRecordId: string, fileName: string): Promise<AxiosResponse<File>> {
 		// const response = await this.api.download(fileRecordId, fileName);
 		// const file = await response.data.arrayBuffer();
 		// const content = Buffer.from(file).toString('utf8');
 
-		return (await this.api.download(fileRecordId, fileName, undefined, {
-			responseType: 'stream',
-		})) as unknown as AxiosResponse<Stream>;
+		return this.api.download(fileRecordId, fileName, undefined, {
+			responseType: 'blob',
+		});
 	}
 
 	// private async streamToString(stream: Stream): Promise<string> {
