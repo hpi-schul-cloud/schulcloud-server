@@ -46,7 +46,11 @@ export class CommonCartridgeExportService {
 		private readonly errorLogger: ErrorLogger
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
-		this.tempDir = Path.join('/TEMP');
+		this.tempDir = Path.join(__dirname, 'tmp', 'downloads');
+
+		if (!Fs.existsSync(this.tempDir)) {
+			Fs.mkdirSync(this.tempDir, { recursive: true });
+		}
 	}
 
 	public async exportCourse(
