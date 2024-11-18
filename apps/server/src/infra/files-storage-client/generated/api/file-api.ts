@@ -162,7 +162,7 @@ export const FileApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async download(fileRecordId: string, fileName: string, range?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+        async download(fileRecordId: string, fileName: string, range?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.download(fileRecordId, fileName, range, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.download']?.[localVarOperationServerIndex]?.url;
@@ -204,7 +204,7 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        download(fileRecordId: string, fileName: string, range?: string, options?: any): AxiosPromise<object> {
+        download(fileRecordId: string, fileName: string, range?: string, options?: any): AxiosPromise<File> {
             return localVarFp.download(fileRecordId, fileName, range, options).then((request) => request(axios, basePath));
         },
         /**
@@ -240,7 +240,7 @@ export interface FileApiInterface {
      * @throws {RequiredError}
      * @memberof FileApiInterface
      */
-    download(fileRecordId: string, fileName: string, range?: string, options?: RawAxiosRequestConfig): AxiosPromise<object>;
+    download(fileRecordId: string, fileName: string, range?: string, options?: RawAxiosRequestConfig): AxiosPromise<File>;
 
     /**
      * 

@@ -92,8 +92,14 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
-	@ApiResponse({ status: 200, type: StreamableFile })
-	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({
+		status: 200,
+		content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } },
+	})
+	@ApiResponse({
+		status: 206,
+		content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } },
+	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
