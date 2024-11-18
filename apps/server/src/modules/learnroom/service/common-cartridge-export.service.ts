@@ -246,55 +246,39 @@ export class CommonCartridgeExportService {
 
 			for await (const fileRecord of fileRecords) {
 				const writer = Fs.createWriteStream(Path.join(this.tempDir, fileRecord.name));
-				// const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
-				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name).then((response) => {
-					this.logger.warning({
-						getLogMessage() {
-							return {
-								message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-								type: typeof response.data,
-								data: response.data as unknown as string,
-							};
-						},
-					});
-
-					response.data.pipe(writer);
-
-					this.logger.warning({
-						getLogMessage() {
-							return {
-								message: `Converted file ${fileRecord.name} to string`,
-								file,
-							};
-						},
-					});
-
-					return this.streamToString(writer);
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
+							request: response.request as unknown as string,
+						};
+					},
 				});
 
-				// this.logger.warning({
-				// 	getLogMessage() {
-				// 		return {
-				// 			message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-				// 			type: typeof response.data,
-				// 			data: writer as unknown as string,
-				// 		};
-				// 	},
-				// });
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
+							type: typeof response.data,
+							data: writer as unknown as string,
+						};
+					},
+				});
 
-				// response.data.pipe(writer);
+				response.data.pipe(writer);
 
-				// const file = await this.streamToString(writer);
+				const file = await this.streamToString(writer);
 
-				// this.logger.warning({
-				// 	getLogMessage() {
-				// 		return {
-				// 			message: `Converted file ${fileRecord.name} to string`,
-				// 			file,
-				// 		};
-				// 	},
-				// });
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Converted file ${fileRecord.name} to string`,
+							file,
+						};
+					},
+				});
 
 				files.push({ fileRecord, file });
 			}
