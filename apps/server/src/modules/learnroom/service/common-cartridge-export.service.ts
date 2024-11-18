@@ -248,8 +248,6 @@ export class CommonCartridgeExportService {
 				const writer = Fs.createWriteStream(Path.join(this.tempDir, fileRecord.name), {});
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
-				response.data.pipe(writer);
-
 				this.logger.warning({
 					getLogMessage() {
 						return {
@@ -259,6 +257,8 @@ export class CommonCartridgeExportService {
 						};
 					},
 				});
+
+				response.data.pipe(writer);
 
 				const file = await this.streamToString(writer);
 
