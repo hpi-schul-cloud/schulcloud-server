@@ -24,11 +24,16 @@ import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
+import * as Fs from 'fs';
+import * as Path from 'path';
+import { Stream } from 'stream';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
+	private readonly tempDir: string;
+
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
@@ -41,6 +46,7 @@ export class CommonCartridgeExportService {
 		private readonly errorLogger: ErrorLogger
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
+		this.tempDir = Path.join('/temp', 'downloads');
 	}
 
 	public async exportCourse(
@@ -235,54 +241,22 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
+				const writer = Fs.createWriteStream(Path.join(this.tempDir, fileRecord.name));
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+
+				response.data.pipe(writer);
 
 				this.logger.warning({
 					getLogMessage() {
 						return {
 							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
 							type: typeof response.data,
-							data: response.data as unknown as string,
+							data: writer as unknown as string,
 						};
 					},
 				});
 
-				const file: string = await new Promise((resolve, reject) => {
-					const chunks: Uint8Array[] = [];
-
-					response.data.on('data', (chunk: Uint8Array) => {
-						chunks.push(chunk);
-					});
-					response.data.on('end', () => {
-						resolve(Buffer.concat(chunks).toString('utf8'));
-					});
-					response.data.on('error', reject);
-				});
-
-				// const { data } = response;
-
-				// this.logger.warning({
-				// 	getLogMessage() {
-				// 		return {
-				// 			message: `Read data for file ${fileRecord.name}`,
-				// 			type: typeof data,
-				// 			data: data as unknown as string,
-				// 		};
-				// 	},
-				// });
-
-				// const buffer = await data.arrayBuffer();
-
-				// this.logger.warning({
-				// 	getLogMessage() {
-				// 		return {
-				// 			message: `Converted data to buffer for file ${fileRecord.name}`,
-				// 			buffer,
-				// 		};
-				// 	},
-				// });
-
-				// const file = Buffer.from(buffer).toString('utf8');
+				const file = await this.streamToString(writer);
 
 				this.logger.warning({
 					getLogMessage() {
@@ -320,5 +294,19 @@ export class CommonCartridgeExportService {
 
 			return [];
 		}
+	}
+
+	private async streamToString(stream: Stream): Promise<string> {
+		const chunks: Uint8Array[] = [];
+
+		return new Promise((resolve, reject) => {
+			stream.on('data', (chunk: Uint8Array) => {
+				chunks.push(chunk);
+			});
+			stream.on('end', () => {
+				resolve(Buffer.concat(chunks).toString('utf8'));
+			});
+			stream.on('error', reject);
+		});
 	}
 }
