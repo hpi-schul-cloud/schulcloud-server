@@ -1,2 +1,1 @@
-export * from './idp-console.module';
-export * from './interface';
+export { UsersSyncOptions, SystemType } from './interface'; // TODO: Why exports are needed?

@@ -12,7 +12,6 @@ import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { OauthConfig } from '@modules/oauth';
@@ -65,7 +64,7 @@ export interface ServerConfig
 		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
-		SynchronizationConfig,
+		// SynchronizationConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		RoomConfig,
@@ -217,7 +216,7 @@ const config: ServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	FEATURE_TSP_SYNC_ENABLED: Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
-	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
+	// SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
