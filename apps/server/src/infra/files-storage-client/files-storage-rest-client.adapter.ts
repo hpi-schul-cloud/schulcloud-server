@@ -6,31 +6,12 @@ export class FilesStorageRestClientAdapter {
 		this.logger.setContext(FilesStorageRestClientAdapter.name);
 	}
 
-	public async download(fileRecordId: string, fileName: string): Promise<string> {
-		this.logger.warning({
-			getLogMessage() {
-				return {
-					message: 'Downloading file...',
-					fileRecordId,
-					fileName,
-				};
-			},
-		});
+	public async download(fileRecordId: string, fileName: string) {
+		// const response = await this.api.download(fileRecordId, fileName);
+		// const file = await response.data.arrayBuffer();
+		// const content = Buffer.from(file).toString('utf8');
 
-		const response = await this.api.download(fileRecordId, fileName);
-		const file = await response.data.arrayBuffer();
-		const content = Buffer.from(file).toString('utf8');
-
-		this.logger.warning({
-			getLogMessage() {
-				return {
-					message: 'Downloaded file',
-					content,
-				};
-			},
-		});
-
-		return content;
+		return this.api.download(fileRecordId, fileName);
 	}
 
 	// private async streamToString(stream: Stream): Promise<string> {

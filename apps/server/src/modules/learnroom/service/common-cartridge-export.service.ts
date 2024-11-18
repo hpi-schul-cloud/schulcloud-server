@@ -235,7 +235,28 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
-				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
+							response,
+						};
+					},
+				});
+
+				const data = await response.data.arrayBuffer();
+				const file = Buffer.from(data).toString('utf8');
+
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Converted file ${fileRecord.name} to string`,
+							file,
+						};
+					},
+				});
 
 				files.push({ fileRecord, file });
 			}
