@@ -9,7 +9,7 @@ export class FilesStorageRestClientAdapter {
 
 	public async download(fileRecordId: string, fileName: string): Promise<AxiosResponse<File>> {
 		return this.api.download(fileRecordId, fileName, undefined, {
-			responseType: 'blob',
+			responseType: 'arraybuffer',
 		});
 	}
 }
