@@ -74,6 +74,23 @@ export class MeRoleResponse {
 	}
 }
 
+export class MeSystemResponse {
+	@ApiProperty()
+	id: string;
+
+	@ApiPropertyOptional()
+	name?: string;
+
+	@ApiProperty()
+	hasEndSessionEndpoint: boolean;
+
+	constructor(props: MeSystemResponse) {
+		this.id = props.id;
+		this.name = props.name;
+		this.hasEndSessionEndpoint = props.hasEndSessionEndpoint;
+	}
+}
+
 export class MeResponse {
 	@ApiProperty()
 	school: MeSchoolResponse;
@@ -96,6 +113,9 @@ export class MeResponse {
 	@ApiProperty()
 	account: MeAccountResponse;
 
+	@ApiPropertyOptional()
+	system?: MeSystemResponse;
+
 	constructor(props: MeResponse) {
 		this.school = props.school;
 		this.user = props.user;
@@ -103,5 +123,6 @@ export class MeResponse {
 		this.permissions = props.permissions;
 		this.language = props.language;
 		this.account = props.account;
+		this.system = props.system;
 	}
 }

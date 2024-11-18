@@ -8,7 +8,7 @@ export class TspSchoolsSyncedLoggable implements Loggable {
 		private readonly updatedSchools: number
 	) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		const message: LogMessage = {
 			message: `Synced schools: Of ${this.tspSchoolCount} schools ${this.processedSchools} were processed. ${this.createdSchools} were created and ${this.updatedSchools} were updated`,
 			data: {

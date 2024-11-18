@@ -7,6 +7,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@src/modules/board';
 import { Room, RoomCreateProps, RoomService, RoomUpdateProps } from '../domain';
 import { RoomConfig } from '../room.config';
 import { RoomMemberResponse } from './dto/response/room-member.response';
@@ -17,6 +18,7 @@ export class RoomUc {
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomService: RoomService,
 		private readonly roomMemberService: RoomMemberService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService
 	) {}
@@ -51,6 +53,23 @@ export class RoomUc {
 
 		await this.checkRoomAuthorization(userId, roomId, Action.read);
 		return room;
+	}
+
+	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
+		this.checkFeatureEnabled();
+
+		await this.roomService.getSingleRoom(roomId);
+		await this.checkRoomAuthorization(userId, roomId, Action.read);
+
+		const boards = await this.columnBoardService.findByExternalReference(
+			{
+				type: BoardExternalReferenceType.Room,
+				id: roomId,
+			},
+			0
+		);
+
+		return boards;
 	}
 
 	public async updateRoom(userId: EntityId, roomId: EntityId, props: RoomUpdateProps): Promise<Room> {

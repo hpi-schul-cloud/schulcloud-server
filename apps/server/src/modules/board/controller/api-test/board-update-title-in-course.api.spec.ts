@@ -10,7 +10,7 @@ import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 
-describe(`board update title (api)`, () => {
+describe(`board update title with course relation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
@@ -39,13 +39,13 @@ describe(`board update title (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, course]);
+			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([teacherAccount, teacherUser, columnBoardNode]);
+			await em.persistAndFlush([columnBoardNode]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
