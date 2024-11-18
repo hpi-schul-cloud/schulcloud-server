@@ -236,40 +236,52 @@ export class CommonCartridgeExportService {
 
 			for await (const fileRecord of fileRecords) {
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+				const file: string = await new Promise((resolve, reject) => {
+					const chunks: Uint8Array[] = [];
+
+					response.data.on('data', (chunk: Uint8Array) => {
+						chunks.push(chunk);
+					});
+					response.data.on('end', () => {
+						resolve(Buffer.concat(chunks).toString('utf8'));
+					});
+					response.data.on('error', reject);
+				});
 
 				this.logger.warning({
 					getLogMessage() {
 						return {
 							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-							response,
+							type: typeof file,
+							file,
 						};
 					},
 				});
 
-				const { data } = response;
+				// const { data } = response;
 
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Read data for file ${fileRecord.name}`,
-							type: typeof data,
-							data: data as unknown as string,
-						};
-					},
-				});
+				// this.logger.warning({
+				// 	getLogMessage() {
+				// 		return {
+				// 			message: `Read data for file ${fileRecord.name}`,
+				// 			type: typeof data,
+				// 			data: data as unknown as string,
+				// 		};
+				// 	},
+				// });
 
-				const buffer = await data.arrayBuffer();
+				// const buffer = await data.arrayBuffer();
 
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Converted data to buffer for file ${fileRecord.name}`,
-							buffer,
-						};
-					},
-				});
+				// this.logger.warning({
+				// 	getLogMessage() {
+				// 		return {
+				// 			message: `Converted data to buffer for file ${fileRecord.name}`,
+				// 			buffer,
+				// 		};
+				// 	},
+				// });
 
-				const file = Buffer.from(buffer).toString('utf8');
+				// const file = Buffer.from(buffer).toString('utf8');
 
 				this.logger.warning({
 					getLogMessage() {
