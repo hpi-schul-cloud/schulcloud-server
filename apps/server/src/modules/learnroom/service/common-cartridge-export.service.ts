@@ -246,8 +246,29 @@ export class CommonCartridgeExportService {
 					},
 				});
 
-				const data = await response.data.arrayBuffer();
-				const file = Buffer.from(data).toString('utf8');
+				const { data } = response;
+
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Read data for file ${fileRecord.name}`,
+							data: data as unknown as string,
+						};
+					},
+				});
+
+				const buffer = await data.arrayBuffer();
+
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Converted data to buffer for file ${fileRecord.name}`,
+							buffer,
+						};
+					},
+				});
+
+				const file = Buffer.from(buffer).toString('utf8');
 
 				this.logger.warning({
 					getLogMessage() {
