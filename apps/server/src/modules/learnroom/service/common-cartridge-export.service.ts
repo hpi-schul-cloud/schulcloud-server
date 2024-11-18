@@ -24,7 +24,6 @@ import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
-import { Stream } from 'stream';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
@@ -223,55 +222,14 @@ export class CommonCartridgeExportService {
 	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: string }[]> {
 		try {
 			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
-
-			this.logger.warning({
-				getLogMessage() {
-					return {
-						message: `Found ${fileRecords.length} files for parent ${parentId}`,
-						files: fileRecords.map((fileRecord) => fileRecord.name).join(', '),
-					};
-				},
-			});
-
 			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-							type: typeof response.data,
-							data: response.data as unknown as string,
-						};
-					},
-				});
-
-				const file = response.data.toString();
-
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Converted file ${fileRecord.name} to string`,
-							file,
-						};
-					},
-				});
+				const file = await response.data.text();
 
 				files.push({ fileRecord, file });
 			}
-
-			// TODO: change to info or debug
-			this.logger.warning({
-				getLogMessage() {
-					return {
-						message: `Found ${files.length} files for parent ${parentId}`,
-						files: files.map((file) => file.fileRecord.name).join(', '),
-						file: files[0]?.file,
-					};
-				},
-			});
 
 			return files;
 		} catch (error: unknown) {
@@ -286,19 +244,5 @@ export class CommonCartridgeExportService {
 
 			return [];
 		}
-	}
-
-	private async streamToString(stream: Stream): Promise<string> {
-		const chunks: Uint8Array[] = [];
-
-		return new Promise((resolve, reject) => {
-			stream.on('data', (chunk: Uint8Array) => {
-				chunks.push(chunk);
-			});
-			stream.on('end', () => {
-				resolve(Buffer.concat(chunks).toString('utf8'));
-			});
-			stream.on('error', reject);
-		});
 	}
 }
