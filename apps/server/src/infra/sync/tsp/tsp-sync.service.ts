@@ -4,6 +4,7 @@ import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { Account, AccountService } from '@src/modules/account';
@@ -207,6 +208,7 @@ export class TspSyncService {
 		user.email = email;
 		user.externalId = externalId;
 		user.previousExternalId = previousExternalId;
+		user.sourceOptions = new UserSourceOptions({ tspUid: user.externalId });
 
 		return this.userService.save(user);
 	}

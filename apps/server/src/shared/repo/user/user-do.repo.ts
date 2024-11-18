@@ -4,6 +4,7 @@ import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
@@ -151,6 +152,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
+			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 		});
 
 		if (entity.roles.isInitialized()) {
