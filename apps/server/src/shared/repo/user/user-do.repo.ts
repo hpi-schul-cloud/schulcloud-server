@@ -7,6 +7,7 @@ import { Page, RoleReference } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
@@ -181,6 +182,9 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
 			birthday: entityDO.birthday,
+			sourceOptions: entityDO.sourceOptions
+				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
+				: undefined,
 		};
 	}
 
