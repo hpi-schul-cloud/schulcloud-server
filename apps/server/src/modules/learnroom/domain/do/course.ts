@@ -106,4 +106,10 @@ export class Course extends DomainObject<CourseProps> {
 	get excludeFromSync(): SyncAttribute[] | undefined {
 		return this.props.excludeFromSync;
 	}
+
+	public isTeacher(userId: EntityId): boolean {
+		const isTeacher: boolean = this.teachers.some((teacherId: EntityId) => teacherId === userId);
+
+		return isTeacher;
+	}
 }

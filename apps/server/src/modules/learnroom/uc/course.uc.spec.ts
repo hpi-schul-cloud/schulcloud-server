@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -91,6 +92,7 @@ describe('CourseUc', () => {
 			courseService.findById.mockResolvedValue(course);
 			authorizationService.getUserWithPermissions.mockResolvedValue(teacherUser);
 			const mockRoleDto: RoleDto = {
+				id: new ObjectId().toHexString(),
 				name: RoleName.TEACHER,
 				permissions: [Permission.COURSE_DELETE],
 			};
