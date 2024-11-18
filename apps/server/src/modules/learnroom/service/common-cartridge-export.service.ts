@@ -252,6 +252,7 @@ export class CommonCartridgeExportService {
 					getLogMessage() {
 						return {
 							message: `Read data for file ${fileRecord.name}`,
+							type: typeof data,
 							data: data as unknown as string,
 						};
 					},
