@@ -49,6 +49,7 @@ import {
 		AuthorizationModule,
 		MetaTagExtractorAdapterModule,
 		RoomMemberModule,
+		MetaTagExtractorAdapterModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
