@@ -9,6 +9,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
+import { defaultMikroOrmOptions } from '@shared/common';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
@@ -28,12 +29,6 @@ const imports = [
 	PreviewGeneratorProducerModule,
 ];
 const providers = [FilesStorageService, PreviewService, FileRecordRepo];
-
-const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
-};
 
 @Module({
 	imports: [

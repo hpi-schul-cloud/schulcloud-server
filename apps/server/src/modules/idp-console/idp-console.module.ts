@@ -3,7 +3,6 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
-import { defaultMikroOrmOptions } from '@modules/server';
 import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
@@ -12,6 +11,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
+import { defaultMikroOrmOptions } from '@shared/common';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SynchronizationUc } from './uc';
 

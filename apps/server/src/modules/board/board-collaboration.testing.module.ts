@@ -1,4 +1,4 @@
-import { defaultMikroOrmOptions, serverConfig } from '@modules/server';
+import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
@@ -7,6 +7,7 @@ import { CoreModule } from '@src/core';
 import { AuthGuardModule, AuthGuardOptions } from '@src/infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
+import { defaultMikroOrmOptions } from '@shared/common';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { AuthorizationModule } from '../authorization';
 import { config as boardCollaborationConfig } from './board-collaboration.config';
