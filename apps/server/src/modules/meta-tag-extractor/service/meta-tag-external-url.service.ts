@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import net from 'net';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
 import { MetaData } from '../types';
+import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 
 @Injectable()
 export class MetaTagExternalUrlService {
-	async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
-		if (!this.isValidNetworkAddress(url)) {
-			return undefined;
-		}
+	async tryExtractMetaTags(url: URL): Promise<MetaData | undefined> {
 		const html = await this.fetchHtmlPartly(url);
 		const { result, error } = await ogs({ html });
 		if (error) {
@@ -23,32 +20,17 @@ export class MetaTagExternalUrlService {
 			title: ogTitle ?? '',
 			description: ogDescription ?? '',
 			image: ogImage ? this.pickImage(ogImage) : undefined,
-			url,
+			url: url.toString(),
 			type: 'external',
 		};
 	}
 
-	private isValidNetworkAddress(url: string): boolean {
-		let urlObject: URL;
-		try {
-			urlObject = new URL(url);
-		} catch (error) {
-			return false;
-		}
-
-		if (net.isIPv4(urlObject.hostname) || net.isIPv6(urlObject.hostname)) {
-			//  Invalid url - IP adress as hostname is not allowed for external urls
-			return false;
-		}
-		return true;
-	}
-
-	private async fetchHtmlPartly(url: string, maxLength = 50000): Promise<string> {
+	private async fetchHtmlPartly(url: URL, maxLength = 50000): Promise<string> {
 		const source = axios.CancelToken.source();
 		let html = '';
 
 		try {
-			const response = await axios.get(url, {
+			const response = await axios.get(url.toString(), {
 				headers: { 'User-Agent': 'Open Graph Scraper' },
 				responseType: 'stream',
 				cancelToken: source.token,
@@ -67,11 +49,10 @@ export class MetaTagExternalUrlService {
 				stream.on('error', reject);
 			});
 		} catch (error) {
-			// due to the fact, that it is very hard to mock the internal axios cancelation mechanism (including throwing this cancelation error),
-			// the next line is not covered by tests
+			// mocking the internal axios cancelation mechanism (including throwing this cancelation error) was not possible... so:
 			// istanbul ignore next
 			if (!axios.isCancel(error)) {
-				throw error;
+				throw new InvalidLinkUrlLoggableException(url.toString(), 'Unable to fetch html for meta tag extraction');
 			}
 		}
 		return html.slice(0, maxLength);

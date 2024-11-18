@@ -59,9 +59,7 @@ describe(MetaTagExtractorService.name, () => {
 			it('should throw an error', async () => {
 				const url = 'http://www.test.de';
 
-				await expect(service.getMetaData(url)).rejects.toThrowError(
-					`MetaTagExtractorService requires https-protocol. Given URL: ${url}`
-				);
+				await expect(service.getMetaData(url)).rejects.toThrowError(`Invalid URL`);
 			});
 		});
 
@@ -79,6 +77,19 @@ describe(MetaTagExtractorService.name, () => {
 						type: 'unknown',
 					});
 				});
+			});
+		});
+
+		describe('when url hostname contains IP-Adress', () => {
+			it.each([
+				{ url: 'https://127.0.0.1' },
+				{ url: 'https://127.0.0.1:8000' },
+				{ url: 'https://127.0.0.1:3000/dashboard' },
+				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C' },
+				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C:8000' },
+				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C:8000/course' },
+			])('should return undefined for $url ', async ({ url }) => {
+				await expect(async () => service.getMetaData(url)).rejects.toThrow();
 			});
 		});
 	});

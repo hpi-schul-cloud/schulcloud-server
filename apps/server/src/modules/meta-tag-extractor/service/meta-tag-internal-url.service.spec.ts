@@ -7,9 +7,9 @@ import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
 const INTERNAL_DOMAIN = 'my-school-cloud.org';
-const INTERNAL_URL = `https://${INTERNAL_DOMAIN}/my-article`;
-const UNKNOWN_INTERNAL_URL = `https://${INTERNAL_DOMAIN}/playground/23hafe23234`;
-const EXTERNAL_URL = 'https://de.wikipedia.org/example-article';
+const INTERNAL_URL = new URL(`https://${INTERNAL_DOMAIN}/my-article`);
+const UNKNOWN_INTERNAL_URL = new URL(`https://${INTERNAL_DOMAIN}/playground/23hafe23234`);
+const EXTERNAL_URL = new URL('https://de.wikipedia.org/example-article');
 
 describe(MetaTagInternalUrlService.name, () => {
 	let module: TestingModule;
@@ -84,9 +84,8 @@ describe(MetaTagInternalUrlService.name, () => {
 		it('should return false for external urls that partially contain the domain', () => {
 			setup();
 
-			const urlObject = new URL(INTERNAL_URL);
-			urlObject.hostname += '.phishing.de';
-			const phishingUrl = urlObject.toString();
+			const phishingUrl = new URL(INTERNAL_URL);
+			phishingUrl.hostname += '.phishing.de';
 
 			expect(service.isInternalUrl(phishingUrl)).toBe(false);
 		});
@@ -100,7 +99,7 @@ describe(MetaTagInternalUrlService.name, () => {
 			boardUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			const mockedMetaTags: MetaData = {
 				title: 'My Title',
-				url: INTERNAL_URL,
+				url: INTERNAL_URL.toString(),
 				description: '',
 				type: 'course',
 			};

@@ -17,35 +17,31 @@ export class MetaTagInternalUrlService {
 		this.handlers = [this.taskUrlHandler, this.lessonUrlHandler, this.courseUrlHandler, this.boardUrlHandler];
 	}
 
-	async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
+	async tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
 		if (this.isInternalUrl(url)) {
 			return this.composeMetaTags(url);
 		}
 		return Promise.resolve(undefined);
 	}
 
-	isInternalUrl(url: string) {
+	isInternalUrl(url: URL) {
 		let domain = Configuration.get('SC_DOMAIN') as string;
 		domain = domain === '' ? 'nothing-configured-for-internal-url.de' : domain;
-		const urlObject = new URL(url);
-		const isInternal = urlObject.hostname.toLowerCase() === domain.toLowerCase();
+		const isInternal = url.hostname.toLowerCase() === domain.toLowerCase();
 		return isInternal;
 	}
 
-	private async composeMetaTags(url: string): Promise<MetaData | undefined> {
-		const urlObject = new URL(url);
-
+	private async composeMetaTags(url: URL): Promise<MetaData | undefined> {
 		const handler = this.handlers.find((h) => h.doesUrlMatch(url));
 		if (handler) {
 			const result = await handler.getMetaData(url);
 			return result;
 		}
 
-		const title = urlObject.pathname;
 		return Promise.resolve({
-			title,
+			title: url.pathname,
 			description: '',
-			url,
+			url: url.toString(),
 			type: 'unknown',
 		});
 	}

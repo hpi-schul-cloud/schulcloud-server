@@ -1,7 +1,7 @@
-import axios, { CancelTokenSource } from 'axios';
-import Stream from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import axios, { CancelTokenSource } from 'axios';
+import Stream from 'stream';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 
 jest.mock('axios');
@@ -95,23 +95,9 @@ describe(MetaTagExternalUrlService.name, () => {
 			return cancelTokenSource;
 		};
 
-		describe('when url hostname contains IP-Adress', () => {
-			it.each([
-				{ url: 'https://127.0.0.1' },
-				{ url: 'https://127.0.0.1:8000' },
-				{ url: 'https://127.0.0.1:3000/dashboard' },
-				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C' },
-				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C:8000' },
-				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C:8000/course' },
-			])('should return undefined for $url ', async ({ url }) => {
-				const result = await service.tryExtractMetaTags(url);
-				expect(result).toBeUndefined();
-			});
-		});
-
 		describe('when html of page is short', () => {
 			it('should extract title and description', async () => {
-				const url = 'https://de.wikipedia.org/example-article';
+				const url = new URL('https://de.wikipedia.org/example-article');
 
 				const cancelTokenSource = createCancelTokenSource();
 				jest.spyOn(axios.CancelToken, 'source').mockReturnValueOnce(cancelTokenSource);
@@ -128,7 +114,7 @@ describe(MetaTagExternalUrlService.name, () => {
 			}, 60000);
 
 			it('should not need to cancel', async () => {
-				const url = 'https://de.wikipedia.org/example-article';
+				const url = new URL('https://de.wikipedia.org/example-article');
 
 				const cancelTokenSource = createCancelTokenSource();
 				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
@@ -144,7 +130,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 		describe('when html of page is huge', () => {
 			it('should only take the first 50000 characters', async () => {
-				const url = 'https://de.wikipedia.org/example-article';
+				const url = new URL('https://de.wikipedia.org/example-article');
 
 				const cancelTokenSource = createCancelTokenSource();
 				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
@@ -168,7 +154,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 		describe('when html of page contains images', () => {
 			it('should return an image', async () => {
-				const url = 'https://de.wikipedia.org/example-article';
+				const url = new URL('https://de.wikipedia.org/example-article');
 
 				const cancelTokenSource = createCancelTokenSource();
 				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
@@ -185,7 +171,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 			describe('when multiple images are present', () => {
 				it('should return the image with the lowest but high enough resolution', async () => {
-					const url = 'https://de.wikipedia.org/example-article';
+					const url = new URL('https://de.wikipedia.org/example-article');
 
 					const cancelTokenSource = createCancelTokenSource();
 					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);

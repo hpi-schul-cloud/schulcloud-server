@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import net from 'net';
 import { basename } from 'path';
+import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import type { MetaData } from '../types';
-import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
+import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 
 @Injectable()
 export class MetaTagExtractorService {
@@ -11,14 +13,8 @@ export class MetaTagExtractorService {
 		private readonly externalLinkMetaTagService: MetaTagExternalUrlService
 	) {}
 
-	async getMetaData(url: string): Promise<MetaData> {
-		if (url.length === 0) {
-			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
-		}
-		const urlObject = new URL(url);
-		if (urlObject.protocol !== 'https:') {
-			throw new Error(`MetaTagExtractorService requires https-protocol. Given URL: ${url}`);
-		}
+	async getMetaData(urlString: string): Promise<MetaData> {
+		const url = this.parseValidUrl(urlString);
 
 		const metaData =
 			(await this.tryInternalLinkMetaTags(url)) ??
@@ -28,27 +24,44 @@ export class MetaTagExtractorService {
 		return metaData;
 	}
 
-	private async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
+	parseValidUrl(url: string): URL {
+		if (url.length === 0) {
+			console.log('Empty url given');
+			throw new InvalidLinkUrlLoggableException(url, 'Empty url given');
+		}
+
+		try {
+			const urlObject = new URL(url);
+			console.log(urlObject);
+			if (urlObject.protocol !== 'https:') {
+				console.log('https-protocol required');
+				throw new InvalidLinkUrlLoggableException(url, 'https-protocol required');
+			}
+
+			if (net.isIPv4(urlObject.hostname) || net.isIPv6(urlObject.hostname)) {
+				console.log('IP adress is not allowed as hostname');
+				throw new InvalidLinkUrlLoggableException(url, 'IP adress is not allowed as hostname');
+			}
+			return urlObject;
+		} catch (err) {
+			throw new InvalidLinkUrlLoggableException(url, 'Invalid URL');
+		}
+	}
+
+	private async tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
 		return this.internalLinkMataTagService.tryInternalLinkMetaTags(url);
 	}
 
-	private async tryExtractMetaTagsFromExternalUrl(url: string): Promise<MetaData | undefined> {
+	private async tryExtractMetaTagsFromExternalUrl(url: URL): Promise<MetaData | undefined> {
 		return this.externalLinkMetaTagService.tryExtractMetaTags(url);
 	}
 
-	private useFilenameAsFallback(url: string): MetaData {
-		const metaData: MetaData = { url, title: '', description: '', type: 'unknown' };
-		try {
-			const urlObject = new URL(url);
-			return {
-				title: basename(urlObject.pathname),
-				description: '',
-				url,
-				type: 'unknown',
-			};
-		} catch (error) {
-			console.log('error', error); // TODO: log error
-		}
-		return metaData;
+	private useFilenameAsFallback(url: URL): MetaData {
+		return {
+			title: basename(url.pathname),
+			description: '',
+			url: url.toString(),
+			type: 'unknown',
+		};
 	}
 }

@@ -30,7 +30,7 @@ describe(TaskUrlHandler.name, () => {
 		describe('when url fits', () => {
 			it('should call taskService with the correct id', async () => {
 				const id = '671a5bdf0995ace8cbc6f899';
-				const url = `https://localhost/homework/${id}`;
+				const url = new URL(`https://localhost/homework/${id}`);
 
 				await taskUrlHandler.getMetaData(url);
 
@@ -39,7 +39,7 @@ describe(TaskUrlHandler.name, () => {
 
 			it('should take the title from the tasks name', async () => {
 				const id = '671a5bdf0995ace8cbc6f899';
-				const url = `https://localhost/homework/${id}`;
+				const url = new URL(`https://localhost/homework/${id}`);
 				const taskName = 'My Task';
 				taskService.findById.mockResolvedValue({ name: taskName } as Task);
 
@@ -51,7 +51,7 @@ describe(TaskUrlHandler.name, () => {
 
 		describe('when url does not fit', () => {
 			it('should return undefined', async () => {
-				const url = `https://localhost/invalid/ef2345abe4e3b`;
+				const url = new URL(`https://localhost/invalid/ef2345abe4e3b`);
 
 				const result = await taskUrlHandler.getMetaData(url);
 
