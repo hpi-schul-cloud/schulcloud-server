@@ -15,13 +15,15 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities, userFactory } from '@shared/testing';
 import { ToolContextType } from '../../common/enum';
+import { Lti11EncryptionService } from '../../common/service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ExternalToolService } from '../../external-tool';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ContextExternalTool, ContextExternalToolProps } from '../domain';
-import { ContextExternalToolService } from '../service';
+import { ContextExternalToolService, LtiDeepLinkingService, LtiDeepLinkTokenService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
-import { contextExternalToolFactory } from '../testing';
+import { contextExternalToolFactory, ltiDeepLinkFactory } from '../testing';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 
 describe(ContextExternalToolUc.name, () => {
@@ -44,6 +46,10 @@ describe(ContextExternalToolUc.name, () => {
 					useValue: createMock<SchoolExternalToolService>(),
 				},
 				{
+					provide: ExternalToolService,
+					useValue: createMock<ExternalToolService>(),
+				},
+				{
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
 				},
@@ -58,6 +64,18 @@ describe(ContextExternalToolUc.name, () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: LtiDeepLinkTokenService,
+					useValue: createMock<LtiDeepLinkTokenService>(),
+				},
+				{
+					provide: LtiDeepLinkingService,
+					useValue: createMock<LtiDeepLinkingService>(),
+				},
+				{
+					provide: Lti11EncryptionService,
+					useValue: createMock<Lti11EncryptionService>(),
 				},
 			],
 		}).compile();
@@ -347,6 +365,7 @@ describe(ContextExternalToolUc.name, () => {
 					schoolId,
 				});
 
+				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
@@ -357,6 +376,7 @@ describe(ContextExternalToolUc.name, () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
+					ltiDeepLink,
 				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -369,11 +389,12 @@ describe(ContextExternalToolUc.name, () => {
 					contextExternalToolId: contextExternalTool.id,
 					user,
 					schoolId,
+					ltiDeepLink,
 				};
 			};
 
 			it('should call contextExternalToolService', async () => {
-				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
+				const { contextExternalTool, user, schoolId, contextExternalToolId, ltiDeepLink } = setup();
 
 				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
@@ -381,6 +402,7 @@ describe(ContextExternalToolUc.name, () => {
 					expect.objectContaining<ContextExternalToolProps>({
 						...contextExternalTool.getProps(),
 						id: expect.any(String),
+						ltiDeepLink,
 					})
 				);
 			});

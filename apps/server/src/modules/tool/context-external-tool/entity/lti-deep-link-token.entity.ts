@@ -1,5 +1,6 @@
 import { Entity, Index, ManyToOne, Property, Unique } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, User } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { User } from '@shared/domain/entity/user.entity';
 import { EntityId } from '@shared/domain/types';
 
 export interface LtiDeepLinkTokenEntityProps {

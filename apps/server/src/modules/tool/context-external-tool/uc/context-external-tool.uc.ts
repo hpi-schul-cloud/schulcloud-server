@@ -90,6 +90,7 @@ export class ContextExternalToolUc {
 		contextExternalTool = new ContextExternalTool({
 			...contextExternalToolDto,
 			id: contextExternalTool.id,
+			ltiDeepLink: contextExternalTool.ltiDeepLink,
 		});
 		contextExternalTool.schoolToolRef.schoolId = schoolId;
 

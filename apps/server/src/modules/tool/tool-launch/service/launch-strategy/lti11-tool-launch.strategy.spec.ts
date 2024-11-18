@@ -87,10 +87,6 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
 			],
 		}).compile();
 

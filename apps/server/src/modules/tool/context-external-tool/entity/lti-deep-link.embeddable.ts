@@ -18,6 +18,7 @@ export class LtiDeepLinkEmbeddable {
 	constructor(props: LtiDeepLinkEmbeddable) {
 		this.mediaType = props.mediaType;
 		this.title = props.title;
+		this.url = props.url;
 		this.parameters = props.parameters;
 	}
 }

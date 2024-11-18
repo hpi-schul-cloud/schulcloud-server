@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -12,10 +11,10 @@ import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
 import { Lti11EncryptionService } from '../../../common/service';
 import { LtiDeepLink, LtiDeepLinkToken } from '../../../context-external-tool/domain';
+import { LtiMessageTypeNotImplementedLoggableException } from '../../../context-external-tool/domain/error/lti-message-type-not-implemented.loggable-exception';
 import { LtiDeepLinkingService } from '../../../context-external-tool/service';
 import { LtiDeepLinkTokenService } from '../../../context-external-tool/service/lti-deep-link-token.service';
 import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
-import { ToolConfig } from '../../../tool-config';
 import { LtiRoleMapper } from '../../mapper';
 import {
 	AuthenticationValues,
@@ -41,7 +40,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
-		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
 		private readonly ltiDeepLinkingService: LtiDeepLinkingService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
@@ -76,24 +74,38 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		let properties: PropertyData[];
-		if (
-			config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST &&
-			!data.contextExternalTool.ltiDeepLink
-		) {
-			properties = await this.buildToolLaunchDataForContentItemSelectionRequest(userId, data, config);
-		} else if (
-			data.contextExternalTool.ltiDeepLink &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltilink' &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltiassignment'
-		) {
-			properties = [];
-		} else {
-			properties = await this.buildToolLaunchDataForLtiLaunch(
-				userId,
-				data,
-				config,
-				LtiMessageType.BASIC_LTI_LAUNCH_REQUEST
-			);
+		switch (config.lti_message_type) {
+			case LtiMessageType.BASIC_LTI_LAUNCH_REQUEST: {
+				properties = await this.buildToolLaunchDataForLtiLaunch(
+					userId,
+					data,
+					config,
+					LtiMessageType.BASIC_LTI_LAUNCH_REQUEST
+				);
+				break;
+			}
+			case LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST: {
+				if (!data.contextExternalTool.ltiDeepLink) {
+					properties = await this.buildToolLaunchDataForContentItemSelectionRequest(userId, data, config);
+				} else if (
+					data.contextExternalTool.ltiDeepLink.mediaType === 'application/vnd.ims.lti.v1.ltilink' ||
+					data.contextExternalTool.ltiDeepLink.mediaType === 'application/vnd.ims.lti.v1.ltiassignment'
+				) {
+					properties = await this.buildToolLaunchDataForLtiLaunch(
+						userId,
+						data,
+						config,
+						LtiMessageType.BASIC_LTI_LAUNCH_REQUEST
+					);
+
+					properties.push(...this.buildToolLaunchDataFromDeepLink(data.contextExternalTool.ltiDeepLink));
+				} else {
+					properties = [];
+				}
+				break;
+			}
+			default:
+				throw new LtiMessageTypeNotImplementedLoggableException(config.lti_message_type);
 		}
 
 		return properties;
@@ -264,10 +276,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		} else {
 			// Don't add a user_id, when the privacy is anonymous
-		}
-
-		if (data.contextExternalTool.ltiDeepLink) {
-			additionalProperties.push(...this.buildToolLaunchDataFromDeepLink(data.contextExternalTool.ltiDeepLink));
 		}
 
 		return additionalProperties;
