@@ -1130,5 +1130,62 @@
 		"restrictToContexts": [],
 		"isPreferred": true,
 		"iconName": "mdiMovieRoll"
+	},
+	{
+		"_id": {
+			"$oid": "6734b4777dc1e30ef752ce2d"
+		},
+		"createdAt": {
+			"$date": "2024-03-22T14:35:34.160Z"
+		},
+		"updatedAt": {
+			"$date": "2024-03-25T09:17:04.688Z"
+		},
+		"name": "CY Test Tool OpenStreetMap",
+		"url": "https://www.openstreetmap.org/",
+		"logoUrl": "https://wiki.openstreetmap.org/w/images/thumb/5/57/Logo_simple_colors.svg/54px-Logo_simple_colors.svg.png?20140504131650",
+		"logoBase64": "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",
+		"config_type": "basic",
+		"config_baseUrl": "https://www.openstreetmap.org/",
+		"parameters": [
+			{
+				"name": "mlat",
+				"displayName": "Geographische Breite",
+				"description": "Geben Sie die geographische Breite des Ortes ein",
+				"default": "52.40847",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			},
+			{
+				"name": "mlon",
+				"displayName": "Geographische Länge",
+				"description": "Geben Sie die geographische Länge des Ortes ein",
+				"default": "9.80823",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			},
+			{
+				"name": "zoom",
+				"displayName": "zoom",
+				"description": "Geben Sie den Zoom für die Karte ein (Zahl zwischen 1 und 20)",
+				"default": "19",
+				"scope": "context",
+				"location": "query",
+				"type": "number",
+				"isOptional": false,
+				"isProtected": false
+			}
+		],
+		"isHidden": false,
+		"isDeactivated": false,
+		"openNewTab": true,
+		"version": 2,
+		"restrictToContexts": []
 	}
 ]
