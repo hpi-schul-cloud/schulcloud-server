@@ -1,3 +1,4 @@
 export * from './jwt-auth.decorator';
 export * from './ws-jwt-auth.decorator';
 export * from './x-api-key.decorator';
+export * from './meta-tag-extractor-x-api-key.decorator';
