@@ -1,25 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
-import { CourseFileIdsResponse } from '../controller/dto';
-import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
 export class CommonCartridgeUc {
 	constructor(private readonly exportService: CommonCartridgeExportService) {}
 
-	public async exportCourse(courseId: EntityId): Promise<CourseExportBodyResponse> {
-		const fileRecords = await this.exportService.findCourseFileRecords(courseId);
-		const courseFileIds = new CourseFileIdsResponse(fileRecords.map((file) => file.id));
-		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
-			await this.exportService.findCourseCommonCartridgeMetadata(courseId);
+	public async exportCourse(
+		courseId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[],
+		tasks: string[],
+		columnBoards: string[]
+	): Promise<Buffer> {
+		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
 
-		const response = new CourseExportBodyResponse({
-			courseFileIds,
-			courseCommonCartridgeMetadata,
-		});
-
-		return response;
+		return exportedCourse;
 	}
 }

@@ -1,5 +1,9 @@
+import { LessonContentResponseContentInnerDto } from './lesson-content-response-inner.dto';
+
 export class LessonContentDto {
-	content: object;
+	id: string | undefined;
+
+	content: LessonContentResponseContentInnerDto;
 
 	title: string;
 
@@ -22,6 +26,7 @@ export const LessonContentDtoComponentValues = {
 	RESOURCES: 'resources',
 	TEXT: 'text',
 	NE_XBOARD: 'neXboard',
+	LERNSTORE: 'lernstore',
 } as const;
 
 export type LessonContentDtoComponent =

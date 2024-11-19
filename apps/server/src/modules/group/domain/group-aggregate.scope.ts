@@ -30,6 +30,15 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 		if (value) {
 			this.pipeline.push(
 				{
+					$match: {
+						$or: [
+							{ type: { $eq: GroupTypes.CLASS } },
+							{ type: { $eq: GroupTypes.COURSE } },
+							{ type: { $eq: GroupTypes.OTHER } },
+						],
+					},
+				},
+				{
 					$lookup: {
 						from: 'courses',
 						localField: '_id',

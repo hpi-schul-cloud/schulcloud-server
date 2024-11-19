@@ -112,7 +112,7 @@ describe(TspOauthDataMapper.name, () => {
 						system: provisioningSystemDto,
 						externalUser: new ExternalUserDto({
 							externalId: tspTeachers[0].lehrerUid ?? '',
-							firstName: tspTeachers[0].lehrerNachname,
+							firstName: tspTeachers[0].lehrerVorname,
 							lastName: tspTeachers[0].lehrerNachname,
 							roles: [RoleName.TEACHER],
 						}),
@@ -123,7 +123,7 @@ describe(TspOauthDataMapper.name, () => {
 						system: provisioningSystemDto,
 						externalUser: new ExternalUserDto({
 							externalId: tspStudents[0].schuelerUid ?? '',
-							firstName: tspStudents[0].schuelerNachname,
+							firstName: tspStudents[0].schuelerVorname,
 							lastName: tspStudents[0].schuelerNachname,
 							roles: [RoleName.STUDENT],
 						}),

@@ -41,6 +41,7 @@ export class SystemResponseMapper {
 			logoutEndpoint: oauthConfig.logoutEndpoint,
 			issuer: oauthConfig.issuer,
 			jwksEndpoint: oauthConfig.jwksEndpoint,
+			endSessionEndpoint: oauthConfig.endSessionEndpoint,
 		});
 
 		return oauthConfigResponse;

@@ -16,9 +16,9 @@ import {
 	GroupAggregateScope,
 	GroupDeletedEvent,
 	GroupFilter,
-	GroupVisibilityPermission,
-	GroupUser,
 	GroupTypes,
+	GroupUser,
+	GroupVisibilityPermission,
 } from '../domain';
 import { GroupRepo } from '../repo';
 
@@ -107,9 +107,6 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 	public async addUserToGroup(groupId: EntityId, userId: EntityId, roleName: RoleName): Promise<void> {
 		const role = await this.roleService.findByName(roleName);
-		if (!role.id) {
-			throw new BadRequestException('Role has no id.');
-		}
 		const group = await this.findById(groupId);
 		const user = await this.userService.findById(userId);
 		// user must have an id, because we are fetching it by id -> fix in service
@@ -133,7 +130,6 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		for (const { userId, roleName } of userIdsAndRoles) {
 			const role = roleNamesSet.find((r) => r.name === roleName);
 			if (!role) throw new BadRequestException(`Role ${roleName} not found.`);
-			if (!role.id) throw new BadRequestException('Role has no id.');
 			const user = users.find((u) => u.id === userId);
 			// user must have an id, because we are fetching it by id -> fix in service
 			if (!user) throw new BadRequestException('Unknown userId.');

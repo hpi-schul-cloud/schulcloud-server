@@ -1,31 +1,25 @@
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { toolConfigurationStatusFactory } from '../../external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from './tool-status-not-launchable.loggable-exception';
 
-describe('ToolStatusNotLaunchableLoggableException', () => {
+describe(ToolStatusNotLaunchableLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const toolId = 'toolId';
 			const userId = 'userId';
+			const contextExternalTool = contextExternalToolFactory.build();
 			const toolConfigStatus = toolConfigurationStatusFactory.build();
 
-			const exception = new ToolStatusNotLaunchableLoggableException(
-				userId,
-				toolId,
-				toolConfigStatus.isOutdatedOnScopeSchool,
-				toolConfigStatus.isOutdatedOnScopeContext,
-				toolConfigStatus.isIncompleteOnScopeContext,
-				toolConfigStatus.isIncompleteOperationalOnScopeContext,
-				toolConfigStatus.isDeactivated,
-				toolConfigStatus.isNotLicensed
-			);
+			const exception = new ToolStatusNotLaunchableLoggableException(userId, contextExternalTool, toolConfigStatus);
 
 			return {
 				exception,
+				toolConfigStatus,
+				contextExternalTool,
 			};
 		};
 
 		it('should log the correct message', () => {
-			const { exception } = setup();
+			const { exception, toolConfigStatus, contextExternalTool } = setup();
 
 			const result = exception.getLogMessage();
 
@@ -35,13 +29,9 @@ describe('ToolStatusNotLaunchableLoggableException', () => {
 				stack: expect.any(String),
 				data: {
 					userId: 'userId',
-					toolId: 'toolId',
-					isOutdatedOnScopeSchool: false,
-					isOutdatedOnScopeContext: false,
-					isIncompleteOnScopeContext: false,
-					isIncompleteOperationalOnScopeContext: false,
-					isDeactivated: false,
-					isNotLicensed: false,
+					contextExternalToolId: contextExternalTool.id,
+					schoolExternalToolId: contextExternalTool.schoolToolRef.schoolToolId,
+					status: toolConfigStatus,
 				},
 			});
 		});

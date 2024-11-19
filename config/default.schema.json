@@ -213,6 +213,16 @@
 			"default": "1",
 			"description": "The amount of days for which the sync fetches school data from the TSP."
 		},
+		"TSP_SYNC_MIGRATION_LIMIT": {
+			"type": "number",
+			"default": "100",
+			"description": "The amount of users the sync migrates at once."
+		},
+		"FEATURE_TSP_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for TSP migration."
+		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1669,6 +1679,11 @@
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
 					"default": 120000
+				},
+				"POLICIES_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching policies info from schulconnex",
+					"default": 4000
 				}
 			},
 			"default": {
@@ -1742,6 +1757,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the rooms feature"
+		},
+		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the external system logout feature"
 		}
 	},
 	"required": []

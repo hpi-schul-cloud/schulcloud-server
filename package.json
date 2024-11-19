@@ -125,7 +125,8 @@
 		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
 		"pregenerate-client:files-storage-api": "rimraf ./apps/server/src/infra/files-storage-client/generated",
-		"generate-client:files-storage-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key files-storage-api"
+		"generate-client:files-storage-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key files-storage-api",
+		"generate-client:lessons-api":"openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",

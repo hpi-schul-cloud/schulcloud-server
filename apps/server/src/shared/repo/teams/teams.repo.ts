@@ -10,10 +10,8 @@ export class TeamsRepo extends BaseRepo<TeamEntity> {
 		return TeamEntity;
 	}
 
-	cacheExpiration = 60000;
-
 	async findById(id: EntityId, populate = false): Promise<TeamEntity> {
-		const team = await this._em.findOneOrFail(TeamEntity, { id }, { cache: this.cacheExpiration });
+		const team = await this._em.findOneOrFail(TeamEntity, { id });
 
 		if (populate) {
 			await Promise.all<void>(

@@ -1,4 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
+import { RoomMemberRepo, RoomMemberService } from '@modules/room-member';
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,8 +8,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@modules/authorization';
-import { RoomMemberRepo, RoomMemberService } from '@modules/room-member';
+import { ColumnBoardService } from '@src/modules/board';
 import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
@@ -35,6 +36,10 @@ describe('RoomUc', () => {
 				{
 					provide: RoomMemberService,
 					useValue: createMock<RoomMemberService>(),
+				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
 				},
 				{
 					provide: AuthorizationService,

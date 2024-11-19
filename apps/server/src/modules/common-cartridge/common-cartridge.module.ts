@@ -13,6 +13,7 @@ import { CoursesClientModule } from './common-cartridge-client/course-client';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
+import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 
 @Module({
@@ -45,7 +46,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 	],
-	providers: [CommonCartridgeUc, CommonCartridgeExportService],
+	providers: [CommonCartridgeExportMapper, CommonCartridgeUc, CommonCartridgeExportService],
 	exports: [CommonCartridgeUc],
 })
 export class CommonCartridgeModule {}
