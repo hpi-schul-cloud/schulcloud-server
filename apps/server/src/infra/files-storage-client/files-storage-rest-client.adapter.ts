@@ -7,6 +7,8 @@ export class FilesStorageRestClientAdapter {
 		const response = await this.api.download(fileRecordId, fileName, undefined, { responseType: 'blob' });
 		const data = response.data.toString();
 
+		console.error(response);
+
 		return data;
 	}
 }
