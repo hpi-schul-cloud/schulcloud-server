@@ -208,7 +208,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const newEmail = newEmailAndUsername;
 		const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
 
-		const account = await this.tspSyncService.findAccountByTspUid(oldUid);
+		const account = await this.tspSyncService.findAccountByExternalId(newUid, systemId);
 
 		if (!account) {
 			throw new NotFoundLoggableException(Account.name, { oldUid });

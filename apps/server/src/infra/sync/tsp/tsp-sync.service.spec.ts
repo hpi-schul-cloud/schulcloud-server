@@ -652,26 +652,29 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
-	describe('findAccountByTspUid', () => {
+	describe('findAccountByExternalId', () => {
 		describe('when account is found', () => {
 			const setup = () => {
-				const tspUid = faker.string.alpha();
+				const externalId = faker.string.alpha();
+				const systemId = faker.string.alpha();
+
 				const user = userDoFactory.build();
 				const account = accountDoFactory.build();
 
-				user.id = tspUid;
+				user.id = faker.string.alpha();
+				user.externalId = externalId;
 				account.userId = user.id;
 
-				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 1 });
+				userService.findByExternalId.mockResolvedValueOnce(user);
 				accountService.findByUserId.mockResolvedValueOnce(account);
 
-				return { tspUid, account };
+				return { externalId, systemId, account };
 			};
 
 			it('should return the account', async () => {
-				const { tspUid, account } = setup();
+				const { externalId, systemId, account } = setup();
 
-				const result = await sut.findAccountByTspUid(tspUid);
+				const result = await sut.findAccountByExternalId(externalId, systemId);
 
 				expect(result).toBe(account);
 			});
@@ -679,19 +682,19 @@ describe(TspSyncService.name, () => {
 
 		describe('when account is not found', () => {
 			const setup = () => {
-				const tspUid = faker.string.alpha();
-				const user = userDoFactory.build();
+				const externalId = faker.string.alpha();
+				const systemId = faker.string.alpha();
 
-				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 0 });
+				userService.findByExternalId.mockResolvedValueOnce(null);
 				accountService.findByUserId.mockResolvedValueOnce(null);
 
-				return { tspUid };
+				return { externalId, systemId };
 			};
 
 			it('should return null', async () => {
-				const { tspUid } = setup();
+				const { externalId, systemId } = setup();
 
-				const result = await sut.findAccountByTspUid(tspUid);
+				const result = await sut.findAccountByExternalId(externalId, systemId);
 
 				expect(result).toBeNull();
 			});

@@ -141,7 +141,7 @@ describe(TspSyncStrategy.name, () => {
 				tspSyncService.fetchTspStudentMigrations.mockResolvedValueOnce([tspStudent]);
 				tspSyncService.findUserByTspUid.mockResolvedValueOnce(userDoFactory.build());
 				tspSyncService.updateUser.mockResolvedValueOnce(userDoFactory.build());
-				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(accountDoFactory.build());
+				tspSyncService.findAccountByExternalId.mockResolvedValueOnce(accountDoFactory.build());
 				tspSyncService.updateAccount.mockResolvedValueOnce(accountDoFactory.build());
 
 				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
@@ -243,7 +243,7 @@ describe(TspSyncStrategy.name, () => {
 
 					await sut.sync();
 
-					expect(tspSyncService.findAccountByTspUid).toHaveBeenCalled();
+					expect(tspSyncService.findAccountByExternalId).toHaveBeenCalled();
 				});
 
 				it('should update account', async () => {
@@ -421,7 +421,7 @@ describe(TspSyncStrategy.name, () => {
 				};
 
 				tspSyncService.fetchTspTeacherMigrations.mockResolvedValueOnce([tspTeacher]);
-				tspSyncService.findAccountByTspUid.mockResolvedValueOnce(null);
+				tspSyncService.findAccountByExternalId.mockResolvedValueOnce(null);
 
 				tspSyncService.fetchTspSchools.mockResolvedValueOnce([]);
 				tspSyncService.fetchTspClasses.mockResolvedValueOnce([]);

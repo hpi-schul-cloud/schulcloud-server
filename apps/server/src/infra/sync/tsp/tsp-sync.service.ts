@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SchoolFeature } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Account, AccountService } from '@src/modules/account';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
@@ -187,8 +187,8 @@ export class TspSyncService {
 		return tspUser.data[0];
 	}
 
-	public async findAccountByTspUid(tspUid: string): Promise<Account | null> {
-		const user = await this.findUserByTspUid(tspUid);
+	public async findAccountByExternalId(externalId: string, systemId: EntityId): Promise<Account | null> {
+		const user = await this.userService.findByExternalId(externalId, systemId);
 
 		if (!user || !user.id) {
 			return null;
