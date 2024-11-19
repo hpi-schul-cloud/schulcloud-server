@@ -15,8 +15,9 @@ export class TspFetchService {
 
 	public async fetchTspSchools(system: System, daysToFetch: number) {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const test = await this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
-		return test;
+		const schools = await this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
+
+		return schools;
 	}
 
 	public async fetchTspTeachers(system: System, daysToFetch: number) {
