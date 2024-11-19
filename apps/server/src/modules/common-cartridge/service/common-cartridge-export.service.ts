@@ -1,9 +1,12 @@
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
+import { ErrorLogger, Logger } from '@src/core/logger';
+import { FilesStorageRestClientAdapter } from '@src/infra/files-storage-client';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
+import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
 import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
 import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
 import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
@@ -29,6 +32,9 @@ const isRichTextElement = (reference: unknown): reference is RichTextElementResp
 const isLinkElement = (reference: unknown): reference is LinkElementResponseDto =>
 	reference instanceof LinkElementResponseDto;
 
+const isFileElement = (reference: unknown): reference is FileElementResponseDto =>
+	reference instanceof FileElementResponseDto;
+
 @Injectable()
 export class CommonCartridgeExportService {
 	constructor(
@@ -38,7 +44,11 @@ export class CommonCartridgeExportService {
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClinetAdapter: LessonClientAdapter,
-		private readonly mapper: CommonCartridgeExportMapper
+		private readonly filesStorageClient: FilesStorageClientAdapterService,
+		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
+		private readonly mapper: CommonCartridgeExportMapper,
+		private readonly logger: Logger,
+		private readonly errorLogger: ErrorLogger
 	) {}
 
 	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
@@ -93,7 +103,7 @@ export class CommonCartridgeExportService {
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
 
 		// add tasks to organization
-		this.addTasks(builder, version, roomBoard.elements, exportedTasks);
+		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
 
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
@@ -152,12 +162,12 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	private addTasks(
+	private async addTasks(
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
 		elements: BoardElementDto[],
 		exportedTasks: string[]
-	): void {
+	): Promise<void> {
 		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements).filter((task) =>
 			exportedTasks.includes(task.id)
 		);
@@ -171,9 +181,15 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(),
 		});
 
-		tasks.forEach((task) => {
+		for await (const task of tasks) {
 			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
-		});
+
+			const files = await this.downloadFiles(task.id);
+
+			for await (const file of files) {
+				tasksOrganization.addResource(this.mapper.mapFileElementToResource(file));
+			}
+		}
 	}
 
 	private async addColumnBoards(
@@ -221,26 +237,29 @@ export class CommonCartridgeExportService {
 		const cardsIds = column.cards.map((card) => card.cardId);
 		const listOfCards: CardListResponseDto = await this.findAllCardsByIds(cardsIds);
 
-		listOfCards.data.forEach((card) => {
-			this.addCardToOrganization(card, columnOrganization);
-		});
+		for await (const card of listOfCards.data) {
+			await this.addCardToOrganization(card, columnOrganization);
+		}
 	}
 
-	private addCardToOrganization(card: CardResponseDto, columnOrganization: CommonCartridgeOrganizationNode): void {
+	private async addCardToOrganization(
+		card: CardResponseDto,
+		columnOrganization: CommonCartridgeOrganizationNode
+	): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
 
-		card.elements.forEach((element) => {
-			this.addCardElementToOrganization(element, cardOrganization);
-		});
+		for await (const element of card.elements) {
+			await this.addCardElementToOrganization(element, cardOrganization);
+		}
 	}
 
-	private addCardElementToOrganization(
+	private async addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
 		cardOrganization: CommonCartridgeOrganizationNode
-	): void {
+	): Promise<void> {
 		if (isRichTextElement(element)) {
 			const resource = this.mapper.mapRichTextElementToResource(element);
 
@@ -251,6 +270,13 @@ export class CommonCartridgeExportService {
 			const resource = this.mapper.mapLinkElementToResource(element);
 
 			cardOrganization.addResource(resource);
+		}
+
+		if (isFileElement(element)) {
+			const files = await this.downloadFiles(element.id);
+			const resources = files.map((f) => this.mapper.mapFileElementToResource(f, element));
+
+			resources.forEach((resource) => cardOrganization.addResource(resource));
 		}
 	}
 
@@ -276,5 +302,43 @@ export class CommonCartridgeExportService {
 			.map((element) => element.content as BoardColumnBoardDto);
 
 		return columnBoard;
+	}
+
+	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: string }[]> {
+		try {
+			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
+
+			const files = new Array<{ fileRecord: FileDto; file: string }>();
+
+			for await (const fileRecord of fileRecords) {
+				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+				const file = response.data.toString();
+
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
+							type: typeof file,
+							data: file,
+						};
+					},
+				});
+
+				files.push({ fileRecord, file });
+			}
+
+			return files;
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: `Failed to download files for parent ${parentId}`,
+						error,
+					};
+				},
+			});
+
+			return [];
+		}
 	}
 }

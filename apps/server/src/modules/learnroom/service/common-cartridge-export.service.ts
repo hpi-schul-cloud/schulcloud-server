@@ -1,4 +1,4 @@
-import { FilesStorageRestClientAdapter, FilesStorageRestClientConfig } from '@infra/files-storage-client';
+import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
 import {
 	AnyBoardNode,
 	BoardExternalReferenceType,
@@ -19,16 +19,15 @@ import {
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
+import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
-import { Request } from 'express';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
+
+export type FileTuple = { fileRecord: FileDto; file: Buffer };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -41,9 +40,7 @@ export class CommonCartridgeExportService {
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
 		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
 		private readonly logger: Logger,
-		private readonly errorLogger: ErrorLogger,
-		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,
-		@Inject(REQUEST) private readonly req: Request
+		private readonly errorLogger: ErrorLogger
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
 	}
@@ -224,22 +221,22 @@ export class CommonCartridgeExportService {
 		}
 	}
 
-	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: string }[]> {
+	private async downloadFiles(parentId: string): Promise<FileTuple[]> {
 		try {
 			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
 
-			const files = new Array<{ fileRecord: FileDto; file: string }>();
+			const files = new Array<FileTuple>();
 
 			for await (const fileRecord of fileRecords) {
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-				const file = response.data.toString();
+				const file = Buffer.from(response.data);
 
 				this.logger.warning({
 					getLogMessage() {
 						return {
 							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
 							type: typeof file,
-							data: file,
+							data: file as unknown as string,
 						};
 					},
 				});

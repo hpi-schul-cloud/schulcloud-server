@@ -12,9 +12,9 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
-import { FileDto } from '@src/modules/files-storage-client';
 import sanitizeHtml from 'sanitize-html';
 import { LearnroomConfig } from '../learnroom.config';
+import type { FileTuple } from '../service/common-cartridge-export.service';
 
 @Injectable()
 export class CommonCartridgeExportMapper {
@@ -142,10 +142,7 @@ export class CommonCartridgeExportMapper {
 		};
 	}
 
-	public mapFileElementToResource(
-		file: { fileRecord: FileDto; file: string },
-		element?: FileElement
-	): CommonCartridgeResourceProps {
+	public mapFileElementToResource(file: FileTuple, element?: FileElement): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.FILE,
 			identifier: createIdentifier(element?.id),
