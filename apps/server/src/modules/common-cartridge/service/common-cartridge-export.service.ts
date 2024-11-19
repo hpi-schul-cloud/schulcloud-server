@@ -86,7 +86,6 @@ export class CommonCartridgeExportService {
 		return lesson;
 	}
 
-	// export course to common cartridge
 	public async exportCourse(
 		courseId: string,
 		version: CommonCartridgeVersion,
@@ -212,7 +211,7 @@ export class CommonCartridgeExportService {
 		}
 
 		const boardSkeletons: BoardSkeletonDto[] = await Promise.all(
-			columnBoardsIds.map((elementId) => this.findBoardSkeletonById(elementId))
+			columnBoardsIds.map((columnBoardId) => this.findBoardSkeletonById(columnBoardId))
 		);
 
 		await Promise.all(
@@ -239,11 +238,13 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(columnId),
 		});
 
-		const cardsIds = column.cards.map((card) => card.cardId);
-		const listOfCards: CardListResponseDto = await this.findAllCardsByIds(cardsIds);
+		if (column.cards?.length) {
+			const cardsIds = column.cards.map((card) => card.cardId);
+			const listOfCards: CardListResponseDto = await this.findAllCardsByIds(cardsIds);
 
-		for await (const card of listOfCards.data) {
-			await this.addCardToOrganization(card, columnOrganization);
+			for await (const card of listOfCards.data) {
+				await this.addCardToOrganization(card, columnOrganization);
+			}
 		}
 	}
 
