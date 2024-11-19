@@ -1,1 +1,1 @@
-export * from './deletion-console.module';
+export * from './deletion-console.module'; // TODO: Fix me!

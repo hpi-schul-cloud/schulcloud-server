@@ -58,6 +58,9 @@ export class SynchronizationUc {
 		}
 	}
 
+	// Should be privat! It is only used for testing.
+	// Every parts that need be tested and only avaible from intern,
+	// need to be passed from outside by constructor or public methods.
 	public async findUsersToSynchronize(systemId: string): Promise<string[]> {
 		let usersToCheck: string[] = [];
 		const usersDownloaded: SchulconnexResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
@@ -84,6 +87,9 @@ export class SynchronizationUc {
 		}
 	}
 
+	// Should be privat! It is only used for testing.
+	// Every parts that need be tested and only avaible from intern,
+	// need to be passed from outside by constructor or public methods.
 	public async updateSynchronization(
 		synchronizationId: string,
 		status: SynchronizationStatusModel,

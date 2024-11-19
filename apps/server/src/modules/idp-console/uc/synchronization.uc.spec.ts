@@ -8,10 +8,9 @@ import {
 	SynchronizationStatusModel,
 } from '@modules/synchronization';
 import { UserService } from '@modules/user';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { createConfigModuleOptions } from '@src/config';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account';
 import { ObjectId } from 'bson';
@@ -20,7 +19,7 @@ import {
 	NoUsersToSynchronizationLoggableException,
 } from './loggable-exception';
 import { SynchronizationUc } from './synchronization.uc';
-import { synchronizationTestConfig } from './testing';
+import { IdpConsoleConfig } from '../idp-console.config';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -29,10 +28,10 @@ describe(SynchronizationUc.name, () => {
 	let accountService: DeepMocked<AccountService>;
 	let synchronizationService: DeepMocked<SynchronizationService>;
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
+	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConfigModule.forRoot(createConfigModuleOptions(synchronizationTestConfig))],
 			providers: [
 				SynchronizationUc,
 				{
@@ -55,6 +54,10 @@ describe(SynchronizationUc.name, () => {
 					provide: SchulconnexRestClient,
 					useValue: createMock<SchulconnexRestClient>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<IdpConsoleConfig, true>>(),
+				},
 			],
 		}).compile();
 
@@ -63,6 +66,8 @@ describe(SynchronizationUc.name, () => {
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
+		configService = module.get(ConfigService);
+
 		await setupEntities();
 	});
 
@@ -79,6 +84,7 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 1;
 				const status = SynchronizationStatusModel.SUCCESS;
 
+				configService.get.mockReturnValueOnce(1); // SYNCHRONIZATION_CHUNK=1
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				jest.spyOn(uc, 'findUsersToSynchronize').mockResolvedValueOnce(usersToCheck);
 				const spyUpdateLastSyncedAt = jest.spyOn(uc, 'updateLastSyncedAt');
@@ -184,6 +190,7 @@ describe(SynchronizationUc.name, () => {
 					}),
 				};
 
+				configService.get.mockReturnValueOnce(1); // SYNCHRONIZATION_CHUNK=1
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				jest.spyOn(uc, 'findUsersToSynchronize').mockResolvedValueOnce(usersToCheck);
 				userService.updateLastSyncedAt.mockRejectedValueOnce(error);
