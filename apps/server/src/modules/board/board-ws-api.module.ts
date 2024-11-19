@@ -9,9 +9,10 @@ import { BoardCollaborationGateway } from './gateway/board-collaboration.gateway
 import { MetricsService } from './metrics/metrics.service';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
+import { RoomModule } from '../room';
 
 @Module({
-	imports: [BoardModule, forwardRef(() => AuthorizationModule), LoggerModule, UserModule, RoomMemberModule],
+	imports: [BoardModule, forwardRef(() => AuthorizationModule), LoggerModule, UserModule, RoomMemberModule, RoomModule],
 	providers: [
 		BoardCollaborationGateway,
 		BoardNodePermissionService,
