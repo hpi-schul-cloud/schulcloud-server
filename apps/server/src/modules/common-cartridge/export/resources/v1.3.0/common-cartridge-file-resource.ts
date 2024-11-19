@@ -63,7 +63,7 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 		return {
 			$: {
 				identifier: this.props.identifier,
-				type: this.props.type,
+				type: CommonCartridgeResourceType.WEB_CONTENT,
 			},
 			file: {
 				$: {
