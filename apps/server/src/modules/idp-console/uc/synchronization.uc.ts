@@ -5,19 +5,19 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { ErrorLogMessage } from '@src/core/logger/types';
-import { AccountService } from '@src/modules/account';
-import { SynchronizationConfig } from '../interface';
+import { AccountService } from '@modules/account';
 import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
 } from './loggable-exception';
+import { IdpConsoleConfig } from '../idp-console.config';
 
 @Injectable()
 export class SynchronizationUc {
 	constructor(
-		private readonly configService: ConfigService<SynchronizationConfig, true>,
+		private readonly configService: ConfigService<IdpConsoleConfig, true>,
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,

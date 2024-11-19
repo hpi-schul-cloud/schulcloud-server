@@ -8,7 +8,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { LanguageType } from '@shared/domain/interface';
 import { RabbitMqConfig } from '@src/infra/rabbitmq';
 
-interface IdpConsoleConfig
+export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,
 		RabbitMqConfig,
 		LoggerConfig,
