@@ -41,7 +41,7 @@ export class RoomUc {
 		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
 
 		await this.roomMemberService
-			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }], user.school.id)
+			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }], user.school.id)
 			.catch(async (err) => {
 				await this.roomService.deleteRoom(room);
 				throw err;

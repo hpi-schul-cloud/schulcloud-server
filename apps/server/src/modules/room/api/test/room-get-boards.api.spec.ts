@@ -100,7 +100,7 @@ describe('Room Controller (API)', () => {
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_VIEWER,
+					name: RoleName.ROOMVIEWER,
 					permissions: [Permission.ROOM_VIEW],
 				});
 				const userGroupEntity = groupEntityFactory.buildWithId({

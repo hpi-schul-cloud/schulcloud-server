@@ -99,7 +99,7 @@ describe('Room Controller (API)', () => {
 					endDate: new Date('2024-10-20'),
 				});
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_EDITOR,
+					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT],
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();

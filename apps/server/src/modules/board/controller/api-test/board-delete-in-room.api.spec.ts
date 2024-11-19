@@ -48,8 +48,8 @@ describe(`board delete in room (api)`, () => {
 		const noAccessUser = userFactory.buildWithId();
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const roleRoomEdit = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
-		const roleRoomView = roleFactory.buildWithId({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+		const roleRoomEdit = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+		const roleRoomView = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,

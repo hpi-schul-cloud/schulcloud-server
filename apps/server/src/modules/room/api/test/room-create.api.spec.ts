@@ -69,7 +69,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_EDITOR,
+					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT, Permission.ROOM_VIEW],
 				});
 				await em.persistAndFlush([teacherAccount, teacherUser, role]);

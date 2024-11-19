@@ -48,11 +48,11 @@ describe('board get context in room (api)', () => {
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
 		const roleRoomEdit = roleFactory.buildWithId({
-			name: RoleName.ROOM_EDITOR,
+			name: RoleName.ROOMEDITOR,
 			permissions: [Permission.ROOM_EDIT],
 		});
 		const roleRoomView = roleFactory.buildWithId({
-			name: RoleName.ROOM_VIEWER,
+			name: RoleName.ROOMVIEWER,
 			permissions: [Permission.ROOM_VIEW],
 		});
 

@@ -218,7 +218,7 @@ describe(`${BoardContextService.name}`, () => {
 			describe('when user with editor role is associated with the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const role = roleFactory.build({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+					const role = roleFactory.build({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
 					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
 					const room = roomFactory.build();
 					roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -253,7 +253,7 @@ describe(`${BoardContextService.name}`, () => {
 			describe('when user with view role is associated with the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const role = roleFactory.build({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+					const role = roleFactory.build({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
 					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
 					const room = roomFactory.build();
 					roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });

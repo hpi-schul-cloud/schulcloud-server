@@ -50,11 +50,11 @@ describe('Room Controller (API)', () => {
 			const room = roomEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const editRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_EDITOR,
+				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_VIEWER,
+				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
 			const students = userFactory.buildList(2);

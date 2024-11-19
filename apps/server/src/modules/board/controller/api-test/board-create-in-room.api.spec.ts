@@ -45,7 +45,7 @@ describe(`create board in room (api)`, () => {
 				const user = userFactory.buildWithId();
 				const account = accountFactory.withUser(user).build();
 
-				const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+				const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
 
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
@@ -161,7 +161,7 @@ describe(`create board in room (api)`, () => {
 				const user = userFactory.buildWithId();
 				const account = accountFactory.withUser(user).build();
 
-				const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_VIEW] });
+				const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_VIEW] });
 
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
@@ -229,7 +229,7 @@ describe(`create board in room (api)`, () => {
 			const user = userFactory.buildWithId();
 			const account = accountFactory.withUser(user).build();
 
-			const role = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+			const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
 
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,

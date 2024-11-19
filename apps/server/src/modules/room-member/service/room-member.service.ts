@@ -19,7 +19,7 @@ export class RoomMemberService {
 	private async createNewRoomMember(
 		roomId: EntityId,
 		userId: EntityId,
-		roleName: RoleName.ROOM_EDITOR | RoleName.ROOM_VIEWER,
+		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER,
 		schoolId?: EntityId
 	) {
 		const group = await this.groupService.createGroup(`Room Members for Room ${roomId}`, GroupTypes.ROOM, schoolId);
@@ -64,7 +64,7 @@ export class RoomMemberService {
 
 	public async addMembersToRoom(
 		roomId: EntityId,
-		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOM_EDITOR | RoleName.ROOM_VIEWER }>,
+		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER }>,
 		schoolId?: EntityId
 	): Promise<EntityId> {
 		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);

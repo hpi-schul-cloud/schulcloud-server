@@ -74,7 +74,7 @@ describe('RoomMemberService', () => {
 			it('should create new room member when not exists', async () => {
 				const { user, room } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
 
 				expect(roomMemberRepo.save).toHaveBeenCalled();
 			});
@@ -110,10 +110,10 @@ describe('RoomMemberService', () => {
 			it('should add user to existing room member', async () => {
 				const { user, room, group } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOM_EDITOR }]);
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
 
 				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
-					{ userId: user.id, roleName: RoleName.ROOM_EDITOR },
+					{ userId: user.id, roleName: RoleName.ROOMEDITOR },
 				]);
 			});
 		});

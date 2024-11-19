@@ -46,11 +46,11 @@ describe('Room Controller (API)', () => {
 	describe('PATCH /rooms/:roomId/members/remove', () => {
 		const setupRoomRoles = () => {
 			const editorRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_EDITOR,
+				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_VIEWER,
+				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
 			return { editorRole, viewerRole };

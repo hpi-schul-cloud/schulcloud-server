@@ -95,7 +95,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_EDITOR,
+					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT],
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
