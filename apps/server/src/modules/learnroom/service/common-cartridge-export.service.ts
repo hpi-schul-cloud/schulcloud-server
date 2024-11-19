@@ -22,12 +22,10 @@ import { TaskService } from '@modules/task';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromRequest } from '@shared/common/utils/jwt';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import { isFileElement } from '@src/modules/board/domain';
-import axios, { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
@@ -233,29 +231,17 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: string }>();
 
 			for await (const fileRecord of fileRecords) {
-				// const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-				const response: AxiosResponse<Blob> = await axios.request({
-					method: 'GET',
-					url: `${this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL')}/api/v3/file/download/${
-						fileRecord.id
-					}/${fileRecord.name}`,
-					responseType: 'blob',
-					headers: {
-						Authorization: `Bearer ${extractJwtFromRequest(this.req)}`,
-					},
-				});
+				const file = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
 				this.logger.warning({
 					getLogMessage() {
 						return {
 							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-							type: typeof response.data,
-							data: response.data as unknown as string,
+							type: typeof file,
+							data: file,
 						};
 					},
 				});
-
-				const file = response.data.toString();
 
 				files.push({ fileRecord, file });
 			}
