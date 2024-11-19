@@ -304,22 +304,22 @@ export class CommonCartridgeExportService {
 		return columnBoard;
 	}
 
-	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: string }[]> {
+	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: Buffer }[]> {
 		try {
 			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
 
-			const files = new Array<{ fileRecord: FileDto; file: string }>();
+			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
 
 			for await (const fileRecord of fileRecords) {
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-				const file = response.data.toString();
+				const file = response.data;
 
 				this.logger.warning({
 					getLogMessage() {
 						return {
 							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
 							type: typeof file,
-							data: file,
+							data: file as unknown as string,
 						};
 					},
 				});

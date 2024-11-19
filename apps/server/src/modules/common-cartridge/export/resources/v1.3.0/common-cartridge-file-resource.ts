@@ -13,7 +13,7 @@ export type CommonCartridgeFileResourcePropsV130 = {
 	identifier: string;
 	folder: string;
 	fileName: string;
-	fileContent: string | Buffer;
+	fileContent: Buffer;
 	title?: string;
 };
 
@@ -30,11 +30,7 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 		return `${this.props.folder}/${this.props.fileName}`;
 	}
 
-	public getFileContent(): string {
-		if (this.props.fileContent instanceof Buffer) {
-			return this.props.fileContent.toString('utf-8');
-		}
-
+	public getFileContent(): Buffer {
 		return this.props.fileContent;
 	}
 

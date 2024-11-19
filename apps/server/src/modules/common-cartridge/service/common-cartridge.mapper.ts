@@ -171,7 +171,7 @@ export class CommonCartridgeExportMapper {
 	}
 
 	public mapFileElementToResource(
-		file: { fileRecord: FileDto; file: string },
+		file: { fileRecord: FileDto; file: Buffer },
 		element?: FileElementResponseDto
 	): CommonCartridgeResourceProps {
 		return {
