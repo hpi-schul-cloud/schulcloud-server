@@ -9,20 +9,20 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { AccountModule } from '@modules/account';
 import { defaultMikroOrmOptions } from '@shared/common';
-import { getDeletionClientConfig } from './deletion-client/deletion-client.config';
 import { FileEntity } from '../files/entity';
 import { DeletionClient } from './deletion-client';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 import { BatchDeletionService } from './services';
 import { DeletionExecutionConsole } from './deletion-execution.console';
+import { deletionConsoleConfig } from './deletion.config';
 
 @Module({
 	imports: [
 		ConsoleModule,
 		ConsoleWriterModule,
 		UserModule,
-		ConfigModule.forRoot(createConfigModuleOptions(getDeletionClientConfig)),
+		ConfigModule.forRoot(createConfigModuleOptions(deletionConsoleConfig)),
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
