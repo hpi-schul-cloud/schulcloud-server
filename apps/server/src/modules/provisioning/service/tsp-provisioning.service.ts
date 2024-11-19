@@ -41,7 +41,10 @@ export class TspProvisioningService {
 	}
 
 	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
-		if (!user.id) throw new BadDataLoggableException('User ID is missing', { user });
+		if (!user.id)
+			throw new BadDataLoggableException('User ID is missing', {
+				externalId: user.externalId,
+			});
 
 		for await (const clazz of classes) {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(school.id, clazz.externalId);
@@ -76,7 +79,11 @@ export class TspProvisioningService {
 	}
 
 	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDO> {
-		if (!data.externalSchool) throw new BadDataLoggableException('External school is missing', { data });
+		if (!data.externalSchool) {
+			throw new BadDataLoggableException('External school is missing for user', {
+				externalId: data.externalUser.externalId,
+			});
+		}
 
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
@@ -116,7 +123,9 @@ export class TspProvisioningService {
 		schoolId: string
 	): Promise<UserDO> {
 		if (!externalUser.firstName || !externalUser.lastName) {
-			throw new BadDataLoggableException('User firstname or lastname is missing', { externalUser });
+			throw new BadDataLoggableException('User firstname or lastname is missing. TspUid:', {
+				externalId: externalUser.externalId,
+			});
 		}
 
 		const newUser = new UserDO({
@@ -134,7 +143,10 @@ export class TspProvisioningService {
 	}
 
 	private async createOrUpdateAccount(systemId: string, user: UserDO): Promise<void> {
-		if (!user.id) throw new BadDataLoggableException('user ID is missing', { user });
+		if (!user.id)
+			throw new BadDataLoggableException('user ID is missing', {
+				externalId: user.externalId,
+			});
 
 		const account = await this.accountService.findByUserId(user.id);
 
