@@ -90,7 +90,7 @@ export class DeletionClient {
 	}
 
 	private isLimitGeaterZero(limit?: number): boolean {
-		return limit !== undefined && limit !== null && limit > 0;
+		return typeof limit === 'number' && limit > 0;
 	}
 
 	private createError(err: unknown, scope: string): Error {

@@ -211,6 +211,28 @@ describe(DeletionClient.name, () => {
 			});
 		});
 
+		describe('when pass invalid limit', () => {
+			const setup = () => {
+				setupConfig();
+				const limit = true;
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 204,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				return { limit };
+			};
+
+			it('should ignore limit and use default headers', async () => {
+				const { limit } = setup();
+
+				// @ts-expect-error test case
+				await expect(client.executeDeletions(limit)).resolves.not.toThrow();
+			});
+		});
+
 		describe('when received invalid HTTP status code in a response', () => {
 			const setup = () => {
 				setupConfig();
