@@ -926,7 +926,7 @@ describe('ShareTokenUC', () => {
 				);
 			});
 
-			it('should throw if the destinationCourseId is not passed', async () => {
+			it('should throw if the destinationId is not passed', async () => {
 				const { user, shareToken } = setup();
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
@@ -1012,7 +1012,7 @@ describe('ShareTokenUC', () => {
 				);
 			});
 
-			it('should throw if the destinationCourseId is not passed', async () => {
+			it('should throw if the destinationId is not passed', async () => {
 				const { user, shareToken } = setupTask();
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(

@@ -195,16 +195,20 @@ export class ShareTokenUC {
 		copyTitle?: string
 	): Promise<CopyStatus> {
 		const originalBoard = await this.columnBoardService.findById(originalColumnBoardId, 0);
-		const destinationBoard = await this.columnBoardService.findById(destinationId, 0);
 
-		await this.checkBoardReferenceWritePermission(user, destinationBoard.context);
+		const targetExternalReference: BoardExternalReference = {
+			id: destinationId,
+			type: originalBoard.context.type,
+		};
+
+		await this.checkBoardReferenceWritePermission(user, targetExternalReference);
 
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
-		const targetStorageLocationReference = await this.getStorageLocationReference(destinationBoard.context);
+		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
 
 		const copyStatus = this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
-			targetExternalReference: destinationBoard.context,
+			targetExternalReference,
 			sourceStorageLocationReference,
 			targetStorageLocationReference,
 			userId: user.id,

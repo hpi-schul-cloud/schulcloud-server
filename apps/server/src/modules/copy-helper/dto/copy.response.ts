@@ -29,9 +29,9 @@ export class CopyApiResponse {
 	type: CopyElementType;
 
 	@ApiPropertyOptional({
-		description: 'Id of destination course',
+		description: 'Id of destination parent reference',
 	})
-	destinationCourseId?: string;
+	destinationId?: string;
 
 	@ApiProperty({
 		type: 'string',
