@@ -228,8 +228,22 @@ export class CommonCartridgeExportService {
 			const files = new Array<FileTuple>();
 
 			for await (const fileRecord of fileRecords) {
+				const chunks: Uint8Array[] = [];
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
-				const file = Buffer.from(response.data);
+
+				const file: Buffer = await new Promise((resolve, reject) => {
+					response.data.on('data', (chunk: Uint8Array) => {
+						chunks.push(chunk);
+					});
+
+					response.data.on('end', () => {
+						resolve(Buffer.concat(chunks));
+					});
+
+					response.data.on('error', (error) => {
+						reject(error);
+					});
+				});
 
 				this.logger.warning({
 					getLogMessage() {
