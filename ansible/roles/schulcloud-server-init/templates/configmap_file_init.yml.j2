@@ -12,7 +12,7 @@ data:
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
     git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm install
+    npm ci
     until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
