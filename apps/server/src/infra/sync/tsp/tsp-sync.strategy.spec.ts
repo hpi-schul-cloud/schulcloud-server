@@ -301,8 +301,6 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does not exist', () => {
 			const setup = () => {
-				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
-
 				const tspSchool: RobjExportSchule = {
 					schuleNummer: faker.string.alpha(),
 					schuleName: faker.string.alpha(),
@@ -325,8 +323,6 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does exist', () => {
 			const setup = () => {
-				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
-
 				const tspSchool: RobjExportSchule = {
 					schuleNummer: faker.string.alpha(),
 					schuleName: faker.string.alpha(),
@@ -351,8 +347,6 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when tsp school does not have a schulnummer', () => {
 			const setup = () => {
-				tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(systemFactory.build());
-
 				const tspSchool: RobjExportSchule = {
 					schuleNummer: undefined,
 					schuleName: faker.string.alpha(),
