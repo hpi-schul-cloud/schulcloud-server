@@ -6,6 +6,7 @@ import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { LoggerModule } from '@src/core/logger';
 import { defaultMikroOrmOptions } from '../server';
 import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
@@ -21,6 +22,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		RabbitMQWrapperModule,
 		FilesStorageClientModule,
 		FilesStorageRestClientModule,
+		LoggerModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
