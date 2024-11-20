@@ -1,4 +1,3 @@
-import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
 import {
 	AnyBoardNode,
 	BoardExternalReferenceType,
@@ -19,11 +18,17 @@ import {
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { REQUEST } from '@nestjs/core';
+import { extractJwtFromRequest } from '@shared/common/utils/jwt';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogger, Logger } from '@src/core/logger';
+import { FilesStorageRestClientConfig } from '@src/infra/files-storage-client';
 import { isFileElement } from '@src/modules/board/domain';
+import axios, { AxiosResponse } from 'axios';
+import { Request } from 'express';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
@@ -38,9 +43,10 @@ export class CommonCartridgeExportService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
-		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
 		private readonly logger: Logger,
-		private readonly errorLogger: ErrorLogger
+		private readonly errorLogger: ErrorLogger,
+		@Inject(REQUEST) private readonly req: Request,
+		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
 	}
@@ -229,7 +235,7 @@ export class CommonCartridgeExportService {
 
 			for await (const fileRecord of fileRecords) {
 				// const chunks: Uint8Array[] = [];
-				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+				const response = await this.downloadFile(fileRecord);
 
 				this.logger.warning({
 					getLogMessage() {
@@ -284,5 +290,24 @@ export class CommonCartridgeExportService {
 
 			return [];
 		}
+	}
+
+	private async downloadFile(fileRecord: FileDto): Promise<AxiosResponse<Buffer>> {
+		const token = extractJwtFromRequest(this.req);
+		const url = new URL(
+			`${this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL')}/file/download/${fileRecord.id}/${
+				fileRecord.name
+			}`
+		);
+		const response: AxiosResponse<Buffer> = await axios.request({
+			method: 'GET',
+			url: url.toString(),
+			responseType: 'arraybuffer',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		return response;
 	}
 }
