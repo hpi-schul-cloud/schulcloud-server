@@ -235,13 +235,14 @@ export class CommonCartridgeExportService {
 					getLogMessage() {
 						return {
 							message: `Files storage response for file ${fileRecord.name} for parent ${parentId}`,
-							type: typeof response,
-							data: response as unknown as string,
+							type: typeof response.data,
+							data: response.data as unknown as string,
 						};
 					},
 				});
 
-				const file = response.data;
+				const file = await response.data.arrayBuffer();
+				const buffer = Buffer.from(file);
 
 				// const file: Buffer = await new Promise((resolve, reject) => {
 				// 	response.data.on('data', (chunk: Uint8Array) => {
@@ -267,7 +268,7 @@ export class CommonCartridgeExportService {
 					},
 				});
 
-				files.push({ fileRecord, file });
+				files.push({ fileRecord, file: buffer });
 			}
 
 			return files;

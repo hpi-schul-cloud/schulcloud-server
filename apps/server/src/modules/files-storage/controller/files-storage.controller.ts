@@ -95,11 +95,12 @@ export class FilesStorageController {
 	@ApiProduces('application/octet-stream')
 	@ApiResponse({
 		status: 200,
-		type: StreamableFile,
+		schema: { type: 'string', format: 'binary' },
 	})
 	@ApiResponse({
 		status: 206,
 		type: StreamableFile,
+		schema: { type: 'string', format: 'binary' },
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
