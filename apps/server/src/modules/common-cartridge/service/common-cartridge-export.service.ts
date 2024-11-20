@@ -314,6 +314,16 @@ export class CommonCartridgeExportService {
 				const chunks: Uint8Array[] = [];
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
+				this.logger.warning({
+					getLogMessage() {
+						return {
+							message: `Files sroeage response for file ${fileRecord.name} for parent ${parentId}`,
+							type: typeof response,
+							data: response as unknown as string,
+						};
+					},
+				});
+
 				const file: Buffer = await new Promise((resolve, reject) => {
 					response.data.on('data', (chunk: Uint8Array) => {
 						chunks.push(chunk);
