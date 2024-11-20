@@ -49,7 +49,9 @@ export class CommonCartridgeExportService {
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly logger: Logger,
 		private readonly errorLogger: ErrorLogger
-	) {}
+	) {
+		this.logger.setContext(CommonCartridgeExportService.name);
+	}
 
 	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
