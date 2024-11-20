@@ -89,7 +89,6 @@ describe('ToolLaunchUc', () => {
 					method: LaunchRequestMethod.GET,
 					payload: '',
 					openNewTab: true,
-					isDeepLink: true,
 				});
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -170,7 +169,6 @@ describe('ToolLaunchUc', () => {
 					method: LaunchRequestMethod.GET,
 					payload: '',
 					url: 'https://mock.com/',
-					isDeepLink: false,
 				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);

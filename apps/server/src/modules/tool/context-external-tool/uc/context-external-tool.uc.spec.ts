@@ -14,27 +14,39 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities, userFactory } from '@shared/testing';
-import { ToolContextType } from '../../common/enum';
+import { LtiMessageType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ExternalToolService } from '../../external-tool';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { ContextExternalTool, ContextExternalToolProps } from '../domain';
+import {
+	ContextExternalTool,
+	ContextExternalToolProps,
+	InvalidOauthSignatureLoggableException,
+	InvalidToolTypeLoggableException,
+	LtiDeepLinkTokenMissingLoggableException,
+} from '../domain';
 import { ContextExternalToolService, LtiDeepLinkingService, LtiDeepLinkTokenService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
-import { contextExternalToolFactory, ltiDeepLinkFactory } from '../testing';
+import { contextExternalToolFactory, ltiDeepLinkFactory, ltiDeepLinkTokenFactory } from '../testing';
+import { lti11DeepLinkParamsFactory } from '../testing/lti11-deep-link-params.factory';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 
 describe(ContextExternalToolUc.name, () => {
 	let module: TestingModule;
 	let uc: ContextExternalToolUc;
 
+	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let contextExternalToolValidationService: DeepMocked<ContextExternalToolValidationService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let ltiDeepLinkTokenService: DeepMocked<LtiDeepLinkTokenService>;
+	let ltiDeepLinkingService: DeepMocked<LtiDeepLinkingService>;
+	let lti11EncryptionService: DeepMocked<Lti11EncryptionService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -42,12 +54,12 @@ describe(ContextExternalToolUc.name, () => {
 			providers: [
 				ContextExternalToolUc,
 				{
-					provide: SchoolExternalToolService,
-					useValue: createMock<SchoolExternalToolService>(),
-				},
-				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
+				},
+				{
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
 				},
 				{
 					provide: ContextExternalToolService,
@@ -81,11 +93,15 @@ describe(ContextExternalToolUc.name, () => {
 		}).compile();
 
 		uc = module.get(ContextExternalToolUc);
+		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		contextExternalToolValidationService = module.get(ContextExternalToolValidationService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
+		ltiDeepLinkTokenService = module.get(LtiDeepLinkTokenService);
+		ltiDeepLinkingService = module.get(LtiDeepLinkingService);
+		lti11EncryptionService = module.get(Lti11EncryptionService);
 	});
 
 	afterAll(async () => {
@@ -841,6 +857,197 @@ describe(ContextExternalToolUc.name, () => {
 						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 						action: Action.read,
 					})
+				);
+			});
+		});
+	});
+
+	describe('updateLtiDeepLink', () => {
+		describe('when deep linking a content', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const payload = lti11DeepLinkParamsFactory.build();
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
+				const ltiDeepLink = ltiDeepLinkFactory.build();
+				const key = 'key';
+				const secret = 'secret';
+				const externalTool = externalToolFactory
+					.withLti11Config({ key, secret, lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST })
+					.build();
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+				const contextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: { schoolToolId: schoolExternalTool.id, schoolId: user.school.id },
+				});
+				const linkedContextExternalTool = new ContextExternalTool({
+					...contextExternalTool.getProps(),
+					ltiDeepLink,
+				});
+				const callbackUrl = 'https://this.cloud/lti-deep-link-callback';
+
+				ltiDeepLinkTokenService.findByState.mockResolvedValueOnce(ltiDeepLinkToken);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				ltiDeepLinkingService.getCallbackUrl.mockReturnValueOnce(callbackUrl);
+				lti11EncryptionService.verify.mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				contextExternalToolService.saveContextExternalTool.mockResolvedValueOnce(linkedContextExternalTool);
+
+				return {
+					contextExternalTool,
+					ltiDeepLink,
+					payload,
+					user,
+					key,
+					secret,
+					callbackUrl,
+					linkedContextExternalTool,
+				};
+			};
+
+			it('should check the oauth signature', async () => {
+				const { contextExternalTool, payload, ltiDeepLink, key, secret, callbackUrl } = setup();
+
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink);
+
+				expect(lti11EncryptionService.verify).toHaveBeenCalledWith(key, secret, callbackUrl, payload);
+			});
+
+			it('should check the user permission', async () => {
+				const { contextExternalTool, payload, ltiDeepLink, user } = setup();
+
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink);
+
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
+					user,
+					contextExternalTool,
+					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
+				);
+			});
+
+			it('should should save the linked tool', async () => {
+				const { contextExternalTool, payload, ltiDeepLink, linkedContextExternalTool } = setup();
+
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink);
+
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(linkedContextExternalTool);
+			});
+		});
+
+		describe('when no content was linked', () => {
+			const setup = () => {
+				const payload = lti11DeepLinkParamsFactory.build();
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ state: payload.data });
+				const contextExternalTool = contextExternalToolFactory.build();
+
+				ltiDeepLinkTokenService.findByState.mockResolvedValueOnce(ltiDeepLinkToken);
+
+				return {
+					contextExternalTool,
+					payload,
+				};
+			};
+
+			it('should do nothing', async () => {
+				const { contextExternalTool, payload } = setup();
+
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data);
+
+				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when deep linking a content', () => {
+			const setup = () => {
+				const payload = lti11DeepLinkParamsFactory.build();
+				const ltiDeepLink = ltiDeepLinkFactory.build();
+				const contextExternalTool = contextExternalToolFactory.build();
+
+				ltiDeepLinkTokenService.findByState.mockResolvedValueOnce(null);
+
+				return {
+					contextExternalTool,
+					payload,
+					ltiDeepLink,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { contextExternalTool, payload, ltiDeepLink } = setup();
+
+				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink)).rejects.toThrow(
+					LtiDeepLinkTokenMissingLoggableException
+				);
+			});
+		});
+
+		describe('when the external tool is not an lti 1.1 tool', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const payload = lti11DeepLinkParamsFactory.build();
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
+				const ltiDeepLink = ltiDeepLinkFactory.build();
+				const externalTool = externalToolFactory.withBasicConfig().build();
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+				const contextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: { schoolToolId: schoolExternalTool.id, schoolId: user.school.id },
+				});
+
+				ltiDeepLinkTokenService.findByState.mockResolvedValueOnce(ltiDeepLinkToken);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+
+				return {
+					contextExternalTool,
+					ltiDeepLink,
+					payload,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { contextExternalTool, payload, ltiDeepLink } = setup();
+
+				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink)).rejects.toThrow(
+					InvalidToolTypeLoggableException
+				);
+			});
+		});
+
+		describe('when the oauth signature is invalid', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const payload = lti11DeepLinkParamsFactory.build();
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
+				const ltiDeepLink = ltiDeepLinkFactory.build();
+				const externalTool = externalToolFactory
+					.withLti11Config({ lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST })
+					.build();
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+				const contextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: { schoolToolId: schoolExternalTool.id, schoolId: user.school.id },
+				});
+				const callbackUrl = 'https://this.cloud/lti-deep-link-callback';
+
+				ltiDeepLinkTokenService.findByState.mockResolvedValueOnce(ltiDeepLinkToken);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				ltiDeepLinkingService.getCallbackUrl.mockReturnValueOnce(callbackUrl);
+				lti11EncryptionService.verify.mockReturnValueOnce(false);
+
+				return {
+					contextExternalTool,
+					ltiDeepLink,
+					payload,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { contextExternalTool, payload, ltiDeepLink } = setup();
+
+				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink)).rejects.toThrow(
+					InvalidOauthSignatureLoggableException
 				);
 			});
 		});

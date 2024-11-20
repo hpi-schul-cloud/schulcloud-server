@@ -5,20 +5,27 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Authorization } from 'oauth-1.0a';
-import { ToolContextType } from '../../common/enum';
+import { ToolConfigType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool, ContextRef, LtiDeepLink, LtiDeepLinkToken } from '../domain';
-import { LtiDeepLinkTokenMissingLoggableException } from '../domain/error';
+import {
+	ContextExternalTool,
+	ContextRef,
+	InvalidOauthSignatureLoggableException,
+	InvalidToolTypeLoggableException,
+	LtiDeepLink,
+	LtiDeepLinkToken,
+	LtiDeepLinkTokenMissingLoggableException,
+} from '../domain';
 import { ContextExternalToolService, LtiDeepLinkingService, LtiDeepLinkTokenService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
@@ -160,14 +167,14 @@ export class ContextExternalToolUc {
 		state: string,
 		deepLink?: LtiDeepLink
 	): Promise<void> {
+		if (!deepLink) {
+			return;
+		}
+
 		const ltiDeepLinkToken: LtiDeepLinkToken | null = await this.ltiDeepLinkTokenService.findByState(state);
 
 		if (!ltiDeepLinkToken) {
 			throw new LtiDeepLinkTokenMissingLoggableException(state, contextExternalToolId);
-		}
-
-		if (!deepLink) {
-			return;
 		}
 
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
@@ -177,11 +184,11 @@ export class ContextExternalToolUc {
 		await this.checkOauthSignature(contextExternalTool, payload);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(ltiDeepLinkToken.userId);
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
-		contextExternalTool.ltiDeepLink = new LtiDeepLink({ ...deepLink });
+		contextExternalTool.ltiDeepLink = deepLink;
 
 		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 	}
@@ -193,7 +200,7 @@ export class ContextExternalToolUc {
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (!ExternalTool.isLti11Config(externalTool.config)) {
-			throw new UnauthorizedException('wrong tool');
+			throw new InvalidToolTypeLoggableException(ToolConfigType.LTI11, externalTool.config.type);
 		}
 
 		const url: string = this.ltiDeepLinkingService.getCallbackUrl(contextExternalTool.id);
@@ -206,7 +213,7 @@ export class ContextExternalToolUc {
 		);
 
 		if (!isValidSignature) {
-			throw new BadRequestException('Invalid signature');
+			throw new InvalidOauthSignatureLoggableException();
 		}
 	}
 }

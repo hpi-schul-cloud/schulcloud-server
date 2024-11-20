@@ -16,6 +16,7 @@ export class ToolReferenceMapper {
 			displayName: contextExternalTool.displayName ?? externalTool.name,
 			status,
 			openInNewTab: externalTool.openNewTab,
+			isLtiDeepLinkingTool: externalTool.isLtiDeepLinkingTool(),
 			ltiDeepLink: contextExternalTool.ltiDeepLink,
 		});
 

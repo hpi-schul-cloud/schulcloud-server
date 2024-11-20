@@ -33,7 +33,6 @@ describe('ToolLaunchMapper', () => {
 				url: 'url',
 				openNewTab: true,
 				payload: 'payload',
-				isDeepLink: false,
 			});
 
 			const result: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
@@ -43,7 +42,6 @@ describe('ToolLaunchMapper', () => {
 				url: toolLaunchRequest.url,
 				payload: toolLaunchRequest.payload,
 				openNewTab: toolLaunchRequest.openNewTab,
-				isDeepLink: toolLaunchRequest.isDeepLink,
 			});
 		});
 	});

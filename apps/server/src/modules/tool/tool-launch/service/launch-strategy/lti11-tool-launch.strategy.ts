@@ -10,10 +10,12 @@ import { Authorization } from 'oauth-1.0a';
 import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
 import { Lti11EncryptionService } from '../../../common/service';
-import { LtiDeepLink, LtiDeepLinkToken } from '../../../context-external-tool/domain';
-import { LtiMessageTypeNotImplementedLoggableException } from '../../../context-external-tool/domain/error/lti-message-type-not-implemented.loggable-exception';
-import { LtiDeepLinkingService } from '../../../context-external-tool/service';
-import { LtiDeepLinkTokenService } from '../../../context-external-tool/service/lti-deep-link-token.service';
+import {
+	LtiDeepLink,
+	LtiDeepLinkToken,
+	LtiMessageTypeNotImplementedLoggableException,
+} from '../../../context-external-tool/domain';
+import { LtiDeepLinkingService, LtiDeepLinkTokenService } from '../../../context-external-tool/service';
 import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
 import {
@@ -21,6 +23,7 @@ import {
 	LaunchRequestMethod,
 	PropertyData,
 	PropertyLocation,
+	ToolLaunchData,
 	ToolLaunchRequest,
 } from '../../types';
 import {
@@ -346,29 +349,44 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	}
 
 	public override async createLaunchRequest(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchRequest> {
-		const request: ToolLaunchRequest = await super.createLaunchRequest(userId, data);
+		const launchData: ToolLaunchData = await this.createLaunchData(userId, data);
+		const { ltiDeepLink } = data.contextExternalTool;
 
-		if (
-			ExternalTool.isLti11Config(data.externalTool.config) &&
-			data.externalTool.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST &&
-			!data.contextExternalTool.ltiDeepLink
-		) {
-			request.openNewTab = true;
-			request.isDeepLink = true;
+		let method: LaunchRequestMethod;
+		let url: string;
+		let payload: string | null;
+		let { openNewTab } = launchData;
+
+		const isContentItemSelectionRequest: boolean = data.externalTool.isLtiDeepLinkingTool() && !ltiDeepLink;
+		if (isContentItemSelectionRequest) {
+			openNewTab = true;
 		}
 
-		if (data.contextExternalTool.ltiDeepLink?.url) {
-			request.url = data.contextExternalTool.ltiDeepLink.url;
+		if (ltiDeepLink?.url) {
+			url = ltiDeepLink?.url;
+		} else {
+			url = this.buildUrl(launchData);
 		}
 
-		if (
-			data.contextExternalTool.ltiDeepLink &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltilink' &&
-			data.contextExternalTool.ltiDeepLink.mediaType !== 'application/vnd.ims.lti.v1.ltiassignment'
-		) {
-			request.method = LaunchRequestMethod.GET;
+		const isLtiLaunch: boolean =
+			!ltiDeepLink ||
+			ltiDeepLink.mediaType === 'application/vnd.ims.lti.v1.ltilink' ||
+			ltiDeepLink.mediaType === 'application/vnd.ims.lti.v1.ltiassignment';
+		if (isLtiLaunch) {
+			method = this.determineLaunchRequestMethod(launchData.properties);
+			payload = this.buildToolLaunchRequestPayload(url, launchData.properties);
+		} else {
+			method = LaunchRequestMethod.GET;
+			payload = null;
 		}
 
-		return request;
+		const toolLaunchRequest = new ToolLaunchRequest({
+			method,
+			url,
+			payload: payload ?? undefined,
+			openNewTab,
+		});
+
+		return toolLaunchRequest;
 	}
 }

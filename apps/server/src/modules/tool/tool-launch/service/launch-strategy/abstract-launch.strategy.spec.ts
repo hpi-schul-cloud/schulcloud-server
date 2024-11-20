@@ -345,7 +345,6 @@ describe(AbstractLaunchStrategy.name, () => {
 					url: expectedUrl.toString(),
 					method: strategy.determineLaunchRequestMethod(expectedProperties),
 					openNewTab: false,
-					isDeepLink: false,
 					payload: strategy.buildToolLaunchRequestPayload(expectedUrl.toString(), expectedProperties),
 				});
 			});
@@ -385,7 +384,6 @@ describe(AbstractLaunchStrategy.name, () => {
 					url: externalTool.config.baseUrl,
 					method: strategy.determineLaunchRequestMethod([concreteConfigParameter]),
 					openNewTab: false,
-					isDeepLink: false,
 					payload: strategy.buildToolLaunchRequestPayload(externalTool.config.baseUrl, [concreteConfigParameter]),
 				});
 			});

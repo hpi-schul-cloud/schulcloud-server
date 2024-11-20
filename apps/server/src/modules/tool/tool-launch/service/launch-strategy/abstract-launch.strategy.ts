@@ -12,11 +12,11 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, To
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoParameterStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoGroupExternalUuidStrategy,
 } from '../auto-parameter-strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 import { ToolLaunchStrategy } from './tool-launch-strategy.interface';
@@ -52,7 +52,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 
 	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
 
-	public async createLaunchRequest(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchRequest> {
+	protected async createLaunchData(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
 		const launchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromTools(data);
@@ -64,6 +64,12 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		launchData.properties.push(...launchDataProperties);
 		launchData.properties.push(...additionalLaunchDataProperties);
 
+		return launchData;
+	}
+
+	public async createLaunchRequest(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchRequest> {
+		const launchData: ToolLaunchData = await this.createLaunchData(userId, data);
+
 		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(launchData.properties);
 		const url: string = this.buildUrl(launchData);
 		const payload: string | null = this.buildToolLaunchRequestPayload(url, launchData.properties);
@@ -73,13 +79,12 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 			url,
 			payload: payload ?? undefined,
 			openNewTab: launchData.openNewTab,
-			isDeepLink: false,
 		});
 
 		return toolLaunchRequest;
 	}
 
-	private buildUrl(toolLaunchDataDO: ToolLaunchData): string {
+	protected buildUrl(toolLaunchDataDO: ToolLaunchData): string {
 		const { baseUrl } = toolLaunchDataDO;
 
 		const pathProperties: PropertyData[] = toolLaunchDataDO.properties.filter(

@@ -100,7 +100,6 @@ describe(ToolLaunchService.name, () => {
 					method: LaunchRequestMethod.GET,
 					payload: '{ "key": "value" }',
 					openNewTab: false,
-					isDeepLink: true,
 				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -162,7 +161,6 @@ describe(ToolLaunchService.name, () => {
 					method: LaunchRequestMethod.GET,
 					payload: '{ "key": "value" }',
 					openNewTab: false,
-					isDeepLink: true,
 				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -224,7 +222,6 @@ describe(ToolLaunchService.name, () => {
 					method: LaunchRequestMethod.GET,
 					payload: '{ "key": "value" }',
 					openNewTab: false,
-					isDeepLink: true,
 				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);

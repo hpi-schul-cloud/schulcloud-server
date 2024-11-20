@@ -123,7 +123,6 @@ describe('ToolLaunchController (API)', () => {
 					method: LaunchRequestMethod.GET,
 					url: 'https://mockurl.de/',
 					openNewTab: true,
-					isDeepLink: false,
 				});
 			});
 		});
@@ -414,7 +413,6 @@ describe('ToolLaunchController (API)', () => {
 					method: LaunchRequestMethod.GET,
 					url: 'https://mockurl.de/',
 					openNewTab: true,
-					isDeepLink: false,
 				});
 			});
 		});

@@ -29,16 +29,10 @@ export class ToolLaunchRequestResponse {
 	})
 	openNewTab?: boolean;
 
-	@ApiProperty({
-		description: 'Specifies whether the request is an LTI Deep linking content item selection request',
-	})
-	isDeepLink: boolean;
-
 	constructor(props: ToolLaunchRequestResponse) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;
 		this.openNewTab = props.openNewTab;
-		this.isDeepLink = props.isDeepLink;
 	}
 }

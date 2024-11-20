@@ -16,6 +16,8 @@ export class ToolReference {
 
 	status: ContextExternalToolConfigurationStatus;
 
+	isLtiDeepLinkingTool: boolean;
+
 	ltiDeepLink?: LtiDeepLink;
 
 	constructor(toolReference: ToolReference) {
@@ -26,6 +28,7 @@ export class ToolReference {
 		this.displayName = toolReference.displayName;
 		this.openInNewTab = toolReference.openInNewTab;
 		this.status = toolReference.status;
+		this.isLtiDeepLinkingTool = toolReference.isLtiDeepLinkingTool;
 		this.ltiDeepLink = toolReference.ltiDeepLink;
 	}
 }

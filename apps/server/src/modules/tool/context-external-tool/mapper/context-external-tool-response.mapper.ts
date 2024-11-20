@@ -1,4 +1,4 @@
-import { ToolStatusResponseMapper } from '../../common/mapper/tool-status-response.mapper';
+import { ToolStatusResponseMapper } from '../../common/mapper';
 import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
 import { ContextExternalToolResponse, LtiDeepLinkResponse, ToolReferenceResponse } from '../controller/dto';
 import { ContextExternalTool, ToolReference } from '../domain';
@@ -60,6 +60,7 @@ export class ContextExternalToolResponseMapper {
 			thumbnailUrl: toolReference.thumbnailUrl,
 			openInNewTab: toolReference.openInNewTab,
 			status: ToolStatusResponseMapper.mapToResponse(toolReference.status),
+			isLtiDeepLinkingTool: toolReference.isLtiDeepLinkingTool,
 			ltiDeepLink: ltiDeepLinkResponse,
 		});
 
