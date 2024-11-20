@@ -241,8 +241,7 @@ export class CommonCartridgeExportService {
 					},
 				});
 
-				const file = await response.data.arrayBuffer();
-				const buffer = Buffer.from(file);
+				const file = response.data;
 
 				// const file: Buffer = await new Promise((resolve, reject) => {
 				// 	response.data.on('data', (chunk: Uint8Array) => {
@@ -268,7 +267,7 @@ export class CommonCartridgeExportService {
 					},
 				});
 
-				files.push({ fileRecord, file: buffer });
+				files.push({ fileRecord, file });
 			}
 
 			return files;
