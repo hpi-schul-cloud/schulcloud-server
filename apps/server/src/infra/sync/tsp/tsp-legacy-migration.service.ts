@@ -2,10 +2,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { TspLegacyMigrationCountLoggable } from './loggable/tsp-legacy-migration-count.loggable';
 import { TspLegacyMigrationStartLoggable } from './loggable/tsp-legacy-migration-start.loggable';
-import { TspLegacyMigrationSuccessLoggable } from './loggable/tsp-legacy-migration-success.loggable';
 import { TspLegacyMigrationSystemMissingLoggable } from './loggable/tsp-legacy-migration-system-missing.loggable';
+import { TspLegacySchoolMigrationCountLoggable } from './loggable/tsp-legacy-school-migration-count.loggable';
+import { TspLegacySchoolMigrationSuccessLoggable } from './loggable/tsp-legacy-school-migration-success.loggable';
 
 type LegacyTspSchoolProperties = {
 	sourceOptions: {
@@ -36,7 +36,7 @@ export class TspLegacyMigrationService {
 
 		const schoolIds = await this.findIdsOfLegacyTspSchools(legacySystemId);
 
-		this.logger.info(new TspLegacyMigrationCountLoggable(schoolIds.length));
+		this.logger.info(new TspLegacySchoolMigrationCountLoggable(schoolIds.length));
 
 		const promises = schoolIds.map(async (oldId): Promise<number> => {
 			const legacySchoolFilter = {
@@ -66,7 +66,7 @@ export class TspLegacyMigrationService {
 			.map((r) => r.value)
 			.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 
-		this.logger.info(new TspLegacyMigrationSuccessLoggable(schoolIds.length, successfulMigrations));
+		this.logger.info(new TspLegacySchoolMigrationSuccessLoggable(schoolIds.length, successfulMigrations));
 	}
 
 	private async findLegacySystemId() {

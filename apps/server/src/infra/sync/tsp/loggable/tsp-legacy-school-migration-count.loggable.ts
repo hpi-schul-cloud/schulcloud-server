@@ -1,6 +1,6 @@
 import { Loggable, LogMessage } from '@src/core/logger';
 
-export class TspLegacyMigrationCountLoggable implements Loggable {
+export class TspLegacySchoolMigrationCountLoggable implements Loggable {
 	constructor(private readonly total: number) {}
 
 	getLogMessage(): LogMessage {

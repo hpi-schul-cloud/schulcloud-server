@@ -1,10 +1,10 @@
-import { TspLegacyMigrationSuccessLoggable } from './tsp-legacy-migration-success.loggable';
+import { TspLegacySchoolMigrationSuccessLoggable } from './tsp-legacy-school-migration-success.loggable';
 
-describe(TspLegacyMigrationSuccessLoggable.name, () => {
-	let loggable: TspLegacyMigrationSuccessLoggable;
+describe(TspLegacySchoolMigrationSuccessLoggable.name, () => {
+	let loggable: TspLegacySchoolMigrationSuccessLoggable;
 
 	beforeAll(() => {
-		loggable = new TspLegacyMigrationSuccessLoggable(10, 5);
+		loggable = new TspLegacySchoolMigrationSuccessLoggable(10, 5);
 	});
 
 	describe('when loggable is initialized', () => {
