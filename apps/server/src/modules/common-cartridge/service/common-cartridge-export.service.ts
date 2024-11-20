@@ -313,56 +313,57 @@ export class CommonCartridgeExportService {
 		return columnBoard;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	private async downloadFiles(parentId: string): Promise<{ fileRecord: FileDto; file: Buffer }[]> {
 		try {
-			const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
+			// const fileRecords = await this.filesStorageClient.listFilesOfParent(parentId);
 
 			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
 
-			for await (const fileRecord of fileRecords) {
-				// const chunks: Uint8Array[] = [];
-				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+			// for await (const fileRecord of fileRecords) {
+			// 	// const chunks: Uint8Array[] = [];
+			// 	const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
 
-				console.warn('response', response);
+			// 	console.warn('response', response);
 
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Files sroeage response for file ${fileRecord.name} for parent ${parentId}`,
-							type: typeof response,
-							data: response as unknown as string,
-						};
-					},
-				});
+			// 	this.logger.warning({
+			// 		getLogMessage() {
+			// 			return {
+			// 				message: `Files sroeage response for file ${fileRecord.name} for parent ${parentId}`,
+			// 				type: typeof response,
+			// 				data: response as unknown as string,
+			// 			};
+			// 		},
+			// 	});
 
-				const file = response.data;
+			// 	const file = response.data;
 
-				// const file: Buffer = await new Promise((resolve, reject) => {
-				// 	response.data.on('data', (chunk: Uint8Array) => {
-				// 		chunks.push(chunk);
-				// 	});
+			// 	// const file: Buffer = await new Promise((resolve, reject) => {
+			// 	// 	response.data.on('data', (chunk: Uint8Array) => {
+			// 	// 		chunks.push(chunk);
+			// 	// 	});
 
-				// 	response.data.on('end', () => {
-				// 		resolve(Buffer.concat(chunks));
-				// 	});
+			// 	// 	response.data.on('end', () => {
+			// 	// 		resolve(Buffer.concat(chunks));
+			// 	// 	});
 
-				// 	response.data.on('error', (error) => {
-				// 		reject(error);
-				// 	});
-				// });
+			// 	// 	response.data.on('error', (error) => {
+			// 	// 		reject(error);
+			// 	// 	});
+			// 	// });
 
-				this.logger.warning({
-					getLogMessage() {
-						return {
-							message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
-							type: typeof file,
-							data: file as unknown as string,
-						};
-					},
-				});
+			// 	this.logger.warning({
+			// 		getLogMessage() {
+			// 			return {
+			// 				message: `Downloaded file ${fileRecord.name} for parent ${parentId}`,
+			// 				type: typeof file,
+			// 				data: file as unknown as string,
+			// 			};
+			// 		},
+			// 	});
 
-				files.push({ fileRecord, file });
-			}
+			// 	files.push({ fileRecord, file });
+			// }
 
 			return files;
 		} catch (error: unknown) {
