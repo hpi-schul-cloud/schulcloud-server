@@ -6,6 +6,7 @@ import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
+import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenMikroOrmRepo } from './repo';
 import {
 	ContextExternalToolAuthorizableService,
 	ContextExternalToolService,
@@ -34,6 +35,10 @@ import { ContextExternalToolValidationService } from './service/context-external
 		ContextExternalToolRule,
 		LtiDeepLinkTokenService,
 		LtiDeepLinkingService,
+		{
+			provide: LTI_DEEP_LINK_TOKEN_REPO,
+			useClass: LtiDeepLinkTokenMikroOrmRepo,
+		},
 	],
 	exports: [
 		ContextExternalToolService,
