@@ -51,6 +51,13 @@ export class CommonCartridgeExportService {
 		private readonly errorLogger: ErrorLogger
 	) {
 		this.logger.setContext(CommonCartridgeExportService.name);
+		this.logger.warning({
+			getLogMessage() {
+				return {
+					message: 'Common cartridge export service initialized',
+				};
+			},
+		});
 	}
 
 	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
@@ -313,8 +320,10 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
 
 			for await (const fileRecord of fileRecords) {
-				const chunks: Uint8Array[] = [];
+				// const chunks: Uint8Array[] = [];
 				const response = await this.filesStorageClientAdapter.download(fileRecord.id, fileRecord.name);
+
+				console.warn('response', response);
 
 				this.logger.warning({
 					getLogMessage() {
@@ -326,19 +335,21 @@ export class CommonCartridgeExportService {
 					},
 				});
 
-				const file: Buffer = await new Promise((resolve, reject) => {
-					response.data.on('data', (chunk: Uint8Array) => {
-						chunks.push(chunk);
-					});
+				const file = response.data;
 
-					response.data.on('end', () => {
-						resolve(Buffer.concat(chunks));
-					});
+				// const file: Buffer = await new Promise((resolve, reject) => {
+				// 	response.data.on('data', (chunk: Uint8Array) => {
+				// 		chunks.push(chunk);
+				// 	});
 
-					response.data.on('error', (error) => {
-						reject(error);
-					});
-				});
+				// 	response.data.on('end', () => {
+				// 		resolve(Buffer.concat(chunks));
+				// 	});
+
+				// 	response.data.on('error', (error) => {
+				// 		reject(error);
+				// 	});
+				// });
 
 				this.logger.warning({
 					getLogMessage() {
