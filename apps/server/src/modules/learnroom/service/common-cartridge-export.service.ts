@@ -294,9 +294,9 @@ export class CommonCartridgeExportService {
 	private async downloadFile(fileRecord: FileDto): Promise<AxiosResponse<Buffer>> {
 		const token = extractJwtFromRequest(this.req);
 		const url = new URL(
-			`${this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL')}/file/download/${fileRecord.id}/${
-				fileRecord.name
-			}`
+			`${this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL')}/api/v3/file/download/${
+				fileRecord.id
+			}/${fileRecord.name}`
 		);
 		const response: AxiosResponse<Buffer> = await axios.request({
 			method: 'GET',
