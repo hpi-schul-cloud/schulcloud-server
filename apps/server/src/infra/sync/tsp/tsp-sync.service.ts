@@ -123,6 +123,7 @@ export class TspSyncService {
 		// TODO: look at current db entries and check if the newly created ones look similar. If any things change, make sure its consistent with all code and migrate
 		// TODO: filestorage provider seems to be missing, maybe also others? schoolModule should probably handle that...
 		// TODO: what about permissions? anyway, compare freshly created db entries for old and new sync :)
+		// The three todos above are done with ticket EW-1052
 
 		const school = SchoolFactory.build({
 			externalId: identifier,
