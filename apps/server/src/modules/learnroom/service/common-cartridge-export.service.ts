@@ -241,7 +241,8 @@ export class CommonCartridgeExportService {
 					},
 				});
 
-				const file = response.data;
+				const file =
+					typeof response.data === 'object' ? Buffer.from(JSON.stringify(response.data)) : Buffer.from(response.data);
 
 				// const file: Buffer = await new Promise((resolve, reject) => {
 				// 	response.data.on('data', (chunk: Uint8Array) => {
