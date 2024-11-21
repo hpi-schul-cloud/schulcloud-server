@@ -4,9 +4,13 @@ import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { Consent } from '@shared/domain/domainobject/consent';
+import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
+import { UserConsent } from '@shared/domain/domainobject/user-consent';
 import { RoleName } from '@shared/domain/interface';
 import { School, SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
+import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
 
@@ -137,6 +141,9 @@ export class TspProvisioningService {
 			birthday: externalUser.birthday,
 			externalId: externalUser.externalId,
 		});
+
+		this.createTspConsent(newUser);
+
 		const savedUser = await this.userService.save(newUser);
 
 		return savedUser;
@@ -178,5 +185,31 @@ export class TspProvisioningService {
 		const email = `${externalId}@${this.TSP_EMAIL_DOMAIN}`;
 
 		return email.toLowerCase();
+	}
+
+	private createTspConsent(user: UserDO) {
+		const userConsent = new UserConsent({
+			form: 'digital',
+			privacyConsent: true,
+			termsOfUseConsent: true,
+			dateOfPrivacyConsent: new Date(),
+			dateOfTermsOfUseConsent: new Date(),
+		});
+
+		const parentConsent = new ParentConsent({
+			id: new ObjectId().toString(),
+			form: 'digital',
+			privacyConsent: true,
+			termsOfUseConsent: true,
+			dateOfPrivacyConsent: new Date(),
+			dateOfTermsOfUseConsent: new Date(),
+		});
+
+		const consent = new Consent({
+			userConsent,
+			parentConsent: [parentConsent],
+		});
+
+		user.consent = consent;
 	}
 }
