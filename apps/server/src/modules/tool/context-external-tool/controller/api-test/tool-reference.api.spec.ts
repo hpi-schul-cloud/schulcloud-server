@@ -188,6 +188,7 @@ describe('ToolReferenceController (API)', () => {
 							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
 								thumbnailFileRecord.name
 							)}`,
+							isLtiDeepLinkingTool: false,
 						},
 					],
 				});
@@ -335,6 +336,7 @@ describe('ToolReferenceController (API)', () => {
 					thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
 						thumbnailFileRecord.name
 					)}`,
+					isLtiDeepLinkingTool: false,
 				});
 			});
 		});
