@@ -172,8 +172,8 @@ export class CommonCartridgeExportMapper {
 		const title = sanitizeHtml(text, {
 			allowedTags: [],
 			allowedAttributes: {},
-		}).slice(0, 50);
+		}).slice(0, 20);
 
-		return title;
+		return `${title}...`;
 	}
 }
