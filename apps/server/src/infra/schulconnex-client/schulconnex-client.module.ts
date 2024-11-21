@@ -28,6 +28,7 @@ export class SchulconnexClientModule {
 							clientId: configService.get<string>('SCHULCONNEX_CLIENT__CLIENT_ID'),
 							clientSecret: configService.get<string>('SCHULCONNEX_CLIENT__CLIENT_SECRET'),
 							personenInfoTimeoutInMs: configService.get<number>('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'),
+							policiesInfoTimeoutInMs: configService.get<number>('SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'),
 						};
 						return new SchulconnexRestClient(options, httpService, oauthAdapterService, logger);
 					},

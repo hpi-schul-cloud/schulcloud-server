@@ -10,7 +10,7 @@ import { BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
 
-describe(`board lookup (api)`, () => {
+describe(`board lookup in course (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;

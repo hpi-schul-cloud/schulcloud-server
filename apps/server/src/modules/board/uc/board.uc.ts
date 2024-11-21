@@ -5,8 +5,9 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { RoomMemberService } from '@src/modules/room-member';
 import { CreateBoardBodyParams } from '../controller/dto';
-import { BoardExternalReference, BoardNodeFactory, Column, ColumnBoard } from '../domain';
+import { BoardExternalReference, BoardExternalReferenceType, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 
 @Injectable()
@@ -15,6 +16,7 @@ export class BoardUc {
 		@Inject(forwardRef(() => AuthorizationService)) // TODO is this needed?
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardPermissionService: BoardNodePermissionService,
+		private readonly roomMemberService: RoomMemberService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
@@ -27,13 +29,7 @@ export class BoardUc {
 	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'createBoard', userId, title: params.title });
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findById(params.parentId);
-
-		this.authorizationService.checkPermission(user, course, {
-			action: Action.write,
-			requiredPermissions: [Permission.COURSE_EDIT],
-		});
+		await this.checkParentWritePermission(userId, { type: params.parentType, id: params.parentId });
 
 		const board = this.boardNodeFactory.buildColumnBoard({
 			context: { type: params.parentType, id: params.parentId },
@@ -146,5 +142,27 @@ export class BoardUc {
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
 		return board;
+	}
+
+	private async checkParentWritePermission(userId: EntityId, context: BoardExternalReference) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		if (context.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(context.id);
+
+			this.authorizationService.checkPermission(user, course, {
+				action: Action.write,
+				requiredPermissions: [Permission.COURSE_EDIT],
+			});
+		} else if (context.type === BoardExternalReferenceType.Room) {
+			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(context.id);
+
+			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+		} else {
+			throw new Error(`Unsupported context type ${context.type as string}`);
+		}
 	}
 }

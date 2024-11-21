@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { RoleUc } from '@modules/role/uc/role.uc';
@@ -31,7 +32,7 @@ describe('RoleUc', () => {
 
 	beforeEach(() => {
 		roleDto = new RoleDto({
-			id: '',
+			id: new ObjectId().toHexString(),
 			name: RoleName.STUDENT,
 			permissions: [],
 		});
