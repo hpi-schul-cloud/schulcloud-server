@@ -1,4 +1,3 @@
-import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { RoomColor } from '../type';
