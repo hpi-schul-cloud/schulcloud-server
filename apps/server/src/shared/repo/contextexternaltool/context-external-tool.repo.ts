@@ -147,7 +147,12 @@ export class ContextExternalToolRepo {
 					mediaType: ltiDeepLinkEntity.mediaType,
 					url: ltiDeepLinkEntity.url,
 					title: ltiDeepLinkEntity.title,
+					text: ltiDeepLinkEntity.text,
 					parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(ltiDeepLinkEntity.parameters),
+					availableFrom: ltiDeepLinkEntity.availableFrom,
+					availableUntil: ltiDeepLinkEntity.availableUntil,
+					submissionFrom: ltiDeepLinkEntity.submissionFrom,
+					submissionUntil: ltiDeepLinkEntity.submissionUntil,
 			  })
 			: undefined;
 
@@ -169,7 +174,12 @@ export class ContextExternalToolRepo {
 					mediaType: ltiDeepLink.mediaType,
 					url: ltiDeepLink.url,
 					title: ltiDeepLink.title,
+					text: ltiDeepLink.text,
 					parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(ltiDeepLink.parameters),
+					availableFrom: ltiDeepLink.availableFrom,
+					availableUntil: ltiDeepLink.availableUntil,
+					submissionFrom: ltiDeepLink.submissionFrom,
+					submissionUntil: ltiDeepLink.submissionUntil,
 			  })
 			: undefined;
 

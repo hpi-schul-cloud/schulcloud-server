@@ -12,5 +12,6 @@ export class Lti11DeepLinkContentItemListParams {
 	@ArrayMaxSize(1)
 	@ValidateNested({ each: true })
 	@Type(() => Lti11DeepLinkContentItemParams)
+	@ApiProperty()
 	'@graph'!: Lti11DeepLinkContentItemParams[];
 }

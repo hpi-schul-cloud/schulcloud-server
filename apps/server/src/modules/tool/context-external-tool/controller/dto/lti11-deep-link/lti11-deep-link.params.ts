@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { StringToObject } from '@shared/controller/transformer';
+import { StringToObject } from '@shared/controller';
 import { Type } from 'class-transformer';
-import { Equals, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Equals, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Lti11DeepLinkContentItemListParams } from './lti11-deep-link-content-item-list.params';
 
 export class Lti11DeepLinkParams {
@@ -13,9 +13,10 @@ export class Lti11DeepLinkParams {
 	@ApiProperty()
 	lti_version!: string;
 
-	@StringToObject(Lti11DeepLinkContentItemListParams)
 	@IsOptional()
+	@IsObject()
 	@ValidateNested()
+	@StringToObject(Lti11DeepLinkContentItemListParams)
 	@Type(() => Lti11DeepLinkContentItemListParams)
 	@ApiPropertyOptional()
 	content_items?: Lti11DeepLinkContentItemListParams;

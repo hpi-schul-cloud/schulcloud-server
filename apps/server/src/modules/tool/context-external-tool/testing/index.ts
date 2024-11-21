@@ -4,3 +4,4 @@ export { contextExternalToolConfigurationStatusResponseFactory } from './context
 export { ltiDeepLinkFactory } from './lti-deep-link.factory';
 export { ltiDeepLinkTokenFactory } from './lti-deep-link-token.factory';
 export { ltiDeepLinkTokenEntityFactory } from './lti-deep-link-token-entity.factory';
+export { Lti11DeepLinkParamsFactory } from './lti11-deep-link-params.factory';

@@ -30,8 +30,12 @@ import {
 } from '../domain';
 import { ContextExternalToolService, LtiDeepLinkingService, LtiDeepLinkTokenService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
-import { contextExternalToolFactory, ltiDeepLinkFactory, ltiDeepLinkTokenFactory } from '../testing';
-import { lti11DeepLinkParamsFactory } from '../testing/lti11-deep-link-params.factory';
+import {
+	contextExternalToolFactory,
+	Lti11DeepLinkParamsFactory,
+	ltiDeepLinkFactory,
+	ltiDeepLinkTokenFactory,
+} from '../testing';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 
 describe(ContextExternalToolUc.name, () => {
@@ -866,13 +870,17 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when deep linking a content', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const payload = lti11DeepLinkParamsFactory.build();
-				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
-				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const key = 'key';
 				const secret = 'secret';
+				const payload = new Lti11DeepLinkParamsFactory().build();
+				const ltiDeepLink = ltiDeepLinkFactory.build();
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
 				const externalTool = externalToolFactory
-					.withLti11Config({ key, secret, lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST })
+					.withLti11Config({
+						key,
+						secret,
+						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+					})
 					.build();
 				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
 				const contextExternalTool = contextExternalToolFactory.build({
@@ -936,7 +944,7 @@ describe(ContextExternalToolUc.name, () => {
 
 		describe('when no content was linked', () => {
 			const setup = () => {
-				const payload = lti11DeepLinkParamsFactory.build();
+				const payload = new Lti11DeepLinkParamsFactory().build();
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ state: payload.data });
 				const contextExternalTool = contextExternalToolFactory.build();
 
@@ -959,7 +967,7 @@ describe(ContextExternalToolUc.name, () => {
 
 		describe('when deep linking a content', () => {
 			const setup = () => {
-				const payload = lti11DeepLinkParamsFactory.build();
+				const payload = new Lti11DeepLinkParamsFactory().build();
 				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const contextExternalTool = contextExternalToolFactory.build();
 
@@ -984,7 +992,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the external tool is not an lti 1.1 tool', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const payload = lti11DeepLinkParamsFactory.build();
+				const payload = new Lti11DeepLinkParamsFactory().build();
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
 				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const externalTool = externalToolFactory.withBasicConfig().build();
@@ -1017,7 +1025,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the oauth signature is invalid', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const payload = lti11DeepLinkParamsFactory.build();
+				const payload = new Lti11DeepLinkParamsFactory().build();
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
 				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const externalTool = externalToolFactory

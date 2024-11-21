@@ -1,8 +1,7 @@
-import { plainToClass, Transform, TransformFnParams } from 'class-transformer';
-import { ClassConstructor } from 'class-transformer/types/interfaces';
+import { ClassConstructor, plainToClass, Transform, TransformFnParams } from 'class-transformer';
 
 export function StringToObject(classType: ClassConstructor<unknown>): PropertyDecorator {
-	return Transform((params: TransformFnParams) => {
+	return Transform((params: TransformFnParams): unknown => {
 		if (typeof params.value === 'string') {
 			const res: unknown = JSON.parse(params.value);
 
@@ -11,7 +10,6 @@ export function StringToObject(classType: ClassConstructor<unknown>): PropertyDe
 			return obj;
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return params.value;
 	});
 }

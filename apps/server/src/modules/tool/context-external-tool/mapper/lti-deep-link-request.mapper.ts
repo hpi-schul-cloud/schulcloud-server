@@ -17,7 +17,12 @@ export class LtiDeepLinkRequestMapper {
 			? new LtiDeepLink({
 					mediaType: contentItem.mediaType,
 					title: contentItem.title,
+					text: contentItem.text,
 					parameters,
+					availableFrom: contentItem.available?.startDatetime,
+					availableUntil: contentItem.available?.endDatetime,
+					submissionFrom: contentItem.submission?.startDatetime,
+					submissionUntil: contentItem.submission?.endDatetime,
 			  })
 			: undefined;
 
