@@ -57,9 +57,10 @@ export class CourseSyncService {
 	}
 
 	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
-		const [studentRole, teacherRole] = await Promise.all([
+		const [studentRole, teacherRole, substituteTeacherRole] = await Promise.all([
 			this.roleService.findByName(RoleName.STUDENT),
 			this.roleService.findByName(RoleName.TEACHER),
+			this.roleService.findByName(RoleName.GROUPSUBSTITUTIONTEACHER),
 		]);
 
 		const studentIds = group.users
@@ -67,6 +68,10 @@ export class CourseSyncService {
 			.map((student) => student.userId);
 		const teacherIds = group.users
 			.filter((user: GroupUser) => user.roleId === teacherRole.id)
+			.map((teacher) => teacher.userId);
+
+		const substituteTeacherIds = group.users
+			.filter((user: GroupUser) => user.roleId === substituteTeacherRole.id)
 			.map((teacher) => teacher.userId);
 
 		for (const course of courses) {
@@ -79,7 +84,9 @@ export class CourseSyncService {
 			if (oldGroup?.name === course.name) {
 				course.name = group.name;
 			}
-
+			if (substituteTeacherIds) {
+				course.substitutionTeachers = substituteTeacherIds;
+			}
 			const excludedFromSync = new Set(course.excludeFromSync || []);
 
 			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
