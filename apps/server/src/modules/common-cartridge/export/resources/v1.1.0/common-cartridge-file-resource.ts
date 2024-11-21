@@ -51,7 +51,7 @@ export class CommonCartridgeFileResourceV110 extends CommonCartridgeResource {
 				identifier: createIdentifier(),
 				identifierref: this.props.identifier,
 			},
-			title: this.props.title ? this.props.title : this.props.fileName,
+			title: this.props.fileName,
 		};
 	}
 
