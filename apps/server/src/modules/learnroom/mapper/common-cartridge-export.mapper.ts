@@ -146,7 +146,7 @@ export class CommonCartridgeExportMapper {
 		return {
 			type: CommonCartridgeResourceType.FILE,
 			identifier: createIdentifier(element?.id),
-			title: element?.caption || file.fileRecord.name,
+			title: element?.caption ? element.caption : file.fileRecord.name,
 			fileName: file.fileRecord.name,
 			fileContent: file.file,
 		};

@@ -14,7 +14,7 @@ export type CommonCartridgeFileResourcePropsV130 = {
 	folder: string;
 	fileName: string;
 	fileContent: Buffer;
-	title?: string;
+	title: string;
 };
 
 export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
@@ -51,7 +51,7 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 				identifier: createIdentifier(),
 				identifierref: this.props.identifier,
 			},
-			title: this.props.fileName,
+			title: this.props.title,
 		};
 	}
 
