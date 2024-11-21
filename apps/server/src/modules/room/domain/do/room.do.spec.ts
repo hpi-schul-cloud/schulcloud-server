@@ -1,4 +1,3 @@
-import { ValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { roomFactory } from '../../testing';
 import { RoomColor } from '../type';
