@@ -1,6 +1,8 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ToolContextType } from '@modules/tool/common/enum';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { Injectable } from '@nestjs/common';
@@ -27,7 +29,8 @@ export class CourseCopyService {
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService
 	) {}
 
 	async copyCourse({
@@ -59,7 +62,28 @@ export class CourseCopyService {
 				await this.contextExternalToolService.findAllByContext(contextRef);
 
 			await Promise.all(
-				contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool> => {
+				contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool | null> => {
+					const schoolTool = await this.schoolExternalToolService.findById(tool.schoolToolRef.schoolToolId);
+
+					if (user.school.id !== schoolTool.schoolId) {
+						const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+							tool.schoolToolRef.schoolToolId
+						);
+
+						const correctSchoolExternalTools: SchoolExternalTool[] =
+							await this.schoolExternalToolService.findSchoolExternalTools({
+								toolId: schoolExternalTool.toolId,
+								schoolId: user.school.id,
+							});
+
+						if (correctSchoolExternalTools.length) {
+							tool.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
+							tool.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
+						} else {
+							return null;
+						}
+					}
+
 					const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
 						tool,
 						courseCopy.id

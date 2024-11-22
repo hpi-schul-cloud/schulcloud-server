@@ -7,6 +7,7 @@ import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -50,6 +51,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		forwardRef(() => BoardModule),
 		CopyHelperModule,
 		ContextExternalToolModule,
+		SchoolExternalToolModule,
 		LessonModule,
 		LoggerModule,
 		TaskModule,

@@ -1,7 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { Injectable } from '@nestjs/common';
@@ -14,6 +16,7 @@ import {
 	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
+	ContentElementType,
 	DeletedElement,
 	DrawingElement,
 	ExternalToolElement,
@@ -25,11 +28,13 @@ import {
 	MediaExternalToolElement,
 	MediaLine,
 	RichTextElement,
+	ROOT_PATH,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '../../domain';
 
 export interface CopyContext {
+	targetSchoolId: EntityId;
 	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]>;
 }
 
@@ -38,7 +43,8 @@ export class BoardNodeCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		private readonly schoolExternalToolService: SchoolExternalToolService
 	) {}
 
 	async copy(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus> {
@@ -283,9 +289,9 @@ export class BoardNodeCopyService {
 		return Promise.resolve(result);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async copyExternalToolElement(original: ExternalToolElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new ExternalToolElement({
+		let copy: ExternalToolElement | DeletedElement;
+		copy = new ExternalToolElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
@@ -295,10 +301,41 @@ export class BoardNodeCopyService {
 			const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
 
 			if (linkedTool) {
-				const contextExternalToolCopy: ContextExternalTool =
-					await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
+				const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+					linkedTool.schoolToolRef.schoolToolId
+				);
 
-				copy.contextExternalToolId = contextExternalToolCopy.id;
+				if (schoolExternalTool.schoolId !== context.targetSchoolId) {
+					const correctSchoolExternalTools: SchoolExternalTool[] =
+						await this.schoolExternalToolService.findSchoolExternalTools({
+							toolId: schoolExternalTool.toolId,
+							schoolId: context.targetSchoolId,
+						});
+
+					if (correctSchoolExternalTools.length) {
+						linkedTool.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
+						linkedTool.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
+					} else {
+						copy = new DeletedElement({
+							id: new ObjectId().toHexString(),
+							path: ROOT_PATH,
+							level: 0,
+							position: 0,
+							children: [],
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							deletedElementType: ContentElementType.EXTERNAL_TOOL,
+							title: linkedTool.displayName ?? (schoolExternalTool.name as string),
+						});
+					}
+				}
+
+				if (copy instanceof ExternalToolElement) {
+					const contextExternalToolCopy: ContextExternalTool =
+						await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
+
+					copy.contextExternalToolId = contextExternalToolCopy.id;
+				}
 
 				status = CopyStatusEnum.SUCCESS;
 			} else {
@@ -308,9 +345,12 @@ export class BoardNodeCopyService {
 			status = CopyStatusEnum.SUCCESS;
 		}
 
+		const copyElementType =
+			copy instanceof ExternalToolElement ? CopyElementType.EXTERNAL_TOOL_ELEMENT : CopyElementType.DELETED_ELEMENT;
+
 		const result: CopyStatus = {
 			copyEntity: copy,
-			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+			type: copyElementType,
 			status,
 		};
 
