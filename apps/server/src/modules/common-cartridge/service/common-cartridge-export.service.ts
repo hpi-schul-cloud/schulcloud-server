@@ -1,10 +1,10 @@
+import { FilesStorageRestClientAdapter, FilesStorageRestClientConfig } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { extractJwtFromRequest } from '@shared/common/utils/jwt';
 import { ErrorLogger } from '@src/core/logger';
-import { FilesStorageRestClientConfig } from '@src/infra/files-storage-client';
 import axios, { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
@@ -50,6 +50,7 @@ export class CommonCartridgeExportService {
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
+		private readonly filesStorageRestClientAdapter: FilesStorageRestClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly errorLogger: ErrorLogger,
 		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,
@@ -316,9 +317,11 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
 
 			for await (const fileRecord of fileRecords) {
-				const response = await this.downloadFile(fileRecord);
+				const file = await this.filesStorageRestClientAdapter.download(fileRecord.id, fileRecord.name);
 
-				files.push({ fileRecord, file: response.data });
+				if (file) {
+					files.push({ fileRecord, file });
+				}
 			}
 
 			return files;
