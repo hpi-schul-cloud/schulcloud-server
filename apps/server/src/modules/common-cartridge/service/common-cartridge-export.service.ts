@@ -41,25 +41,25 @@ export class CommonCartridgeExportService {
 		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 
-	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
+	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
 		return courseCommonCartridgeMetadata;
 	}
 
-	public async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
+	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
 		const courseRooms = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		return courseRooms;
 	}
 
-	public async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
+	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
 		const boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
 
 		return boardSkeleton;
 	}
 
-	public async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
+	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
 		const cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
 
 		return cards;
