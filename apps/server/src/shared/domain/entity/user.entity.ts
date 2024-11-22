@@ -1,5 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property, wrap } from '@mikro-orm/core';
+import {
+	Collection,
+	Embeddable,
+	Embedded,
+	Entity,
+	Index,
+	ManyToMany,
+	ManyToOne,
+	Property,
+	wrap,
+} from '@mikro-orm/core';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
@@ -16,6 +26,7 @@ export interface UserProperties {
 	lastName: string;
 	preferredName?: string;
 	school: SchoolEntity;
+	secondarySchools?: UserSchoolEntityProps[];
 	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
@@ -42,6 +53,27 @@ interface UserInfo {
 	lastName: string;
 	language?: LanguageType;
 	customAvatarBackgroundColor?: string;
+}
+
+export interface UserSchoolEntityProps {
+	school: SchoolEntity;
+
+	role: Role;
+}
+
+@Embeddable()
+export class UserSchoolEmbeddable {
+	@Index()
+	@ManyToOne(() => SchoolEntity)
+	school: SchoolEntity;
+
+	@ManyToOne(() => Role)
+	role: Role;
+
+	constructor(props: UserSchoolEntityProps) {
+		this.school = props.school;
+		this.role = props.role;
+	}
 }
 
 @Entity({ tableName: 'users' })
@@ -71,6 +103,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Index()
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	school: SchoolEntity;
+
+	@Embedded(() => UserSchoolEmbeddable, { array: true, nullable: true })
+	secondarySchools?: UserSchoolEmbeddable[];
 
 	@Property({ nullable: true })
 	@Index()
