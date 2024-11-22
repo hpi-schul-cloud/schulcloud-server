@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
@@ -97,7 +98,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			});
 			const minimalViableExternalUser: ExternalUserDto = new ExternalUserDto({ externalId: 'externalUserId' });
 			const userRole: RoleDto = new RoleDto({
-				id: 'roleId',
+				id: new ObjectId().toHexString(),
 				name: RoleName.USER,
 			});
 			const hash = 'hash';
