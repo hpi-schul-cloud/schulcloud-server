@@ -1,18 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account';
 import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory, schoolYearFactory, userDoFactory } from '@shared/testing';
-import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@src/modules/account/testing';
-import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
-import { SchoolProps } from '@src/modules/school/domain';
+import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
+import { FileStorageType, SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
-import { UserService } from '@modules/user';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
@@ -254,6 +254,7 @@ describe(TspSyncService.name, () => {
 						systemIds: [system.id],
 						federalState,
 						currentYear: schoolYear,
+						fileStorageType: FileStorageType.AWS_S3,
 					}) as Partial<SchoolProps>,
 				});
 			});
@@ -291,6 +292,7 @@ describe(TspSyncService.name, () => {
 						systemIds: [system.id],
 						federalState,
 						currentYear: schoolYear,
+						fileStorageType: FileStorageType.AWS_S3,
 					}) as Partial<SchoolProps>,
 				});
 				expect(federalStateService.findFederalStateByName).not.toHaveBeenCalled();
@@ -337,26 +339,29 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
-	describe('findAccountByTspUid', () => {
+	describe('findAccountByExternalId', () => {
 		describe('when account is found', () => {
 			const setup = () => {
-				const tspUid = faker.string.alpha();
+				const externalId = faker.string.alpha();
+				const systemId = faker.string.alpha();
+
 				const user = userDoFactory.build();
 				const account = accountDoFactory.build();
 
-				user.id = tspUid;
+				user.id = faker.string.alpha();
+				user.externalId = externalId;
 				account.userId = user.id;
 
-				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 1 });
+				userService.findByExternalId.mockResolvedValueOnce(user);
 				accountService.findByUserId.mockResolvedValueOnce(account);
 
-				return { tspUid, account };
+				return { externalId, systemId, account };
 			};
 
 			it('should return the account', async () => {
-				const { tspUid, account } = setup();
+				const { externalId, systemId, account } = setup();
 
-				const result = await sut.findAccountByTspUid(tspUid);
+				const result = await sut.findAccountByExternalId(externalId, systemId);
 
 				expect(result).toBe(account);
 			});
@@ -364,19 +369,19 @@ describe(TspSyncService.name, () => {
 
 		describe('when account is not found', () => {
 			const setup = () => {
-				const tspUid = faker.string.alpha();
-				const user = userDoFactory.build();
+				const externalId = faker.string.alpha();
+				const systemId = faker.string.alpha();
 
-				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 0 });
+				userService.findByExternalId.mockResolvedValueOnce(null);
 				accountService.findByUserId.mockResolvedValueOnce(null);
 
-				return { tspUid };
+				return { externalId, systemId };
 			};
 
 			it('should return null', async () => {
-				const { tspUid } = setup();
+				const { externalId, systemId } = setup();
 
-				const result = await sut.findAccountByTspUid(tspUid);
+				const result = await sut.findAccountByExternalId(externalId, systemId);
 
 				expect(result).toBeNull();
 			});

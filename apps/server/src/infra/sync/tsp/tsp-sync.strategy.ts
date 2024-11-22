@@ -24,6 +24,7 @@ import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
+import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspFetchService } from './tsp-fetch.service';
 
 @Injectable()
@@ -45,6 +46,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspSyncService: TspSyncService,
 		private readonly tspFetchService: TspFetchService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
+		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		configService: ConfigService<TspSyncConfig, true>,
 		private readonly provisioningService: ProvisioningService
 	) {
@@ -67,6 +69,8 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	public async sync(): Promise<void> {
 		const system = await this.tspSyncService.findTspSystemOrFail();
+
+		await this.tspLegacyMigrationService.migrateLegacyData(system.id);
 
 		await this.syncSchools(system);
 
@@ -206,7 +210,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const newEmail = newEmailAndUsername;
 		const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
 
-		const account = await this.tspSyncService.findAccountByTspUid(oldUid);
+		const account = await this.tspSyncService.findAccountByExternalId(newUid, systemId);
 
 		if (!account) {
 			throw new NotFoundLoggableException(Account.name, { oldUid });
