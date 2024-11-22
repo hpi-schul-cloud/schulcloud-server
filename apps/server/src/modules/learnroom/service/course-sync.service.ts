@@ -72,7 +72,7 @@ export class CourseSyncService {
 
 		const substituteTeacherIds = group.users
 			.filter((user: GroupUser) => user.roleId === substituteTeacherRole.id)
-			.map((teacher) => teacher.userId);
+			.map((substituteTeacher) => substituteTeacher.userId);
 
 		for (const course of courses) {
 			course.syncedWithGroup = group.id;
@@ -80,13 +80,12 @@ export class CourseSyncService {
 			course.untilDate = group.validPeriod?.until;
 			course.classes = [];
 			course.groups = [];
+			course.substitutionTeachers = substituteTeacherIds;
 
 			if (oldGroup?.name === course.name) {
 				course.name = group.name;
 			}
-			if (substituteTeacherIds) {
-				course.substitutionTeachers = substituteTeacherIds;
-			}
+
 			const excludedFromSync = new Set(course.excludeFromSync || []);
 
 			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
