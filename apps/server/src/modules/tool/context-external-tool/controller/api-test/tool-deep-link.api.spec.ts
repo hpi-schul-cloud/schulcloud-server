@@ -6,12 +6,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolType } from '../../entity';
+import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../entity';
 import {
 	contextExternalToolEntityFactory,
 	Lti11DeepLinkParamsFactory,
 	ltiDeepLinkTokenEntityFactory,
 } from '../../testing';
+import { Lti11DeepLinkContentItemParams } from '../dto';
 
 describe('ToolDeepLinkController (API)', () => {
 	let app: INestApplication;
@@ -88,14 +89,17 @@ describe('ToolDeepLinkController (API)', () => {
 				]);
 				em.clear();
 
+				const targetContent = lti11DeepLinkParams.content_items?.['@graph'][0] as Lti11DeepLinkContentItemParams;
+
 				return {
 					postParams,
 					contextExternalTool,
+					targetContent,
 				};
 			};
 
 			it('should create a lti deep link with the context external tool', async () => {
-				const { postParams, contextExternalTool } = await setup();
+				const { postParams, contextExternalTool, targetContent } = await setup();
 
 				const response = await testApiClient
 					.post(`/${contextExternalTool.id}/lti11-deep-link-callback`)
@@ -105,6 +109,23 @@ describe('ToolDeepLinkController (API)', () => {
 				expect(response.text).toEqual(
 					'<!DOCTYPE html><head><title>Window can be closed</title><script>window.close();</script></head><body><span>This window can be closed</span></body>'
 				);
+				const dbContextExternalTool = await em.findOneOrFail(ContextExternalToolEntity, contextExternalTool.id);
+				expect(dbContextExternalTool.ltiDeepLink).toMatchObject<LtiDeepLinkEmbeddable>({
+					mediaType: targetContent.mediaType,
+					title: targetContent.title,
+					url: targetContent.url,
+					text: targetContent.text,
+					parameters: [
+						{
+							name: 'dl_param',
+							value: targetContent.custom?.dl_param,
+						},
+					],
+					availableFrom: targetContent.available?.startDatetime,
+					availableUntil: targetContent.available?.endDatetime,
+					submissionFrom: targetContent.submission?.startDatetime,
+					submissionUntil: targetContent.submission?.endDatetime,
+				});
 			});
 		});
 	});
