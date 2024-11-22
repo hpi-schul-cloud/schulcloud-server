@@ -2,14 +2,17 @@ import { HttpService } from '@nestjs/axios';
 // import { Logger } from '@src/core/logger';
 import { firstValueFrom } from 'rxjs';
 // import { JwtExtractorService } from '@infra/jwt-extractor';
-import { Injectable } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MetaTagExtractorResponse } from '@modules/meta-tag-extractor/controller/dto';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MetaTagExtractorAdapterService {
 	constructor(private readonly httpService: HttpService) {}
 
 	async getMetaData(linkUrl: URL): Promise<MetaTagExtractorResponse> {
+		const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const metaTagExtractorUrl = `${publicBackendUrl}/v3/meta-tag-extractor`;
 		try {
 			const conf = {
 				headers: {
@@ -19,7 +22,7 @@ export class MetaTagExtractorAdapterService {
 				},
 			}; // TODO: decide if timeout should be configured
 			const request = this.httpService.post<MetaTagExtractorResponse>(
-				'http://localhost:4000/api/v3/meta-tag-extractor', // TODO
+				metaTagExtractorUrl,
 				{ url: linkUrl.toString() },
 				conf
 			);
