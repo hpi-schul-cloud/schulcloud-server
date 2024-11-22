@@ -2,6 +2,7 @@ import { CollaborativeTextEditorModule } from '@modules/collaborative-text-edito
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
+import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -41,6 +42,7 @@ import {
 		LoggerModule,
 		UserModule,
 		ContextExternalToolModule,
+		SchoolExternalToolModule,
 		HttpModule,
 		TldrawClientModule,
 		CqrsModule,

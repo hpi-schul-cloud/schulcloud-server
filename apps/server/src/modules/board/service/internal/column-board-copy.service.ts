@@ -44,6 +44,7 @@ export class ColumnBoardCopyService {
 			targetStorageLocation: StorageLocation.SCHOOL,
 			userId: props.userId,
 			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
+			targetSchoolId: user.schoolId,
 		});
 
 		const copyStatus = await this.boardNodeCopyService.copy(originalBoard, copyContext);
