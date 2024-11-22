@@ -21,12 +21,12 @@ export const lti11DeepLinkParamsPayloadFactory = Factory.define<Lti11DeepLinkPar
 					text: 'descriptive text',
 					url: 'https://lti.deep.link',
 					available: {
-						startDatetime: new Date(),
-						endDatetime: new Date(),
+						startDatetime: new Date('2024-01'),
+						endDatetime: new Date('2024-02'),
 					},
 					submission: {
-						startDatetime: new Date(),
-						endDatetime: new Date(),
+						startDatetime: new Date('2024-01'),
+						endDatetime: new Date('2024-02'),
 					},
 					custom: {
 						dl_param: 'dl_value',
@@ -38,11 +38,23 @@ export const lti11DeepLinkParamsPayloadFactory = Factory.define<Lti11DeepLinkPar
 });
 
 export class Lti11DeepLinkParamsFactory {
+	private readonly consumer: OAuth;
+
 	constructor(
 		private readonly url: string = 'https://default.deep-link.url/callback',
 		private readonly key: string = 'defaultKey',
 		private readonly secret: string = 'defaultSecret'
-	) {}
+	) {
+		this.consumer = new OAuth({
+			consumer: {
+				key: this.key,
+				secret: this.secret,
+			},
+			signature_method: 'HMAC-SHA1',
+			hash_function: (base_string: string, hashKey: string) =>
+				CryptoJS.HmacSHA1(base_string, hashKey).toString(CryptoJS.enc.Base64),
+		});
+	}
 
 	build(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParams {
 		const payload: Lti11DeepLinkParamsPayload = lti11DeepLinkParamsPayloadFactory.build(params);
@@ -53,18 +65,22 @@ export class Lti11DeepLinkParamsFactory {
 			data: payload,
 		};
 
-		const consumer: OAuth = new OAuth({
-			consumer: {
-				key: this.key,
-				secret: this.secret,
-			},
-			signature_method: 'HMAC-SHA1',
-			hash_function: (base_string: string, hashKey: string) =>
-				CryptoJS.HmacSHA1(base_string, hashKey).toString(CryptoJS.enc.Base64),
-		});
-
-		const authorization: Authorization = consumer.authorize(requestData);
+		const authorization: Authorization = this.consumer.authorize(requestData);
 
 		return authorization as Lti11DeepLinkParams;
+	}
+
+	buildWithStringContent(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Authorization {
+		const payload: Lti11DeepLinkParamsPayload = lti11DeepLinkParamsPayloadFactory.build(params);
+
+		const requestData: RequestOptions = {
+			url: this.url,
+			method: 'POST',
+			data: { ...payload, content_items: JSON.stringify(payload.content_items) },
+		};
+
+		const authorization: Authorization = this.consumer.authorize(requestData);
+
+		return authorization;
 	}
 }

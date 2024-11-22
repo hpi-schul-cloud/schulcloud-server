@@ -193,7 +193,7 @@ export class ContextExternalToolUc {
 		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 	}
 
-	private async checkOauthSignature(contextExternalTool: ContextExternalTool, payload: Authorization) {
+	private async checkOauthSignature(contextExternalTool: ContextExternalTool, payload: Authorization): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);

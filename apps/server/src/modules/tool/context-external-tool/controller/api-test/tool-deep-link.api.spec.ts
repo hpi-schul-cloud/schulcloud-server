@@ -66,17 +66,10 @@ describe('ToolDeepLinkController (API)', () => {
 
 				const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const callbackUrl = `${publicBackendUrl}/v3${basePath}/${contextExternalTool.id}/lti11-deep-link-callback`;
-				const lti11DeepLinkParams = new Lti11DeepLinkParamsFactory(
-					callbackUrl,
-					lti11Config.key,
-					lti11Config.secret
-				).build({
+				const requestFactory = new Lti11DeepLinkParamsFactory(callbackUrl, lti11Config.key, lti11Config.secret);
+				const postParams = requestFactory.buildWithStringContent({
 					data: ltiDeepLinkToken.state,
 				});
-				const postParams = {
-					...lti11DeepLinkParams,
-					content_items: JSON.stringify(lti11DeepLinkParams.content_items),
-				};
 
 				await em.persistAndFlush([
 					teacherAccount,
@@ -89,7 +82,9 @@ describe('ToolDeepLinkController (API)', () => {
 				]);
 				em.clear();
 
-				const targetContent = lti11DeepLinkParams.content_items?.['@graph'][0] as Lti11DeepLinkContentItemParams;
+				const targetContent = requestFactory.build({
+					data: ltiDeepLinkToken.state,
+				}).content_items?.['@graph'][0] as Lti11DeepLinkContentItemParams;
 
 				return {
 					postParams,

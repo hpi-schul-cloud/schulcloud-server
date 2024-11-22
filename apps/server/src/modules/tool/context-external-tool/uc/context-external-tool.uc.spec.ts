@@ -14,6 +14,7 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities, userFactory } from '@shared/testing';
+import { UUID } from 'bson';
 import { LtiMessageType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
@@ -872,9 +873,12 @@ describe(ContextExternalToolUc.name, () => {
 				const user = userFactory.buildWithId();
 				const key = 'key';
 				const secret = 'secret';
-				const payload = new Lti11DeepLinkParamsFactory().build();
+				const state = new UUID().toString();
+				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+					data: state,
+				});
 				const ltiDeepLink = ltiDeepLinkFactory.build();
-				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state });
 				const externalTool = externalToolFactory
 					.withLti11Config({
 						key,
@@ -908,23 +912,24 @@ describe(ContextExternalToolUc.name, () => {
 					user,
 					key,
 					secret,
+					state,
 					callbackUrl,
 					linkedContextExternalTool,
 				};
 			};
 
 			it('should check the oauth signature', async () => {
-				const { contextExternalTool, payload, ltiDeepLink, key, secret, callbackUrl } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, key, secret, state, callbackUrl } = setup();
 
-				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink);
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink);
 
 				expect(lti11EncryptionService.verify).toHaveBeenCalledWith(key, secret, callbackUrl, payload);
 			});
 
 			it('should check the user permission', async () => {
-				const { contextExternalTool, payload, ltiDeepLink, user } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, state, user } = setup();
 
-				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink);
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink);
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					user,
@@ -934,9 +939,9 @@ describe(ContextExternalToolUc.name, () => {
 			});
 
 			it('should should save the linked tool', async () => {
-				const { contextExternalTool, payload, ltiDeepLink, linkedContextExternalTool } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, state, linkedContextExternalTool } = setup();
 
-				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink);
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink);
 
 				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(linkedContextExternalTool);
 			});
@@ -944,8 +949,9 @@ describe(ContextExternalToolUc.name, () => {
 
 		describe('when no content was linked', () => {
 			const setup = () => {
-				const payload = new Lti11DeepLinkParamsFactory().build();
-				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ state: payload.data });
+				const state = new UUID().toString();
+				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({ data: state });
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ state });
 				const contextExternalTool = contextExternalToolFactory.build();
 
 				ltiDeepLinkTokenService.findByState.mockResolvedValueOnce(ltiDeepLinkToken);
@@ -953,13 +959,14 @@ describe(ContextExternalToolUc.name, () => {
 				return {
 					contextExternalTool,
 					payload,
+					state,
 				};
 			};
 
 			it('should do nothing', async () => {
-				const { contextExternalTool, payload } = setup();
+				const { contextExternalTool, payload, state } = setup();
 
-				await uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data);
+				await uc.updateLtiDeepLink(contextExternalTool.id, payload, state);
 
 				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
 			});
@@ -967,7 +974,10 @@ describe(ContextExternalToolUc.name, () => {
 
 		describe('when deep linking a content', () => {
 			const setup = () => {
-				const payload = new Lti11DeepLinkParamsFactory().build();
+				const state = new UUID().toString();
+				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+					data: state,
+				});
 				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const contextExternalTool = contextExternalToolFactory.build();
 
@@ -977,13 +987,14 @@ describe(ContextExternalToolUc.name, () => {
 					contextExternalTool,
 					payload,
 					ltiDeepLink,
+					state,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { contextExternalTool, payload, ltiDeepLink } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, state } = setup();
 
-				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink)).rejects.toThrow(
+				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink)).rejects.toThrow(
 					LtiDeepLinkTokenMissingLoggableException
 				);
 			});
@@ -992,8 +1003,11 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the external tool is not an lti 1.1 tool', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const payload = new Lti11DeepLinkParamsFactory().build();
-				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
+				const state = new UUID().toString();
+				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+					data: state,
+				});
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state });
 				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const externalTool = externalToolFactory.withBasicConfig().build();
 				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
@@ -1010,13 +1024,14 @@ describe(ContextExternalToolUc.name, () => {
 					contextExternalTool,
 					ltiDeepLink,
 					payload,
+					state,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { contextExternalTool, payload, ltiDeepLink } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, state } = setup();
 
-				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink)).rejects.toThrow(
+				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink)).rejects.toThrow(
 					InvalidToolTypeLoggableException
 				);
 			});
@@ -1025,8 +1040,11 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the oauth signature is invalid', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const payload = new Lti11DeepLinkParamsFactory().build();
-				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state: payload.data });
+				const state = new UUID().toString();
+				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+					data: state,
+				});
+				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state });
 				const ltiDeepLink = ltiDeepLinkFactory.build();
 				const externalTool = externalToolFactory
 					.withLti11Config({ lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST })
@@ -1048,13 +1066,14 @@ describe(ContextExternalToolUc.name, () => {
 					contextExternalTool,
 					ltiDeepLink,
 					payload,
+					state,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { contextExternalTool, payload, ltiDeepLink } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, state } = setup();
 
-				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, payload.data, ltiDeepLink)).rejects.toThrow(
+				await expect(uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink)).rejects.toThrow(
 					InvalidOauthSignatureLoggableException
 				);
 			});
