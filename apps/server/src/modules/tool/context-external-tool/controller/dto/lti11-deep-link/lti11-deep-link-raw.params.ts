@@ -43,4 +43,9 @@ export class Lti11DeepLinkParamsRaw implements Authorization {
 	@IsString()
 	@ApiProperty()
 	oauth_signature!: string;
+
+	@IsOptional()
+	@IsString()
+	@ApiPropertyOptional()
+	oauth_callback?: string;
 }

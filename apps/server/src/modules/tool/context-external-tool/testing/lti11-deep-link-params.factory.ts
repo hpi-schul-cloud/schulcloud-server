@@ -35,6 +35,7 @@ export const lti11DeepLinkParamsPayloadFactory = Factory.define<Lti11DeepLinkPar
 				},
 			],
 		},
+		oauth_callback: 'about:blank',
 	};
 });
 

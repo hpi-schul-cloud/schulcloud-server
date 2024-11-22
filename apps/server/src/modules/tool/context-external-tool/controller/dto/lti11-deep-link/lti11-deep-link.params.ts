@@ -48,4 +48,9 @@ export class Lti11DeepLinkParams {
 	@IsString()
 	@ApiProperty()
 	oauth_signature!: string;
+
+	@IsOptional()
+	@IsString()
+	@ApiPropertyOptional()
+	oauth_callback?: string;
 }
