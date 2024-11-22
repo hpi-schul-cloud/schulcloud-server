@@ -6,10 +6,7 @@ import { StrategyType } from '../interface';
 import { MetaTagExtractorXApiKeyAuthGuardConfig } from '../config';
 
 @Injectable()
-export class MetaTagExtractorXApiKeyStrategy extends PassportStrategy(
-	Strategy,
-	StrategyType.METATAG_EXTRACTOR_API_KEY
-) {
+export class MetaTagExtractorXApiKeyStrategy extends PassportStrategy(Strategy, StrategyType.API_KEY) {
 	private readonly allowedApiKeys: string[];
 
 	constructor(private readonly configService: ConfigService<MetaTagExtractorXApiKeyAuthGuardConfig, true>) {

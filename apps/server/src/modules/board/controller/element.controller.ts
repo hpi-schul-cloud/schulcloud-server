@@ -74,7 +74,7 @@ export class ElementController {
 		DrawingElementContentBody
 	)
 	@ApiResponse({
-		status: 201,
+		status: 200,
 		schema: {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
