@@ -2,6 +2,8 @@ export { JwtValidationAdapter } from './adapter';
 export { AuthGuardModule, AuthGuardOptions } from './auth-guard.module';
 export { JwtAuthGuardConfig, MetaTagExtractorXApiKeyAuthGuardConfig, XApiKeyAuthGuardConfig } from './config';
 export {
+	CurrentUser,
+	JWT,
 	JwtAuthentication,
 	WsJwtAuthentication,
 	XApiKeyAuthentication,
