@@ -12,7 +12,7 @@ data:
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
     git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm install
+    npm ci
     until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
@@ -519,43 +519,51 @@ data:
     # ========== Start of the CTL seed data configuration section.
     echo "Inserting ctl seed data secrets to external-tools..."
 
+    if [ -n "$CTL_SEED_SECRET_ONLINE_DIA_MATHE" ]; then
          # Encrypt secrets of external tools that contain an lti11 config.
-                CTL_SEED_SECRET_ONLINE_DIA_MATHE=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_MATHE)
-                CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH)
-
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-           {
-             "name": "Product Test Onlinediagnose Grundschule - Mathematik",
-           },
-           { $set: {
-             "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_MATHE'",
-           } },
-           {
-             "upsert": true
-           }
-       );'
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-           {
-             "name": "Product Test Onlinediagnose Grundschule - Deutsch",
-           },
-           { $set: {
-             "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'",
-           } },
-           {
-             "upsert": true
-           }
-       );'
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-           {
-             "name": "Merlin Bibliothek",
-           },
-           { $set: {
-             "config_secret": "'$CTL_SEED_SECRET_MERLIN'",
-           } },
-           {
-             "upsert": true
-           }
-       );'
+         CTL_SEED_SECRET_ONLINE_DIA_MATHE=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_MATHE)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+                {
+                  "name": "Product Test Onlinediagnose Grundschule - Mathematik",
+                },
+                { $set: {
+                  "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_MATHE'",
+                } },
+                {
+                  "upsert": true
+                }
+            );'
+    fi
+    if [ -n "$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH" ]; then
+         # Encrypt secrets of external tools that contain an lti11 config.
+         CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+                {
+                  "name": "Product Test Onlinediagnose Grundschule - Deutsch",
+                },
+                { $set: {
+                  "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'",
+                } },
+                {
+                  "upsert": true
+                }
+            );'
+    fi
+    if [ -n "$CTL_SEED_SECRET_MERLIN" ]; then
+         # Encrypt secrets of external tools that contain an lti11 config.
+         CTL_SEED_SECRET_MERLIN=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_MERLIN)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+                {
+                  "name": "Merlin Bibliothek",
+                },
+                { $set: {
+                  "config_secret": "'$CTL_SEED_SECRET_MERLIN'",
+                } },
+                {
+                  "upsert": true
+                }
+            );'
+    fi
     echo "Inserted ctl seed data secrets to external-tools."
 
     # ========== End of the CTL seed data configuration section.

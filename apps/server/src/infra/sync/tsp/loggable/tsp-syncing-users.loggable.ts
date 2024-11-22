@@ -3,7 +3,7 @@ import { Loggable, LogMessage } from '@src/core/logger';
 export class TspSyncingUsersLoggable implements Loggable {
 	constructor(private readonly syncingUsers: number) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		const message: LogMessage = {
 			message: `Syncing ${this.syncingUsers} users from TSP.`,
 			data: {
