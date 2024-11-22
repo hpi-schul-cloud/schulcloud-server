@@ -1,4 +1,3 @@
-import { FilesStorageRestClientModule } from '@infra/files-storage-client';
 import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -7,7 +6,7 @@ import { LessonModule } from '@modules/lesson';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
-import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { ContextExternalToolModule } from '@modules/tool';
 import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -18,19 +17,15 @@ import {
 	DashboardModelMapper,
 	DashboardRepo,
 	LegacyBoardRepo,
-	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardNodeRepo } from '../board/repo';
-import { FilesStorageClientModule } from '../files-storage-client';
 import { COURSE_REPO } from './domain';
-import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import { ColumnBoardNodeRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
-	CommonCartridgeExportService,
 	CommonCartridgeImportService,
 	CourseCopyService,
 	CourseDoService,
@@ -61,8 +56,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		SchoolModule,
 		GroupModule,
 		RoleModule,
-		FilesStorageClientModule,
-		FilesStorageRestClientModule,
 	],
 	providers: [
 		{
@@ -71,10 +64,8 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		},
 		BoardCopyService,
 		BoardNodeRepo,
-		CommonCartridgeExportService,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
-		CommonCartridgeExportMapper,
 		CommonCartridgeImportMapper,
 		CourseCopyService,
 		CourseGroupRepo,
@@ -92,7 +83,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		DashboardService,
 		LegacyBoardRepo,
 		CourseRoomsService,
-		UserRepo,
 		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
 	],
@@ -102,7 +92,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseDoService,
 		CourseSyncService,
 		CourseRoomsService,
-		CommonCartridgeExportService,
 		CommonCartridgeImportService,
 		CourseGroupService,
 		DashboardService,

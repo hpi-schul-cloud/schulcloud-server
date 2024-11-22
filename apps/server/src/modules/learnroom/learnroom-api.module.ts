@@ -19,7 +19,6 @@ import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { CourseInfoController } from './controller/course-info.controller';
 import {
 	CourseCopyUC,
-	CourseExportUc,
 	CourseImportUc,
 	CourseInfoUc,
 	CourseRoomsAuthorisationService,
@@ -59,7 +58,6 @@ import {
 		LessonCopyUC,
 		CourseCopyUC,
 		CourseRoomsAuthorisationService,
-		CourseExportUc,
 		CourseImportUc,
 		CourseSyncUc,
 		// FIXME Refactor UCs to use services and remove these imports
