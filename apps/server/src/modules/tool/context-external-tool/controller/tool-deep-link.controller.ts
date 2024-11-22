@@ -1,11 +1,10 @@
-import { Body, Controller, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
-import { Authorization } from 'oauth-1.0a';
 import { LtiDeepLink } from '../domain';
 import { LtiDeepLinkRequestMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolIdParams, Lti11DeepLinkParams } from './dto';
+import { Lti11DeepLinkParamsRaw } from './dto/lti11-deep-link/lti11-deep-link-raw.params';
 
 @ApiTags('Tool')
 @Controller('tools/context-external-tools')
@@ -14,14 +13,13 @@ export class ToolDeepLinkController {
 
 	@Post(':contextExternalToolId/lti11-deep-link-callback')
 	public async deepLink(
-		@Req() req: Request,
 		@Param() params: ContextExternalToolIdParams,
+		@Body() rawBody: Lti11DeepLinkParamsRaw,
 		@Body() body: Lti11DeepLinkParams
 	): Promise<string> {
 		const deepLink: LtiDeepLink | undefined = LtiDeepLinkRequestMapper.mapRequestToDO(body);
-		const originalBody: Authorization = req.body as Authorization;
 
-		await this.contextExternalToolUc.updateLtiDeepLink(params.contextExternalToolId, originalBody, body.data, deepLink);
+		await this.contextExternalToolUc.updateLtiDeepLink(params.contextExternalToolId, rawBody, body.data, deepLink);
 
 		return '<!DOCTYPE html><head><title>Window can be closed</title><script>window.close();</script></head><body><span>This window can be closed</span></body>';
 	}

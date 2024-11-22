@@ -874,7 +874,7 @@ describe(ContextExternalToolUc.name, () => {
 				const key = 'key';
 				const secret = 'secret';
 				const state = new UUID().toString();
-				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+				const payload = new Lti11DeepLinkParamsFactory().buildRaw({
 					data: state,
 				});
 				const ltiDeepLink = ltiDeepLinkFactory.build();
@@ -950,7 +950,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when no content was linked', () => {
 			const setup = () => {
 				const state = new UUID().toString();
-				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({ data: state });
+				const payload = new Lti11DeepLinkParamsFactory().buildRaw({ data: state });
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ state });
 				const contextExternalTool = contextExternalToolFactory.build();
 
@@ -975,7 +975,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when deep linking a content', () => {
 			const setup = () => {
 				const state = new UUID().toString();
-				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+				const payload = new Lti11DeepLinkParamsFactory().buildRaw({
 					data: state,
 				});
 				const ltiDeepLink = ltiDeepLinkFactory.build();
@@ -1004,7 +1004,7 @@ describe(ContextExternalToolUc.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const state = new UUID().toString();
-				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+				const payload = new Lti11DeepLinkParamsFactory().buildRaw({
 					data: state,
 				});
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state });
@@ -1041,7 +1041,7 @@ describe(ContextExternalToolUc.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const state = new UUID().toString();
-				const payload = new Lti11DeepLinkParamsFactory().buildWithStringContent({
+				const payload = new Lti11DeepLinkParamsFactory().buildRaw({
 					data: state,
 				});
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({ userId: user.id, state });

@@ -67,7 +67,7 @@ describe('ToolDeepLinkController (API)', () => {
 				const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const callbackUrl = `${publicBackendUrl}/v3${basePath}/${contextExternalTool.id}/lti11-deep-link-callback`;
 				const requestFactory = new Lti11DeepLinkParamsFactory(callbackUrl, lti11Config.key, lti11Config.secret);
-				const postParams = requestFactory.buildWithStringContent({
+				const postParams = requestFactory.buildRaw({
 					data: ltiDeepLinkToken.state,
 				});
 

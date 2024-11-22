@@ -1,10 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { StringToObject } from '@shared/controller';
-import { Type } from 'class-transformer';
-import { Equals, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { Lti11DeepLinkContentItemListParams } from './lti11-deep-link-content-item-list.params';
+import { Equals, IsJSON, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Authorization } from 'oauth-1.0a';
 
-export class Lti11DeepLinkParams {
+export class Lti11DeepLinkParamsRaw implements Authorization {
 	@Equals('ContentItemSelection')
 	@ApiProperty()
 	lti_message_type!: string;
@@ -14,12 +12,9 @@ export class Lti11DeepLinkParams {
 	lti_version!: string;
 
 	@IsOptional()
-	@IsObject()
-	@ValidateNested()
-	@StringToObject(Lti11DeepLinkContentItemListParams)
-	@Type(() => Lti11DeepLinkContentItemListParams)
+	@IsJSON()
 	@ApiPropertyOptional()
-	content_items?: Lti11DeepLinkContentItemListParams;
+	content_items?: string;
 
 	@IsString()
 	@ApiProperty()
