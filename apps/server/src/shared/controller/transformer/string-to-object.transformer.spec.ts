@@ -44,4 +44,32 @@ describe('StringToObject Decorator', () => {
 			expect(result.obj).toEqual(obj);
 		});
 	});
+
+	describe('when the object is already an object', () => {
+		const setup = () => {
+			const obj: TestObject = {
+				string: 'test',
+				number: 1,
+				boolean: true,
+				array: [],
+			};
+
+			const plain = {
+				obj,
+			};
+
+			return {
+				obj,
+				plain,
+			};
+		};
+
+		it('should stay an object', () => {
+			const { obj, plain } = setup();
+
+			const result = plainToClass(Dto, plain);
+
+			expect(result.obj).toEqual(obj);
+		});
+	});
 });
