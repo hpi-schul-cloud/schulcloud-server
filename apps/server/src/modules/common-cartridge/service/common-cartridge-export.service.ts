@@ -317,10 +317,10 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
 
 			for await (const fileRecord of fileRecords) {
-				const file = await this.filesStorageRestClientAdapter.download(fileRecord.id, fileRecord.name);
+				const file = await this.downloadFile(fileRecord);
 
 				if (file) {
-					files.push({ fileRecord, file });
+					files.push({ fileRecord, file: file.data });
 				}
 			}
 
