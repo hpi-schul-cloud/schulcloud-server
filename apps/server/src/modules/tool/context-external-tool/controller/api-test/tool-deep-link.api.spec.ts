@@ -4,6 +4,7 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import crypto from 'crypto-js';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../entity';
@@ -21,6 +22,8 @@ describe('ToolDeepLinkController (API)', () => {
 	let testApiClient: TestApiClient;
 
 	const basePath = '/tools/context-external-tools';
+	const decryptedSecret = 'secret';
+	const encryptedSecret = crypto.AES.encrypt(decryptedSecret, Configuration.get('AES_KEY') as string).toString();
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -52,7 +55,9 @@ describe('ToolDeepLinkController (API)', () => {
 					teachers: [teacherUser],
 				});
 
-				const lti11Config = lti11ToolConfigEntityFactory.build();
+				const lti11Config = lti11ToolConfigEntityFactory.build({
+					secret: encryptedSecret,
+				});
 				const externalTool = externalToolEntityFactory.buildWithId({ config: lti11Config });
 				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalTool,
@@ -66,7 +71,7 @@ describe('ToolDeepLinkController (API)', () => {
 
 				const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const callbackUrl = `${publicBackendUrl}/v3${basePath}/${contextExternalTool.id}/lti11-deep-link-callback`;
-				const requestFactory = new Lti11DeepLinkParamsFactory(callbackUrl, lti11Config.key, lti11Config.secret);
+				const requestFactory = new Lti11DeepLinkParamsFactory(callbackUrl, lti11Config.key, decryptedSecret);
 				const postParams = requestFactory.buildRaw({
 					data: ltiDeepLinkToken.state,
 				});

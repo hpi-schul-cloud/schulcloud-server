@@ -1,3 +1,4 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
 	AuthorizationContext,
 	AuthorizationContextBuilder,
@@ -5,7 +6,7 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -41,7 +42,8 @@ export class ContextExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
 		private readonly ltiDeepLinkingService: LtiDeepLinkingService,
-		private readonly lti11EncryptionService: Lti11EncryptionService
+		private readonly lti11EncryptionService: Lti11EncryptionService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
 	async createContextExternalTool(
@@ -204,10 +206,11 @@ export class ContextExternalToolUc {
 		}
 
 		const url: string = this.ltiDeepLinkingService.getCallbackUrl(contextExternalTool.id);
+		const decryptedSecret: string = this.encryptionService.decrypt(externalTool.config.secret);
 
-		const isValidSignature = this.lti11EncryptionService.verify(
+		const isValidSignature: boolean = this.lti11EncryptionService.verify(
 			externalTool.config.key,
-			externalTool.config.secret,
+			decryptedSecret,
 			url,
 			payload
 		);

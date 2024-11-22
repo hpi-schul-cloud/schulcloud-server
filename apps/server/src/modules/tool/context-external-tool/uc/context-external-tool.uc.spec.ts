@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Action,
@@ -52,6 +53,7 @@ describe(ContextExternalToolUc.name, () => {
 	let ltiDeepLinkTokenService: DeepMocked<LtiDeepLinkTokenService>;
 	let ltiDeepLinkingService: DeepMocked<LtiDeepLinkingService>;
 	let lti11EncryptionService: DeepMocked<Lti11EncryptionService>;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -94,6 +96,10 @@ describe(ContextExternalToolUc.name, () => {
 					provide: Lti11EncryptionService,
 					useValue: createMock<Lti11EncryptionService>(),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
@@ -107,6 +113,7 @@ describe(ContextExternalToolUc.name, () => {
 		ltiDeepLinkTokenService = module.get(LtiDeepLinkTokenService);
 		ltiDeepLinkingService = module.get(LtiDeepLinkingService);
 		lti11EncryptionService = module.get(Lti11EncryptionService);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -901,6 +908,7 @@ describe(ContextExternalToolUc.name, () => {
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 				ltiDeepLinkingService.getCallbackUrl.mockReturnValueOnce(callbackUrl);
+				encryptionService.decrypt.mockReturnValueOnce('decryptedSecret');
 				lti11EncryptionService.verify.mockReturnValueOnce(true);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValueOnce(linkedContextExternalTool);
@@ -923,7 +931,7 @@ describe(ContextExternalToolUc.name, () => {
 
 				await uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink);
 
-				expect(lti11EncryptionService.verify).toHaveBeenCalledWith(key, secret, callbackUrl, payload);
+				expect(lti11EncryptionService.verify).toHaveBeenCalledWith(key, 'decryptedSecret', callbackUrl, payload);
 			});
 
 			it('should check the user permission', async () => {
@@ -1060,6 +1068,7 @@ describe(ContextExternalToolUc.name, () => {
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 				ltiDeepLinkingService.getCallbackUrl.mockReturnValueOnce(callbackUrl);
+				encryptionService.decrypt.mockReturnValueOnce('decryptedSecret');
 				lti11EncryptionService.verify.mockReturnValueOnce(false);
 
 				return {
