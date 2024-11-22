@@ -600,5 +600,19 @@
 			"ROOM_VIEW",
 			"ROOM_EDIT"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "67404edd76a89449722a7fb1"
+		},
+		"name": "groupSubstitutionTeacher",
+		"permissions": [],
+		"createdAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"updatedAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"__v": 0
 	}
 ]
