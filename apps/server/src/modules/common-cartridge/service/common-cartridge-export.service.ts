@@ -1,4 +1,4 @@
-import { FilesStorageRestClientAdapter, FilesStorageRestClientConfig } from '@infra/files-storage-client';
+import { FilesStorageRestClientConfig } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -50,7 +50,6 @@ export class CommonCartridgeExportService {
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
-		private readonly filesStorageRestClientAdapter: FilesStorageRestClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly errorLogger: ErrorLogger,
 		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,

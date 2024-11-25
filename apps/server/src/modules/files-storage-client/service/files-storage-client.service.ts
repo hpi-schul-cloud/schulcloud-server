@@ -50,6 +50,7 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 
 	async listFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
 		const response = await this.fileStorageMQProducer.listFilesOfParent(parentId);
+
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 		return fileInfos;

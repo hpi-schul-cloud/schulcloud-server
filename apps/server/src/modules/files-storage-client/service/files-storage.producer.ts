@@ -37,7 +37,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
 		const response = await this.request<FileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
-		this.logger.debug({ action: 'listFilesOfParent:finished', response });
+		this.logger.debug({ action: 'listFilesOfParent:finished', payload });
 
 		return response;
 	}
