@@ -10,9 +10,7 @@ import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity'
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { ColumnBoard, ColumnBoardService } from '@src/modules/board';
-import { BoardContextService } from '@src/modules/board/service/internal';
-import { BoardNodePermissionService } from '@src/modules/board/service';
+import { BoardNodeAuthorizableService, BoardRoles, ColumnBoard, ColumnBoardService } from '@src/modules/board';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -22,8 +20,7 @@ import { VideoConferenceConfig } from '../video-conference-config';
 @Injectable()
 export class VideoConferenceService {
 	constructor(
-		private readonly boardContextService: BoardContextService,
-		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly configService: ConfigService<VideoConferenceConfig, true>,
 		private readonly courseService: CourseService,
@@ -124,10 +121,14 @@ export class VideoConferenceService {
 		entity: ColumnBoard | Course | TeamEntity
 	): Promise<boolean> {
 		if (entity instanceof ColumnBoard) {
-			const boardUsers = await this.boardContextService.getUsersWithBoardRoles(entity);
-			const isBoardEditor = this.boardNodePermissionService.isUserBoardEditor(authorizableUser.id, boardUsers);
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
-			return isBoardEditor;
+			if (boardAuthorisedUser) {
+				return boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
+			}
+
+			return false;
 		}
 		const context = AuthorizationContextBuilder.read([Permission.START_MEETING]);
 		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
@@ -140,10 +141,14 @@ export class VideoConferenceService {
 		entity: ColumnBoard | Course | TeamEntity
 	): Promise<boolean> {
 		if (entity instanceof ColumnBoard) {
-			const boardUsers = await this.boardContextService.getUsersWithBoardRoles(entity);
-			const isBoardReader = this.boardNodePermissionService.isUserBoardReader(authorizableUser.id, boardUsers);
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
-			return isBoardReader;
+			if (boardAuthorisedUser) {
+				return boardAuthorisedUser?.roles.includes(BoardRoles.READER);
+			}
+
+			return false;
 		}
 		const context = AuthorizationContextBuilder.read([Permission.JOIN_MEETING]);
 		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
