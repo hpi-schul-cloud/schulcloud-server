@@ -61,7 +61,7 @@ export class DeletionClient {
 	}
 
 	private createDetaultHeaders() {
-		const apiKey = this.configService.get<string>('ADMIN_API_CLIENT_API_KEY');
+		const apiKey = this.configService.get('ADMIN_API_CLIENT_API_KEY', { infer: true });
 
 		return {
 			headers: { 'X-Api-Key': apiKey },

@@ -1,4 +1,4 @@
-import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
@@ -34,7 +34,7 @@ export class SynchronizationUc {
 
 		try {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
-			const chunkSize = this.configService.get<number>('SYNCHRONIZATION_CHUNK');
+			const chunkSize = this.configService.get('SYNCHRONIZATION_CHUNK', { infer: true });
 			const chunks = this.chunkArray(usersToCheck, chunkSize);
 			const promises = chunks.map((chunk) => this.updateLastSyncedAt(chunk, systemId));
 			const results = await Promise.all(promises);
@@ -62,13 +62,12 @@ export class SynchronizationUc {
 	// Every parts that need be tested and only avaible from intern,
 	// need to be passed from outside by constructor or public methods.
 	public async findUsersToSynchronize(systemId: string): Promise<string[]> {
-		let usersToCheck: string[] = [];
-		const usersDownloaded: SchulconnexResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
+		const usersDownloaded = await this.schulconnexRestClient.getPersonenInfo({});
 
 		if (usersDownloaded.length === 0) {
 			throw new NoUsersToSynchronizationLoggableException(systemId);
 		}
-		usersToCheck = usersDownloaded.map((user) => user.pid);
+		const usersToCheck = usersDownloaded.map((user) => user.pid);
 
 		return usersToCheck;
 	}
@@ -76,7 +75,6 @@ export class SynchronizationUc {
 	public async updateLastSyncedAt(usersToCheck: string[], systemId: string): Promise<number> {
 		try {
 			const foundUsers = await this.userService.findMultipleByExternalIds(usersToCheck);
-
 			const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
 
 			await this.userService.updateLastSyncedAt(verifiedUsers);
@@ -106,6 +104,9 @@ export class SynchronizationUc {
 		await this.synchronizationService.update(newSynchronization);
 	}
 
+	// Should be privat! It is only used for testing.
+	// Every parts that need be tested and only avaible from intern,
+	// need to be passed from outside by constructor or public methods.
 	chunkArray(array: string[], chunkSize: number): string[][] {
 		const chunkedArray: string[][] = [];
 		let index = 0;
