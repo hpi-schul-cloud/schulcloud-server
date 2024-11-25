@@ -22,6 +22,7 @@ import { schoolFactory } from '@src/modules/school/testing';
 import { System } from '@src/modules/system';
 import { systemFactory } from '@src/modules/system/testing';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -35,6 +36,7 @@ describe(TspSyncStrategy.name, () => {
 	let tspFetchService: DeepMocked<TspFetchService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
+	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -83,6 +85,10 @@ describe(TspSyncStrategy.name, () => {
 					provide: TspOauthDataMapper,
 					useValue: createMock<TspOauthDataMapper>(),
 				},
+				{
+					provide: TspLegacyMigrationService,
+					useValue: createMock<TspLegacyMigrationService>(),
+				},
 			],
 		}).compile();
 
@@ -91,6 +97,7 @@ describe(TspSyncStrategy.name, () => {
 		tspFetchService = module.get(TspFetchService);
 		provisioningService = module.get(ProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
+		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
 	});
 
 	afterEach(() => {
@@ -145,7 +152,7 @@ describe(TspSyncStrategy.name, () => {
 			params.foundTspUidUser !== undefined ? params.foundTspUidUser : userDoFactory.build()
 		);
 		tspSyncService.updateUser.mockResolvedValueOnce(params.updatedUser ?? userDoFactory.build());
-		tspSyncService.findAccountByTspUid.mockResolvedValueOnce(
+		tspSyncService.findAccountByExternalId.mockResolvedValueOnce(
 			params.foundTspUidAccount !== undefined ? params.foundTspUidAccount : accountDoFactory.build()
 		);
 		tspSyncService.updateAccount.mockResolvedValueOnce(params.updatedAccount ?? accountDoFactory.build());
@@ -189,6 +196,14 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalled();
+			});
+
+			it('should migrate the legacy data', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(tspLegacyMigrationService.migrateLegacyData).toHaveBeenCalled();
 			});
 
 			it('should fetch the schools', async () => {
@@ -271,7 +286,7 @@ describe(TspSyncStrategy.name, () => {
 
 					await sut.sync();
 
-					expect(tspSyncService.findAccountByTspUid).toHaveBeenCalled();
+					expect(tspSyncService.findAccountByExternalId).toHaveBeenCalled();
 				});
 
 				it('should update account', async () => {
