@@ -1,7 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyApiResponse } from '@modules/copy-helper/dto/copy.response';
+import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
 import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
