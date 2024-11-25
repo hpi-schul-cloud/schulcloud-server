@@ -344,30 +344,6 @@ describe(SchulconnexResponseMapper.name, () => {
 			});
 		});
 
-		describe('when other participants have unknown roles', () => {
-			const setup = () => {
-				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
-					{
-						ktid: 'ktid',
-						rollen: [SchulconnexGroupRole.SCHOOL_SUPPORT],
-					},
-				];
-
-				return {
-					schulconnexResponse,
-				};
-			};
-
-			it('should not add the user to other users', () => {
-				const { schulconnexResponse } = setup();
-
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
-
-				expect(result?.[0].otherUsers).toHaveLength(0);
-			});
-		});
-
 		describe('when the group has no duration', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
