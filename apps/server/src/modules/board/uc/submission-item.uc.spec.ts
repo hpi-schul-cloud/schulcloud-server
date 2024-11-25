@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import {
 	BoardNodeAuthorizable,
 	BoardNodeFactory,
