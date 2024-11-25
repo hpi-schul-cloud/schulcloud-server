@@ -86,7 +86,7 @@ export class ShareTokenUC {
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
-		await this.checkLookupPermission(userId, shareToken.payload.parentType);
+		await this.checkTokenLookupPermission(userId, shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -229,7 +229,7 @@ export class ShareTokenUC {
 				await this.checkTaskWritePermission(user, payload.parentId, Permission.HOMEWORK_CREATE);
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				await this.checkColumnBoardWritePermission(user, payload.parentId, Permission.COURSE_EDIT);
+				await this.checkColumnBoardSharePermission(user, payload.parentId);
 				break;
 			default:
 		}
@@ -268,14 +268,15 @@ export class ShareTokenUC {
 		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([permission]));
 	}
 
-	private async checkColumnBoardWritePermission(user: User, boardNodeId: EntityId, permission: Permission) {
-		const columBoard = await this.columnBoardService.findById(boardNodeId);
+	private async checkColumnBoardSharePermission(user: User, boardNodeId: EntityId) {
+		const columBoard = await this.columnBoardService.findById(boardNodeId, 0);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
+		const permissions = columBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 
 		this.authorizationService.checkPermission(
 			user,
 			boardNodeAuthorizable,
-			AuthorizationContextBuilder.write([permission])
+			AuthorizationContextBuilder.write(permissions)
 		);
 	}
 
@@ -296,7 +297,7 @@ export class ShareTokenUC {
 		}
 	}
 
-	private async checkLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {
+	private async checkTokenLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		let requiredPermissions: Permission[] = [];
 		// eslint-disable-next-line default-case
@@ -311,6 +312,7 @@ export class ShareTokenUC {
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 				break;
 			case ShareTokenParentType.ColumnBoard:
+				// TODO: check room permission
 				requiredPermissions = [Permission.COURSE_EDIT];
 				break;
 		}
