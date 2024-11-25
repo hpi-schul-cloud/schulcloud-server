@@ -121,6 +121,7 @@ export class BoardUc {
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 		await this.checkReferenceWritePermission(userId, board.context);
 
 		const storageLocationReference = await this.getStorageLocationReference(board.context);

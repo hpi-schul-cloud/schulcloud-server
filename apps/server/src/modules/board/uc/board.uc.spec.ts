@@ -4,9 +4,11 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
-import { courseFactory } from '@shared/testing/factory';
+import { courseFactory } from '@shared/testing/factory/course.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { LegacyLogger } from '@src/core/logger';
+import { RoomService } from '@src/modules/room';
 import { RoomMemberService } from '@src/modules/room-member';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
@@ -47,6 +49,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
+				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
 				},
 				{
 					provide: BoardNodeFactory,
@@ -427,8 +433,15 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('copyBoard', () => {
+		const setup = () => {
+			const { user, board, boardId } = globalSetup();
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+			return { user, board, boardId };
+		};
+
 		it('should call the service to find the user', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			await uc.copyBoard(user.id, boardId);
 
@@ -436,7 +449,7 @@ describe(BoardUc.name, () => {
 		});
 
 		it('should call the service to find the board', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			await uc.copyBoard(user.id, boardId);
 
@@ -444,7 +457,7 @@ describe(BoardUc.name, () => {
 		});
 
 		it('[deprecated] should call course repo to find the course', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			await uc.copyBoard(user.id, boardId);
 
@@ -452,8 +465,7 @@ describe(BoardUc.name, () => {
 		});
 
 		it('should call Board Permission Service to check permission', async () => {
-			const { user, board } = globalSetup();
-			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+			const { user, board } = setup();
 
 			await uc.copyBoard(user.id, board.id);
 
@@ -461,7 +473,7 @@ describe(BoardUc.name, () => {
 		});
 
 		it('should call authorization to check course permissions', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			const course = courseFactory.build();
 			// TODO should not use course repo
@@ -471,12 +483,12 @@ describe(BoardUc.name, () => {
 
 			expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, {
 				action: Action.write,
-				requiredPermissions: [],
+				requiredPermissions: ['COURSE_EDIT'],
 			});
 		});
 
 		it('should call the service to copy the board', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			await uc.copyBoard(user.id, boardId);
 
@@ -486,7 +498,7 @@ describe(BoardUc.name, () => {
 		});
 
 		it('should return the copy status', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			const copyStatus: CopyStatus = {
 				type: CopyElementType.BOARD,
