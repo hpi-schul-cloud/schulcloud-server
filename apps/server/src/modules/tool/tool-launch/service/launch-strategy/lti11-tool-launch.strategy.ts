@@ -21,6 +21,7 @@ import { LtiRoleMapper } from '../../mapper';
 import {
 	AuthenticationValues,
 	LaunchRequestMethod,
+	LaunchType,
 	PropertyData,
 	PropertyLocation,
 	ToolLaunchData,
@@ -348,6 +349,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		return LaunchRequestMethod.POST;
 	}
 
+	public override determineLaunchType(): LaunchType {
+		return LaunchType.LTI11_BASIC_LAUNCH;
+	}
+
 	public override async createLaunchRequest(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchRequest> {
 		const launchData: ToolLaunchData = await this.createLaunchData(userId, data);
 		const { ltiDeepLink } = data.contextExternalTool;
@@ -355,12 +360,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		let method: LaunchRequestMethod;
 		let url: string;
 		let payload: string | null;
+		let launchType: LaunchType;
 		let { openNewTab } = launchData;
-
-		const isContentItemSelectionRequest: boolean = data.externalTool.isLtiDeepLinkingTool() && !ltiDeepLink;
-		if (isContentItemSelectionRequest) {
-			openNewTab = true;
-		}
 
 		if (ltiDeepLink?.url) {
 			url = ltiDeepLink?.url;
@@ -375,9 +376,17 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		if (isLtiLaunch) {
 			method = this.determineLaunchRequestMethod(launchData.properties);
 			payload = this.buildToolLaunchRequestPayload(url, launchData.properties);
+			launchType = this.determineLaunchType();
 		} else {
 			method = LaunchRequestMethod.GET;
 			payload = null;
+			launchType = LaunchType.BASIC;
+		}
+
+		const isContentItemSelectionRequest: boolean = data.externalTool.isLtiDeepLinkingTool() && !ltiDeepLink;
+		if (isContentItemSelectionRequest) {
+			openNewTab = true;
+			launchType = LaunchType.LTI11_CONTENT_ITEM_SELECTION;
 		}
 
 		const toolLaunchRequest = new ToolLaunchRequest({
@@ -385,6 +394,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			url,
 			payload: payload ?? undefined,
 			openNewTab,
+			launchType,
 		});
 
 		return toolLaunchRequest;

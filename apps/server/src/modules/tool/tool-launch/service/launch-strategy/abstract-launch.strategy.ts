@@ -8,7 +8,14 @@ import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
-import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
+import {
+	LaunchRequestMethod,
+	LaunchType,
+	PropertyData,
+	PropertyLocation,
+	ToolLaunchData,
+	ToolLaunchRequest,
+} from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
@@ -52,6 +59,8 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 
 	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
 
+	public abstract determineLaunchType(): LaunchType;
+
 	protected async createLaunchData(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
@@ -79,6 +88,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 			url,
 			payload: payload ?? undefined,
 			openNewTab: launchData.openNewTab,
+			launchType: this.determineLaunchType(),
 		});
 
 		return toolLaunchRequest;

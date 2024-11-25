@@ -28,7 +28,7 @@ import { ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
-import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
@@ -1202,6 +1202,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					url: 'https://www.lti11-baseurl.com/',
 					payload: JSON.stringify(signedPayload),
 					openNewTab: true,
+					launchType: LaunchType.LTI11_CONTENT_ITEM_SELECTION,
 				});
 			});
 		});
@@ -1293,6 +1294,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					url: ltiDeepLink.url as string,
 					payload: JSON.stringify(signedPayload),
 					openNewTab: false,
+					launchType: LaunchType.LTI11_BASIC_LAUNCH,
 				});
 			});
 		});
@@ -1359,6 +1361,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					url: 'https://www.lti11-baseurl.com/',
 					payload: undefined,
 					openNewTab: false,
+					launchType: LaunchType.BASIC,
 				});
 			});
 		});
@@ -1450,6 +1453,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					url: 'https://www.lti11-baseurl.com/',
 					payload: JSON.stringify(signedPayload),
 					openNewTab: false,
+					launchType: LaunchType.LTI11_BASIC_LAUNCH,
 				});
 			});
 		});
@@ -1541,6 +1545,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					url: 'https://www.lti11-baseurl.com/',
 					payload: JSON.stringify(signedPayload),
 					openNewTab: false,
+					launchType: LaunchType.LTI11_BASIC_LAUNCH,
 				});
 			});
 		});
@@ -1632,7 +1637,18 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					url: 'https://www.lti11-baseurl.com/',
 					payload: JSON.stringify(signedPayload),
 					openNewTab: false,
+					launchType: LaunchType.LTI11_BASIC_LAUNCH,
 				});
+			});
+		});
+	});
+
+	describe('determineLaunchType', () => {
+		describe('whenever it is called', () => {
+			it('should return lti basic launch', () => {
+				const result = strategy.determineLaunchType();
+
+				expect(result).toEqual(LaunchType.LTI11_BASIC_LAUNCH);
 			});
 		});
 	});

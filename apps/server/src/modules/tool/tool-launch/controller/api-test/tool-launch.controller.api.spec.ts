@@ -26,7 +26,7 @@ import {
 } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { LaunchRequestMethod } from '../../types';
+import { LaunchRequestMethod, LaunchType } from '../../types';
 import { ContextExternalToolBodyParams, ContextExternalToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
 describe('ToolLaunchController (API)', () => {
@@ -123,6 +123,7 @@ describe('ToolLaunchController (API)', () => {
 					method: LaunchRequestMethod.GET,
 					url: 'https://mockurl.de/',
 					openNewTab: true,
+					launchType: LaunchType.BASIC,
 				});
 			});
 		});
@@ -413,6 +414,7 @@ describe('ToolLaunchController (API)', () => {
 					method: LaunchRequestMethod.GET,
 					url: 'https://mockurl.de/',
 					openNewTab: true,
+					launchType: LaunchType.BASIC,
 				});
 			});
 		});
