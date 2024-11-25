@@ -8,6 +8,7 @@ import { Module } from '@nestjs/common';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { LoggerModule } from '@src/core/logger';
+import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
@@ -18,6 +19,7 @@ import { VideoConferenceDeprecatedUc } from './uc';
 	imports: [
 		AuthorizationModule,
 		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
+		BoardModule,
 		CalendarModule,
 		HttpModule,
 		LegacySchoolModule,
