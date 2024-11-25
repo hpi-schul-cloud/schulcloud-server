@@ -15,7 +15,8 @@ import { contextExternalToolFactory } from '../../context-external-tool/testing'
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolLaunchService } from '../service';
-import { LaunchRequestMethod, ToolLaunchRequest } from '../types';
+import { toolLaunchRequestFactory } from '../testing';
+import { ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
 
 describe('ToolLaunchUc', () => {
@@ -84,12 +85,7 @@ describe('ToolLaunchUc', () => {
 					id: contextExternalToolId,
 				});
 
-				const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
-					url: 'baseUrl',
-					method: LaunchRequestMethod.GET,
-					payload: '',
-					openNewTab: true,
-				});
+				const toolLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
@@ -164,12 +160,7 @@ describe('ToolLaunchUc', () => {
 					parameters: [],
 				};
 
-				const toolLaunchRequest = new ToolLaunchRequest({
-					openNewTab: true,
-					method: LaunchRequestMethod.GET,
-					payload: '',
-					url: 'https://mock.com/',
-				});
+				const toolLaunchRequest = toolLaunchRequestFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
