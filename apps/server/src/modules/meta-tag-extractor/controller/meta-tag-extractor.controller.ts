@@ -1,12 +1,12 @@
-import { MetaTagExtractorXApiKeyAuthentication } from '@infra/auth-guard';
 import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { XApiKeyAuthentication } from '@src/infra/auth-guard';
 import { MetaTagExtractorUc } from '../uc';
 import { MetaTagExtractorResponse } from './dto';
 import { GetMetaTagDataBody } from './post-link-url.body.params';
 
 @ApiTags('Meta Tag Extractor')
-@MetaTagExtractorXApiKeyAuthentication()
+@XApiKeyAuthentication()
 @Controller('meta-tag-extractor')
 export class MetaTagExtractorController {
 	constructor(private readonly metaTagExtractorUc: MetaTagExtractorUc) {}
