@@ -685,6 +685,8 @@ describe('ShareTokenUC', () => {
 				const shareToken = shareTokenFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: columnBoard.title });
 
+				columnBoardService.findById.mockResolvedValueOnce(columnBoard);
+
 				return { user, shareToken, columnBoard, course };
 			};
 

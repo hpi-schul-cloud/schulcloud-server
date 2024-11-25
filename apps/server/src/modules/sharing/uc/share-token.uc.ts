@@ -86,7 +86,7 @@ export class ShareTokenUC {
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
-		await this.checkTokenLookupPermission(userId, shareToken.payload.parentType);
+		await this.checkTokenLookupPermission(userId, shareToken.payload);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -297,11 +297,11 @@ export class ShareTokenUC {
 		}
 	}
 
-	private async checkTokenLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {
+	private async checkTokenLookupPermission(userId: EntityId, payload: ShareTokenPayload) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		let requiredPermissions: Permission[] = [];
 		// eslint-disable-next-line default-case
-		switch (parentType) {
+		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
 				break;
@@ -311,10 +311,12 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Task:
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 				break;
-			case ShareTokenParentType.ColumnBoard:
-				// TODO: check room permission
-				requiredPermissions = [Permission.COURSE_EDIT];
+			case ShareTokenParentType.ColumnBoard: {
+				const columnBoard = await this.columnBoardService.findById(payload.parentId, 0);
+				requiredPermissions =
+					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 				break;
+			}
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
