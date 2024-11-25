@@ -35,6 +35,10 @@ export class ContextExternalTool extends DomainObject<ContextExternalToolProps> 
 		return this.props.displayName;
 	}
 
+	set displayName(value: string | undefined) {
+		this.props.displayName = value;
+	}
+
 	get parameters(): CustomParameterEntry[] {
 		return this.props.parameters;
 	}

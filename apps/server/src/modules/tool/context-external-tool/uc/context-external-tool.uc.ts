@@ -187,10 +187,12 @@ export class ContextExternalToolUc {
 
 		const user: User = await this.authorizationService.getUserWithPermissions(ltiDeepLinkToken.userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
-
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		contextExternalTool.ltiDeepLink = deepLink;
+		if (deepLink.title) {
+			contextExternalTool.displayName = deepLink.title;
+		}
 
 		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 	}

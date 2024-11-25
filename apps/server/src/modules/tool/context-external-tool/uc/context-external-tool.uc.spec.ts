@@ -896,10 +896,12 @@ describe(ContextExternalToolUc.name, () => {
 				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
 				const contextExternalTool = contextExternalToolFactory.build({
 					schoolToolRef: { schoolToolId: schoolExternalTool.id, schoolId: user.school.id },
+					displayName: 'oldName',
 				});
 				const linkedContextExternalTool = new ContextExternalTool({
 					...contextExternalTool.getProps(),
 					ltiDeepLink,
+					displayName: ltiDeepLink.title,
 				});
 				const callbackUrl = 'https://this.cloud/lti-deep-link-callback';
 
@@ -927,7 +929,7 @@ describe(ContextExternalToolUc.name, () => {
 			};
 
 			it('should check the oauth signature', async () => {
-				const { contextExternalTool, payload, ltiDeepLink, key, secret, state, callbackUrl } = setup();
+				const { contextExternalTool, payload, ltiDeepLink, key, state, callbackUrl } = setup();
 
 				await uc.updateLtiDeepLink(contextExternalTool.id, payload, state, ltiDeepLink);
 
