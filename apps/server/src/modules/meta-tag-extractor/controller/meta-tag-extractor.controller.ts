@@ -18,8 +18,7 @@ export class MetaTagExtractorController {
 	@Post('')
 	async getMetaTags(@Body() bodyParams: GetMetaTagDataBody): Promise<MetaTagExtractorResponse> {
 		const result = await this.metaTagExtractorUc.getMetaData(bodyParams.url);
-		const originalImageUrl = result.image?.url;
-		const response = new MetaTagExtractorResponse({ ...result, originalImageUrl });
+		const response = new MetaTagExtractorResponse({ ...result });
 		return response;
 	}
 }

@@ -19,7 +19,7 @@ export class MetaTagExternalUrlService {
 		return {
 			title: ogTitle ?? '',
 			description: ogDescription ?? '',
-			image: ogImage ? this.pickImage(ogImage) : undefined,
+			originalImageUrl: ogImage ? this.getImageUrl(ogImage, url) : undefined,
 			url: url.toString(),
 			type: 'external',
 		};
@@ -56,6 +56,19 @@ export class MetaTagExternalUrlService {
 			}
 		}
 		return html.slice(0, maxLength);
+	}
+
+	private getImageUrl(images: ImageObject[], url: URL): string | undefined {
+		const image = this.pickImage(images);
+		if (!image) {
+			return undefined;
+		}
+
+		const baseUrl = url;
+		baseUrl.pathname = '';
+
+		const imageUrl = new URL(image.url, baseUrl.toString());
+		return imageUrl.toString();
 	}
 
 	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {
