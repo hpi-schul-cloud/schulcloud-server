@@ -2,8 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson/service';
 import { ToolContextType } from '@modules/tool/common/enum';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -34,6 +37,7 @@ describe('course copy service', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	afterAll(async () => {
 		await module.close();
@@ -84,6 +88,10 @@ describe('course copy service', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
+				{
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
+				},
 			],
 		}).compile();
 
@@ -97,6 +105,7 @@ describe('course copy service', () => {
 		userRepo = module.get(UserRepo);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		configService = module.get(ConfigService);
+		schoolExternalToolService = module.get(SchoolExternalToolService);
 	});
 
 	beforeEach(() => {
@@ -105,13 +114,20 @@ describe('course copy service', () => {
 
 	describe('copy course', () => {
 		const setup = () => {
-			const user = userFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
 			const allCourses = courseFactory.buildList(3, { teachers: [user] });
 			const course = allCourses[0];
 			const originalBoard = boardFactory.build({ course });
 			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
 			const boardCopy = boardFactory.build({ course: courseCopy });
-			const tools: ContextExternalTool[] = contextExternalToolFactory.buildList(2);
+			const schoolTool: SchoolExternalTool = schoolExternalToolFactory.build({ schoolId: school.id });
+			const tools: ContextExternalTool[] = contextExternalToolFactory.buildList(2, {
+				schoolToolRef: {
+					schoolToolId: schoolTool.id,
+					schoolId: school.id,
+				},
+			});
 
 			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
@@ -351,6 +367,103 @@ describe('course copy service', () => {
 
 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[0], courseCopy.id);
 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[1], courseCopy.id);
+		});
+
+		describe('when the course has course context external tools', () => {
+			describe('when the course is from another school', () => {
+				describe('when the target school has the correct school external tool', () => {
+					const setupSchoolTool = () => {
+						const { course, user } = setup();
+
+						const sourceSchool = schoolEntityFactory.buildWithId();
+						const sourceSchoolExternalTool = schoolExternalToolFactory.build({
+							schoolId: sourceSchool.id,
+						});
+						const sourceCourseTools = contextExternalToolFactory.buildList(2, {
+							schoolToolRef: { schoolToolId: sourceSchoolExternalTool.id, schoolId: sourceSchool.id },
+						});
+
+						const targetSchoolExternalTool = schoolExternalToolFactory.build({
+							toolId: sourceSchoolExternalTool.toolId,
+							schoolId: user.school.id,
+						});
+
+						contextExternalToolService.findAllByContext.mockResolvedValue(sourceCourseTools);
+						schoolExternalToolService.findById.mockResolvedValue(sourceSchoolExternalTool);
+						schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([targetSchoolExternalTool]);
+
+						return { course, user, sourceSchoolExternalTool, targetSchoolExternalTool };
+					};
+
+					it('should assign the copied tool with the school external tool id of the source school', async () => {
+						const { course, user, sourceSchoolExternalTool, targetSchoolExternalTool } = setupSchoolTool();
+
+						const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+						const courseCopy = status.copyEntity as Course;
+
+						expect(schoolExternalToolService.findById).toBeCalledWith(sourceSchoolExternalTool.id);
+						expect(schoolExternalToolService.findSchoolExternalTools).toBeCalledWith({
+							toolId: sourceSchoolExternalTool.toolId,
+							schoolId: user.school.id,
+						});
+
+						expect(contextExternalToolService.copyContextExternalTool).toHaveBeenNthCalledWith(
+							1,
+							expect.objectContaining({
+								schoolToolRef: {
+									schoolToolId: targetSchoolExternalTool.id,
+									schoolId: targetSchoolExternalTool.schoolId,
+								},
+							}),
+							courseCopy.id
+						);
+
+						expect(contextExternalToolService.copyContextExternalTool).toHaveBeenNthCalledWith(
+							2,
+							expect.objectContaining({
+								schoolToolRef: {
+									schoolToolId: targetSchoolExternalTool.id,
+									schoolId: targetSchoolExternalTool.schoolId,
+								},
+							}),
+							courseCopy.id
+						);
+					});
+				});
+
+				describe('when the target school does not have the correct school external tool', () => {
+					const setupSchoolTool = () => {
+						const { course, user } = setup();
+
+						const sourceSchool = schoolEntityFactory.build();
+						const sourceSchoolExternalTool = schoolExternalToolFactory.build({
+							schoolId: sourceSchool.id,
+						});
+						const sourceCourseTools = contextExternalToolFactory.buildList(2, {
+							schoolToolRef: { schoolToolId: sourceSchoolExternalTool.id, schoolId: sourceSchool.id },
+						});
+
+						contextExternalToolService.findAllByContext.mockResolvedValue(sourceCourseTools);
+						schoolExternalToolService.findById.mockResolvedValue(sourceSchoolExternalTool);
+						schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+
+						return { course, user, sourceSchoolExternalTool };
+					};
+
+					it('should not copy the course context external tool', async () => {
+						const { course, user, sourceSchoolExternalTool } = setupSchoolTool();
+
+						await service.copyCourse({ userId: user.id, courseId: course.id });
+
+						expect(schoolExternalToolService.findById).toBeCalledWith(sourceSchoolExternalTool.id);
+						expect(schoolExternalToolService.findSchoolExternalTools).toBeCalledWith({
+							toolId: sourceSchoolExternalTool.toolId,
+							schoolId: user.school.id,
+						});
+						expect(contextExternalToolService.copyContextExternalTool).not.toHaveBeenCalled();
+					});
+				});
+			});
 		});
 	});
 

@@ -15,6 +15,7 @@ describe(BoardNodeCopyContext.name, () => {
 				targetStorageLocation: StorageLocation.SCHOOL,
 				userId: new ObjectId().toHexString(),
 				filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+				targetSchoolId: new ObjectId().toHexString(),
 			};
 
 			const copyContext = new BoardNodeCopyContext(contextProps);

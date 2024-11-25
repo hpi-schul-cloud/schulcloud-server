@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/interface';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
 import {
 	Card,
@@ -59,6 +61,7 @@ describe(BoardNodeCopyService.name, () => {
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -78,12 +81,17 @@ describe(BoardNodeCopyService.name, () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(BoardNodeCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
+		schoolExternalToolService = module.get(SchoolExternalToolService);
 
 		await setupEntities();
 	});
@@ -104,6 +112,7 @@ describe(BoardNodeCopyService.name, () => {
 			targetStorageLocation: StorageLocation.SCHOOL,
 			userId: new ObjectId().toHexString(),
 			filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+			targetSchoolId: new ObjectId().toHexString(),
 		};
 
 		const copyContext = new BoardNodeCopyContext(contextProps);
@@ -424,20 +433,132 @@ describe(BoardNodeCopyService.name, () => {
 					const tool = contextExternalToolFactory.build();
 					const toolCopy = contextExternalToolFactory.build();
 					contextExternalToolService.findById.mockResolvedValueOnce(tool);
-					contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(toolCopy);
+					contextExternalToolService.copyContextExternalTool.mockResolvedValue(toolCopy);
 					externalToolElement.contextExternalToolId = tool.id;
 
 					return { copyContext, externalToolElement, tool, toolCopy };
 				};
 
-				it('should copy the external tool', async () => {
-					const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
+				describe('when the linked external tool is from the same school', () => {
+					const setupToolInSameSchool = () => {
+						const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
 
-					const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+						const schoolTool = schoolExternalToolFactory.buildWithId(
+							{ schoolId: copyContext.targetSchoolId },
+							tool.schoolToolRef.schoolToolId
+						);
+						tool.schoolToolRef.schoolId = schoolTool.schoolId;
 
-					expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
-					expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tool, result.copyEntity?.id);
-					expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+						schoolExternalToolService.findById.mockResolvedValue(schoolTool);
+						jest.spyOn(schoolExternalToolService, 'findSchoolExternalTools');
+
+						return { copyContext, externalToolElement, tool, toolCopy };
+					};
+
+					it('should copy the external tool', async () => {
+						const { copyContext, externalToolElement, tool, toolCopy } = setupToolInSameSchool();
+
+						const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+						expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
+						expect(schoolExternalToolService.findById).toHaveBeenCalledWith(tool.schoolToolRef.schoolToolId);
+						expect(schoolExternalToolService.findSchoolExternalTools).not.toBeCalled();
+						expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
+							tool,
+							result.copyEntity?.id
+						);
+						expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+					});
+				});
+
+				describe('when the linked external tool is from another school', () => {
+					const setupToolDiffSchool = () => {
+						const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
+
+						const sourceSchoolTool = schoolExternalToolFactory.buildWithId(
+							{ schoolId: tool.schoolToolRef.schoolId },
+							tool.schoolToolRef.schoolToolId
+						);
+
+						schoolExternalToolService.findById.mockResolvedValue(sourceSchoolTool);
+						schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+
+						return { copyContext, externalToolElement, tool, toolCopy, externalToolId: sourceSchoolTool.toolId };
+					};
+
+					it('should find the source school external tool', async () => {
+						const { copyContext, externalToolElement, tool } = setupToolDiffSchool();
+
+						await service.copyExternalToolElement(externalToolElement, copyContext);
+
+						expect(schoolExternalToolService.findById).toHaveBeenCalledWith(tool.schoolToolRef.schoolToolId);
+					});
+
+					it('should find any existing school external tool from the target school', async () => {
+						const { copyContext, externalToolElement, externalToolId } = setupToolDiffSchool();
+
+						await service.copyExternalToolElement(externalToolElement, copyContext);
+
+						expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({
+							toolId: externalToolId,
+							schoolId: copyContext.targetSchoolId,
+						});
+					});
+
+					describe('when the target school has the school external tool', () => {
+						const setupExistingSchoolTool = () => {
+							const { copyContext, externalToolElement, tool, toolCopy, externalToolId } = setupToolDiffSchool();
+
+							const targetSchoolTool = schoolExternalToolFactory.buildWithId({
+								toolId: externalToolId,
+								schoolId: copyContext.targetSchoolId,
+							});
+
+							schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([targetSchoolTool]);
+
+							return { copyContext, externalToolElement, tool, toolCopy };
+						};
+
+						it('should copy the external tool', async () => {
+							const { copyContext, externalToolElement, tool, toolCopy } = setupExistingSchoolTool();
+
+							const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+							expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
+								tool,
+								result.copyEntity?.id
+							);
+							expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+							expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+						});
+					});
+
+					describe('when the target school does not have the school external tool', () => {
+						const setupNonExistingSchoolTool = () => {
+							const { copyContext, externalToolElement } = setupToolDiffSchool();
+
+							schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+
+							return { copyContext, externalToolElement };
+						};
+
+						it('should not copy the external tool', async () => {
+							const { copyContext, externalToolElement } = setupNonExistingSchoolTool();
+
+							await service.copyExternalToolElement(externalToolElement, copyContext);
+
+							expect(contextExternalToolService.copyContextExternalTool).not.toBeCalled();
+						});
+
+						it('should return an deleted element', async () => {
+							const { copyContext, externalToolElement } = setupNonExistingSchoolTool();
+
+							const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+							expect(result.type).toEqual(CopyElementType.DELETED_ELEMENT);
+							expect(result.copyEntity instanceof DeletedElement).toEqual(true);
+						});
+					});
 				});
 			});
 
