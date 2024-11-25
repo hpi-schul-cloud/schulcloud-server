@@ -41,7 +41,7 @@ export class DeletionClient {
 
 	private createDeletionRequest(input: DeletionRequestInput): Observable<AxiosResponse<DeletionRequestOutput, any>> {
 		const headers = this.createDetaultHeaders();
-		const baseUrl = this.configService.get<string>('ADMIN_API_CLIENT_BASE_URL');
+		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 		const postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', baseUrl).toString();
 
 		const request = this.httpService.post<DeletionRequestOutput>(postDeletionRequestsEndpoint, input, headers);
@@ -53,7 +53,7 @@ export class DeletionClient {
 		const defaultHeaders = this.createDetaultHeaders();
 		const headers = this.isLimitGeaterZero(limit) ? { ...defaultHeaders, params: { limit } } : defaultHeaders;
 
-		const baseUrl = this.configService.get<string>('ADMIN_API_CLIENT_BASE_URL');
+		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 		const postDeletionExecutionsEndpoint = new URL('/admin/api/v1/deletionExecutions', baseUrl).toString();
 		const request = this.httpService.post(postDeletionExecutionsEndpoint, null, headers);
 

@@ -6,7 +6,7 @@ import { SynchronizationConfig } from '@modules/synchronization';
 import { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { LanguageType } from '@shared/domain/interface';
-import { RabbitMqConfig } from '@src/infra/rabbitmq';
+import { RabbitMqConfig } from '@infra/rabbitmq';
 
 export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,

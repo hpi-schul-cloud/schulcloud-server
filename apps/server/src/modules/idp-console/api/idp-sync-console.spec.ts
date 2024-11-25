@@ -2,10 +2,10 @@ import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@infra/console';
 import { createMock } from '@golevelup/ts-jest';
-import { SynchronizationUc } from './uc';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
-import { UsersSyncOptionsBuilder } from './builder';
+import { UsersSyncOptionsBuilder } from '../testing';
+import { SynchronizationUc } from './synchronization.uc';
 
 describe(IdpSyncConsole.name, () => {
 	let module: TestingModule;

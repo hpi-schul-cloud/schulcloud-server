@@ -12,9 +12,8 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@sr
 import { LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
 import { defaultMikroOrmOptions } from '@shared/common';
-import { IdpSyncConsole } from './idp-sync-console';
-import { SynchronizationUc } from './uc';
 import { idpConsoleConfigConfig } from './idp-console.config';
+import { IdpSyncConsole, SynchronizationUc } from './api';
 
 @Module({
 	imports: [
