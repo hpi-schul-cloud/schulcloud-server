@@ -3,14 +3,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	groupEntityFactory,
-	roleFactory,
-	userFactory,
-} from '@shared/testing';
+import { TestApiClient } from '@shared/testing/test-api-client';
+import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
+import { groupEntityFactory } from '@shared/testing/factory/group-entity.factory';
+import { roleFactory } from '@shared/testing/factory/role.factory';
+import { userFactory } from '@shared/testing/factory/user.factory';
 import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
 import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';

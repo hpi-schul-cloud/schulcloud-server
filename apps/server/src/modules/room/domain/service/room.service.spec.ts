@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -69,6 +70,7 @@ describe('RoomService', () => {
 			const props: RoomCreateProps = {
 				name: 'room #1',
 				color: RoomColor.ORANGE,
+				schoolId: new ObjectId().toHexString(),
 			};
 			return { props };
 		};
