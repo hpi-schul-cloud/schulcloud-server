@@ -153,17 +153,19 @@ describe(SchulconnexResponseMapper.name, () => {
 				const personenkontext: SchulconnexPersonenkontextResponse = schulconnexResponse.personenkontexte[0];
 				const group: SchulconnexGruppenResponse = personenkontext.gruppen![0];
 				const otherParticipant: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
+				const otherParticipant1: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![1];
 
 				return {
 					schulconnexResponse,
 					group,
 					personenkontext,
 					otherParticipant,
+					otherParticipant1,
 				};
 			};
 
 			it('should map the schulconnex response to external group dtos', () => {
-				const { schulconnexResponse, group, personenkontext, otherParticipant } = setup();
+				const { schulconnexResponse, group, personenkontext, otherParticipant, otherParticipant1 } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
@@ -179,6 +181,10 @@ describe(SchulconnexResponseMapper.name, () => {
 						{
 							externalUserId: otherParticipant.ktid,
 							roleName: RoleName.STUDENT,
+						},
+						{
+							externalUserId: otherParticipant1.ktid,
+							roleName: RoleName.GROUPSUBSTITUTIONTEACHER,
 						},
 					],
 					from: new Date('2024-08-01'),
@@ -311,6 +317,30 @@ describe(SchulconnexResponseMapper.name, () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result?.[0].otherUsers).toStrictEqual([]);
+			});
+		});
+
+		describe('when other participants have unknown roles', () => {
+			const setup = () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
+					{
+						ktid: 'ktid',
+						rollen: [SchulconnexGroupRole.SCHOOL_SUPPORT],
+					},
+				];
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should not add the user to other users', () => {
+				const { schulconnexResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result?.[0].otherUsers).toHaveLength(0);
 			});
 		});
 
