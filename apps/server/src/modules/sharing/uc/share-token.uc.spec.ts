@@ -23,6 +23,10 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
+import { StorageLocation } from '@src/modules/files-storage/interface';
+import { RoomService } from '@src/modules/room';
+import { RoomMemberService } from '@src/modules/room-member';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
@@ -81,6 +85,14 @@ describe('ShareTokenUC', () => {
 				{
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
+				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
+				{
+					provide: RoomMemberService,
+					useValue: createMock<RoomMemberService>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -1070,9 +1082,10 @@ describe('ShareTokenUC', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
-				courseService.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValue(course);
 
 				const columnBoard = columnBoardFactory.build();
+				columnBoardService.findById.mockResolvedValue(columnBoard);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
@@ -1116,9 +1129,11 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken, course, columnBoard } = setup();
 				const newName = 'NewName';
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
-				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith({
+				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith<CopyColumnBoardParams[]>({
 					originalColumnBoardId: columnBoard.id,
-					destinationExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
+					targetExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
+					sourceStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
+					targetStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
 					userId: user.id,
 					copyTitle: newName,
 				});
