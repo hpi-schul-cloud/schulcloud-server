@@ -6,7 +6,7 @@
     - Document code that is not self-explanatory
     - Think about bugs and keep security in mind
     - Write tests (Unit and Integration), also for error cases
-    - Main logic should have hidden behind the api, never trust the client
+    - Main logic should be hidden behind the api, never trust the client
     - Visible changes should be discussed with the UX-Team from the beginning of development; they also have to accept them at the end
     - Leave the code cleaner than you found it. Remove unnecessary lines. Listen to the linter.
 -->
