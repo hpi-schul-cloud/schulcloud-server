@@ -1,5 +1,5 @@
-import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { MediaAvailableLineElement, MediaAvailableLineElementProps } from '../domain';
 
 export const mediaAvailableLineElementFactory = BaseFactory.define<
