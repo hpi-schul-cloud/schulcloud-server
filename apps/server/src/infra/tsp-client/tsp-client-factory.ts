@@ -1,8 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
+import { Logger } from '@src/core/logger';
 import { OauthAdapterService } from '@src/modules/oauth';
 import { OAuthGrantType } from '@src/modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@src/modules/oauth/service/dto';
+import { AxiosError } from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
@@ -27,7 +30,8 @@ export class TspClientFactory {
 	constructor(
 		private readonly oauthAdapterService: OauthAdapterService,
 		configService: ConfigService<TspClientConfig, true>,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
+		private readonly logger: Logger
 	) {
 		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
 		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
@@ -60,13 +64,22 @@ export class TspClientFactory {
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
-		const response = await this.oauthAdapterService.sendTokenRequest(params.tokenEndpoint, payload);
+		try {
+			const response = await this.oauthAdapterService.sendTokenRequest(params.tokenEndpoint, payload);
 
-		this.cachedToken = response.accessToken;
-		this.tokenExpiresAt = this.getExpiresAt(now, response.accessToken);
+			this.cachedToken = response.accessToken;
+			this.tokenExpiresAt = this.getExpiresAt(now, response.accessToken);
 
-		// We need the Bearer prefix for the generated client, because OAS 2 does not support Bearer token type
-		return `Bearer ${this.cachedToken}`;
+			// We need the Bearer prefix for the generated client, because OAS 2 does not support Bearer token type
+			return `Bearer ${this.cachedToken}`;
+		} catch (e) {
+			if (e instanceof AxiosError) {
+				this.logger.warning(new AxiosErrorLoggable(e, 'TSP_OAUTH_ERROR'));
+			} else {
+				this.logger.warning(new ErrorLoggable(e));
+			}
+			return Promise.reject();
+		}
 	}
 
 	private getExpiresAt(now: number, token: string): number {
