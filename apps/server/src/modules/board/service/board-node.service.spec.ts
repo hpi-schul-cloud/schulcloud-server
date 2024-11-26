@@ -5,11 +5,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing/setup-entities';
 import { Card, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { cardFactory } from '../testing/card.factory';
-import { columnBoardFactory } from '../testing/column-board.factory';
-import { deletedElementFactory } from '../testing/deleted-element.factory';
-import { externalToolElementFactory } from '../testing/external-tool-element.factory';
-import { richTextElementFactory } from '../testing/rich-text-element.factory';
+import {
+	cardFactory,
+	columnBoardFactory,
+	deletedElementFactory,
+	externalToolElementFactory,
+	richTextElementFactory,
+} from '../testing';
 import { BoardNodeService } from './board-node.service';
 import { BoardNodeDeleteHooksService, ContentElementUpdateService } from './internal';
 

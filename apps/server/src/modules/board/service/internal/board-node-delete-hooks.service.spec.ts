@@ -1,16 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor/service/collaborative-text-editor.service';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
-import { DrawingElementAdapterService } from '@src/modules/tldraw-client/service/drawing-element-adapter.service';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service/context-external-tool.service';
-import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing/context-external-tool.factory';
-import { collaborativeTextEditorFactory } from '../../testing/collaborative-text-editor.factory';
-import { drawingElementFactory } from '../../testing/drawing-element.factory';
-import { externalToolElementFactory } from '../../testing/external-tool-element.factory';
-import { fileElementFactory } from '../../testing/file-element.factory';
-import { linkElementFactory } from '../../testing/link-element.factory';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor/service/collaborative-text-editor.service';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service/files-storage-client.service';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service/context-external-tool.service';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing/context-external-tool.factory';
+import {
+	collaborativeTextEditorFactory,
+	drawingElementFactory,
+	externalToolElementFactory,
+	fileElementFactory,
+	linkElementFactory,
+} from '../../testing';
 import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
 
 describe(BoardNodeDeleteHooksService.name, () => {

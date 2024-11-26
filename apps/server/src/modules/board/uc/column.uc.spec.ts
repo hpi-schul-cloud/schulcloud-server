@@ -2,14 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { userFactory } from '@shared/testing/factory/user.factory';
+import { userFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
 import { BoardNodeService } from '../service';
 import { BoardNodePermissionService } from '../service/board-node-permission.service';
-import { cardFactory } from '../testing/card.factory';
-import { columnBoardFactory } from '../testing/column-board.factory';
-import { columnFactory } from '../testing/column.factory';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ColumnUc } from './column.uc';
 
 describe(ColumnUc.name, () => {

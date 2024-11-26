@@ -4,9 +4,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { cleanupCollections } from '@shared/testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { ColumnBoard } from '../domain';
-import { cardFactory } from '../testing/card.factory';
-import { columnBoardFactory } from '../testing/column-board.factory';
-import { columnFactory } from '../testing/column.factory';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { BoardNodeEntity } from './entity/board-node.entity';
 

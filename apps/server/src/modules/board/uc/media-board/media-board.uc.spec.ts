@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { userFactory as userEntityFactory } from '@shared/testing/factory/user.factory';
+import { userFactory as userEntityFactory } from '@shared/testing/factory';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';

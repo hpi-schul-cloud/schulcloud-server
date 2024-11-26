@@ -3,7 +3,7 @@ import { Action } from '@modules/authorization';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing/setup-entities';
-import { userFactory } from '@shared/testing/factory/user.factory';
+import { userFactory } from '@shared/testing/factory';
 import {
 	BoardNodeAuthorizable,
 	BoardNodeFactory,
