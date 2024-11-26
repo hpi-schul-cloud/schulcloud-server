@@ -191,5 +191,22 @@ describe(MetaTagExternalUrlService.name, () => {
 				});
 			});
 		});
+
+		describe('when html not contains images', () => {
+			it('should return no image', async () => {
+				const url = new URL('https://de.wikipedia.org/example-article');
+
+				const cancelTokenSource = createCancelTokenSource();
+				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+				const ogImages = [];
+				const mockedStream = mockReadstream([mockHtmlStart({ ogImages })]);
+				mockedAxios.get.mockResolvedValue({ data: mockedStream });
+
+				const result = await service.tryExtractMetaTags(url);
+
+				expect(result?.originalImageUrl).toBeUndefined();
+			});
+		});
 	});
 });

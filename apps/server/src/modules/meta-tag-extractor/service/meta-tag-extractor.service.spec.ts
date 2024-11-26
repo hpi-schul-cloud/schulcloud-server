@@ -2,16 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import ogs from 'open-graph-scraper';
+import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
-import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
-
-jest.mock('open-graph-scraper', () => {
-	return {
-		__esModule: true,
-		default: jest.fn(),
-	};
-});
 
 describe(MetaTagExtractorService.name, () => {
 	let module: TestingModule;
@@ -54,7 +48,24 @@ describe(MetaTagExtractorService.name, () => {
 		jest.resetAllMocks();
 	});
 
+	const setup = (ogsResult: Partial<Awaited<Promise<ReturnType<typeof ogs>>>>) => {
+		jest.mock('open-graph-scraper', () => {
+			return {
+				__esModule: true,
+				default: jest.fn().mockResolvedValue(ogsResult),
+			};
+		});
+	};
+
 	describe('getMetaData', () => {
+		describe('when url is an empty string', () => {
+			it('should throw an error', async () => {
+				const url = '';
+
+				await expect(async () => service.getMetaData(url)).rejects.toThrow();
+			});
+		});
+
 		describe('when protocol is not https', () => {
 			it('should fix it', async () => {
 				const url = 'http://www.test.de';
