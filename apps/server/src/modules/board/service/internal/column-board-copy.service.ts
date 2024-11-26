@@ -1,5 +1,5 @@
 import { CopyStatus } from '@modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../../domain';
