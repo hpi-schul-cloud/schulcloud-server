@@ -25,16 +25,7 @@ export class MetaTagExtractorService {
 	}
 
 	parseValidUrl(url: string): URL {
-		if (url.length === 0) {
-			throw new InvalidLinkUrlLoggableException(url, 'Empty url given');
-		}
-
-		let urlObject: URL;
-		try {
-			urlObject = new URL(url);
-		} catch (err) {
-			throw new InvalidLinkUrlLoggableException(url, 'Invalid URL');
-		}
+		const urlObject = new URL(url);
 
 		// enforce https
 		urlObject.protocol = 'https:';
