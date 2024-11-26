@@ -9,11 +9,11 @@ import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.lo
 export class MetaTagExternalUrlService {
 	async tryExtractMetaTags(url: URL): Promise<MetaData | undefined> {
 		const html = await this.fetchHtmlPartly(url);
-		const { result, error } = await ogs({ html });
-		if (error) {
-			// unable to parse html
+		const result = await this.parseHtml(html);
+		if (!result) {
 			return undefined;
 		}
+
 		const { ogTitle, ogDescription, ogImage } = result;
 
 		return {
@@ -23,6 +23,16 @@ export class MetaTagExternalUrlService {
 			url: url.toString(),
 			type: 'external',
 		};
+	}
+
+	private async parseHtml(html: string) {
+		try {
+			const { result } = await ogs({ html });
+			return result;
+		} catch (error) {
+			// unable to parse html
+			return undefined;
+		}
 	}
 
 	private async fetchHtmlPartly(url: URL, maxLength = 50000): Promise<string> {

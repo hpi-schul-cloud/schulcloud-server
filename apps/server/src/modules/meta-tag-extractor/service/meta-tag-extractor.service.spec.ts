@@ -48,15 +48,6 @@ describe(MetaTagExtractorService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	const setup = (ogsResult: Partial<Awaited<Promise<ReturnType<typeof ogs>>>>) => {
-		jest.mock('open-graph-scraper', () => {
-			return {
-				__esModule: true,
-				default: jest.fn().mockResolvedValue(ogsResult),
-			};
-		});
-	};
-
 	describe('getMetaData', () => {
 		describe('when url is an empty string', () => {
 			it('should throw an error', async () => {

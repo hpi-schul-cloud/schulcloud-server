@@ -208,5 +208,21 @@ describe(MetaTagExternalUrlService.name, () => {
 				expect(result?.originalImageUrl).toBeUndefined();
 			});
 		});
+
+		describe('when html creates an error', () => {
+			it('should return undefined', async () => {
+				const url = new URL('https://de.wikipedia.org/example-article');
+
+				const cancelTokenSource = createCancelTokenSource();
+				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+				const mockedStream = mockReadstream([]);
+				mockedAxios.get.mockResolvedValue({ data: mockedStream });
+
+				const result = await service.tryExtractMetaTags(url);
+
+				expect(result).toBeUndefined();
+			});
+		});
 	});
 });

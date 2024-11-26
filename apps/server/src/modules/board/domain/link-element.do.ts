@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { BoardNode } from './board-node.do';
 import type { LinkElementProps } from './types';
 
