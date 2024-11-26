@@ -504,6 +504,30 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('updateSecondarySchoolRole', () => {
+		describe('when user is not in the school yet', () => {
+			it('should add user with role to school', async () => {
+				const user = userDoFactory.buildWithId();
+				const roleName = RoleName.GUESTTEACHER;
+				const role = roleFactory.buildWithId({ name: roleName });
+				const school = schoolFactory.build();
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+				roleService.findByName.mockResolvedValueOnce(role);
+
+				await service.addSecondarySchoolToUsers([user.id as string], school.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [{ schoolId: school.id, role: { id: role.id, name: roleName } }],
+					}),
+				]);
+			});
+			// TODO: student
+			// TODO: user already in school
+		});
+	});
+
 	describe('saveAll is called', () => {
 		it('should call the repo with given users', async () => {
 			const users: UserDO[] = [userDoFactory.buildWithId()];
