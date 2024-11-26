@@ -105,7 +105,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	school: SchoolEntity;
 
 	@Embedded(() => UserSchoolEmbeddable, { array: true, nullable: true })
-	secondarySchools?: UserSchoolEmbeddable[];
+	secondarySchools: UserSchoolEmbeddable[] = [];
 
 	@Property({ nullable: true })
 	@Index()
@@ -181,6 +181,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.preferredName = props.preferredName;
 		this.email = props.email;
 		this.school = props.school;
+		this.secondarySchools = props.secondarySchools || [];
 		this.roles.set(props.roles);
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;
