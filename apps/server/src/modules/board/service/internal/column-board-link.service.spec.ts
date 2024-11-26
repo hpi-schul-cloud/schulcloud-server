@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing/setup-entities';
 import { ColumnBoard, LinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 import {
@@ -12,8 +12,9 @@ import {
 	linkElementFactory,
 	richTextElementFactory,
 } from '../../testing';
-import { BoardNodeService } from '../board-node.service';
 import { ColumnBoardLinkService } from './column-board-link.service';
+// Warning: do not move the BoardNodeService import up. Otherwise the import will lead to dependency cycles.
+import { BoardNodeService } from '../board-node.service';
 
 describe(ColumnBoardLinkService.name, () => {
 	let module: TestingModule;

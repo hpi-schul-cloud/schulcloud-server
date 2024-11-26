@@ -4,8 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDeletedEvent } from '../../../tool/context-external-tool/domain';
 import { ContentElementType, DeletedElement, ROOT_PATH } from '../../domain';
 import { externalToolElementFactory } from '../../testing';
-import { BoardNodeService } from '../board-node.service';
 import { ContextExternalToolDeletedEventHandlerService } from './context-external-tool-deleted-event-handler.service';
+// Warning: do not move the BoardNodeService import up. Otherwise the import will lead to dependency cycles.
+import { BoardNodeService } from '../board-node.service';
 
 describe(ContextExternalToolDeletedEventHandlerService.name, () => {
 	let module: TestingModule;
