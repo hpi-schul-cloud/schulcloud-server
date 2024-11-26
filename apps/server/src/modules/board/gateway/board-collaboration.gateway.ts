@@ -17,7 +17,7 @@ import {
 	ColumnResponseMapper,
 	ContentElementResponseFactory,
 } from '../controller/mapper';
-import { AnyBoardNode, ContentElementType } from '../domain';
+import { AnyBoardNode } from '../domain';
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
@@ -351,11 +351,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const element = await this.elementUc.updateElement(userId, data.elementId, data.data.content);
-			// TODO: add mapper or something similar
-			if ('originalImageUrl' in element && data.data.type === ContentElementType.LINK) {
-				data.data.content.title = element.title;
-				data.data.content.originalImageUrl = element.originalImageUrl;
-			}
 			emitter.emitToClientAndRoom(data, element);
 		} catch (err) {
 			emitter.emitFailure(data);

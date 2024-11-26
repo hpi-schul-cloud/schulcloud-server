@@ -1,5 +1,5 @@
 import { TaskService } from '@modules/task';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';
@@ -8,7 +8,7 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 export class TaskUrlHandler extends AbstractUrlHandler implements UrlHandler {
 	patterns: RegExp[] = [/\/homework\/([0-9a-f]{24})$/i];
 
-	constructor(@Inject(forwardRef(() => TaskService)) private readonly taskService: TaskService) {
+	constructor(private readonly taskService: TaskService) {
 		super();
 	}
 

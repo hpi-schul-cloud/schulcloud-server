@@ -1,8 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MetaDataEntityType } from '@modules/meta-tag-extractor/types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { MetaTagExtractorAdapterService } from '@src/infra/meta-tag-extractor-client';
 import {
 	DrawingContentBody,
 	ExternalToolContentBody,
@@ -26,7 +24,6 @@ describe('ContentElementUpdateService', () => {
 	let module: TestingModule;
 	let service: ContentElementUpdateService;
 	let repo: DeepMocked<BoardNodeRepo>;
-	let metaTagExtractorAdapterService: DeepMocked<MetaTagExtractorAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,15 +33,10 @@ describe('ContentElementUpdateService', () => {
 					provide: BoardNodeRepo,
 					useValue: createMock<BoardNodeRepo>(),
 				},
-				{
-					provide: MetaTagExtractorAdapterService,
-					useValue: createMock<MetaTagExtractorAdapterService>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(ContentElementUpdateService);
-		metaTagExtractorAdapterService = module.get(MetaTagExtractorAdapterService);
 		repo = module.get(BoardNodeRepo);
 	});
 
@@ -72,21 +64,17 @@ describe('ContentElementUpdateService', () => {
 	it('should update LinkElement', async () => {
 		const element = linkElementFactory.build();
 		const content = new LinkContentBody();
-		content.url = 'https://example.com/';
-
-		const metaData = {
-			title: 'title',
-			description: 'description',
-			url: 'https://example.com/',
-			imageUrl: 'https://example.com/image.jpg',
-			type: 'unknown' as MetaDataEntityType,
-		};
-
-		metaTagExtractorAdapterService.getMetaData.mockResolvedValue(metaData);
+		content.url = 'http://example.com/';
+		content.title = 'title';
+		content.description = 'description';
+		content.imageUrl = 'relative-image.jpg';
 
 		await service.updateContent(element, content);
 
-		expect(element.url).toBe('https://example.com/');
+		expect(element.url).toBe('http://example.com/');
+		expect(element.title).toBe('title');
+		expect(element.description).toBe('description');
+		expect(element.imageUrl).toBe('relative-image.jpg');
 		expect(repo.save).toHaveBeenCalledWith(element);
 	});
 
