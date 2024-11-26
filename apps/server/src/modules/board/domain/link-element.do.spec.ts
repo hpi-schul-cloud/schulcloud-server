@@ -25,7 +25,7 @@ describe('LinkElement', () => {
 		});
 	});
 
-	it('should be instance of LinkElement',, () => {
+	it('should be instance of LinkElement', () => {
 		expect(isLinkElement(linkElement)).toBe(true);
 	});
 
