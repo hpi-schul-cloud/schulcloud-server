@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import ogs from 'open-graph-scraper';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
