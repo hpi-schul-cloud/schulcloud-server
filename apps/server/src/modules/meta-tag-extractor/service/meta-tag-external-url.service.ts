@@ -15,11 +15,11 @@ export class MetaTagExternalUrlService {
 		}
 
 		const { ogTitle, ogDescription, ogImage } = result;
-
+		console.log('tryExtractMetaTags result', result);
 		return {
 			title: ogTitle ?? '',
 			description: ogDescription ?? '',
-			originalImageUrl: ogImage ? this.getImageUrl(ogImage, url) : undefined,
+			originalImageUrl: this.getImageUrl(ogImage, url),
 			url: url.toString(),
 			type: 'external',
 		};
@@ -28,7 +28,7 @@ export class MetaTagExternalUrlService {
 	private async parseHtml(html: string) {
 		try {
 			const { result } = await ogs({ html });
-			return result;
+			return { ogImage: [], ...result };
 		} catch (error) {
 			// unable to parse html
 			return undefined;
