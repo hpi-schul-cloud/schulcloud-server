@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import { InputFormat } from '@shared/domain/types';
-import { MetaTagExtractorAdapterService } from '@src/infra/meta-tag-extractor-client';
 import {
 	AnyElementContentBody,
 	DrawingContentBody,
@@ -30,17 +29,14 @@ import { BoardNodeRepo } from '../../repo';
 
 @Injectable()
 export class ContentElementUpdateService {
-	constructor(
-		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly metaTagExtractorAdapterService: MetaTagExtractorAdapterService
-	) {}
+	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async updateContent(element: AnyContentElement, content: AnyElementContentBody): Promise<void> {
 		// TODO refactor if ... else to e.g. discriminated union or non-exhaustive check
 		if (isFileElement(element) && content instanceof FileContentBody) {
 			this.updateFileElement(element, content);
 		} else if (isLinkElement(element) && content instanceof LinkContentBody) {
-			await this.updateLinkElement(element, content);
+			this.updateLinkElement(element, content);
 		} else if (isRichTextElement(element) && content instanceof RichTextContentBody) {
 			this.updateRichTextElement(element, content);
 		} else if (isDrawingElement(element) && content instanceof DrawingContentBody) {
@@ -61,13 +57,21 @@ export class ContentElementUpdateService {
 		element.alternativeText = sanitizeRichText(content.alternativeText, InputFormat.PLAIN_TEXT);
 	}
 
-	async updateLinkElement(element: LinkElement, content: LinkContentBody): Promise<void> {
-		const url = new URL(content.url);
-		const metaData = await this.metaTagExtractorAdapterService.getMetaData(url);
-		element.url = url.toString();
-		element.title = metaData.title ?? '';
-		element.description = metaData.description ?? '';
-		element.originalImageUrl = metaData.originalImageUrl ?? '';
+	updateLinkElement(element: LinkElement, content: LinkContentBody): void {
+		element.url = new URL(content.url).toString();
+		element.title = content.title ?? '';
+		element.description = content.description ?? '';
+		if (content.imageUrl) {
+			const isRelativeUrl = (url: string) => {
+				const fallbackHostname = 'https://www.fallback-url-if-url-is-relative.org';
+				const imageUrlObject = new URL(url, fallbackHostname);
+				return imageUrlObject.origin === fallbackHostname;
+			};
+
+			if (isRelativeUrl(content.imageUrl)) {
+				element.imageUrl = content.imageUrl;
+			}
+		}
 	}
 
 	updateRichTextElement(element: RichTextElement, content: RichTextContentBody): void {

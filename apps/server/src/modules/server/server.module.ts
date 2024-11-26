@@ -55,7 +55,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
-	AuthGuardModule.register([AuthGuardOptions.JWT, AuthGuardOptions.X_API_KEY]),
+	AuthGuardModule.register([AuthGuardOptions.JWT]),
 	AuthorizationReferenceApiModule,
 	AuthorizationRulesModule,
 	AccountApiModule,

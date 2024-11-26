@@ -26,26 +26,23 @@ export class MetaTagExtractorService {
 
 	parseValidUrl(url: string): URL {
 		if (url.length === 0) {
-			console.log('Empty url given');
 			throw new InvalidLinkUrlLoggableException(url, 'Empty url given');
 		}
 
+		let urlObject: URL;
 		try {
-			const urlObject = new URL(url);
-			console.log(urlObject);
-			if (urlObject.protocol !== 'https:') {
-				console.log('https-protocol required');
-				throw new InvalidLinkUrlLoggableException(url, 'https-protocol required');
-			}
-
-			if (net.isIPv4(urlObject.hostname) || net.isIPv6(urlObject.hostname)) {
-				console.log('IP adress is not allowed as hostname');
-				throw new InvalidLinkUrlLoggableException(url, 'IP adress is not allowed as hostname');
-			}
-			return urlObject;
+			urlObject = new URL(url);
 		} catch (err) {
 			throw new InvalidLinkUrlLoggableException(url, 'Invalid URL');
 		}
+
+		// enforce https
+		urlObject.protocol = 'https:';
+
+		if (net.isIPv4(urlObject.hostname) || net.isIPv6(urlObject.hostname)) {
+			throw new InvalidLinkUrlLoggableException(url, 'IP adress is not allowed as hostname');
+		}
+		return urlObject;
 	}
 
 	private async tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {

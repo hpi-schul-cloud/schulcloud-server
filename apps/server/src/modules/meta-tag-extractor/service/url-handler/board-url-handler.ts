@@ -1,6 +1,6 @@
 import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';
@@ -9,7 +9,10 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 export class BoardUrlHandler extends AbstractUrlHandler implements UrlHandler {
 	patterns: RegExp[] = [/\/boards\/([0-9a-f]{24})$/i];
 
-	constructor(private readonly columnBoardService: ColumnBoardService, private readonly courseService: CourseService) {
+	constructor(
+		@Inject(forwardRef(() => ColumnBoardService)) private readonly columnBoardService: ColumnBoardService,
+		@Inject(forwardRef(() => CourseService)) private readonly courseService: CourseService
+	) {
 		super();
 	}
 

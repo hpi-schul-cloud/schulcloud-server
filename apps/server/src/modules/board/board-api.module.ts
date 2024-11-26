@@ -1,6 +1,5 @@
-import { MetaTagExtractorAdapterModule } from '@src/infra/meta-tag-extractor-client';
 import { AuthorizationModule } from '@modules/authorization';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardModule } from './board.module';
@@ -16,13 +15,7 @@ import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 import { RoomMemberModule } from '../room-member';
 
 @Module({
-	imports: [
-		BoardModule,
-		LoggerModule,
-		MetaTagExtractorAdapterModule,
-		RoomMemberModule,
-		forwardRef(() => AuthorizationModule),
-	],
+	imports: [BoardModule, LoggerModule, RoomMemberModule, AuthorizationModule],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
 	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CourseRepo],
 })
