@@ -14,6 +14,9 @@ import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
+import { RoleModule } from '../role';
+import { RoomMemberModule } from '../room-member';
+import { RoomModule } from '../room';
 
 @Module({
 	imports: [
@@ -24,6 +27,9 @@ import { VideoConferenceDeprecatedUc } from './uc';
 		HttpModule,
 		LegacySchoolModule,
 		LoggerModule,
+		RoleModule,
+		RoomMemberModule,
+		RoomModule,
 		UserModule,
 		LearnroomModule,
 		UserModule,

@@ -18,8 +18,10 @@ import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory }
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { BoardNodeAuthorizableService, BoardRoles, ColumnBoard, ColumnBoardService } from '@src/modules/board';
-import { boardNodeAuthorizableFactory, columnBoardFactory } from '@src/modules/board/testing';
+import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '@src/modules/board';
+import { RoleService } from '@src/modules/role';
+import { RoomService } from '@src/modules/room';
+import { RoomMemberService } from '@src/modules/room-member';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -29,11 +31,21 @@ import { VideoConferenceService } from './video-conference.service';
 
 describe(VideoConferenceService.name, () => {
 	let service: DeepMocked<VideoConferenceService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let boardNodeService: DeepMocked<BoardNodeService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let roleService: DeepMocked<RoleService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let roomMemberService: DeepMocked<RoomMemberService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let roomService: DeepMocked<RoomService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
@@ -47,6 +59,10 @@ describe(VideoConferenceService.name, () => {
 				{
 					provide: BoardNodeAuthorizableService,
 					useValue: createMock<BoardNodeAuthorizableService>(),
+				},
+				{
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
 					provide: ConfigService,
@@ -73,6 +89,18 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
+				{
+					provide: RoomMemberService,
+					useValue: createMock<RoomMemberService>(),
+				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
+				{
 					provide: TeamsRepo,
 					useValue: createMock<TeamsRepo>(),
 				},
@@ -89,10 +117,14 @@ describe(VideoConferenceService.name, () => {
 
 		service = module.get(VideoConferenceService);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
+		boardNodeService = module.get(BoardNodeService);
 		columnBoardService = module.get(ColumnBoardService);
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
+		roleService = module.get(RoleService);
+		roomMemberService = module.get(RoomMemberService);
+		roomService = module.get(RoomService);
 		schoolService = module.get(LegacySchoolService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
@@ -338,51 +370,6 @@ describe(VideoConferenceService.name, () => {
 	});
 
 	describe('checkPermission', () => {
-		describe('when user has START_MEETING permission and is in board scope', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const usersWithRoles = [
-					{
-						userId: user.id,
-						roles: [BoardRoles.EDITOR],
-					},
-				];
-				const entity = columnBoardFactory.build();
-				const conferenceScope = VideoConferenceScope.BOARD;
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
-					boardNodeAuthorizableFactory.build({ users: usersWithRoles })
-				);
-				columnBoardService.findById.mockResolvedValueOnce(entity);
-
-				return {
-					user,
-					userId: user.id,
-					usersWithRoles,
-					entity,
-					entityId: entity.id,
-					conferenceScope,
-				};
-			};
-
-			it('should call the correct authorization order', async () => {
-				const { entity, userId, conferenceScope, entityId } = setup();
-
-				await service.determineBbbRole(userId, entityId, conferenceScope);
-
-				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(entity);
-			});
-
-			it('should return BBBRole.MODERATOR', async () => {
-				const { userId, conferenceScope, entityId } = setup();
-
-				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
-
-				expect(result).toBe(BBBRole.MODERATOR);
-			});
-		});
-
 		describe('when user has START_MEETING permission and is in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -612,24 +599,6 @@ describe(VideoConferenceService.name, () => {
 			};
 		};
 
-		describe('when conference scope is VideoConferenceScope.BOARD', () => {
-			it('should return scope information for a board', async () => {
-				const { userId, scopeId } = setup();
-				const board: ColumnBoard = columnBoardFactory.build({ id: scopeId, title: 'Board' });
-				columnBoardService.findById.mockResolvedValue(board);
-
-				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.BOARD);
-
-				expect(result).toEqual({
-					scopeId,
-					scopeName: 'boards',
-					logoutUrl: `${service.hostUrl}/boards/${scopeId}`,
-					title: board.title,
-				});
-				expect(columnBoardService.findById).toHaveBeenCalledWith(scopeId);
-			});
-		});
-
 		describe('when conference scope is VideoConferenceScope.COURSE', () => {
 			it('should return scope information for a course', async () => {
 				const { userId, conferenceScope, scopeId } = setup();
@@ -698,52 +667,6 @@ describe(VideoConferenceService.name, () => {
 				team,
 			};
 		};
-
-		/* 			describe('when conference scope is VideoConferenceScope.BOARD', () => {
-			it('should call columnBoardService.findById', async () => {
-				const user = userFactory.buildWithId();
-				const usersWithRoles = [
-					{
-						userId: user.id,
-						roles: [BoardRoles.EDITOR],
-					},
-				];
-				const entity = columnBoardFactory.build();
-				const conferenceScope = VideoConferenceScope.BOARD;
-				const scopeId = new ObjectId().toHexString();
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
-					boardNodeAuthorizableFactory.build({ users: usersWithRoles })
-				);
-				columnBoardService.findById.mockResolvedValueOnce(entity);
-
-				configService.get.mockReturnValue('https://api.example.com');
-
-				await service.getUserRoleAndGuestStatusByUserIdForBbb(user.id, scopeId, conferenceScope);
-
-				expect(columnBoardService.findById).toHaveBeenCalledWith(scopeId);
-			});
-
-			it('should call userService.findById', async () => {
-				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.BOARD);
-				userService.findById.mockResolvedValue(user);
-
-				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
-
-				expect(userService.findById).toHaveBeenCalledWith(userId);
-			});
-
-			it('should return the user role and guest status for a board conference', async () => {
-				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.BOARD);
-				columnBoardService.findById.mockResolvedValue(columnBoardFactory.build({ title: 'Board' }));
-				userService.findById.mockResolvedValue(user);
-
-				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
-
-				expect(result).toEqual({ role: BBBRole.MODERATOR, isGuest: false });
-			});
-		}); */
 
 		describe('when conference scope is VideoConferenceScope.COURSE', () => {
 			it('should call courseRepo.findById', async () => {

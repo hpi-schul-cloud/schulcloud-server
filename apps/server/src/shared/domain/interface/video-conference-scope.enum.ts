@@ -1,5 +1,6 @@
 export enum VideoConferenceScope {
-	BOARD = 'board',
 	COURSE = 'course',
 	EVENT = 'event',
+	ROOM = 'room',
+	VIDEO_CONFERENCE_ELEMENT = 'video-conference-element',
 }
