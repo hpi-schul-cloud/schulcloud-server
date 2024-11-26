@@ -129,6 +129,7 @@ export interface ServerConfig
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
+	OAUTH2_LOGIN_REQUEST_TIMEOUT_MS: number;
 }
 
 const config: ServerConfig = {
@@ -327,6 +328,7 @@ const config: ServerConfig = {
 	AES_KEY: Configuration.get('AES_KEY') as string,
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
+	OAUTH2_LOGIN_REQUEST_TIMEOUT_MS: Configuration.get('OAUTH2_LOGIN_REQUEST_TIMEOUT_MS') as number,
 };
 
 export const serverConfig = () => config;
