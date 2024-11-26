@@ -57,6 +57,7 @@ export class Migration20241120100616 extends Migration {
 					numberOfDeletedTools += 1;
 					if (tool.contextType === 'boardElement') {
 						await this.driver.nativeDelete('boardnodes', { _id: tool.contextId });
+						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 						console.info(`deleted boardnode: ${tool.contextId}`);
 						numberOfDeletedElements += 1;
 					}
