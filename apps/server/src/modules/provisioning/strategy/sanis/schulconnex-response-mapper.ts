@@ -146,7 +146,7 @@ export class SchulconnexResponseMapper {
 			otherUsers = group.sonstige_gruppenzugehoerige
 				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
-						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null)
+						.filter((otherUser: ExternalGroupUserDto | null): otherUser is ExternalGroupUserDto => otherUser !== null)
 				: [];
 		}
 

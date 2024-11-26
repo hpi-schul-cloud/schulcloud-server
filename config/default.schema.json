@@ -1762,6 +1762,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
+		},
+		"OAUTH2_LOGIN_REQUEST_TIMEOUT_MS": {
+			"type": "integer",
+			"description": "Timeout in milliseconds for oauth2 login",
+			"default": 8000
 		}
 	},
 	"required": []

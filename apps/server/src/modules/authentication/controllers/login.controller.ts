@@ -2,8 +2,8 @@ import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ForbiddenOperationError, ValidationError } from '@shared/common';
-import { StrategyType, type OauthCurrentUser } from '../interface';
+import { ForbiddenOperationError, RequestTimeout, ValidationError } from '@shared/common';
+import { type OauthCurrentUser, StrategyType } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -50,6 +50,7 @@ export class LoginController {
 		return response;
 	}
 
+	@RequestTimeout('OAUTH2_LOGIN_REQUEST_TIMEOUT_MS')
 	@UseGuards(AuthGuard(StrategyType.OAUTH2))
 	@HttpCode(HttpStatus.OK)
 	@Post('oauth2')
