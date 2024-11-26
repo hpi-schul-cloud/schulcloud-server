@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { MetaTagExtractorAdapterService } from '@src/infra/meta-tag-extractor-client';
 import { RichTextContentBody } from '../controller/dto';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
@@ -53,10 +52,6 @@ describe(ElementUc.name, () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
-				},
-				{
-					provide: MetaTagExtractorAdapterService,
-					useValue: createMock<MetaTagExtractorAdapterService>(),
 				},
 			],
 		}).compile();

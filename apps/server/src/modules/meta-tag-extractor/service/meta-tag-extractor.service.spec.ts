@@ -56,10 +56,12 @@ describe(MetaTagExtractorService.name, () => {
 
 	describe('getMetaData', () => {
 		describe('when protocol is not https', () => {
-			it('should throw an error', async () => {
+			it('should fix it', async () => {
 				const url = 'http://www.test.de';
 
-				await expect(service.getMetaData(url)).rejects.toThrowError(`Invalid URL`);
+				const metaData = await service.getMetaData(url);
+
+				expect(metaData).toEqual(expect.objectContaining({ url: 'https://www.test.de/' }));
 			});
 		});
 

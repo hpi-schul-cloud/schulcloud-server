@@ -166,7 +166,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				const result = await service.tryExtractMetaTags(url);
 
-				expect(result?.image).toBeDefined();
+				expect(result?.originalImageUrl).toBeDefined();
 			});
 
 			describe('when multiple images are present', () => {
@@ -187,7 +187,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 					const result = await service.tryExtractMetaTags(url);
 
-					expect(result?.image?.url).toEqual('https://example.com/paper.jpg');
+					expect(result?.originalImageUrl).toEqual('https://example.com/paper.jpg');
 				});
 			});
 		});
