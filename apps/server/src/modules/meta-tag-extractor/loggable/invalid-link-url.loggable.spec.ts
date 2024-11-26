@@ -10,9 +10,8 @@ describe('InvalidLinkUrlLoggableException', () => {
 		const url = 'http://invalid.url';
 		const message = 'Invalid URL';
 		const exception = new InvalidLinkUrlLoggableException(url, message);
-		const logMessage = exception.getLogMessage();
 
-		expect(logMessage).toEqual({
+		expect(exception.getLogMessage()).toEqual({
 			type: 'INVALID_LINK_URL',
 			message,
 			stack: exception.stack,
@@ -20,11 +19,5 @@ describe('InvalidLinkUrlLoggableException', () => {
 				url,
 			},
 		});
-	});
-
-	it('should have the correct message property', () => {
-		const message = 'Invalid URL';
-		const exception = new InvalidLinkUrlLoggableException('http://invalid.url', message);
-		expect(exception.message).toBe(message);
 	});
 });

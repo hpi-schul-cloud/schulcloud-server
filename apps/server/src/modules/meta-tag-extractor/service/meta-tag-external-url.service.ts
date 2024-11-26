@@ -15,7 +15,7 @@ export class MetaTagExternalUrlService {
 		}
 
 		const { ogTitle, ogDescription, ogImage } = result;
-		console.log('tryExtractMetaTags result', result);
+
 		return {
 			title: ogTitle ?? '',
 			description: ogDescription ?? '',

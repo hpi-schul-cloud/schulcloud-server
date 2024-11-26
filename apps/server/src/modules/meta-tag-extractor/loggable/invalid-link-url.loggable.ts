@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { BadRequestException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
