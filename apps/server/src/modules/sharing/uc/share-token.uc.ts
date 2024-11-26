@@ -313,7 +313,7 @@ export class ShareTokenUC {
 			case ShareTokenParentType.ColumnBoard:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Task Feature not enabled');
+					throw new InternalServerErrorException('Import Column Board Feature not enabled');
 				}
 				break;
 			default:
