@@ -343,30 +343,6 @@ describe('account repo', () => {
 			});
 		});
 
-		describe('When searching by username', () => {
-			const setup = async () => {
-				const originalUsername = 'USER@EXAMPLE.COM';
-				const partialLowerCaseUsername = 'USER@example.COM';
-				const lowercaseUsername = 'user@example.com';
-				const account = accountFactory.build({ username: originalUsername });
-				await em.persistAndFlush([account]);
-				em.clear();
-				return { originalUsername, partialLowerCaseUsername, lowercaseUsername, account };
-			};
-
-			it('should find account by user name, ignoring case', async () => {
-				const { originalUsername, partialLowerCaseUsername, lowercaseUsername } = await setup();
-
-				let [accounts] = await repo.searchByUsernameExactMatch(partialLowerCaseUsername);
-				expect(accounts).toHaveLength(1);
-				expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-
-				[accounts] = await repo.searchByUsernameExactMatch(lowercaseUsername);
-				expect(accounts).toHaveLength(1);
-				expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-			});
-		});
-
 		describe('When using wildcard', () => {
 			const setup = async () => {
 				const originalUsername = 'USER@EXAMPLE.COM';

@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { ProvisioningConfig } from '@modules/provisioning';
-import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -561,16 +560,6 @@ describe('GroupService', () => {
 
 				expect(groupRepo.save).toHaveBeenCalledWith(group);
 			});
-
-			describe('when the role id is undefined', () => {
-				it('should throw', async () => {
-					roleService.findByName.mockResolvedValue(roleDtoFactory.build({ id: undefined }));
-
-					await expect(service.addUserToGroup('groupId', 'userId', RoleName.STUDENT)).rejects.toThrow(
-						BadRequestException
-					);
-				});
-			});
 		});
 	});
 
@@ -611,18 +600,6 @@ describe('GroupService', () => {
 			describe('when role does not exist', () => {
 				it('should fail', async () => {
 					const { userDo } = setup();
-
-					const method = () => service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: RoleName.STUDENT }]);
-
-					await expect(method).rejects.toThrow();
-				});
-			});
-
-			describe('when role has no id', () => {
-				it('should fail', async () => {
-					const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
-					roleDto.id = undefined;
-					const { userDo } = setup([roleDto]);
 
 					const method = () => service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: RoleName.STUDENT }]);
 

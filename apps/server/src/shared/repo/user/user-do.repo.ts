@@ -4,8 +4,10 @@ import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
@@ -22,6 +24,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
+			.byTspUid(query.tspUid)
 			.byRoleId(query.roleId)
 			.withDiscoverableTrue(query.discoverable)
 			.isOutdated(query.isOutdated)
@@ -150,6 +153,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
+			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -178,6 +182,9 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
 			birthday: entityDO.birthday,
+			sourceOptions: entityDO.sourceOptions
+				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
+				: undefined,
 		};
 	}
 

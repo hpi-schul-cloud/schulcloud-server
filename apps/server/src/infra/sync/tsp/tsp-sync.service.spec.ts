@@ -1,43 +1,34 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	ExportApiInterface,
-	RobjExportKlasse,
-	RobjExportLehrer,
-	RobjExportSchueler,
-	RobjExportSchule,
-	TspClientFactory,
-} from '@infra/tsp-client';
+import { AccountService } from '@modules/account';
 import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { federalStateFactory, schoolYearFactory } from '@shared/testing';
+import { federalStateFactory, schoolYearFactory, userDoFactory } from '@shared/testing';
+import { accountDoFactory } from '@src/modules/account/testing';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
-import { SchoolProps } from '@src/modules/school/domain';
+import { FileStorageType, SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
-import { AxiosResponse } from 'axios';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
 	let module: TestingModule;
 	let sut: TspSyncService;
-	let tspClientFactory: DeepMocked<TspClientFactory>;
 	let systemService: DeepMocked<SystemService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
+	let userService: DeepMocked<UserService>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TspSyncService,
-				{
-					provide: TspClientFactory,
-					useValue: createMock<TspClientFactory>(),
-				},
 				{
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
@@ -54,15 +45,24 @@ describe(TspSyncService.name, () => {
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspSyncService);
-		tspClientFactory = module.get(TspClientFactory);
 		systemService = module.get(SystemService);
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
+		userService = module.get(UserService);
+		accountService = module.get(AccountService);
 	});
 
 	afterEach(() => {
@@ -109,203 +109,6 @@ describe(TspSyncService.name, () => {
 				setup();
 
 				await expect(sut.findTspSystemOrFail()).rejects.toThrow();
-			});
-		});
-	});
-
-	const setupTspClient = () => {
-		const clientId = faker.string.alpha();
-		const clientSecret = faker.string.alpha();
-		const tokenEndpoint = faker.internet.url();
-		const system = systemFactory.build({
-			oauthConfig: {
-				clientId,
-				clientSecret,
-				tokenEndpoint,
-			},
-		});
-
-		const tspSchool: RobjExportSchule = {
-			schuleName: faker.string.alpha(),
-			schuleNummer: faker.string.alpha(),
-		};
-		const schools = [tspSchool];
-		const responseSchools = createMock<AxiosResponse<Array<RobjExportSchule>>>({
-			data: schools,
-		});
-
-		const tspTeacher: RobjExportLehrer = {
-			schuleNummer: faker.string.alpha(),
-			lehrerVorname: faker.string.alpha(),
-			lehrerNachname: faker.string.alpha(),
-			lehrerUid: faker.string.alpha(),
-		};
-		const teachers = [tspTeacher];
-		const responseTeachers = createMock<AxiosResponse<Array<RobjExportLehrer>>>({
-			data: teachers,
-		});
-
-		const tspStudent: RobjExportSchueler = {
-			schuleNummer: faker.string.alpha(),
-			schuelerVorname: faker.string.alpha(),
-			schuelerNachname: faker.string.alpha(),
-			schuelerUid: faker.string.alpha(),
-		};
-		const students = [tspStudent];
-		const responseStudents = createMock<AxiosResponse<Array<RobjExportSchueler>>>({
-			data: students,
-		});
-
-		const tspClass: RobjExportKlasse = {
-			schuleNummer: faker.string.alpha(),
-			klasseId: faker.string.alpha(),
-			klasseName: faker.string.alpha(),
-			lehrerUid: faker.string.alpha(),
-		};
-		const classes = [tspClass];
-		const responseClasses = createMock<AxiosResponse<Array<RobjExportKlasse>>>({
-			data: classes,
-		});
-
-		const exportApiMock = createMock<ExportApiInterface>();
-		exportApiMock.exportSchuleList.mockResolvedValueOnce(responseSchools);
-		exportApiMock.exportLehrerList.mockResolvedValueOnce(responseTeachers);
-		exportApiMock.exportSchuelerList.mockResolvedValueOnce(responseStudents);
-		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
-
-		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
-
-		return { clientId, clientSecret, tokenEndpoint, system, exportApiMock, schools, teachers, students, classes };
-	};
-
-	describe('fetchTspSchools', () => {
-		describe('when tsp schools are fetched', () => {
-			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
-
-				await sut.fetchTspSchools(system, 1);
-
-				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
-					clientId,
-					clientSecret,
-					tokenEndpoint,
-				});
-			});
-
-			it('should call exportSchuleList', async () => {
-				const { system, exportApiMock } = setupTspClient();
-
-				await sut.fetchTspSchools(system, 1);
-
-				expect(exportApiMock.exportSchuleList).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return an array of schools', async () => {
-				const { system } = setupTspClient();
-
-				const schools = await sut.fetchTspSchools(system, 1);
-
-				expect(schools).toBeDefined();
-				expect(schools).toBeInstanceOf(Array);
-			});
-		});
-	});
-
-	describe('fetchTspTeachers', () => {
-		describe('when tsp teachers are fetched', () => {
-			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
-
-				await sut.fetchTspTeachers(system, 1);
-
-				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
-					clientId,
-					clientSecret,
-					tokenEndpoint,
-				});
-			});
-
-			it('should call exportLehrerList', async () => {
-				const { system, exportApiMock } = setupTspClient();
-
-				await sut.fetchTspTeachers(system, 1);
-
-				expect(exportApiMock.exportLehrerList).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return an array of teachers', async () => {
-				const { system } = setupTspClient();
-
-				const teachers = await sut.fetchTspTeachers(system, 1);
-
-				expect(teachers).toBeDefined();
-				expect(teachers).toBeInstanceOf(Array);
-			});
-		});
-	});
-
-	describe('fetchTspStudents', () => {
-		describe('when tsp students are fetched', () => {
-			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
-
-				await sut.fetchTspStudents(system, 1);
-
-				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
-					clientId,
-					clientSecret,
-					tokenEndpoint,
-				});
-			});
-
-			it('should call exportSchuelerList', async () => {
-				const { system, exportApiMock } = setupTspClient();
-
-				await sut.fetchTspStudents(system, 1);
-
-				expect(exportApiMock.exportSchuelerList).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return an array of students', async () => {
-				const { system } = setupTspClient();
-
-				const students = await sut.fetchTspStudents(system, 1);
-
-				expect(students).toBeDefined();
-				expect(students).toBeInstanceOf(Array);
-			});
-		});
-	});
-
-	describe('fetchTspClasses', () => {
-		describe('when tsp classes are fetched', () => {
-			it('should use the oauthConfig to create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
-
-				await sut.fetchTspClasses(system, 1);
-
-				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
-					clientId,
-					clientSecret,
-					tokenEndpoint,
-				});
-			});
-
-			it('should call exportKlasseList', async () => {
-				const { system, exportApiMock } = setupTspClient();
-
-				await sut.fetchTspClasses(system, 1);
-
-				expect(exportApiMock.exportKlasseList).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return an array of classes', async () => {
-				const { system } = setupTspClient();
-
-				const classes = await sut.fetchTspClasses(system, 1);
-
-				expect(classes).toBeDefined();
-				expect(classes).toBeInstanceOf(Array);
 			});
 		});
 	});
@@ -451,6 +254,7 @@ describe(TspSyncService.name, () => {
 						systemIds: [system.id],
 						federalState,
 						currentYear: schoolYear,
+						fileStorageType: FileStorageType.AWS_S3,
 					}) as Partial<SchoolProps>,
 				});
 			});
@@ -488,9 +292,143 @@ describe(TspSyncService.name, () => {
 						systemIds: [system.id],
 						federalState,
 						currentYear: schoolYear,
+						fileStorageType: FileStorageType.AWS_S3,
 					}) as Partial<SchoolProps>,
 				});
 				expect(federalStateService.findFederalStateByName).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('findUserByTspUid', () => {
+		describe('when user is found', () => {
+			const setup = () => {
+				const tspUid = faker.string.alpha();
+				const user = userDoFactory.build();
+
+				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 1 });
+
+				return { tspUid, user };
+			};
+
+			it('should return the user', async () => {
+				const { tspUid, user } = setup();
+
+				const result = await sut.findUserByTspUid(tspUid);
+
+				expect(result).toBe(user);
+			});
+		});
+
+		describe('when user is not found', () => {
+			const setup = () => {
+				const tspUid = faker.string.alpha();
+
+				userService.findUsers.mockResolvedValueOnce({ data: [], total: 0 });
+
+				return { tspUid };
+			};
+
+			it('should return null', async () => {
+				const { tspUid } = setup();
+
+				const result = await sut.findUserByTspUid(tspUid);
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findAccountByExternalId', () => {
+		describe('when account is found', () => {
+			const setup = () => {
+				const externalId = faker.string.alpha();
+				const systemId = faker.string.alpha();
+
+				const user = userDoFactory.build();
+				const account = accountDoFactory.build();
+
+				user.id = faker.string.alpha();
+				user.externalId = externalId;
+				account.userId = user.id;
+
+				userService.findByExternalId.mockResolvedValueOnce(user);
+				accountService.findByUserId.mockResolvedValueOnce(account);
+
+				return { externalId, systemId, account };
+			};
+
+			it('should return the account', async () => {
+				const { externalId, systemId, account } = setup();
+
+				const result = await sut.findAccountByExternalId(externalId, systemId);
+
+				expect(result).toBe(account);
+			});
+		});
+
+		describe('when account is not found', () => {
+			const setup = () => {
+				const externalId = faker.string.alpha();
+				const systemId = faker.string.alpha();
+
+				userService.findByExternalId.mockResolvedValueOnce(null);
+				accountService.findByUserId.mockResolvedValueOnce(null);
+
+				return { externalId, systemId };
+			};
+
+			it('should return null', async () => {
+				const { externalId, systemId } = setup();
+
+				const result = await sut.findAccountByExternalId(externalId, systemId);
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('updateUser', () => {
+		describe('when user is updated', () => {
+			const setup = () => {
+				const oldUid = faker.string.alpha();
+				const newUid = faker.string.alpha();
+				const email = faker.internet.email();
+				const user = userDoFactory.build();
+
+				userService.save.mockResolvedValueOnce(user);
+
+				return { oldUid, newUid, email, user };
+			};
+
+			it('should return the updated user', async () => {
+				const { oldUid, newUid, email, user } = setup();
+
+				const result = await sut.updateUser(user, email, newUid, oldUid);
+
+				expect(result).toBe(user);
+			});
+		});
+	});
+
+	describe('updateAccount', () => {
+		describe('when account is updated', () => {
+			const setup = () => {
+				const username = faker.internet.userName();
+				const systemId = faker.string.alpha();
+				const account = accountDoFactory.build();
+
+				accountService.save.mockResolvedValueOnce(account);
+
+				return { username, systemId, account };
+			};
+
+			it('should return the updated account', async () => {
+				const { username, systemId, account } = setup();
+
+				const result = await sut.updateAccount(account, username, systemId);
+
+				expect(result).toBe(account);
 			});
 		});
 	});
