@@ -1126,8 +1126,8 @@
 		"parameters": [],
 		"isHidden": false,
 		"isDeactivated": false,
-		"openNewTab": false,
-		"restrictToContexts": [],
+		"openNewTab": true,
+		"restrictToContexts": ["board-element", "course"],
 		"isPreferred": true,
 		"iconName": "mdiMovieRoll"
 	},
