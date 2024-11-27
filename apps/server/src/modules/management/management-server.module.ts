@@ -1,17 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types'; // Fix me!!
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { defaultMikroOrmOptions } from '@shared/common';
 import { ManagementModule } from './management.module';
-
-export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
-};
 
 @Module({
 	imports: [
