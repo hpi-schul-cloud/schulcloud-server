@@ -1,4 +1,4 @@
-import { setupEntities } from '@shared/testing/setup-entities';
+import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareToken } from './share-token.entity';

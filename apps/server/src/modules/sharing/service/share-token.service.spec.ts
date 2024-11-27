@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing/setup-entities';
-import { courseFactory, lessonFactory, shareTokenFactory, taskFactory } from '@shared/testing/factory';
+import { courseFactory, lessonFactory, setupEntities, shareTokenFactory, taskFactory } from '@shared/testing';
 import { columnBoardFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/learnroom/service';
 import { ColumnBoardService } from '@modules/board/service';
