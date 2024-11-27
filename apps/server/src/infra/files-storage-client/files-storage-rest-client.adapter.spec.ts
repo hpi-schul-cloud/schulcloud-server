@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
-import { ErrorLogger } from '@src/core/logger';
+import { ErrorLogger, Logger } from '@src/core/logger';
 import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
 import { FileApi } from './generated';
 
@@ -19,6 +19,10 @@ describe(FilesStorageRestClientAdapter.name, () => {
 				{
 					provide: FileApi,
 					useValue: createMock<FileApi>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ErrorLogger,
