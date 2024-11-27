@@ -49,6 +49,7 @@ export interface LinkElementProps extends BoardNodeProps {
 	title: string;
 	url: string;
 	description?: string;
+	originalImageUrl?: string;
 	imageUrl?: string;
 }
 
