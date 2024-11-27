@@ -9,7 +9,7 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config
 import { CoreModule } from '@src/core';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { config, TLDRAW_DB_URL, TldrawConfig, tldrawS3Config } from './config';
 import { TldrawDrawing } from './entities';
