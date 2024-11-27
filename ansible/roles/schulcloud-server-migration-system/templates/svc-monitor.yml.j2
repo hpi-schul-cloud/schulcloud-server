@@ -1,14 +1,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: api-admin-svc-monitor
+  name: api-migration-systems-svc-monitor
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-admin
+    app: api
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: api-admin-svc
+      app.kubernetes.io/name: api-migration-systems-svc
   endpoints:
-    - path: /metrics
-      port: api-metrics
+  - path: /metrics
+    port: api-metrics
