@@ -2,10 +2,9 @@ const valueDict = {};
 const ttlDict = {};
 
 const RedisClientMock = class {
-	get(key, ...args) {
+	get(key) {
 		const value = valueDict[key];
-		const callback = args[args.length - 1];
-		callback(null, value);
+		return Promise.resolve(value);
 	}
 
 	set(key, value, ...args) {
@@ -14,21 +13,18 @@ const RedisClientMock = class {
 		if (ex >= 0) {
 			ttlDict[key] = args[ex + 1];
 		}
-		const callback = args[args.length - 1];
-		callback(null, true);
+		return Promise.resolve(true);
 	}
 
-	del(key, ...args) {
+	del(key) {
 		delete valueDict[key];
 		delete ttlDict[key];
-		const callback = args[args.length - 1];
-		callback(null, true);
+		return Promise.resolve(true);
 	}
 
-	ttl(key, ...args) {
+	ttl(key) {
 		const ttl = ttlDict[key];
-		const callback = args[args.length - 1];
-		callback(null, ttl);
+		return Promise.resolve(ttl);
 	}
 };
 
