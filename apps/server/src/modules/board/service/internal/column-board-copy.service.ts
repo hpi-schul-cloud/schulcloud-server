@@ -54,6 +54,7 @@ export class ColumnBoardCopyService {
 			);
 		}
 		copyStatus.copyEntity.context = params.targetExternalReference;
+		copyStatus.copyEntity.isVisible = false;
 		await this.boardNodeService.addRoot(copyStatus.copyEntity);
 		copyStatus.originalEntity = originalBoard;
 

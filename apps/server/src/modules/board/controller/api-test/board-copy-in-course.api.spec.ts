@@ -82,6 +82,27 @@ describe(`board copy with course relation (api)`, () => {
 			expect(result).toBeDefined();
 		});
 
+		it('should set draft status on the board copy', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
+			const body = response.body as CopyApiResponse;
+
+			const expectedBody: CopyApiResponse = {
+				id: expect.any(String),
+				type: CopyElementType.COLUMNBOARD,
+				status: CopyStatusEnum.SUCCESS,
+				destinationId: columnBoardNode.context?.id,
+			};
+
+			expect(body).toEqual(expectedBody);
+
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			const result = await em.findOneOrFail(BoardNodeEntity, body.id!);
+
+			expect(result.isVisible).toBe(false);
+		});
+
 		describe('with invalid id', () => {
 			it('should return status 400', async () => {
 				const { loggedInClient } = await setup();
