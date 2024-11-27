@@ -11,7 +11,6 @@ import {
 	ColumnController,
 	ElementController,
 } from './controller';
-import { BoardModule } from './board.module';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 
