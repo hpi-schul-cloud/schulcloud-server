@@ -5,6 +5,7 @@ import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
+import { LoggerModule } from '@src/core/logger';
 import { defaultMikroOrmOptions } from '../server';
 import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CoursesClientModule } from './common-cartridge-client/course-client';
@@ -19,6 +20,7 @@ import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
 	imports: [
 		RabbitMQWrapperModule,
 		FilesStorageClientModule,
+		LoggerModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
