@@ -7,7 +7,7 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { RoomMemberModule } from '../room-member';
