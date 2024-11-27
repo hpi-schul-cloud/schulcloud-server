@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ErrorUtils } from '@src/core/error/utils';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AxiosResponse, HttpStatusCode } from 'axios';
 import { DeletionRequestInput, DeletionRequestOutput } from './interface';
 import { DeletionConsoleConfig } from '../deletion.config';
@@ -16,9 +16,7 @@ export class DeletionClient {
 
 	public async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
 		try {
-			const request = this.createDeletionRequest(input);
-			const response = await firstValueFrom(request);
-
+			const response = await this.postDeletionRequest(input);
 			this.checkResponseStatusCode(response, HttpStatusCode.Accepted);
 			this.checkDeletionRequestResponseData(response);
 
@@ -30,34 +28,34 @@ export class DeletionClient {
 
 	public async executeDeletions(limit?: number): Promise<void> {
 		try {
-			const request = this.createDeletionExecutionRequest(limit);
-			const response = await firstValueFrom(request);
-
+			const response = await this.postDeletionExecutionRequest(limit);
 			this.checkResponseStatusCode(response, HttpStatusCode.NoContent);
 		} catch (err) {
 			throw this.createError(err, 'executeDeletions');
 		}
 	}
 
-	private createDeletionRequest(input: DeletionRequestInput): Observable<AxiosResponse<DeletionRequestOutput, any>> {
+	private async postDeletionRequest(input: DeletionRequestInput): Promise<AxiosResponse<DeletionRequestOutput, any>> {
 		const headers = this.createDetaultHeaders();
 		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 		const postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', baseUrl).toString();
 
 		const request = this.httpService.post<DeletionRequestOutput>(postDeletionRequestsEndpoint, input, headers);
+		const response = await firstValueFrom(request);
 
-		return request;
+		return response;
 	}
 
-	private createDeletionExecutionRequest(limit?: number): Observable<AxiosResponse<any, any>> {
+	private async postDeletionExecutionRequest(limit?: number): Promise<AxiosResponse<any, any>> {
 		const defaultHeaders = this.createDetaultHeaders();
 		const headers = this.isLimitGeaterZero(limit) ? { ...defaultHeaders, params: { limit } } : defaultHeaders;
-
 		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 		const postDeletionExecutionsEndpoint = new URL('/admin/api/v1/deletionExecutions', baseUrl).toString();
-		const request = this.httpService.post(postDeletionExecutionsEndpoint, null, headers);
 
-		return request;
+		const request = this.httpService.post(postDeletionExecutionsEndpoint, null, headers);
+		const response = await firstValueFrom(request);
+
+		return response;
 	}
 
 	private createDetaultHeaders() {
