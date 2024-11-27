@@ -640,6 +640,34 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('removeSecondarySchool', () => {
+		describe('when user is guest in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const user = userDoFactory.buildWithId({
+					roles: [role],
+					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestTeacher) }],
+				});
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool, guestTeacher };
+			};
+
+			it('should remove user from secondary school', async () => {
+				const { user, targetSchool } = setup();
+
+				await service.removeSecondarySchoolFromUsers([user.id as EntityId], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+				);
+			});
+		});
+	});
+
 	describe('saveAll is called', () => {
 		it('should call the repo with given users', async () => {
 			const users: UserDO[] = [userDoFactory.buildWithId()];

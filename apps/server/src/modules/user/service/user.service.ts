@@ -174,6 +174,17 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return Promise.resolve();
 	}
 
+	async removeSecondarySchoolFromUsers(userIds: string[], schoolId: EntityId): Promise<void> {
+		const users = await this.userDORepo.findByIds(userIds, true);
+
+		users.forEach((user) => {
+			user.secondarySchools = user.secondarySchools.filter((school) => school.schoolId !== schoolId);
+		});
+
+		await this.userDORepo.saveAll(users);
+		return Promise.resolve();
+	}
+
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
 		const user: Promise<UserDO | null> = this.userDORepo.findByExternalId(externalId, systemId);
 
