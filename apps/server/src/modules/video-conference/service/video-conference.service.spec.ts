@@ -18,7 +18,7 @@ import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory }
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '@src/modules/board';
+import { BoardNodeAuthorizableService, BoardNodeService } from '@src/modules/board';
 import { RoleService } from '@src/modules/role';
 import { RoomService } from '@src/modules/room';
 import { RoomMemberService } from '@src/modules/room-member';
@@ -35,8 +35,6 @@ describe(VideoConferenceService.name, () => {
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let boardNodeService: DeepMocked<BoardNodeService>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -67,10 +65,6 @@ describe(VideoConferenceService.name, () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<VideoConferenceConfig, true>>(),
-				},
-				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
 				},
 				{
 					provide: CourseService,
@@ -118,7 +112,6 @@ describe(VideoConferenceService.name, () => {
 		service = module.get(VideoConferenceService);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		boardNodeService = module.get(BoardNodeService);
-		columnBoardService = module.get(ColumnBoardService);
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);

@@ -10,13 +10,7 @@ import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity'
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	BoardNodeAuthorizableService,
-	BoardNodeService,
-	BoardRoles,
-	ColumnBoard,
-	ColumnBoardService,
-} from '@src/modules/board';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
 import { VideoConferenceElement } from '@src/modules/board/domain';
 import { Room, RoomService } from '@src/modules/room';
 import { RoomMemberService } from '@src/modules/room-member';
@@ -32,7 +26,6 @@ export class VideoConferenceService {
 	constructor(
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly columnBoardService: ColumnBoardService,
 		private readonly configService: ConfigService<VideoConferenceConfig, true>,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
@@ -110,8 +103,8 @@ export class VideoConferenceService {
 	private async loadScopeRessources(
 		scopeId: EntityId,
 		scope: VideoConferenceScope
-	): Promise<ColumnBoard | Course | Room | TeamEntity | null> {
-		let scopeRessource: ColumnBoard | Course | Room | TeamEntity | null = null;
+	): Promise<Course | Room | TeamEntity | VideoConferenceElement | null> {
+		let scopeRessource: Course | Room | TeamEntity | VideoConferenceElement | null = null;
 
 		if (scope === VideoConferenceScope.COURSE) {
 			scopeRessource = await this.courseService.findById(scopeId);
@@ -120,7 +113,7 @@ export class VideoConferenceService {
 		} else if (scope === VideoConferenceScope.ROOM) {
 			scopeRessource = await this.roomService.getSingleRoom(scopeId);
 		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
-			scopeRessource = await this.columnBoardService.findById(scopeId);
+			scopeRessource = (await this.boardNodeService.findById(scopeId)) as VideoConferenceElement;
 		} else {
 			// Need to be solve the null with throw by it self.
 		}
@@ -134,24 +127,24 @@ export class VideoConferenceService {
 
 	private async hasStartMeetingAndCanRead(
 		authorizableUser: User,
-		entity: ColumnBoard | Course | Room | TeamEntity
+		entity: Course | Room | TeamEntity | VideoConferenceElement
 	): Promise<boolean> {
-		if (entity instanceof ColumnBoard) {
-			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
-			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
-
-			if (boardAuthorisedUser) {
-				return boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
-			}
-
-			return false;
-		}
 		if (entity instanceof Room) {
 			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(entity.id);
 			const roomMember = roomMemberAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return roomMember.roles.includes(await this.roleService.findByName(RoleName.ROOM_EDITOR));
+			}
+
+			return false;
+		}
+		if (entity instanceof VideoConferenceElement) {
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
+
+			if (boardAuthorisedUser) {
+				return boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
 			}
 
 			return false;
@@ -164,24 +157,24 @@ export class VideoConferenceService {
 
 	private async hasJoinMeetingAndCanRead(
 		authorizableUser: User,
-		entity: ColumnBoard | Course | Room | TeamEntity
+		entity: Course | Room | TeamEntity | VideoConferenceElement
 	): Promise<boolean> {
-		if (entity instanceof ColumnBoard) {
-			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
-			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
-
-			if (boardAuthorisedUser) {
-				return boardAuthorisedUser?.roles.includes(BoardRoles.READER);
-			}
-
-			return false;
-		}
 		if (entity instanceof Room) {
 			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(entity.id);
 			const roomMember = roomMemberAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return roomMember.roles.includes(await this.roleService.findByName(RoleName.ROOM_VIEWER));
+			}
+
+			return false;
+		}
+		if (entity instanceof VideoConferenceElement) {
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
+
+			if (boardAuthorisedUser) {
+				return boardAuthorisedUser?.roles.includes(BoardRoles.READER);
 			}
 
 			return false;
@@ -194,7 +187,7 @@ export class VideoConferenceService {
 
 	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
-		const [authorizableUser, scopeRessource]: [User, Course | ColumnBoard | Room | TeamEntity | null] =
+		const [authorizableUser, scopeRessource]: [User, Course | Room | TeamEntity | VideoConferenceElement | null] =
 			await Promise.all([
 				this.authorizationService.getUserWithPermissions(userId),
 				this.loadScopeRessources(scopeId, scope),
@@ -266,7 +259,7 @@ export class VideoConferenceService {
 				const element = (await this.boardNodeService.findById(scopeId)) as VideoConferenceElement;
 
 				return {
-					scopeId: element.rootId,
+					scopeId: element.id,
 					scopeName: 'video-conference-element',
 					logoutUrl: `${this.hostUrl}/boards/${element.rootId}`,
 					title: element.title,
