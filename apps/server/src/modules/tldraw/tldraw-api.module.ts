@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawController } from './controller';
 import { TldrawDrawing } from './entities';
