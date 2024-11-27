@@ -8,7 +8,7 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { RoomService } from '@src/modules/room';
-import { RoomMemberService } from '@src/modules/room-member';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -58,8 +58,8 @@ describe(BoardUc.name, () => {
 					useValue: createMock<BoardNodeFactory>(),
 				},
 				{
-					provide: RoomMemberService,
-					useValue: createMock<RoomMemberService>(),
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: LegacyLogger,

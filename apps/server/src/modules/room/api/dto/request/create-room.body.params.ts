@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { RoomCreateProps } from '@src/modules/room/domain';
-import { RoomColor } from '@src/modules/room/domain/type';
+import { RoomCreateProps } from '@modules/room/domain';
+import { RoomColor } from '@modules/room/domain/type';
 import { IsDate, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateRoomBodyParams implements Omit<RoomCreateProps, 'schoolId'> {

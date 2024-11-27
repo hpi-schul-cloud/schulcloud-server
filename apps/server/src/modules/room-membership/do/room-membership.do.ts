@@ -1,7 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
-export interface RoomMemberProps extends AuthorizableObject {
+export interface RoomMembershipProps extends AuthorizableObject {
 	id: EntityId;
 	roomId: EntityId;
 	userGroupId: EntityId;
@@ -9,12 +9,12 @@ export interface RoomMemberProps extends AuthorizableObject {
 	updatedAt: Date;
 }
 
-export class RoomMember extends DomainObject<RoomMemberProps> {
-	public constructor(props: RoomMemberProps) {
+export class RoomMembership extends DomainObject<RoomMembershipProps> {
+	public constructor(props: RoomMembershipProps) {
 		super(props);
 	}
 
-	public getProps(): RoomMemberProps {
+	public getProps(): RoomMembershipProps {
 		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment

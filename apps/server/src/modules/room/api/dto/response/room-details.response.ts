@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Permission } from '@shared/domain/interface';
-import { RoomColor } from '@src/modules/room/domain/type';
+import { RoomColor } from '@modules/room/domain/type';
 import { IsEnum } from 'class-validator';
 
 export class RoomDetailsResponse {

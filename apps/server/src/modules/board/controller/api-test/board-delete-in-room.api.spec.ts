@@ -7,7 +7,7 @@ import { accountFactory } from '@src/modules/account/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomEntityFactory } from '@src/modules/room/testing';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardNodeEntity } from '../../repo';
 import { BoardExternalReferenceType } from '../../domain';
@@ -61,7 +61,7 @@ describe(`board delete in room (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,

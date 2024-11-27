@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@shared/testing/factory/entity.factory';
-import { RoomMemberEntity, RoomMemberEntityProps } from '../repo/entity/room-member.entity';
+import { RoomMembershipEntity, RoomMembershipEntityProps } from '../repo/entity/room-membership.entity';
 
-export const roomMemberEntityFactory = EntityFactory.define<RoomMemberEntity, RoomMemberEntityProps>(
-	RoomMemberEntity,
+export const roomMembershipEntityFactory = EntityFactory.define<RoomMembershipEntity, RoomMembershipEntityProps>(
+	RoomMembershipEntity,
 	() => {
 		return {
 			id: new ObjectId().toHexString(),

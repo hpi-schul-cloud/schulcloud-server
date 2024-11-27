@@ -3,23 +3,23 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { RoomMember } from '../do/room-member.do';
-import { roomMemberEntityFactory, roomMemberFactory } from '../testing';
-import { RoomMemberEntity } from './entity';
-import { RoomMemberRepo } from './room-member.repo';
+import { RoomMembership } from '../do/room-membership.do';
+import { roomMembershipEntityFactory, roomMembershipFactory } from '../testing';
+import { RoomMembershipEntity } from './entity';
+import { RoomMembershipRepo } from './room-membership.repo';
 
-describe('RoomMemberRepo', () => {
+describe('RoomMembershipRepo', () => {
 	let module: TestingModule;
-	let repo: RoomMemberRepo;
+	let repo: RoomMembershipRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [RoomMemberRepo],
+			providers: [RoomMembershipRepo],
 		}).compile();
 
-		repo = module.get(RoomMemberRepo);
+		repo = module.get(RoomMembershipRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -33,20 +33,20 @@ describe('RoomMemberRepo', () => {
 
 	describe('findByRoomId', () => {
 		const setup = async () => {
-			const roomMemberEntity = roomMemberEntityFactory.buildWithId();
-			await em.persistAndFlush([roomMemberEntity]);
+			const roomMembershipEntity = roomMembershipEntityFactory.buildWithId();
+			await em.persistAndFlush([roomMembershipEntity]);
 			em.clear();
 
-			return { roomMemberEntity };
+			return { roomMembershipEntity };
 		};
 
 		it('should find room member by roomId', async () => {
-			const { roomMemberEntity } = await setup();
+			const { roomMembershipEntity } = await setup();
 
-			const roomMember = await repo.findByRoomId(roomMemberEntity.roomId);
+			const roomMember = await repo.findByRoomId(roomMembershipEntity.roomId);
 
 			expect(roomMember).toBeDefined();
-			expect(roomMember?.getProps()).toEqual(roomMemberEntity);
+			expect(roomMember?.getProps()).toEqual(roomMembershipEntity);
 		});
 	});
 
@@ -56,9 +56,9 @@ describe('RoomMemberRepo', () => {
 			const roomId2 = new ObjectId().toHexString();
 
 			const roomMemberEntities = [
-				roomMemberEntityFactory.buildWithId({ roomId: roomId1 }),
-				roomMemberEntityFactory.buildWithId({ roomId: roomId1 }),
-				roomMemberEntityFactory.buildWithId({ roomId: roomId2 }),
+				roomMembershipEntityFactory.buildWithId({ roomId: roomId1 }),
+				roomMembershipEntityFactory.buildWithId({ roomId: roomId1 }),
+				roomMembershipEntityFactory.buildWithId({ roomId: roomId2 }),
 			];
 
 			await em.persistAndFlush(roomMemberEntities);
@@ -80,9 +80,9 @@ describe('RoomMemberRepo', () => {
 		const setup = async () => {
 			const groupId = new ObjectId().toHexString();
 			const roomMemberEntities = [
-				roomMemberEntityFactory.build({ userGroupId: groupId }),
-				roomMemberEntityFactory.build({ userGroupId: groupId }),
-				roomMemberEntityFactory.build({ userGroupId: new ObjectId().toHexString() }),
+				roomMembershipEntityFactory.build({ userGroupId: groupId }),
+				roomMembershipEntityFactory.build({ userGroupId: groupId }),
+				roomMembershipEntityFactory.build({ userGroupId: new ObjectId().toHexString() }),
 			];
 
 			await em.persistAndFlush(roomMemberEntities);
@@ -102,7 +102,7 @@ describe('RoomMemberRepo', () => {
 
 	describe('save', () => {
 		const setup = () => {
-			const roomMembers = roomMemberFactory.buildList(3);
+			const roomMembers = roomMembershipFactory.buildList(3);
 			return { roomMembers };
 		};
 
@@ -110,7 +110,7 @@ describe('RoomMemberRepo', () => {
 			const { roomMembers } = setup();
 
 			await repo.save(roomMembers[0]);
-			const result = await em.findOneOrFail(RoomMemberEntity, roomMembers[0].id);
+			const result = await em.findOneOrFail(RoomMembershipEntity, roomMembers[0].id);
 
 			expect(roomMembers[0].getProps()).toMatchObject(result);
 		});
@@ -119,7 +119,7 @@ describe('RoomMemberRepo', () => {
 			const { roomMembers } = setup();
 
 			await repo.save(roomMembers);
-			const result = await em.find(RoomMemberEntity, { id: { $in: roomMembers.map((r) => r.id) } });
+			const result = await em.find(RoomMembershipEntity, { id: { $in: roomMembers.map((r) => r.id) } });
 
 			expect(result.length).toBe(roomMembers.length);
 		});
@@ -127,9 +127,9 @@ describe('RoomMemberRepo', () => {
 
 	describe('delete', () => {
 		const setup = async () => {
-			const roomMemberEntities = roomMemberEntityFactory.buildListWithId(3);
+			const roomMemberEntities = roomMembershipEntityFactory.buildListWithId(3);
 			await em.persistAndFlush(roomMemberEntities);
-			const roomMembers = roomMemberEntities.map((entity) => new RoomMember(entity));
+			const roomMembers = roomMemberEntities.map((entity) => new RoomMembership(entity));
 			em.clear();
 
 			return { roomMembers };
@@ -140,7 +140,7 @@ describe('RoomMemberRepo', () => {
 
 			await repo.delete(roomMembers[0]);
 
-			await expect(em.findOneOrFail(RoomMemberEntity, roomMembers[0].id)).rejects.toThrow(NotFoundError);
+			await expect(em.findOneOrFail(RoomMembershipEntity, roomMembers[0].id)).rejects.toThrow(NotFoundError);
 		});
 
 		it('should be able to delete many rooms', async () => {
@@ -148,7 +148,7 @@ describe('RoomMemberRepo', () => {
 
 			await repo.delete(roomMembers);
 
-			const remainingCount = await em.count(RoomMemberEntity);
+			const remainingCount = await em.count(RoomMembershipEntity);
 			expect(remainingCount).toBe(0);
 		});
 	});

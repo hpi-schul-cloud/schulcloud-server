@@ -15,11 +15,11 @@ import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { StorageLocationReference } from '@src/modules/board/service/internal';
-import { StorageLocation } from '@src/modules/files-storage/interface';
-import { RoomService } from '@src/modules/room';
-import { RoomMemberService } from '@src/modules/room-member';
-import { SchoolService } from '@src/modules/school';
+import { StorageLocationReference } from '@modules/board/service/internal';
+import { StorageLocation } from '@modules/files-storage/interface';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@src/modules/room-membership';
+import { SchoolService } from '@modules/school';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -42,7 +42,7 @@ export class ShareTokenUC {
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
 		private readonly roomService: RoomService,
-		private readonly roomMemberService: RoomMemberService,
+		private readonly roomMembershipService: RoomMembershipService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly schoolService: SchoolService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
@@ -249,11 +249,11 @@ export class ShareTokenUC {
 	}
 
 	private async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []) {
-		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 
 		this.authorizationService.checkPermission(
 			user,
-			roomMemberAuthorizable,
+			roomMembershipAuthorizable,
 			AuthorizationContextBuilder.write(permissions)
 		);
 	}

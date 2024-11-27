@@ -9,11 +9,11 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { BoardExternalReferenceType } from '@src/modules/board';
-import { columnBoardEntityFactory } from '@src/modules/board/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@src/modules/server';
+import { BoardExternalReferenceType } from '@modules/board';
+import { columnBoardEntityFactory } from '@modules/board/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
+import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { roomEntityFactory } from '../../testing';
 
 describe('Room Controller (API)', () => {
@@ -109,7 +109,7 @@ describe('Room Controller (API)', () => {
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
-				const roomMember = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+				const roomMember = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
 				await em.persistAndFlush([room, board, studentAccount, studentUser, role, userGroupEntity, roomMember]);
 				em.clear();
 

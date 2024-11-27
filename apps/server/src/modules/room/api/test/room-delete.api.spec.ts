@@ -9,9 +9,9 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 
@@ -103,7 +103,7 @@ describe('Room Controller (API)', () => {
 					type: GroupEntityTypes.ROOM,
 					users: [{ role, user: teacherUser }],
 				});
-				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 

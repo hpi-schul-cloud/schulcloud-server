@@ -23,10 +23,10 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
-import { StorageLocation } from '@src/modules/files-storage/interface';
-import { RoomService } from '@src/modules/room';
-import { RoomMemberService } from '@src/modules/room-member';
+import { CopyColumnBoardParams } from '@modules/board/service/internal';
+import { StorageLocation } from '@modules/files-storage/interface';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
@@ -91,8 +91,8 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
-					provide: RoomMemberService,
-					useValue: createMock<RoomMemberService>(),
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: ColumnBoardService,

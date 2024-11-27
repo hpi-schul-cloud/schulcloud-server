@@ -1,13 +1,13 @@
+import { AuthorizationModule } from '@modules/authorization';
+import { BoardModule } from '@modules/board';
+import { LearnroomModule } from '@modules/learnroom';
+import { LessonModule } from '@modules/lesson';
+import { RoomModule } from '@modules/room';
+import { RoomMembershipModule } from '@src/modules/room-membership';
+import { SchoolModule } from '@modules/school';
+import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
-import { BoardModule } from '../board';
-import { LearnroomModule } from '../learnroom';
-import { LessonModule } from '../lesson';
-import { RoomModule } from '../room';
-import { RoomMemberModule } from '../room-member';
-import { SchoolModule } from '../school';
-import { TaskModule } from '../task';
 import { ShareTokenController } from './controller/share-token.controller';
 import { SharingModule } from './sharing.module';
 import { ShareTokenUC } from './uc';
@@ -20,7 +20,7 @@ import { ShareTokenUC } from './uc';
 		LessonModule,
 		TaskModule,
 		BoardModule,
-		RoomMemberModule,
+		RoomMembershipModule,
 		RoomModule,
 		SchoolModule,
 		LoggerModule,

@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
-import { RoomMemberService } from '@src/modules/room-member';
-import { UserWithRoomRoles } from '@src/modules/room-member/do/room-member-authorizable.do';
+import { RoomMembershipService, UserWithRoomRoles } from '@src/modules/room-membership';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 
 @Injectable()
 export class BoardContextService {
-	constructor(private readonly courseRepo: CourseRepo, private readonly roomMemberService: RoomMemberService) {}
+	constructor(private readonly courseRepo: CourseRepo, private readonly roomMembershipService: RoomMembershipService) {}
 
 	async getUsersWithBoardRoles(rootNode: AnyBoardNode): Promise<UserWithBoardRoles[]> {
 		if (!('context' in rootNode)) {
@@ -31,8 +30,8 @@ export class BoardContextService {
 	}
 
 	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
-		const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(roomId);
-		const usersWithRoles: UserWithBoardRoles[] = roomMemberAuthorizable.members.map((member) => {
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const usersWithRoles: UserWithBoardRoles[] = roomMembershipAuthorizable.members.map((member) => {
 			const roles = this.getBoardRolesFromRoomMember(member);
 			return {
 				userId: member.userId,

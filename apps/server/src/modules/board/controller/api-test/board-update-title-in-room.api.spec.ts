@@ -7,7 +7,7 @@ import { TestApiClient, cleanupCollections, groupEntityFactory, roleFactory, use
 import { Permission, RoleName } from '@shared/domain/interface';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
@@ -68,7 +68,7 @@ describe(`board update title with room relation (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,

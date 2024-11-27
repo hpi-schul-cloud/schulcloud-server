@@ -7,7 +7,7 @@ import { CourseRepo } from '@shared/repo/course';
 import { LegacyLogger } from '@src/core/logger';
 import { StorageLocation } from '@src/modules/files-storage/interface';
 import { RoomService } from '@src/modules/room';
-import { RoomMemberService } from '@src/modules/room-member';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -19,7 +19,7 @@ export class BoardUc {
 		@Inject(forwardRef(() => AuthorizationService)) // TODO is this needed?
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardPermissionService: BoardNodePermissionService,
-		private readonly roomMemberService: RoomMemberService,
+		private readonly roomMembershipService: RoomMembershipService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
@@ -158,9 +158,9 @@ export class BoardUc {
 				requiredPermissions: [Permission.COURSE_EDIT],
 			});
 		} else if (context.type === BoardExternalReferenceType.Room) {
-			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(context.id);
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(context.id);
 
-			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 				action: Action.write,
 				requiredPermissions: [],
 			});

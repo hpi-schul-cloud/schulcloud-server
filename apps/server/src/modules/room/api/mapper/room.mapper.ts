@@ -1,5 +1,5 @@
 import { Page } from '@shared/domain/domainobject';
-import { ColumnBoard } from '@src/modules/board';
+import { ColumnBoard } from '@modules/board';
 import { Room } from '../../domain/do/room.do';
 import { RoomPaginationParams } from '../dto/request/room-pagination.params';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';

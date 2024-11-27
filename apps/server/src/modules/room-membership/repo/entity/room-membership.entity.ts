@@ -3,9 +3,9 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { RoomMember } from '../../do/room-member.do';
+import { RoomMembership } from '../../do/room-membership.do';
 
-export interface RoomMemberEntityProps extends AuthorizableObject {
+export interface RoomMembershipEntityProps extends AuthorizableObject {
 	id: EntityId;
 	roomId: EntityId;
 	userGroupId: EntityId;
@@ -13,9 +13,9 @@ export interface RoomMemberEntityProps extends AuthorizableObject {
 	updatedAt: Date;
 }
 
-@Entity({ tableName: 'room-members' })
+@Entity({ tableName: 'room-memberships' })
 @Unique({ properties: ['roomId', 'userGroupId'] })
-export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMemberEntityProps {
+export class RoomMembershipEntity extends BaseEntityWithTimestamps implements RoomMembershipEntityProps {
 	@Unique()
 	@Property({ type: ObjectIdType, fieldName: 'room' })
 	roomId!: EntityId;
@@ -24,5 +24,5 @@ export class RoomMemberEntity extends BaseEntityWithTimestamps implements RoomMe
 	userGroupId!: EntityId;
 
 	@Property({ persist: false })
-	domainObject: RoomMember | undefined;
+	domainObject: RoomMembership | undefined;
 }

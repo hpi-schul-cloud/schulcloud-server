@@ -7,7 +7,7 @@ import { cleanupCollections, groupEntityFactory, roleFactory, TestApiClient, use
 import { Permission, RoleName } from '@shared/domain/interface';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { BoardResponse } from '../dto';
@@ -62,7 +62,7 @@ describe(`board lookup in room (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,

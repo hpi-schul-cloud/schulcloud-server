@@ -7,7 +7,7 @@ import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections, groupEntityFactory, roleFactory, TestApiClient, userFactory } from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
@@ -54,7 +54,7 @@ describe(`create board in room (api)`, () => {
 
 				const room = roomEntityFactory.buildWithId();
 
-				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 				await em.persistAndFlush([account, user, role, userGroup, room, roomMember]);
 				em.clear();
@@ -170,7 +170,7 @@ describe(`create board in room (api)`, () => {
 
 				const room = roomEntityFactory.buildWithId();
 
-				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 				await em.persistAndFlush([account, user, role, userGroup, room, roomMember]);
 				em.clear();
@@ -238,7 +238,7 @@ describe(`create board in room (api)`, () => {
 
 			const room = roomEntityFactory.buildWithId();
 
-			const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+			const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 			await em.persistAndFlush([account, user, role, userGroup, room, roomMember]);
 			em.clear();

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { RoomUpdateProps } from '@src/modules/room/domain';
-import { RoomColor } from '@src/modules/room/domain/type';
+import { RoomUpdateProps } from '@modules/room/domain';
+import { RoomColor } from '@modules/room/domain/type';
 import { IsDate, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateRoomBodyParams implements RoomUpdateProps {
