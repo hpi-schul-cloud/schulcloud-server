@@ -1407,12 +1407,12 @@
 		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables new CTL-tool tab in a course"
 		},
 		"FEATURE_LTI_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables old LTI-tool tab in a course"
 		},
 		"FEATURE_SHOW_OUTDATED_USERS": {
@@ -1432,7 +1432,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables external tools on the column board"
 		},
 		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
