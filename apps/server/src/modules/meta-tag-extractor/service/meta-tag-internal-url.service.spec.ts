@@ -3,16 +3,15 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { MetaData } from '../types';
-import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
 const INTERNAL_DOMAIN = 'my-school-cloud.org';
-const INTERNAL_URL = `https://${INTERNAL_DOMAIN}/my-article`;
-const UNKNOWN_INTERNAL_URL = `https://${INTERNAL_DOMAIN}/playground/23hafe23234`;
-const EXTERNAL_URL = 'https://de.wikipedia.org/example-article';
+const INTERNAL_URL = new URL(`https://${INTERNAL_DOMAIN}/my-article`);
+const UNKNOWN_INTERNAL_URL = new URL(`https://${INTERNAL_DOMAIN}/playground/23hafe23234`);
+const EXTERNAL_URL = new URL('https://de.wikipedia.org/example-article');
 
-describe(MetaTagExtractorService.name, () => {
+describe(MetaTagInternalUrlService.name, () => {
 	let module: TestingModule;
 	let taskUrlHandler: DeepMocked<TaskUrlHandler>;
 	let lessonUrlHandler: DeepMocked<LessonUrlHandler>;
@@ -81,6 +80,15 @@ describe(MetaTagExtractorService.name, () => {
 
 			expect(service.isInternalUrl(EXTERNAL_URL)).toBe(false);
 		});
+
+		it('should return false for external urls that partially contain the domain', () => {
+			setup();
+
+			const phishingUrl = new URL(INTERNAL_URL);
+			phishingUrl.hostname += '.phishing.de';
+
+			expect(service.isInternalUrl(phishingUrl)).toBe(false);
+		});
 	});
 
 	describe('tryInternalLinkMetaTags', () => {
@@ -91,7 +99,7 @@ describe(MetaTagExtractorService.name, () => {
 			boardUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			const mockedMetaTags: MetaData = {
 				title: 'My Title',
-				url: INTERNAL_URL,
+				url: INTERNAL_URL.toString(),
 				description: '',
 				type: 'course',
 			};
