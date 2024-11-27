@@ -5,6 +5,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-migration-systems
+    app.kubernetes.io/name: api-migration-systems-svc
 spec:
   type: ClusterIP
   ports:
