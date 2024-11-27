@@ -21,6 +21,7 @@ describe('LinkElement', () => {
 			title: 'Example',
 			description: 'Example description',
 			imageUrl: 'https://example.com/image.jpg',
+			originalImageUrl: 'https://example.com/image.jpg',
 		});
 	});
 
@@ -66,6 +67,15 @@ describe('LinkElement', () => {
 	it('should set imageUrl', () => {
 		linkElement.imageUrl = 'https://newurl.com/newimage.jpg';
 		expect(linkElement.imageUrl).toBe('https://newurl.com/newimage.jpg');
+	});
+
+	it('should return originalImageUrl', () => {
+		expect(linkElement.originalImageUrl).toBe('https://example.com/image.jpg');
+	});
+
+	it('should set originalImageUrl', () => {
+		linkElement.originalImageUrl = 'https://newurl.com/newimage.jpg';
+		expect(linkElement.originalImageUrl).toBe('https://newurl.com/newimage.jpg');
 	});
 
 	it('should not have child', () => {
