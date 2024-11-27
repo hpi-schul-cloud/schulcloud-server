@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { ServerTestModule } from '@modules/server';
+import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -57,16 +57,19 @@ describe(`share token import (api)`, () => {
 		await app.close();
 	});
 
-	beforeEach(async () => {
+	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	beforeEach(() => {
 		Configuration.set('FEATURE_COURSE_SHARE', true);
-		Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
 		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
+
+		const config: ServerConfig = serverConfig();
+		config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
 	});
 
 	const setupSchoolExclusiveImport = async () => {
-		await cleanupCollections(em);
-
 		const school = schoolEntityFactory.buildWithId();
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 		const course = courseFactory.buildWithId({ teachers: [teacherUser], school: teacherUser.school });
@@ -127,8 +130,6 @@ describe(`share token import (api)`, () => {
 
 		describe('when doing a valid course import from another school', () => {
 			const setupCrossSchoolImport = async () => {
-				await cleanupCollections(em);
-
 				const targetSchool = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool });
 
@@ -219,12 +220,13 @@ describe(`share token import (api)`, () => {
 						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
 						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
-							contextId: new ObjectId(copiedCourse.id),
+							schoolTool: targetSchoolTool,
 						});
 
 						expect(copiedCourseTools.length).toEqual(2);
-						expect(copiedCourseTools[0].schoolTool.id).toEqual(targetSchoolTool.id);
-						expect(copiedCourseTools[1].schoolTool.id).toEqual(targetSchoolTool.id);
+						copiedCourseTools.forEach((courseTool) => {
+							expect(courseTool.contextId.toHexString()).toEqual(copiedCourse.id);
+						});
 					});
 				});
 
@@ -333,7 +335,7 @@ describe(`share token import (api)`, () => {
 
 				describe('when the importing school has the proper school external tool', () => {
 					const setupExistingSchoolTool = async () => {
-						const { loggedInClient, token, elementType, targetSchool, course } = await setupCrossSchoolImport();
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
 
 						const externalTool = externalToolEntityFactory.buildWithId();
 
@@ -370,7 +372,7 @@ describe(`share token import (api)`, () => {
 						]);
 						em.clear();
 
-						return { loggedInClient, token, elementType, targetSchool, targetSchoolTool };
+						return { loggedInClient, token, targetSchool, targetSchoolTool };
 					};
 
 					it('should save the copied course', async () => {
@@ -383,7 +385,21 @@ describe(`share token import (api)`, () => {
 						await em.findOneOrFail(Course, { school: targetSchool });
 					});
 
-					it('should copy the board tools and reassign them to the correct school external tool', async () => {
+					it('should copy the board tool elements', async () => {
+						const { loggedInClient, token } = await setupExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						const persistedBoardTools: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.EXTERNAL_TOOL,
+						});
+
+						expect(persistedBoardTools.length).toBeGreaterThan(2);
+					});
+
+					it('should copy the board context external tools with the correct school external tool', async () => {
 						const { loggedInClient, token, targetSchoolTool } = await setupExistingSchoolTool();
 
 						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
@@ -444,11 +460,11 @@ describe(`share token import (api)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-							type: BoardNodeType.DELETED_ELEMENT,
-						});
 						const persistedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.BOARD_ELEMENT,
+						});
+						const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.DELETED_ELEMENT,
 						});
 
 						expect(persistedBoardTools.length).not.toBeGreaterThan(2);
@@ -460,8 +476,6 @@ describe(`share token import (api)`, () => {
 
 		describe('when doing a valid board import from another school', () => {
 			const setupCrossSchoolImport = async () => {
-				await cleanupCollections(em);
-
 				const targetSchool = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool }, [
 					Permission.COURSE_EDIT,
@@ -612,7 +626,6 @@ describe(`share token import (api)`, () => {
 							contextType: ContextExternalToolType.BOARD_ELEMENT,
 							schoolTool: targetSchoolTool,
 						});
-
 						expect(copiedBoardTools.length).toEqual(2);
 					});
 				});
@@ -666,7 +679,7 @@ describe(`share token import (api)`, () => {
 						expect(copiedColumnBoardNode).not.toBeUndefined();
 					});
 
-					it('should not copy the board tools and replace them with deleted elements', async () => {
+					it('should not copy the board tool elements and replace them with deleted elements', async () => {
 						const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
 
 						const data: ShareTokenImportBodyParams = {
@@ -677,19 +690,32 @@ describe(`share token import (api)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-							type: BoardNodeType.DELETED_ELEMENT,
-						});
-						const persistedBoardContextTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-							contextType: ContextExternalToolType.BOARD_ELEMENT,
-						});
 						const persistedBoardToolElements: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
 							type: BoardNodeType.EXTERNAL_TOOL,
 						});
+						const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.DELETED_ELEMENT,
+						});
 
-						expect(persistedBoardContextTools.length).not.toBeGreaterThan(2);
 						expect(persistedBoardToolElements.length).not.toBeGreaterThan(2);
 						expect(deletedElementNodes.length).toEqual(2);
+					});
+
+					it('should not copy the board context external tools', async () => {
+						const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
+
+						const data: ShareTokenImportBodyParams = {
+							newName: 'newName',
+							destinationCourseId: targetCourse.id,
+						};
+						const response = await loggedInClient.post(getSubPath(token), data);
+
+						expect(response.status).toEqual(201);
+
+						const persistedBoardContextTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+						});
+						expect(persistedBoardContextTools.length).not.toBeGreaterThan(2);
 					});
 				});
 			});
