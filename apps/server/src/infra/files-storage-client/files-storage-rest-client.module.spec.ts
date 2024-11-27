@@ -8,10 +8,10 @@ import { Request } from 'express';
 import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
 import { FilesStorageRestClientModule } from './files-storage-rest-client.module';
 
-describe.skip(FilesStorageRestClientModule.name, () => {
-	const configServiceMock = createMock<ConfigService>();
-
+describe(FilesStorageRestClientModule.name, () => {
 	let module: TestingModule;
+
+	const configServiceMock = createMock<ConfigService>();
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,10 +43,10 @@ describe.skip(FilesStorageRestClientModule.name, () => {
 
 	describe('resolve providers', () => {
 		describe('when resolving FilesStorageRestClientAdapter', () => {
-			it('should resolve FilesStorageRestClientAdapter', () => {
-				const provider = module.resolve(FilesStorageRestClientAdapter);
+			it('should resolve FilesStorageRestClientAdapter', async () => {
+				const provider = await module.resolve(FilesStorageRestClientAdapter);
 
-				expect(provider).toBeDefined();
+				expect(provider).toBeInstanceOf(FilesStorageRestClientAdapter);
 			});
 		});
 	});

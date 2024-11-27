@@ -1,12 +1,7 @@
-import { FilesStorageRestClientConfig } from '@infra/files-storage-client';
+import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
-import { extractJwtFromRequest } from '@shared/common/utils/jwt';
+import { Injectable } from '@nestjs/common';
 import { ErrorLogger } from '@src/core/logger';
-import axios, { AxiosResponse } from 'axios';
-import { Request } from 'express';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
@@ -50,10 +45,9 @@ export class CommonCartridgeExportService {
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly filesStorageClient: FilesStorageClientAdapterService,
+		private readonly filesStorageAdapter: FilesStorageRestClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper,
-		private readonly errorLogger: ErrorLogger,
-		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,
-		@Inject(REQUEST) private readonly req: Request
+		private readonly errorLogger: ErrorLogger
 	) {}
 
 	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
@@ -316,10 +310,10 @@ export class CommonCartridgeExportService {
 			const files = new Array<{ fileRecord: FileDto; file: Buffer }>();
 
 			for await (const fileRecord of fileRecords) {
-				const file = await this.downloadFile(fileRecord);
+				const file = await this.filesStorageAdapter.download(fileRecord.id, fileRecord.name);
 
 				if (file) {
-					files.push({ fileRecord, file: file.data });
+					files.push({ fileRecord, file });
 				}
 			}
 
@@ -336,28 +330,5 @@ export class CommonCartridgeExportService {
 
 			return [];
 		}
-	}
-
-	// INFO: we need to download the file from the files storage service without using the generated client,
-	// because the generated client does not support downloading files as arraybuffer. Otherwise files with
-	// binary content would be corrupted like pdfs, zip files, etc. Setting the responseType to 'arraybuffer'
-	// will not work with the generated client.
-	private async downloadFile(fileRecord: FileDto): Promise<AxiosResponse<Buffer>> {
-		const token = extractJwtFromRequest(this.req);
-		const url = new URL(
-			`${this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL')}/api/v3/file/download/${
-				fileRecord.id
-			}/${fileRecord.name}`
-		);
-		const response: AxiosResponse<Buffer> = await axios.request({
-			method: 'GET',
-			url: url.toString(),
-			responseType: 'arraybuffer',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-
-		return response;
 	}
 }
