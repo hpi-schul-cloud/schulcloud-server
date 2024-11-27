@@ -3,7 +3,7 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 class DummyHandler extends AbstractUrlHandler {
 	patterns: RegExp[] = [/\/dummy\/([0-9a-z]+)$/i];
 
-	extractId(url: string): string | undefined {
+	extractId(url: URL): string | undefined {
 		return super.extractId(url);
 	}
 }
@@ -11,8 +11,8 @@ class DummyHandler extends AbstractUrlHandler {
 describe(AbstractUrlHandler.name, () => {
 	const setup = () => {
 		const id = 'af322312feae';
-		const url = `https://localhost/dummy/${id}`;
-		const invalidUrl = `https://localhost/wrong/${id}`;
+		const url = new URL(`https://localhost/dummy/${id}`);
+		const invalidUrl = new URL(`https://localhost/wrong/${id}`);
 		const handler = new DummyHandler();
 		return { id, url, invalidUrl, handler };
 	};
@@ -53,7 +53,7 @@ describe(AbstractUrlHandler.name, () => {
 
 			const result = handler.getDefaultMetaData(url);
 
-			expect(result).toEqual(expect.objectContaining({ type: 'unknown', url }));
+			expect(result).toEqual(expect.objectContaining({ type: 'unknown', url: url.toString() }));
 		});
 	});
 });
