@@ -1,12 +1,12 @@
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { HttpModule } from '@nestjs/axios';
-import { Module, NotFoundException } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { initialisePerformanceObserver } from '@shared/common/measure-utils';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger, LoggerModule } from '@src/core/logger';
+import { defaultMikroOrmOptions } from '@shared/common';
 import { config, TLDRAW_DB_URL, TldrawConfig } from './config';
 import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';
@@ -15,11 +15,6 @@ import { TldrawRedisFactory, TldrawRedisService } from './redis';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 
-const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
-};
 @Module({
 	imports: [
 		HttpModule,
