@@ -31,6 +31,7 @@ import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
+import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -148,11 +149,24 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	async addSecondarySchoolToUsers(userIds: string[], schoolId: EntityId): Promise<void> {
 		const users = await this.userDORepo.findByIds(userIds, true);
-		const role = await this.roleService.findByName(RoleName.GUESTTEACHER);
+		const guestStudent = await this.roleService.findByName(RoleName.GUESTSTUDENT);
+		const guestTeacher = await this.roleService.findByName(RoleName.GUESTTEACHER);
+
+		const roleMapping: Record<string, RoleDto> = {
+			[RoleName.STUDENT]: guestStudent,
+			[RoleName.TEACHER]: guestTeacher,
+			[RoleName.ADMINISTRATOR]: guestTeacher,
+		};
 
 		users.forEach((user) => {
-			user.secondarySchools.push({ schoolId, role: new RoleReference(role) });
+			const guestRole = roleMapping[user.roles[0].name];
+
+			if (!guestRole) {
+				throw new AddSecondarySchoolToUsersRoleErrorLoggableException({ roles: user.roles });
+			}
+			user.secondarySchools.push({ schoolId, role: new RoleReference(guestRole) });
 		});
+
 		await this.userDORepo.saveAll(users);
 		return Promise.resolve();
 	}

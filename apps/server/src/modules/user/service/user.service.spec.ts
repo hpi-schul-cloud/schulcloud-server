@@ -12,7 +12,7 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleService } from '@modules/role';
+import { RoleDto, RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -505,27 +505,82 @@ describe('UserService', () => {
 	});
 
 	describe('updateSecondarySchoolRole', () => {
-		describe('when user is not in the school yet', () => {
-			it('should add user with role to school', async () => {
-				const user = userDoFactory.buildWithId();
-				const roleName = RoleName.GUESTTEACHER;
-				const role = roleFactory.buildWithId({ name: roleName });
-				const school = schoolFactory.build();
+		const setupGuestRoles = () => {
+			const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+			const guestStudent = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+			const school = schoolFactory.build();
 
-				userDORepo.findByIds.mockResolvedValueOnce([user]);
-				roleService.findByName.mockResolvedValueOnce(role);
+			roleService.findByName.mockImplementation((name) => {
+				if (name === RoleName.GUESTTEACHER) {
+					return Promise.resolve(new RoleDto(guestTeacher));
+				}
+				if (name === RoleName.GUESTSTUDENT) {
+					return Promise.resolve(new RoleDto(guestStudent));
+				}
+				throw new Error('Unexpected role name');
+			});
+
+			return { school, guestTeacher, guestStudent };
+		};
+
+		const setupUserWithRole = (rolename: RoleName) => {
+			const role = roleFactory.buildWithId({ name: rolename });
+			const user = userDoFactory.buildWithId({ roles: [role] });
+
+			userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+			return { user, role };
+		};
+
+		describe('when user is not in targetSchool yet', () => {
+			it('should add teacher as guestteacher to school', async () => {
+				const { user } = setupUserWithRole(RoleName.TEACHER);
+				const { school, guestTeacher } = setupGuestRoles();
 
 				await service.addSecondarySchoolToUsers([user.id as string], school.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith([
 					expect.objectContaining<Partial<UserDO>>({
-						secondarySchools: [{ schoolId: school.id, role: { id: role.id, name: roleName } }],
+						secondarySchools: [{ schoolId: school.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } }],
 					}),
 				]);
 			});
-			// TODO: student
-			// TODO: user already in school
+
+			it('should add admin as guestteacher to school', async () => {
+				const { user } = setupUserWithRole(RoleName.ADMINISTRATOR);
+				const { school, guestTeacher } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], school.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [{ schoolId: school.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } }],
+					}),
+				]);
+			});
+
+			it('should add student as gueststudent to school', async () => {
+				const { user } = setupUserWithRole(RoleName.STUDENT);
+				const { school, guestStudent } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], school.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [{ schoolId: school.id, role: { id: guestStudent.id, name: RoleName.GUESTSTUDENT } }],
+					}),
+				]);
+			});
+
+			it('should throw when user has no recognized role', async () => {
+				const { user } = setupUserWithRole(RoleName.USER);
+				const { school } = setupGuestRoles();
+
+				await expect(() => service.addSecondarySchoolToUsers([user.id as string], school.id)).rejects.toThrowError();
+			});
 		});
+
+		// TODO: user already in school
 	});
 
 	describe('saveAll is called', () => {
