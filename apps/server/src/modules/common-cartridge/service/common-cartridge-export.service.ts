@@ -145,7 +145,7 @@ export class CommonCartridgeExportService {
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
 	): Promise<Buffer> {
-		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifestNew(version, courseId));
+		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
 		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
 			await this.findCourseCommonCartridgeMetadata(courseId);
