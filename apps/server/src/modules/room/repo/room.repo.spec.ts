@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cleanupCollections } from '@shared/testing';
 import { Room } from '../domain/do/room.do';
 import { roomEntityFactory, roomFactory } from '../testing';
 import { RoomEntity } from './entity';

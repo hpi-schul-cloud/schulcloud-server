@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
-import { roomFactory } from '../../testing/room.factory';
+import { roomFactory } from '../../testing';
 import { RoomColor } from '../type';
 import { Room, RoomProps } from './room.do';
 

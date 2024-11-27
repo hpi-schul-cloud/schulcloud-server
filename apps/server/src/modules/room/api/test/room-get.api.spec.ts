@@ -2,13 +2,15 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { cleanupCollections } from '@shared/testing/cleanup-collections';
-import { groupEntityFactory } from '@shared/testing/factory/group-entity.factory';
-import { roleFactory } from '@shared/testing/factory/role.factory';
-import { UserAndAccountTestFactory } from '@shared/testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@shared/testing/test-api-client';
+import {
+	TestApiClient,
+	UserAndAccountTestFactory,
+	cleanupCollections,
+	groupEntityFactory,
+	roleFactory,
+} from '@shared/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
+import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 

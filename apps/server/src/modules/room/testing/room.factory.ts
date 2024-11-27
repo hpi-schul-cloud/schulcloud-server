@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Room, RoomProps } from '../domain/do/room.do';
 import { RoomColor } from '../domain/type';
