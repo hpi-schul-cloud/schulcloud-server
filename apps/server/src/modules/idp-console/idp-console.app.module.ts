@@ -11,7 +11,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { idpConsoleConfigConfig } from './idp-console.config';
 import { IdpSyncConsole, SynchronizationUc } from './api';
 

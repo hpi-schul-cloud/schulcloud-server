@@ -2,7 +2,7 @@ import { ObjectId } from 'bson';
 import fs from 'fs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { BatchDeletionUc } from './uc';

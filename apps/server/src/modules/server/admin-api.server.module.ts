@@ -15,7 +15,7 @@ import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { AdminApiRegistrationPinModule } from '../registration-pin/admin-api-registration-pin.module';
 import { adminApiServerConfig } from './admin-api-server.config';
 
