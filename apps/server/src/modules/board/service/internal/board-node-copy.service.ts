@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyHelperService } from '@modules/copy-helper/service/copy-helper.service';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
