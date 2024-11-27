@@ -1,12 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
-import {
-	Synchronization,
-	synchronizationFactory,
-	SynchronizationService,
-	SynchronizationStatusModel,
-} from '@modules/synchronization';
+import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +9,7 @@ import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account';
 import { ObjectId } from 'bson';
+import { synchronizationFactory } from '@modules/synchronization/domain/testing';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
