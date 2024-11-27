@@ -2,7 +2,7 @@ import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceAuthMethod } from '../enum/media-source-auth-method.enum';
 
-export interface MediaSourceConfigEmbeddableProps {
+export interface MediaSourceOauthConfigEmbeddableProps {
 	_id: ObjectId;
 
 	clientId: string;
@@ -15,7 +15,7 @@ export interface MediaSourceConfigEmbeddableProps {
 }
 
 @Embeddable()
-export class MediaSourceConfigEmbeddable {
+export class MediaSourceOauthConfigEmbeddable {
 	@Property()
 	_id: ObjectId;
 
@@ -31,7 +31,7 @@ export class MediaSourceConfigEmbeddable {
 	@Enum({ nullable: false })
 	method: MediaSourceAuthMethod;
 
-	constructor(props: MediaSourceConfigEmbeddableProps) {
+	constructor(props: MediaSourceOauthConfigEmbeddableProps) {
 		this._id = props._id;
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;

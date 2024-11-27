@@ -13,7 +13,7 @@ import {
 } from '../testing';
 import { MediaUserLicenseRepo } from './media-user-license.repo';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
-import { MediaSourceConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
+import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
 import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
 
 describe(MediaUserLicenseRepo.name, () => {
@@ -43,7 +43,7 @@ describe(MediaUserLicenseRepo.name, () => {
 		describe('when searching for a users media licences', () => {
 			const setup = async () => {
 				const user: UserEntity = userFactory.build();
-				const config: MediaSourceConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
+				const config: MediaSourceOauthConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
 				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ config });
 				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({ user, mediaSource });
 				const otherMediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build();
@@ -76,7 +76,7 @@ describe(MediaUserLicenseRepo.name, () => {
 							name: mediaSource.name,
 							sourceId: mediaSource.sourceId,
 							format: mediaSource.format,
-							config: MediaSourceConfigMapper.mapToDo(config),
+							oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(config),
 						}),
 					}),
 				]);

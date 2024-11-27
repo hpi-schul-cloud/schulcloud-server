@@ -6,7 +6,7 @@ import { MediaSource } from '../domain';
 import { MediaSourceEntity } from '../entity';
 import { mediaSourceEntityFactory, mediaSourceFactory } from '../testing';
 import { MediaSourceRepo } from './media-source.repo';
-import { MediaSourceConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
+import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
 import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
@@ -36,7 +36,7 @@ describe(MediaSourceRepo.name, () => {
 	describe('findBySourceId', () => {
 		describe('when a media source exists', () => {
 			const setup = async () => {
-				const config: MediaSourceConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
+				const config: MediaSourceOauthConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
 
 				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ config });
 
@@ -61,7 +61,7 @@ describe(MediaSourceRepo.name, () => {
 						name: mediaSource.name,
 						sourceId: mediaSource.sourceId,
 						format: mediaSource.format,
-						config: MediaSourceConfigMapper.mapToDo(config),
+						oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(config),
 					})
 				);
 			});

@@ -1,0 +1,73 @@
+import { EntityData, EntityName } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
+import { SchoolEntity } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { MediaSourceEntity, MediaSource } from '@src/modules/user-license';
+import { MediaSourceConfigMapper } from '@src/modules/user-license/repo';
+import { MediaSchoolLicense } from '../domain';
+import { MediaSchoolLicenseEntity } from '../entity';
+import { SchoolLicenseType } from '../enum';
+
+@Injectable()
+export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLicense, MediaSchoolLicenseEntity> {
+	protected get entityName(): EntityName<MediaSchoolLicenseEntity> {
+		return MediaSchoolLicenseEntity.name;
+	}
+
+	private mapEntityToDomainObject(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
+		let mediaSource: MediaSource | undefined;
+
+		if (entity.mediaSource) {
+			mediaSource = new MediaSource({
+				id: entity.mediaSource.id,
+				name: entity.mediaSource.name,
+				sourceId: entity.mediaSource.sourceId,
+				format: entity.mediaSource.format,
+				oauthConfig: entity.mediaSource.oauthConfig
+					? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
+					: undefined,
+				basicConfig: entity.mediaSource.basicConfig
+					? MediaSourceConfigMapper.mapBasicConfigToDo(entity.mediaSource.basicConfig)
+					: undefined,
+			});
+		}
+
+		const schoolLicense: MediaSchoolLicense = new MediaSchoolLicense({
+			id: entity.id,
+			schoolId: entity.school.id,
+			mediumId: entity.mediumId,
+			mediaSource,
+			type: entity.type,
+		});
+
+		return schoolLicense;
+	}
+
+	protected mapDOToEntityProperties(entityDO: MediaSchoolLicense): EntityData<MediaSchoolLicenseEntity> {
+		const entityProps: EntityData<MediaSchoolLicenseEntity> = {
+			school: this.em.getReference(SchoolEntity, entityDO.schoolId),
+			type: SchoolLicenseType.MEDIA_LICENSE,
+			mediumId: entityDO.mediumId,
+			mediaSource: entityDO.mediaSource ? this.em.getReference(MediaSourceEntity, entityDO.mediaSource.id) : undefined,
+		};
+
+		return entityProps;
+	}
+
+	public async findMediaSchoolLicensesForSchool(schoolId: EntityId): Promise<MediaSchoolLicense[]> {
+		const entities: MediaSchoolLicenseEntity[] = await this.em.find(
+			MediaSchoolLicenseEntity,
+			{ school: schoolId, type: SchoolLicenseType.MEDIA_LICENSE },
+			{
+				populate: ['mediaSource'],
+			}
+		);
+
+		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
+			this.mapEntityToDomainObject(entity)
+		);
+
+		return domainObjects;
+	}
+}

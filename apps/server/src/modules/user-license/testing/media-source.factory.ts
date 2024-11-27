@@ -10,6 +10,6 @@ export const mediaSourceFactory = BaseFactory.define<MediaSource, MediaSourcePro
 		name: `media-source-${sequence}`,
 		sourceId: `source-id-${sequence}`,
 		format: MediaSourceDataFormat.BILDUNGSLOGIN,
-		config: mediaSourceConfigFactory.build(),
+		oauthConfig: mediaSourceConfigFactory.build(),
 	};
 });

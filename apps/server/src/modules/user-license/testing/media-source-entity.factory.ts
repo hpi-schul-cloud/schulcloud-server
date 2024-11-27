@@ -11,7 +11,7 @@ export const mediaSourceEntityFactory = BaseFactory.define<MediaSourceEntity, Me
 			name: `media-source-${sequence}`,
 			sourceId: `source-id-${sequence}`,
 			format: MediaSourceDataFormat.BILDUNGSLOGIN,
-			config: mediaSourceConfigEmbeddableFactory.build(),
+			oauthConfig: mediaSourceConfigEmbeddableFactory.build(),
 		};
 	}
 );
