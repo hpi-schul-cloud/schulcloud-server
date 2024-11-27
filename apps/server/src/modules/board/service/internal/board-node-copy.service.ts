@@ -296,62 +296,71 @@ export class BoardNodeCopyService {
 			...this.buildSpecificProps([]),
 		});
 
-		let status: CopyStatusEnum;
-		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') && original.contextExternalToolId) {
-			const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
+		if (!this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') || !original.contextExternalToolId) {
+			const copyStatus: CopyStatus = {
+				copyEntity: copy,
+				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+				status: CopyStatusEnum.SUCCESS,
+			};
 
-			if (linkedTool) {
-				const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-					linkedTool.schoolToolRef.schoolToolId
-				);
-
-				if (schoolExternalTool.schoolId !== context.targetSchoolId) {
-					const correctSchoolExternalTools: SchoolExternalTool[] =
-						await this.schoolExternalToolService.findSchoolExternalTools({
-							toolId: schoolExternalTool.toolId,
-							schoolId: context.targetSchoolId,
-						});
-
-					if (correctSchoolExternalTools.length) {
-						linkedTool.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
-						linkedTool.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
-					} else {
-						copy = new DeletedElement({
-							id: new ObjectId().toHexString(),
-							path: ROOT_PATH,
-							level: 0,
-							position: 0,
-							children: [],
-							createdAt: new Date(),
-							updatedAt: new Date(),
-							deletedElementType: ContentElementType.EXTERNAL_TOOL,
-							title: linkedTool.displayName ?? (schoolExternalTool.name as string),
-						});
-					}
-				}
-
-				if (copy instanceof ExternalToolElement) {
-					const contextExternalToolCopy: ContextExternalTool =
-						await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
-
-					copy.contextExternalToolId = contextExternalToolCopy.id;
-				}
-
-				status = CopyStatusEnum.SUCCESS;
-			} else {
-				status = CopyStatusEnum.FAIL;
-			}
-		} else {
-			status = CopyStatusEnum.SUCCESS;
+			return Promise.resolve(copyStatus);
 		}
 
-		const copyElementType =
-			copy instanceof ExternalToolElement ? CopyElementType.EXTERNAL_TOOL_ELEMENT : CopyElementType.DELETED_ELEMENT;
+		const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
+		if (!linkedTool) {
+			const copyStatus: CopyStatus = {
+				copyEntity: copy,
+				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+				status: CopyStatusEnum.FAIL,
+			};
+
+			return Promise.resolve(copyStatus);
+		}
+
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			linkedTool.schoolToolRef.schoolToolId
+		);
+
+		if (schoolExternalTool.schoolId !== context.targetSchoolId) {
+			const correctSchoolExternalTools: SchoolExternalTool[] =
+				await this.schoolExternalToolService.findSchoolExternalTools({
+					toolId: schoolExternalTool.toolId,
+					schoolId: context.targetSchoolId,
+				});
+
+			if (correctSchoolExternalTools.length) {
+				linkedTool.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
+				linkedTool.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
+			} else {
+				copy = new DeletedElement({
+					id: new ObjectId().toHexString(),
+					path: ROOT_PATH,
+					level: 0,
+					position: 0,
+					children: [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					deletedElementType: ContentElementType.EXTERNAL_TOOL,
+					title: linkedTool.displayName ?? (schoolExternalTool.name as string),
+				});
+			}
+		}
+
+		let copyElementType: CopyElementType;
+		if (copy instanceof ExternalToolElement) {
+			const contextExternalToolCopy: ContextExternalTool =
+				await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
+
+			copy.contextExternalToolId = contextExternalToolCopy.id;
+			copyElementType = CopyElementType.EXTERNAL_TOOL_ELEMENT;
+		} else {
+			copyElementType = CopyElementType.DELETED_ELEMENT;
+		}
 
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: copyElementType,
-			status,
+			status: CopyStatusEnum.SUCCESS,
 		};
 
 		return Promise.resolve(result);
