@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing/cleanup-collections';
+import { cleanupCollections } from '@shared/testing';
 import { RoomMember } from '../do/room-member.do';
 import { roomMemberEntityFactory, roomMemberFactory } from '../testing';
 import { RoomMemberEntity } from './entity';

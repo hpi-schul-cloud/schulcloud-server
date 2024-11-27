@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities } from '@shared/testing/setup-entities';
-import { roleDtoFactory, userFactory } from '@shared/testing/factory';
+import { roleDtoFactory, setupEntities, userFactory } from '@shared/testing';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomMemberRule } from './room-member.rule';
