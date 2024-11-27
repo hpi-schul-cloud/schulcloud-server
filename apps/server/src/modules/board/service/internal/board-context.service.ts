@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { RoomMemberService } from '@src/modules/room-member';
 import { UserWithRoomRoles } from '@src/modules/room-member/do/room-member-authorizable.do';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
