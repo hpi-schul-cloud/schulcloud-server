@@ -18,6 +18,13 @@ Base links to copy
 - https://ticketsystem.dbildungscloud.de/browse/BC-????
 -->
 
+<!--
+## Changes
+  What will the PR change?
+  Why are the changes required?
+  Short notice if a ticket exists, more detailed if not
+-->
+
 ## Approval for review
 
 - [ ] DEV: If api was changed - `generate-client:server` was executed in vue frontend and changes were tested and put in a PR with the same branch name.
