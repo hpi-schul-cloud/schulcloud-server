@@ -36,7 +36,7 @@ export class DeletionClient {
 	}
 
 	private async postDeletionRequest(input: DeletionRequestInput): Promise<AxiosResponse<DeletionRequestOutput, any>> {
-		const headers = this.createDetaultHeaders();
+		const headers = this.createDefaultHeaders();
 		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 		const postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', baseUrl).toString();
 
@@ -47,7 +47,7 @@ export class DeletionClient {
 	}
 
 	private async postDeletionExecutionRequest(limit?: number): Promise<AxiosResponse<any, any>> {
-		const defaultHeaders = this.createDetaultHeaders();
+		const defaultHeaders = this.createDefaultHeaders();
 		const headers = this.isLimitGeaterZero(limit) ? { ...defaultHeaders, params: { limit } } : defaultHeaders;
 		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 		const postDeletionExecutionsEndpoint = new URL('/admin/api/v1/deletionExecutions', baseUrl).toString();
@@ -58,7 +58,7 @@ export class DeletionClient {
 		return response;
 	}
 
-	private createDetaultHeaders() {
+	private createDefaultHeaders() {
 		const apiKey = this.configService.get('ADMIN_API_CLIENT_API_KEY', { infer: true });
 
 		return {
