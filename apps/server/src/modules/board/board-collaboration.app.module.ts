@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { defaultMikroOrmOptions } from '@shared/common';
 import { AuthorizationModule } from '../authorization';
 import { config } from './board-collaboration.config';
