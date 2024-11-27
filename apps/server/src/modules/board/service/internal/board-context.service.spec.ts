@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo } from '@shared/repo';
-import { courseFactory, groupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { RoomMemberService } from '@src/modules/room-member';
-import { roomFactory } from '@src/modules/room/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { CourseRepo } from '@shared/repo/course';
+import { courseFactory, groupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { GroupTypes } from '@src/modules/group';
+import { RoomMemberService } from '@src/modules/room-member';
 import { roomMemberFactory } from '@src/modules/room-member/testing';
-import { columnFactory, columnBoardFactory } from '../../testing';
+import { roomFactory } from '@src/modules/room/testing';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
+import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
 
 describe(`${BoardContextService.name}`, () => {

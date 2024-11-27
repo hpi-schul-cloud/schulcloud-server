@@ -3,7 +3,7 @@ import { CopyStatus } from '@modules/copy-helper';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { LegacyLogger } from '@src/core/logger';
 import { StorageLocation } from '@src/modules/files-storage/interface';
 import { RoomService } from '@src/modules/room';
