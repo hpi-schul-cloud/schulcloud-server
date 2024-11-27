@@ -6,9 +6,11 @@ import {
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
 import { CommonCartridgeElementFactory } from '../export/elements/common-cartridge-element-factory';
+import { CommonCartridgeFileResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-file-resource';
 import { CommonCartridgeManifestResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-content-resource';
 import { CommonCartridgeWebLinkResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-link-resource';
+import { CommonCartridgeFileResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-resource';
 import { CommonCartridgeManifestResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-content-resource';
 import { CommonCartridgeWebLinkResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-link-resource';
@@ -60,6 +62,30 @@ export function createCommonCartridgeWebContentResourcePropsV130(): CommonCartri
 		title: faker.lorem.words(),
 		html: faker.lorem.paragraphs(),
 		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+	};
+}
+
+export function createCommonCartridgeFileResourcePropsV110(): CommonCartridgeFileResourcePropsV110 {
+	return {
+		type: CommonCartridgeResourceType.FILE,
+		version: CommonCartridgeVersion.V_1_1_0,
+		identifier: faker.string.uuid(),
+		folder: faker.system.directoryPath(),
+		fileName: faker.system.fileName(),
+		fileContent: Buffer.from(faker.lorem.sentence()),
+		title: faker.lorem.word(),
+	};
+}
+
+export function createCommonCartridgeFileResourcePropsV130(): CommonCartridgeFileResourcePropsV130 {
+	return {
+		type: CommonCartridgeResourceType.FILE,
+		version: CommonCartridgeVersion.V_1_3_0,
+		identifier: faker.string.uuid(),
+		folder: faker.system.directoryPath(),
+		fileName: faker.system.fileName(),
+		fileContent: Buffer.from(faker.lorem.sentence()),
+		title: faker.lorem.word(),
 	};
 }
 

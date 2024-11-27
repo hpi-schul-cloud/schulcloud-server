@@ -1,30 +1,18 @@
-import { faker } from '@faker-js/faker';
+import { createCommonCartridgeFileResourcePropsV130 } from '../../../testing/common-cartridge-resource-props.factory';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
-import {
-	CommonCartridgeFileResourcePropsV130,
-	CommonCartridgeFileResourceV130,
-} from './common-cartridge-file-resource';
+import { CommonCartridgeFileResourceV130 } from './common-cartridge-file-resource';
 
 describe(CommonCartridgeFileResourceV130.name, () => {
-	const setup = (props: Partial<CommonCartridgeFileResourcePropsV130> = {}) => {
-		const defaultProps: CommonCartridgeFileResourcePropsV130 = {
-			type: CommonCartridgeResourceType.FILE,
-			version: CommonCartridgeVersion.V_1_3_0,
-			identifier: faker.string.uuid(),
-			folder: faker.system.directoryPath(),
-			fileName: faker.system.fileName(),
-			fileContent: Buffer.from(faker.lorem.sentence()),
-			title: faker.lorem.word(),
-		};
-		const finalProps = { ...defaultProps, ...props };
-		const sut = new CommonCartridgeFileResourceV130(finalProps);
+	const setup = () => {
+		const props = createCommonCartridgeFileResourcePropsV130();
+		const sut = new CommonCartridgeFileResourceV130(props);
 
-		return { sut, props: finalProps };
+		return { sut, props };
 	};
 
 	describe('getSupportedVersion', () => {
