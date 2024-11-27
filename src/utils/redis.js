@@ -1,4 +1,3 @@
-const { promisify } = require('util');
 const Redis = require('ioredis');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -32,19 +31,19 @@ function setRedisClient(client) {
 }
 
 const redisGetAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.get).apply(redisClient, args);
+	if (redisClient) return redisClient.get(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 const redisSetAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.set).apply(redisClient, args);
+	if (redisClient) return redisClient.set(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 const redisDelAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.del).apply(redisClient, args);
+	if (redisClient) return redisClient.del(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 const redisTtlAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.ttl).apply(redisClient, args);
+	if (redisClient) return redisClient.ttl(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 

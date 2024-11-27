@@ -1,11 +1,13 @@
 import { ObjectId } from 'bson';
+import fs from 'fs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriterService } from '@infra/console';
-import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { defaultMikroOrmOptions } from '@shared/common';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { BatchDeletionUc } from './uc';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
+import { DeletionConsoleModule } from './deletion-console.app.module';
 
 describe(DeletionQueueConsole.name, () => {
 	let module: TestingModule;
@@ -14,17 +16,7 @@ describe(DeletionQueueConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				DeletionQueueConsole,
-				{
-					provide: ConsoleWriterService,
-					useValue: createMock<ConsoleWriterService>(),
-				},
-				{
-					provide: BatchDeletionUc,
-					useValue: createMock<BatchDeletionUc>(),
-				},
-			],
+			imports: [DeletionConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
 		}).compile();
 
 		console = module.get(DeletionQueueConsole);
@@ -46,6 +38,7 @@ describe(DeletionQueueConsole.name, () => {
 	describe('pushDeletionRequests', () => {
 		describe('when called with valid options', () => {
 			const setup = () => {
+				jest.spyOn(fs, 'readFileSync').mockReturnValueOnce('');
 				const refsFilePath = '/tmp/ids.txt';
 				const targetRefDomain = 'school';
 				const deleteInMinutes = 43200;
