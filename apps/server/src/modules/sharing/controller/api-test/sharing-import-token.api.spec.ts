@@ -146,13 +146,13 @@ describe(`share token import (api)`, () => {
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, token: shareToken.token, elementType: CopyElementType.COURSE, targetSchool, course };
+				return { loggedInClient, token: shareToken.token, targetSchool, course };
 			};
 
 			describe('when the course has course tools', () => {
 				describe('when the importing school has the proper school external tool', () => {
 					const setupExistingSchoolTool = async () => {
-						const { loggedInClient, token, elementType, targetSchool, course } = await setupCrossSchoolImport();
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
 
 						const externalTool = externalToolEntityFactory.buildWithId();
 
@@ -178,38 +178,22 @@ describe(`share token import (api)`, () => {
 						return {
 							loggedInClient,
 							token,
-							elementType,
 							targetSchool,
 							targetSchoolTool,
 						};
 					};
 
-					it('should return status 201', async () => {
-						const { loggedInClient, token } = await setupExistingSchoolTool();
+					it('should save the copied course', async () => {
+						const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
 
-						const response = await loggedInClient.post(getSubPath(token), { newName: 'NewName' });
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
 
 						expect(response.status).toEqual(201);
+
+						await em.findOneOrFail(Course, { school: targetSchool });
 					});
 
-					it('should return a valid response body', async () => {
-						const { loggedInClient, token, elementType } = await setupExistingSchoolTool();
-
-						const newName = 'newName';
-						const response = await loggedInClient.post(getSubPath(token), { newName });
-						const body = response.body as CopyApiResponse;
-
-						const expectedResult: CopyApiResponse = {
-							id: expect.any(String),
-							type: elementType,
-							title: newName,
-							status: CopyStatusEnum.SUCCESS,
-						};
-
-						expect(body).toEqual(expect.objectContaining(expectedResult));
-					});
-
-					it('should save the copied course and course tools with the correct external school id', async () => {
+					it('should save the course tools with the correct external school id', async () => {
 						const { loggedInClient, token, targetSchool, targetSchoolTool } = await setupExistingSchoolTool();
 
 						const newName = 'newName';
@@ -220,19 +204,19 @@ describe(`share token import (api)`, () => {
 						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
 						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
-							schoolTool: targetSchoolTool,
+							contextId: new ObjectId(copiedCourse.id),
 						});
 
 						expect(copiedCourseTools.length).toEqual(2);
 						copiedCourseTools.forEach((courseTool) => {
-							expect(courseTool.contextId.toHexString()).toEqual(copiedCourse.id);
+							expect(courseTool.schoolTool.id).toEqual(targetSchoolTool.id);
 						});
 					});
 				});
 
 				describe('when the importing school does not have the proper school external tool', () => {
 					const setupNonExistingSchoolTool = async () => {
-						const { loggedInClient, token, elementType, targetSchool, course } = await setupCrossSchoolImport();
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
 
 						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
 							school: course.school,
@@ -247,33 +231,8 @@ describe(`share token import (api)`, () => {
 						await em.persistAndFlush([sourceSchoolTool, ...sourceCourseTools]);
 						em.clear();
 
-						return { loggedInClient, token, elementType, targetSchool };
+						return { loggedInClient, token, targetSchool };
 					};
-
-					it('should return status 201', async () => {
-						const { loggedInClient, token } = await setupNonExistingSchoolTool();
-
-						const response = await loggedInClient.post(getSubPath(token), { newName: 'NewName' });
-
-						expect(response.status).toEqual(201);
-					});
-
-					it('should return a valid response body', async () => {
-						const { loggedInClient, token, elementType } = await setupNonExistingSchoolTool();
-
-						const newName = 'newName';
-						const response = await loggedInClient.post(getSubPath(token), { newName });
-						const body = response.body as CopyApiResponse;
-
-						const expectedResult: CopyApiResponse = {
-							id: expect.any(String),
-							type: elementType,
-							title: newName,
-							status: CopyStatusEnum.SUCCESS,
-						};
-
-						expect(body).toEqual(expect.objectContaining(expectedResult));
-					});
 
 					it('should save the copied course', async () => {
 						const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
@@ -385,6 +344,24 @@ describe(`share token import (api)`, () => {
 						await em.findOneOrFail(Course, { school: targetSchool });
 					});
 
+					it('should save the copied board', async () => {
+						const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.COLUMN_BOARD,
+						});
+						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
+							(node) => node.context?.id === copiedCourse.id
+						);
+
+						expect(copiedColumnBoardNode).not.toBeUndefined();
+					});
+
 					it('should copy the board tool elements', async () => {
 						const { loggedInClient, token } = await setupExistingSchoolTool();
 
@@ -417,7 +394,7 @@ describe(`share token import (api)`, () => {
 
 				describe('when the importing school does not have the proper school external tool', () => {
 					const setupNonExistingSchoolTool = async () => {
-						const { loggedInClient, token, elementType, targetSchool, course } = await setupCrossSchoolImport();
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
 
 						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
 							school: course.school,
@@ -440,7 +417,7 @@ describe(`share token import (api)`, () => {
 						await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
 						em.clear();
 
-						return { loggedInClient, token, elementType, targetSchool };
+						return { loggedInClient, token, targetSchool };
 					};
 
 					it('should save the copied course', async () => {
@@ -451,6 +428,24 @@ describe(`share token import (api)`, () => {
 						expect(response.status).toEqual(201);
 
 						await em.findOneOrFail(Course, { school: targetSchool });
+					});
+
+					it('should save the copied board', async () => {
+						const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.COLUMN_BOARD,
+						});
+						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
+							(node) => node.context?.id === copiedCourse.id
+						);
+
+						expect(copiedColumnBoardNode).not.toBeUndefined();
 					});
 
 					it('should not copy the board tools and replace them with deleted elements', async () => {
@@ -517,12 +512,44 @@ describe(`share token import (api)`, () => {
 				return {
 					loggedInClient,
 					token: shareToken.token,
+					elementType: CopyElementType.COLUMNBOARD,
 					targetSchool,
 					targetCourse,
 					sourceCourse,
 					columnBoardNode,
 				};
 			};
+
+			it('should return status 201', async () => {
+				const { loggedInClient, token, targetCourse } = await setupCrossSchoolImport();
+
+				const data: ShareTokenImportBodyParams = {
+					newName: 'newName',
+					destinationCourseId: targetCourse.id,
+				};
+				const response = await loggedInClient.post(getSubPath(token), data);
+
+				expect(response.status).toEqual(201);
+			});
+
+			it('should return a valid response body', async () => {
+				const { loggedInClient, token, elementType, targetCourse } = await setupCrossSchoolImport();
+
+				const data: ShareTokenImportBodyParams = {
+					newName: 'newName',
+					destinationCourseId: targetCourse.id,
+				};
+				const response = await loggedInClient.post(getSubPath(token), data);
+				const body = response.body as CopyApiResponse;
+
+				const expectedResult: CopyApiResponse = {
+					id: expect.any(String),
+					type: elementType,
+					status: CopyStatusEnum.SUCCESS,
+				};
+
+				expect(body).toEqual(expect.objectContaining(expectedResult));
+			});
 
 			describe('when the board has tool elements', () => {
 				const populateColumnBoardWithTools = (

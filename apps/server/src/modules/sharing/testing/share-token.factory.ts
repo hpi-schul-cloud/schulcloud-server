@@ -23,7 +23,7 @@ class ShareTokenFactory extends BaseFactory<ShareToken, ShareTokenProperties> {
 	}
 
 	withParentTypeTask(): this {
-		const parentType = ShareTokenParentType.Course;
+		const parentType = ShareTokenParentType.Task;
 		const parentId = new ObjectId().toHexString();
 		const params: DeepPartial<ShareTokenProperties> = { parentType, parentId };
 
@@ -31,7 +31,7 @@ class ShareTokenFactory extends BaseFactory<ShareToken, ShareTokenProperties> {
 	}
 
 	withParentTypeLesson(): this {
-		const parentType = ShareTokenParentType.Course;
+		const parentType = ShareTokenParentType.Lesson;
 		const parentId = new ObjectId().toHexString();
 		const params: DeepPartial<ShareTokenProperties> = { parentType, parentId };
 
