@@ -2,19 +2,22 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoIoAdapter } from '@infra/socketio';
-import { InputFormat } from '@shared/domain/types';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections, courseFactory, userFactory } from '@shared/testing';
 import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
+import { BoardCollaborationModule } from '../../board-collaboration.app.module';
+import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	richTextElementEntityFactory,
 } from '../../testing';
-import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
-import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 
 describe(BoardCollaborationGateway.name, () => {
@@ -25,7 +28,13 @@ describe(BoardCollaborationGateway.name, () => {
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [BoardCollaborationTestingModule],
+			imports: [
+				BoardCollaborationModule,
+				MongoMemoryDatabaseModule.forRoot({
+					...defaultMikroOrmOptions,
+					entities: ALL_ENTITIES,
+				}),
+			],
 		}).compile();
 		app = testingModule.createNestApplication();
 
