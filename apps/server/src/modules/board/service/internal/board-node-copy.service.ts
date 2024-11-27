@@ -4,7 +4,7 @@ import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ToolConfig } from '@modules/tool/tool-config';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -37,6 +37,7 @@ export interface CopyContext {
 export class BoardNodeCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
+		@Inject(forwardRef(() => ContextExternalToolService))
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
