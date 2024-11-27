@@ -22,6 +22,7 @@ import {
 } from '@modules/board/testing';
 import { BoardNodeType } from '@modules/board/domain';
 import { BoardNodeEntity } from '@modules/board/repo';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
@@ -152,11 +153,14 @@ describe(`share token import (api)`, () => {
 					const setupExistingSchoolTool = async () => {
 						const { loggedInClient, token, elementType, targetSchool, course } = await setupCrossSchoolImport();
 
+						const externalTool = externalToolEntityFactory.buildWithId();
+
 						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
 							school: course.school,
+							tool: externalTool,
 						});
 
-						const sourceCourseTools = contextExternalToolEntityFactory.buildListWithId(2, {
+						const sourceCourseTools = contextExternalToolEntityFactory.buildList(2, {
 							schoolTool: sourceSchoolTool,
 							contextType: ContextExternalToolType.COURSE,
 							contextId: course.id,
@@ -164,10 +168,10 @@ describe(`share token import (api)`, () => {
 
 						const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
 							school: targetSchool,
-							tool: sourceSchoolTool.tool,
+							tool: externalTool,
 						});
 
-						await em.persistAndFlush([targetSchoolTool, sourceSchoolTool, ...sourceCourseTools]);
+						await em.persistAndFlush([externalTool, targetSchoolTool, sourceSchoolTool, ...sourceCourseTools]);
 						em.clear();
 
 						return {
@@ -331,8 +335,11 @@ describe(`share token import (api)`, () => {
 					const setupExistingSchoolTool = async () => {
 						const { loggedInClient, token, elementType, targetSchool, course } = await setupCrossSchoolImport();
 
+						const externalTool = externalToolEntityFactory.buildWithId();
+
 						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
 							school: course.school,
+							tool: externalTool,
 						});
 
 						const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
@@ -348,13 +355,19 @@ describe(`share token import (api)`, () => {
 						});
 
 						const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-							tool: sourceSchoolTool.tool,
 							school: targetSchool,
+							tool: externalTool,
 						});
 
 						setupBoardEntitiesWithTools(course, sourceBoardToolOne, sourceBoardToolTwo);
 
-						await em.persistAndFlush([targetSchoolTool, sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
+						await em.persistAndFlush([
+							externalTool,
+							targetSchoolTool,
+							sourceSchoolTool,
+							sourceBoardToolOne,
+							sourceBoardToolTwo,
+						]);
 						em.clear();
 
 						return { loggedInClient, token, elementType, targetSchool, targetSchoolTool };
@@ -438,8 +451,8 @@ describe(`share token import (api)`, () => {
 							contextType: ContextExternalToolType.BOARD_ELEMENT,
 						});
 
-						expect(deletedElementNodes.length).toEqual(2);
 						expect(persistedBoardTools.length).not.toBeGreaterThan(2);
+						expect(deletedElementNodes.length).toEqual(2);
 					});
 				});
 			});
@@ -525,8 +538,11 @@ describe(`share token import (api)`, () => {
 						const { loggedInClient, token, targetSchool, targetCourse, sourceCourse, columnBoardNode } =
 							await setupCrossSchoolImport();
 
+						const externalTool = externalToolEntityFactory.buildWithId();
+
 						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
 							school: sourceCourse.school,
+							tool: externalTool,
 						});
 
 						const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
@@ -542,13 +558,19 @@ describe(`share token import (api)`, () => {
 						});
 
 						const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-							tool: sourceSchoolTool.tool,
 							school: targetSchool,
+							tool: externalTool,
 						});
 
 						populateColumnBoardWithTools(columnBoardNode, sourceBoardToolOne, sourceBoardToolTwo);
 
-						await em.persistAndFlush([targetSchoolTool, sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
+						await em.persistAndFlush([
+							externalTool,
+							targetSchoolTool,
+							sourceSchoolTool,
+							sourceBoardToolOne,
+							sourceBoardToolTwo,
+						]);
 						em.clear();
 
 						return { loggedInClient, token, targetSchool, targetSchoolTool, targetCourse };
@@ -571,6 +593,7 @@ describe(`share token import (api)`, () => {
 						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
 							(node) => node.context?.id === targetCourse.id
 						);
+
 						expect(copiedColumnBoardNode).not.toBeUndefined();
 					});
 
@@ -664,9 +687,9 @@ describe(`share token import (api)`, () => {
 							type: BoardNodeType.EXTERNAL_TOOL,
 						});
 
-						expect(deletedElementNodes.length).toEqual(2);
 						expect(persistedBoardContextTools.length).not.toBeGreaterThan(2);
 						expect(persistedBoardToolElements.length).not.toBeGreaterThan(2);
+						expect(deletedElementNodes.length).toEqual(2);
 					});
 				});
 			});
