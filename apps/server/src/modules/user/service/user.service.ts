@@ -158,14 +158,17 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			[RoleName.ADMINISTRATOR]: guestTeacher,
 		};
 
-		users.forEach((user) => {
-			const guestRole = roleMapping[user.roles[0].name];
+		users
+			.filter((user) => user.schoolId !== schoolId)
+			.filter((user) => !user.secondarySchools.some((school) => school.schoolId === schoolId))
+			.forEach((user) => {
+				const guestRole = roleMapping[user.roles[0].name];
 
-			if (!guestRole) {
-				throw new AddSecondarySchoolToUsersRoleErrorLoggableException({ roles: user.roles });
-			}
-			user.secondarySchools.push({ schoolId, role: new RoleReference(guestRole) });
-		});
+				if (!guestRole) {
+					throw new AddSecondarySchoolToUsersRoleErrorLoggableException({ roles: user.roles });
+				}
+				user.secondarySchools.push({ schoolId, role: new RoleReference(guestRole) });
+			});
 
 		await this.userDORepo.saveAll(users);
 		return Promise.resolve();
