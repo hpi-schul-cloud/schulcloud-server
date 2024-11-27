@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing/setup-entities';
+import { setupEntities } from '@shared/testing';
 import { Card, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import {

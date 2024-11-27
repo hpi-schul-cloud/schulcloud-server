@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@shared/testing/factory';
-import { setupEntities } from '@shared/testing/setup-entities';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
-import { StorageLocation } from '@src/modules/files-storage/interface';
-import { BoardExternalReferenceType } from '../../domain';
-import { columnBoardFactory } from '../../testing';
+import { courseFactory, setupEntities } from '@shared/testing';
+import { BoardExternalReferenceType } from '../../domain/types';
+import { columnBoardFactory } from '../../testing/column-board.factory';
 import { BoardNodeService } from '../board-node.service';
-import { BoardNodeCopyService } from './board-node-copy.service';
 import { ColumnBoardCopyService, CopyColumnBoardParams } from './column-board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
+// Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
+import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(ColumnBoardCopyService.name, () => {
 	let module: TestingModule;

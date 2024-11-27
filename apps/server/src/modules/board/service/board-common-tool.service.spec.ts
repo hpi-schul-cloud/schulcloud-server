@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing/context-external-tool.factory';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { BoardCommonToolService } from './board-common-tool.service';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';

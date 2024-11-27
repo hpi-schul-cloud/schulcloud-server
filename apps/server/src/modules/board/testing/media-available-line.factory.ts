@@ -1,5 +1,5 @@
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { BaseFactory } from '@shared/testing';
 import { MediaBoardColors, MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps } from '../domain';
 
 class MediaAvailableLineFactory extends BaseFactory<MediaAvailableLine, MediaAvailableLineProps> {

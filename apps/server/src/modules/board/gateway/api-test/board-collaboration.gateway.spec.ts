@@ -1,21 +1,20 @@
-import { MongoIoAdapter } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+
+import { MongoIoAdapter } from '@infra/socketio';
 import { InputFormat } from '@shared/domain/types';
-import { cleanupCollections } from '@shared/testing/cleanup-collections';
-import { courseFactory } from '@shared/testing/factory/course.factory';
-import { userFactory } from '@shared/testing/factory/user.factory';
+import { cleanupCollections, courseFactory, userFactory } from '@shared/testing';
 import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
-import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
-import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	richTextElementEntityFactory,
 } from '../../testing';
+import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
+import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 
 describe(BoardCollaborationGateway.name, () => {

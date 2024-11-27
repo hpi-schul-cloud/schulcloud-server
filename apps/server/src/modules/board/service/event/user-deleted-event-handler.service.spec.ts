@@ -11,13 +11,12 @@ import {
 } from '@modules/deletion';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing/setup-entities';
+import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { mediaBoardFactory } from '../../testing';
-import { UserDeletedEventHandlerService } from './user-deleted-event-handler.service';
 import { BoardNodeService } from '../board-node.service';
-// Warning: do not move the MediaBoardService import up. Otherwise the import will lead to dependency cycles.
-import { MediaBoardService } from '../media-board/media-board.service';
+import { MediaBoardService } from '../media-board';
+import { UserDeletedEventHandlerService } from './user-deleted-event-handler.service';
 
 describe(UserDeletedEventHandlerService.name, () => {
 	let module: TestingModule;

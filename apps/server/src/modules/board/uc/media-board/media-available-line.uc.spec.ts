@@ -1,17 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { ExternalTool } from '@modules/tool/external-tool/domain/external-tool.do';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain/school-external-tool.do';
-import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing/school-external-tool.factory';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User } from '@shared/domain/entity';
-import { setupEntities } from '@shared/testing/setup-entities';
-import { userFactory as userEntityFactory, userFactory } from '@shared/testing/factory';
-import { externalToolFactory } from '@modules/tool/external-tool/testing/external-tool.factory';
+import { setupEntities, userFactory as userEntityFactory, userFactory } from '@shared/testing';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import {
 	MediaAvailableLine,
 	MediaAvailableLineElement,

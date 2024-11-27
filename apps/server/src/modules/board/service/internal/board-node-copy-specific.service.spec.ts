@@ -1,13 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyHelperService } from '@modules/copy-helper/service/copy-helper.service';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing/setup-entities';
+import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
