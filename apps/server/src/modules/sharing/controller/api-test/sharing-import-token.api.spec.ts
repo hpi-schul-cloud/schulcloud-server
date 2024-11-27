@@ -56,11 +56,14 @@ describe(`share token import (api)`, () => {
 		await app.close();
 	});
 
-	beforeEach(async () => {
-		await cleanupCollections(em);
+	beforeEach(() => {
 		Configuration.set('FEATURE_COURSE_SHARE', true);
 		Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', true);
 		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
+	});
+
+	afterEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	const setupSchoolExclusiveImport = async () => {
@@ -141,6 +144,7 @@ describe(`share token import (api)`, () => {
 				});
 
 				await em.persistAndFlush([teacherAccount, teacherUser, targetSchool, course, shareToken]);
+				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -213,14 +217,17 @@ describe(`share token import (api)`, () => {
 						expect(response.status).toEqual(201);
 
 						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
-						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+						const persistedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
-							contextId: new ObjectId(copiedCourse.id),
 						});
+						const copiedCourseTools: ContextExternalToolEntity[] = persistedCourseTools.filter(
+							(courseTool) => courseTool.contextId.toHexString() === copiedCourse.id
+						);
 
 						expect(copiedCourseTools.length).toEqual(2);
-						expect(copiedCourseTools[0].schoolTool.id).toEqual(targetSchoolTool.id);
-						expect(copiedCourseTools[1].schoolTool.id).toEqual(targetSchoolTool.id);
+						copiedCourseTools.forEach((copiedTool) => {
+							expect(copiedTool.schoolTool.id).toEqual(targetSchoolTool.id);
+						});
 					});
 				});
 
@@ -287,12 +294,14 @@ describe(`share token import (api)`, () => {
 						expect(response.status).toEqual(201);
 
 						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
-						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+						const persistedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
-							contextId: new ObjectId(copiedCourse.id),
 						});
 
-						expect(copiedCourseTools.length).toEqual(0);
+						const courseTools: ContextExternalToolEntity[] = persistedCourseTools.filter(
+							(courseTool) => courseTool.contextId.toHexString() === copiedCourse.id
+						);
+						expect(courseTools.length).toEqual(0);
 					});
 				});
 			});
@@ -377,10 +386,12 @@ describe(`share token import (api)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+						const persistedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.BOARD_ELEMENT,
-							schoolTool: targetSchoolTool,
 						});
+						const copiedBoardTools = persistedBoardTools.filter(
+							(boardTool) => boardTool.schoolTool.id === targetSchoolTool.id
+						);
 
 						expect(copiedBoardTools.length).toEqual(2);
 					});
@@ -574,7 +585,7 @@ describe(`share token import (api)`, () => {
 						expect(copiedColumnBoardNode).not.toBeUndefined();
 					});
 
-					it('should copy the course tools and reassign them to the correct school external tool', async () => {
+					it('should copy the board tools and reassign them to the correct school external tool', async () => {
 						const { loggedInClient, token, targetSchoolTool, targetCourse } = await setupExistingSchoolTool();
 
 						const data: ShareTokenImportBodyParams = {
@@ -585,10 +596,12 @@ describe(`share token import (api)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+						const persistedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.BOARD_ELEMENT,
-							schoolTool: targetSchoolTool,
 						});
+						const copiedBoardTools = persistedBoardTools.filter(
+							(boardTool) => boardTool.schoolTool.id === targetSchoolTool.id
+						);
 
 						expect(copiedBoardTools.length).toEqual(2);
 					});
