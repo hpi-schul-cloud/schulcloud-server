@@ -1,6 +1,4 @@
-import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { ErrorLogger } from '@src/core/logger';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
@@ -38,95 +36,45 @@ export class CommonCartridgeExportService {
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClinetAdapter: LessonClientAdapter,
-		private readonly mapper: CommonCartridgeExportMapper,
-		private readonly erorrLogger: ErrorLogger
+		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 
 	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
 		let courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto = {} as CourseCommonCartridgeMetadataDto;
-		try {
-			courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
-		} catch (error: unknown) {
-			this.erorrLogger.error({
-				getLogMessage() {
-					return {
-						message: 'Error while fetching course common cartridge metadata',
-						error,
-					};
-				},
-			});
-		}
+
+		courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
 		return courseCommonCartridgeMetadata;
 	}
 
 	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
 		let roomBoardDto: RoomBoardDto = {} as RoomBoardDto;
-		try {
-			roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
-		} catch (error: unknown) {
-			this.erorrLogger.error({
-				getLogMessage() {
-					return {
-						message: 'Error while fetching room board by course ID',
-						error,
-					};
-				},
-			});
-		}
+
+		roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+
 		return roomBoardDto;
 	}
 
 	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
 		let boardSkeleton: BoardSkeletonDto = {} as BoardSkeletonDto;
-		try {
-			boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
-		} catch (error: unknown) {
-			this.erorrLogger.error({
-				getLogMessage() {
-					return {
-						message: 'Error while fetching board skeleton by course ID',
-						error,
-					};
-				},
-			});
-		}
+
+		boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
 
 		return boardSkeleton;
 	}
 
 	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
 		let cards: CardListResponseDto = {} as CardListResponseDto;
-		try {
-			cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
-		} catch (error: unknown) {
-			this.erorrLogger.error({
-				getLogMessage() {
-					return {
-						message: 'Error while fetching all board cards by IDs',
-						error,
-					};
-				},
-			});
-		}
+
+		cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
 
 		return cards;
 	}
 
 	private async findLessonById(lessonId: string): Promise<LessonDto> {
 		let lesson: LessonDto = {} as LessonDto;
-		try {
-			lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
-		} catch (error: unknown) {
-			this.erorrLogger.error({
-				getLogMessage() {
-					return {
-						message: 'Error while fetching lesson by ID',
-						error,
-					};
-				},
-			});
-		}
+
+		lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
 
 		return lesson;
 	}
