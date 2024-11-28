@@ -95,14 +95,14 @@ describe('RoomMembershipService', () => {
 				const user = userFactory.buildWithId();
 				const group = groupFactory.build({ type: GroupTypes.ROOM });
 				const room = roomFactory.build();
-				const roomMember = roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+				const roomMembership = roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 
-				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMember);
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
 				return {
 					user,
 					room,
-					roomMember,
+					roomMembership,
 					group,
 				};
 			};
@@ -137,7 +137,7 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			describe('when roomMember does not exist', () => {
+			describe('when roomMembership does not exist', () => {
 				it('should throw an exception', async () => {
 					const { room } = setup();
 					roomMembershipRepo.findByRoomId.mockResolvedValue(null);
@@ -152,15 +152,15 @@ describe('RoomMembershipService', () => {
 				const user = userFactory.buildWithId();
 				const group = groupFactory.build({ type: GroupTypes.ROOM });
 				const room = roomFactory.build();
-				const roomMember = roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+				const roomMembership = roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 
-				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMember);
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 				groupService.findById.mockResolvedValue(group);
 
 				return {
 					user,
 					room,
-					roomMember,
+					roomMembership,
 					group,
 				};
 			};
@@ -175,7 +175,7 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
-	describe('deleteRoomMember', () => {
+	describe('deleteRoomMembership', () => {
 		describe('when room member does not exist', () => {
 			const setup = () => {
 				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
@@ -183,7 +183,7 @@ describe('RoomMembershipService', () => {
 
 			it('no nothing', async () => {
 				setup();
-				await service.deleteRoomMember('roomId');
+				await service.deleteRoomMembership('roomId');
 				expect(groupService.delete).not.toHaveBeenCalled();
 				expect(roomMembershipRepo.delete).not.toHaveBeenCalled();
 			});
@@ -192,18 +192,18 @@ describe('RoomMembershipService', () => {
 		describe('when room member exists', () => {
 			const setup = () => {
 				const group = groupFactory.build();
-				const roomMember = roomMembershipFactory.build({ userGroupId: group.id });
-				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMember);
+				const roomMembership = roomMembershipFactory.build({ userGroupId: group.id });
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 				groupService.findById.mockResolvedValue(group);
 
-				return { roomMember, group };
+				return { roomMembership, group };
 			};
 
 			it('should call delete group and room member', async () => {
-				const { roomMember, group } = setup();
-				await service.deleteRoomMember(roomMember.roomId);
+				const { roomMembership, group } = setup();
+				await service.deleteRoomMembership(roomMembership.roomId);
 				expect(groupService.delete).toHaveBeenCalledWith(group);
-				expect(roomMembershipRepo.delete).toHaveBeenCalledWith(roomMember);
+				expect(roomMembershipRepo.delete).toHaveBeenCalledWith(roomMembership);
 			});
 		});
 	});
@@ -215,15 +215,15 @@ describe('RoomMembershipService', () => {
 			const groupId = 'group789';
 			const roleId = 'role101';
 
-			const roomMember = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+			const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
 			const group = groupFactory.build({ id: groupId, users: [{ userId, roleId }] });
 			const role = roleDtoFactory.build({ id: roleId });
 
-			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMember);
+			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 			groupService.findById.mockResolvedValue(group);
 			roleService.findByIds.mockResolvedValue([role]);
 
-			return { roomId, userId, groupId, roleId, roomMember, group, role };
+			return { roomId, userId, groupId, roleId, roomMembership, group, role };
 		};
 
 		it('should return RoomMembershipAuthorizable when room member exists', async () => {
@@ -264,31 +264,31 @@ describe('RoomMembershipService', () => {
 				groupFactory.build({ id: groupId1, users: [{ userId, roleId: roleId1 }] }),
 				groupFactory.build({ id: groupId2, users: [{ userId, roleId: roleId2 }] }),
 			];
-			const roomMembers = [
+			const roomMemberships = [
 				roomMembershipFactory.build({ roomId: roomId1, userGroupId: groupId1 }),
 				roomMembershipFactory.build({ roomId: roomId2, userGroupId: groupId2 }),
 			];
 			const roles = [roleDtoFactory.build({ id: roleId1 }), roleDtoFactory.build({ id: roleId2 })];
 
 			groupService.findGroups.mockResolvedValue({ data: groups, total: groups.length });
-			roomMembershipRepo.findByGroupIds.mockResolvedValue(roomMembers);
+			roomMembershipRepo.findByGroupIds.mockResolvedValue(roomMemberships);
 			roleService.findByIds.mockResolvedValue(roles);
 
-			return { userId, roomMembers, roles };
+			return { userId, roomMemberships, roles };
 		};
 
 		it('should return RoomMembershipAuthorizables for user', async () => {
-			const { userId, roomMembers, roles } = setup();
+			const { userId, roomMemberships, roles } = setup();
 
 			const result = await service.getRoomMembershipAuthorizablesByUserId(userId);
 
 			expect(result).toHaveLength(2);
 			expect(result[0]).toBeInstanceOf(RoomMembershipAuthorizable);
-			expect(result[0].roomId).toBe(roomMembers[0].roomId);
+			expect(result[0].roomId).toBe(roomMemberships[0].roomId);
 			expect(result[0].members[0].userId).toBe(userId);
 			expect(result[0].members[0].roles[0].id).toBe(roles[0].id);
 			expect(result[1]).toBeInstanceOf(RoomMembershipAuthorizable);
-			expect(result[1].roomId).toBe(roomMembers[1].roomId);
+			expect(result[1].roomId).toBe(roomMemberships[1].roomId);
 			expect(result[1].members[0].userId).toBe(userId);
 			expect(result[1].members[0].roles[0].id).toBe(roles[1].id);
 		});

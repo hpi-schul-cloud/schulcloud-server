@@ -32,7 +32,7 @@ export class BoardContextService {
 	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const usersWithRoles: UserWithBoardRoles[] = roomMembershipAuthorizable.members.map((member) => {
-			const roles = this.getBoardRolesFromRoomMember(member);
+			const roles = this.getBoardRolesFromRoomMembership(member);
 			return {
 				userId: member.userId,
 				roles,
@@ -84,7 +84,7 @@ export class BoardContextService {
 		return usersWithRoles;
 	}
 
-	private getBoardRolesFromRoomMember(member: UserWithRoomRoles): BoardRoles[] {
+	private getBoardRolesFromRoomMembership(member: UserWithRoomRoles): BoardRoles[] {
 		const isReader = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_VIEW);
 		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_EDIT);
 

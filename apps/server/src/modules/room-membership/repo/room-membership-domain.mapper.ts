@@ -8,18 +8,18 @@ export class RoomMembershipDomainMapper {
 			return roomMembershipEntity.domainObject;
 		}
 
-		const roomMember = new RoomMembership(roomMembershipEntity);
+		const roomMembership = new RoomMembership(roomMembershipEntity);
 
 		// attach to identity map
-		roomMembershipEntity.domainObject = roomMember;
+		roomMembershipEntity.domainObject = roomMembership;
 
-		return roomMember;
+		return roomMembership;
 	}
 
-	static mapDoToEntity(roomMember: RoomMembership): RoomMembershipEntity {
+	static mapDoToEntity(roomMembership: RoomMembership): RoomMembershipEntity {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const { props } = roomMember;
+		const { props } = roomMembership;
 
 		if (!(props instanceof RoomMembershipEntity)) {
 			const entity = new RoomMembershipEntity();
@@ -27,7 +27,7 @@ export class RoomMembershipDomainMapper {
 
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			roomMember.props = entity;
+			roomMembership.props = entity;
 
 			return entity;
 		}

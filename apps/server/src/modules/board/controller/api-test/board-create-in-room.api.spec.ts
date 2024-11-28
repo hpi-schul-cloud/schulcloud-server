@@ -54,9 +54,9 @@ describe(`create board in room (api)`, () => {
 
 				const room = roomEntityFactory.buildWithId();
 
-				const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-				await em.persistAndFlush([account, user, role, userGroup, room, roomMember]);
+				await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(account);
@@ -170,9 +170,9 @@ describe(`create board in room (api)`, () => {
 
 				const room = roomEntityFactory.buildWithId();
 
-				const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-				await em.persistAndFlush([account, user, role, userGroup, room, roomMember]);
+				await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(account);
@@ -238,9 +238,9 @@ describe(`create board in room (api)`, () => {
 
 			const room = roomEntityFactory.buildWithId();
 
-			const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+			const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-			await em.persistAndFlush([account, user, role, userGroup, room, roomMember]);
+			await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(account);

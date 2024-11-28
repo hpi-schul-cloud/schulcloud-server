@@ -62,7 +62,7 @@ describe(`board lookup in room (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,
@@ -75,7 +75,7 @@ describe(`board lookup in room (api)`, () => {
 			roleRoomView,
 			userGroup,
 			room,
-			roomMember,
+			roomMembership,
 		]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

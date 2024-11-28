@@ -3,7 +3,7 @@ import { roomMembershipFactory } from '../testing';
 import { RoomMembership, RoomMembershipProps } from './room-membership.do';
 
 describe('RoomMembership', () => {
-	let roomMember: RoomMembership;
+	let roomMembership: RoomMembership;
 	const roomMemberId: EntityId = 'roomMemberId';
 	const roomMembershipProps: RoomMembershipProps = {
 		id: roomMemberId,
@@ -14,29 +14,29 @@ describe('RoomMembership', () => {
 	};
 
 	beforeEach(() => {
-		roomMember = new RoomMembership(roomMembershipProps);
+		roomMembership = new RoomMembership(roomMembershipProps);
 	});
 
 	it('should props without domainObject', () => {
 		const mockDomainObject = roomMembershipFactory.build();
 		// this tests the hotfix for the mikro-orm issue
 		// eslint-disable-next-line @typescript-eslint/dot-notation
-		roomMember['domainObject'] = mockDomainObject;
+		roomMembership['domainObject'] = mockDomainObject;
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const { domainObject, ...props } = roomMember.getProps();
+		const { domainObject, ...props } = roomMembership.getProps();
 
 		expect(domainObject).toEqual(undefined);
 		expect(props).toEqual(roomMembershipProps);
 	});
 
 	it('should get roomId', () => {
-		expect(roomMember.roomId).toEqual(roomMembershipProps.roomId);
+		expect(roomMembership.roomId).toEqual(roomMembershipProps.roomId);
 	});
 
 	it('should get userGroupId', () => {
-		expect(roomMember.userGroupId).toEqual(roomMembershipProps.userGroupId);
+		expect(roomMembership.userGroupId).toEqual(roomMembershipProps.userGroupId);
 	});
 });

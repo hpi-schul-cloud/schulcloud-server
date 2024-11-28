@@ -109,8 +109,8 @@ describe('Room Controller (API)', () => {
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
-				const roomMember = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
-				await em.persistAndFlush([room, board, studentAccount, studentUser, role, userGroupEntity, roomMember]);
+				const roomMembership = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+				await em.persistAndFlush([room, board, studentAccount, studentUser, role, userGroupEntity, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

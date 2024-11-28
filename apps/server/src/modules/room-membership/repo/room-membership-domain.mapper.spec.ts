@@ -19,7 +19,7 @@ describe('RoomMembershipDomainMapper', () => {
 		});
 
 		it('should return existing domainObject if present, regardless of entity properties', () => {
-			const existingRoomMember = new RoomMembership({
+			const existingRoomMembership = new RoomMembership({
 				id: '1',
 				roomId: 'r1',
 				userGroupId: 'ug1',
@@ -29,12 +29,12 @@ describe('RoomMembershipDomainMapper', () => {
 
 			const roomMembershipEntity = {
 				id: '1',
-				domainObject: existingRoomMember,
+				domainObject: existingRoomMembership,
 			} as RoomMembershipEntity;
 
 			const result = RoomMembershipDomainMapper.mapEntityToDo(roomMembershipEntity);
 
-			expect(result).toBe(existingRoomMember);
+			expect(result).toBe(existingRoomMembership);
 			expect(result).toBeInstanceOf(RoomMembership);
 			expect(result.getProps()).toEqual({
 				id: '1',
@@ -64,9 +64,9 @@ describe('RoomMembershipDomainMapper', () => {
 		describe('when domain object props are instanceof roomMembershipEntity', () => {
 			it('should return the entity', () => {
 				const roomMembershipEntity = roomMembershipEntityFactory.build();
-				const roomMember = new RoomMembership(roomMembershipEntity);
+				const roomMembership = new RoomMembership(roomMembershipEntity);
 
-				const result = RoomMembershipDomainMapper.mapDoToEntity(roomMember);
+				const result = RoomMembershipDomainMapper.mapDoToEntity(roomMembership);
 
 				expect(result).toBe(roomMembershipEntity);
 			});

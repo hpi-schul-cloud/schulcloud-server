@@ -103,8 +103,8 @@ describe('Room Controller (API)', () => {
 					type: GroupEntityTypes.ROOM,
 					users: [{ role, user: teacherUser }],
 				});
-				const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
-				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser, userGroup, role]);
+				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

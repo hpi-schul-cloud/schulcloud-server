@@ -98,13 +98,13 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
-					const roomMember = await em.findOneOrFail(RoomMembershipEntity, { roomId });
+					const roomMembership = await em.findOneOrFail(RoomMembershipEntity, { roomId });
 
 					const userGroup = await em.findOneOrFail(GroupEntity, {
-						id: roomMember.userGroupId,
+						id: roomMembership.userGroupId,
 					});
 
-					expect(roomMember).toBeDefined();
+					expect(roomMembership).toBeDefined();
 					expect(userGroup).toBeDefined();
 					expect(userGroup.users).toHaveLength(1);
 					expect(userGroup.users[0].user.id).toBe(teacherUser.id);

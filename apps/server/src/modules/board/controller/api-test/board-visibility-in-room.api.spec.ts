@@ -67,7 +67,7 @@ describe(`board update visibility with room relation (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,
@@ -80,7 +80,7 @@ describe(`board update visibility with room relation (api)`, () => {
 			roleRoomView,
 			userGroup,
 			room,
-			roomMember,
+			roomMembership,
 		]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({
