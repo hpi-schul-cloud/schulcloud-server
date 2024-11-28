@@ -1,5 +1,6 @@
-import { Page } from '@shared/domain/domainobject';
 import { ColumnBoard } from '@modules/board';
+import { Page } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { Room } from '../../domain/do/room.do';
 import { RoomPaginationParams } from '../dto/request/room-pagination.params';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
@@ -7,7 +8,6 @@ import { RoomBoardListResponse } from '../dto/response/room-board-list.response'
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
-import { Permission } from '@shared/domain/interface';
 
 export class RoomMapper {
 	static mapToRoomItemResponse(room: Room): RoomItemResponse {
