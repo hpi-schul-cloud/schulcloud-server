@@ -21,7 +21,7 @@ import { School } from '@src/modules/school';
 import { schoolFactory } from '@src/modules/school/testing';
 import { System } from '@src/modules/system';
 import { systemFactory } from '@src/modules/system/testing';
-import { SyncStrategyTarget } from '../sync-strategy.types';
+import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
