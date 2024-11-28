@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { GroupService, GroupTypes } from '@modules/group';
+import { RoleService } from '@modules/role';
+import { roomFactory } from '@modules/room/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { groupFactory, roleDtoFactory, userFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { GroupService, GroupTypes } from '@modules/group';
-import { RoleService } from '@modules/role';
-import { roomFactory } from '@modules/room/testing';
+import { RoomService } from '@src/modules/room/domain';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { roomMembershipFactory } from '../testing';
@@ -18,6 +19,7 @@ describe('RoomMembershipService', () => {
 	let roomMembershipRepo: DeepMocked<RoomMembershipRepo>;
 	let groupService: DeepMocked<GroupService>;
 	let roleService: DeepMocked<RoleService>;
+	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,6 +38,10 @@ describe('RoomMembershipService', () => {
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
 				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
 			],
 		}).compile();
 
@@ -43,6 +49,7 @@ describe('RoomMembershipService', () => {
 		roomMembershipRepo = module.get(RoomMembershipRepo);
 		groupService = module.get(GroupService);
 		roleService = module.get(RoleService);
+		roomService = module.get(RoomService);
 	});
 
 	afterAll(async () => {
@@ -54,7 +61,7 @@ describe('RoomMembershipService', () => {
 	});
 
 	describe('addMembersToRoom', () => {
-		describe('when room member does not exist', () => {
+		describe('when roomMembership does not exist', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const room = roomFactory.build();
@@ -64,6 +71,7 @@ describe('RoomMembershipService', () => {
 				groupService.createGroup.mockResolvedValue(group);
 				groupService.addUserToGroup.mockResolvedValue();
 				roomMembershipRepo.save.mockResolvedValue();
+				roomService.getSingleRoom.mockResolvedValue(room);
 
 				return {
 					user,
@@ -71,12 +79,24 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should create new room member when not exists', async () => {
+			it('should create new roomMembership when not exists', async () => {
 				const { user, room } = setup();
 
 				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
 
 				expect(roomMembershipRepo.save).toHaveBeenCalled();
+			});
+
+			it('should save the schoolId of the room in the roomMembership', async () => {
+				const { user, room } = setup();
+
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
+
+				expect(roomMembershipRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						schoolId: room.schoolId,
+					})
+				);
 			});
 
 			describe('when no user is provided', () => {
@@ -90,7 +110,7 @@ describe('RoomMembershipService', () => {
 			});
 		});
 
-		describe('when room member exists', () => {
+		describe('when roomMembership exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const group = groupFactory.build({ type: GroupTypes.ROOM });
@@ -107,7 +127,7 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should add user to existing room member', async () => {
+			it('should add user to existing roomMembership', async () => {
 				const { user, room, group } = setup();
 
 				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
@@ -120,7 +140,7 @@ describe('RoomMembershipService', () => {
 	});
 
 	describe('removeMembersFromRoom', () => {
-		describe('when room member does not exist', () => {
+		describe('when roomMembership does not exist', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const room = roomFactory.build();
@@ -147,7 +167,7 @@ describe('RoomMembershipService', () => {
 			});
 		});
 
-		describe('when room member exists', () => {
+		describe('when roomMembership exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const group = groupFactory.build({ type: GroupTypes.ROOM });
@@ -165,7 +185,7 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should remove room member', async () => {
+			it('should remove roomMembership', async () => {
 				const { user, room, group } = setup();
 
 				await service.removeMembersFromRoom(room.id, [user.id]);
@@ -176,7 +196,7 @@ describe('RoomMembershipService', () => {
 	});
 
 	describe('deleteRoomMembership', () => {
-		describe('when room member does not exist', () => {
+		describe('when roomMembership does not exist', () => {
 			const setup = () => {
 				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
 			};
@@ -189,7 +209,7 @@ describe('RoomMembershipService', () => {
 			});
 		});
 
-		describe('when room member exists', () => {
+		describe('when roomMembership exists', () => {
 			const setup = () => {
 				const group = groupFactory.build();
 				const roomMembership = roomMembershipFactory.build({ userGroupId: group.id });
@@ -199,7 +219,7 @@ describe('RoomMembershipService', () => {
 				return { roomMembership, group };
 			};
 
-			it('should call delete group and room member', async () => {
+			it('should call delete group and roomMembership', async () => {
 				const { roomMembership, group } = setup();
 				await service.deleteRoomMembership(roomMembership.roomId);
 				expect(groupService.delete).toHaveBeenCalledWith(group);
@@ -226,7 +246,7 @@ describe('RoomMembershipService', () => {
 			return { roomId, userId, groupId, roleId, roomMembership, group, role };
 		};
 
-		it('should return RoomMembershipAuthorizable when room member exists', async () => {
+		it('should return RoomMembershipAuthorizable when roomMembership exists', async () => {
 			const { roomId, userId, roleId } = setup();
 
 			const result = await service.getRoomMembershipAuthorizable(roomId);
@@ -238,7 +258,7 @@ describe('RoomMembershipService', () => {
 			expect(result.members[0].roles[0].id).toBe(roleId);
 		});
 
-		it('should return empty RoomMembershipAuthorizable when room member not exists', async () => {
+		it('should return empty RoomMembershipAuthorizable when roomMembership not exists', async () => {
 			const roomId = 'nonexistent';
 			roomMembershipRepo.findByRoomId.mockResolvedValue(null);
 

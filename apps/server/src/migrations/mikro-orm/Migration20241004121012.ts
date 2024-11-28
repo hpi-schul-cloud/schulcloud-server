@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
-export class Migration202410041210124 extends Migration {
+export class Migration20241004121012 extends Migration {
 	async up(): Promise<void> {
 		// Add ROOMVIEWER role
 		await this.getCollection('roles').insertOne({

@@ -41,7 +41,7 @@ export class RoomUc {
 		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
 
 		await this.roomMembershipService
-			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }], user.school.id)
+			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }])
 			.catch(async (err) => {
 				await this.roomService.deleteRoom(room);
 				throw err;
@@ -99,6 +99,7 @@ export class RoomUc {
 
 		await this.checkRoomAuthorization(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
 		await this.roomService.deleteRoom(room);
+		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {

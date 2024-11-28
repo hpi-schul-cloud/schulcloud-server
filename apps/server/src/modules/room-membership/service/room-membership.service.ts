@@ -1,41 +1,49 @@
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Group, GroupService, GroupTypes } from '@modules/group';
+import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupService, GroupTypes } from '@modules/group';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoomService } from '@src/modules/room/domain';
+import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
-import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 
 @Injectable()
 export class RoomMembershipService {
 	constructor(
 		private readonly groupService: GroupService,
-		private readonly roomMembersRepo: RoomMembershipRepo,
-		private readonly roleService: RoleService
+		private readonly roomMembershipRepo: RoomMembershipRepo,
+		private readonly roleService: RoleService,
+		private readonly roomService: RoomService
 	) {}
 
-	private async createNewRoomMember(
+	private async createNewRoomMembership(
 		roomId: EntityId,
 		userId: EntityId,
-		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER,
-		schoolId?: EntityId
+		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER
 	) {
-		const group = await this.groupService.createGroup(`Room Members for Room ${roomId}`, GroupTypes.ROOM, schoolId);
+		const room = await this.roomService.getSingleRoom(roomId);
+
+		const group = await this.groupService.createGroup(
+			`Room Members for Room ${roomId}`,
+			GroupTypes.ROOM,
+			room.schoolId
+		);
 		await this.groupService.addUsersToGroup(group.id, [{ userId, roleName }]);
 
-		const roomMember = new RoomMembership({
+		const roomMembership = new RoomMembership({
 			id: new ObjectId().toHexString(),
 			roomId,
 			userGroupId: group.id,
+			schoolId: room.schoolId,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 
-		await this.roomMembersRepo.save(roomMember);
+		await this.roomMembershipRepo.save(roomMembership);
 
-		return roomMember;
+		return roomMembership;
 	}
 
 	private buildRoomMembershipAuthorizable(
@@ -57,52 +65,51 @@ export class RoomMembershipService {
 		return roomMembershipAuthorizable;
 	}
 
-	public async deleteRoomMember(roomId: EntityId) {
-		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
-		if (roomMember === null) return;
+	public async deleteRoomMembership(roomId: EntityId) {
+		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		if (roomMembership === null) return;
 
-		const group = await this.groupService.findById(roomMember.userGroupId);
+		const group = await this.groupService.findById(roomMembership.userGroupId);
 		await this.groupService.delete(group);
-		await this.roomMembersRepo.delete(roomMember);
+		await this.roomMembershipRepo.delete(roomMembership);
 	}
 
 	public async addMembersToRoom(
 		roomId: EntityId,
-		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER }>,
-		schoolId?: EntityId
+		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER }>
 	): Promise<EntityId> {
-		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
-		if (roomMember === null) {
-			const firstUser = userIdsAndRoles.pop();
+		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		if (roomMembership === null) {
+			const firstUser = userIdsAndRoles.shift();
 			if (firstUser === undefined) {
 				throw new BadRequestException('No user provided');
 			}
-			const newRoomMember = await this.createNewRoomMember(roomId, firstUser.userId, firstUser.roleName, schoolId);
-			return newRoomMember.id;
+			const newRoomMembership = await this.createNewRoomMembership(roomId, firstUser.userId, firstUser.roleName);
+			return newRoomMembership.id;
 		}
 
-		await this.groupService.addUsersToGroup(roomMember.userGroupId, userIdsAndRoles);
+		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
 
-		return roomMember.id;
+		return roomMembership.id;
 	}
 
 	public async removeMembersFromRoom(roomId: EntityId, userIds: EntityId[]): Promise<void> {
-		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
-		if (roomMember === null) {
+		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		if (roomMembership === null) {
 			throw new BadRequestException('Room member not found');
 		}
 
-		const group = await this.groupService.findById(roomMember.userGroupId);
+		const group = await this.groupService.findById(roomMembership.userGroupId);
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
 		const groupPage = await this.groupService.findGroups({ userId, groupTypes: [GroupTypes.ROOM] });
 		const groupIds = groupPage.data.map((group) => group.id);
-		const roomMembers = await this.roomMembersRepo.findByGroupIds(groupIds);
+		const roomMemberships = await this.roomMembershipRepo.findByGroupIds(groupIds);
 		const roleIds = groupPage.data.flatMap((group) => group.users.map((groupUser) => groupUser.roleId));
 		const roleSet = await this.roleService.findByIds(roleIds);
-		const roomMembershipAuthorizables = roomMembers
+		const roomMembershipAuthorizables = roomMemberships
 			.map((item) => {
 				const group = groupPage.data.find((g) => g.id === item.userGroupId);
 				if (!group) return null;
@@ -114,11 +121,11 @@ export class RoomMembershipService {
 	}
 
 	public async getRoomMembershipAuthorizable(roomId: EntityId): Promise<RoomMembershipAuthorizable> {
-		const roomMember = await this.roomMembersRepo.findByRoomId(roomId);
-		if (roomMember === null) {
+		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		if (roomMembership === null) {
 			return new RoomMembershipAuthorizable(roomId, []);
 		}
-		const group = await this.groupService.findById(roomMember.userGroupId);
+		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const roleSet = await this.roleService.findByIds(group.users.map((groupUser) => groupUser.roleId));
 
 		const members = group.users.map((groupUser): UserWithRoomRoles => {

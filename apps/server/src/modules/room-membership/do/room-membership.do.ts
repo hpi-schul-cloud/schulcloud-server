@@ -5,6 +5,7 @@ export interface RoomMembershipProps extends AuthorizableObject {
 	id: EntityId;
 	roomId: EntityId;
 	userGroupId: EntityId;
+	schoolId: EntityId;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -30,5 +31,9 @@ export class RoomMembership extends DomainObject<RoomMembershipProps> {
 
 	public get userGroupId(): EntityId {
 		return this.props.userGroupId;
+	}
+
+	public get schoolId(): EntityId {
+		return this.props.schoolId;
 	}
 }

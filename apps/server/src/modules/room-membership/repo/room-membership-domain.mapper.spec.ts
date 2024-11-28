@@ -23,6 +23,7 @@ describe('RoomMembershipDomainMapper', () => {
 				id: '1',
 				roomId: 'r1',
 				userGroupId: 'ug1',
+				schoolId: 's1',
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 			});
@@ -40,6 +41,7 @@ describe('RoomMembershipDomainMapper', () => {
 				id: '1',
 				roomId: 'r1',
 				userGroupId: 'ug1',
+				schoolId: 's1',
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 			});
@@ -78,6 +80,7 @@ describe('RoomMembershipDomainMapper', () => {
 					id: '66d581c3ef74c548a4efea1d',
 					roomId: '66d581c3ef74c548a4efea1a',
 					userGroupId: '66d581c3ef74c548a4efea1b',
+					schoolId: '66d581c3ef74c548a4efea1c',
 					createdAt: new Date('2024-10-1'),
 					updatedAt: new Date('2024-10-1'),
 				};

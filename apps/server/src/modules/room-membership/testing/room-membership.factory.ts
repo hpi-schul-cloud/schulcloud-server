@@ -7,6 +7,7 @@ export const roomMembershipFactory = BaseFactory.define<RoomMembership, RoomMemb
 		id: new ObjectId().toHexString(),
 		roomId: new ObjectId().toHexString(),
 		userGroupId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

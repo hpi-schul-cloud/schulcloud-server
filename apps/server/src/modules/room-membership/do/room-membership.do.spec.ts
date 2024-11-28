@@ -9,6 +9,7 @@ describe('RoomMembership', () => {
 		id: roomMemberId,
 		roomId: 'roomId',
 		userGroupId: 'userGroupId',
+		schoolId: 'schoolId',
 		createdAt: new Date('2024-01-01'),
 		updatedAt: new Date('2024-01-01'),
 	};
@@ -38,5 +39,9 @@ describe('RoomMembership', () => {
 
 	it('should get userGroupId', () => {
 		expect(roomMembership.userGroupId).toEqual(roomMembershipProps.userGroupId);
+	});
+
+	it('should get schoolId', () => {
+		expect(roomMembership.schoolId).toEqual(roomMembershipProps.schoolId);
 	});
 });
