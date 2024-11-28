@@ -9,6 +9,7 @@ import {
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
+	VideoConferenceContentBody,
 } from '../../controller/dto';
 import {
 	AnyContentElement,
@@ -21,9 +22,11 @@ import {
 	isLinkElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
+	isVideoConferenceElement,
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
+	VideoConferenceElement,
 } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 
@@ -45,6 +48,8 @@ export class ContentElementUpdateService {
 			this.updateSubmissionContainerElement(element, content);
 		} else if (isExternalToolElement(element) && content instanceof ExternalToolContentBody) {
 			this.updateExternalToolElement(element, content);
+		} else if (isVideoConferenceElement(element) && content instanceof VideoConferenceContentBody) {
+			this.updateVideoConferenceElement(element, content);
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
@@ -94,5 +99,10 @@ export class ContentElementUpdateService {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			element.contextExternalToolId = content.contextExternalToolId;
 		}
+	}
+
+	updateVideoConferenceElement(element: VideoConferenceElement, content: VideoConferenceContentBody): void {
+		element.title = content.title;
+		element.url = new URL(content.url).toString();
 	}
 }

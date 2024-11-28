@@ -68,7 +68,7 @@ export interface SubmissionItemProps extends BoardNodeProps {
 
 export interface VideoConferenceElementProps extends BoardNodeProps {
 	title: string;
-	url?: string;
+	url: string;
 }
 
 export interface DeletedElementProps extends BoardNodeProps {
