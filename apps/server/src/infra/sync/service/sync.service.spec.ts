@@ -3,7 +3,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
 import { Logger } from '@src/core/logger';
 import { SyncService } from './sync.service';
-import { TspSyncStrategy } from '../tsp/tsp-sync.strategy';
+import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 
