@@ -36,6 +36,7 @@ const RoleMapping: Record<SchulconnexRole, RoleName> = {
 
 const GroupRoleMapping: Partial<Record<SchulconnexGroupRole, RoleName>> = {
 	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
+	[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
 	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
 };
 

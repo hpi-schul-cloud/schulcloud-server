@@ -20,6 +20,10 @@ export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityPro
 				user: userFactory.buildWithId(),
 				role: roleFactory.buildWithId({ name: RoleName.TEACHER }),
 			},
+			{
+				user: userFactory.buildWithId(),
+				role: roleFactory.buildWithId({ name: RoleName.GROUPSUBSTITUTIONTEACHER }),
+			},
 		],
 		validPeriod: new GroupValidPeriodEmbeddable({
 			from: new Date(2023, 1),

@@ -57,9 +57,10 @@ export class CourseSyncService {
 	}
 
 	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
-		const [studentRole, teacherRole] = await Promise.all([
+		const [studentRole, teacherRole, substituteTeacherRole] = await Promise.all([
 			this.roleService.findByName(RoleName.STUDENT),
 			this.roleService.findByName(RoleName.TEACHER),
+			this.roleService.findByName(RoleName.GROUPSUBSTITUTIONTEACHER),
 		]);
 
 		const studentIds = group.users
@@ -69,12 +70,17 @@ export class CourseSyncService {
 			.filter((user: GroupUser) => user.roleId === teacherRole.id)
 			.map((teacher) => teacher.userId);
 
+		const substituteTeacherIds = group.users
+			.filter((user: GroupUser) => user.roleId === substituteTeacherRole.id)
+			.map((substituteTeacher) => substituteTeacher.userId);
+
 		for (const course of courses) {
 			course.syncedWithGroup = group.id;
 			course.startDate = group.validPeriod?.from;
 			course.untilDate = group.validPeriod?.until;
 			course.classes = [];
 			course.groups = [];
+			course.substitutionTeachers = substituteTeacherIds;
 
 			if (oldGroup?.name === course.name) {
 				course.name = group.name;
