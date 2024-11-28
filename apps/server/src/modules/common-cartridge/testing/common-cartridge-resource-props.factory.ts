@@ -120,6 +120,16 @@ export function createCommonCartridgeWebLinkResourceProps(): CommonCartridgeReso
 	};
 }
 
+export function createCommonCartridgeFileProps(): CommonCartridgeResourceProps {
+	return {
+		type: CommonCartridgeResourceType.FILE,
+		title: faker.lorem.words(),
+		identifier: faker.string.uuid(),
+		fileName: faker.system.fileName(),
+		fileContent: Buffer.from(faker.lorem.paragraphs()),
+	};
+}
+
 export function createCommonCartridgeWebContentResourceProps(): CommonCartridgeResourceProps {
 	return {
 		type: CommonCartridgeResourceType.WEB_CONTENT,
