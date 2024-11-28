@@ -4,7 +4,7 @@ import { StorageLocation } from '@modules/files-storage/interface';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../../domain';
 import { BoardNodeService } from '../board-node.service';
 import { BoardNodeCopyContext } from './board-node-copy-context';

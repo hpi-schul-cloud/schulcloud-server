@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const { promisify } = require('es6-promisify');
 const { BadRequest } = require('../../errors');
 const { userModel } = require('../user/model');
 const { getRandomInt } = require('../../utils/randomNumberGenerator');
@@ -43,21 +42,19 @@ const rndChar = () => {
 };
 
 module.exports = function setup() {
-	const genSaltAsync = promisify(bcrypt.genSalt);
-	const genHashAsync = promisify(bcrypt.hash);
 	class HashService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
 		}
 
-		async create(data, params) {
+		async create(data) {
 			if (data.toHash === undefined) {
 				throw new BadRequest('Please set toHash key.');
 			}
-			const salt = await genSaltAsync(8);
+			const salt = await bcrypt.genSalt(8);
 
-			let hash = await genHashAsync(data.toHash, salt);
+			let hash = await bcrypt.hash(data.toHash, salt);
 
 			if (data.save === true || data.save === 'true') {
 				hash = hash.replace(/\/|\$|\./g, rndChar());
