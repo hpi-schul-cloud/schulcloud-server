@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { SystemType, UsersSyncOptions } from '../interface';
+import { SystemType, UsersSyncOptions } from '../api/interface';
 import { UsersSyncOptionsBuilder } from './users-sync-options.builder';
 
 describe(UsersSyncOptionsBuilder.name, () => {

@@ -7,11 +7,8 @@ metadata:
     app: tldraw-server
 spec:
   selector:
-    matchExpressions:
-      - key: app.kubernetes.io/name
-        operator: in
-        values:
-          - tldraw-server-svc
+      matchLabels:
+        app.kubernetes.io/name: tldraw-server-svc
   endpoints:
   - path: /metrics
     port: api-metrics

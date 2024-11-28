@@ -5,6 +5,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: board-collaboration
+    app.kubernetes.io/name: board-collaboration-svc
 spec:
   type: ClusterIP
   ports:

@@ -3,21 +3,21 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
-import { defaultMikroOrmOptions } from '@modules/server';
 import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { ConsoleModule } from 'nestjs-console';
-import { IdpSyncConsole } from './idp-sync-console';
-import { SynchronizationUc } from './uc';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { idpConsoleConfigConfig } from './idp-console.config';
+import { IdpSyncConsole, SynchronizationUc } from './api';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot({ isGlobal: true }),
+		ConfigModule.forRoot(createConfigModuleOptions(idpConsoleConfigConfig)),
 		SchulconnexClientModule.registerAsync(),
 		SynchronizationModule,
 		MikroOrmModule.forRoot({
