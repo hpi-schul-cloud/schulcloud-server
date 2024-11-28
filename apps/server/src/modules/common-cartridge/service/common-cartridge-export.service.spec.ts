@@ -3,7 +3,6 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
-import { ErrorLogger } from '@src/core/logger';
 import {
 	BoardClientAdapter,
 	BoardSkeletonDto,
@@ -18,7 +17,7 @@ import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/le
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
-import { LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
+import { LessonContentDto, LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
 import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
 import { VisibilitySettingsResponseDto } from '../common-cartridge-client/card-client/dto/visibility-settings-response.dto';
 import { TimestampResponseDto } from '../common-cartridge-client/card-client/dto/timestamp-response.dto';
@@ -32,6 +31,9 @@ import { ContentElementType } from '../common-cartridge-client/card-client/enums
 import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
 import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
 import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
+import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
+import { BoardLessonDto } from '../common-cartridge-client/room-client/dto/board-lesson.dto';
+import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -41,7 +43,6 @@ describe('CommonCartridgeExportService', () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
-	let errorLogger: DeepMocked<ErrorLogger>;
 
 	const dummyCourseId = faker.string.uuid();
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
@@ -62,20 +63,36 @@ describe('CommonCartridgeExportService', () => {
 			copyRightOwners: [faker.person.fullName()],
 		});
 
-		const lessonLinkedTask: LessonLinkedTaskDto = {
-			name: 'TEST LINKED TASK',
-			description: faker.lorem.paragraph(),
-			descriptionInputFormat: 'plainText',
-			availableDate: faker.date.recent().toISOString(),
-			dueDate: faker.date.future().toISOString(),
-			private: false,
-			publicSubmissions: false,
-			teamSubmissions: false,
-			creator: faker.internet.email(),
-			courseId: dummyCourseId,
-			submissionIds: [],
-			finishedIds: [],
-		};
+		const lessonLinkedTask: LessonLinkedTaskDto[] = [
+			{
+				name: 'First linked Task',
+				description: faker.lorem.paragraph(),
+				descriptionInputFormat: 'plainText',
+				availableDate: faker.date.recent().toISOString(),
+				dueDate: faker.date.future().toISOString(),
+				private: false,
+				publicSubmissions: false,
+				teamSubmissions: false,
+				creator: faker.internet.email(),
+				courseId: dummyCourseId,
+				submissionIds: [],
+				finishedIds: [],
+			},
+			{
+				name: 'second linked Task',
+				description: faker.lorem.paragraph(),
+				descriptionInputFormat: 'plainText',
+				availableDate: faker.date.recent().toISOString(),
+				dueDate: faker.date.future().toISOString(),
+				private: false,
+				publicSubmissions: false,
+				teamSubmissions: false,
+				creator: faker.internet.email(),
+				courseId: dummyCourseId,
+				submissionIds: [],
+				finishedIds: [],
+			},
+		];
 
 		const lessons: LessonDto[] = [
 			{
@@ -86,18 +103,27 @@ describe('CommonCartridgeExportService', () => {
 				hidden: false,
 				position: faker.number.int(),
 				contents: [
-					{
+					new LessonContentDto({
 						id: faker.string.uuid(),
-						content: {
+						content: new ComponentTextPropsDto({
 							text: 'text',
-						},
+						}),
 						title: faker.lorem.sentence(),
 						component: 'text',
 						hidden: false,
-					},
+					}),
+					new LessonContentDto({
+						id: faker.string.uuid(),
+						content: new ComponentGeogebraPropsDto({
+							materialId: faker.string.uuid(),
+						}),
+						title: faker.lorem.sentence(),
+						component: 'geoGebra',
+						hidden: false,
+					}),
 				],
 				materials: [],
-				linkedTasks: [lessonLinkedTask],
+				linkedTasks: [lessonLinkedTask[0]],
 			},
 			{
 				lessonId: faker.string.uuid(),
@@ -107,15 +133,15 @@ describe('CommonCartridgeExportService', () => {
 				hidden: false,
 				position: faker.number.int(),
 				contents: [
-					{
+					new LessonContentDto({
 						id: faker.string.uuid(),
-						content: {
+						content: new ComponentTextPropsDto({
 							text: 'text',
-						},
+						}),
 						title: faker.lorem.sentence(),
 						component: 'text',
 						hidden: false,
-					},
+					}),
 				],
 				materials: [],
 			},
@@ -153,7 +179,7 @@ describe('CommonCartridgeExportService', () => {
 			data: [
 				new CardResponseDto(
 					boardSkeleton.columns[0].cards?.[0].cardId ?? '',
-					'TEST CARD 1',
+					'Text card',
 					faker.number.int(),
 					[
 						new RichTextElementResponseDto(
@@ -168,7 +194,7 @@ describe('CommonCartridgeExportService', () => {
 				),
 				new CardResponseDto(
 					boardSkeleton.columns[0].cards?.[1].cardId ?? '',
-					'TEST CARD 2',
+					'link card',
 					faker.number.int(),
 					[
 						new LinkElementResponseDto(
@@ -225,6 +251,34 @@ describe('CommonCartridgeExportService', () => {
 						layout: BoardLayout.COLUMNS,
 					},
 				},
+				{
+					type: BoardElementDtoType.LESSON,
+					content: new BoardLessonDto({
+						id: lessons[0].lessonId,
+						name: lessons[0].name,
+						courseName: courseMetadata.courseName,
+						numberOfPublishedTasks: lessons[0].linkedTasks?.length ?? 0,
+						numberOfDraftTasks: 0,
+						numberOfPlannedTasks: 0,
+						createdAt: faker.date.recent().toISOString(),
+						updatedAt: faker.date.recent().toISOString(),
+						hidden: lessons[0].hidden,
+					}),
+				},
+				{
+					type: BoardElementDtoType.LESSON,
+					content: new BoardLessonDto({
+						id: lessons[1].lessonId,
+						name: lessons[1].name,
+						courseName: courseMetadata.courseName,
+						numberOfPublishedTasks: lessons[1].linkedTasks?.length ?? 0,
+						numberOfDraftTasks: 0,
+						numberOfPlannedTasks: 0,
+						createdAt: faker.date.recent().toISOString(),
+						updatedAt: faker.date.recent().toISOString(),
+						hidden: lessons[1].hidden,
+					}),
+				},
 			],
 			isArchived: false,
 			isSynchronized: false,
@@ -233,14 +287,14 @@ describe('CommonCartridgeExportService', () => {
 		coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 		lessonClientAdapterMock.getLessonById.mockResolvedValue(lessons[0]);
-		lessonClientAdapterMock.getLessonTasks.mockResolvedValue([lessonLinkedTask]);
+		lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonLinkedTask);
 		boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 		cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 
 		const buffer = await sut.exportCourse(
 			dummyCourseId,
 			version,
-			exportTopics ? [lessons[0].lessonId, lessons[1].lessonId] : [],
+			exportTopics ? [room.elements[2].content.id, room.elements[3].content.id] : [],
 			exportTasks ? [room.elements[0].content.id] : [],
 			exportColumnBoards ? [room.elements[1].content.id] : []
 		);
@@ -256,6 +310,8 @@ describe('CommonCartridgeExportService', () => {
 			boardTask,
 			boardSkeleton,
 			listOfCardsResponse,
+			textElement: listOfCardsResponse.data[0].elements[0].content as RichTextElementContentDto,
+			linkElement: listOfCardsResponse.data[1].elements[0].content as LinkElementContentDto,
 		};
 	};
 
@@ -288,10 +344,6 @@ describe('CommonCartridgeExportService', () => {
 					provide: LessonClientAdapter,
 					useValue: createMock<LessonClientAdapter>(),
 				},
-				{
-					provide: ErrorLogger,
-					useValue: createMock<ErrorLogger>(),
-				},
 			],
 		}).compile();
 
@@ -301,7 +353,6 @@ describe('CommonCartridgeExportService', () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		boardClientAdapterMock = module.get(BoardClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
-		errorLogger = module.get(ErrorLogger);
 	});
 
 	afterAll(async () => {
@@ -330,12 +381,12 @@ describe('CommonCartridgeExportService', () => {
 				);
 			});
 
-			it('should add lessons', async () => {
-				const { archive, lessons } = await setup();
+			it('should add lesson', async () => {
+				const { archive, room } = await setup();
 
-				lessons.forEach((lesson) => {
-					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
-				});
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
+					createXmlString('title', (room.elements[2].content as BoardLessonDto).name)
+				);
 			});
 
 			it('should add task', async () => {
@@ -346,14 +397,14 @@ describe('CommonCartridgeExportService', () => {
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="i${boardTask.id}"`);
 			});
 
-			// it('should add tasks of lesson to manifest file', async () => {
-			// 	const { archive, lessons } = await setup();
-			// 	const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			it('should add tasks of lesson to manifest file', async () => {
+				const { archive, lessons } = await setup();
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-			// 	lessons[0].linkedTasks?.forEach((linkedTask) => {
-			// 		expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
-			// 	});
-			// });
+				lessons[0].linkedTasks?.forEach((linkedTask) => {
+					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
+				});
+			});
 
 			it('should add column boards', async () => {
 				const { archive, boardSkeleton } = await setup();
@@ -395,11 +446,11 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add lessons', async () => {
-				const { archive, lessons } = await setup();
+				const { archive, room } = await setup();
 
-				lessons.forEach((lesson) => {
-					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
-				});
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
+					createXmlString('title', (room.elements[2].content as BoardLessonDto).name)
+				);
 			});
 
 			it('should add tasks', async () => {
@@ -438,19 +489,19 @@ describe('CommonCartridgeExportService', () => {
 				expect(manifest).toContain(createXmlString('title', listOfCardsResponse.data[0].title ?? ''));
 			});
 
-			// it('should add content element of cards', async () => {
-			// 	const { archive, textCardElement } = await setup();
-			// 	const manifest = getFileContent(archive, 'imsmanifest.xml');
+			it('should add content element of cards', async () => {
+				const { archive, listOfCardsResponse } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-			// 	expect(manifest).toContain(`<resource identifier="i${textCardElement.id}"`);
-			// });
+				expect(manifest).toContain(`<resource identifier="i${listOfCardsResponse.data[0].id}"`);
+			});
 
-			// it('should add link element of card', async () => {
-			// 	const { archive, linkElement } = await setup();
-			// 	const manifest = getFileContent(archive, 'imsmanifest.xml');
+			it('should add link element of card', async () => {
+				const { archive, linkElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-			// 	expect(manifest).toContain(`<resource identifier="i${linkElement.id}"`);
-			// });
+				expect(manifest).toContain(createXmlString('title', linkElement.title));
+			});
 		});
 
 		describe('When topics array is empty', () => {
