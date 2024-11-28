@@ -31,6 +31,8 @@
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
+		"check": "tsc --project tsconfig.check.json",
+		"check:watch": "tsc --watch --project tsconfig.build.json",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup:db:seed && npm run nest:build && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup:db:seed && npm run mocha-inspect",
 		"setup": "command removed - check npm run setup:db:seed instead!",
@@ -126,7 +128,7 @@
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
 		"pregenerate-client:files-storage-api": "rimraf ./apps/server/src/infra/files-storage-client/generated",
 		"generate-client:files-storage-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key files-storage-api",
-		"generate-client:lessons-api":"openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api"
+		"generate-client:lessons-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
