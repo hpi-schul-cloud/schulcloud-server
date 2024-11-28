@@ -1,1 +1,1 @@
-export { TspSyncConfig, TspSyncStrategy } from './tsp';
+export { TspSyncConfig, TspSyncStrategy } from './strategy/tsp';

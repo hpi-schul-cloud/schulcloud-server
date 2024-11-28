@@ -1,4 +1,6 @@
-export interface TspSyncConfig {
+import { TspConfig } from '../tsp.config';
+
+export interface TspSyncConfig extends TspConfig {
 	TSP_SYNC_SCHOOL_LIMIT: number;
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: number;
 	TSP_SYNC_DATA_LIMIT: number;
