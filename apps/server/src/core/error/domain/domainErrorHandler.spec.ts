@@ -4,9 +4,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common';
 import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import util from 'util';
+import { AxiosError } from 'axios';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
 import { DomainErrorHandler } from './domainErrorHandler';
+import { AxiosErrorLoggable } from '../loggable';
 
 class SampleLoggableException extends BadRequestException implements Loggable {
 	constructor(private testData: string) {
@@ -199,6 +201,23 @@ describe('GlobalErrorFilter', () => {
 				domainErrorHandler.exec(loggable);
 
 				expect(logger.error).toBeCalledWith(loggable);
+			});
+		});
+
+		describe('when error is a axios error', () => {
+			const setup = () => {
+				const error = new AxiosError('test');
+				const axiosLoggable = new AxiosErrorLoggable(error, 'AXIOS_REQUEST_ERROR');
+
+				return { axiosLoggable };
+			};
+
+			it('should call logger with axios error', () => {
+				const { axiosLoggable } = setup();
+
+				domainErrorHandler.exec(axiosLoggable);
+
+				expect(logger.error).toBeCalledWith(axiosLoggable);
 			});
 		});
 	});

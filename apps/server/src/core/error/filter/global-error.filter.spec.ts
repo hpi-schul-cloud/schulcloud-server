@@ -113,7 +113,7 @@ describe('GlobalErrorFilter', () => {
 				return { error, argumentsHost };
 			};
 
-			it('should call exec on axios error handler', () => {
+			it('should call exec on domain error handler', () => {
 				const { error, argumentsHost } = setup();
 
 				service.catch(error, argumentsHost);
