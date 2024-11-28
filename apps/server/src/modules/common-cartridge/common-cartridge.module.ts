@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
@@ -19,7 +18,6 @@ import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		FilesStorageClientModule,
 		LoggerModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,

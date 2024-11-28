@@ -33,7 +33,6 @@ const isLinkElement = (reference: unknown): reference is LinkElementResponseDto 
 @Injectable()
 export class CommonCartridgeExportService {
 	constructor(
-		private readonly filesService: FilesStorageClientAdapterService,
 		private readonly boardClientAdapter: BoardClientAdapter,
 		private readonly cardClientAdapter: CardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
@@ -132,12 +131,6 @@ export class CommonCartridgeExportService {
 		return lesson;
 	}
 
-	private async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
-		const courseFiles = await this.filesService.listFilesOfParent(courseId);
-
-		return courseFiles;
-	}
-
 	public async exportCourse(
 		courseId: string,
 		version: CommonCartridgeVersion,
@@ -193,7 +186,7 @@ export class CommonCartridgeExportService {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
 
-		if (!lessonsIds) {
+		if (lessonsIds.length === 0) {
 			return;
 		}
 
@@ -246,7 +239,7 @@ export class CommonCartridgeExportService {
 			.filter((columBoard) => exportedColumnBoards.includes(columBoard.columnBoardId))
 			.map((columBoard) => columBoard.columnBoardId);
 
-		if (!columnBoardsIds) {
+		if (columnBoardsIds.length === 0) {
 			return;
 		}
 
