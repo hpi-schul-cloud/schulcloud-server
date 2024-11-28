@@ -6,7 +6,7 @@ import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFac
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
+import { BoardExternalReferenceType, ColumnBoardProps } from '../../domain';
 
 const baseRouteName = '/boards';
 
@@ -35,13 +35,14 @@ describe(`board copy with course relation (api)`, () => {
 	});
 
 	describe('with valid user', () => {
-		const setup = async () => {
+		const setup = async (columnBoardProps: Partial<ColumnBoardProps> = {}) => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
+				...columnBoardProps,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -83,7 +84,7 @@ describe(`board copy with course relation (api)`, () => {
 		});
 
 		it('should set draft status on the board copy', async () => {
-			const { loggedInClient, columnBoardNode } = await setup();
+			const { loggedInClient, columnBoardNode } = await setup({ isVisible: true });
 
 			const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
 			const body = response.body as CopyApiResponse;
