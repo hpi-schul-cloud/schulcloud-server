@@ -12,7 +12,7 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@sr
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';

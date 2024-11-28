@@ -4,7 +4,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ManagementModule } from './management.module';
 
 @Module({

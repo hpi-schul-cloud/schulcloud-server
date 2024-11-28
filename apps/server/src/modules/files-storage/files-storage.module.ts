@@ -8,7 +8,7 @@ import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';

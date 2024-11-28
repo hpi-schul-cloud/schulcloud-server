@@ -4,7 +4,7 @@ import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { FileRecord } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.module';
 

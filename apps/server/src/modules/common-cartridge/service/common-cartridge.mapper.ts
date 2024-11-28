@@ -29,7 +29,7 @@ import { createIdentifier } from '../export/utils';
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
 
-	public mapCourseToManifestNew(
+	public mapCourseToManifest(
 		version: CommonCartridgeVersion,
 		courseId: string
 	): { version: CommonCartridgeVersion; identifier: string } {
@@ -42,7 +42,7 @@ export class CommonCartridgeExportMapper {
 	public mapCourseToMetadata(courseMetadata: CourseCommonCartridgeMetadataDto): CommonCartridgeElementProps {
 		return {
 			type: CommonCartridgeElementType.METADATA,
-			title: courseMetadata.title,
+			title: courseMetadata.courseName,
 			copyrightOwners: courseMetadata.copyRightOwners,
 			creationDate: courseMetadata.creationDate ? new Date(courseMetadata.creationDate) : new Date(),
 		};
@@ -188,8 +188,8 @@ export class CommonCartridgeExportMapper {
 		const title = sanitizeHtml(text, {
 			allowedTags: [],
 			allowedAttributes: {},
-		}).slice(0, 50);
+		}).slice(0, 20);
 
-		return title;
+		return `${title}...`;
 	}
 }

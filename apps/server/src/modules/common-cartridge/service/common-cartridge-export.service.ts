@@ -43,41 +43,106 @@ export class CommonCartridgeExportService {
 		private readonly cardClientAdapter: CardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
-		private readonly lessonClientAdapter: LessonClientAdapter,
-		private readonly filesStorageClient: FilesStorageClientAdapterService,
-		private readonly filesStorageAdapter: FilesStorageRestClientAdapter,
+		private readonly lessonClinetAdapter: LessonClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper,
-		private readonly errorLogger: ErrorLogger
+		private readonly errorLogger: ErrorLogger,
+		private readonly filesStorageClient: FilesStorageClientAdapterService,
+		private readonly filesStorageAdapter: FilesStorageRestClientAdapter
 	) {}
 
-	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
-		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
+		let courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto = {} as CourseCommonCartridgeMetadataDto;
+		try {
+			courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: 'Error while fetching course common cartridge metadata',
+						error,
+					};
+				},
+			});
+		}
 
 		return courseCommonCartridgeMetadata;
 	}
 
-	public async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
-		const courseRooms = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
-
-		return courseRooms;
+	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
+		let roomBoardDto: RoomBoardDto = {} as RoomBoardDto;
+		try {
+			roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: 'Error while fetching room board by course ID',
+						error,
+					};
+				},
+			});
+		}
+		return roomBoardDto;
 	}
 
-	public async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
-		const boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
+	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
+		let boardSkeleton: BoardSkeletonDto = {} as BoardSkeletonDto;
+		try {
+			boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: 'Error while fetching board skeleton by course ID',
+						error,
+					};
+				},
+			});
+		}
 
 		return boardSkeleton;
 	}
 
-	public async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
-		const cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
+	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
+		let cards: CardListResponseDto = {} as CardListResponseDto;
+		try {
+			cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: 'Error while fetching all board cards by IDs',
+						error,
+					};
+				},
+			});
+		}
 
 		return cards;
 	}
 
 	private async findLessonById(lessonId: string): Promise<LessonDto> {
-		const lesson = await this.lessonClientAdapter.getLessonById(lessonId);
+		let lesson: LessonDto = {} as LessonDto;
+		try {
+			lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
+		} catch (error: unknown) {
+			this.errorLogger.error({
+				getLogMessage() {
+					return {
+						message: 'Error while fetching lesson by ID',
+						error,
+					};
+				},
+			});
+		}
 
 		return lesson;
+	}
+
+	private async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
+		const courseFiles = await this.filesService.listFilesOfParent(courseId);
+
+		return courseFiles;
 	}
 
 	public async exportCourse(
@@ -87,7 +152,7 @@ export class CommonCartridgeExportService {
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
 	): Promise<Buffer> {
-		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifestNew(version, courseId));
+		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
 		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
 			await this.findCourseCommonCartridgeMetadata(courseId);
@@ -107,12 +172,6 @@ export class CommonCartridgeExportService {
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
 		return builder.build();
-	}
-
-	public async findCourseFileRecords(courseId: string): Promise<FileDto[]> {
-		const courseFiles = await this.filesService.listFilesOfParent(courseId);
-
-		return courseFiles;
 	}
 
 	private addComponentToOrganization(
