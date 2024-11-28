@@ -26,7 +26,7 @@ export interface UserProperties {
 	lastName: string;
 	preferredName?: string;
 	school: SchoolEntity;
-	secondarySchools?: UserSchoolEntityProps[];
+	secondarySchools?: UserSchoolEmbeddable[];
 	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
@@ -55,12 +55,6 @@ interface UserInfo {
 	customAvatarBackgroundColor?: string;
 }
 
-export interface UserSchoolEntityProps {
-	school: SchoolEntity;
-
-	role: Role;
-}
-
 @Embeddable()
 export class UserSchoolEmbeddable {
 	@Index()
@@ -70,7 +64,7 @@ export class UserSchoolEmbeddable {
 	@ManyToOne(() => Role)
 	role: Role;
 
-	constructor(props: UserSchoolEntityProps) {
+	constructor(props: UserSchoolEmbeddable) {
 		this.school = props.school;
 		this.role = props.role;
 	}

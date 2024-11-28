@@ -6,7 +6,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { SecondarySchoolReference, UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User, UserSchoolEmbeddable } from '@shared/domain/entity';
 import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -192,12 +192,13 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			preferredName: entityDO.preferredName,
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
-			secondarySchools: entityDO.secondarySchools.map((secondarySchool) => {
-				return {
-					school: this._em.getReference(SchoolEntity, secondarySchool.schoolId),
-					role: this._em.getReference(Role, secondarySchool.role.id),
-				};
-			}),
+			secondarySchools: entityDO.secondarySchools.map(
+				(secondarySchool) =>
+					new UserSchoolEmbeddable({
+						school: this._em.getReference(SchoolEntity, secondarySchool.schoolId),
+						role: this._em.getReference(Role, secondarySchool.role.id),
+					})
+			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
