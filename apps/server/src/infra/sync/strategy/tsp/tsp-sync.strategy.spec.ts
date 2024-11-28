@@ -10,7 +10,7 @@ import { schoolFactory } from '@modules/school/testing';
 import { System } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { userDoFactory } from '@shared/testing';
-import { SystemProvisioningStrategy } from '@shared/domain/interface';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
 import {
@@ -20,8 +20,8 @@ import {
 	RobjExportSchueler,
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
-} from '../../tsp-client';
-import { SyncStrategyTarget } from '../sync-strategy.types';
+} from '../../../tsp-client';
+import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
