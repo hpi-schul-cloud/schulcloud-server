@@ -1,16 +1,22 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { ErrorLogger, Logger } from '@src/core/logger';
+import type { Request } from 'express';
+import { from, throwError } from 'rxjs';
 import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
 import { FileApi } from './generated';
 
 describe(FilesStorageRestClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: FilesStorageRestClientAdapter;
-	let fileApiMock: DeepMocked<FileApi>;
+	let httpServiceMock: DeepMocked<HttpService>;
 	let errorLoggerMock: DeepMocked<ErrorLogger>;
+	let configServiceMock: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,12 +34,29 @@ describe(FilesStorageRestClientAdapter.name, () => {
 					provide: ErrorLogger,
 					useValue: createMock<ErrorLogger>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: REQUEST,
+					useValue: createMock<Request>({
+						headers: {
+							authorization: `Bearer ${faker.string.alphanumeric(42)}`,
+						},
+					}),
+				},
 			],
 		}).compile();
 
 		sut = module.get(FilesStorageRestClientAdapter);
-		fileApiMock = module.get(FileApi);
+		httpServiceMock = module.get(HttpService);
 		errorLoggerMock = module.get(ErrorLogger);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -53,8 +76,10 @@ describe(FilesStorageRestClientAdapter.name, () => {
 			const setup = () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
+				const observable = from([axiosResponseFactory.build({ data: Buffer.from('') })]);
 
-				fileApiMock.download.mockResolvedValueOnce(axiosResponseFactory.build({ data: Buffer.from('') }));
+				httpServiceMock.get.mockReturnValue(observable);
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return {
 					fileRecordId,
@@ -68,8 +93,11 @@ describe(FilesStorageRestClientAdapter.name, () => {
 				const result = await sut.download(fileRecordId, fileName);
 
 				expect(result).toEqual(Buffer.from(''));
-				expect(fileApiMock.download).toBeCalledWith(fileRecordId, fileName, undefined, {
+				expect(httpServiceMock.get).toBeCalledWith(expect.any(String), {
 					responseType: 'arraybuffer',
+					headers: {
+						Authorization: expect.any(String),
+					},
 				});
 			});
 		});
@@ -78,8 +106,9 @@ describe(FilesStorageRestClientAdapter.name, () => {
 			const setup = () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
+				const observable = throwError(() => new Error('error'));
 
-				fileApiMock.download.mockRejectedValueOnce(new Error('error'));
+				httpServiceMock.get.mockReturnValue(observable);
 
 				return {
 					fileRecordId,

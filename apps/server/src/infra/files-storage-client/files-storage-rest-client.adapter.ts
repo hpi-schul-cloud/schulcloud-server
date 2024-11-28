@@ -1,11 +1,13 @@
+import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { extractJwtFromRequest } from '@shared/common/utils/jwt';
 import { AxiosErrorLoggable } from '@src/core/error/loggable';
 import { ErrorLogger, Logger } from '@src/core/logger';
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { Request } from 'express';
+import { AxiosError } from 'axios';
+import type { Request } from 'express';
+import { lastValueFrom } from 'rxjs';
 import { FilesStorageRestClientConfig } from './files-storage-rest-client.config';
 import { FileApi } from './generated';
 
@@ -16,6 +18,7 @@ export class FilesStorageRestClientAdapter {
 		private readonly logger: Logger,
 		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
+		private readonly httpService: HttpService,
 		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,
 		@Inject(REQUEST) private readonly req: Request
 	) {}
@@ -35,14 +38,13 @@ export class FilesStorageRestClientAdapter {
 					'FILES_STORAGE__SERVICE_BASE_URL'
 				)}/api/v3/file/download/${fileRecordId}/${fileName}`
 			);
-			const response: AxiosResponse<Buffer> = await axios.request({
-				method: 'GET',
-				url: url.toString(),
+			const observable = this.httpService.get(url.toString(), {
 				responseType: 'arraybuffer',
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
+			const response = await lastValueFrom(observable);
 
 			this.logger.warning({
 				getLogMessage() {
