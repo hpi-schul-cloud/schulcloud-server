@@ -7,6 +7,14 @@
     tags:
       - service
 
+  - name: ServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: svc-monitor.yml.j2
+    tags:
+      - prometheus
+
   - name: Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

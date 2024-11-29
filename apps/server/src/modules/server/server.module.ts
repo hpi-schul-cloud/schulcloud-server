@@ -47,7 +47,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 

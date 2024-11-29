@@ -8,6 +8,8 @@ export enum RoleName {
 	DEMOSTUDENT = 'demoStudent',
 	DEMOTEACHER = 'demoTeacher',
 	EXPERT = 'expert',
+	GUESTTEACHER = 'guestTeacher',
+	GUESTSTUDENT = 'guestStudent',
 	HELPDESK = 'helpdesk',
 	ROOM_VIEWER = 'room_viewer',
 	ROOM_EDITOR = 'room_editor',
@@ -32,3 +34,6 @@ export type IUserRoleName =
 
 export const RoomRoleArray = [RoleName.ROOM_EDITOR, RoleName.ROOM_VIEWER] as const;
 export type RoomRole = typeof RoomRoleArray[number];
+
+export const GuestRoleArray = [RoleName.GUESTSTUDENT, RoleName.GUESTTEACHER] as const;
+export type GuestRole = typeof GuestRoleArray[number];

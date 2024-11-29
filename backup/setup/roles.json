@@ -600,5 +600,19 @@
 			"ROOM_VIEW",
 			"ROOM_EDIT"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "674444262ba8186272dc8abb"
+		},
+		"name": "guestStudent",
+		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "674444262ba8186272dc8abc"
+		},
+		"name": "guestTeacher",
+		"permissions": []
 	}
 ]

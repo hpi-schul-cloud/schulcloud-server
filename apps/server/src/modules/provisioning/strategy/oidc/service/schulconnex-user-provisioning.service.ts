@@ -93,6 +93,7 @@ export class SchulconnexUserProvisioningService {
 			roles: roleRefs ?? [],
 			schoolId,
 			birthday: externalUser.birthday,
+			secondarySchools: [],
 		});
 
 		return user;
