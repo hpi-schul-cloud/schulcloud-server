@@ -1,6 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { sleep } from '@modules/board/loadtest/helper/sleep';
 import { BoardNodeEntity } from '@modules/board/repo';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 
@@ -37,12 +36,12 @@ export class Migration20241120100616 extends Migration {
 			}
 
 			if (courseId) {
-				const schoolOfContext: [{ schoolId: ObjectId }] = (await this.driver.aggregate('courses', [
+				const schoolOfContext: [{ schoolId: ObjectId }] = (await this.driver.findOne('courses', [
 					{ $match: { _id: courseId } },
 					{ $project: { item: 1, schoolId: 1, _id: 0 } },
 				])) as [{ schoolId: ObjectId }];
 
-				const schoolOfSchoolTool: [{ school: ObjectId }] = (await this.driver.aggregate('school-external-tools', [
+				const schoolOfSchoolTool: [{ school: ObjectId }] = (await this.driver.findOne('school-external-tools', [
 					{ $match: { _id: tool.schoolTool } },
 					{ $project: { item: 1, school: 1, _id: 0 } },
 				])) as [{ school: ObjectId }];
@@ -74,8 +73,8 @@ export class Migration20241120100616 extends Migration {
 		);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async down(): Promise<void> {
-		await sleep(100);
 		console.info('Unfortunately the deleted documents cannot be restored. Use a backup.');
 	}
 }
