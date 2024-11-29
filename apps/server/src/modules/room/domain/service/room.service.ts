@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { ValidationError } from '@shared/common';
 import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 
@@ -29,6 +30,7 @@ export class RoomService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
+		this.validateTimeSpan(props, roomProps.id);
 		const room = new Room(roomProps);
 
 		await this.roomRepo.save(room);
@@ -43,6 +45,7 @@ export class RoomService {
 	}
 
 	public async updateRoom(room: Room, props: RoomUpdateProps): Promise<void> {
+		this.validateTimeSpan(props, room.id);
 		Object.assign(room, props);
 
 		await this.roomRepo.save(room);
@@ -50,5 +53,13 @@ export class RoomService {
 
 	public async deleteRoom(room: Room): Promise<void> {
 		await this.roomRepo.delete(room);
+	}
+
+	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
+		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
+			throw new ValidationError(
+				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
+			);
+		}
 	}
 }
