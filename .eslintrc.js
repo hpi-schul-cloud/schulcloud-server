@@ -50,7 +50,6 @@ module.exports = {
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
 		'max-classes-per-file': ['warn', 1],
-		'jest/prefer-spy-on': 'warn',
 	},
 	plugins: ['import', 'prettier', 'promise', 'no-only-tests', 'filename-rules'],
 	env: {
@@ -140,8 +139,11 @@ module.exports = {
 					rules: {
 						// you should turn the original rule off *only* for test files
 						'@typescript-eslint/unbound-method': 'off',
+						'jest/prefer-spy-on': 'warn',
 						'jest/unbound-method': 'error',
 						'@typescript-eslint/explicit-function-return-type': 'off',
+						'max-classes-per-file': 'off',
+						'@typescript-eslint/explicit-member-accessibility': 'off',
 					},
 				},
 			],
