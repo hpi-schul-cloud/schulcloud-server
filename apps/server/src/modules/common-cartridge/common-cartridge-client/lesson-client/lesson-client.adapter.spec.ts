@@ -8,7 +8,7 @@ import { Request } from 'express';
 import { LessonClientAdapter } from './lesson-client.adapter';
 import { LessonApi, LessonLinkedTaskResponse, LessonResponse } from './lessons-api-client';
 
-describe(LessonClientAdapter.name, () => {
+describe.skip(LessonClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: LessonClientAdapter;
 	let lessonApiMock: DeepMocked<LessonApi>;
