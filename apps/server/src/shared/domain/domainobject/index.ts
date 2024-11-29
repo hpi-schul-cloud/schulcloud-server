@@ -3,7 +3,7 @@ export { Pseudonym, PseudonymProps } from './pseudonym.do';
 export { VideoConferenceDO, VideoConferenceOptionsDO } from './video-conference.do';
 export { UserLoginMigrationDO } from './user-login-migration.do';
 export * from './legacy-school.do';
-export { SecondarySchoolReference, UserDO } from './user.do';
+export { UserDO } from './user.do';
 export { Page } from './page';
 export { RoleReference } from './role-reference';
 export { CustomLtiPropertyDO, LtiToolDO } from './ltitool.do';
