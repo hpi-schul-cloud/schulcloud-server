@@ -5,8 +5,8 @@ import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { SecondarySchoolReference, UserDO } from '@shared/domain/domainobject/user.do';
+import { Role, SchoolEntity, User, UserSchoolEmbeddable } from '@shared/domain/entity';
 import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -53,7 +53,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear']);
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 
@@ -65,7 +65,15 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 
 		if (populate) {
 			await Promise.all(
-				users.map((user) => this._em.populate(user, ['roles', 'school.systems', 'school.currentYear', 'school.name']))
+				users.map((user) =>
+					this._em.populate(user, [
+						'roles',
+						'school.systems',
+						'school.currentYear',
+						'school.name',
+						'secondarySchools.role',
+					])
+				)
 			);
 			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
 		}
@@ -83,7 +91,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		}
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -140,6 +148,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			roles: [],
 			schoolId: entity.school.id,
 			schoolName: entity.school.name,
+			secondarySchools: [],
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
 			importHash: entity.importHash,
@@ -162,6 +171,16 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 				.map((role: Role): RoleReference => new RoleReference({ id: role.id, name: role.name }));
 		}
 
+		if (entity.secondarySchools) {
+			user.secondarySchools = entity.secondarySchools.map(
+				(school) =>
+					new SecondarySchoolReference({
+						schoolId: school.school.id,
+						role: new RoleReference({ id: school.role.id, name: school.role.name }),
+					})
+			);
+		}
+
 		return user;
 	}
 
@@ -173,6 +192,13 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			preferredName: entityDO.preferredName,
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
+			secondarySchools: entityDO.secondarySchools.map(
+				(secondarySchool) =>
+					new UserSchoolEmbeddable({
+						school: this._em.getReference(SchoolEntity, secondarySchool.schoolId),
+						role: this._em.getReference(Role, secondarySchool.role.id),
+					})
+			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
