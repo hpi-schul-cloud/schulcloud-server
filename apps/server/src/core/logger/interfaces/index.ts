@@ -1,2 +1,2 @@
-export * from './legacy-logger.interface';
-export * from './loggable';
+export { ILegacyLogger } from './legacy-logger.interface';
+export { Loggable } from './loggable';

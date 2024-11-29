@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SchoolFeature } from '@shared/domain/types';
-import { cleanupCollections, schoolEntityFactory, systemEntityFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { SystemType } from '@src/modules/system';
+import { SystemType } from '../../../modules/system';
+import { MongoMemoryDatabaseModule } from '../../database';
+import { Logger } from '../../../core/logger';
+import { cleanupCollections, schoolEntityFactory, systemEntityFactory } from '../../../shared/testing';
+import { SchoolFeature } from '../../../shared/domain/types';
+import { SystemProvisioningStrategy } from '../../../shared/domain/interface';
+import { SchoolEntity } from '../../../shared/domain/entity';
 import { TspLegacyMigrationSystemMissingLoggable } from './loggable/tsp-legacy-migration-system-missing.loggable';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 

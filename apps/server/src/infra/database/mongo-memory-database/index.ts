@@ -1,2 +1,2 @@
-export * from './mongo-memory-database.module';
-export * from './types';
+export { MongoMemoryDatabaseModule } from './mongo-memory-database.module';
+export { MongoDatabaseModuleOptions } from './types';

@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@src/core/logger';
+import { Loggable, LogMessage } from '../../../../core/logger';
 
 export class TspStudentsMigratedLoggable implements Loggable {
 	constructor(private readonly migratedStudents: number) {}

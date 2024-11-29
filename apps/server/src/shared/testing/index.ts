@@ -1,8 +1,74 @@
-export * from './factory';
-export * from './setup-entities';
-export * from './create-collections';
-export * from './cleanup-collections';
-export * from './map-user-to-current-user';
-export * from './test-api-client';
-export * from './web-socket-ready-state-enum';
+export {
+	AxiosHeadersKeyValue,
+	BaseFactory,
+	CurrentUserFactory,
+	DoBaseFactory,
+	DomainObjectFactory,
+	EntityFactory,
+	JwtPayloadFactory,
+	JwtTestFactory,
+	SystemEntityFactory,
+	UserAndAccountParams,
+	UserAndAccountTestFactory,
+	axiosErrorFactory,
+	axiosResponseFactory,
+	boardFactory,
+	columnBoardNodeFactory,
+	columnboardBoardElementFactory,
+	countyEmbeddableFactory,
+	courseFactory,
+	courseGroupFactory,
+	courseNewsFactory,
+	courseUnpublishedNewsFactory,
+	currentUserFactory,
+	externalGroupDtoFactory,
+	externalSchoolDtoFactory,
+	externalToolPseudonymEntityFactory,
+	federalStateFactory,
+	fileRecordFactory,
+	groupEntityFactory,
+	groupFactory,
+	h5pContentFactory,
+	importUserFactory,
+	jwtPayloadFactory,
+	legacyFileEntityMockFactory,
+	legacySchoolDoFactory,
+	lessonBoardElementFactory,
+	lessonFactory,
+	ltiToolDOFactory,
+	materialFactory,
+	pseudonymFactory,
+	roleDtoFactory,
+	roleFactory,
+	schoolEntityFactory,
+	schoolNewsFactory,
+	schoolSystemOptionsEntityFactory,
+	schoolSystemOptionsFactory,
+	schoolUnpublishedNewsFactory,
+	schoolYearFactory,
+	shareTokenFactory,
+	storageProviderFactory,
+	submissionFactory,
+	systemEntityFactory,
+	systemLdapConfigEntityFactory,
+	systemOauthConfigEntityFactory,
+	systemOidcConfigEntityFactory,
+	taskBoardElementFactory,
+	taskFactory,
+	teamFactory,
+	teamNewsFactory,
+	teamUnpublishedNewsFactory,
+	teamUserFactory,
+	tldrawFileDtoFactory,
+	userDoFactory,
+	userFactory,
+	userLoginMigrationDOFactory,
+	userLoginMigrationFactory,
+} from './factory';
+export { setupEntities } from './setup-entities';
+export { createCollections } from './create-collections';
+export { cleanupCollections } from './cleanup-collections';
+export { mapUserToCurrentUser } from './map-user-to-current-user';
+export { TestApiClient } from './test-api-client';
+export { WebSocketReadyStateEnum } from './web-socket-ready-state-enum';
 export { DatesToStrings } from './dates-to-strings';

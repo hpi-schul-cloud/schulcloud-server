@@ -1,1 +1,1 @@
-export * from './synchronization.mapper';
+export { SynchronizationMapper } from './synchronization.mapper';

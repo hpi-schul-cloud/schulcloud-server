@@ -1,2 +1,2 @@
-export * from './mongo-memory-database';
-export * from './management';
+export { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from './mongo-memory-database';
+export { DatabaseManagementModule, DatabaseManagementService } from './management';

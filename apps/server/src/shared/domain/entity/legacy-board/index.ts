@@ -1,5 +1,10 @@
-export * from './legacy-board.entity';
-export * from './legacy-boardelement.entity';
-export * from './column-board-boardelement';
-export * from './lesson-boardelement.entity';
-export * from './task-boardelement.entity';
+export { BoardProps, LegacyBoard } from './legacy-board.entity';
+export {
+	LegacyBoardElement,
+	LegacyBoardElementProps,
+	LegacyBoardElementReference,
+	LegacyBoardElementType,
+} from './legacy-boardelement.entity';
+export { ColumnboardBoardElement } from './column-board-boardelement';
+export { LessonBoardElement } from './lesson-boardelement.entity';
+export { TaskBoardElement } from './task-boardelement.entity';

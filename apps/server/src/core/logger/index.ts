@@ -1,8 +1,15 @@
-export * from './interfaces';
-export * from './logger.module';
-export * from './legacy-logger.service';
-export * from './logger';
-export * from './error-logger';
-export * from './types';
-export * from './logging.utils';
+export { Loggable, ILegacyLogger } from './interfaces';
+export { LoggerModule } from './logger.module';
+export { LegacyLogger } from './legacy-logger.service';
+export { Logger } from './logger';
+export { ErrorLogger } from './error-logger';
+export {
+	LogMessage,
+	LogMessageData,
+	LogMessageDataObject,
+	LogMessageWithContext,
+	ErrorLogMessage,
+	ValidationErrorLogMessage,
+} from './types';
+export { LoggingUtils } from './logging.utils';
 export { LoggerConfig } from './logger.config';

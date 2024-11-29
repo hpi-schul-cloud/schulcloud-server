@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { OauthAdapterService } from '@modules/oauth';
-import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
-import { Logger } from '@src/core/logger';
 import axios, { AxiosError } from 'axios';
+import { AxiosErrorLoggable, ErrorLoggable } from '../../core/error/loggable';
+import { Logger } from '../../core/logger';
+import { ServerConfig } from '../../modules/server';
+import { OauthAdapterService } from '../../modules/oauth';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
 
