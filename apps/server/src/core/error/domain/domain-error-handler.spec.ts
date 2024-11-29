@@ -6,7 +6,7 @@ import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogM
 import util from 'util';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
-import { DomainErrorHandler } from './domainErrorHandler';
+import { DomainErrorHandler } from './domain-error-handler';
 
 class SampleLoggableException extends BadRequestException implements Loggable {
 	constructor(private testData: string) {
