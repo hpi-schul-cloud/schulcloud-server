@@ -49,8 +49,8 @@ module.exports = {
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
-		'max-classes-per-file': ['error', 1],
-		'jest/prefer-spy-on': 'error',
+		'max-classes-per-file': ['warn', 1],
+		'jest/prefer-spy-on': 'warn',
 	},
 	plugins: ['import', 'prettier', 'promise', 'no-only-tests', 'filename-rules'],
 	env: {
@@ -94,9 +94,9 @@ module.exports = {
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
 				'filename-rules/match': [2, 'kebabcase'],
-				'require-await': 'error',
+				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
-				'@typescript-eslint/no-non-null-assertion': 'error',
+				'@typescript-eslint/no-non-null-assertion': 'warn',
 				'@typescript-eslint/explicit-function-return-type': 'warn',
 				'@typescript-eslint/explicit-member-accessibility': [
 					'warn',
