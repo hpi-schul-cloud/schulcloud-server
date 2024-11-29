@@ -1,37 +1,37 @@
+import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
-import AdmZip from 'adm-zip';
 import { ErrorLogger } from '@src/core/logger';
+import AdmZip from 'adm-zip';
 import {
 	BoardClientAdapter,
 	BoardSkeletonDto,
 	CardSkeletonDto,
 	ColumnSkeletonDto,
 } from '../common-cartridge-client/board-client';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
-import { LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
-import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
-import { VisibilitySettingsResponseDto } from '../common-cartridge-client/card-client/dto/visibility-settings-response.dto';
-import { TimestampResponseDto } from '../common-cartridge-client/card-client/dto/timestamp-response.dto';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
+import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
+import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
+import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
+import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
+import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
+import { TimestampResponseDto } from '../common-cartridge-client/card-client/dto/timestamp-response.dto';
+import { VisibilitySettingsResponseDto } from '../common-cartridge-client/card-client/dto/visibility-settings-response.dto';
+import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
+import { LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
+import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { BoardTaskStatusDto } from '../common-cartridge-client/room-client/dto/board-task-status.dto';
+import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
+import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
 import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
 import { BoardLayout } from '../common-cartridge-client/room-client/enums/board-layout.enum';
-import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
-import { BoardTaskStatusDto } from '../common-cartridge-client/room-client/dto/board-task-status.dto';
-import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
-import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
-import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
-import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
-import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -41,7 +41,6 @@ describe('CommonCartridgeExportService', () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
-	let errorLogger: DeepMocked<ErrorLogger>;
 
 	const dummyCourseId = faker.string.uuid();
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
@@ -301,7 +300,6 @@ describe('CommonCartridgeExportService', () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		boardClientAdapterMock = module.get(BoardClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
-		errorLogger = module.get(ErrorLogger);
 	});
 
 	afterAll(async () => {
