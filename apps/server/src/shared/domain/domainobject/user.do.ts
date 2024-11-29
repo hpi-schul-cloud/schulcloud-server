@@ -1,7 +1,20 @@
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
+import { Consent } from './consent';
 import { RoleReference } from './role-reference';
+import { UserSourceOptions } from './user-source-options.do';
+
+export class SecondarySchoolReference {
+	schoolId: EntityId;
+
+	role: RoleReference;
+
+	constructor(props: SecondarySchoolReference) {
+		this.schoolId = props.schoolId;
+		this.role = props.role;
+	}
+}
 
 export class UserDO extends BaseDO {
 	createdAt?: Date;
@@ -21,6 +34,8 @@ export class UserDO extends BaseDO {
 	schoolId: EntityId;
 
 	schoolName?: string;
+
+	secondarySchools: SecondarySchoolReference[];
 
 	ldapDn?: string;
 
@@ -50,6 +65,10 @@ export class UserDO extends BaseDO {
 
 	birthday?: Date;
 
+	consent?: Consent;
+
+	sourceOptions?: UserSourceOptions;
+
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
 
@@ -62,6 +81,7 @@ export class UserDO extends BaseDO {
 		this.roles = domainObject.roles;
 		this.schoolId = domainObject.schoolId;
 		this.schoolName = domainObject.schoolName;
+		this.secondarySchools = domainObject.secondarySchools || [];
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;
 		this.importHash = domainObject.importHash;
@@ -76,5 +96,7 @@ export class UserDO extends BaseDO {
 		this.outdatedSince = domainObject.outdatedSince;
 		this.previousExternalId = domainObject.previousExternalId;
 		this.birthday = domainObject.birthday;
+		this.consent = domainObject.consent;
+		this.sourceOptions = domainObject.sourceOptions;
 	}
 }
