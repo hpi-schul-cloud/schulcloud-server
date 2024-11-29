@@ -5,5 +5,3 @@ export abstract class SyncStrategy {
 
 	abstract sync(): Promise<void>;
 }
-
-// TODO: think about folder structure, in other cases the strategy specific folders are in the strategy folder

@@ -6,7 +6,6 @@ import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
-// TODO: do not deep import from modules. These things should probably be publicly exported by the school module.
 import { FederalState } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
