@@ -34,6 +34,7 @@ import { LinkElementContentDto } from '../common-cartridge-client/card-client/dt
 import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
 import { BoardLessonDto } from '../common-cartridge-client/room-client/dto/board-lesson.dto';
 import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
+import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -119,6 +120,15 @@ describe('CommonCartridgeExportService', () => {
 						}),
 						title: faker.lorem.sentence(),
 						component: 'geoGebra',
+						hidden: false,
+					}),
+					new LessonContentDto({
+						id: faker.string.uuid(),
+						content: new ComponentLernstorePropsDto({
+							resources: ['{title: resource1, url: https:test.de}', '{title: resource2, url: https:test.de}'],
+						}),
+						title: faker.lorem.sentence(),
+						component: 'resources',
 						hidden: false,
 					}),
 				],
@@ -406,6 +416,15 @@ describe('CommonCartridgeExportService', () => {
 				});
 			});
 
+			it('should add lernstore element of lesson to manifest file', async () => {
+				const { archive, lessons } = await setup();
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+
+				lessons[0].contents.forEach((content) => {
+					expect(manifest).toContain(`<title>${content.title}</title>`);
+				});
+			});
+
 			it('should add column boards', async () => {
 				const { archive, boardSkeleton } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
@@ -465,6 +484,15 @@ describe('CommonCartridgeExportService', () => {
 
 				lessons[0].linkedTasks?.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
+				});
+			});
+
+			it('should add lernstore element of lesson to manifest file', async () => {
+				const { archive, lessons } = await setup();
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+
+				lessons[0].contents.forEach((content) => {
+					expect(manifest).toContain(`<title>${content.title}</title>`);
 				});
 			});
 
