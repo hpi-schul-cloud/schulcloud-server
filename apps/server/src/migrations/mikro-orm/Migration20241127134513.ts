@@ -15,7 +15,7 @@ export class Migration20241127134513 extends Migration {
 
 			if (course === null) {
 				await this.getCollection('context-external-tools').deleteOne({ _id: doc._id });
-				deleteCount++;
+				deleteCount += 1;
 			}
 		}
 
