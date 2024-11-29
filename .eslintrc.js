@@ -49,8 +49,10 @@ module.exports = {
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
+		'max-classes-per-file': ['error', 1],
+		'jest/prefer-spy-on': 'error',
 	},
-	plugins: ['import', 'prettier', 'promise', 'no-only-tests'],
+	plugins: ['import', 'prettier', 'promise', 'no-only-tests', 'filename-rules'],
 	env: {
 		node: true,
 		mocha: true,
@@ -88,11 +90,27 @@ module.exports = {
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
 				'import/prefer-default-export': 'off',
 				'no-void': ['error', { allowAsStatement: true }],
-				'max-classes-per-file': 'off',
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
+				'filename-rules/match': [2, 'kebabcase'],
+				'require-await': 'error',
 				'@typescript-eslint/unbound-method': 'error',
+				'@typescript-eslint/no-non-null-assertion': 'error',
+				'@typescript-eslint/explicit-function-return-type': 'error',
+				'@typescript-eslint/explicit-member-accessibility': [
+					'error',
+					{
+						accessibility: 'explicit',
+						overrides: {
+							accessors: 'explicit',
+							constructors: 'no-public',
+							methods: 'explicit',
+							properties: 'explicit',
+							parameterProperties: 'explicit',
+						},
+					},
+				],
 				'@typescript-eslint/no-unused-vars': 'error',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
@@ -105,7 +123,7 @@ module.exports = {
 					{
 						patterns: [
 							{
-								group: ['@infra/*/*', '@modules/*/*', '!*.module'],
+								group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
 								message: 'Do not deep import from a module',
 							},
 						],
