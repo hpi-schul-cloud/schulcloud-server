@@ -97,13 +97,13 @@ module.exports = {
 				'require-await': 'error',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'error',
-				'@typescript-eslint/explicit-function-return-type': 'error',
+				'@typescript-eslint/explicit-function-return-type': 'warn',
 				'@typescript-eslint/explicit-member-accessibility': [
-					'error',
+					'warn',
 					{
 						accessibility: 'explicit',
 						overrides: {
-							accessors: 'explicit',
+							accessors: 'no-public',
 							constructors: 'no-public',
 							methods: 'explicit',
 							properties: 'explicit',
@@ -141,6 +141,7 @@ module.exports = {
 						// you should turn the original rule off *only* for test files
 						'@typescript-eslint/unbound-method': 'off',
 						'jest/unbound-method': 'error',
+						'@typescript-eslint/explicit-function-return-type': 'off',
 					},
 				},
 			],
