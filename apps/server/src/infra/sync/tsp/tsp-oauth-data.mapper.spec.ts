@@ -1,15 +1,14 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	ExternalClassDto,
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	ProvisioningSystemDto,
-} from '@modules/provisioning';
+import { ExternalClassDto, ExternalSchoolDto, ProvisioningSystemDto } from '@modules/provisioning';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { externalSchoolDtoFactory } from '@shared/testing';
+import { externalClassDtoFactory } from '@shared/testing/factory/external-class-dto.factory';
+import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
+import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
+import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
 import { Logger } from '@src/core/logger';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@src/infra/tsp-client';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
@@ -93,42 +92,49 @@ describe(TspOauthDataMapper.name, () => {
 					},
 				];
 
-				const provisioningSystemDto = new ProvisioningSystemDto({
+				const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 					systemId: system.id,
 					provisioningStrategy: SystemProvisioningStrategy.TSP,
 				});
 
-				const externalSchool = new ExternalSchoolDto({
-					externalId: school.externalId ?? '',
+				const externalSchoolDto: ExternalSchoolDto = externalSchoolDtoFactory.build({
+					externalId: school.externalId,
+					name: undefined,
 				});
 
-				const externalClass = new ExternalClassDto({
-					externalId: klasseId,
+				const externalClassDto: ExternalClassDto = externalClassDtoFactory.build({
+					externalId: tspClasses[0].klasseId ?? '',
 					name: tspClasses[0].klasseName,
 				});
 
-				const expected: OauthDataDto[] = [
-					new OauthDataDto({
+				const externalTeacherUserDto = externalUserDtoFactory.build({
+					externalId: tspTeachers[0].lehrerUid ?? '',
+					firstName: tspTeachers[0].lehrerVorname,
+					lastName: tspTeachers[0].lehrerNachname,
+					roles: [RoleName.TEACHER],
+					email: undefined,
+				});
+
+				const externalStudentUserDto = externalUserDtoFactory.build({
+					externalId: tspStudents[0].schuelerUid ?? '',
+					firstName: tspStudents[0].schuelerVorname,
+					lastName: tspStudents[0].schuelerNachname,
+					roles: [RoleName.STUDENT],
+					email: undefined,
+				});
+
+				const expected = [
+					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
-						externalUser: new ExternalUserDto({
-							externalId: tspTeachers[0].lehrerUid ?? '',
-							firstName: tspTeachers[0].lehrerVorname,
-							lastName: tspTeachers[0].lehrerNachname,
-							roles: [RoleName.TEACHER],
-						}),
-						externalSchool,
-						externalClasses: [externalClass],
+						externalUser: externalTeacherUserDto,
+						externalSchool: externalSchoolDto,
+						externalClasses: [externalClassDto],
 					}),
-					new OauthDataDto({
+					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
-						externalUser: new ExternalUserDto({
-							externalId: tspStudents[0].schuelerUid ?? '',
-							firstName: tspStudents[0].schuelerVorname,
-							lastName: tspStudents[0].schuelerNachname,
-							roles: [RoleName.STUDENT],
-						}),
-						externalSchool,
-						externalClasses: [externalClass],
+						externalUser: externalStudentUserDto,
+						externalSchool: externalSchoolDto,
+						externalClasses: [externalClassDto],
 					}),
 				];
 
