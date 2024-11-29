@@ -1,7 +1,7 @@
 export { ALL_ENTITIES } from './all-entities';
-export { BaseEntity, BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
-export { ColumnBoardNodeProps } from './column-board-node.entity';
-export { Course, CourseFeatures, CourseProperties, SyncAttribute, UsersList } from './course.entity';
+export { BaseEntity, BaseEntityReference, BaseEntityWithTimestamps, baseEntityProperties } from './base.entity';
+export { ColumnBoardNodeProps, ColumnBoardNode } from './column-board-node.entity';
+export { Course, CourseFeatures, CourseProperties, UsersList, SyncAttribute } from './course.entity';
 export { CourseGroup, CourseGroupProperties } from './coursegroup.entity';
 export {
 	DashboardEntity,

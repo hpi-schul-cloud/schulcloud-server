@@ -4,6 +4,10 @@ import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
+import { EntityId } from '@shared/domain/types';
+import { LegacyBoardRepo } from '@shared/repo';
+import { LegacyLogger } from '@src/core/logger';
+import { sortBy } from 'lodash';
 import {
 	ColumnboardBoardElement,
 	ColumnBoardNode,
@@ -18,11 +22,7 @@ import {
 	Task,
 	TaskBoardElement,
 	User,
-} from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
-import { sortBy } from 'lodash';
+} from '../../../shared/domain/entity';
 import { ColumnBoardNodeRepo } from '../repo';
 
 type BoardCopyParams = {
