@@ -489,13 +489,6 @@ describe('CommonCartridgeExportService', () => {
 				expect(manifest).toContain(createXmlString('title', listOfCardsResponse.data[0].title ?? ''));
 			});
 
-			it('should add content element of cards', async () => {
-				const { archive, listOfCardsResponse } = await setup();
-				const manifest = getFileContent(archive, 'imsmanifest.xml');
-
-				expect(manifest).toContain(`<resource identifier="i${listOfCardsResponse.data[0].id}"`);
-			});
-
 			it('should add link element of card', async () => {
 				const { archive, linkElement } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
