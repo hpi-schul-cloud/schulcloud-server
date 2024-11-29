@@ -40,41 +40,31 @@ export class CommonCartridgeExportService {
 	) {}
 
 	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
-		let courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto = {} as CourseCommonCartridgeMetadataDto;
-
-		courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
 		return courseCommonCartridgeMetadata;
 	}
 
 	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
-		let roomBoardDto: RoomBoardDto = {} as RoomBoardDto;
-
-		roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+		const roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		return roomBoardDto;
 	}
 
 	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
-		let boardSkeleton: BoardSkeletonDto = {} as BoardSkeletonDto;
-
-		boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
+		const boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
 
 		return boardSkeleton;
 	}
 
 	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
-		let cards: CardListResponseDto = {} as CardListResponseDto;
-
-		cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
+		const cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
 
 		return cards;
 	}
 
 	private async findLessonById(lessonId: string): Promise<LessonDto> {
-		let lesson: LessonDto = {} as LessonDto;
-
-		lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
+		const lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
 
 		return lesson;
 	}
