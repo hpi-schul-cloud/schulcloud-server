@@ -1,8 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
-import type { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ContextExternalToolType } from '@modules/tool/context-external-tool/entity/context-external-tool-type.enum';
-import type { Course } from '@shared/domain/entity';
+import type { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity/context-external-tool.entity';
 
 export class Migration20241127134513 extends Migration {
 	async up(): Promise<void> {
@@ -12,7 +11,7 @@ export class Migration20241127134513 extends Migration {
 		});
 
 		for await (const doc of cursor) {
-			const course = await this.getCollection<Course>('courses').findOne({ _id: new ObjectId(doc.contextId) });
+			const course = await this.getCollection('courses').findOne({ _id: new ObjectId(doc.contextId) });
 
 			if (course === null) {
 				await this.getCollection('context-external-tools').deleteOne({ _id: doc._id });
