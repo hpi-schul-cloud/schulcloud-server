@@ -2,11 +2,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { sanitizeRichText } from '@shared/controller';
+import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
 import { InputFormat } from '@shared/domain/types';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { BoardNodeEntity } from '../../repo';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
+import { BoardNodeEntity } from '../../repo';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -90,7 +90,7 @@ describe(`content element update content (api)`, () => {
 			};
 		};
 
-		it('should return status 201', async () => {
+		it('should return status 200', async () => {
 			const { loggedInClient, richTextElement } = await setup();
 
 			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
@@ -100,7 +100,7 @@ describe(`content element update content (api)`, () => {
 				},
 			});
 
-			expect(response.statusCode).toEqual(201);
+			expect(response.statusCode).toEqual(200);
 		});
 
 		it('should actually change content of the element', async () => {
@@ -159,7 +159,7 @@ describe(`content element update content (api)`, () => {
 			expect(result.alternativeText).toEqual('rich text 1 some more text');
 		});
 
-		it('should return status 201', async () => {
+		it('should return status 200', async () => {
 			const { loggedInClient, submissionContainerElement } = await setup();
 			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
 				data: {
@@ -168,7 +168,7 @@ describe(`content element update content (api)`, () => {
 				},
 			});
 
-			expect(response.statusCode).toEqual(201);
+			expect(response.statusCode).toEqual(200);
 		});
 
 		it('should not change dueDate when not proviced in submission container element without dueDate', async () => {

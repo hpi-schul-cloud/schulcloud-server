@@ -27,7 +27,7 @@ export class AdminApiUserUc {
 			if (!r.id) throw new Error();
 			return new RoleReference({ ...r, id: r.id });
 		});
-		const user = await this.userService.save({ ...props, roles });
+		const user = await this.userService.save({ ...props, roles, secondarySchools: [] });
 		if (!user.id) throw new Error();
 		const initialPassword = nanoid(12);
 		const account = await this.accountService.save({

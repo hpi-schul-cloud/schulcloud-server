@@ -80,6 +80,9 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'string', nullable: true })
 	imageUrl: string | undefined;
 
+	@Property({ type: 'string', nullable: true })
+	originalImageUrl: string | undefined;
+
 	// FileElement
 	// --------------------------------------------------------------------------
 	@Property({ type: 'string', nullable: true })
