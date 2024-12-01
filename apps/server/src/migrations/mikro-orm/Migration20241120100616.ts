@@ -1,19 +1,19 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntity } from '@modules/board/repo';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { type BoardNodeEntity } from '@modules/board/repo';
+import { type ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
+import { type SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { type Course } from '@shared/domain/entity';
 
 export class Migration20241120100616 extends Migration {
 	async up(): Promise<void> {
-		const tools: ContextExternalToolEntity[] = (await this.driver.find('context-external-tools', {
-			$or: [{ contextType: 'course' }, { contextType: 'boardElement' }],
-		})) as ContextExternalToolEntity[];
-		console.info(`Found ${tools.length} context external tools to look through`);
+		const cursor = this.getCollection<ContextExternalToolEntity>('context-external-tools').find({
+			$or: [{ contextType: ContextExternalToolType.COURSE }, { contextType: ContextExternalToolType.BOARD_ELEMENT }],
+		});
 
 		let numberOfDeletedTools = 0;
 		let numberOfDeletedElements = 0;
-		for await (const tool of tools) {
-			let iteration = 0;
+		for await (const tool of cursor) {
 			let courseId: ObjectId | undefined;
 			if (tool.contextType === 'course') {
 				courseId = tool.contextId;
@@ -36,21 +36,13 @@ export class Migration20241120100616 extends Migration {
 			}
 
 			if (courseId) {
-				const schoolOfContext: [{ schoolId: ObjectId }] = (await this.driver.findOne('courses', [
-					{ $match: { _id: courseId } },
-					{ $project: { item: 1, schoolId: 1, _id: 0 } },
-				])) as [{ schoolId: ObjectId }];
+				const course: Course = (await this.driver.findOne('courses', { _id: courseId })) as Course;
 
-				const schoolOfSchoolTool: [{ school: ObjectId }] = (await this.driver.findOne('school-external-tools', [
-					{ $match: { _id: tool.schoolTool } },
-					{ $project: { item: 1, school: 1, _id: 0 } },
-				])) as [{ school: ObjectId }];
+				const schoolTool: SchoolExternalToolEntity = (await this.driver.findOne('school-external-tools', {
+					_id: tool.schoolTool,
+				})) as SchoolExternalToolEntity;
 
-				if (
-					!schoolOfContext ||
-					!schoolOfSchoolTool ||
-					schoolOfContext[0].schoolId.toString() !== schoolOfSchoolTool[0].school.toString()
-				) {
+				if (!course || !schoolTool || course.school.toString() !== schoolTool.school.toString()) {
 					await this.driver.nativeDelete('context-external-tools', { _id: tool._id });
 					console.info(`deleted context external tool: ${tool._id.toString()}`);
 					numberOfDeletedTools += 1;
@@ -61,11 +53,6 @@ export class Migration20241120100616 extends Migration {
 						numberOfDeletedElements += 1;
 					}
 				}
-			}
-
-			iteration += 1;
-			if (iteration % 100 === 0) {
-				console.info(`Finished ${iteration} of ${tools.length} iterations.`);
 			}
 		}
 		console.info(
