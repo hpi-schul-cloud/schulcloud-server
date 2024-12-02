@@ -1,17 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { ContentElementUpdateService } from './content-element-update.service';
 import {
+	DrawingContentBody,
+	ExternalToolContentBody,
 	FileContentBody,
 	LinkContentBody,
 	RichTextContentBody,
-	DrawingContentBody,
 	SubmissionContainerContentBody,
-	ExternalToolContentBody,
 } from '../../controller/dto';
 import { BoardNodeRepo } from '../../repo';
-
 import {
 	drawingElementFactory,
 	externalToolElementFactory,
@@ -20,6 +18,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 } from '../../testing';
+import { ContentElementUpdateService } from './content-element-update.service';
 
 describe('ContentElementUpdateService', () => {
 	let module: TestingModule;

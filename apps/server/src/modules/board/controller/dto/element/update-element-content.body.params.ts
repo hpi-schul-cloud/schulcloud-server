@@ -52,6 +52,11 @@ export class LinkContentBody {
 	@IsOptional()
 	@ApiProperty({})
 	imageUrl?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	originalImageUrl?: string;
 }
 
 export class LinkElementContentBody extends ElementContentBody {

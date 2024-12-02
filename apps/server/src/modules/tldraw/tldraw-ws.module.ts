@@ -6,7 +6,7 @@ import { initialisePerformanceObserver } from '@shared/common/measure-utils';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger, LoggerModule } from '@src/core/logger';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { config, TLDRAW_DB_URL, TldrawConfig } from './config';
 import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';

@@ -77,7 +77,7 @@ export class ElementController {
 		VideoConferenceElementContentBody
 	)
 	@ApiResponse({
-		status: 201,
+		status: 200,
 		schema: {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
@@ -93,7 +93,7 @@ export class ElementController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(201)
+	@HttpCode(200)
 	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,

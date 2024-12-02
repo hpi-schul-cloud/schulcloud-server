@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';

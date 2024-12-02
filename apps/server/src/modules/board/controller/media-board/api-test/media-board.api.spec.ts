@@ -7,7 +7,7 @@ import { MediaUserLicenseEntity } from '@modules/user-license/entity';
 import { mediaSourceEntityFactory, mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { type DatesToStrings, fileRecordFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { DateToString, fileRecordFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {
@@ -85,7 +85,7 @@ describe('Media Board (API)', () => {
 
 				const response = await studentClient.get('me');
 
-				expect(response.body).toEqual<DatesToStrings<MediaBoardResponse>>({
+				expect(response.body).toEqual<DateToString<MediaBoardResponse>>({
 					id: mediaBoard.id,
 					timestamps: {
 						createdAt: mediaBoard.createdAt.toISOString(),
@@ -205,7 +205,7 @@ describe('Media Board (API)', () => {
 
 				const response = await studentClient.post(`${mediaBoard.id}/media-lines`);
 
-				expect(response.body).toEqual<DatesToStrings<MediaLineResponse>>({
+				expect(response.body).toEqual<DateToString<MediaLineResponse>>({
 					id: expect.any(String),
 					timestamps: {
 						createdAt: expect.any(String),
