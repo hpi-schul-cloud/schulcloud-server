@@ -1,22 +1,16 @@
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Module, NotFoundException } from '@nestjs/common';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawController } from './controller';
 import { TldrawDrawing } from './entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawService } from './service';
-
-const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
-};
 
 @Module({
 	imports: [

@@ -5,6 +5,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: tldraw-server
+    app.kubernetes.io/name: tldraw-server-svc
 spec:
   type: ClusterIP
   ports:

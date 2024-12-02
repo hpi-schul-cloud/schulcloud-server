@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConsoleWriterService } from '@infra/console';
+import { DeepMocked } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 import { DeletionExecutionUc } from './uc';
+import { DeletionConsoleModule } from './deletion-console.app.module';
 
 describe(DeletionExecutionConsole.name, () => {
 	let module: TestingModule;
@@ -12,17 +14,7 @@ describe(DeletionExecutionConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				DeletionExecutionConsole,
-				{
-					provide: ConsoleWriterService,
-					useValue: createMock<ConsoleWriterService>(),
-				},
-				{
-					provide: DeletionExecutionUc,
-					useValue: createMock<DeletionExecutionUc>(),
-				},
-			],
+			imports: [DeletionConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
 		}).compile();
 
 		console = module.get(DeletionExecutionConsole);
@@ -67,7 +59,6 @@ describe(DeletionExecutionConsole.name, () => {
 				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
 
 				deletionExecutionUc.triggerDeletionExecution.mockResolvedValueOnce(undefined);
-
 				const spy = jest.spyOn(DeletionExecutionTriggerResultBuilder, 'buildSuccess');
 
 				return { options, spy };
@@ -85,13 +76,9 @@ describe(DeletionExecutionConsole.name, () => {
 		describe(`when ${DeletionExecutionUc.name}'s triggerDeletionExecution() method throws an exception`, () => {
 			const setup = () => {
 				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
-
 				const err = new Error('some error occurred...');
 
 				deletionExecutionUc.triggerDeletionExecution.mockRejectedValueOnce(err);
-
-				// const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
-
 				const spy = jest.spyOn(DeletionExecutionTriggerResultBuilder, 'buildFailure');
 
 				return { options, err, spy };
