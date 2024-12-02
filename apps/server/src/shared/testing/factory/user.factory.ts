@@ -108,5 +108,6 @@ export const userFactory = UserFactory.define(User, ({ sequence }) => {
 		roles: [],
 		school: schoolEntityFactory.build(),
 		consent: consentFactory.build(),
+		secondarySchools: [],
 	};
 });

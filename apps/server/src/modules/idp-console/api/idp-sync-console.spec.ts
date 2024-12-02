@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { defaultMikroOrmOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
 import { UsersSyncOptionsBuilder } from '../testing';
