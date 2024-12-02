@@ -98,6 +98,20 @@ describe('UserRepo', () => {
 			]);
 		});
 
+		it('should find user and populate secondary schools', async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const role = roleFactory.buildWithId();
+			await em.persistAndFlush([school, role]);
+			const user = userFactory.buildWithId({ secondarySchools: [{ school, role }] });
+			await em.persistAndFlush(user);
+
+			em.clear();
+
+			const result: UserDO = await repo.findById(user.id, true);
+
+			expect(result.secondarySchools).toEqual([{ schoolId: school.id, role: { id: role.id, name: role.name } }]);
+		});
+
 		it('should throw if user cannot be found', async () => {
 			await expect(repo.findById(new ObjectId().toHexString(), false)).rejects.toThrow(NotFoundError);
 		});
@@ -279,12 +293,19 @@ describe('UserRepo', () => {
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
 			const id = new ObjectId();
+			const secondarySchools = [
+				{
+					role: roleFactory.buildWithId(),
+					school: schoolEntityFactory.buildWithId(),
+				},
+			];
 			const testEntity: User = userFactory.buildWithId(
 				{
 					email: 'email@email.email',
 					firstName: 'firstName',
 					lastName: 'lastName',
 					school: schoolEntityFactory.buildWithId(),
+					secondarySchools,
 					ldapDn: 'ldapDn',
 					externalId: 'externalId',
 					language: LanguageType.DE,
@@ -316,6 +337,15 @@ describe('UserRepo', () => {
 					lastName: testEntity.lastName,
 					preferredName: testEntity.preferredName,
 					schoolId: testEntity.school.id,
+					secondarySchools: [
+						{
+							schoolId: secondarySchools[0].school.id,
+							role: {
+								id: secondarySchools[0].role.id,
+								name: secondarySchools[0].role.name,
+							},
+						},
+					],
 					roles: [
 						{
 							id: role.id,
@@ -351,6 +381,12 @@ describe('UserRepo', () => {
 						lastName: 'lastName',
 						preferredName: 'preferredName',
 						schoolId: new ObjectId().toHexString(),
+						secondarySchools: [
+							{
+								schoolId: new ObjectId().toHexString(),
+								role: { id: new ObjectId().toHexString(), name: RoleName.USER },
+							},
+						],
 						ldapDn: 'ldapDn',
 						externalId: 'externalId',
 						language: LanguageType.DE,
@@ -375,6 +411,14 @@ describe('UserRepo', () => {
 				school: expect.objectContaining<Partial<SchoolEntity>>({ id: testDO.schoolId }),
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
+				secondarySchools: [
+					expect.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						school: expect.objectContaining({ id: testDO.secondarySchools[0].schoolId }),
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						role: expect.objectContaining({ id: testDO.secondarySchools[0].role.id }),
+					}),
+				],
 				ldapDn: testDO.ldapDn,
 				externalId: testDO.externalId,
 				language: testDO.language,
