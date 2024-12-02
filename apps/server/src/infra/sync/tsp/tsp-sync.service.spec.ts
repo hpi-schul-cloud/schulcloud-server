@@ -1,18 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from '../../../modules/account';
-import { School, SchoolService } from '../../../modules/school';
-import { SystemService, SystemType } from '../../../modules/system';
-import { UserService } from '../../../modules/user';
-import { SystemProvisioningStrategy } from '../../../shared/domain/interface/system-provisioning.strategy';
-import { federalStateFactory, schoolYearFactory, userDoFactory } from '../../../shared/testing';
-import { accountDoFactory } from '../../../modules/account/testing';
-import { FederalStateService, SchoolYearService } from '../../../modules/legacy-school';
-import { FileStorageType, SchoolProps } from '../../../modules/school/domain';
-import { FederalStateEntityMapper, SchoolYearEntityMapper } from '../../../modules/school/repo/mikro-orm/mapper';
-import { schoolFactory } from '../../../modules/school/testing';
-import { systemFactory } from '../../../modules/system/testing';
+import { AccountService } from '@modules/account';
+import { School, SchoolService } from '@modules/school';
+import { SystemService, SystemType } from '@modules/system';
+import { UserService } from '@modules/user';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { federalStateFactory, schoolYearFactory, userDoFactory } from '@shared/testing';
+import { accountDoFactory } from '@modules/account/testing';
+import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
+import { FileStorageType, SchoolProps } from '@modules/school/domain';
+import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { schoolFactory } from '@modules/school/testing';
+import { systemFactory } from '@modules/system/testing';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {

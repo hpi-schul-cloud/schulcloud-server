@@ -22,7 +22,7 @@ import {
 	Task,
 	TaskBoardElement,
 	User,
-} from '../../../shared/domain/entity';
+} from '@shared/domain/entity';
 import { ColumnBoardNodeRepo } from '../repo';
 
 type BoardCopyParams = {

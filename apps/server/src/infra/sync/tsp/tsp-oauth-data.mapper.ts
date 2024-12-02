@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { BadDataLoggableException } from '../../../modules/provisioning/loggable';
-import { System } from '../../../modules/system';
-import { RoleName, SystemProvisioningStrategy } from '../../../shared/domain/interface';
+import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { System } from '@modules/system';
+import { RoleName, SystemProvisioningStrategy } from '@shared/domain/interface';
 
-import { Logger } from '../../../core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../tsp-client';
-import { School } from '../../../modules/school';
+import { School } from '@modules/school';
 import {
 	ExternalClassDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	ProvisioningSystemDto,
-} from '../../../modules/provisioning';
+} from '@modules/provisioning';
+import { Logger } from '../../../core/logger';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../tsp-client';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 
 @Injectable()

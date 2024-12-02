@@ -3,10 +3,10 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios, { AxiosError } from 'axios';
+import { ServerConfig } from '@modules/server';
+import { OauthAdapterService } from '@modules/oauth';
 import { AxiosErrorLoggable, ErrorLoggable } from '../../core/error/loggable';
 import { Logger } from '../../core/logger';
-import { ServerConfig } from '../../modules/server';
-import { OauthAdapterService } from '../../modules/oauth';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
 

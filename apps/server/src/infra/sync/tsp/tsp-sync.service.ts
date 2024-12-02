@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'bson';
-import { FederalStateService, SchoolYearService } from '../../../modules/legacy-school';
-import { School, SchoolService } from '../../../modules/school';
-import { System, SystemService, SystemType } from '../../../modules/system';
-import { UserSourceOptions, UserDO } from '../../../shared/domain/domainobject';
-import { SystemProvisioningStrategy } from '../../../shared/domain/interface/system-provisioning.strategy';
-import { EntityId, SchoolFeature } from '../../../shared/domain/types';
-import { Account, AccountService } from '../../../modules/account';
-import { FederalStateNames } from '../../../modules/legacy-school/types';
-import { FederalState, FileStorageType } from '../../../modules/school/domain';
-import { SchoolFactory } from '../../../modules/school/domain/factory';
-import { SchoolPermissions } from '../../../modules/school/domain/type';
-import { FederalStateEntityMapper, SchoolYearEntityMapper } from '../../../modules/school/repo/mikro-orm/mapper';
-import { UserService } from '../../../modules/user';
+import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
+import { School, SchoolService } from '@modules/school';
+import { System, SystemService, SystemType } from '@modules/system';
+import { UserSourceOptions, UserDO } from '@shared/domain/domainobject';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { Account, AccountService } from '@modules/account';
+import { FederalStateNames } from '@modules/legacy-school/types';
+import { FederalState, FileStorageType } from '@modules/school/domain';
+import { SchoolFactory } from '@modules/school/domain/factory';
+import { SchoolPermissions } from '@modules/school/domain/type';
+import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { UserService } from '@modules/user';
 import { TspSystemNotFoundLoggableException } from './loggable';
 
 @Injectable()

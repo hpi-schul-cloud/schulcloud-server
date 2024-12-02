@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosError, AxiosResponse } from 'axios';
 import moment from 'moment';
-import { System } from '../../../modules/system';
-import { OauthConfigMissingLoggableException } from '../../../modules/oauth/loggable';
+import { System } from '@modules/system';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { ExportApiInterface, TspClientFactory } from '../../tsp-client';
 import { Logger } from '../../../core/logger';
 import { AxiosErrorLoggable, ErrorLoggable } from '../../../core/error/loggable';

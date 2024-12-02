@@ -2,22 +2,17 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '../../../modules/account';
-import { accountDoFactory } from '../../../modules/account/testing';
-import {
-	ExternalUserDto,
-	OauthDataDto,
-	ProvisioningService,
-	ProvisioningSystemDto,
-} from '../../../modules/provisioning';
-import { School } from '../../../modules/school';
-import { schoolFactory } from '../../../modules/school/testing';
-import { System } from '../../../modules/system';
-import { systemFactory } from '../../../modules/system/testing';
+import { Account } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
+import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
+import { System } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
+import { userDoFactory } from '@shared/testing';
+import { SystemProvisioningStrategy } from '@shared/domain/interface';
+import { UserDO } from '@shared/domain/domainobject';
 import { Logger } from '../../../core/logger';
-import { userDoFactory } from '../../../shared/testing';
-import { SystemProvisioningStrategy } from '../../../shared/domain/interface';
-import { UserDO } from '../../../shared/domain/domainobject';
 import {
 	RobjExportKlasse,
 	RobjExportLehrer,
