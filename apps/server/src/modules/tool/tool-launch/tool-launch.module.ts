@@ -10,7 +10,7 @@ import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
-import { Lti11EncryptionService, ToolLaunchService } from './service';
+import { ToolLaunchService } from './service';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
@@ -37,7 +37,6 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 	],
 	providers: [
 		ToolLaunchService,
-		Lti11EncryptionService,
 		BasicToolLaunchStrategy,
 		Lti11ToolLaunchStrategy,
 		OAuth2ToolLaunchStrategy,
