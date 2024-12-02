@@ -1,10 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalClassDto, ExternalSchoolDto, ProvisioningSystemDto } from '@modules/provisioning';
+import { ExternalClassDto, ProvisioningSystemDto } from '@modules/provisioning';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { externalSchoolDtoFactory } from '@shared/testing';
 import { externalClassDtoFactory } from '@shared/testing/factory/external-class-dto.factory';
 import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
 import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
@@ -97,11 +96,6 @@ describe(TspOauthDataMapper.name, () => {
 					provisioningStrategy: SystemProvisioningStrategy.TSP,
 				});
 
-				const externalSchoolDto: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					externalId: school.externalId,
-					name: undefined,
-				});
-
 				const externalClassDto: ExternalClassDto = externalClassDtoFactory.build({
 					externalId: tspClasses[0].klasseId ?? '',
 					name: tspClasses[0].klasseName,
@@ -127,13 +121,11 @@ describe(TspOauthDataMapper.name, () => {
 					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
 						externalUser: externalTeacherUserDto,
-						externalSchool: externalSchoolDto,
 						externalClasses: [externalClassDto],
 					}),
 					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
 						externalUser: externalStudentUserDto,
-						externalSchool: externalSchoolDto,
 						externalClasses: [externalClassDto],
 					}),
 				];
@@ -142,9 +134,9 @@ describe(TspOauthDataMapper.name, () => {
 			};
 
 			it('should return an array of oauth data dtos', () => {
-				const { system, school, tspTeachers, tspStudents, tspClasses, expected } = setup();
+				const { system, tspTeachers, tspStudents, tspClasses, expected } = setup();
 
-				const result = sut.mapTspDataToOauthData(system, [school], tspTeachers, tspStudents, tspClasses);
+				const result = sut.mapTspDataToOauthData(system, [], tspTeachers, tspStudents, tspClasses);
 
 				expect(result).toStrictEqual(expected);
 			});
