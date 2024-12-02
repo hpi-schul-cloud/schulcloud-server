@@ -31,6 +31,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 	}
 
 	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
+		const login = performance.now();
 		const { systemId, redirectUri, code } = request.body;
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
@@ -64,6 +65,8 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			systemId,
 			tokenDto.idToken
 		);
+		console.log('Login:::::');
+		console.log(performance.now() - login);
 
 		return currentUser;
 	}

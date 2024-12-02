@@ -149,7 +149,6 @@ export class SchulconnexResponseMapper {
 						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null)
 				: [];
 		}
-
 		const groupDuration: TimePeriode | undefined = SchulconnexResponseMapper.mapGroupDuration(group.gruppe.laufzeit);
 
 		const externalGroup: ExternalGroupDto = new ExternalGroupDto({

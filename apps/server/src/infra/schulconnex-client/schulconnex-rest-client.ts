@@ -31,6 +31,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	}
 
 	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
+		console.log(accessToken);
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/person-info`);
 
 		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(url, accessToken);

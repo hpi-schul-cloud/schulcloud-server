@@ -32,11 +32,16 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
 		let school: LegacySchoolDo | undefined;
 		if (data.externalSchool) {
+			console.time('ProvisionierungDerSchule');
+
 			school = await this.schulconnexSchoolProvisioningService.provisionExternalSchool(
 				data.externalSchool,
 				data.system.systemId
 			);
+
+			console.timeEnd('ProvisionierungDerSchule');
 		}
+		console.time('ProvisionierungDesNutzers');
 
 		const user: UserDO = await this.schulconnexUserProvisioningService.provisionExternalUser(
 			data.externalUser,
@@ -44,27 +49,35 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			school?.id
 		);
 
+		console.timeEnd('ProvisionierungDesNutzers');
+
 		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
 			await this.provisionGroups(data, school);
 		}
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
+			console.time('Medienlizenzen');
 			await this.schulconnexLicenseProvisioningService.provisionExternalLicenses(user.id, data.externalLicenses);
 			await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
 				user.id,
 				user.schoolId,
 				data.system.systemId
 			);
+
+			console.timeEnd('Medienlizenzen');
 		}
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 
 	private async provisionGroups(data: OauthDataDto, school?: LegacySchoolDo): Promise<void> {
+		console.time('NutzerVonGruppenEntf');
 		await this.removeUserFromGroups(data);
+		console.timeEnd('NutzerVonGruppenEntf');
 
 		if (data.externalGroups) {
 			let groups: ExternalGroupDto[] = data.externalGroups;
+			console.time('GruppeFiltern');
 
 			groups = await this.schulconnexGroupProvisioningService.filterExternalGroups(
 				groups,
@@ -72,6 +85,23 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 				data.system.systemId
 			);
 
+			console.timeEnd('GruppeFiltern');
+
+			/* console.time('FirstGroup');
+			await this.groupService.findByExternalSource(groups[0].externalId, data.system.systemId);
+			console.timeEnd('FirstGroup');
+			console.time('Group2');
+			await this.groupService.findByExternalSource(groups[1].externalId, data.system.systemId);
+			console.timeEnd('Group2');
+			console.time('Group3');
+			await this.groupService.findByExternalSource(groups[2].externalId, data.system.systemId);
+			console.timeEnd('Group3');
+			console.time('Group4');
+			await this.groupService.findByExternalSource(groups[3].externalId, data.system.systemId);
+			console.timeEnd('Group4'); */
+
+			console.time('AllGroups');
+			const allgroups = Date.now();
 			const groupProvisioningPromises: Promise<unknown>[] = groups.map(
 				async (externalGroup: ExternalGroupDto): Promise<void> => {
 					const existingGroup: Group | null = await this.groupService.findByExternalSource(
@@ -95,6 +125,9 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			);
 
 			await Promise.all(groupProvisioningPromises);
+			console.timeEnd('AllGroups');
+			console.log('AllGroups Date.now');
+			console.log(Date.now() - allgroups);
 		}
 	}
 

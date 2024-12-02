@@ -72,13 +72,17 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 				`Sanis system with id: ${input.system.systemId} is missing a provisioning url`
 			);
 		}
-
+		const req = performance.now();
 		const schulconnexAxiosResponse: SchulconnexResponse = await this.schulconnexRestClient.getPersonInfo(
 			input.accessToken,
 			{
 				overrideUrl: input.system.provisioningUrl,
 			}
 		);
+		console.log('RequestZuPersonInfoMoinSchule::::');
+		console.log(performance.now() - req);
+
+		console.time('DatenVonMoinSchule');
 
 		const schulconnexResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, schulconnexAxiosResponse);
 
@@ -140,6 +144,8 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			externalGroups,
 			externalLicenses,
 		});
+
+		console.timeEnd('DatenVonMoinSchule');
 
 		return oauthData;
 	}
