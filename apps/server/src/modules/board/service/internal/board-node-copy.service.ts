@@ -1,10 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -28,7 +26,6 @@ import {
 	MediaExternalToolElement,
 	MediaLine,
 	RichTextElement,
-	ROOT_PATH,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '../../domain';
@@ -43,8 +40,7 @@ export class BoardNodeCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly copyHelperService: CopyHelperService,
-		private readonly schoolExternalToolService: SchoolExternalToolService
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copy(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus> {
@@ -317,44 +313,27 @@ export class BoardNodeCopyService {
 			return Promise.resolve(copyStatus);
 		}
 
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-			linkedTool.schoolToolRef.schoolToolId
-		);
-
-		if (schoolExternalTool.schoolId !== context.targetSchoolId) {
-			const correctSchoolExternalTools: SchoolExternalTool[] =
-				await this.schoolExternalToolService.findSchoolExternalTools({
-					toolId: schoolExternalTool.toolId,
-					schoolId: context.targetSchoolId,
-				});
-
-			if (correctSchoolExternalTools.length) {
-				linkedTool.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
-				linkedTool.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
-			} else {
-				copy = new DeletedElement({
-					id: new ObjectId().toHexString(),
-					path: ROOT_PATH,
-					level: 0,
-					position: 0,
-					children: [],
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					deletedElementType: ContentElementType.EXTERNAL_TOOL,
-					title: linkedTool.displayName ?? (schoolExternalTool.name as string),
-				});
-			}
-		}
+		const contextToolCopyResult: ContextExternalTool | CopyContextExternalToolRejectData =
+			await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id, context.targetSchoolId);
 
 		let copyElementType: CopyElementType;
-		if (copy instanceof ExternalToolElement) {
-			const contextExternalToolCopy: ContextExternalTool =
-				await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
+		if (contextToolCopyResult instanceof CopyContextExternalToolRejectData) {
+			copy = new DeletedElement({
+				id: new ObjectId().toHexString(),
+				path: copy.path,
+				level: copy.level,
+				position: copy.position,
+				children: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				deletedElementType: ContentElementType.EXTERNAL_TOOL,
+				title: contextToolCopyResult.externalToolName,
+			});
 
-			copy.contextExternalToolId = contextExternalToolCopy.id;
-			copyElementType = CopyElementType.EXTERNAL_TOOL_ELEMENT;
-		} else {
 			copyElementType = CopyElementType.DELETED_ELEMENT;
+		} else {
+			copy.contextExternalToolId = contextToolCopyResult.id;
+			copyElementType = CopyElementType.EXTERNAL_TOOL;
 		}
 
 		const result: CopyStatus = {
