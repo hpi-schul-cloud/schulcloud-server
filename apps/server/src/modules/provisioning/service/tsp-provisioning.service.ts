@@ -140,6 +140,7 @@ export class TspProvisioningService {
 			email: this.createTspEmail(externalUser.externalId),
 			birthday: externalUser.birthday,
 			externalId: externalUser.externalId,
+			secondarySchools: [],
 		});
 
 		this.createTspConsent(newUser);
