@@ -10,13 +10,13 @@ import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { RedisIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import {
+	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from './helpers/prometheus-metrics';
+} from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
