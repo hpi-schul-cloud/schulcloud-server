@@ -12,7 +12,8 @@ import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
-import { LaunchRequestMethod, ToolLaunchRequest } from '../types';
+import { toolLaunchRequestFactory } from '../testing';
+import { ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
@@ -95,13 +96,7 @@ describe(ToolLaunchService.name, () => {
 					},
 				});
 
-				const expectedLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
-					url: 'https://example.com/tool-launch',
-					method: LaunchRequestMethod.GET,
-					payload: '{ "key": "value" }',
-					openNewTab: false,
-					isDeepLink: true,
-				});
+				const expectedLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
@@ -157,13 +152,7 @@ describe(ToolLaunchService.name, () => {
 					},
 				});
 
-				const expectedLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
-					url: 'https://example.com/tool-launch',
-					method: LaunchRequestMethod.GET,
-					payload: '{ "key": "value" }',
-					openNewTab: false,
-					isDeepLink: true,
-				});
+				const expectedLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
@@ -219,13 +208,7 @@ describe(ToolLaunchService.name, () => {
 					},
 				});
 
-				const expectedLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
-					url: 'https://example.com/tool-launch',
-					method: LaunchRequestMethod.GET,
-					payload: '{ "key": "value" }',
-					openNewTab: false,
-					isDeepLink: true,
-				});
+				const expectedLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
