@@ -10,6 +10,7 @@ import * as jwt from 'jsonwebtoken';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 import { TspClientConfig } from './tsp-client-config';
+import { DomainErrorHandler } from '@src/core';
 
 type FactoryParams = {
 	clientId: string;
@@ -19,8 +20,6 @@ type FactoryParams = {
 
 @Injectable()
 export class TspClientFactory {
-	private readonly baseUrl: string;
-
 	private readonly tokenLifetime: number;
 
 	private cachedToken: string | undefined;
@@ -33,8 +32,16 @@ export class TspClientFactory {
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly logger: Logger
 	) {
-		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
 		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
+	}
+
+	// Bitte infer nutzen anstatt <string>
+	// und nicht im constructor zuweisen, damit sich die verschiedenen Zustände der Config leicht testen lassen.
+	// siehe deletion.cient.ts
+	private getBaseUrl(): string {
+		const baseUrl = this.configService.getOrThrow('TSP_API_CLIENT_BASE_URL', { infer: true });
+
+		return baseUrl;
 	}
 
 	public createExportClient(params: FactoryParams): ExportApiInterface {
@@ -43,7 +50,7 @@ export class TspClientFactory {
 				// accessToken has to be a function otherwise it will be called once
 				// and will not be refresh the access token when it expires
 				apiKey: async () => this.getAccessToken(params),
-				basePath: this.baseUrl,
+				basePath: this.getBaseUrl(),
 			})
 		);
 
@@ -74,10 +81,15 @@ export class TspClientFactory {
 			return `Bearer ${this.cachedToken}`;
 		} catch (e) {
 			if (e instanceof AxiosError) {
+				// Vielleicht das nutzen
+				this.domainErrorHandler.exec(e);
 				this.logger.warning(new AxiosErrorLoggable(e, 'TSP_OAUTH_ERROR'));
 			} else {
 				this.logger.warning(new ErrorLoggable(e));
 			}
+
+			// Promise.reject(new TspLoggableError(e));
+			// Das loggable sorgt dafür das nichts geloggt wird, was nicht geloggt werden darf.
 			return Promise.reject();
 		}
 	}

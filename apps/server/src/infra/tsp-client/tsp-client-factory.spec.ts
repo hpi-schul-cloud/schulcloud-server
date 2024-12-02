@@ -64,9 +64,9 @@ describe('TspClientFactory', () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		jest.resetAllMocks(); // Nur einer der Aufrufe ist richtig, ich glaube dieser :-D
+		// jest.restoreAllMocks();
+		// jest.clearAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -95,12 +95,13 @@ describe('TspClientFactory', () => {
 				const clientSecret = faker.string.alpha();
 				const tokenEndpoint = faker.internet.url();
 
-				oauthAdapterServiceMock.sendTokenRequest.mockResolvedValue({
+				oauthAdapterServiceMock.sendTokenRequest.mockResolvedValueOnce({
 					accessToken: faker.string.alpha(),
 					idToken: faker.string.alpha(),
 					refreshToken: faker.string.alpha(),
 				});
 
+				// Im besten Fall sollte es nicht nötig sein, aber ist jetzt auch nicht so kritisch.
 				Reflect.set(sut, 'cachedToken', undefined);
 
 				return {

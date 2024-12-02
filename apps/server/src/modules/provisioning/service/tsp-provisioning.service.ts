@@ -13,7 +13,13 @@ import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
+import { TypeGuard } from '@shared/common';
 
+// Bitte darauf achten das der ganze Sync und provining Code möglichst effizient von der Performance strukturiert ist.
+// Erst Daten laden, dann umformen / bearbeiten, dann persistieren.
+// Bei Moin.Schule gibt es in dem Bereich einige Probleme.
+
+// Gehört der Service hier eher zum tsp module?
 @Injectable()
 export class TspProvisioningService {
 	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
@@ -23,6 +29,9 @@ export class TspProvisioningService {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly classService: ClassService,
+		// Ich denke das es einmal in unserer ganzen Code Basis einen Service geben sollte
+		// der Service.createUserAndAccount und UpdateUserAndAccount behandelt inklusive Rolle
+		// Das ist etwas das wir als Projekt lösen müssen.
 		private readonly roleService: RoleService,
 		private readonly userService: UserService,
 		private readonly accountService: AccountService
@@ -44,11 +53,15 @@ export class TspProvisioningService {
 		return schools[0];
 	}
 
+	checkIfIdExists(user: UserDO): void {
+		if (!user.id) {
+			throw new Error();
+		}
+	}
+
 	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
-		if (!user.id)
-			throw new BadDataLoggableException('User ID is missing', {
-				externalId: user.externalId,
-			});
+		this.checkIfIdExists(user);
+		console.log(user.id.toString());
 
 		for await (const clazz of classes) {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(school.id, clazz.externalId);
@@ -82,6 +95,7 @@ export class TspProvisioningService {
 		}
 	}
 
+	// check Methoden können auch gut in private Methoden ausgelagert werden
 	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDO> {
 		if (!data.externalSchool) {
 			throw new BadDataLoggableException('External school is missing for user', {

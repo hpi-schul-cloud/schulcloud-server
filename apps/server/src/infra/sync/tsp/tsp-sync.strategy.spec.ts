@@ -161,6 +161,13 @@ describe(TspSyncStrategy.name, () => {
 		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
 	};
 
+	/*
+	Called n time
+	Called with
+	Die Konfigurationsvariationen testen
+	Vielleicht besser zum Ausdruck bringen das hier Orchestrierung getestet wird
+	... sync() -> und die ganzen Methoden müssen aufgerufen werden in einem it()
+	*/
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {

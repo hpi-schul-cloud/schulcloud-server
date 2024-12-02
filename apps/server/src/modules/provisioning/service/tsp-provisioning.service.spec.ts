@@ -158,6 +158,7 @@ describe('TspProvisioningService', () => {
 					roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
 				});
 
+				// Bitte immer mockResolvedValueOnce verwenden bei allen Stellen
 				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValue(clazz);
 
 				return { school, classes, user };
@@ -343,6 +344,7 @@ describe('TspProvisioningService', () => {
 		describe('when user id is not set after create', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
+				// Test Factory nutzen/einführen
 				const data = new OauthDataDto({
 					system: setupExternalSystem(),
 					externalUser: setupExternalUser({

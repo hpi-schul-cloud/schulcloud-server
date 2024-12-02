@@ -80,6 +80,7 @@ describe(TspFetchService.name, () => {
 			data: schools,
 		});
 
+		// test factory
 		const tspTeacher: RobjExportLehrer = {
 			schuleNummer: faker.string.alpha(),
 			lehrerVorname: faker.string.alpha(),
@@ -95,6 +96,7 @@ describe(TspFetchService.name, () => {
 			schuleNummer: faker.string.alpha(),
 			schuelerVorname: faker.string.alpha(),
 			schuelerNachname: faker.string.alpha(),
+			// Der Vorteil von faker geht bei alpha verloren
 			schuelerUid: faker.string.alpha(),
 		};
 		const students = [tspStudent];

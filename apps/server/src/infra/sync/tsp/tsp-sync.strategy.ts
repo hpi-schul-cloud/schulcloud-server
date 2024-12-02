@@ -53,6 +53,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
 
+		// Config nicht im constructor zuweisen, sondern direkt aufrufen
 		this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
 		this.schoolDaysToFetch = configService.get<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', 1);
 
@@ -70,15 +71,17 @@ export class TspSyncStrategy extends SyncStrategy {
 	public async sync(): Promise<void> {
 		const system = await this.tspSyncService.findTspSystemOrFail();
 
+		// Bitte den Code so strukturieren / benennen das:
+		// 1. Möglichst viel Daten gleichzeitig inital geladen werden
+		// 2. Die Reihenfolge der Aufrufe eindeutig ist
 		await this.tspLegacyMigrationService.migrateLegacyData(system.id);
-
 		await this.syncSchools(system);
-
 		const schools = await this.tspSyncService.findSchoolsForSystem(system);
 
 		if (this.migrationEnabled) {
+			// Promise.all
 			const teacherMigrationResult = await this.migrateTspTeachers(system);
-			const studentMigrationResult = await this.migrateTspStudents(system);
+			const studentMigrationResult = await this.migrateTsptudents(system);
 			const totalMigrations = teacherMigrationResult.total + studentMigrationResult.total;
 			this.logger.info(new TspUsersMigratedLoggable(totalMigrations));
 		}
@@ -125,6 +128,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncData(system: System, schools: School[]): Promise<void> {
+		// Promise.all
 		const tspTeachers = await this.tspFetchService.fetchTspTeachers(system, this.schoolDataDaysToFetch);
 		const tspStudents = await this.tspFetchService.fetchTspStudents(system, this.schoolDataDaysToFetch);
 		const tspClasses = await this.tspFetchService.fetchTspClasses(system, this.schoolDataDaysToFetch);

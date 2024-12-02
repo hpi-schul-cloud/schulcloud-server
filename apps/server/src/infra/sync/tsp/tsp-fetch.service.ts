@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
 import { Logger } from '@src/core/logger';
-import { ExportApiInterface, TspClientFactory } from '@src/infra/tsp-client';
-import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
-import { System } from '@src/modules/system';
+import { ExportApiInterface, TspClientFactory } from '@infra/tsp-client';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
+import { System } from '@modules/system';
 import { AxiosError, AxiosResponse } from 'axios';
 import moment from 'moment';
 
@@ -60,11 +60,13 @@ export class TspFetchService {
 	): Promise<T> {
 		const client = this.createClient(system);
 		try {
+			// Benennung von fetch
 			const response = await fetch(client);
 			const { data } = response;
 
 			return data;
 		} catch (e) {
+			// Noch mal drauf schauen, siehe Anmerkungen an tsp-client factory
 			if (e instanceof AxiosError) {
 				this.logger.warning(new AxiosErrorLoggable(e, 'TSP_FETCH_ERROR'));
 			} else {
@@ -78,7 +80,7 @@ export class TspFetchService {
 		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 
-	private createClient(system: System) {
+	private createClient(system: System): ExportApiInterface {
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}
