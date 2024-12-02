@@ -4,7 +4,7 @@ import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 
 @Injectable()
 export class Lti11EncryptionService {
-	public sign(key: string, secret: string, url: string, payload: Record<string, string>): Authorization {
+	public sign(key: string, secret: string, url: string, payload: unknown): Authorization {
 		const requestData: RequestOptions = {
 			url,
 			method: 'POST',
@@ -24,5 +24,16 @@ export class Lti11EncryptionService {
 		const authorization: Authorization = consumer.authorize(requestData);
 
 		return authorization;
+	}
+
+	public verify(key: string, secret: string, url: string, payload: Authorization): boolean {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const { oauth_signature, ...validationPayload } = payload;
+
+		const authorization: Authorization = this.sign(key, secret, url, validationPayload);
+
+		const isValid = oauth_signature === authorization.oauth_signature;
+
+		return isValid;
 	}
 }
