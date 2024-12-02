@@ -92,7 +92,7 @@ module.exports = {
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
-				'filename-rules/match': [2, 'kebabcase'],
+				'filename-rules/match': [1, 'kebabcase'],
 				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',
@@ -122,6 +122,10 @@ module.exports = {
 					{
 						patterns: [
 							{
+								group: ['@src/apps/**', '@src/core/**', '@src/modules/*/*', '@src/shared/**'],
+								message: 'Remove src/ from import path',
+							},
+							{
 								group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
 								message: 'Do not deep import from a module',
 							},
@@ -144,6 +148,86 @@ module.exports = {
 						'@typescript-eslint/explicit-function-return-type': 'off',
 						'max-classes-per-file': 'off',
 						'@typescript-eslint/explicit-member-accessibility': 'off',
+					},
+				},
+				{
+					files: ['apps/server/src/apps/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@infra/**', '@shared/**'],
+										message: 'apps-modules may NOT import from @apps, @infra or @shared',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/core/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**'],
+										message: 'core-modules may NOT import from @apps, @core, @infra or @modules',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/infra/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@core/**', '@modules/**'],
+										message: 'infra-modules may NOT import from @apps, @core or @modules',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/modules/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**'],
+										message: 'modules-modules may NOT import from @apps',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/shared/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**', '@shared/**'],
+										message: 'shared modules may NOT import from @apps, @core, @infra, @modules or @shared',
+									},
+								],
+							},
+						],
 					},
 				},
 			],
