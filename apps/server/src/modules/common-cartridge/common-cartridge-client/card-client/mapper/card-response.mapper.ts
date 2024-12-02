@@ -47,11 +47,11 @@ export class CardResponseMapper {
 	private static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {
 		return new CardResponseDto(
 			cardResponse.id,
-			cardResponse.title ?? '',
 			cardResponse.height,
 			this.mapToCardResponseElementsInnerDto(cardResponse.elements),
 			this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
-			this.mapToTimestampDto(cardResponse.timestamps)
+			this.mapToTimestampDto(cardResponse.timestamps),
+			cardResponse.title ?? ''
 		);
 	}
 

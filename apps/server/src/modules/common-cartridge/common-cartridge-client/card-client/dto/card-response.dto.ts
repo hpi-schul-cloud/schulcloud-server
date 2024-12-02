@@ -17,14 +17,14 @@ export class CardResponseDto {
 
 	constructor(
 		id: string,
-		title: string,
 		height: number,
 		elements: CardResponseElementsInnerDto[],
 		visibilitySettings: VisibilitySettingsResponseDto,
-		timestamps: TimestampResponseDto
+		timestamps: TimestampResponseDto,
+		title?: string
 	) {
 		this.id = id;
-		this.title = title;
+		this.title = title ?? '';
 		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;
