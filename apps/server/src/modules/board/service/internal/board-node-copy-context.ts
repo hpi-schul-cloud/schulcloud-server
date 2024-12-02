@@ -16,7 +16,7 @@ export type BoardNodeCopyContextProps = {
 };
 
 export class BoardNodeCopyContext implements CopyContext {
-	targetSchoolId: EntityId;
+	readonly targetSchoolId: EntityId;
 
 	constructor(private readonly props: BoardNodeCopyContextProps) {
 		this.targetSchoolId = props.targetSchoolId;
