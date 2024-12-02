@@ -70,6 +70,7 @@ describe('ToolReferenceUc', () => {
 						isOutdatedOnScopeContext: false,
 					}),
 					openInNewTab: externalTool.openNewTab,
+					isLtiDeepLinkingTool: false,
 				});
 
 				const contextType: ToolContextType = ToolContextType.COURSE;
@@ -159,6 +160,7 @@ describe('ToolReferenceUc', () => {
 						isOutdatedOnScopeContext: false,
 					}),
 					openInNewTab: externalTool.openNewTab,
+					isLtiDeepLinkingTool: false,
 				});
 
 				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);

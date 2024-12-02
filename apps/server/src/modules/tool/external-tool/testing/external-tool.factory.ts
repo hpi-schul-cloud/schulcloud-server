@@ -45,7 +45,7 @@ class Oauth2ToolConfigFactory extends DoBaseFactory<Oauth2ToolConfig, Oauth2Tool
 export const oauth2ToolConfigFactory = Oauth2ToolConfigFactory.define(Oauth2ToolConfig, () => {
 	return {
 		type: ToolConfigType.OAUTH2,
-		baseUrl: 'https://www.oauth2-baseUrl.com/',
+		baseUrl: 'https://www.oauth2-baseurl.com/',
 		clientId: 'clientId',
 		skipConsent: false,
 	};
@@ -54,7 +54,7 @@ export const oauth2ToolConfigFactory = Oauth2ToolConfigFactory.define(Oauth2Tool
 export const lti11ToolConfigFactory = DoBaseFactory.define<Lti11ToolConfig, Lti11ToolConfig>(Lti11ToolConfig, () => {
 	return {
 		type: ToolConfigType.LTI11,
-		baseUrl: 'https://www.lti11-baseUrl.com/',
+		baseUrl: 'https://www.lti11-baseurl.com/',
 		key: 'key',
 		secret: 'secret',
 		privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,

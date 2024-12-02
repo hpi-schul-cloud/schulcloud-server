@@ -1,4 +1,10 @@
-export { externalToolEntityFactory, customParameterEntityFactory } from './external-tool-entity.factory';
+export {
+	externalToolEntityFactory,
+	customParameterEntityFactory,
+	basicToolConfigEntityFactory,
+	oauth2ToolConfigEntityFactory,
+	lti11ToolConfigEntityFactory,
+} from './external-tool-entity.factory';
 export {
 	externalToolFactory,
 	customParameterFactory,
