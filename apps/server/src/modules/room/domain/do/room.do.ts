@@ -1,4 +1,3 @@
-import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { RoomColor } from '../type';
@@ -20,7 +19,6 @@ export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 export class Room extends DomainObject<RoomProps> {
 	public constructor(props: RoomProps) {
 		super(props);
-		this.validateTimeSpan();
 	}
 
 	public getProps(): RoomProps {
@@ -59,7 +57,6 @@ export class Room extends DomainObject<RoomProps> {
 
 	public set startDate(value: Date) {
 		this.props.startDate = value;
-		this.validateTimeSpan();
 	}
 
 	public get endDate(): Date | undefined {
@@ -68,7 +65,6 @@ export class Room extends DomainObject<RoomProps> {
 
 	public set endDate(value: Date) {
 		this.props.endDate = value;
-		this.validateTimeSpan();
 	}
 
 	public get createdAt(): Date {
@@ -77,15 +73,5 @@ export class Room extends DomainObject<RoomProps> {
 
 	public get updatedAt(): Date {
 		return this.props.updatedAt;
-	}
-
-	private validateTimeSpan() {
-		if (this.props.startDate != null && this.props.endDate != null && this.props.startDate > this.props.endDate) {
-			throw new ValidationError(
-				`Invalid room timespan. Start date '${this.props.startDate.toISOString()}' has to be before end date: '${this.props.endDate.toISOString()}'. Room id='${
-					this.id
-				}'`
-			);
-		}
 	}
 }

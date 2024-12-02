@@ -1,5 +1,4 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { roomFactory } from '../../testing';
 import { RoomColor } from '../type';
@@ -72,57 +71,5 @@ describe('Room', () => {
 	it('should get updatedAt', () => {
 		const expectedUpdatedAt = new Date('2024-01-01');
 		expect(room.updatedAt).toEqual(expectedUpdatedAt);
-	});
-
-	describe('time frame validation', () => {
-		const setup = () => {
-			const props: RoomProps = {
-				id: roomId,
-				name: 'Conference Room',
-				color: RoomColor.BLUE,
-				startDate: new Date('2024-01-01'),
-				endDate: new Date('2024-12-31'),
-				schoolId: new ObjectId().toHexString(),
-				createdAt: new Date('2024-01-01'),
-				updatedAt: new Date('2024-01-01'),
-			};
-
-			return { props };
-		};
-
-		describe('when costructor is called with invalid time frame', () => {
-			it('should throw validation error', () => {
-				const buildInvalid = () => {
-					const { props } = setup();
-					props.startDate = new Date('2024-12-31');
-					props.endDate = new Date('2024-01-01');
-					// eslint-disable-next-line no-new
-					new Room(props);
-				};
-				expect(buildInvalid).toThrowError(ValidationError);
-			});
-		});
-
-		describe('when setting start date after end date', () => {
-			it('should throw validation error', () => {
-				const setInvalidStartDate = () => {
-					const { props } = setup();
-					const inValidRoom = new Room(props);
-					inValidRoom.startDate = new Date('2025-01-01');
-				};
-				expect(setInvalidStartDate).toThrowError(ValidationError);
-			});
-		});
-
-		describe('when setting end date before start date', () => {
-			it('should throw validation error', () => {
-				const setInvalidEndDate = () => {
-					const { props } = setup();
-					const inValidRoom = new Room(props);
-					inValidRoom.endDate = new Date('2023-12-31');
-				};
-				expect(setInvalidEndDate).toThrowError(ValidationError);
-			});
-		});
 	});
 });

@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { ValidationError } from '@shared/common';
 import { RoomRepo } from '../../repo';
 import { roomFactory } from '../../testing';
 import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
@@ -82,6 +83,14 @@ describe('RoomService', () => {
 
 			expect(roomRepo.save).toHaveBeenCalledWith(expect.objectContaining(props));
 		});
+
+		it('should throw validation error if start date is after end date', async () => {
+			const { props } = setup();
+			props.startDate = new Date('2024-12-31');
+			props.endDate = new Date('2024-01-01');
+
+			await expect(service.createRoom(props)).rejects.toThrowError(ValidationError);
+		});
 	});
 
 	describe('getSingleRoom', () => {
@@ -138,6 +147,14 @@ describe('RoomService', () => {
 			await service.updateRoom(room, props);
 
 			expect(roomRepo.save).toHaveBeenCalledWith(room);
+		});
+
+		it('should throw validation error if start date is after end date', async () => {
+			const { props, room } = setup();
+			props.startDate = new Date('2024-12-31');
+			props.endDate = new Date('2024-01-01');
+
+			await expect(service.updateRoom(room, props)).rejects.toThrowError(ValidationError);
 		});
 	});
 
