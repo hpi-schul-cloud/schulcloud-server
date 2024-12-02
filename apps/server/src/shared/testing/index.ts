@@ -71,4 +71,4 @@ export { cleanupCollections } from './cleanup-collections';
 export { mapUserToCurrentUser } from './map-user-to-current-user';
 export { TestApiClient } from './test-api-client';
 export { WebSocketReadyStateEnum } from './web-socket-ready-state-enum';
-export { DatesToStrings } from './dates-to-strings';
+export { DateToString } from './date-to-string';
