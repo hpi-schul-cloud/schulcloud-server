@@ -7,19 +7,24 @@ import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,
+	DateToString,
 	fileRecordFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { Response } from 'supertest';
-import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, LtiMessageType, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
-import { contextExternalToolConfigurationStatusResponseFactory, contextExternalToolEntityFactory } from '../../testing';
+import {
+	contextExternalToolConfigurationStatusResponseFactory,
+	contextExternalToolEntityFactory,
+	ltiDeepLinkEmbeddableFactory,
+} from '../../testing';
 import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
 
 describe('ToolReferenceController (API)', () => {
@@ -188,6 +193,7 @@ describe('ToolReferenceController (API)', () => {
 							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
 								thumbnailFileRecord.name
 							)}`,
+							isLtiDeepLinkingTool: false,
 						},
 					],
 				});
@@ -257,34 +263,40 @@ describe('ToolReferenceController (API)', () => {
 				]);
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const thumbnailFileRecord = fileRecordFactory.build();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-					logoBase64: 'logoBase64',
-					parameters: [
-						customParameterFactory.build({
-							name: 'schoolMockParameter',
-							scope: CustomParameterScope.SCHOOL,
-							location: CustomParameterLocation.PATH,
-						}),
-						customParameterFactory.build({
-							name: 'contextMockParameter',
-							scope: CustomParameterScope.CONTEXT,
-							location: CustomParameterLocation.PATH,
-						}),
-					],
-					thumbnail: {
-						uploadUrl: 'https://uploadurl.com',
-						fileRecord: thumbnailFileRecord,
-					},
-				});
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
+					.withLti11Config({
+						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+					})
+					.buildWithId({
+						logoBase64: 'logoBase64',
+						parameters: [
+							customParameterFactory.build({
+								name: 'schoolMockParameter',
+								scope: CustomParameterScope.SCHOOL,
+								location: CustomParameterLocation.PATH,
+							}),
+							customParameterFactory.build({
+								name: 'contextMockParameter',
+								scope: CustomParameterScope.CONTEXT,
+								location: CustomParameterLocation.PATH,
+							}),
+						],
+						thumbnail: {
+							uploadUrl: 'https://uploadurl.com',
+							fileRecord: thumbnailFileRecord,
+						},
+					});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
+				const ltiDeepLinkEmbeddable = ltiDeepLinkEmbeddableFactory.build();
 				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 					displayName: 'This is a test tool',
+					ltiDeepLink: ltiDeepLinkEmbeddable,
 				});
 
 				await em.persistAndFlush([
@@ -307,6 +319,7 @@ describe('ToolReferenceController (API)', () => {
 					contextExternalToolEntity,
 					externalToolEntity,
 					thumbnailFileRecord,
+					ltiDeepLinkEmbeddable,
 				};
 			};
 
@@ -317,12 +330,13 @@ describe('ToolReferenceController (API)', () => {
 					contextExternalToolEntity,
 					externalToolEntity,
 					thumbnailFileRecord,
+					ltiDeepLinkEmbeddable,
 				} = await setup();
 
 				const response: Response = await loggedInClient.get(`context-external-tools/${contextExternalToolId}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ToolReferenceResponse>({
+				expect(response.body).toEqual<DateToString<ToolReferenceResponse>>({
 					contextToolId: contextExternalToolEntity.id,
 					description: externalToolEntity.description,
 					displayName: contextExternalToolEntity.displayName as string,
@@ -335,6 +349,16 @@ describe('ToolReferenceController (API)', () => {
 					thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
 						thumbnailFileRecord.name
 					)}`,
+					isLtiDeepLinkingTool: true,
+					ltiDeepLink: {
+						mediaType: ltiDeepLinkEmbeddable.mediaType,
+						title: ltiDeepLinkEmbeddable.title,
+						text: ltiDeepLinkEmbeddable.text,
+						availableFrom: ltiDeepLinkEmbeddable.availableFrom?.toISOString(),
+						availableUntil: ltiDeepLinkEmbeddable.availableUntil?.toISOString(),
+						submissionFrom: ltiDeepLinkEmbeddable.submissionFrom?.toISOString(),
+						submissionUntil: ltiDeepLinkEmbeddable.submissionUntil?.toISOString(),
+					},
 				});
 			});
 		});
