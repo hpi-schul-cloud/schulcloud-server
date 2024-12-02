@@ -56,8 +56,12 @@ describe(ExternalToolRepo.name, () => {
 		const client2Id = 'client-2';
 
 		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.withBasicConfig().buildWithId();
-		const externalOauthTool: ExternalToolEntity = externalToolEntityFactory.withOauth2Config('client-1').buildWithId();
-		const externalOauthTool2: ExternalToolEntity = externalToolEntityFactory.withOauth2Config('client-2').buildWithId();
+		const externalOauthTool: ExternalToolEntity = externalToolEntityFactory
+			.withOauth2Config({ clientId: 'client-1' })
+			.buildWithId();
+		const externalOauthTool2: ExternalToolEntity = externalToolEntityFactory
+			.withOauth2Config({ clientId: 'client-2' })
+			.buildWithId();
 		const externalLti11Tool: ExternalToolEntity = externalToolEntityFactory.withLti11Config().buildWithId();
 
 		await em.persistAndFlush([externalToolEntity, externalOauthTool, externalOauthTool2, externalLti11Tool]);

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LaunchRequestMethod } from '../../types';
+import { LaunchRequestMethod, LaunchType } from '../../types';
 
 export class ToolLaunchRequestResponse {
 	@ApiProperty({
@@ -30,15 +30,17 @@ export class ToolLaunchRequestResponse {
 	openNewTab?: boolean;
 
 	@ApiProperty({
-		description: 'Specifies whether the request is an LTI Deep linking content item selection request',
+		description: 'Specifies the underlying type of the request',
+		enum: LaunchType,
+		enumName: 'LaunchType',
 	})
-	isDeepLink: boolean;
+	launchType: LaunchType;
 
 	constructor(props: ToolLaunchRequestResponse) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;
 		this.openNewTab = props.openNewTab;
-		this.isDeepLink = props.isDeepLink;
+		this.launchType = props.launchType;
 	}
 }
