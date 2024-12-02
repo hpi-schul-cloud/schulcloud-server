@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { GroupTypes } from '@modules/group';
+import { RoomMembershipService } from '@modules/room-membership';
+import { roomMembershipFactory } from '@modules/room-membership/testing';
+import { roomFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
 import { courseFactory, groupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { GroupTypes } from '@src/modules/group';
-import { RoomMembershipService } from '@src/modules/room-membership';
-import { roomMembershipFactory } from '@src/modules/room-membership/testing';
-import { roomFactory } from '@src/modules/room/testing';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
