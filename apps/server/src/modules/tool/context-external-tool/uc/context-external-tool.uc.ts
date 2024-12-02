@@ -1,3 +1,4 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
 	AuthorizationContext,
 	AuthorizationContextBuilder,
@@ -5,16 +6,28 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ToolContextType } from '../../common/enum';
+import { Authorization } from 'oauth-1.0a';
+import { ToolConfigType, ToolContextType } from '../../common/enum';
+import { Lti11EncryptionService } from '../../common/service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ExternalToolService } from '../../external-tool';
+import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolService } from '../service';
+import {
+	ContextExternalTool,
+	ContextRef,
+	InvalidOauthSignatureLoggableException,
+	InvalidToolTypeLoggableException,
+	LtiDeepLink,
+	LtiDeepLinkToken,
+	LtiDeepLinkTokenMissingLoggableException,
+} from '../domain';
+import { ContextExternalToolService, LtiDeepLinkingService, LtiDeepLinkTokenService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 
@@ -22,10 +35,15 @@ import { ContextExternalToolDto } from './dto/context-external-tool.types';
 export class ContextExternalToolUc {
 	constructor(
 		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
+		private readonly ltiDeepLinkingService: LtiDeepLinkingService,
+		private readonly lti11EncryptionService: Lti11EncryptionService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
 	async createContextExternalTool(
@@ -81,6 +99,7 @@ export class ContextExternalToolUc {
 		contextExternalTool = new ContextExternalTool({
 			...contextExternalToolDto,
 			id: contextExternalTool.id,
+			ltiDeepLink: contextExternalTool.ltiDeepLink,
 		});
 		contextExternalTool.schoolToolRef.schoolId = schoolId;
 
@@ -142,5 +161,64 @@ export class ContextExternalToolUc {
 		);
 
 		return toolsWithPermission;
+	}
+
+	public async updateLtiDeepLink(
+		contextExternalToolId: EntityId,
+		payload: Authorization,
+		state: string,
+		deepLink?: LtiDeepLink
+	): Promise<void> {
+		if (!deepLink) {
+			return;
+		}
+
+		const ltiDeepLinkToken: LtiDeepLinkToken | null = await this.ltiDeepLinkTokenService.findByState(state);
+
+		if (!ltiDeepLinkToken) {
+			throw new LtiDeepLinkTokenMissingLoggableException(state, contextExternalToolId);
+		}
+
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
+			contextExternalToolId
+		);
+
+		await this.checkOauthSignature(contextExternalTool, payload);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(ltiDeepLinkToken.userId);
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
+
+		contextExternalTool.ltiDeepLink = deepLink;
+		if (deepLink.title) {
+			contextExternalTool.displayName = deepLink.title;
+		}
+
+		await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
+	}
+
+	private async checkOauthSignature(contextExternalTool: ContextExternalTool, payload: Authorization): Promise<void> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (!ExternalTool.isLti11Config(externalTool.config)) {
+			throw new InvalidToolTypeLoggableException(ToolConfigType.LTI11, externalTool.config.type);
+		}
+
+		const url: string = this.ltiDeepLinkingService.getCallbackUrl(contextExternalTool.id);
+		const decryptedSecret: string = this.encryptionService.decrypt(externalTool.config.secret);
+
+		const isValidSignature: boolean = this.lti11EncryptionService.verify(
+			externalTool.config.key,
+			decryptedSecret,
+			url,
+			payload
+		);
+
+		if (!isValidSignature) {
+			throw new InvalidOauthSignatureLoggableException();
+		}
 	}
 }
