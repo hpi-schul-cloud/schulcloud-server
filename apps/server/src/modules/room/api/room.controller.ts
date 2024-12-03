@@ -11,6 +11,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Put,
 	Query,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -115,8 +116,8 @@ export class RoomController {
 		return response;
 	}
 
-	@Patch(':roomId')
-	@ApiOperation({ summary: 'Create a new room' })
+	@Put(':roomId')
+	@ApiOperation({ summary: 'Update an existing room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomDetailsResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })

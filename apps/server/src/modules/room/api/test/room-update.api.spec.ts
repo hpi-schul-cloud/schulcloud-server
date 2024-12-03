@@ -42,11 +42,11 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('PATCH /rooms/:id', () => {
+	describe('PUT /rooms/:id', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const someId = new ObjectId().toHexString();
-				const response = await testApiClient.patch(someId);
+				const response = await testApiClient.put(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -68,7 +68,7 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient } = await setup();
 				const someId = new ObjectId().toHexString();
 				const params = { name: 'Room #101', color: 'green' };
-				const response = await loggedInClient.patch(someId, params);
+				const response = await loggedInClient.put(someId, params);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
@@ -87,7 +87,7 @@ describe('Room Controller (API)', () => {
 			it('should return a 400 error', async () => {
 				const { loggedInClient } = await setup();
 				const params = { name: 'Room #101', color: 'green' };
-				const response = await loggedInClient.patch('42', params);
+				const response = await loggedInClient.put('42', params);
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
@@ -121,7 +121,7 @@ describe('Room Controller (API)', () => {
 					const someId = new ObjectId().toHexString();
 					const params = { name: 'Room #101', color: 'green' };
 
-					const response = await loggedInClient.patch(someId, params);
+					const response = await loggedInClient.put(someId, params);
 
 					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
@@ -132,7 +132,7 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 					const params = { name: 'Room #101', color: 'green' };
 
-					const response = await loggedInClient.patch(room.id, params);
+					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
@@ -147,7 +147,7 @@ describe('Room Controller (API)', () => {
 						const { loggedInClient, room } = await setup();
 						const params = { name: '', color: 'red' };
 
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 
 						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 					});
@@ -158,7 +158,7 @@ describe('Room Controller (API)', () => {
 						const { loggedInClient, room } = await setup();
 						const params = { name: 'Room #101', color: '' };
 
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 
 						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 					});
@@ -169,7 +169,7 @@ describe('Room Controller (API)', () => {
 						const { loggedInClient, room } = await setup();
 						const params = { name: 'Room #101', color: 'fancy-color' };
 
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 
 						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 					});
@@ -181,7 +181,7 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 
 					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02' };
-					const response = await loggedInClient.patch(room.id, params);
+					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
@@ -194,7 +194,7 @@ describe('Room Controller (API)', () => {
 					it('should return a 400 error', async () => {
 						const { loggedInClient, room } = await setup();
 						const params = { name: 'Room #101', color: 'green', startDate: 'invalid date' };
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 					});
 				});
@@ -204,14 +204,26 @@ describe('Room Controller (API)', () => {
 						const { loggedInClient, room } = await setup();
 						const params = { name: 'Room #101', color: 'green', startDate: null };
 
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 
 						expect(response.status).toBe(HttpStatus.OK);
-						await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
-							id: room.id,
-							startDate: null,
-						});
+						const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
+						expect(resultRoom.startDate).toBe(undefined);
 					});
+				});
+			});
+
+			describe('when the startDate is omitted', () => {
+				it('should unset the property', async () => {
+					const { loggedInClient, room } = await setup();
+					const params = { name: 'Room #101', color: 'green' };
+
+					const response = await loggedInClient.put(room.id, params);
+
+					expect(response.status).toBe(HttpStatus.OK);
+
+					const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
+					expect(resultRoom.endDate).toBe(undefined);
 				});
 			});
 
@@ -220,7 +232,7 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 					const params = { name: 'Room #101', color: 'green', endDate: '2024-10-18' };
 
-					const response = await loggedInClient.patch(room.id, params);
+					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
@@ -233,7 +245,7 @@ describe('Room Controller (API)', () => {
 					it('should return a 400 error', async () => {
 						const { loggedInClient, room } = await setup();
 						const params = { name: 'Room #101', color: 'green', endDate: 'invalid date' };
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 					});
 				});
@@ -241,16 +253,29 @@ describe('Room Controller (API)', () => {
 				describe('when the date is null', () => {
 					it('should unset the property', async () => {
 						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', endDate: null };
+						const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', endDate: null };
 
-						const response = await loggedInClient.patch(room.id, params);
+						const response = await loggedInClient.put(room.id, params);
 
 						expect(response.status).toBe(HttpStatus.OK);
-						await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
-							id: room.id,
-							endDate: null,
-						});
+
+						const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
+						expect(resultRoom.endDate).toBe(undefined);
 					});
+				});
+			});
+
+			describe('when the endDate is omitted', () => {
+				it('should unset the property', async () => {
+					const { loggedInClient, room } = await setup();
+					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02' };
+
+					const response = await loggedInClient.put(room.id, params);
+
+					expect(response.status).toBe(HttpStatus.OK);
+
+					const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
+					expect(resultRoom.endDate).toBe(undefined);
 				});
 			});
 
@@ -264,7 +289,7 @@ describe('Room Controller (API)', () => {
 						endDate: '2024-10-18',
 					};
 
-					const response = await loggedInClient.patch(room.id, params);
+					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.OK);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
@@ -285,7 +310,7 @@ describe('Room Controller (API)', () => {
 						endDate: '2024-10-05',
 					};
 
-					const response = await loggedInClient.patch(room.id, params);
+					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
@@ -313,7 +338,7 @@ describe('Room Controller (API)', () => {
 					const someId = new ObjectId().toHexString();
 					const params = { name: 'Room #101', color: 'green' };
 
-					const response = await loggedInClient.patch(someId, params);
+					const response = await loggedInClient.put(someId, params);
 
 					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
@@ -324,7 +349,7 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 					const params = { name: 'Room #101', color: 'green' };
 
-					const response = await loggedInClient.patch(room.id, params);
+					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});

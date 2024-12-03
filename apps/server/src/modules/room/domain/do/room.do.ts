@@ -55,7 +55,7 @@ export class Room extends DomainObject<RoomProps> {
 		return this.props.startDate;
 	}
 
-	public set startDate(value: Date) {
+	public set startDate(value: Date | undefined) {
 		this.props.startDate = value;
 	}
 
@@ -63,7 +63,7 @@ export class Room extends DomainObject<RoomProps> {
 		return this.props.endDate;
 	}
 
-	public set endDate(value: Date) {
+	public set endDate(value: Date | undefined) {
 		this.props.endDate = value;
 	}
 
