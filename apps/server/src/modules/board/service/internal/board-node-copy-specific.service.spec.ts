@@ -39,6 +39,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeCopyContext } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -627,6 +628,31 @@ describe(BoardNodeCopyService.name, () => {
 			const result = await service.copyDeletedElement(deletedElement, copyContext);
 
 			expect(result.copyEntity).toBeInstanceOf(DeletedElement);
+		});
+	});
+
+	describe('copy video conference element', () => {
+		const setup = () => {
+			const { copyContext } = setupContext();
+			const videoConferenceElement = videoConferenceElementFactory.build();
+
+			return {
+				copyContext,
+				videoConferenceElement,
+			};
+		};
+
+		it('should copy the node', async () => {
+			const { copyContext, videoConferenceElement } = setup();
+
+			const result = await service.copyVideoConferenceElement(videoConferenceElement, copyContext);
+
+			const expectedStatus: CopyStatus = {
+				type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
+				status: CopyStatusEnum.NOT_DOING,
+			};
+
+			expect(result).toEqual(expectedStatus);
 		});
 	});
 });

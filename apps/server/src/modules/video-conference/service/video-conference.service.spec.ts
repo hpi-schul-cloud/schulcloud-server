@@ -14,14 +14,18 @@ import { Course, TeamUserEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { courseFactory, groupFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { BoardNodeAuthorizableService, BoardNodeService } from '@src/modules/board';
+import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
 import { RoleService } from '@src/modules/role';
 import { RoomService } from '@src/modules/room';
 import { RoomMemberService } from '@src/modules/room-member';
+import { GroupTypes } from '@src/modules/group';
+import { roomMemberFactory } from '@src/modules/room-member/testing';
+import { roomFactory } from '@src/modules/room/testing';
+import { columnBoardFactory, videoConferenceElementFactory } from '@src/modules/board/testing';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -187,6 +191,78 @@ describe(VideoConferenceService.name, () => {
 					user,
 					userId,
 					conferenceScope: VideoConferenceScope.COURSE,
+					scopeId,
+				};
+			};
+
+			it('should return true', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+
+				expect(result).toBe(true);
+			});
+
+			it('should call userService.findById', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, conferenceScope, scopeId);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+		});
+
+		describe('when user has EXPERT role for a room', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.build({ id: new ObjectId().toHexString() });
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
+				configService.get.mockReturnValueOnce('https://api.example.com');
+				userService.findById.mockResolvedValueOnce(user);
+
+				return {
+					user,
+					userId,
+					conferenceScope: VideoConferenceScope.ROOM,
+					scopeId,
+				};
+			};
+
+			it('should return true', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+
+				expect(result).toBe(true);
+			});
+
+			it('should call userService.findById', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, conferenceScope, scopeId);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+		});
+
+		describe('when user has EXPERT role for a video conference element', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.build({ id: new ObjectId().toHexString() });
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
+				configService.get.mockReturnValueOnce('https://api.example.com');
+				userService.findById.mockResolvedValueOnce(user);
+
+				return {
+					user,
+					userId,
+					conferenceScope: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
 					scopeId,
 				};
 			};
@@ -403,6 +479,104 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
+		describe('when user has room editor role in room scope', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const roleEditor = roleFactory.buildWithId({
+					name: RoleName.ROOM_EDITOR,
+					permissions: [Permission.ROOM_EDIT],
+				});
+				const roleViewer = roleFactory.buildWithId({
+					name: RoleName.ROOM_VIEWER,
+					permissions: [Permission.ROOM_VIEW],
+				});
+				const group = groupFactory.build({
+					type: GroupTypes.ROOM,
+					users: [{ userId: user.id, roleId: roleEditor.id }],
+				});
+				const room = roomFactory.build();
+				roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+				const conferenceScope = VideoConferenceScope.ROOM;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roomMemberService.getRoomMemberAuthorizable.mockResolvedValueOnce({
+					id: 'foo',
+					roomId: room.id,
+					members: [{ userId: user.id, roles: [roleEditor] }],
+				});
+				roleService.findByName.mockResolvedValueOnce(roleEditor).mockResolvedValueOnce(roleViewer);
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				return {
+					user,
+					userId: user.id,
+					room,
+					roomId: room.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct service order', async () => {
+				const { userId, conferenceScope, roomId } = setup();
+
+				await service.determineBbbRole(userId, roomId, conferenceScope);
+
+				expect(roomMemberService.getRoomMemberAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roleService.findByName).toHaveBeenCalledWith(RoleName.ROOM_EDITOR);
+			});
+
+			it('should return BBBRole.MODERATOR', async () => {
+				const { userId, conferenceScope, roomId } = setup();
+
+				const result = await service.determineBbbRole(userId, roomId, conferenceScope);
+
+				expect(result).toBe(BBBRole.MODERATOR);
+			});
+		});
+
+		describe('when user has editor role in video conference node', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const element = videoConferenceElementFactory.build();
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: element.id,
+					boardNode: element,
+					rootNode: columnBoardFactory.build(),
+				});
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
+				boardNodeService.findById.mockResolvedValueOnce(element);
+
+				return {
+					user,
+					userId: user.id,
+					element,
+					elementId: element.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct service', async () => {
+				const { userId, conferenceScope, element, elementId } = setup();
+
+				await service.determineBbbRole(userId, elementId, conferenceScope);
+
+				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(element);
+			});
+
+			it('should return BBBRole.MODERATOR', async () => {
+				const { userId, conferenceScope, elementId } = setup();
+
+				const result = await service.determineBbbRole(userId, elementId, conferenceScope);
+
+				expect(result).toBe(BBBRole.MODERATOR);
+			});
+		});
+
 		// can be removed when team / course / user is passed from UC
 		// missing when course / team loading throw an error, but also not nessasary if it is passed to UC.
 		describe('when user has START_MEETING permission and is in team(event) scope', () => {
@@ -445,7 +619,7 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when user has JOIN_MEETING permission', () => {
+		describe('when user has JOIN_MEETING permission and is in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const entity = courseFactory.buildWithId();
@@ -487,6 +661,107 @@ describe(VideoConferenceService.name, () => {
 				const { userId, conferenceScope, entityId } = setup();
 
 				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(result).toBe(BBBRole.VIEWER);
+			});
+		});
+
+		describe('when user has room viewer role in room scope', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+				const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+				const group = groupFactory.build({
+					type: GroupTypes.ROOM,
+					users: [{ userId: user.id, roleId: roleViewer.id }],
+				});
+				const room = roomFactory.build();
+				roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+				const conferenceScope = VideoConferenceScope.ROOM;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roomMemberService.getRoomMemberAuthorizable
+					.mockResolvedValueOnce({
+						id: 'foo',
+						roomId: room.id,
+						members: [{ userId: user.id, roles: [roleViewer] }],
+					})
+					.mockResolvedValueOnce({
+						id: 'foo',
+						roomId: room.id,
+						members: [{ userId: user.id, roles: [roleViewer] }],
+					});
+				roleService.findByName.mockResolvedValueOnce(roleEditor).mockResolvedValueOnce(roleViewer);
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				return {
+					user,
+					userId: user.id,
+					room,
+					roomId: room.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct service order', async () => {
+				const { userId, conferenceScope, roomId } = setup();
+
+				await service.determineBbbRole(userId, roomId, conferenceScope);
+
+				expect(roomMemberService.getRoomMemberAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roleService.findByName).toHaveBeenCalledWith(RoleName.ROOM_EDITOR);
+			});
+
+			it('should return BBBRole.VIEWER', async () => {
+				jest.restoreAllMocks();
+				const { userId, conferenceScope, roomId } = setup();
+
+				const result = await service.determineBbbRole(userId, roomId, conferenceScope);
+
+				expect(result).toBe(BBBRole.VIEWER);
+			});
+		});
+
+		describe('when user has reader role in video conference node', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const element = videoConferenceElementFactory.build();
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+					id: element.id,
+					boardNode: element,
+					rootNode: columnBoardFactory.build(),
+				});
+				boardNodeAuthorizableService.getBoardAuthorizable
+					.mockResolvedValueOnce(boardNodeAuthorizable)
+					.mockResolvedValueOnce(boardNodeAuthorizable);
+				boardNodeService.findById.mockResolvedValueOnce(element);
+
+				return {
+					user,
+					userId: user.id,
+					element,
+					elementId: element.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct service', async () => {
+				const { userId, conferenceScope, element, elementId } = setup();
+
+				await service.determineBbbRole(userId, elementId, conferenceScope);
+
+				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(element);
+			});
+
+			it('should return BBBRole.VIEWER', async () => {
+				const { userId, conferenceScope, elementId } = setup();
+
+				const result = await service.determineBbbRole(userId, elementId, conferenceScope);
 
 				expect(result).toBe(BBBRole.VIEWER);
 			});
@@ -580,21 +855,22 @@ describe(VideoConferenceService.name, () => {
 	describe('getScopeInfo', () => {
 		const setup = () => {
 			const userId = 'user-id';
-			const conferenceScope: VideoConferenceScope = VideoConferenceScope.COURSE;
+
 			const scopeId = new ObjectId().toHexString();
 
 			configService.get.mockReturnValue('https://api.example.com');
 
 			return {
 				userId,
-				conferenceScope,
+
 				scopeId,
 			};
 		};
 
 		describe('when conference scope is VideoConferenceScope.COURSE', () => {
 			it('should return scope information for a course', async () => {
-				const { userId, conferenceScope, scopeId } = setup();
+				const { userId, scopeId } = setup();
+				const conferenceScope: VideoConferenceScope = VideoConferenceScope.COURSE;
 				const course: Course = courseFactory.buildWithId({ name: 'Course' });
 				course.id = scopeId;
 				courseService.findById.mockResolvedValue(course);
@@ -608,6 +884,44 @@ describe(VideoConferenceService.name, () => {
 					title: course.name,
 				});
 				expect(courseService.findById).toHaveBeenCalledWith(scopeId);
+			});
+		});
+
+		describe('when conference scope is VideoConferenceScope.ROOM', () => {
+			it('should return scope information for a room', async () => {
+				const { userId } = setup();
+				const conferenceScope: VideoConferenceScope = VideoConferenceScope.ROOM;
+				const room = roomFactory.build({ name: 'Room' });
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				const result: ScopeInfo = await service.getScopeInfo(userId, room.id, conferenceScope);
+
+				expect(result).toEqual({
+					scopeId: room.id,
+					scopeName: 'rooms',
+					logoutUrl: `${service.hostUrl}/rooms/${room.id}`,
+					title: room.name,
+				});
+				expect(roomService.getSingleRoom).toHaveBeenCalledWith(room.id);
+			});
+		});
+
+		describe('when conference scope is VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT', () => {
+			it('should return scope information for a room', async () => {
+				const { userId } = setup();
+				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+				const element = videoConferenceElementFactory.build({ title: 'Element' });
+				boardNodeService.findById.mockResolvedValueOnce(element);
+
+				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
+
+				expect(result).toEqual({
+					scopeId: element.id,
+					scopeName: 'video-conference-element',
+					logoutUrl: `${service.hostUrl}/boards/${element.id}`,
+					title: element.title,
+				});
+				expect(boardNodeService.findById).toHaveBeenCalledWith(element.id);
 			});
 		});
 
@@ -645,10 +959,42 @@ describe(VideoConferenceService.name, () => {
 		const setup = (conferenceScope: VideoConferenceScope) => {
 			const user: UserDO = userDoFactory.buildWithId();
 			const userId = user.id as EntityId;
+			const roomUser = userFactory.buildWithId();
 			const scopeId = new ObjectId().toHexString();
 			const team = teamFactory
 				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
 				.build();
+			const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+			const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+			const group = groupFactory.build({
+				type: GroupTypes.ROOM,
+				users: [{ userId: roomUser.id, roleId: roleEditor.id }],
+			});
+			const room = roomFactory.build();
+			roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+			roomMemberService.getRoomMemberAuthorizable
+				.mockResolvedValueOnce({
+					id: 'foo',
+					roomId: room.id,
+					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+				})
+				.mockResolvedValueOnce({
+					id: 'foo',
+					roomId: room.id,
+					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+				});
+			roleService.findByName.mockResolvedValueOnce(roleEditor).mockResolvedValueOnce(roleViewer);
+
+			const element = videoConferenceElementFactory.build();
+			const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				users: [{ userId: roomUser.id, roles: [BoardRoles.READER] }],
+				id: element.id,
+				boardNode: element,
+				rootNode: columnBoardFactory.build(),
+			});
+			boardNodeAuthorizableService.getBoardAuthorizable
+				.mockResolvedValueOnce(boardNodeAuthorizable)
+				.mockResolvedValueOnce(boardNodeAuthorizable);
 
 			configService.get.mockReturnValue('https://api.example.com');
 
@@ -656,6 +1002,7 @@ describe(VideoConferenceService.name, () => {
 				user,
 				userId,
 				conferenceScope,
+				roomUser,
 				scopeId,
 				team,
 			};
@@ -682,6 +1029,67 @@ describe(VideoConferenceService.name, () => {
 
 			it('should return the user role and guest status for a course conference', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.COURSE);
+				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
+				userService.findById.mockResolvedValue(user);
+
+				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
+
+				expect(result).toEqual({ role: BBBRole.MODERATOR, isGuest: false });
+			});
+		});
+
+		describe('when conference scope is VideoConferenceScope.ROOM', () => {
+			it('should call roomService.getSingleRoom', async () => {
+				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.ROOM);
+				userService.findById.mockResolvedValue(user);
+
+				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
+
+				expect(roomService.getSingleRoom).toHaveBeenCalledWith(scopeId);
+			});
+
+			it('should call userService.findById', async () => {
+				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.ROOM);
+				userService.findById.mockResolvedValue(user);
+
+				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return the user role and guest status for a room conference', async () => {
+				const { user, userId, conferenceScope, roomUser, scopeId } = setup(VideoConferenceScope.ROOM);
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ name: 'Room' }));
+				userService.findById.mockResolvedValue(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(roomUser);
+
+				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
+
+				expect(result).toEqual({ role: BBBRole.MODERATOR, isGuest: false });
+			});
+		});
+
+		describe('when conference scope is VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT', () => {
+			it('should call boardNodeService.findById', async () => {
+				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+				userService.findById.mockResolvedValue(user);
+
+				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
+
+				expect(boardNodeService.findById).toHaveBeenCalledWith(scopeId);
+			});
+
+			it('should call userService.findById', async () => {
+				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+				userService.findById.mockResolvedValue(user);
+
+				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return the user role and guest status for a video conference element conference', async () => {
+				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
 				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
 				userService.findById.mockResolvedValue(user);
 

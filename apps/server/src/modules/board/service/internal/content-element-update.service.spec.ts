@@ -8,6 +8,7 @@ import {
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
+	VideoConferenceContentBody,
 } from '../../controller/dto';
 import { BoardNodeRepo } from '../../repo';
 import {
@@ -17,6 +18,7 @@ import {
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
 import { ContentElementUpdateService } from './content-element-update.service';
 
@@ -121,6 +123,19 @@ describe('ContentElementUpdateService', () => {
 		await service.updateContent(element, content);
 
 		expect(element.contextExternalToolId).toBe('contextExternalToolId');
+		expect(repo.save).toHaveBeenCalledWith(element);
+	});
+
+	it('should update VideoConferenceElement', async () => {
+		const element = videoConferenceElementFactory.build();
+		const content = new VideoConferenceContentBody();
+		content.url = 'http://example-vc.com/';
+		content.title = 'vc title';
+
+		await service.updateContent(element, content);
+
+		expect(element.url).toBe('http://example-vc.com/');
+		expect(element.title).toBe('vc title');
 		expect(repo.save).toHaveBeenCalledWith(element);
 	});
 
