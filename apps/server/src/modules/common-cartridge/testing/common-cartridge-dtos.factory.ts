@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Factory } from 'fishery';
+import { BaseFactory } from '@shared/testing';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
 import { LessonContentDto, LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
 import { BoardSkeletonDto, CardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
@@ -13,6 +14,10 @@ import { BoardElementDtoType } from '../common-cartridge-client/room-client/enum
 import { BoardLessonDto } from '../common-cartridge-client/room-client/dto/board-lesson.dto';
 import { BoardColumnBoardDto } from '../common-cartridge-client/room-client/dto/board-column-board.dto';
 import { BoardLayout } from '../common-cartridge-client/room-client/enums/board-layout.enum';
+import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
+import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
+import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
+import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
 
 export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataDto>(({ sequence }) => {
 	return {
@@ -48,39 +53,54 @@ export const columnBoardFactory = Factory.define<BoardSkeletonDto>(({ sequence }
 	};
 });
 
+export const richTextElementContentFactory = Factory.define<RichTextElementContentDto>(() => {
+	return {
+		text: faker.lorem.word(),
+		inputFormat: 'plainText',
+	};
+});
+
+class RichTextElement extends BaseFactory<RichTextElementResponseDto, Readonly<RichTextElementResponseDto>> {}
+export const richTextElementFactroy = RichTextElement.define(RichTextElementResponseDto, () => {
+	return {
+		id: faker.string.uuid(),
+		type: ContentElementType.RICH_TEXT,
+		content: richTextElementContentFactory.build(),
+		timestamps: {
+			lastUpdatedAt: faker.date.recent().toISOString(),
+			createdAt: faker.date.recent().toISOString(),
+			deletedAt: undefined,
+		},
+	};
+});
+
+export const linkElementContentFactory = Factory.define<LinkElementContentDto>(() => {
+	return {
+		url: faker.internet.url(),
+		title: faker.lorem.word(),
+		description: faker.lorem.sentence(),
+	};
+});
+
+class LinkElementFactory extends BaseFactory<LinkElementResponseDto, Readonly<LinkElementResponseDto>> {}
+export const linkElementFactory = LinkElementFactory.define(LinkElementResponseDto, () => {
+	return {
+		id: faker.string.uuid(),
+		type: ContentElementType.LINK,
+		content: linkElementContentFactory.build(),
+		timestamps: {
+			lastUpdatedAt: faker.date.recent().toISOString(),
+			createdAt: faker.date.recent().toISOString(),
+			deletedAt: undefined,
+		},
+	};
+});
+
 export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
 		height: faker.number.int(),
-		elements: [
-			{
-				id: faker.string.uuid(),
-				type: ContentElementType.RICH_TEXT,
-				content: {
-					text: 'text',
-					inputFormat: 'plainText',
-				},
-				timestamps: {
-					lastUpdatedAt: faker.date.recent().toISOString(),
-					createdAt: faker.date.recent().toISOString(),
-					deletedAt: undefined,
-				},
-			},
-			{
-				id: faker.string.uuid(),
-				type: ContentElementType.LINK,
-				content: {
-					url: faker.internet.url(),
-					title: faker.lorem.word(),
-					description: faker.lorem.sentence(),
-				},
-				timestamps: {
-					lastUpdatedAt: faker.date.recent().toISOString(),
-					createdAt: faker.date.recent().toISOString(),
-					deletedAt: undefined,
-				},
-			},
-		],
+		elements: [richTextElementFactroy.build(), linkElementFactory.build()],
 		visibilitySettings: {
 			publishedAt: faker.date.recent().toISOString(),
 		},
@@ -177,9 +197,9 @@ export const boardTaskFactory = Factory.define<BoardTaskDto>(({ sequence }) => {
 	};
 });
 
-export const boardCloumnBoardFactory = Factory.define<BoardColumnBoardDto>(({ sequence }) => {
+export const boardCloumnBoardFactory = Factory.define<BoardColumnBoardDto>(() => {
 	return {
-		id: sequence.toString(),
+		id: faker.string.uuid(),
 		title: faker.lorem.word(),
 		published: faker.datatype.boolean(),
 		createdAt: faker.date.recent().toISOString(),

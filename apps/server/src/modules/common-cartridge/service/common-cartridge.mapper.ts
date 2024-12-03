@@ -198,6 +198,6 @@ export class CommonCartridgeExportMapper {
 			allowedAttributes: {},
 		}).slice(0, 20);
 
-		return `${title}...`;
+		return title.length > 20 ? `${title}...` : title;
 	}
 }

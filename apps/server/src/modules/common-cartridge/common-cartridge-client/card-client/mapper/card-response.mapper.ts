@@ -135,24 +135,24 @@ export class CardResponseMapper {
 				case ContentElementType.LINK: {
 					const content: LinkElementContent = element.content as LinkElementContent;
 					elements.push(
-						new LinkElementResponseDto(
-							element.id,
-							ContentElementType.LINK,
-							new LinkElementContentDto(content.url, content.title, content.description ?? '', content.imageUrl ?? ''),
-							this.mapToTimestampDto(element.timestamps)
-						)
+						new LinkElementResponseDto({
+							id: element.id,
+							type: ContentElementType.LINK,
+							content: new LinkElementContentDto(content.url, content.title, content.description ?? ''),
+							timestamps: this.mapToTimestampDto(element.timestamps),
+						})
 					);
 					break;
 				}
 				case ContentElementType.RICH_TEXT: {
 					const content: RichTextElementContent = element.content as RichTextElementContent;
 					elements.push(
-						new RichTextElementResponseDto(
-							element.id,
-							ContentElementType.RICH_TEXT,
-							new RichTextElementContentDto(content.text, content.inputFormat),
-							this.mapToTimestampDto(element.timestamps)
-						)
+						new RichTextElementResponseDto({
+							id: element.id,
+							type: ContentElementType.RICH_TEXT,
+							content: new RichTextElementContentDto(content.text, content.inputFormat),
+							timestamps: this.mapToTimestampDto(element.timestamps),
+						})
 					);
 					break;
 				}

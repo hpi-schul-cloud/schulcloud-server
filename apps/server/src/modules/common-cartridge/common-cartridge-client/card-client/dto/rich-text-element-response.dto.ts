@@ -11,15 +11,10 @@ export class RichTextElementResponseDto {
 
 	timestamps: TimestampResponseDto;
 
-	constructor(
-		id: string,
-		type: ContentElementType,
-		content: RichTextElementContentDto,
-		timestamps: TimestampResponseDto
-	) {
-		this.id = id;
-		this.type = type;
-		this.content = content;
-		this.timestamps = timestamps;
+	constructor(props: RichTextElementResponseDto) {
+		this.id = props.id;
+		this.type = props.type;
+		this.content = props.content;
+		this.timestamps = props.timestamps;
 	}
 }

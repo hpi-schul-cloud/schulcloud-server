@@ -174,7 +174,7 @@ export class CommonCartridgeExportService {
 	): Promise<void> {
 		const columnBoards = this.filterColumnBoardFromBoardElement(elements);
 		const columnBoardsIds = columnBoards
-			.filter((columBoard) => exportedColumnBoards.includes(columBoard.columnBoardId))
+			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
 			.map((columBoard) => columBoard.columnBoardId);
 
 		if (columnBoardsIds.length === 0) {
@@ -248,7 +248,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private filterTasksFromBoardElements(elements: BoardElementDto[]): BoardTaskDto[] {
-		const tasks: BoardTaskDto[] = elements
+		const tasks = elements
 			.filter((element) => element.type === BoardElementDtoType.TASK)
 			.map((element) => element.content as BoardTaskDto);
 
@@ -256,7 +256,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private filterLessonFromBoardElements(elements: BoardElementDto[]): BoardLessonDto[] {
-		const lessons: BoardLessonDto[] = elements
+		const lessons = elements
 			.filter((element) => element.content instanceof BoardLessonDto)
 			.map((element) => element.content as BoardLessonDto);
 
@@ -264,7 +264,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private filterColumnBoardFromBoardElement(elements: BoardElementDto[]): BoardColumnBoardDto[] {
-		const columnBoard: BoardColumnBoardDto[] = elements
+		const columnBoard = elements
 			.filter((element) => element.type === BoardElementDtoType.COLUMN_BOARD)
 			.map((element) => element.content as BoardColumnBoardDto);
 
