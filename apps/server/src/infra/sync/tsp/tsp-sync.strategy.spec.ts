@@ -12,7 +12,7 @@ import { systemFactory } from '@modules/system/testing';
 import { userDoFactory } from '@shared/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface';
 import { UserDO } from '@shared/domain/domainobject';
-import { Logger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 import {
 	RobjExportKlasse,
 	RobjExportLehrer,

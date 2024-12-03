@@ -9,7 +9,7 @@ import { ProvisioningModule } from '@modules/provisioning';
 import { TspClientModule } from '@infra/tsp-client';
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { LoggerModule } from '../../core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { SyncConsole } from './console/sync.console';
 import { SyncService } from './service/sync.service';
 import { TspLegacyMigrationService } from './tsp/tsp-legacy-migration.service';

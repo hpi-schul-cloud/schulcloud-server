@@ -6,7 +6,7 @@ import { cleanupCollections, schoolEntityFactory, systemEntityFactory } from '@s
 import { SchoolFeature } from '@shared/domain/types';
 import { SystemProvisioningStrategy } from '@shared/domain/interface';
 import { SchoolEntity } from '@shared/domain/entity';
-import { Logger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 import { MongoMemoryDatabaseModule } from '../../database';
 import { TspLegacyMigrationSystemMissingLoggable } from './loggable/tsp-legacy-migration-system-missing.loggable';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';

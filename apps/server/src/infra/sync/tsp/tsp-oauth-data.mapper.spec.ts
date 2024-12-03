@@ -13,7 +13,7 @@ import {
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../tsp-client';
-import { Logger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
