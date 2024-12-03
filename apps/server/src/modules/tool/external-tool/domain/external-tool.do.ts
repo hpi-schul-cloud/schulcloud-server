@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameter } from '../../common/domain';
-import { ToolConfigType, ToolContextType } from '../../common/enum';
+import { LtiMessageType, ToolConfigType, ToolContextType } from '../../common/enum';
 import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
 import { ExternalToolMedium } from './external-tool-medium.do';
 import { FileRecordRef } from './file-record-ref';
@@ -211,5 +211,12 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 
 	static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
 		return ToolConfigType.LTI11 === config.type;
+	}
+
+	public isLtiDeepLinkingTool(): boolean {
+		return (
+			ExternalTool.isLti11Config(this.config) &&
+			this.config.lti_message_type === LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
+		);
 	}
 }

@@ -7,8 +7,8 @@ import util from 'util';
 import { AxiosError } from 'axios';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
-import { DomainErrorHandler } from './domainErrorHandler';
 import { AxiosErrorLoggable } from '../loggable';
+import { DomainErrorHandler } from './domain-error-handler';
 
 class SampleLoggableException extends BadRequestException implements Loggable {
 	constructor(private testData: string) {

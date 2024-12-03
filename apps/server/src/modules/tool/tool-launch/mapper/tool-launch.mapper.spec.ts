@@ -1,6 +1,6 @@
 import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
 import { ToolLaunchRequestResponse } from '../controller/dto';
-import { LaunchRequestMethod, PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
+import { LaunchRequestMethod, LaunchType, PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchMapper } from './tool-launch.mapper';
 
 describe('ToolLaunchMapper', () => {
@@ -33,7 +33,7 @@ describe('ToolLaunchMapper', () => {
 				url: 'url',
 				openNewTab: true,
 				payload: 'payload',
-				isDeepLink: false,
+				launchType: LaunchType.BASIC,
 			});
 
 			const result: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
@@ -43,7 +43,7 @@ describe('ToolLaunchMapper', () => {
 				url: toolLaunchRequest.url,
 				payload: toolLaunchRequest.payload,
 				openNewTab: toolLaunchRequest.openNewTab,
-				isDeepLink: toolLaunchRequest.isDeepLink,
+				launchType: LaunchType.BASIC,
 			});
 		});
 	});

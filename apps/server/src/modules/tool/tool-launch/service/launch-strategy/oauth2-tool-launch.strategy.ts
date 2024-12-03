@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LaunchRequestMethod, PropertyData } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData } from '../../types';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 
@@ -23,5 +23,9 @@ export class OAuth2ToolLaunchStrategy extends AbstractLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
 		return LaunchRequestMethod.GET;
+	}
+
+	public override determineLaunchType(): LaunchType {
+		return LaunchType.OAUTH2;
 	}
 }
