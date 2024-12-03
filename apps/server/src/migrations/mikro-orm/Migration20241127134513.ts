@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 export class Migration20241127134513 extends Migration {
 	async up(): Promise<void> {
 		let deleteCount = 0;
-		const cursor = this.getCollection<{ contextId: ObjectId }>('context-external-tools').find({
+		const cursor = this.getCollection<{ contextId: ObjectId; contextType: string }>('context-external-tools').find({
 			contextType: 'course',
 		});
 
