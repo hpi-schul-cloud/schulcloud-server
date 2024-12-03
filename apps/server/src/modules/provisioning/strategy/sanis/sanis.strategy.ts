@@ -98,13 +98,17 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 
 		let externalGroups: ExternalGroupDto[] | undefined;
 		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+			const mapExternalGroups = performance.now();
 			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);
+			console.log('mapExternalGroups');
+			console.log(performance.now() - mapExternalGroups);
 		}
 
 		let externalLicenses: ExternalLicenseDto[] | undefined;
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			const mapExternalLicences = performance.now();
 			const policiesInfoUrl = this.configService.get<string>('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL');
 			try {
 				const schulconnexPoliciesInfoAxiosResponse = await this.schulconnexRestClient.getPoliciesInfo(
@@ -132,6 +136,8 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 					});
 
 				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexPoliciesInfoLicenceResponses);
+				console.log('mapExternalLicences');
+				console.log(performance.now() - mapExternalLicences);
 			} catch (error) {
 				this.logger.warning(new FetchingPoliciesInfoFailedLoggable(externalUser, policiesInfoUrl));
 			}

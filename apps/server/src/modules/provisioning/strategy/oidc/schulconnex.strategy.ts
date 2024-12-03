@@ -71,9 +71,13 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 	}
 
 	private async provisionGroups(data: OauthDataDto, school?: LegacySchoolDo): Promise<void> {
-		console.time('NutzerVonGruppenEntf');
+		const deleteUserFromGroup = performance.now();
+
 		await this.removeUserFromGroups(data);
-		console.timeEnd('NutzerVonGruppenEntf');
+
+		console.log('DeleteUserFromGroup');
+		const deleteUserFromGroup = performance.now() - deleteUserFromGroup;
+		console.log(deleteUserFromGroup);
 
 		if (data.externalGroups) {
 			let groups: ExternalGroupDto[] = data.externalGroups;
@@ -101,7 +105,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			console.timeEnd('Group4'); */
 
 			console.time('AllGroups');
-			const allgroups = Date.now();
+			const allgroups = performance.now();
 			const groupProvisioningPromises: Promise<unknown>[] = groups.map(
 				async (externalGroup: ExternalGroupDto): Promise<void> => {
 					const existingGroup: Group | null = await this.groupService.findByExternalSource(
@@ -125,9 +129,9 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			);
 
 			await Promise.all(groupProvisioningPromises);
-			console.timeEnd('AllGroups');
 			console.log('AllGroups Date.now');
-			console.log(Date.now() - allgroups);
+			const newAllGroups = performance.now() - allgroups;
+			console.log(newAllGroups);
 		}
 	}
 
