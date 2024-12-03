@@ -12,7 +12,7 @@ import { CurrentUser, JWT, JwtAuthentication } from './jwt-auth.decorator';
 export class TestDecoratorCurrentUserController {
 	@Get('test')
 	async test(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		return Promise.resolve();
+		await Promise.resolve(currentUser);
 	}
 }
 
@@ -21,7 +21,7 @@ export class TestDecoratorCurrentUserController {
 export class TestDecoratorJWTController {
 	@Get('test')
 	async test(@JWT() jwt: string): Promise<void> {
-		return Promise.resolve();
+		await Promise.resolve(jwt);
 	}
 }
 
