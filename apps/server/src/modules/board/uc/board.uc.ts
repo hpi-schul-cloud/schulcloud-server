@@ -181,7 +181,7 @@ export class BoardUc {
 
 			return { id: room.schoolId, type: StorageLocation.SCHOOL };
 		}
-
-		throw new Error(`Cannot get storage location reference for context type ${context.type as string}`);
+		/* istanbul ignore next */
+		throw new Error(`Unsupported board reference type ${context.type as string}`);
 	}
 }
