@@ -6,7 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
 import { InternalServerModule } from '@modules/internal-server';
@@ -16,19 +16,19 @@ import { ServerModule } from '@modules/server';
 import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { AccountUc } from '@src/modules/account/api/account.uc';
+import { AccountUc } from '@modules/account/api/account.uc';
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
+	AppStartLoggable,
+	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from './helpers/prometheus-metrics';
+} from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
