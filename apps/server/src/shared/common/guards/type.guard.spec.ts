@@ -1,5 +1,11 @@
 import { TypeGuard } from './type.guard';
 
+type ExampleObjectType = {
+	id?: number;
+	name?: string;
+	email?: string;
+};
+
 describe('TypeGuard', () => {
 	describe('isError', () => {
 		describe('when passing type of value is an Error', () => {
@@ -649,7 +655,9 @@ describe('TypeGuard', () => {
 	describe('checkKeyInObject', () => {
 		describe('when passing value is an object that has the requested key', () => {
 			it('should be return the key value', () => {
-				expect(TypeGuard.checkKeyInObject({ xyz: 'abc' }, 'xyz')).toEqual('abc');
+				const result = TypeGuard.checkKeyInObject({ xyz: 'abc' }, 'xyz');
+
+				expect(result).toEqual('abc');
 			});
 		});
 
@@ -693,6 +701,44 @@ describe('TypeGuard', () => {
 			it('should be throw an error', () => {
 				// @ts-expect-error test-case
 				expect(() => TypeGuard.checkKeyInObject({ xyz: 'abc' }, 1)).toThrowError('Type is not a string');
+			});
+		});
+	});
+
+	describe('checkKeysInInstance', () => {
+		describe('when passing value is an object that has the requested keys', () => {
+			it('should be return the object', () => {
+				const example: ExampleObjectType = { name: 'abc' };
+
+				const checkedObject = TypeGuard.checkKeysInInstance(example, ['name']);
+
+				expect(checkedObject).toEqual(example);
+			});
+
+			it('should know the property is defined', () => {
+				const example: ExampleObjectType = { name: 'abc' };
+
+				const checkedObject = TypeGuard.checkKeysInInstance(example, ['name']);
+
+				expect(checkedObject.name).toEqual('abc');
+			});
+		});
+
+		describe('when passing value and keys do not match', () => {
+			it('should throw an error', () => {
+				const example: ExampleObjectType = { id: 1, name: 'John Doe' };
+
+				expect(() => TypeGuard.checkKeysInInstance(example, ['email'])).toThrowError(
+					'Object lacks this property: email. '
+				);
+			});
+
+			it('should throw an error', () => {
+				const example: ExampleObjectType = { id: 1, name: 'John Doe' };
+
+				expect(() => TypeGuard.checkKeysInInstance(example, ['email'])).toThrowError(
+					'Object lacks this property: email. '
+				);
 			});
 		});
 	});
