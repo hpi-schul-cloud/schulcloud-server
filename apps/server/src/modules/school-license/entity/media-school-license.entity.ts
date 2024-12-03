@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { MediaSourceEntity } from '@src/modules/user-license';
+import { MediaSourceEntity } from '@src/modules/mediasource/entity';
 import { SchoolLicenseType } from '../enum';
 import { SchoolLicenseEntity, SchoolLicenseProps } from './school-license.entity';
 

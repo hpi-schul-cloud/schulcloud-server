@@ -2,7 +2,7 @@ import { Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { MediaSourceDataFormat } from '../enum';
-import { MediaSourceBasicConfigEmbeddable } from './media-source-basic-config.embeddable';
+import { MediaSourceBasicAuthConfigEmbeddable } from './media-source-basic-auth-config.embeddable';
 import { MediaSourceOauthConfigEmbeddable } from './media-source-oauth-config.embeddable';
 
 export interface MediaSourceEntityProps {
@@ -14,7 +14,7 @@ export interface MediaSourceEntityProps {
 
 	oauthConfig?: MediaSourceOauthConfigEmbeddable;
 
-	basicConfig?: MediaSourceBasicConfigEmbeddable;
+	basicConfig?: MediaSourceBasicAuthConfigEmbeddable;
 
 	format?: MediaSourceDataFormat;
 }
@@ -46,6 +46,6 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => MediaSourceOauthConfigEmbeddable, { object: true, nullable: true })
 	oauthConfig?: MediaSourceOauthConfigEmbeddable;
 
-	@Embedded(() => MediaSourceBasicConfigEmbeddable, { object: true, nullable: true })
-	basicConfig?: MediaSourceBasicConfigEmbeddable;
+	@Embedded(() => MediaSourceBasicAuthConfigEmbeddable, { object: true, nullable: true })
+	basicConfig?: MediaSourceBasicAuthConfigEmbeddable;
 }

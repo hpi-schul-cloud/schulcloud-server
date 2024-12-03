@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MediaSource } from '../domain';
 import { MediaSourceEntity } from '../entity';
-import { mediaSourceEntityFactory, mediaSourceFactory } from '../testing';
+import { mediaSourceEntityFactory, mediaSourceFactory } from '../../user-license/testing';
 import { MediaSourceRepo } from './media-source.repo';
 import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
 import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';

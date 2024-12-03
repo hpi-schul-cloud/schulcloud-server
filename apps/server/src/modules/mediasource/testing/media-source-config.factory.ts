@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSourceAuthMethod } from '../entity';
+import { MediaSourceAuthMethod } from '../../user-license/entity';
 import { MediaSourceOauthConfig, MediaSourceOauthConfigProps } from '../domain/media-source-oauth-config';
 
 export const mediaSourceConfigFactory = BaseFactory.define<MediaSourceOauthConfig, MediaSourceOauthConfigProps>(

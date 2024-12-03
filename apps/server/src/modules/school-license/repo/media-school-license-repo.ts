@@ -3,8 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSourceEntity, MediaSource } from '@src/modules/user-license';
-import { MediaSourceConfigMapper } from '@src/modules/user-license/repo';
+import { MediaSourceEntity } from '@src/modules/mediasource/entity';
+import { MediaSource } from '@src/modules/mediasource/domain';
+
+import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo';
 import { MediaSchoolLicense } from '../domain';
 import { MediaSchoolLicenseEntity } from '../entity';
 import { SchoolLicenseType } from '../enum';

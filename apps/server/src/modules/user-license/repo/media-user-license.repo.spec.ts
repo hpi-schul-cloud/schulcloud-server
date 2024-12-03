@@ -12,9 +12,9 @@ import {
 	mediaUserLicenseFactory,
 } from '../testing';
 import { MediaUserLicenseRepo } from './media-user-license.repo';
-import { MediaSourceConfigMapper } from './media-source-config.mapper';
-import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
-import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
+import { MediaSourceConfigMapper } from '../../mediasource/repo/media-source-config.mapper';
+import { MediaSourceOauthConfigEmbeddable } from '../../mediasource/entity/media-source-oauth-config.embeddable';
+import { mediaSourceConfigEmbeddableFactory } from '../../mediasource/testing/media-source-config.embeddable.factory';
 
 describe(MediaUserLicenseRepo.name, () => {
 	let module: TestingModule;

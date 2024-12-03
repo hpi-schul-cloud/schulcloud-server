@@ -1,6 +1,6 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSourceAuthMethod } from '../enum/media-source-auth-method.enum';
+import { MediaSourceAuthMethod } from '../enum';
 
 export interface MediaSourceOauthConfigEmbeddableProps {
 	_id: ObjectId;

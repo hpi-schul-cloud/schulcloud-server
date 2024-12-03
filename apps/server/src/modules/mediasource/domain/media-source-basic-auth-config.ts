@@ -1,7 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
-export interface MediaSourceBasicConfigProps extends AuthorizableObject {
+export interface MediaSourceBasicAuthConfigProps extends AuthorizableObject {
 	id: EntityId;
 
 	username: string;
@@ -11,4 +11,4 @@ export interface MediaSourceBasicConfigProps extends AuthorizableObject {
 	authEndpoint: string;
 }
 
-export class MediaSourceBasicConfig extends DomainObject<MediaSourceBasicConfigProps> {}
+export class MediaSourceBasicAuthConfig extends DomainObject<MediaSourceBasicAuthConfigProps> {}

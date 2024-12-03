@@ -3,9 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSource, MediaUserLicense } from '../domain';
-import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseType } from '../entity';
-import { MediaSourceConfigMapper } from './media-source-config.mapper';
+import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo/media-source-config.mapper';
+import { MediaSource } from '@src/modules/mediasource/domain';
+import { MediaSourceEntity } from '@src/modules/mediasource/entity';
+import { MediaUserLicense } from '../domain';
+import { MediaUserLicenseEntity, UserLicenseType } from '../entity';
 
 @Injectable()
 export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense, MediaUserLicenseEntity> {
@@ -40,7 +42,7 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 	}
 
 	protected mapDOToEntityProperties(entityDO: MediaUserLicense): EntityData<MediaUserLicenseEntity> {
-		const entityProps: EntityData<MediaUserLicenseEntity> = {
+		const entityProps: EntityData<MediaUserLicenseEntity> = MediaUserLicenseMapper{
 			user: this.em.getReference(User, entityDO.userId),
 			type: UserLicenseType.MEDIA_LICENSE,
 			mediumId: entityDO.mediumId,

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSourceAuthMethod } from '../entity';
+import { MediaSourceAuthMethod } from '../enum';
 import {
 	MediaSourceOauthConfigEmbeddable,
 	MediaSourceOauthConfigEmbeddableProps,

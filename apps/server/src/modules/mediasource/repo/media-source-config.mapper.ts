@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSourceBasicConfig } from '../domain/media-source-basic-config';
+import { MediaSourceBasicAuthConfig } from '../domain/media-source-basic-auth-config';
 import { MediaSourceOauthConfig } from '../domain/media-source-oauth-config';
-import { MediaSourceBasicConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
+import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
 
 export class MediaSourceConfigMapper {
 	static mapOauthConfigToEntity(config: MediaSourceOauthConfig): MediaSourceOauthConfigEmbeddable {
@@ -18,10 +18,10 @@ export class MediaSourceConfigMapper {
 		return configEmbeddable;
 	}
 
-	static mapBasicConfigToEntity(config: MediaSourceBasicConfig): MediaSourceBasicConfigEmbeddable {
+	static mapBasicConfigToEntity(config: MediaSourceBasicAuthConfig): MediaSourceBasicAuthConfigEmbeddable {
 		const configProps = config.getProps();
 
-		const configEmbeddable = new MediaSourceBasicConfigEmbeddable({
+		const configEmbeddable = new MediaSourceBasicAuthConfigEmbeddable({
 			_id: new ObjectId(configProps.id),
 			username: configProps.username,
 			password: configProps.password,
@@ -43,8 +43,8 @@ export class MediaSourceConfigMapper {
 		return config;
 	}
 
-	static mapBasicConfigToDo(embeddable: MediaSourceBasicConfigEmbeddable): MediaSourceBasicConfig {
-		const config = new MediaSourceBasicConfig({
+	static mapBasicConfigToDo(embeddable: MediaSourceBasicAuthConfigEmbeddable): MediaSourceBasicAuthConfig {
+		const config = new MediaSourceBasicAuthConfig({
 			id: embeddable._id.toHexString(),
 			username: embeddable.username,
 			password: embeddable.password,

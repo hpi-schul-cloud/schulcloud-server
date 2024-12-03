@@ -1,7 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSource, MediaSourceProps } from '../domain';
-import { MediaSourceDataFormat } from '../entity';
+import { MediaSourceProps, MediaSource } from '@src/modules/mediasource/domain';
+
+import { MediaSourceDataFormat } from '@src/modules/mediasource/enum';
+
 import { mediaSourceConfigFactory } from './media-source-config.factory';
 
 export const mediaSourceFactory = BaseFactory.define<MediaSource, MediaSourceProps>(MediaSource, ({ sequence }) => {
