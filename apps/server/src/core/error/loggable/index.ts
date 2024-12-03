@@ -1,2 +1,2 @@
-export { ErrorLoggable } from './error.loggable';
-export { AxiosErrorLoggable } from './axios-error.loggable';
+export * from './error.loggable';
+export * from './axios-error.loggable';

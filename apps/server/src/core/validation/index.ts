@@ -1,1 +1,1 @@
-export { ValidationModule } from './validation.module';
+export * from './validation.module';
