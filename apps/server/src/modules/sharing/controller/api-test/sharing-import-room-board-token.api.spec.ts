@@ -1,5 +1,8 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	groupEntityFactory,
@@ -7,17 +10,14 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ShareTokenService } from '../../service';
-import { Test } from '@nestjs/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { roomEntityFactory } from '@src/modules/room/testing';
+import { BoardExternalReferenceType } from '@src/modules/board';
+import { columnBoardEntityFactory } from '@src/modules/board/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
+import { roomEntityFactory } from '@src/modules/room/testing';
+import { ServerTestModule } from '@src/modules/server';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
-import { columnBoardEntityFactory } from '@src/modules/board/testing';
-import { BoardExternalReferenceType } from '@src/modules/board';
+import { ShareTokenService } from '../../service';
 
 describe('Sharing Controller (API)', () => {
 	let app: INestApplication;

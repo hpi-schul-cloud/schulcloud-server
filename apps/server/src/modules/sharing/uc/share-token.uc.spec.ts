@@ -3,15 +3,19 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
+import { CopyColumnBoardParams } from '@modules/board/service/internal';
 import { boardNodeAuthorizableFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { RoomService } from '@modules/room';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
-import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import {
 	courseFactory,
@@ -23,9 +27,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { CopyColumnBoardParams } from '@modules/board/service/internal';
-import { StorageLocation } from '@modules/files-storage/interface';
-import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@src/modules/room-membership';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
@@ -863,7 +864,7 @@ describe('ShareTokenUC', () => {
 				Configuration.set('FEATURE_COURSE_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 
@@ -936,7 +937,7 @@ describe('ShareTokenUC', () => {
 				Configuration.set('FEATURE_LESSON_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 
@@ -1022,7 +1023,7 @@ describe('ShareTokenUC', () => {
 				Configuration.set('FEATURE_TASK_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 
@@ -1105,7 +1106,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken } = setup();
 				Configuration.set('FEATURE_COLUMN_BOARD_SHARE', false);
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 			it('should check the permission to create the columnboard', async () => {
