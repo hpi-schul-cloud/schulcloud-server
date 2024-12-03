@@ -1,3 +1,5 @@
+type EnsureKeysAreSet<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
 export class TypeGuard {
 	static isError(value: unknown): value is Error {
 		const isError = value instanceof Error;
@@ -166,6 +168,19 @@ export class TypeGuard {
 		}
 
 		return object;
+	}
+
+	public static checkKeysInInstance<T extends object, K extends keyof T>(
+		obj: T,
+		keys: K[],
+		contextInfo = ''
+	): EnsureKeysAreSet<T, K> {
+		for (const key of keys) {
+			if (!(key in obj) || obj[key] === undefined) {
+				throw new Error(`Object lacks this property: ${String(key)}. ${contextInfo}`);
+			}
+		}
+		return obj as EnsureKeysAreSet<T, K>;
 	}
 
 	// add additional method checkKeysInObject with key array see use case for example in method mapEtherpadSessionToSession
