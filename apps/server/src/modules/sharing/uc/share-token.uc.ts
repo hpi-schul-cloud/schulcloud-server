@@ -202,7 +202,7 @@ export class ShareTokenUC {
 			type: originalBoard.context.type,
 		};
 
-		await this.checkBoardReferenceWritePermission(user, targetExternalReference);
+		await this.checkBoardContextWritePermission(user, targetExternalReference);
 
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
 		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
@@ -361,29 +361,30 @@ export class ShareTokenUC {
 
 	// ---- Move to shared service? (see apps/server/src/modules/board/uc/board.uc.ts)
 
-	private async checkBoardReferenceWritePermission(user: User, boardExternalReference: BoardExternalReference) {
-		if (boardExternalReference.type === BoardExternalReferenceType.Course) {
-			await this.checkCourseWritePermission(user, boardExternalReference.id, Permission.COURSE_EDIT);
-		} else if (boardExternalReference.type === BoardExternalReferenceType.Room) {
-			await this.checkRoomWritePermission(user, boardExternalReference.id);
+	private async checkBoardContextWritePermission(user: User, boardContext: BoardExternalReference) {
+		if (boardContext.type === BoardExternalReferenceType.Course) {
+			await this.checkCourseWritePermission(user, boardContext.id, Permission.COURSE_EDIT);
+		} else if (boardContext.type === BoardExternalReferenceType.Room) {
+			await this.checkRoomWritePermission(user, boardContext.id);
 		} else {
-			throw new Error(`Unsupported target reference type ${boardExternalReference.type as string}`);
+			/* istanbul ignore next */
+			throw new Error(`Unsupported board reference type ${boardContext.type as string}`);
 		}
 	}
 
-	private async getStorageLocationReference(context: BoardExternalReference): Promise<StorageLocationReference> {
-		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseService.findById(context.id);
+	private async getStorageLocationReference(boardContext: BoardExternalReference): Promise<StorageLocationReference> {
+		if (boardContext.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseService.findById(boardContext.id);
 
 			return { id: course.school.id, type: StorageLocation.SCHOOL };
 		}
 
-		if (context.type === BoardExternalReferenceType.Room) {
-			const room = await this.roomService.getSingleRoom(context.id);
+		if (boardContext.type === BoardExternalReferenceType.Room) {
+			const room = await this.roomService.getSingleRoom(boardContext.id);
 
 			return { id: room.schoolId, type: StorageLocation.SCHOOL };
 		}
-
-		throw new Error(`Cannot get storage location reference for context type ${context.type as string}`);
+		/* istanbul ignore next */
+		throw new Error(`Unsupported board reference type ${boardContext.type as string}`);
 	}
 }
