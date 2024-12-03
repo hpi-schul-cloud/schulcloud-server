@@ -3,6 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosError, AxiosResponse } from 'axios';
 import { Logger } from '@src/core/logger';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
+import { systemFactory } from '@modules/system/testing';
+import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,
@@ -13,9 +16,6 @@ import {
 	RobjExportSchule,
 	TspClientFactory,
 } from '../../tsp-client';
-import { systemFactory } from '../../../modules/system/testing';
-import { OauthConfigMissingLoggableException } from '../../../modules/oauth/loggable';
-import { AxiosErrorLoggable, ErrorLoggable } from '../../../core/error/loggable';
 import { TspFetchService } from './tsp-fetch.service';
 
 describe(TspFetchService.name, () => {
