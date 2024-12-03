@@ -9,7 +9,7 @@ import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { AccountModule } from '@modules/account';
-import { LoggerModule } from '../../core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { SchulconnexClientModule } from '../../infra/schulconnex-client';
 import { ClassModule } from '../class';
 import { UserLicenseModule } from '../user-license';

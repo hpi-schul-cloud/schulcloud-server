@@ -5,8 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import axios, { AxiosError } from 'axios';
 import { ServerConfig } from '@modules/server';
 import { OauthAdapterService } from '@modules/oauth';
-import { AxiosErrorLoggable, ErrorLoggable } from '../../core/error/loggable';
-import { Logger } from '../../core/logger';
+import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
+import { Logger } from '@src/core/logger';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
 

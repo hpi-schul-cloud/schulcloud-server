@@ -12,8 +12,8 @@ import {
 	OauthDataDto,
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../tsp-client';
 import { Logger } from '@src/core/logger';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../tsp-client';
 
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';

@@ -4,8 +4,8 @@ import moment from 'moment';
 import { System } from '@modules/system';
 import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { Logger } from '@src/core/logger';
+import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
 import { ExportApiInterface, TspClientFactory } from '../../tsp-client';
-import { AxiosErrorLoggable, ErrorLoggable } from '../../../core/error/loggable';
 
 @Injectable()
 export class TspFetchService {
