@@ -29,6 +29,7 @@ import {
 } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 
 @Injectable()
 export class ShareTokenUC {
@@ -332,25 +333,25 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Course:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COURSE_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Course Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_COURSE_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Lesson:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_LESSON_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Lesson Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_LESSON_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Task:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_TASK_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Task Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_TASK_SHARE');
 				}
 				break;
 			case ShareTokenParentType.ColumnBoard:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Task Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
 				}
 				break;
 			default:
