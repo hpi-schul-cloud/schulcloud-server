@@ -7,14 +7,14 @@ import { TldrawWsModule } from '@modules/tldraw/tldraw-ws.module';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import * as WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import {
+	AppStartLoggable,
+	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from '@src/apps/helpers/prometheus-metrics';
+} from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
