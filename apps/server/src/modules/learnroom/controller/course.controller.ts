@@ -8,8 +8,6 @@ import {
 	Param,
 	Post,
 	Query,
-	Res,
-	StreamableFile,
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common';
@@ -26,18 +24,10 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
-import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
-import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
+import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
-import {
-	CourseExportBodyParams,
-	CourseImportBodyParams,
-	CourseMetadataListResponse,
-	CourseQueryParams,
-	CourseSyncBodyParams,
-	CourseUrlParams,
-} from './dto';
+import { CourseImportBodyParams, CourseMetadataListResponse, CourseSyncBodyParams, CourseUrlParams } from './dto';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
 @ApiTags('Courses')
@@ -46,7 +36,6 @@ import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.
 export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
-		private readonly courseExportUc: CourseExportUc,
 		private readonly courseImportUc: CourseImportUc,
 		private readonly courseSyncUc: CourseSyncUc
 	) {}
@@ -62,31 +51,6 @@ export class CourseController {
 
 		const result = new CourseMetadataListResponse(courseResponses, total, skip, limit);
 		return result;
-	}
-
-	@Post(':courseId/export')
-	async exportCourse(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: CourseUrlParams,
-		@Query() queryParams: CourseQueryParams,
-		@Body() bodyParams: CourseExportBodyParams,
-		@Res({ passthrough: true }) response: Response
-	): Promise<StreamableFile> {
-		const result = await this.courseExportUc.exportCourse(
-			urlParams.courseId,
-			currentUser.userId,
-			queryParams.version,
-			bodyParams.topics,
-			bodyParams.tasks,
-			bodyParams.columnBoards
-		);
-
-		response.set({
-			'Content-Type': 'application/zip',
-			'Content-Disposition': 'attachment;',
-		});
-
-		return new StreamableFile(result);
 	}
 
 	@Post('import')
