@@ -39,7 +39,6 @@ describe('CommonCartridgeExportService', () => {
 	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
 
-	const dummyCourseId = faker.string.uuid();
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
 	const getFileContent = (archive: AdmZip, filePath: string): string | undefined =>
@@ -76,7 +75,7 @@ describe('CommonCartridgeExportService', () => {
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 		const buffer = await sut.exportCourse(
-			dummyCourseId,
+			courseMetadata.id,
 			version,
 			exportTopics ? [room.elements[1].content.id] : [],
 			exportTasks ? [room.elements[0].content.id] : [],
@@ -236,13 +235,13 @@ describe('CommonCartridgeExportService', () => {
 				);
 			});
 
-			// it('should add lessons', async () => {
-			// 	const { archive, room } = await setup();
+			it('should add lessons', async () => {
+				const { archive, lesson } = await setup();
 
-			// 	expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-			// 		createXmlString('title', (room.elements[1].content as BoardLessonDto).name)
-			// 	);
-			// });
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
+					createXmlString('title', lesson.name)
+				);
+			});
 
 			it('should add tasks', async () => {
 				const { archive, boardTask } = await setup();

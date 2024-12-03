@@ -24,7 +24,7 @@ export class CardResponseDto {
 		title?: string
 	) {
 		this.id = id;
-		this.title = title ?? '';
+		this.title = title;
 		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;

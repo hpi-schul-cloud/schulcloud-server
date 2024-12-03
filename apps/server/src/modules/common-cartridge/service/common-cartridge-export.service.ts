@@ -35,7 +35,7 @@ export class CommonCartridgeExportService {
 		private readonly cardClientAdapter: CardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
-		private readonly lessonClinetAdapter: LessonClientAdapter,
+		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 
@@ -64,7 +64,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private async findLessonById(lessonId: string): Promise<LessonDto> {
-		const lesson = await this.lessonClinetAdapter.getLessonById(lessonId);
+		const lesson = await this.lessonClientAdapter.getLessonById(lessonId);
 
 		return lesson;
 	}

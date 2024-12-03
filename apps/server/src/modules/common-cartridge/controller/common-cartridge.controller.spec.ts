@@ -41,7 +41,7 @@ describe('CommonCartridgeController', () => {
 	describe('exportCourse', () => {
 		const setup = () => {
 			const courseId = faker.string.uuid();
-			const params = { parentId: courseId } as ExportCourseParams;
+			const params = { courseId: courseId } as ExportCourseParams;
 			const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
 			const body = {
 				topics: [faker.string.uuid(), faker.string.uuid()],
@@ -65,7 +65,7 @@ describe('CommonCartridgeController', () => {
 
 			expect(mockResponse.set).toHaveBeenCalledWith({
 				'Content-Type': 'application/zip',
-				'Content-Disposition': `attachment; filename=course_${params.parentId}.zip`,
+				'Content-Disposition': `attachment; filename=course_${params.courseId}.zip`,
 			});
 			expect(result).toBeInstanceOf(StreamableFile);
 		});
