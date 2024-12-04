@@ -1,13 +1,12 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
 
 export class Migration20241120100616 extends Migration {
 	async up(): Promise<void> {
 		const cursor = this.getCollection<{ contextType: string; contextId: ObjectId; schoolTool: ObjectId }>(
 			'context-external-tools'
 		).find({
-			$or: [{ contextType: ContextExternalToolType.COURSE }, { contextType: ContextExternalToolType.BOARD_ELEMENT }],
+			$or: [{ contextType: 'course' }, { contextType: 'boardElement' }],
 		});
 
 		let numberOfDeletedTools = 0;
