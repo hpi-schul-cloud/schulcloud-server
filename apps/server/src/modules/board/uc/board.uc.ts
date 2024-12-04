@@ -5,10 +5,13 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { LegacyLogger } from '@src/core/logger';
-import { RoomMemberService } from '@src/modules/room-member';
+import { StorageLocation } from '@src/modules/files-storage/interface';
+import { RoomService } from '@src/modules/room';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
+import { StorageLocationReference } from '../service/internal';
 
 @Injectable()
 export class BoardUc {
@@ -16,11 +19,12 @@ export class BoardUc {
 		@Inject(forwardRef(() => AuthorizationService)) // TODO is this needed?
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardPermissionService: BoardNodePermissionService,
-		private readonly roomMemberService: RoomMemberService,
+		private readonly roomMembershipService: RoomMembershipService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo,
+		private readonly roomService: RoomService,
 		private readonly boardNodeFactory: BoardNodeFactory
 	) {
 		this.logger.setContext(BoardUc.name);
@@ -29,7 +33,7 @@ export class BoardUc {
 	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'createBoard', userId, title: params.title });
 
-		await this.checkParentWritePermission(userId, { type: params.parentType, id: params.parentId });
+		await this.checkReferenceWritePermission(userId, { type: params.parentType, id: params.parentId });
 
 		const board = this.boardNodeFactory.buildColumnBoard({
 			context: { type: params.parentType, id: params.parentId },
@@ -115,22 +119,19 @@ export class BoardUc {
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {
 		this.logger.debug({ action: 'copyBoard', userId, boardId });
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
-		// TODO - should not use course repo
-		const course = await this.courseRepo.findById(board.context.id);
-
 		await this.boardPermissionService.checkPermission(userId, board, Action.read);
-		this.authorizationService.checkPermission(user, course, {
-			action: Action.write,
-			requiredPermissions: [], // TODO - what permissions are required? COURSE_EDIT?
-		});
+		await this.checkReferenceWritePermission(userId, board.context);
+
+		const storageLocationReference = await this.getStorageLocationReference(board.context);
 
 		const copyStatus = await this.columnBoardService.copyColumnBoard({
-			userId,
 			originalColumnBoardId: boardId,
-			destinationExternalReference: board.context,
+			targetExternalReference: board.context,
+			sourceStorageLocationReference: storageLocationReference,
+			targetStorageLocationReference: storageLocationReference,
+			userId,
 		});
 
 		return copyStatus;
@@ -144,7 +145,9 @@ export class BoardUc {
 		return board;
 	}
 
-	private async checkParentWritePermission(userId: EntityId, context: BoardExternalReference) {
+	// ---- Move to shared service? (see apps/server/src/modules/sharing/uc/share-token.uc.ts)
+
+	private async checkReferenceWritePermission(userId: EntityId, context: BoardExternalReference) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {
@@ -155,14 +158,30 @@ export class BoardUc {
 				requiredPermissions: [Permission.COURSE_EDIT],
 			});
 		} else if (context.type === BoardExternalReferenceType.Room) {
-			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(context.id);
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(context.id);
 
-			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 				action: Action.write,
 				requiredPermissions: [],
 			});
 		} else {
 			throw new Error(`Unsupported context type ${context.type as string}`);
 		}
+	}
+
+	private async getStorageLocationReference(context: BoardExternalReference): Promise<StorageLocationReference> {
+		if (context.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(context.id);
+
+			return { id: course.school.id, type: StorageLocation.SCHOOL };
+		}
+
+		if (context.type === BoardExternalReferenceType.Room) {
+			const room = await this.roomService.getSingleRoom(context.id);
+
+			return { id: room.schoolId, type: StorageLocation.SCHOOL };
+		}
+		/* istanbul ignore next */
+		throw new Error(`Unsupported board reference type ${context.type as string}`);
 	}
 }
