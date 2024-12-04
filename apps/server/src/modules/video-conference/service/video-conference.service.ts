@@ -13,7 +13,7 @@ import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
 import { VideoConferenceElement } from '@src/modules/board/domain';
 import { Room, RoomService } from '@src/modules/room';
-import { RoomMemberService } from '@src/modules/room-member';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -29,7 +29,7 @@ export class VideoConferenceService {
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly roomMemberService: RoomMemberService,
+		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
 		private readonly schoolService: LegacySchoolService,
 		private readonly teamsRepo: TeamsRepo,
@@ -128,11 +128,11 @@ export class VideoConferenceService {
 		entity: Course | Room | TeamEntity | VideoConferenceElement
 	): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(entity.id);
-			const roomMember = roomMemberAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
+			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.some((role) => role.name === RoleName.ROOM_EDITOR);
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR);
 			}
 
 			return false;
@@ -158,11 +158,11 @@ export class VideoConferenceService {
 		entity: Course | Room | TeamEntity | VideoConferenceElement
 	): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMemberAuthorizable = await this.roomMemberService.getRoomMemberAuthorizable(entity.id);
-			const roomMember = roomMemberAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
+			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.some((role) => role.name === RoleName.ROOM_VIEWER);
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER);
 			}
 
 			return false;

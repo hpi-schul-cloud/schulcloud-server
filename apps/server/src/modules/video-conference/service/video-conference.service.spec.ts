@@ -20,9 +20,9 @@ import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
 import { RoomService } from '@src/modules/room';
-import { RoomMemberService } from '@src/modules/room-member';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { GroupTypes } from '@src/modules/group';
-import { roomMemberFactory } from '@src/modules/room-member/testing';
+import { roomMembershipFactory } from '@src/modules/room-membership/testing';
 import { roomFactory } from '@src/modules/room/testing';
 import { columnBoardFactory, videoConferenceElementFactory } from '@src/modules/board/testing';
 import { BBBRole } from '../bbb';
@@ -39,7 +39,7 @@ describe(VideoConferenceService.name, () => {
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let roomMemberService: DeepMocked<RoomMemberService>;
+	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
@@ -80,8 +80,8 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: RoomMemberService,
-					useValue: createMock<RoomMemberService>(),
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: RoomService,
@@ -108,7 +108,7 @@ describe(VideoConferenceService.name, () => {
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
-		roomMemberService = module.get(RoomMemberService);
+		roomMembershipService = module.get(RoomMembershipService);
 		roomService = module.get(RoomService);
 		schoolService = module.get(LegacySchoolService);
 		teamsRepo = module.get(TeamsRepo);
@@ -471,7 +471,7 @@ describe(VideoConferenceService.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roleEditor = roleFactory.buildWithId({
-					name: RoleName.ROOM_EDITOR,
+					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT],
 				});
 				const group = groupFactory.build({
@@ -479,11 +479,11 @@ describe(VideoConferenceService.name, () => {
 					users: [{ userId: user.id, roleId: roleEditor.id }],
 				});
 				const room = roomFactory.build();
-				roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMemberService.getRoomMemberAuthorizable.mockResolvedValueOnce({
+				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
 					members: [{ userId: user.id, roles: [roleEditor] }],
@@ -504,7 +504,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMemberService.getRoomMemberAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.MODERATOR', async () => {
@@ -651,17 +651,17 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room viewer role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+				const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
 					users: [{ userId: user.id, roleId: roleViewer.id }],
 				});
 				const room = roomFactory.build();
-				roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMemberService.getRoomMemberAuthorizable
+				roomMembershipService.getRoomMembershipAuthorizable
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
@@ -688,7 +688,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMemberService.getRoomMemberAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.VIEWER', async () => {
@@ -943,14 +943,14 @@ describe(VideoConferenceService.name, () => {
 			const team = teamFactory
 				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
 				.build();
-			const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+			const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
 			const group = groupFactory.build({
 				type: GroupTypes.ROOM,
 				users: [{ userId: roomUser.id, roleId: roleEditor.id }],
 			});
 			const room = roomFactory.build();
-			roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
-			roomMemberService.getRoomMemberAuthorizable
+			roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+			roomMembershipService.getRoomMembershipAuthorizable
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,

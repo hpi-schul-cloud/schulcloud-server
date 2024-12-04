@@ -15,7 +15,7 @@ import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
 import { RoleModule } from '../role';
-import { RoomMemberModule } from '../room-member';
+import { RoomMembershipModule } from '../room-membership';
 import { RoomModule } from '../room';
 
 @Module({
@@ -28,7 +28,7 @@ import { RoomModule } from '../room';
 		LegacySchoolModule,
 		LoggerModule,
 		RoleModule,
-		RoomMemberModule,
+		RoomMembershipModule,
 		RoomModule,
 		UserModule,
 		LearnroomModule,
