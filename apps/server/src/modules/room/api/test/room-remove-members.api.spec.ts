@@ -10,9 +10,9 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 
 describe('Room Controller (API)', () => {
@@ -46,11 +46,11 @@ describe('Room Controller (API)', () => {
 	describe('PATCH /rooms/:roomId/members/remove', () => {
 		const setupRoomRoles = () => {
 			const editorRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_EDITOR,
+				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_VIEWER,
+				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
 			return { editorRole, viewerRole };
@@ -81,9 +81,9 @@ describe('Room Controller (API)', () => {
 				externalSource: undefined,
 			});
 
-			const roomMembers = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
 
-			await em.persistAndFlush([...Object.values(users), room, roomMembers, teacherAccount, userGroupEntity]);
+			await em.persistAndFlush([...Object.values(users), room, roomMemberships, teacherAccount, userGroupEntity]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
