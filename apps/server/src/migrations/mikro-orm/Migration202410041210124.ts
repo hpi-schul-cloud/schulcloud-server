@@ -19,11 +19,11 @@ export class Migration202410041210124 extends Migration {
 
 	async down(): Promise<void> {
 		// Remove ROOM_VIEWER role
-		await this.getCollection('roles').deleteOne({ name: 'ROOM_VIEWER' });
+		await this.getCollection('roles').deleteOne({ name: 'room_viewer' });
 		console.info('Rollback: Removed ROOM_VIEWER role');
 
 		// Remove ROOM_EDITOR role
-		await this.getCollection('roles').deleteOne({ name: 'ROOM_EDITOR' });
+		await this.getCollection('roles').deleteOne({ name: 'room_editor' });
 		console.info('Rollback: Removed ROOM_EDITOR role');
 	}
 }

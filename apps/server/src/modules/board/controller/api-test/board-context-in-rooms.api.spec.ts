@@ -6,7 +6,7 @@ import { TestApiClient, cleanupCollections, groupEntityFactory, roleFactory, use
 import { Permission, RoleName } from '@shared/domain/interface';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
@@ -48,11 +48,11 @@ describe('board get context in room (api)', () => {
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
 		const roleRoomEdit = roleFactory.buildWithId({
-			name: RoleName.ROOM_EDITOR,
+			name: RoleName.ROOMEDITOR,
 			permissions: [Permission.ROOM_EDIT],
 		});
 		const roleRoomView = roleFactory.buildWithId({
-			name: RoleName.ROOM_VIEWER,
+			name: RoleName.ROOMVIEWER,
 			permissions: [Permission.ROOM_VIEW],
 		});
 
@@ -66,7 +66,7 @@ describe('board get context in room (api)', () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,
@@ -79,7 +79,7 @@ describe('board get context in room (api)', () => {
 			roleRoomView,
 			userGroup,
 			room,
-			roomMember,
+			roomMembership,
 		]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

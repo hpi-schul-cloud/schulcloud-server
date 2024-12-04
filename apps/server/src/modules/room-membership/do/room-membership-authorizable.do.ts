@@ -1,13 +1,13 @@
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { RoleDto } from '@src/modules/role';
+import { RoleDto } from '@modules/role';
 
 export type UserWithRoomRoles = {
 	roles: RoleDto[];
 	userId: EntityId;
 };
 
-export class RoomMemberAuthorizable implements AuthorizableObject {
+export class RoomMembershipAuthorizable implements AuthorizableObject {
 	public readonly id: EntityId = '';
 
 	public readonly roomId: EntityId;
