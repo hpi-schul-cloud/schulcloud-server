@@ -13,7 +13,7 @@ metadata:
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: vidis-media-activation-data-sync-cronjob
 spec:
-  schedule: "1 * * * *"
+  schedule: 1 * * * *
   concurrencyPolicy: Forbid
   jobTemplate:
      metadata:
@@ -26,7 +26,7 @@ spec:
         app.kubernetes.io/managed-by: ansible
         git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-    spec:
+  spec:
       template:
         metadata:
           labels:
@@ -46,7 +46,7 @@ spec:
             runAsNonRoot: true
           containers:
           - name: vidis-media-activation-data-sync-cronjob
-            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            image: "{{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}"
             envFrom:
             - configMapRef:
                 name: api-configmap
