@@ -141,7 +141,7 @@ export class CardResponseMapper {
 							content: new LinkElementContentDto({
 								url: content.url,
 								title: content.title,
-								description: content.description
+								description: content.description,
 							}),
 							timestamps: this.mapToTimestampDto(element.timestamps),
 						})
@@ -177,7 +177,7 @@ export class CardResponseMapper {
 		return new TimestampResponseDto({
 			lastUpdatedAt: timestamp.lastUpdatedAt,
 			createdAt: timestamp.createdAt,
-			deletedAt: timestamp.deletedAt
+			deletedAt: timestamp.deletedAt,
 		});
 	}
 }

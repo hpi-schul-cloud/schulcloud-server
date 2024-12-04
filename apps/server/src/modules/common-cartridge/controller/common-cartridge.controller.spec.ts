@@ -41,7 +41,7 @@ describe('CommonCartridgeController', () => {
 	describe('exportCourse', () => {
 		const setup = () => {
 			const courseId = faker.string.uuid();
-			const params = { courseId: courseId } as ExportCourseParams;
+			const params = { courseId } as ExportCourseParams;
 			const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
 			const body = {
 				topics: [faker.string.uuid(), faker.string.uuid()],
