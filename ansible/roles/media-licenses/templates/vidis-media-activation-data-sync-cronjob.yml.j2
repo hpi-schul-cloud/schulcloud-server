@@ -13,40 +13,15 @@ metadata:
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: vidis-media-activation-data-sync-cronjob
 spec:
-  schedule: "{{ MOIN_SCHULE_USERS_SYNC_CRONJOB_SCHEDULE|default('@daily', true) }}"
+  schedule: "{{ SERVER_VIDIS_SYNC_CRONJOB_SCHEDULE|default("@hourly", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
-     metadata:
-      labels:
-        app: vidis-media-activation-data-sync-cronjob
-        app.kubernetes.io/part-of: schulcloud-verbund
-        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-        app.kubernetes.io/name: vidis-media-activation-data-sync-cronjob
-        app.kubernetes.io/component: sync
-        app.kubernetes.io/managed-by: ansible
-        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-  spec:
+    spec:
       template:
-        metadata:
-          labels:
-            app: vidis-media-activation-data-sync-cronjob
-            app.kubernetes.io/part-of: schulcloud-verbund
-            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name: vidis-media-activation-data-sync-cronjob
-            app.kubernetes.io/component: sync
-            app.kubernetes.io/managed-by: ansible
-            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
-            runAsNonRoot: true
           containers:
           - name: vidis-media-activation-data-sync-cronjob
-            image: "{{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}"
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
             - configMapRef:
                 name: api-configmap
@@ -109,3 +84,13 @@ spec:
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
 {% endif %}
+        metadata:
+          labels:
+            app: vidis-media-activation-data-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: vidis-media-activation-data-sync-cronjob
+            app.kubernetes.io/component: sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
