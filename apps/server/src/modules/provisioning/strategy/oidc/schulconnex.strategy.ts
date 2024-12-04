@@ -71,12 +71,12 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 	}
 
 	private async provisionGroups(data: OauthDataDto, school?: LegacySchoolDo): Promise<void> {
-		const deleteUserFromGroup = performance.now();
+		const deleteUserFromGroupStart = performance.now();
 
 		await this.removeUserFromGroups(data);
 
 		console.log('DeleteUserFromGroup');
-		const deleteUserFromGroup = performance.now() - deleteUserFromGroup;
+		const deleteUserFromGroup = performance.now() - deleteUserFromGroupStart;
 		console.log(deleteUserFromGroup);
 
 		if (data.externalGroups) {
@@ -104,33 +104,42 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			await this.groupService.findByExternalSource(groups[3].externalId, data.system.systemId);
 			console.timeEnd('Group4'); */
 
-			console.time('AllGroups');
-			const allgroups = performance.now();
+			console.log(groups.length, ' Gruppen gefunden');
+			const groupProvisioningStart = performance.now();
 			const groupProvisioningPromises: Promise<unknown>[] = groups.map(
 				async (externalGroup: ExternalGroupDto): Promise<void> => {
+					const findGroupsStart = performance.now();
 					const existingGroup: Group | null = await this.groupService.findByExternalSource(
 						externalGroup.externalId,
 						data.system.systemId
 					);
+					const findGroups = performance.now() - findGroupsStart;
+					console.log('>>>>>>>>>>>>>>>>>>>>>>>>>find group: ', findGroups);
 
+					const provisionGroupsStart = performance.now();
 					const provisionedGroup: Group | null = await this.schulconnexGroupProvisioningService.provisionExternalGroup(
 						externalGroup,
 						data.externalSchool,
 						data.system.systemId
 					);
+					const provisionGrops = performance.now() - provisionGroupsStart;
+					console.log('>>>>>>>>>>>provision all groups took[ms]: ', provisionGrops);
 
+					const courseSyncStart = performance.now();
 					if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
 						await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(
 							provisionedGroup,
 							existingGroup ?? undefined
 						);
 					}
+					const courseSync = performance.now() - courseSyncStart;
+					console.log('course provisioning took[ms]: ', courseSync);
 				}
 			);
 
 			await Promise.all(groupProvisioningPromises);
-			console.log('AllGroups Date.now');
-			const newAllGroups = performance.now() - allgroups;
+			console.log('Gruppenprovisionierung');
+			const newAllGroups = performance.now() - groupProvisioningStart;
 			console.log(newAllGroups);
 		}
 	}
