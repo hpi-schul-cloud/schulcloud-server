@@ -93,11 +93,6 @@ export class CommonCartridgeExportService {
 	): Promise<void> {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
-
-		if (lessonsIds.length === 0) {
-			return;
-		}
-
 		const lessons = await Promise.all(lessonsIds.map((elementId) => this.findLessonById(elementId)));
 
 		lessons.forEach((lesson) => {
@@ -122,11 +117,6 @@ export class CommonCartridgeExportService {
 		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements).filter((task) =>
 			exportedTasks.includes(task.id)
 		);
-
-		if (tasks.length === 0) {
-			return;
-		}
-
 		const tasksOrganization = builder.createOrganization({
 			title: 'Aufgaben',
 			identifier: createIdentifier(),
@@ -146,11 +136,6 @@ export class CommonCartridgeExportService {
 		const columnBoardsIds = columnBoards
 			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
 			.map((columBoard) => columBoard.columnBoardId);
-
-		if (columnBoardsIds.length === 0) {
-			return;
-		}
-
 		const boardSkeletons: BoardSkeletonDto[] = await Promise.all(
 			columnBoardsIds.map((columnBoardId) => this.findBoardSkeletonById(columnBoardId))
 		);
@@ -242,32 +227,22 @@ export class CommonCartridgeExportService {
 	}
 
 	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
-		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
-
-		return courseCommonCartridgeMetadata;
+		return await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 	}
 
 	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
-		const roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
-
-		return roomBoardDto;
+		return await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 	}
 
 	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
-		const boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(boardId);
-
-		return boardSkeleton;
+		return await this.boardClientAdapter.getBoardSkeletonById(boardId);
 	}
 
 	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
-		const cards = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
-
-		return cards;
+		return await this.cardClientAdapter.getAllBoardCardsByIds(ids);
 	}
 
 	private async findLessonById(lessonId: string): Promise<LessonDto> {
-		const lesson = await this.lessonClientAdapter.getLessonById(lessonId);
-
-		return lesson;
+		return await this.lessonClientAdapter.getLessonById(lessonId);
 	}
 }
