@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { System } from '@modules/system';
-import { RoleName, SystemProvisioningStrategy } from '@shared/domain/interface';
-
+import { RoleName } from '@shared/domain/interface';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { School } from '@modules/school';
 import {
 	ExternalClassDto,
