@@ -46,6 +46,7 @@ export class ProvisioningService {
 		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(system.provisioningStrategy);
 
 		const data: OauthDataDto = await strategy.getData(input);
+		
 		return data;
 	}
 
