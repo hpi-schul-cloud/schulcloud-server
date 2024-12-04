@@ -455,7 +455,7 @@ describe(BoardNodeCopyService.name, () => {
 						);
 						expect(result.copyEntity instanceof ExternalToolElement).toEqual(true);
 						expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(copiedTool.id);
-						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL);
+						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
 						expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 					});
 				});
@@ -485,8 +485,8 @@ describe(BoardNodeCopyService.name, () => {
 							copyContext.targetSchoolId
 						);
 						expect(result.copyEntity instanceof DeletedElement).toEqual(true);
-						expect(result.type).toEqual(CopyElementType.DELETED_ELEMENT);
-						expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+						expect(result.status).toEqual(CopyStatusEnum.FAIL);
 					});
 				});
 			});

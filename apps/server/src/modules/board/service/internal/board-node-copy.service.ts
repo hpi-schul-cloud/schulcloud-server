@@ -310,13 +310,13 @@ export class BoardNodeCopyService {
 				status: CopyStatusEnum.FAIL,
 			};
 
-			return Promise.resolve(copyStatus);
+			return copyStatus;
 		}
 
 		const contextToolCopyResult: ContextExternalTool | CopyContextExternalToolRejectData =
 			await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id, context.targetSchoolId);
 
-		let copyElementType: CopyElementType;
+		let copyStatus: CopyStatusEnum = CopyStatusEnum.SUCCESS;
 		if (contextToolCopyResult instanceof CopyContextExternalToolRejectData) {
 			copy = new DeletedElement({
 				id: new ObjectId().toHexString(),
@@ -330,16 +330,15 @@ export class BoardNodeCopyService {
 				title: contextToolCopyResult.externalToolName,
 			});
 
-			copyElementType = CopyElementType.DELETED_ELEMENT;
+			copyStatus = CopyStatusEnum.FAIL;
 		} else {
 			copy.contextExternalToolId = contextToolCopyResult.id;
-			copyElementType = CopyElementType.EXTERNAL_TOOL;
 		}
 
 		const result: CopyStatus = {
 			copyEntity: copy,
-			type: copyElementType,
-			status: CopyStatusEnum.SUCCESS,
+			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+			status: copyStatus,
 		};
 
 		return Promise.resolve(result);
