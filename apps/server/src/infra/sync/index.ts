@@ -1,2 +1,2 @@
 export * from './tsp';
-export * from './vidis';
+export * from './media-licenses';

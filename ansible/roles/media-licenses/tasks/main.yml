@@ -1,0 +1,16 @@
+- name: media licenses sync CronJob
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-media-activation-data-sync-cronjob.yml.j2
+  tags:
+    - cronjob
+
+- name: moin.schule users sync CronJob ConfigMap
+  when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-media-activation-data-sync-cronjob-configmap.yml.j2
+  tags:
+    - configmap

@@ -4,7 +4,7 @@ import { TspSyncStrategy } from '../tsp/tsp-sync.strategy';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
-import { VidisSyncStrategy } from '../vidis/strategy';
+import { VidisSyncStrategy } from '../media-licenses/strategy';
 
 @Injectable()
 export class SyncService {
