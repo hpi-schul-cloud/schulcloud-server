@@ -14,7 +14,6 @@ import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src
 import { VideoConferenceElement } from '@src/modules/board/domain';
 import { Room, RoomService } from '@src/modules/room';
 import { RoomMemberService } from '@src/modules/room-member';
-import { RoleService } from '@src/modules/role';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -30,7 +29,6 @@ export class VideoConferenceService {
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly roleService: RoleService,
 		private readonly roomMemberService: RoomMemberService,
 		private readonly roomService: RoomService,
 		private readonly schoolService: LegacySchoolService,
@@ -134,7 +132,7 @@ export class VideoConferenceService {
 			const roomMember = roomMemberAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.includes(await this.roleService.findByName(RoleName.ROOM_EDITOR));
+				return roomMember.roles.some((role) => role.name === RoleName.ROOM_EDITOR);
 			}
 
 			return false;
@@ -164,7 +162,7 @@ export class VideoConferenceService {
 			const roomMember = roomMemberAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.includes(await this.roleService.findByName(RoleName.ROOM_VIEWER));
+				return roomMember.roles.some((role) => role.name === RoleName.ROOM_VIEWER);
 			}
 
 			return false;
