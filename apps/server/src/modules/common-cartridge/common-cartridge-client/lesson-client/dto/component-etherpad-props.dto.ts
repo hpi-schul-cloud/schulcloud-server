@@ -1,11 +1,11 @@
 import { ComponentEtherpadPropsImpl } from '../lessons-api-client';
 
 export class ComponentEtherpadPropsDto {
-	description!: string;
+	description: string;
 
-	title!: string;
+	title: string;
 
-	url!: string;
+	url: string;
 
 	constructor(etherpadContent: ComponentEtherpadPropsImpl) {
 		this.description = etherpadContent.description;

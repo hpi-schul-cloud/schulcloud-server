@@ -1,7 +1,7 @@
 import { ComponentGeogebraPropsImpl } from '../lessons-api-client';
 
 export class ComponentGeogebraPropsDto {
-	materialId!: string;
+	materialId: string;
 
 	constructor(geogebraContent: ComponentGeogebraPropsImpl) {
 		this.materialId = geogebraContent.materialId;
