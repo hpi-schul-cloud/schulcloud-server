@@ -5,7 +5,7 @@ import { System } from '@modules/system';
 import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { Logger } from '@src/core/logger';
 import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
-import { ExportApiInterface, TspClientFactory } from '../../tsp-client';
+import { ExportApiInterface, TspClientFactory } from '../../../tsp-client';
 
 @Injectable()
 export class TspFetchService {
