@@ -1,6 +1,5 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
@@ -238,9 +237,7 @@ describe('CommonCartridgeExportService', () => {
 			it('should add lessons', async () => {
 				const { archive, lesson } = await setup();
 
-				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('title', lesson.name)
-				);
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
 			});
 
 			it('should add tasks', async () => {
@@ -308,7 +305,7 @@ describe('CommonCartridgeExportService', () => {
 
 			it("shouldn't add lessons", async () => {
 				const { archive, lesson } = await setup();
-				
+
 				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
 			});
 		});

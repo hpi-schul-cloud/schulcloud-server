@@ -227,22 +227,32 @@ export class CommonCartridgeExportService {
 	}
 
 	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
-		return await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+		const courseMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+
+		return courseMetadata;
 	}
 
 	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
-		return await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+		const roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+
+		return roomBoardDto;
 	}
 
 	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
-		return await this.boardClientAdapter.getBoardSkeletonById(boardId);
+		const boardSkeletonDto = await this.boardClientAdapter.getBoardSkeletonById(boardId);
+
+		return boardSkeletonDto;
 	}
 
 	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
-		return await this.cardClientAdapter.getAllBoardCardsByIds(ids);
+		const cardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
+
+		return cardListResponseDto;
 	}
 
 	private async findLessonById(lessonId: string): Promise<LessonDto> {
-		return await this.lessonClientAdapter.getLessonById(lessonId);
+		const lessonDto = await this.lessonClientAdapter.getLessonById(lessonId);
+
+		return lessonDto;
 	}
 }
