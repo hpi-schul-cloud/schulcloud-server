@@ -3,12 +3,14 @@ import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SchoolFeature } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Account, AccountService } from '@src/modules/account';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
-import { FederalState } from '@src/modules/school/domain';
+import { FederalState, FileStorageType } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
+import { SchoolPermissions } from '@src/modules/school/domain/type';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
@@ -78,6 +80,12 @@ export class TspSyncService {
 		const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 		const federalState = await this.findFederalState();
 
+		const permissions: SchoolPermissions = {
+			teacher: {
+				STUDENT_LIST: true,
+			},
+		};
+
 		const school = SchoolFactory.build({
 			externalId: identifier,
 			name,
@@ -88,6 +96,8 @@ export class TspSyncService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			id: new ObjectId().toHexString(),
+			fileStorageType: FileStorageType.AWS_S3,
+			permissions,
 		});
 
 		const savedSchool = await this.schoolService.save(school);
@@ -115,8 +125,8 @@ export class TspSyncService {
 		return tspUser.data[0];
 	}
 
-	public async findAccountByTspUid(tspUid: string): Promise<Account | null> {
-		const user = await this.findUserByTspUid(tspUid);
+	public async findAccountByExternalId(externalId: string, systemId: EntityId): Promise<Account | null> {
+		const user = await this.userService.findByExternalId(externalId, systemId);
 
 		if (!user || !user.id) {
 			return null;
@@ -136,6 +146,7 @@ export class TspSyncService {
 		user.email = email;
 		user.externalId = externalId;
 		user.previousExternalId = previousExternalId;
+		user.sourceOptions = new UserSourceOptions({ tspUid: user.externalId });
 
 		return this.userService.save(user);
 	}

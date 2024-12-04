@@ -4,11 +4,21 @@ import { IsString, IsUrl } from 'class-validator';
 import { MetaDataEntityType } from '../../types';
 
 export class MetaTagExtractorResponse {
-	constructor({ url, title, description, imageUrl, type, parentTitle, parentType }: MetaTagExtractorResponse) {
+	constructor({
+		url,
+		title,
+		description,
+		originalImageUrl,
+		imageUrl,
+		type,
+		parentTitle,
+		parentType,
+	}: MetaTagExtractorResponse) {
 		this.url = url;
 		this.title = title;
 		this.description = description;
 		this.imageUrl = imageUrl;
+		this.originalImageUrl = originalImageUrl;
 		this.type = type;
 		this.parentTitle = parentTitle;
 		this.parentType = parentType;
@@ -25,6 +35,10 @@ export class MetaTagExtractorResponse {
 	@ApiProperty()
 	@DecodeHtmlEntities()
 	description?: string;
+
+	@ApiProperty()
+	@IsString()
+	originalImageUrl?: string;
 
 	@ApiProperty()
 	@IsString()

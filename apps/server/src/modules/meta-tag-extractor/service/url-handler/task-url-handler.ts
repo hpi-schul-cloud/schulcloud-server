@@ -6,13 +6,13 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 
 @Injectable()
 export class TaskUrlHandler extends AbstractUrlHandler implements UrlHandler {
-	patterns: RegExp[] = [/\/homework\/([0-9a-z]+)$/i];
+	patterns: RegExp[] = [/\/homework\/([0-9a-f]{24})$/i];
 
 	constructor(private readonly taskService: TaskService) {
 		super();
 	}
 
-	async getMetaData(url: string): Promise<MetaData | undefined> {
+	async getMetaData(url: URL): Promise<MetaData | undefined> {
 		const id = this.extractId(url);
 		if (id === undefined) {
 			return undefined;

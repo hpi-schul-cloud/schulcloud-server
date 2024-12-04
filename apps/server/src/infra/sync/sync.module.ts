@@ -12,6 +12,7 @@ import { LoggerModule } from '@src/core/logger';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { SyncConsole } from './console/sync.console';
 import { SyncService } from './service/sync.service';
+import { TspLegacyMigrationService } from './tsp/tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp/tsp-oauth-data.mapper';
 import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
@@ -43,7 +44,7 @@ import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
 		SyncUc,
 		SyncService,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspFetchService]
+			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspFetchService, TspLegacyMigrationService]
 			: []),
 		VidisSyncService,
 		VidisSyncStrategy,

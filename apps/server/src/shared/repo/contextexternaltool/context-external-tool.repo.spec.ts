@@ -8,6 +8,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/too
 import {
 	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
+	ltiDeepLinkFactory,
 } from '@modules/tool/context-external-tool/testing';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
@@ -151,10 +152,12 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const result: ContextExternalTool = await repo.save(domainObject);
 
-				expect(result).toMatchObject({
-					...domainObject.getProps(),
-					id: expect.any(String),
-				});
+				expect(result).toEqual(
+					new ContextExternalTool({
+						...domainObject.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 
@@ -171,6 +174,7 @@ describe(ContextExternalToolRepo.name, () => {
 						schoolToolId: new ObjectId().toHexString(),
 						schoolId: undefined,
 					},
+					ltiDeepLink: ltiDeepLinkFactory.build(),
 				});
 
 				return {
@@ -183,10 +187,12 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const result: ContextExternalTool = await repo.save(domainObject);
 
-				expect(result).toMatchObject({
-					...domainObject.getProps(),
-					id: expect.any(String),
-				});
+				expect(result).toEqual(
+					new ContextExternalTool({
+						...domainObject.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 

@@ -8,29 +8,22 @@ import { axiosResponseFactory } from '@shared/testing';
 import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
 import { DeletionRequestOutput } from './interface';
 import { DeletionClient } from './deletion.client';
+import { DeletionConsoleConfig } from '../deletion.config';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;
 	let client: DeletionClient;
+	let configService: DeepMocked<ConfigService>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				DeletionClient,
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>({
-						get: jest.fn((key: string) => {
-							if (key === 'ADMIN_API_CLIENT_BASE_URL') {
-								return 'http://localhost:4030';
-							}
-
-							// Default is for the Admin APIs API Key.
-							return '6b3df003-61e9-467c-9e6b-579634801896';
-						}),
-					}),
+					useValue: createMock<ConfigService<DeletionConsoleConfig, true>>(),
 				},
+				DeletionClient,
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
@@ -39,6 +32,7 @@ describe(DeletionClient.name, () => {
 		}).compile();
 
 		client = module.get(DeletionClient);
+		configService = module.get(ConfigService);
 		httpService = module.get(HttpService);
 	});
 
@@ -50,9 +44,17 @@ describe(DeletionClient.name, () => {
 		await module.close();
 	});
 
+	const setupConfig = () => {
+		// Please take a look that the order is correct if the code order is changed
+		configService.get
+			.mockReturnValueOnce('652559c2-93da-42ad-94e1-640e3afbaca0')
+			.mockReturnValueOnce('http://api-admin:4030');
+	};
+
 	describe('queueDeletionRequest', () => {
 		describe('when sending the HTTP request failed', () => {
 			const setup = () => {
+				setupConfig();
 				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
 				const error = new Error('unknown error');
@@ -70,6 +72,7 @@ describe(DeletionClient.name, () => {
 
 		describe('when received valid response with expected HTTP status code', () => {
 			const setup = () => {
+				setupConfig();
 				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
 				const output: DeletionRequestOutput = DeletionRequestOutputBuilder.build(
@@ -98,6 +101,7 @@ describe(DeletionClient.name, () => {
 
 		describe('when received invalid HTTP status code in a response', () => {
 			const setup = () => {
+				setupConfig();
 				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
 				const output: DeletionRequestOutput = DeletionRequestOutputBuilder.build('', new Date());
@@ -121,6 +125,7 @@ describe(DeletionClient.name, () => {
 
 		describe('when received no requestId in a response', () => {
 			const setup = () => {
+				setupConfig();
 				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
 				const output: DeletionRequestOutput = DeletionRequestOutputBuilder.build(
@@ -147,6 +152,7 @@ describe(DeletionClient.name, () => {
 
 		describe('when received no deletionPlannedAt in a response', () => {
 			const setup = () => {
+				setupConfig();
 				const input = DeletionRequestInputBuilder.build('user', '652f1625e9bc1a13bdaae48b');
 
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
@@ -172,6 +178,7 @@ describe(DeletionClient.name, () => {
 	describe('executeDeletions', () => {
 		describe('when sending the HTTP request failed', () => {
 			const setup = () => {
+				setupConfig();
 				const error = new Error('unknown error');
 				httpService.post.mockReturnValueOnce(throwError(() => error));
 			};
@@ -185,6 +192,7 @@ describe(DeletionClient.name, () => {
 
 		describe('when received valid response with expected HTTP status code', () => {
 			const setup = () => {
+				setupConfig();
 				const limit = 10;
 
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
@@ -203,8 +211,31 @@ describe(DeletionClient.name, () => {
 			});
 		});
 
+		describe('when pass invalid limit', () => {
+			const setup = () => {
+				setupConfig();
+				const limit = true;
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 204,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				return { limit };
+			};
+
+			it('should ignore limit and use default headers', async () => {
+				const { limit } = setup();
+
+				// @ts-expect-error test case
+				await expect(client.executeDeletions(limit)).resolves.not.toThrow();
+			});
+		});
+
 		describe('when received invalid HTTP status code in a response', () => {
 			const setup = () => {
+				setupConfig();
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 					status: 200,
 				});

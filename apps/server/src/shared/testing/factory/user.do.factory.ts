@@ -22,5 +22,6 @@ export const userDoFactory = UserDoFactory.define(UserDO, ({ sequence }) => {
 		email: `user-${sequence}@example.com`,
 		roles: [],
 		schoolId: new ObjectId().toString(),
+		secondarySchools: [],
 	};
 });

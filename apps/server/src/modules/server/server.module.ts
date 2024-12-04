@@ -4,8 +4,7 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/da
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
 import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
@@ -42,15 +41,16 @@ import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolLicenseModule } from '../school-license/school-license.module';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { SchoolLicenseModule } from '../school-license/school-license.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -107,12 +107,6 @@ const serverModules = [
 	RosterModule,
 	ShdApiModule,
 ];
-
-export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
-};
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
 const controllers = [ServerController, ServerConfigController];
