@@ -5,9 +5,9 @@ export class TimestampResponseDto {
 
 	deletedAt?: string;
 
-	constructor(lastUpdatedAt: string, createdAt: string, deletedAt?: string) {
-		this.lastUpdatedAt = lastUpdatedAt;
-		this.createdAt = createdAt;
-		this.deletedAt = deletedAt;
+	constructor(props: Readonly<TimestampResponseDto>) {
+		this.lastUpdatedAt = props.lastUpdatedAt;
+		this.createdAt = props.createdAt;
+		this.deletedAt = props.deletedAt;
 	}
 }

@@ -7,10 +7,10 @@ export class LinkElementContentDto {
 
 	imageUrl?: string;
 
-	constructor(url: string, title: string, description: string, imageUrl?: string) {
-		this.url = url;
-		this.title = title;
-		this.description = description;
-		this.imageUrl = imageUrl;
+	constructor(props: Readonly<LinkElementContentDto>) {
+		this.url = props.url;
+		this.title = props.title;
+		this.description = props.description;
+		this.imageUrl = props.imageUrl;
 	}
 }

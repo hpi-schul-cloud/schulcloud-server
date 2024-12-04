@@ -15,19 +15,12 @@ export class CardResponseDto {
 
 	timeStamps: TimestampResponseDto;
 
-	constructor(
-		id: string,
-		height: number,
-		elements: CardResponseElementsInnerDto[],
-		visibilitySettings: VisibilitySettingsResponseDto,
-		timestamps: TimestampResponseDto,
-		title?: string
-	) {
-		this.id = id;
-		this.title = title;
-		this.height = height;
-		this.elements = elements;
-		this.visibilitySettings = visibilitySettings;
-		this.timeStamps = timestamps;
+	constructor(props: Readonly<CardResponseDto>) {
+		this.id = props.id;
+		this.title = props.title;
+		this.height = props.height;
+		this.elements = props.elements;
+		this.visibilitySettings = props.visibilitySettings;
+		this.timeStamps = props.timeStamps;
 	}
 }

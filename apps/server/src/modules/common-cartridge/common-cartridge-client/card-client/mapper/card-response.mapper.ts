@@ -45,14 +45,14 @@ export class CardResponseMapper {
 	}
 
 	private static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {
-		return new CardResponseDto(
-			cardResponse.id,
-			cardResponse.height,
-			this.mapToCardResponseElementsInnerDto(cardResponse.elements),
-			this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
-			this.mapToTimestampDto(cardResponse.timestamps),
-			cardResponse.title ?? ''
-		);
+		return new CardResponseDto({
+			id: cardResponse.id,
+			title: cardResponse.title,
+			height: cardResponse.height,
+			elements: this.mapToCardResponseElementsInnerDto(cardResponse.elements),
+			visibilitySettings: this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
+			timeStamps: this.mapToTimestampDto(cardResponse.timestamps),
+		});
 	}
 
 	private static mapToCardResponseElementsInnerDto(
@@ -138,7 +138,10 @@ export class CardResponseMapper {
 						new LinkElementResponseDto({
 							id: element.id,
 							type: ContentElementType.LINK,
-							content: new LinkElementContentDto(content.url, content.title, content.description ?? ''),
+							content: new LinkElementContentDto({
+								url: content.url, 
+								title: content.title, 
+								description: content.description}),
 							timestamps: this.mapToTimestampDto(element.timestamps),
 						})
 					);
@@ -170,6 +173,9 @@ export class CardResponseMapper {
 	}
 
 	private static mapToTimestampDto(timestamp: TimestampsResponse): TimestampResponseDto {
-		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt ?? '');
+		return new TimestampResponseDto({
+			lastUpdatedAt: timestamp.lastUpdatedAt, 
+			createdAt: timestamp.createdAt, 
+			deletedAt: timestamp.deletedAt});
 	}
 }

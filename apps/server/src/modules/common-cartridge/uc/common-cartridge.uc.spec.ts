@@ -49,8 +49,10 @@ describe('CommonCartridgeUc', () => {
 
 		it('should return a course export response with file IDs and metadata of a course', async () => {
 			const { courseId, expected, version, tasks, columnBoards, topics } = setup();
-
+			
 			expect(await sut.exportCourse(courseId, version, topics, tasks, columnBoards)).toEqual(expected);
+			expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(courseId, version, topics, tasks, columnBoards);
+
 		});
 	});
 });

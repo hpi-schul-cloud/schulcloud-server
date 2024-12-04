@@ -11,7 +11,7 @@ export class RichTextElementResponseDto {
 
 	timestamps: TimestampResponseDto;
 
-	constructor(props: RichTextElementResponseDto) {
+	constructor(props: Readonly<RichTextElementResponseDto>) {
 		this.id = props.id;
 		this.type = props.type;
 		this.content = props.content;
