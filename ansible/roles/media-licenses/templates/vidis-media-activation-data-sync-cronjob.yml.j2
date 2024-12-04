@@ -13,7 +13,7 @@ metadata:
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: vidis-media-activation-data-sync-cronjob
 spec:
-  schedule: 1 * * * *
+  schedule: "{{ MOIN_SCHULE_USERS_SYNC_CRONJOB_SCHEDULE|default('@daily', true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
      metadata:
