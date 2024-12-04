@@ -18,7 +18,7 @@ import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 import { TspFetchService } from './tsp/tsp-fetch.service';
-import { VidisSyncService, VidisSyncStrategy } from './vidis';
+import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
 
 @Module({
 	imports: [
