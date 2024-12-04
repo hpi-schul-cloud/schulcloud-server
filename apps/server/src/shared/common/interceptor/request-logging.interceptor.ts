@@ -1,7 +1,6 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
-import { RequestLoggingBody } from '@src/core/logger/interfaces';
+import { LegacyLogger, RequestLoggingBody } from '@src/core/logger';
 import { Request } from 'express';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';

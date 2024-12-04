@@ -6,4 +6,3 @@ export * from './learnroom';
 export * from './permission.enum';
 export * from './rolename.enum';
 export * from './video-conference-scope.enum';
-export * from './system-provisioning.strategy';

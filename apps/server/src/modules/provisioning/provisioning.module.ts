@@ -10,7 +10,7 @@ import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { AccountModule } from '@modules/account';
 import { LoggerModule } from '@src/core/logger';
-import { SchulconnexClientModule } from '../../infra/schulconnex-client';
+import { SchulconnexClientModule } from '@src/infra/schulconnex-client/schulconnex-client.module';
 import { ClassModule } from '../class';
 import { UserLicenseModule } from '../user-license';
 import { ProvisioningService } from './service/provisioning.service';

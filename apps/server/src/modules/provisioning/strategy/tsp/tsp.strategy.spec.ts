@@ -3,8 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import jwt from 'jsonwebtoken';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
-import { RoleName, SystemProvisioningStrategy } from '@shared/domain/interface';
+import { RoleName } from '@shared/domain/interface';
 import { schoolFactory } from '@modules/school/testing';
 import {
 	ExternalClassDto,
