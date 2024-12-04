@@ -308,7 +308,7 @@ describe('CommonCartridgeExportService', () => {
 
 			it("shouldn't add lessons", async () => {
 				const { archive, lesson } = await setup();
-
+				
 				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
 			});
 		});
