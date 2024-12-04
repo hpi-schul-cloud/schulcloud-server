@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { setupEntities, userFactory } from '@shared/testing';
 import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';

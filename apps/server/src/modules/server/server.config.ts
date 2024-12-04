@@ -12,7 +12,6 @@ import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import { SynchronizationConfig } from '@modules/idp-console';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { OauthConfig } from '@modules/oauth';
@@ -65,7 +64,6 @@ export interface ServerConfig
 		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
-		SynchronizationConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		RoomConfig,
@@ -183,7 +181,6 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
 	JWT_EXTENDED_TIMEOUT_SECONDS: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS') as number,
-
 	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 	JWT_PRIVATE_KEY: (Configuration.get('JWT_PRIVATE_KEY') as string).replace(/\\n/g, '\n'),
@@ -217,7 +214,6 @@ const config: ServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	FEATURE_TSP_SYNC_ENABLED: Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
-	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
@@ -327,6 +323,7 @@ const config: ServerConfig = {
 	AES_KEY: Configuration.get('AES_KEY') as string,
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
+	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 };
 
 export const serverConfig = () => config;

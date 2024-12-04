@@ -536,7 +536,7 @@ describe(OauthProviderController.name, () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const consentListResponse: ProviderConsentSessionResponse = providerConsentSessionResponseFactory.build();
-				const externalTool = externalToolEntityFactory.withOauth2Config('clientId').buildWithId();
+				const externalTool = externalToolEntityFactory.withOauth2Config().buildWithId();
 				const pseudonym = externalToolPseudonymEntityFactory.buildWithId({
 					toolId: externalTool.id,
 					userId: studentUser.id,

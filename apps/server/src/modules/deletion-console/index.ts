@@ -1,1 +1,3 @@
-export * from './deletion-console.module';
+/** *************************************************
+ *   Do not re-export here! File should be empty!   *
+ ************************************************** */
