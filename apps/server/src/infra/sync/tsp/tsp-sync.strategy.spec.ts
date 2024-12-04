@@ -16,8 +16,9 @@ import { userDoFactory } from '@shared/testing';
 import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
 import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
 import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
-import { robjExportSchuleFactory } from '@shared/testing/factory/robj-export-schule.factory';
 import { robjExportLehrerMigrationFactory } from '@shared/testing/factory/robj-export-lehrer-migration.factory';
+import { robjExportSchuelerMigrationFactory } from '@shared/testing/factory/robj-export-schueler-migration.factory';
+import { robjExportSchuleFactory } from '@shared/testing/factory/robj-export-schule.factory';
 import { Logger } from '@src/core/logger';
 import { Account } from '@src/modules/account';
 import { accountDoFactory } from '@src/modules/account/testing';
@@ -372,10 +373,10 @@ describe(TspSyncStrategy.name, () => {
 					lehrerUidAlt: undefined,
 					lehrerUidNeu: faker.string.alpha(),
 				});
-				const tspStudent = robjExportLehrerMigrationFactory.build({
-					lehrerUidAlt: faker.string.alpha(),
-					lehrerUidNeu: undefined,
-				}) as RobjExportSchuelerMigration;
+				const tspStudent = robjExportSchuelerMigrationFactory.build({
+					schuelerUidAlt: faker.string.alpha(),
+					schuelerUidNeu: undefined,
+				});
 
 				setupMockServices({
 					fetchedStudentMigrations: [tspStudent],
