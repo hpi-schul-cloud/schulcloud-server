@@ -4,13 +4,16 @@ import { ProvisioningSystemDto } from '@modules/provisioning';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { externalClassDtoFactory } from '@shared/testing/factory/external-class-dto.factory';
-import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
-import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
-import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
-import { robjExportKlasseFactory } from '@shared/testing/factory/robj-export-klasse.factory';
-import { robjExportLehrerFactory } from '@shared/testing/factory/robj-export-lehrer.factory';
-import { robjExportSchuelerFactory } from '@shared/testing/factory/robj-export-schueler.factory';
+import {
+	externalClassDtoFactory,
+	externalSchoolDtoFactory,
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+	robjExportKlasseFactory,
+	robjExportLehrerFactory,
+	robjExportSchuelerFactory,
+} from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { schoolFactory } from '@src/modules/school/testing';
@@ -113,16 +116,25 @@ describe(TspOauthDataMapper.name, () => {
 					email: undefined,
 				});
 
+				const externalSchoolDto = externalSchoolDtoFactory.build({
+					externalId: school.externalId,
+					name: school.name,
+					officialSchoolNumber: undefined,
+					location: undefined,
+				});
+
 				const expected = [
 					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
 						externalUser: externalTeacherUserDto,
 						externalClasses: [externalClassDto],
+						externalSchool: externalSchoolDto,
 					}),
 					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
 						externalUser: externalStudentUserDto,
 						externalClasses: [externalClassDto],
+						externalSchool: externalSchoolDto,
 					}),
 				];
 
@@ -130,9 +142,9 @@ describe(TspOauthDataMapper.name, () => {
 			};
 
 			it('should return an array of oauth data dtos', () => {
-				const { system, tspTeachers, tspStudents, tspClasses, expected } = setup();
+				const { system, school, tspTeachers, tspStudents, tspClasses, expected } = setup();
 
-				const result = sut.mapTspDataToOauthData(system, [], tspTeachers, tspStudents, tspClasses);
+				const result = sut.mapTspDataToOauthData(system, [school], tspTeachers, tspStudents, tspClasses);
 
 				expect(result).toStrictEqual(expected);
 			});

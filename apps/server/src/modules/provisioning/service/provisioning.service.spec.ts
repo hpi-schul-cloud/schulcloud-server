@@ -3,9 +3,7 @@ import { System, SystemService } from '@modules/system';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
-import { provisioningDtoFactory } from '@shared/testing/factory/provisioning-dto.factory';
-import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
+import { oauthDataDtoFactory, provisioningDtoFactory, provisioningSystemDtoFactory } from '@shared/testing/factory';
 import { systemFactory } from '@src/modules/system/testing';
 import {
 	ExternalUserDto,

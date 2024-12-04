@@ -1,8 +1,10 @@
-import { ExternalSchoolDto } from '@modules/provisioning/dto';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Factory } from 'fishery';
+import { ExternalSchoolDto } from '@modules/provisioning/dto';
+import { BaseFactory } from './base.factory';
 
-export const externalSchoolDtoFactory = Factory.define<ExternalSchoolDto, ExternalSchoolDto>(({ sequence }) => {
+class ExternalSchoolDtoFactory extends BaseFactory<ExternalSchoolDto, Readonly<ExternalSchoolDto>> {}
+
+export const externalSchoolDtoFactory = ExternalSchoolDtoFactory.define(ExternalSchoolDto, ({ sequence }) => {
 	return {
 		externalId: new ObjectId().toHexString(),
 		name: `External School ${sequence}`,
