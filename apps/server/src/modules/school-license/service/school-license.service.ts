@@ -1,7 +1,7 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaSourceRepo } from '../../user-license/repo';
+import { MediaSourceRepo } from '../../mediasource/repo';
 import { MediaSchoolLicense } from '../domain';
 import { MediaSchoolLicenseRepo } from '../repo/media-school-license-repo';
 

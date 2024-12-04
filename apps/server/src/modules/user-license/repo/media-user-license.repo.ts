@@ -42,7 +42,7 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 	}
 
 	protected mapDOToEntityProperties(entityDO: MediaUserLicense): EntityData<MediaUserLicenseEntity> {
-		const entityProps: EntityData<MediaUserLicenseEntity> = MediaUserLicenseMapper{
+		const entityProps: EntityData<MediaUserLicenseEntity> = {
 			user: this.em.getReference(User, entityDO.userId),
 			type: UserLicenseType.MEDIA_LICENSE,
 			mediumId: entityDO.mediumId,

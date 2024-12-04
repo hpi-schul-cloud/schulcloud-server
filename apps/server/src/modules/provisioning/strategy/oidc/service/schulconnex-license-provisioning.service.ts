@@ -3,6 +3,7 @@ import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@mod
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { MediaSourceService } from '@src/modules/mediasource/service';
+import { MediaSource } from '@src/modules/mediasource/domain';
 import { ExternalLicenseDto } from '../../../dto';
 
 @Injectable()
