@@ -225,6 +225,7 @@ describe('RoomMembershipService', () => {
 				roles: [role],
 				secondarySchools: [{ schoolId: secondarySchool.id, role: new RoleDto(guestTeacher) }],
 			});
+
 			return { secondarySchool, externalUser, otherSchool };
 		};
 
@@ -236,6 +237,7 @@ describe('RoomMembershipService', () => {
 				userGroupId: group.id,
 				schoolId,
 			});
+
 			return { group, room, roomMembership };
 		};
 
