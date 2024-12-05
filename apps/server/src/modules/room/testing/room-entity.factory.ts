@@ -9,6 +9,7 @@ export const roomEntityFactory = EntityFactory.define<RoomEntity, RoomProps>(Roo
 		id: new ObjectId().toHexString(),
 		name: `room #${sequence}`,
 		color: [RoomColor.BLUE, RoomColor.RED, RoomColor.GREEN, RoomColor.MAGENTA][Math.floor(Math.random() * 4)],
+		schoolId: new ObjectId().toHexString(),
 		startDate: new Date(),
 		endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 		createdAt: new Date(),

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
+import { CopyElementType, CopyStatusEnum } from '../types/copy.types';
 
 /**
  * DTO for returning a copy status document via api.
@@ -29,9 +29,9 @@ export class CopyApiResponse {
 	type: CopyElementType;
 
 	@ApiPropertyOptional({
-		description: 'Id of destination course',
+		description: 'Id of destination parent reference',
 	})
-	destinationCourseId?: string;
+	destinationId?: string;
 
 	@ApiProperty({
 		type: 'string',
