@@ -187,7 +187,7 @@ export class TspProvisioningService {
 		return email.toLowerCase();
 	}
 
-	private createTspConsent(user: UserDO) {
+	private createTspConsent(user: UserDO): void {
 		const userConsent = new UserConsent({
 			form: 'digital',
 			privacyConsent: true,
