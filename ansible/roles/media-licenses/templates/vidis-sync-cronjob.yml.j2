@@ -13,7 +13,7 @@ metadata:
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: vidis-sync-cronjob
 spec:
-  schedule: "{{ SERVER_VIDIS_SYNC_CRONJOB_SCHEDULE|default("*/7 * * * *", true) }}"
+  schedule: "{{ SERVER_VIDIS_SYNC_CRONJOB_SCHEDULE|default('*/7 * * * *', true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
