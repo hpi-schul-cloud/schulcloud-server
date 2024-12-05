@@ -47,7 +47,9 @@ export class LessonDtoMapper {
 			courseGroupId: lessonResponse.courseGroupId,
 			hidden: lessonResponse.hidden,
 			position: lessonResponse.position,
-			contents: lessonResponse.contents.map((content) => this.mapToLessenContentDto(content)),
+			contents: lessonResponse.contents
+				.map((content) => this.mapToLessenContentDto(content))
+				.filter((contetnDto) => contetnDto !== null),
 			materials: lessonResponse.materials.map((material) => this.mapToLessonMaterialDto(material)),
 		});
 
@@ -68,7 +70,7 @@ export class LessonDtoMapper {
 		return lessonMaterialsDto;
 	}
 
-	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto {
+	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
 		switch (lessonContentResponse.component) {
 			case LessonContentResponseComponent.TEXT:
 				return new LessonContentDto({
@@ -119,7 +121,7 @@ export class LessonDtoMapper {
 					content: new ComponentNexboardPropsDto(lessonContentResponse.content as ComponentNexboardPropsImpl),
 				});
 			default:
-				throw new Error(`Unknown component type of lesson content`);
+				return null;
 		}
 	}
 }
