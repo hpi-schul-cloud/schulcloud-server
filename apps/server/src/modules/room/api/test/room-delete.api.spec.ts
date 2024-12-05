@@ -1,4 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
@@ -9,9 +11,8 @@ import {
 	groupEntityFactory,
 	roleFactory,
 } from '@shared/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
+import { RoomMembershipEntity } from '@src/modules/room-membership';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 
@@ -95,7 +96,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_EDITOR,
+					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT],
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -103,8 +104,8 @@ describe('Room Controller (API)', () => {
 					type: GroupEntityTypes.ROOM,
 					users: [{ role, user: teacherUser }],
 				});
-				const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
-				await em.persistAndFlush([room, roomMember, teacherAccount, teacherUser, userGroup, role]);
+				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -119,6 +120,16 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 					await expect(em.findOneOrFail(RoomEntity, room.id)).rejects.toThrow(NotFoundException);
+				});
+
+				it('should delete the roomMembership', async () => {
+					const { loggedInClient, room } = await setup();
+
+					await expect(em.findOneOrFail(RoomMembershipEntity, { roomId: room.id })).resolves.not.toThrow();
+
+					const response = await loggedInClient.delete(room.id);
+					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+					await expect(em.findOneOrFail(RoomMembershipEntity, { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 			});
 
