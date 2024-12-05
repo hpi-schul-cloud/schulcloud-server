@@ -92,7 +92,7 @@ export class CommonCartridgeExportMapper {
 					extractedResources.map((resource) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
-							identifier: createIdentifier(),
+							identifier: createIdentifier(lessonContent.id),
 							title: resource.title,
 							url: resource.url,
 						};
