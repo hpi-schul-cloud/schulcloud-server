@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { roomFactory } from '../../testing';
 import { RoomColor } from '../type';
@@ -12,6 +13,7 @@ describe('Room', () => {
 		color: RoomColor.BLUE,
 		startDate: new Date('2024-01-01'),
 		endDate: new Date('2024-12-31'),
+		schoolId: new ObjectId().toHexString(),
 		createdAt: new Date('2024-01-01'),
 		updatedAt: new Date('2024-01-01'),
 	};
