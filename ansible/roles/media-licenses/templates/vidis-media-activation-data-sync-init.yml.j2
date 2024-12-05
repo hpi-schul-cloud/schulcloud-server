@@ -41,8 +41,6 @@ spec:
             name: api-secret
         - configMapRef:
             name: vidis-media-activation-data-sync-init-configmap
-        - secretRef:
-            name: api-secret
         command: ['/bin/sh', '-c']
         args: ['npm run nest:start:sync:vidis']
         resources:
