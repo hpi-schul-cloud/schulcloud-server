@@ -4,16 +4,14 @@ import { ProvisioningSystemDto } from '@modules/provisioning';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	externalClassDtoFactory,
-	externalSchoolDtoFactory,
-	externalUserDtoFactory,
-	oauthDataDtoFactory,
-	provisioningSystemDtoFactory,
-	robjExportKlasseFactory,
-	robjExportLehrerFactory,
-	robjExportSchuelerFactory,
-} from '@shared/testing/factory';
+import { externalSchoolDtoFactory } from '@shared/testing';
+import { externalClassDtoFactory } from '@shared/testing/factory/external-class-dto.factory';
+import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
+import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
+import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
+import { robjExportKlasseFactory } from '@shared/testing/factory/robj-export-klasse.factory';
+import { robjExportLehrerFactory } from '@shared/testing/factory/robj-export-lehrer.factory';
+import { robjExportSchuelerFactory } from '@shared/testing/factory/robj-export-schueler.factory';
 import { Logger } from '@src/core/logger';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { schoolFactory } from '@src/modules/school/testing';
