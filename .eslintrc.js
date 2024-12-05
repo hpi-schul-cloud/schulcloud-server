@@ -230,6 +230,24 @@ module.exports = {
 						],
 					},
 				},
+				{
+					files: ['apps/server/src/**/*.entity.ts'],
+					rules: {
+						'@typescript-eslint/explicit-member-accessibility': [
+							'warn',
+							{
+								accessibility: 'explicit',
+								overrides: {
+									accessors: 'no-public',
+									constructors: 'no-public',
+									methods: 'explicit',
+									properties: 'no-public',
+									parameterProperties: 'explicit',
+								},
+							},
+						],
+					},
+				},
 			],
 		},
 	],
