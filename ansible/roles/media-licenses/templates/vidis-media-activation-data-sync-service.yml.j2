@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vidis-media-activation-data-sync-service
+  namespace: {{ NAMESPACE }}
+  labels:
+    app:vidis-media-activation-data-sync
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ PORT_SERVER }}
+      targetPort: 3030
+      protocol: TCP
+      name: vidis-media-activation-data-sync
+  selector:
+    app: vidis-media-activation-data-sync

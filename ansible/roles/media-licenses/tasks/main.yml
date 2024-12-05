@@ -6,8 +6,7 @@
   tags:
     - cronjob
 
-- name: moin.schule users sync CronJob ConfigMap
-  when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
+- name: media licenses sync CronJob ConfigMap
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
