@@ -59,7 +59,9 @@ describe(`Share Token Import (API)`, () => {
 		await cleanupCollections(em);
 	});
 
-	beforeEach(() => {
+	beforeEach(async () => {
+		await cleanupCollections(em);
+
 		Configuration.set('FEATURE_COURSE_SHARE', true);
 		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
 
@@ -68,6 +70,8 @@ describe(`Share Token Import (API)`, () => {
 	});
 
 	const setupSchoolExclusiveImport = async () => {
+		await cleanupCollections(em);
+
 		const school = schoolEntityFactory.buildWithId();
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 		const course = courseFactory.buildWithId({ teachers: [teacherUser], school: teacherUser.school });
@@ -137,628 +141,628 @@ describe(`Share Token Import (API)`, () => {
 					status: CopyStatusEnum.SUCCESS,
 				};
 
-					expect(response.body as CopyApiResponse).toEqual(expect.objectContaining(expectedResult));
-				});
+				expect(response.body as CopyApiResponse).toEqual(expect.objectContaining(expectedResult));
 			});
+		});
 
-			describe('when doing a valid course import from another school', () => {
-				const setupCrossSchoolImport = async () => {
-					const targetSchool = schoolEntityFactory.buildWithId();
-					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool });
+		describe('when doing a valid course import from another school', () => {
+			const setupCrossSchoolImport = async () => {
+				const targetSchool = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool });
 
-					const sourceSchool = schoolEntityFactory.buildWithId();
-					const course = courseFactory.buildWithId({ school: sourceSchool });
+				const sourceSchool = schoolEntityFactory.buildWithId();
+				const course = courseFactory.buildWithId({ school: sourceSchool });
 
-					const shareToken = shareTokenFactory.withParentTypeCourse().build({
-						parentId: course.id,
-						contextType: undefined,
-						contextId: undefined,
-					});
-
-					await em.persistAndFlush([teacherAccount, teacherUser, targetSchool, course, shareToken]);
-
-					const loggedInClient = await testApiClient.login(teacherAccount);
-
-					return { loggedInClient, token: shareToken.token, targetSchool, course };
-				};
-
-				describe('when the course has course tools', () => {
-					describe('when the importing school has the proper school external tool', () => {
-						const setupExistingSchoolTool = async () => {
-							const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
-
-							const externalTool = externalToolEntityFactory.buildWithId();
-
-							const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: course.school,
-								tool: externalTool,
-							});
-
-							const sourceCourseTools = contextExternalToolEntityFactory.buildList(2, {
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.COURSE,
-								contextId: course.id,
-							});
-
-							const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: targetSchool,
-								tool: externalTool,
-							});
-
-							await em.persistAndFlush([externalTool, targetSchoolTool, sourceSchoolTool, ...sourceCourseTools]);
-							em.clear();
-
-							return {
-								loggedInClient,
-								token,
-								targetSchool,
-								targetSchoolTool,
-							};
-						};
-
-						it('should save the copied course', async () => {
-							const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							await em.findOneOrFail(Course, { school: targetSchool });
-						});
-
-						it('should save the course tools with the correct external school id', async () => {
-							const { loggedInClient, token, targetSchool, targetSchoolTool } = await setupExistingSchoolTool();
-
-							const newName = 'newName';
-							const response = await loggedInClient.post(getSubPath(token), { newName });
-
-							expect(response.status).toEqual(201);
-
-							const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
-							const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-								contextType: ContextExternalToolType.COURSE,
-								contextId: new ObjectId(copiedCourse.id),
-							});
-
-							expect(copiedCourseTools.length).toEqual(2);
-							copiedCourseTools.forEach((courseTool) => {
-								expect(courseTool.schoolTool.id).toEqual(targetSchoolTool.id);
-							});
-						});
-					});
-
-					describe('when the importing school does not have the proper school external tool', () => {
-						const setupNonExistingSchoolTool = async () => {
-							const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
-
-							const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: course.school,
-							});
-
-							const sourceCourseTools = contextExternalToolEntityFactory.buildListWithId(2, {
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.COURSE,
-								contextId: course.id,
-							});
-
-							await em.persistAndFlush([sourceSchoolTool, ...sourceCourseTools]);
-							em.clear();
-
-							return { loggedInClient, token, targetSchool };
-						};
-
-						it('should save the copied course', async () => {
-							const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							await em.findOneOrFail(Course, { school: targetSchool });
-						});
-
-						it('should not save the course tools', async () => {
-							const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
-							const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-								contextType: ContextExternalToolType.COURSE,
-								contextId: new ObjectId(copiedCourse.id),
-							});
-
-							expect(copiedCourseTools.length).toEqual(0);
-						});
-					});
+				const shareToken = shareTokenFactory.withParentTypeCourse().build({
+					parentId: course.id,
+					contextType: undefined,
+					contextId: undefined,
 				});
 
-				describe('when the course has boards with tool elements', () => {
-					const setupBoardEntitiesWithTools = (
-						course: Course,
-						boardToolOne: ContextExternalToolEntity,
-						boardToolTwo: ContextExternalToolEntity
-					) => {
-						const columnBoardNode = columnBoardEntityFactory.build({
-							context: {
-								type: BoardExternalReferenceType.Course,
-								id: course.id,
-							},
+				await em.persistAndFlush([teacherAccount, teacherUser, targetSchool, course, shareToken]);
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, token: shareToken.token, targetSchool, course };
+			};
+
+			describe('when the course has course tools', () => {
+				describe('when the importing school has the proper school external tool', () => {
+					const setupExistingSchoolTool = async () => {
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
+
+						const externalTool = externalToolEntityFactory.buildWithId();
+
+						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: course.school,
+							tool: externalTool,
 						});
 
-						const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-
-						const cardNode = cardEntityFactory.withParent(columnNode).build();
-
-						const boardToolElementOne = externalToolElementEntityFactory.withParent(cardNode).build({
-							position: 0,
-							contextExternalToolId: boardToolOne.id,
+						const sourceCourseTools = contextExternalToolEntityFactory.buildList(2, {
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.COURSE,
+							contextId: course.id,
 						});
 
-						const boardToolElementTwo = externalToolElementEntityFactory.withParent(cardNode).build({
-							position: 1,
-							contextExternalToolId: boardToolTwo.id,
+						const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: targetSchool,
+							tool: externalTool,
 						});
 
-						em.persist([columnBoardNode, columnNode, cardNode, boardToolElementOne, boardToolElementTwo]);
+						await em.persistAndFlush([externalTool, targetSchoolTool, sourceSchoolTool, ...sourceCourseTools]);
+						em.clear();
+
+						return {
+							loggedInClient,
+							token,
+							targetSchool,
+							targetSchoolTool,
+						};
 					};
 
-					describe('when the importing school has the proper school external tool', () => {
-						const setupExistingSchoolTool = async () => {
-							const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
+					it('should save the copied course', async () => {
+						const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
 
-							const externalTool = externalToolEntityFactory.buildWithId();
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
 
-							const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: course.school,
-								tool: externalTool,
-							});
+						expect(response.status).toEqual(201);
 
-							const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
-
-							const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
-
-							const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: targetSchool,
-								tool: externalTool,
-							});
-
-							setupBoardEntitiesWithTools(course, sourceBoardToolOne, sourceBoardToolTwo);
-
-							await em.persistAndFlush([
-								externalTool,
-								targetSchoolTool,
-								sourceSchoolTool,
-								sourceBoardToolOne,
-								sourceBoardToolTwo,
-							]);
-							em.clear();
-
-							return { loggedInClient, token, targetSchool, targetSchoolTool };
-						};
-
-						it('should save the copied course', async () => {
-							const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							await em.findOneOrFail(Course, { school: targetSchool });
-						});
-
-						it('should save the copied board', async () => {
-							const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
-							const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.COLUMN_BOARD,
-							});
-							const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
-								(node) => node.context?.id === copiedCourse.id
-							);
-
-							expect(copiedColumnBoardNode).not.toBeUndefined();
-						});
-
-						it('should copy the board tool elements', async () => {
-							const { loggedInClient, token } = await setupExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							const persistedBoardTools: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.EXTERNAL_TOOL,
-							});
-
-							expect(persistedBoardTools.length).toBeGreaterThan(2);
-						});
-
-						it('should copy the board context external tools with the correct school external tool', async () => {
-							const { loggedInClient, token, targetSchoolTool } = await setupExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							const copiedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								schoolTool: targetSchoolTool,
-							});
-
-							expect(copiedBoardTools.length).toEqual(2);
-						});
+						await em.findOneOrFail(Course, { school: targetSchool });
 					});
 
-					describe('when the importing school does not have the proper school external tool', () => {
-						const setupNonExistingSchoolTool = async () => {
-							const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
+					it('should save the course tools with the correct external school id', async () => {
+						const { loggedInClient, token, targetSchool, targetSchoolTool } = await setupExistingSchoolTool();
 
-							const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: course.school,
-							});
+						const newName = 'newName';
+						const response = await loggedInClient.post(getSubPath(token), { newName });
 
-							const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
+						expect(response.status).toEqual(201);
 
-							const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
-
-							setupBoardEntitiesWithTools(course, sourceBoardToolOne, sourceBoardToolTwo);
-
-							await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
-							em.clear();
-
-							return { loggedInClient, token, targetSchool };
-						};
-
-						it('should save the copied course', async () => {
-							const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.COURSE,
+							contextId: new ObjectId(copiedCourse.id),
 						});
 
-						it('should save the copied board', async () => {
-							const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
+						expect(copiedCourseTools.length).toEqual(2);
+						copiedCourseTools.forEach((courseTool) => {
+							expect(courseTool.schoolTool.id).toEqual(targetSchoolTool.id);
+						});
+					});
+				});
 
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+				describe('when the importing school does not have the proper school external tool', () => {
+					const setupNonExistingSchoolTool = async () => {
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
 
-							expect(response.status).toEqual(201);
-
-							const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
-							const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.COLUMN_BOARD,
-							});
-							const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
-								(node) => node.context?.id === copiedCourse.id
-							);
-
-							expect(copiedColumnBoardNode).not.toBeUndefined();
+						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: course.school,
 						});
 
-						it('should not copy the board tools and replace them with deleted elements', async () => {
-							const { loggedInClient, token } = await setupNonExistingSchoolTool();
-
-							const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
-
-							expect(response.status).toEqual(201);
-
-							const persistedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-							});
-							const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.DELETED_ELEMENT,
-							});
-
-							expect(persistedBoardTools.length).not.toBeGreaterThan(2);
-							expect(deletedElementNodes.length).toEqual(2);
+						const sourceCourseTools = contextExternalToolEntityFactory.buildListWithId(2, {
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.COURSE,
+							contextId: course.id,
 						});
+
+						await em.persistAndFlush([sourceSchoolTool, ...sourceCourseTools]);
+						em.clear();
+
+						return { loggedInClient, token, targetSchool };
+					};
+
+					it('should save the copied course', async () => {
+						const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						await em.findOneOrFail(Course, { school: targetSchool });
+					});
+
+					it('should not save the course tools', async () => {
+						const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.COURSE,
+							contextId: new ObjectId(copiedCourse.id),
+						});
+
+						expect(copiedCourseTools.length).toEqual(0);
 					});
 				});
 			});
 
-			describe('when doing a valid board import from another school', () => {
-				const setupCrossSchoolImport = async () => {
-					const targetSchool = schoolEntityFactory.buildWithId();
-					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool }, [
-						Permission.COURSE_EDIT,
-					]);
-
-					const targetCourse = courseFactory.buildWithId({
-						school: targetSchool,
-						teachers: [teacherUser],
-					});
-
-					const sourceSchool = schoolEntityFactory.buildWithId();
-					const sourceCourse = courseFactory.buildWithId({ school: sourceSchool });
-
+			describe('when the course has boards with tool elements', () => {
+				const setupBoardEntitiesWithTools = (
+					course: Course,
+					boardToolOne: ContextExternalToolEntity,
+					boardToolTwo: ContextExternalToolEntity
+				) => {
 					const columnBoardNode = columnBoardEntityFactory.build({
 						context: {
-							id: sourceCourse.id,
 							type: BoardExternalReferenceType.Course,
+							id: course.id,
 						},
 					});
 
-					const shareToken = shareTokenFactory.withParentTypeBoard().build({
-						parentId: columnBoardNode.id,
-						contextType: undefined,
-						contextId: undefined,
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+
+					const boardToolElementOne = externalToolElementEntityFactory.withParent(cardNode).build({
+						position: 0,
+						contextExternalToolId: boardToolOne.id,
 					});
 
-					await em.persistAndFlush([
-						teacherAccount,
-						teacherUser,
-						targetSchool,
-						targetCourse,
-						sourceCourse,
-						shareToken,
-						columnBoardNode,
-					]);
+					const boardToolElementTwo = externalToolElementEntityFactory.withParent(cardNode).build({
+						position: 1,
+						contextExternalToolId: boardToolTwo.id,
+					});
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
-
-					return {
-						loggedInClient,
-						token: shareToken.token,
-						elementType: CopyElementType.COLUMNBOARD,
-						targetSchool,
-						targetCourse,
-						sourceCourse,
-						columnBoardNode,
-					};
+					em.persist([columnBoardNode, columnNode, cardNode, boardToolElementOne, boardToolElementTwo]);
 				};
 
-				it('should return status 201', async () => {
-					const { loggedInClient, token, targetCourse } = await setupCrossSchoolImport();
+				describe('when the importing school has the proper school external tool', () => {
+					const setupExistingSchoolTool = async () => {
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
 
-					const data: ShareTokenImportBodyParams = {
-						newName: 'newName',
-						destinationId: targetCourse.id,
-					};
-					const response = await loggedInClient.post(getSubPath(token), data);
+						const externalTool = externalToolEntityFactory.buildWithId();
 
-					expect(response.status).toEqual(201);
-				});
-
-				it('should return a valid response body', async () => {
-					const { loggedInClient, token, elementType, targetCourse } = await setupCrossSchoolImport();
-
-					const data: ShareTokenImportBodyParams = {
-						newName: 'newName',
-						destinationId: targetCourse.id,
-					};
-					const response = await loggedInClient.post(getSubPath(token), data);
-					const body = response.body as CopyApiResponse;
-
-					const expectedResult: CopyApiResponse = {
-						id: expect.any(String),
-						type: elementType,
-						status: CopyStatusEnum.SUCCESS,
-					};
-
-					expect(body).toEqual(expect.objectContaining(expectedResult));
-				});
-
-				describe('when the board has tool elements', () => {
-					const populateColumnBoardWithTools = (
-						columnBoardNode: BoardNodeEntity,
-						boardToolOne: ContextExternalToolEntity,
-						boardToolTwo: ContextExternalToolEntity
-					) => {
-						const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-
-						const cardNode = cardEntityFactory.withParent(columnNode).build();
-
-						const boardToolElementOne = externalToolElementEntityFactory.withParent(cardNode).build({
-							position: 0,
-							contextExternalToolId: boardToolOne.id,
+						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: course.school,
+							tool: externalTool,
 						});
 
-						const boardToolElementTwo = externalToolElementEntityFactory.withParent(cardNode).build({
-							position: 1,
-							contextExternalToolId: boardToolTwo.id,
+						const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
 						});
 
-						em.persist([columnBoardNode, columnNode, cardNode, boardToolElementOne, boardToolElementTwo]);
+						const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: targetSchool,
+							tool: externalTool,
+						});
+
+						setupBoardEntitiesWithTools(course, sourceBoardToolOne, sourceBoardToolTwo);
+
+						await em.persistAndFlush([
+							externalTool,
+							targetSchoolTool,
+							sourceSchoolTool,
+							sourceBoardToolOne,
+							sourceBoardToolTwo,
+						]);
+						em.clear();
+
+						return { loggedInClient, token, targetSchool, targetSchoolTool };
 					};
 
-					describe('when the importing school has the proper school external tool', () => {
-						const setupExistingSchoolTool = async () => {
-							const { loggedInClient, token, targetSchool, targetCourse, sourceCourse, columnBoardNode } =
-								await setupCrossSchoolImport();
+					it('should save the copied course', async () => {
+						const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
 
-							const externalTool = externalToolEntityFactory.buildWithId();
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
 
-							const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: sourceCourse.school,
-								tool: externalTool,
-							});
+						expect(response.status).toEqual(201);
 
-							const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
-
-							const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
-
-							const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: targetSchool,
-								tool: externalTool,
-							});
-
-							populateColumnBoardWithTools(columnBoardNode, sourceBoardToolOne, sourceBoardToolTwo);
-
-							await em.persistAndFlush([
-								externalTool,
-								targetSchoolTool,
-								sourceSchoolTool,
-								sourceBoardToolOne,
-								sourceBoardToolTwo,
-							]);
-							em.clear();
-
-							return { loggedInClient, token, targetSchool, targetSchoolTool, targetCourse };
-						};
-
-						it('should save the copied board', async () => {
-							const { loggedInClient, token, targetCourse } = await setupExistingSchoolTool();
-
-							const data: ShareTokenImportBodyParams = {
-								newName: 'newName',
-								destinationId: targetCourse.id,
-							};
-							const response = await loggedInClient.post(getSubPath(token), data);
-
-							expect(response.status).toEqual(201);
-
-							const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.COLUMN_BOARD,
-							});
-							const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
-								(node) => node.context?.id === targetCourse.id
-							);
-
-							expect(copiedColumnBoardNode).not.toBeUndefined();
-						});
-
-						it('should copy the course tools and reassign them to the correct school external tool', async () => {
-							const { loggedInClient, token, targetSchoolTool, targetCourse } = await setupExistingSchoolTool();
-
-							const data: ShareTokenImportBodyParams = {
-								newName: 'newName',
-								destinationId: targetCourse.id,
-							};
-							const response = await loggedInClient.post(getSubPath(token), data);
-
-							expect(response.status).toEqual(201);
-
-							const copiedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								schoolTool: targetSchoolTool,
-							});
-							expect(copiedBoardTools.length).toEqual(2);
-						});
+						await em.findOneOrFail(Course, { school: targetSchool });
 					});
 
-					describe('when the importing school does not have the proper school external tool', () => {
-						const setupNonExistingSchoolTool = async () => {
-							const { loggedInClient, token, targetSchool, targetCourse, sourceCourse, columnBoardNode } =
-								await setupCrossSchoolImport();
+					it('should save the copied board', async () => {
+						const { loggedInClient, token, targetSchool } = await setupExistingSchoolTool();
 
-							const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
-								school: sourceCourse.school,
-							});
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
 
-							const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
+						expect(response.status).toEqual(201);
 
-							const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
-								schoolTool: sourceSchoolTool,
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-								contextId: new ObjectId().toHexString(),
-							});
+						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.COLUMN_BOARD,
+						});
+						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
+							(node) => node.context?.id === copiedCourse.id
+						);
 
-							populateColumnBoardWithTools(columnBoardNode, sourceBoardToolOne, sourceBoardToolTwo);
+						expect(copiedColumnBoardNode).not.toBeUndefined();
+					});
 
-							await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
-							em.clear();
+					it('should copy the board tool elements', async () => {
+						const { loggedInClient, token } = await setupExistingSchoolTool();
 
-							return { loggedInClient, token, targetSchool, targetCourse };
-						};
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
 
-						it('should save the copied board', async () => {
-							const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
+						expect(response.status).toEqual(201);
 
-							const data: ShareTokenImportBodyParams = {
-								newName: 'newName',
-								destinationId: targetCourse.id,
-							};
-							const response = await loggedInClient.post(getSubPath(token), data);
-
-							expect(response.status).toEqual(201);
-
-							const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.COLUMN_BOARD,
-							});
-							const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
-								(node) => node.context?.id === targetCourse.id
-							);
-							expect(copiedColumnBoardNode).not.toBeUndefined();
+						const persistedBoardTools: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.EXTERNAL_TOOL,
 						});
 
-						it('should not copy the board tool elements and replace them with deleted elements', async () => {
-							const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
+						expect(persistedBoardTools.length).toBeGreaterThan(2);
+					});
 
-							const data: ShareTokenImportBodyParams = {
-								newName: 'newName',
-								destinationId: targetCourse.id,
-							};
-							const response = await loggedInClient.post(getSubPath(token), data);
+					it('should copy the board context external tools with the correct school external tool', async () => {
+						const { loggedInClient, token, targetSchoolTool } = await setupExistingSchoolTool();
 
-							expect(response.status).toEqual(201);
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
 
-							const persistedBoardToolElements: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.EXTERNAL_TOOL,
-							});
-							const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
-								type: BoardNodeType.DELETED_ELEMENT,
-							});
+						expect(response.status).toEqual(201);
 
-							expect(persistedBoardToolElements.length).not.toBeGreaterThan(2);
-							expect(deletedElementNodes.length).toEqual(2);
+						const copiedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							schoolTool: targetSchoolTool,
 						});
 
-						it('should not copy the board context external tools', async () => {
-							const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
-
-							const data: ShareTokenImportBodyParams = {
-								newName: 'newName',
-								destinationId: targetCourse.id,
-							};
-							const response = await loggedInClient.post(getSubPath(token), data);
-
-							expect(response.status).toEqual(201);
-
-							const persistedBoardContextTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
-								contextType: ContextExternalToolType.BOARD_ELEMENT,
-							});
-							expect(persistedBoardContextTools.length).not.toBeGreaterThan(2);
-						});
+						expect(copiedBoardTools.length).toEqual(2);
 					});
 				});
+
+				describe('when the importing school does not have the proper school external tool', () => {
+					const setupNonExistingSchoolTool = async () => {
+						const { loggedInClient, token, targetSchool, course } = await setupCrossSchoolImport();
+
+						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: course.school,
+						});
+
+						const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						setupBoardEntitiesWithTools(course, sourceBoardToolOne, sourceBoardToolTwo);
+
+						await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
+						em.clear();
+
+						return { loggedInClient, token, targetSchool };
+					};
+
+					it('should save the copied course', async () => {
+						const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						await em.findOneOrFail(Course, { school: targetSchool });
+					});
+
+					it('should save the copied board', async () => {
+						const { loggedInClient, token, targetSchool } = await setupNonExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.COLUMN_BOARD,
+						});
+						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
+							(node) => node.context?.id === copiedCourse.id
+						);
+
+						expect(copiedColumnBoardNode).not.toBeUndefined();
+					});
+
+					it('should not copy the board tools and replace them with deleted elements', async () => {
+						const { loggedInClient, token } = await setupNonExistingSchoolTool();
+
+						const response = await loggedInClient.post(getSubPath(token), { newName: 'newName' });
+
+						expect(response.status).toEqual(201);
+
+						const persistedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+						});
+						const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.DELETED_ELEMENT,
+						});
+
+						expect(persistedBoardTools.length).not.toBeGreaterThan(2);
+						expect(deletedElementNodes.length).toEqual(2);
+					});
+				});
+			});
+		});
+
+		describe('when doing a valid board import from another school', () => {
+			const setupCrossSchoolImport = async () => {
+				const targetSchool = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool }, [
+					Permission.COURSE_EDIT,
+				]);
+
+				const targetCourse = courseFactory.buildWithId({
+					school: targetSchool,
+					teachers: [teacherUser],
+				});
+
+				const sourceSchool = schoolEntityFactory.buildWithId();
+				const sourceCourse = courseFactory.buildWithId({ school: sourceSchool });
+
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: {
+						id: sourceCourse.id,
+						type: BoardExternalReferenceType.Course,
+					},
+				});
+
+				const shareToken = shareTokenFactory.withParentTypeBoard().build({
+					parentId: columnBoardNode.id,
+					contextType: undefined,
+					contextId: undefined,
+				});
+
+				await em.persistAndFlush([
+					teacherAccount,
+					teacherUser,
+					targetSchool,
+					targetCourse,
+					sourceCourse,
+					shareToken,
+					columnBoardNode,
+				]);
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					token: shareToken.token,
+					elementType: CopyElementType.COLUMNBOARD,
+					targetSchool,
+					targetCourse,
+					sourceCourse,
+					columnBoardNode,
+				};
+			};
+
+			it('should return status 201', async () => {
+				const { loggedInClient, token, targetCourse } = await setupCrossSchoolImport();
+
+				const data: ShareTokenImportBodyParams = {
+					newName: 'newName',
+					destinationId: targetCourse.id,
+				};
+				const response = await loggedInClient.post(getSubPath(token), data);
+
+				expect(response.status).toEqual(201);
+			});
+
+			it('should return a valid response body', async () => {
+				const { loggedInClient, token, elementType, targetCourse } = await setupCrossSchoolImport();
+
+				const data: ShareTokenImportBodyParams = {
+					newName: 'newName',
+					destinationId: targetCourse.id,
+				};
+				const response = await loggedInClient.post(getSubPath(token), data);
+				const body = response.body as CopyApiResponse;
+
+				const expectedResult: CopyApiResponse = {
+					id: expect.any(String),
+					type: elementType,
+					status: CopyStatusEnum.SUCCESS,
+				};
+
+				expect(body).toEqual(expect.objectContaining(expectedResult));
+			});
+
+			describe('when the board has tool elements', () => {
+				const populateColumnBoardWithTools = (
+					columnBoardNode: BoardNodeEntity,
+					boardToolOne: ContextExternalToolEntity,
+					boardToolTwo: ContextExternalToolEntity
+				) => {
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+
+					const boardToolElementOne = externalToolElementEntityFactory.withParent(cardNode).build({
+						position: 0,
+						contextExternalToolId: boardToolOne.id,
+					});
+
+					const boardToolElementTwo = externalToolElementEntityFactory.withParent(cardNode).build({
+						position: 1,
+						contextExternalToolId: boardToolTwo.id,
+					});
+
+					em.persist([columnBoardNode, columnNode, cardNode, boardToolElementOne, boardToolElementTwo]);
+				};
+
+				describe('when the importing school has the proper school external tool', () => {
+					const setupExistingSchoolTool = async () => {
+						const { loggedInClient, token, targetSchool, targetCourse, sourceCourse, columnBoardNode } =
+							await setupCrossSchoolImport();
+
+						const externalTool = externalToolEntityFactory.buildWithId();
+
+						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: sourceCourse.school,
+							tool: externalTool,
+						});
+
+						const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						const targetSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: targetSchool,
+							tool: externalTool,
+						});
+
+						populateColumnBoardWithTools(columnBoardNode, sourceBoardToolOne, sourceBoardToolTwo);
+
+						await em.persistAndFlush([
+							externalTool,
+							targetSchoolTool,
+							sourceSchoolTool,
+							sourceBoardToolOne,
+							sourceBoardToolTwo,
+						]);
+						em.clear();
+
+						return { loggedInClient, token, targetSchool, targetSchoolTool, targetCourse };
+					};
+
+					it('should save the copied board', async () => {
+						const { loggedInClient, token, targetCourse } = await setupExistingSchoolTool();
+
+						const data: ShareTokenImportBodyParams = {
+							newName: 'newName',
+							destinationId: targetCourse.id,
+						};
+						const response = await loggedInClient.post(getSubPath(token), data);
+
+						expect(response.status).toEqual(201);
+
+						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.COLUMN_BOARD,
+						});
+						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
+							(node) => node.context?.id === targetCourse.id
+						);
+
+						expect(copiedColumnBoardNode).not.toBeUndefined();
+					});
+
+					it('should copy the course tools and reassign them to the correct school external tool', async () => {
+						const { loggedInClient, token, targetSchoolTool, targetCourse } = await setupExistingSchoolTool();
+
+						const data: ShareTokenImportBodyParams = {
+							newName: 'newName',
+							destinationId: targetCourse.id,
+						};
+						const response = await loggedInClient.post(getSubPath(token), data);
+
+						expect(response.status).toEqual(201);
+
+						const copiedBoardTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							schoolTool: targetSchoolTool,
+						});
+						expect(copiedBoardTools.length).toEqual(2);
+					});
+				});
+
+				describe('when the importing school does not have the proper school external tool', () => {
+					const setupNonExistingSchoolTool = async () => {
+						const { loggedInClient, token, targetSchool, targetCourse, sourceCourse, columnBoardNode } =
+							await setupCrossSchoolImport();
+
+						const sourceSchoolTool = schoolExternalToolEntityFactory.buildWithId({
+							school: sourceCourse.school,
+						});
+
+						const sourceBoardToolOne = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						const sourceBoardToolTwo = contextExternalToolEntityFactory.buildWithId({
+							schoolTool: sourceSchoolTool,
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+							contextId: new ObjectId().toHexString(),
+						});
+
+						populateColumnBoardWithTools(columnBoardNode, sourceBoardToolOne, sourceBoardToolTwo);
+
+						await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
+						em.clear();
+
+						return { loggedInClient, token, targetSchool, targetCourse };
+					};
+
+					it('should save the copied board', async () => {
+						const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
+
+						const data: ShareTokenImportBodyParams = {
+							newName: 'newName',
+							destinationId: targetCourse.id,
+						};
+						const response = await loggedInClient.post(getSubPath(token), data);
+
+						expect(response.status).toEqual(201);
+
+						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.COLUMN_BOARD,
+						});
+						const copiedColumnBoardNode: BoardNodeEntity | undefined = columnBoardNodes.find(
+							(node) => node.context?.id === targetCourse.id
+						);
+						expect(copiedColumnBoardNode).not.toBeUndefined();
+					});
+
+					it('should not copy the board tool elements and replace them with deleted elements', async () => {
+						const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
+
+						const data: ShareTokenImportBodyParams = {
+							newName: 'newName',
+							destinationId: targetCourse.id,
+						};
+						const response = await loggedInClient.post(getSubPath(token), data);
+
+						expect(response.status).toEqual(201);
+
+						const persistedBoardToolElements: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.EXTERNAL_TOOL,
+						});
+						const deletedElementNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
+							type: BoardNodeType.DELETED_ELEMENT,
+						});
+
+						expect(persistedBoardToolElements.length).not.toBeGreaterThan(2);
+						expect(deletedElementNodes.length).toEqual(2);
+					});
+
+					it('should not copy the board context external tools', async () => {
+						const { loggedInClient, token, targetCourse } = await setupNonExistingSchoolTool();
+
+						const data: ShareTokenImportBodyParams = {
+							newName: 'newName',
+							destinationId: targetCourse.id,
+						};
+						const response = await loggedInClient.post(getSubPath(token), data);
+
+						expect(response.status).toEqual(201);
+
+						const persistedBoardContextTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
+							contextType: ContextExternalToolType.BOARD_ELEMENT,
+						});
+						expect(persistedBoardContextTools.length).not.toBeGreaterThan(2);
+					});
+				});
+			});
 		});
 
 		describe('with invalid token', () => {
@@ -816,5 +820,5 @@ describe(`Share Token Import (API)`, () => {
 				expect(response.status).toEqual(HttpStatus.NOT_IMPLEMENTED);
 			});
 		});
-  });
+	});
 });

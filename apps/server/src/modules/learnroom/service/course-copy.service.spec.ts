@@ -445,6 +445,29 @@ describe('course copy service', () => {
 				expect(courseToolCopyStatus?.status).toEqual(CopyStatusEnum.FAIL);
 			});
 		});
+
+		describe('when there are no ctl tools to copy', () => {
+			const setupNoTools = () => {
+				const { course, user } = setup();
+
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([]);
+
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
+
+				return { course, user };
+			};
+
+			it('should not return copy status of course tools in the elements field', async () => {
+				const { course, user } = setupNoTools();
+
+				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+				);
+
+				expect(courseToolCopyStatus).toBeUndefined();
+			});
+		});
 	});
 
 	describe('when FEATURE_CTL_TOOLS_COPY_ENABLED is false', () => {
