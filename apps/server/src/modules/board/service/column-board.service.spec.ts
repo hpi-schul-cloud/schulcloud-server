@@ -9,6 +9,7 @@ import { columnBoardFactory } from '../testing';
 import { BoardNodeService } from './board-node.service';
 import { ColumnBoardService } from './column-board.service';
 import { ColumnBoardCopyService, ColumnBoardLinkService } from './internal';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 describe('ColumnBoardService', () => {
 	let module: TestingModule;
@@ -114,6 +115,7 @@ describe('ColumnBoardService', () => {
 			sourceStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			targetStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			userId: '1',
+			targetSchoolId: new ObjectId().toHexString(),
 		});
 
 		expect(result).toEqual(copyStatus);
