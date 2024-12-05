@@ -12,6 +12,7 @@ import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomEntity } from '@modules/room/repo/entity';
+import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
@@ -20,7 +21,7 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ImportUser } from '@modules/user-import/entity';
 import { RoomMemberEntity } from '@src/modules/room-member/repo/entity/room-member.entity';
-import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { ColumnBoardNode } from './column-board-node.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -78,7 +79,7 @@ export const ALL_ENTITIES = [
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
-	RoomMemberEntity,
+	RoomMembershipEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,

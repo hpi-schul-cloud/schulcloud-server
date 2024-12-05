@@ -66,10 +66,8 @@ describe(BoardNodeCopyService.name, () => {
 
 	const setup = () => {
 		const contextProps: BoardNodeCopyContextProps = {
-			sourceStorageLocationId: new ObjectId().toHexString(),
-			sourceStorageLocation: StorageLocation.SCHOOL,
-			targetStorageLocationId: new ObjectId().toHexString(),
-			targetStorageLocation: StorageLocation.SCHOOL,
+			sourceStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
+			targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
 			userId: new ObjectId().toHexString(),
 			filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
 		};
