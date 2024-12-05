@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleDtoFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@src/modules/authorization';
-import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
-import { RoomMemberRule } from './room-member.rule';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
+import { RoomMembershipRule } from './room-membership.rule';
 
-describe(RoomMemberRule.name, () => {
-	let service: RoomMemberRule;
+describe(RoomMembershipRule.name, () => {
+	let service: RoomMembershipRule;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomMemberRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		service = await module.get(RoomMemberRule);
+		service = await module.get(RoomMembershipRule);
 		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
@@ -30,14 +30,14 @@ describe(RoomMemberRule.name, () => {
 		describe('when entity is applicable', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roomMemberAuthorizable = new RoomMemberAuthorizable('', []);
+				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', []);
 
-				return { user, roomMemberAuthorizable };
+				return { user, roomMembershipAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMemberAuthorizable } = setup();
-				const result = service.isApplicable(user, roomMemberAuthorizable);
+				const { user, roomMembershipAuthorizable } = setup();
+				const result = service.isApplicable(user, roomMembershipAuthorizable);
 
 				expect(result).toStrictEqual(true);
 			});
@@ -64,15 +64,15 @@ describe(RoomMemberRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_VIEW] });
-				const roomMemberAuthorizable = new RoomMemberAuthorizable('', [{ roles: [roleDto], userId: user.id }]);
+				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [{ roles: [roleDto], userId: user.id }]);
 
-				return { user, roomMemberAuthorizable };
+				return { user, roomMembershipAuthorizable };
 			};
 
 			it('should return "true" for read action', () => {
-				const { user, roomMemberAuthorizable } = setup();
+				const { user, roomMembershipAuthorizable } = setup();
 
-				const res = service.hasPermission(user, roomMemberAuthorizable, {
+				const res = service.hasPermission(user, roomMembershipAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -81,9 +81,9 @@ describe(RoomMemberRule.name, () => {
 			});
 
 			it('should return "false" for write action', () => {
-				const { user, roomMemberAuthorizable } = setup();
+				const { user, roomMembershipAuthorizable } = setup();
 
-				const res = service.hasPermission(user, roomMemberAuthorizable, {
+				const res = service.hasPermission(user, roomMembershipAuthorizable, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -95,15 +95,15 @@ describe(RoomMemberRule.name, () => {
 		describe('when user is not member of room', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roomMemberAuthorizable = new RoomMemberAuthorizable('', []);
+				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', []);
 
-				return { user, roomMemberAuthorizable };
+				return { user, roomMembershipAuthorizable };
 			};
 
 			it('should return "false" for read action', () => {
-				const { user, roomMemberAuthorizable } = setup();
+				const { user, roomMembershipAuthorizable } = setup();
 
-				const res = service.hasPermission(user, roomMemberAuthorizable, {
+				const res = service.hasPermission(user, roomMembershipAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -112,9 +112,9 @@ describe(RoomMemberRule.name, () => {
 			});
 
 			it('should return "false" for write action', () => {
-				const { user, roomMemberAuthorizable } = setup();
+				const { user, roomMembershipAuthorizable } = setup();
 
-				const res = service.hasPermission(user, roomMemberAuthorizable, {
+				const res = service.hasPermission(user, roomMembershipAuthorizable, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
