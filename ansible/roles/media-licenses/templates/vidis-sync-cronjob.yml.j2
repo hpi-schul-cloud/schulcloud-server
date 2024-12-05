@@ -3,24 +3,24 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: vidis-media-activation-data-sync-cronjob
+    app: vidis-sync-cronjob
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name: vidis-media-activation-data-sync-cronjob
+    app.kubernetes.io/name: vidis-sync-cronjob
     app.kubernetes.io/component: sync
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-  name: vidis-media-activation-data-sync-cronjob
+  name: vidis-sync-cronjob
 spec:
-  schedule: 0/5 * * * *
+  schedule:"{{ SERVER_VIDIS_SYNC_CRONJOB_SCHEDULE|default("@hourly", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: vidis-media-activation-data-sync-cronjob
+          - name: vidis-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
             - configMapRef:
@@ -28,7 +28,7 @@ spec:
             - secretRef:
                 name: api-secret
             - configMapRef:
-                name: vidis-media-activation-data-sync-cronjob-configmap
+                name: vidis-sync-cronjob-configmap
             command: ['/bin/sh','-c']
             args: ['npm run nest:start:sync:vidis']
             resources:
@@ -86,10 +86,10 @@ spec:
 {% endif %}
         metadata:
           labels:
-            app: vidis-media-activation-data-sync-cronjob
+            app: vidis-sync-cronjob
             app.kubernetes.io/part-of: schulcloud-verbund
             app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name: vidis-media-activation-data-sync-cronjob
+            app.kubernetes.io/name: vidis-sync-cronjob
             app.kubernetes.io/component: sync
             app.kubernetes.io/managed-by: ansible
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}

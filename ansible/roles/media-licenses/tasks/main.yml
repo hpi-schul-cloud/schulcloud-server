@@ -1,15 +1,15 @@
-- name: media licenses sync CronJob
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: vidis-media-activation-data-sync-cronjob.yml.j2
-  tags:
-    - cronjob
-
 - name: media licenses sync CronJob ConfigMap
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
-    template: vidis-media-activation-data-sync-cronjob-configmap.yml.j2
+    template: vidis-sync-cronjob-configmap.yml.j2
   tags:
     - configmap
+
+- name: media licenses sync CronJob
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-sync-cronjob.yml.j2
+  tags:
+    - cronjob
