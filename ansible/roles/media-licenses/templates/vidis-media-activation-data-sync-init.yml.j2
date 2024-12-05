@@ -37,6 +37,8 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - secretRef:
+            name: api-secret
         - configMapRef:
             name: vidis-media-activation-data-sync-init-configmap
         - secretRef:

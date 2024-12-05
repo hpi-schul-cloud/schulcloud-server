@@ -25,10 +25,10 @@ spec:
             envFrom:
             - configMapRef:
                 name: api-configmap
+             - secretRef:
+                name: api-secret
             - configMapRef:
                 name: vidis-media-activation-data-sync-cronjob-configmap
-            - secretRef:
-                name: api-files-secret
             command: ['/bin/sh','-c']
             args: ['npm run nest:start:sync:vidis']
             resources:
