@@ -11,6 +11,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Put,
 	Query,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -89,9 +90,9 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
+		const { room, permissions } = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
 
 		return response;
 	}
@@ -115,8 +116,8 @@ export class RoomController {
 		return response;
 	}
 
-	@Patch(':roomId')
-	@ApiOperation({ summary: 'Create a new room' })
+	@Put(':roomId')
+	@ApiOperation({ summary: 'Update an existing room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomDetailsResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
@@ -128,9 +129,9 @@ export class RoomController {
 		@Param() urlParams: RoomUrlParams,
 		@Body() updateRoomParams: UpdateRoomBodyParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
+		const { room, permissions } = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
 
 		return response;
 	}

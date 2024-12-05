@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
-import { RoomMemberRepo, RoomMemberService } from '@modules/room-member';
+import { RoomMembershipRepo, RoomMembershipService } from '@src/modules/room-membership';
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,7 +8,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
+import { ColumnBoardService } from '@modules/board';
 import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
@@ -20,7 +20,7 @@ describe('RoomUc', () => {
 	let configService: DeepMocked<ConfigService>;
 	let roomService: DeepMocked<RoomService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let roomMemberService: DeepMocked<RoomMemberService>;
+	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -34,8 +34,8 @@ describe('RoomUc', () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
-					provide: RoomMemberService,
-					useValue: createMock<RoomMemberService>(),
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -46,8 +46,8 @@ describe('RoomUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: RoomMemberRepo,
-					useValue: createMock<RoomMemberRepo>(),
+					provide: RoomMembershipRepo,
+					useValue: createMock<RoomMembershipRepo>(),
 				},
 				{
 					provide: UserService,
@@ -60,7 +60,7 @@ describe('RoomUc', () => {
 		configService = module.get(ConfigService);
 		roomService = module.get(RoomService);
 		authorizationService = module.get(AuthorizationService);
-		roomMemberService = module.get(RoomMemberService);
+		roomMembershipService = module.get(RoomMembershipService);
 		await setupEntities();
 	});
 
@@ -117,7 +117,7 @@ describe('RoomUc', () => {
 			authorizationService.checkOneOfPermissions.mockReturnValue(undefined);
 			const room = roomFactory.build();
 			roomService.createRoom.mockResolvedValue(room);
-			roomMemberService.addMembersToRoom.mockRejectedValue(new Error('test'));
+			roomMembershipService.addMembersToRoom.mockRejectedValue(new Error('test'));
 			return { user, room };
 		};
 

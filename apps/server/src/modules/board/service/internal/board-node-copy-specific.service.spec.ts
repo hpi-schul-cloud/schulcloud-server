@@ -40,7 +40,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '../../testing';
-import { BoardNodeCopyContext } from './board-node-copy-context';
+import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(BoardNodeCopyService.name, () => {
@@ -98,11 +98,9 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	const setupContext = () => {
-		const contextProps = {
-			sourceStorageLocationId: new ObjectId().toHexString(),
-			sourceStorageLocation: StorageLocation.SCHOOL,
-			targetStorageLocationId: new ObjectId().toHexString(),
-			targetStorageLocation: StorageLocation.SCHOOL,
+		const contextProps: BoardNodeCopyContextProps = {
+			sourceStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
+			targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
 			userId: new ObjectId().toHexString(),
 			filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
 		};

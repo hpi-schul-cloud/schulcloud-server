@@ -59,18 +59,12 @@ describe(`share token lookup (api)`, () => {
 			};
 		};
 
-		it('should return status 500', async () => {
+		it('should return status 403', async () => {
 			const { token, loggedInClient } = await setup();
 
 			const response = await loggedInClient.get(token);
 
-			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
-			expect(response.body).toEqual({
-				code: 500,
-				message: 'Import Course Feature not enabled',
-				title: 'Internal Server Error',
-				type: 'INTERNAL_SERVER_ERROR',
-			});
+			expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 		});
 	});
 
