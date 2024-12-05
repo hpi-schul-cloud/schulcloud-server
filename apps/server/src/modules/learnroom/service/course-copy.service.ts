@@ -57,12 +57,14 @@ export class CourseCopyService {
 
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
+
+		let courseToolsCopyStatus: CopyStatus | null = null;
 		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
 			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
 			const contextExternalToolsInContext: ContextExternalTool[] =
 				await this.contextExternalToolService.findAllByContext(contextRef);
 
-			await Promise.all(
+			const copyCourseToolsResult = await Promise.all(
 				contextExternalToolsInContext.map(
 					async (tool: ContextExternalTool): Promise<ContextExternalTool | CopyContextExternalToolRejectData> => {
 						const copiedResult: ContextExternalTool | CopyContextExternalToolRejectData =
@@ -72,12 +74,19 @@ export class CourseCopyService {
 					}
 				)
 			);
+
+			courseToolsCopyStatus = this.deriveCourseToolCopyStatus(copyCourseToolsResult);
 		}
 
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 
-		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
+		const courseStatus = this.deriveCourseStatus(
+			originalCourse,
+			finishedCourseCopy,
+			boardStatus,
+			courseToolsCopyStatus
+		);
 
 		return courseStatus;
 	}
@@ -104,7 +113,12 @@ export class CourseCopyService {
 		return courseCopy;
 	}
 
-	private deriveCourseStatus(originalCourse: Course, courseCopy: Course, boardStatus: CopyStatus): CopyStatus {
+	private deriveCourseStatus(
+		originalCourse: Course,
+		courseCopy: Course,
+		boardStatus: CopyStatus,
+		courseToolsCopyStatus: CopyStatus | null
+	): CopyStatus {
 		const elements = [
 			{
 				type: CopyElementType.METADATA,
@@ -125,11 +139,8 @@ export class CourseCopyService {
 			boardStatus,
 		];
 
-		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
-			elements.push({
-				type: CopyElementType.EXTERNAL_TOOL,
-				status: CopyStatusEnum.SUCCESS,
-			});
+		if (courseToolsCopyStatus) {
+			elements.push(courseToolsCopyStatus);
 		}
 
 		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
@@ -149,5 +160,25 @@ export class CourseCopyService {
 			elements,
 		};
 		return status;
+	}
+
+	private deriveCourseToolCopyStatus(
+		copyCourseToolsResult: (ContextExternalTool | CopyContextExternalToolRejectData)[]
+	): CopyStatus {
+		let status: CopyStatusEnum = CopyStatusEnum.SUCCESS;
+		const rejectedCopies: CopyContextExternalToolRejectData[] = copyCourseToolsResult.filter(
+			(result) => result instanceof CopyContextExternalToolRejectData
+		);
+
+		if (rejectedCopies.length === copyCourseToolsResult.length) {
+			status = CopyStatusEnum.FAIL;
+		} else if (rejectedCopies.length > 0) {
+			status = CopyStatusEnum.PARTIAL;
+		}
+
+		return {
+			type: CopyElementType.EXTERNAL_TOOL,
+			status,
+		};
 	}
 }
