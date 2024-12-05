@@ -7,6 +7,7 @@
     - configmap
 
 - name: media licenses sync CronJob
+  when: WITH_MEDIA_LICENSES is defined and WITH_MEDIA_LICENSES|bool == true
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
