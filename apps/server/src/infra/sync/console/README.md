@@ -32,3 +32,4 @@ TODO: should be linked in Docusaurus
 https://github.com/hpi-schul-cloud/schulcloud-documentation
 https://documentation.dbildungscloud.dev/docs/intro
 */
+// The todo above is done with ticket EW-1051
