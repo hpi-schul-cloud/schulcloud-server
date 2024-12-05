@@ -23,11 +23,11 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		super();
 	}
 
-	getType(): SystemProvisioningStrategy {
+	public getType(): SystemProvisioningStrategy {
 		return SystemProvisioningStrategy.TSP;
 	}
 
-	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
+	public override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
 
 		if (!decodedAccessToken) {
@@ -60,8 +60,8 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		const externalClassDtoList = payload.ptscListKlasseId
-			.split(',')
-			.map((externalId) => new ExternalClassDto({ externalId }));
+			? payload.ptscListKlasseId.split(',').map((externalId) => new ExternalClassDto({ externalId }))
+			: [];
 
 		const oauthDataDto = new OauthDataDto({
 			system: input.system,
@@ -73,7 +73,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		return oauthDataDto;
 	}
 
-	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
+	public override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
 		if (!data.externalSchool) {
 			throw new BadDataLoggableException('External school is missing for user', {
 				externalId: data.externalUser.externalId,
