@@ -25,7 +25,7 @@ export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
 	@Get('export/:parentId')
-	public async exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseExportBodyResponse> {
+	public exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseExportBodyResponse> {
 		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
 	}
 
@@ -44,6 +44,6 @@ export class CommonCartridgeController {
 		@UploadedFile(CommonCartridgeFileValidatorPipe)
 		file: Express.Multer.File
 	): Promise<void> {
-		return this.commonCartridgeUC.importCourse(file);
+		await this.commonCartridgeUC.importCourse(file.buffer);
 	}
 }

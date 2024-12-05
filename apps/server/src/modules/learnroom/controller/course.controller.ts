@@ -25,11 +25,11 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
+import { SchoolService } from '@modules/school';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import {
-	CourseExportBodyParams,
 	CourseImportBodyParams,
 	CourseMetadataListResponse,
 	CourseSyncBodyParams,
@@ -45,7 +45,8 @@ export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
 		private readonly courseImportUc: CourseImportUc,
-		private readonly courseSyncUc: CourseSyncUc
+		private readonly courseSyncUc: CourseSyncUc,
+		private readonly schoolService: SchoolService
 	) {}
 
 	@Get()
@@ -65,12 +66,11 @@ export class CourseController {
 	@ApiOperation({ summary: 'Create a new course.' })
 	@ApiConsumes('application/json')
 	@ApiProduces('application/json')
-	@ApiBody({ type: CourseExportBodyParams, required: true })
 	@ApiCreatedResponse({ description: 'Course was successfully created.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async createCourse(@CurrentUser() user: ICurrentUser, @Body() body: CreateCourseBodyParams): Promise<void> {
-		await this.courseUc.createCourse(user, body);
+		await this.courseUc.createCourse(user, body.title);
 	}
 
 	@Post('import')

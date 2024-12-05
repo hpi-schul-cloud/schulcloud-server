@@ -7,5 +7,5 @@ export class CommonCartridgeImportBodyParams {
 		required: true,
 		description: 'The Common Cartridge file to import.',
 	})
-	file!: Express.Multer.File;
+	public file!: Express.Multer.File;
 }

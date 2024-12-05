@@ -1,11 +1,11 @@
+import { CourseCommonCartridgeMetadataResponse, CoursesClientAdapter } from '@infra/courses-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client';
-import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -23,7 +23,7 @@ export class CommonCartridgeExportService {
 		return courseFiles;
 	}
 
-	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
+	public async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataResponse> {
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
 		return courseCommonCartridgeMetadata;

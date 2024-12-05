@@ -9,12 +9,4 @@ export class CreateCourseBodyParams {
 		nullable: false,
 	})
 	public title!: string;
-
-	@IsString()
-	@ApiProperty({
-		description: 'The description of the course',
-		required: true,
-		nullable: false,
-	})
-	public description!: string;
 }
