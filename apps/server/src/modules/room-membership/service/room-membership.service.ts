@@ -92,6 +92,9 @@ export class RoomMembershipService {
 
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
 
+		const userIds = userIdsAndRoles.map((user) => user.userId);
+		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
+
 		return roomMembership.id;
 	}
 
