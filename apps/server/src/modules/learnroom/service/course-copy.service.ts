@@ -170,11 +170,6 @@ export class CourseCopyService {
 	private deriveCourseToolCopyStatus(
 		copyCourseToolsResult: (ContextExternalTool | CopyContextExternalToolRejectData)[]
 	): CopyStatus | null {
-		const copyStatus: CopyStatus = {
-			type: CopyElementType.EXTERNAL_TOOL,
-			status: CopyStatusEnum.SUCCESS,
-		};
-
 		if (!copyCourseToolsResult.length) {
 			return null;
 		}
@@ -183,12 +178,18 @@ export class CourseCopyService {
 			(result) => result instanceof CopyContextExternalToolRejectData
 		);
 
+		let status: CopyStatusEnum;
 		if (rejectedCopies.length === copyCourseToolsResult.length) {
-			copyStatus.status = CopyStatusEnum.FAIL;
+			status = CopyStatusEnum.FAIL;
 		} else if (rejectedCopies.length > 0) {
-			copyStatus.status = CopyStatusEnum.PARTIAL;
+			status = CopyStatusEnum.PARTIAL;
+		} else {
+			status = CopyStatusEnum.SUCCESS;
 		}
 
-		return copyStatus;
+		return {
+			type: CopyElementType.EXTERNAL_TOOL,
+			status,
+		};
 	}
 }
