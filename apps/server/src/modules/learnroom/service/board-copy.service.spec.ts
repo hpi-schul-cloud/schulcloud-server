@@ -22,7 +22,9 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
 import { columnBoardFactory } from '@src/modules/board/testing';
+import { StorageLocation } from '@src/modules/files-storage/interface';
 import { ColumnBoardNodeRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 
@@ -101,28 +103,48 @@ describe('board copy service', () => {
 			it('should return copy type "board"', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				expect(status.type).toEqual(CopyElementType.BOARD);
 			});
 
 			it('should set title copy status to "board"', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				expect(status.title).toEqual('board');
 			});
 
 			it('should set original entity in status', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				expect(status.originalEntity).toEqual(originalBoard);
 			});
 
 			it('should create a copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const board = status.copyEntity as LegacyBoard;
 				expect(board.id).not.toEqual(originalBoard.id);
 			});
@@ -130,7 +152,12 @@ describe('board copy service', () => {
 			it('should set destination course of copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const board = status.copyEntity as LegacyBoard;
 				expect(board.course.id).toEqual(destinationCourse.id);
 			});
@@ -158,7 +185,7 @@ describe('board copy service', () => {
 			it('should call taskCopyService with original task', async () => {
 				const { destinationCourse, originalBoard, user, originalTask } = setup();
 
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 				expect(taskCopyService.copyTask).toHaveBeenCalledWith({
 					originalTaskId: originalTask.id,
 					destinationCourse,
@@ -169,14 +196,19 @@ describe('board copy service', () => {
 			it('should call copyHelperService', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledTimes(1);
 			});
 
 			it('should add copy of task to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const board = status.copyEntity as LegacyBoard;
 				expect(board.getElements().length).toEqual(1);
 			});
@@ -184,7 +216,12 @@ describe('board copy service', () => {
 			it('should add status of copying task to board copy status', async () => {
 				const { destinationCourse, originalBoard, user, originalTask } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const taskStatus = status.elements?.find(
 					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name
 				);
@@ -221,13 +258,18 @@ describe('board copy service', () => {
 					user,
 				};
 
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith(expected);
 			});
 
 			it('should add lessonCopy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const board = status.copyEntity as LegacyBoard;
 
 				expect(board.getElements().length).toEqual(1);
@@ -235,7 +277,12 @@ describe('board copy service', () => {
 
 			it('should add status of lessonCopy to board copy status', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON);
 
 				expect(lessonStatus).toBeDefined();
@@ -268,22 +315,29 @@ describe('board copy service', () => {
 			it('should call columnBoardCopyService with original columnBoard', async () => {
 				const { destinationCourse, originalBoard, user, columnBoardTarget } = setup();
 
-				const expected = {
+				const expected: CopyColumnBoardParams = {
 					originalColumnBoardId: columnBoardTarget.id,
-					destinationExternalReference: {
+					targetExternalReference: {
 						type: BoardExternalReferenceType.Course,
 						id: destinationCourse.id,
 					},
+					sourceStorageLocationReference: { id: destinationCourse.school.id, type: StorageLocation.SCHOOL },
+					targetStorageLocationReference: { id: destinationCourse.school.id, type: StorageLocation.SCHOOL },
 					userId: user.id,
 				};
 
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(expected);
 			});
 
 			it('should add columnBoard copy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					originalCourse: destinationCourse,
+					user,
+					destinationCourse,
+				});
 				const board = status.copyEntity as LegacyBoard;
 
 				expect(board.getElements().length).toEqual(1);
@@ -291,7 +345,12 @@ describe('board copy service', () => {
 
 			it('should add status of columnBoard copy to board copy status', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					originalCourse: destinationCourse,
+					user,
+					destinationCourse,
+				});
 				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.COLUMNBOARD);
 
 				expect(lessonStatus).toBeDefined();
@@ -365,14 +424,14 @@ describe('board copy service', () => {
 
 			it('should trigger swapping ids for board', async () => {
 				const { destinationCourse, originalBoard, user, columnBoardCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 
 				expect(columnBoardService.swapLinkedIds).toHaveBeenCalledWith(columnBoardCopy.id, expect.anything());
 			});
 
 			it('should pass task for swapping ids', async () => {
 				const { destinationCourse, originalBoard, user, originalTask, taskCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 
 				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalTask.id)).toEqual(taskCopy.id);
@@ -380,7 +439,7 @@ describe('board copy service', () => {
 
 			it('should pass lesson for swapping ids', async () => {
 				const { destinationCourse, originalBoard, user, originalLesson, lessonCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 
 				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalLesson.id)).toEqual(lessonCopy.id);
@@ -388,7 +447,7 @@ describe('board copy service', () => {
 
 			it('should pass course for swapping ids', async () => {
 				const { originalCourse, destinationCourse, originalBoard, user } = setup();
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 
 				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalCourse.id)).toEqual(destinationCourse.id);
@@ -417,7 +476,7 @@ describe('board copy service', () => {
 
 			it('should call deriveStatusFromElements', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-				await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
 
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 			});
@@ -425,7 +484,12 @@ describe('board copy service', () => {
 			it('should use returned value from deriveStatusFromElements', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 
 				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
@@ -458,7 +522,12 @@ describe('board copy service', () => {
 			it('should skip boardelements that contain a corrupted reference', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 				const board = status.copyEntity as LegacyBoard;
 
 				expect(board.references).toHaveLength(0);
@@ -489,7 +558,12 @@ describe('board copy service', () => {
 			it('should return status fail', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const status = await copyService.copyBoard({
+					originalBoard,
+					user,
+					originalCourse: destinationCourse,
+					destinationCourse,
+				});
 
 				expect(status.status).toEqual(CopyStatusEnum.FAIL);
 			});

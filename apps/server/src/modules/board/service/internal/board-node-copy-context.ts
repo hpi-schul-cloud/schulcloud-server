@@ -5,12 +5,15 @@ import { EntityId } from '@shared/domain/types';
 import { FileRecordParentType } from '@src/infra/rabbitmq';
 import { CopyContext } from './board-node-copy.service';
 
+export type StorageLocationReference = {
+	id: EntityId;
+	type: StorageLocation;
+};
+
 export type BoardNodeCopyContextProps = {
-	sourceStorageLocationId: EntityId;
-	targetStorageLocationId: EntityId;
+	sourceStorageLocationReference: StorageLocationReference;
+	targetStorageLocationReference: StorageLocationReference;
 	userId: EntityId;
-	sourceStorageLocation: StorageLocation;
-	targetStorageLocation: StorageLocation;
 	filesStorageClientAdapterService: FilesStorageClientAdapterService;
 	targetSchoolId: EntityId;
 };
@@ -27,14 +30,14 @@ export class BoardNodeCopyContext implements CopyContext {
 			source: {
 				parentId: sourceParentId,
 				parentType: FileRecordParentType.BoardNode,
-				storageLocationId: this.props.sourceStorageLocationId,
-				storageLocation: this.props.sourceStorageLocation,
+				storageLocationId: this.props.sourceStorageLocationReference.id,
+				storageLocation: this.props.sourceStorageLocationReference.type,
 			},
 			target: {
 				parentId: targetParentId,
 				parentType: FileRecordParentType.BoardNode,
-				storageLocationId: this.props.targetStorageLocationId,
-				storageLocation: this.props.targetStorageLocation,
+				storageLocationId: this.props.targetStorageLocationReference.id,
+				storageLocation: this.props.targetStorageLocationReference.type,
 			},
 			userId: this.props.userId,
 		});

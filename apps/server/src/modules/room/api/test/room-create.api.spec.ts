@@ -2,9 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, roleFactory } from '@shared/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
-import { RoomMemberEntity } from '@src/modules/room-member';
-import { GroupEntity } from '@src/modules/group/entity';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { RoomMembershipEntity } from '@src/modules/room-membership';
+import { GroupEntity } from '@modules/group/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { RoomEntity } from '../../repo';
 
@@ -69,7 +69,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_EDITOR,
+					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT, Permission.ROOM_VIEW],
 				});
 				await em.persistAndFlush([teacherAccount, teacherUser, role]);
@@ -98,13 +98,13 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
-					const roomMember = await em.findOneOrFail(RoomMemberEntity, { roomId });
+					const roomMembership = await em.findOneOrFail(RoomMembershipEntity, { roomId });
 
 					const userGroup = await em.findOneOrFail(GroupEntity, {
-						id: roomMember.userGroupId,
+						id: roomMembership.userGroupId,
 					});
 
-					expect(roomMember).toBeDefined();
+					expect(roomMembership).toBeDefined();
 					expect(userGroup).toBeDefined();
 					expect(userGroup.users).toHaveLength(1);
 					expect(userGroup.users[0].user.id).toBe(teacherUser.id);
