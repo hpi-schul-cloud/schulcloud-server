@@ -1,5 +1,19 @@
-export * from './generated/api';
-export * from './generated/models';
-export * from './tsp-client-config';
-export * from './tsp-client-factory';
-export * from './tsp-client.module';
+export {
+	ExportApi,
+	ExportApiAxiosParamCreator,
+	ExportApiFactory,
+	ExportApiFp,
+	ExportApiInterface,
+} from './generated/api';
+export {
+	RobjExportKlasse,
+	RobjExportLehrer,
+	RobjExportLehrerMigration,
+	RobjExportSchueler,
+	RobjExportSchuelerMigration,
+	RobjExportSchule,
+	VersionResponse,
+} from './generated/models';
+export { TspClientConfig } from './tsp-client-config';
+export { TspClientFactory } from './tsp-client-factory';
+export { TspClientModule } from './tsp-client.module';

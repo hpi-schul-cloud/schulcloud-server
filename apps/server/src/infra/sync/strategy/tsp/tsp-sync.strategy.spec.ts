@@ -1,5 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Account } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
+import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
+import { System } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
+import { userDoFactory } from '@shared/testing';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { UserDO } from '@shared/domain/domainobject';
+import { Logger } from '@src/core/logger';
 import {
 	RobjExportKlasse,
 	RobjExportLehrer,
@@ -7,21 +20,8 @@ import {
 	RobjExportSchueler,
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
-} from '@infra/tsp-client';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { Account } from '@src/modules/account';
-import { accountDoFactory } from '@src/modules/account/testing';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
-import { School } from '@src/modules/school';
-import { schoolFactory } from '@src/modules/school/testing';
-import { System } from '@src/modules/system';
-import { systemFactory } from '@src/modules/system/testing';
-import { SyncStrategyTarget } from '../sync-strategy.types';
+} from '../../../tsp-client';
+import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
