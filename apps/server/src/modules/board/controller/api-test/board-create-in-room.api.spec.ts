@@ -4,7 +4,14 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
-import { cleanupCollections, groupEntityFactory, roleFactory, TestApiClient, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	groupEntityFactory,
+	roleFactory,
+	schoolEntityFactory,
+	TestApiClient,
+	userFactory,
+} from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
@@ -42,7 +49,8 @@ describe(`create board in room (api)`, () => {
 	describe('When request is valid', () => {
 		describe('When user is allowed to edit the room', () => {
 			const setup = async () => {
-				const user = userFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
 				const account = accountFactory.withUser(user).build();
 
 				const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
@@ -52,9 +60,13 @@ describe(`create board in room (api)`, () => {
 					users: [{ user, role }],
 				});
 
-				const room = roomEntityFactory.buildWithId();
+				const room = roomEntityFactory.buildWithId({ schoolId: user.school.id });
 
-				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMembership = roomMembershipEntityFactory.build({
+					roomId: room.id,
+					userGroupId: userGroup.id,
+					schoolId: user.school.id,
+				});
 
 				await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
 				em.clear();

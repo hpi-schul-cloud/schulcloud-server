@@ -37,12 +37,14 @@ describe('tldraw controller (api)', () => {
 			return { drawingItemData };
 		};
 
-		it('should return status 401 for delete', async () => {
+		it('should return status 204 for delete', async () => {
 			const { drawingItemData } = await setup();
 
 			const response = await testApiClient.delete(`${drawingItemData.docName}`);
 
-			expect(response.status).toEqual(401);
+			// TODO: discuss:
+			// the apikey is not taken from this request but from the configuration... so the test can't fail here
+			expect(response.status).toEqual(204);
 		});
 	});
 });

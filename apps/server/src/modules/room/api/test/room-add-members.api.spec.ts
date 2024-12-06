@@ -65,7 +65,11 @@ describe('Room Controller (API)', () => {
 				externalSource: undefined,
 			});
 
-			const roomMemberships = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room.id,
+				schoolId: school.id,
+			});
 			await em.persistAndFlush([
 				room,
 				roomMemberships,
