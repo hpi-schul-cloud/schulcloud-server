@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
+import { CoursesClientConfig } from '@infra/courses-client';
 import { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
@@ -75,7 +76,8 @@ export interface ServerConfig
 		AlertConfig,
 		ShdConfig,
 		OauthConfig,
-		EncryptionConfig {
+		EncryptionConfig,
+		CoursesClientConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -130,6 +132,7 @@ export interface ServerConfig
 }
 
 const config: ServerConfig = {
+	API_HOST: Configuration.get('API_HOST') as string,
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:

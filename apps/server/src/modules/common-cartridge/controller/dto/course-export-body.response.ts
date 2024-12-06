@@ -1,12 +1,12 @@
-import { CourseCommonCartridgeMetadataDto } from '../../common-cartridge-client/course-client';
+import { CourseCommonCartridgeMetadataResponse } from '@infra/courses-client';
 import { CourseFileIdsResponse } from './common-cartridge.response';
 
 export class CourseExportBodyResponse {
-	courseFileIds?: CourseFileIdsResponse;
+	public courseFileIds?: CourseFileIdsResponse;
 
-	courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto;
+	public courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataResponse;
 
-	constructor(courseExportBodyResponse: CourseExportBodyResponse) {
+	constructor(courseExportBodyResponse: Readonly<CourseExportBodyResponse>) {
 		this.courseFileIds = courseExportBodyResponse.courseFileIds;
 		this.courseCommonCartridgeMetadata = courseExportBodyResponse.courseCommonCartridgeMetadata;
 	}
