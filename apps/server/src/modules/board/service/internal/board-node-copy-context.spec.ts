@@ -13,6 +13,7 @@ describe(BoardNodeCopyContext.name, () => {
 				targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
 				userId: new ObjectId().toHexString(),
 				filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+				targetSchoolId: new ObjectId().toHexString(),
 			};
 
 			const copyContext = new BoardNodeCopyContext(contextProps);

@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { StorageLocation } from '@src/modules/files-storage/interface';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
@@ -114,6 +115,7 @@ describe('ColumnBoardService', () => {
 			sourceStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			targetStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			userId: '1',
+			targetSchoolId: new ObjectId().toHexString(),
 		});
 
 		expect(result).toEqual(copyStatus);

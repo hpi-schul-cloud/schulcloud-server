@@ -63,6 +63,7 @@ describe(ColumnBoardCopyService.name, () => {
 	describe('copyColumnBoard', () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
+			const targetSchoolId = new ObjectId().toHexString();
 			const course = courseFactory.buildWithId();
 			const originalBoard = columnBoardFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -86,6 +87,7 @@ describe(ColumnBoardCopyService.name, () => {
 				targetStorageLocationReference: { id: course.school.id, type: StorageLocation.SCHOOL },
 				userId,
 				copyTitle: 'Board Copy',
+				targetSchoolId,
 			};
 
 			return { originalBoard, userId, copyParams };
@@ -165,6 +167,7 @@ describe(ColumnBoardCopyService.name, () => {
 	describe('when the copy response is not a ColumnBoard', () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
+			const targetSchoolId = new ObjectId().toHexString();
 			const course = courseFactory.buildWithId();
 			const originalBoard = columnBoardFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -178,6 +181,7 @@ describe(ColumnBoardCopyService.name, () => {
 				targetStorageLocationReference: { id: course.school.id, type: StorageLocation.SCHOOL },
 				userId,
 				copyTitle: 'Board Copy',
+				targetSchoolId,
 			};
 
 			return { originalBoard, userId, copyParams };

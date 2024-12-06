@@ -116,7 +116,7 @@ export class BoardUc {
 		return column;
 	}
 
-	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {
+	async copyBoard(userId: EntityId, boardId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
 		this.logger.debug({ action: 'copyBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
@@ -132,6 +132,7 @@ export class BoardUc {
 			sourceStorageLocationReference: storageLocationReference,
 			targetStorageLocationReference: storageLocationReference,
 			userId,
+			targetSchoolId: schoolId,
 		});
 
 		return copyStatus;

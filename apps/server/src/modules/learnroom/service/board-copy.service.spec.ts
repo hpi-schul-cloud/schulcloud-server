@@ -324,6 +324,7 @@ describe('board copy service', () => {
 					sourceStorageLocationReference: { id: destinationCourse.school.id, type: StorageLocation.SCHOOL },
 					targetStorageLocationReference: { id: destinationCourse.school.id, type: StorageLocation.SCHOOL },
 					userId: user.id,
+					targetSchoolId: user.school.id,
 				};
 
 				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });

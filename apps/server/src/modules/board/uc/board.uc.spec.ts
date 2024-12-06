@@ -442,7 +442,7 @@ describe(BoardUc.name, () => {
 		it('should call the service to find the user', async () => {
 			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 		});
@@ -450,7 +450,7 @@ describe(BoardUc.name, () => {
 		it('should call the service to find the board', async () => {
 			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
 		});
@@ -458,7 +458,7 @@ describe(BoardUc.name, () => {
 		it('[deprecated] should call course repo to find the course', async () => {
 			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(courseRepo.findById).toHaveBeenCalled();
 		});
@@ -466,7 +466,7 @@ describe(BoardUc.name, () => {
 		it('should call Board Permission Service to check permission', async () => {
 			const { user, board } = setup();
 
-			await uc.copyBoard(user.id, board.id);
+			await uc.copyBoard(user.id, board.id, user.school.id);
 
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
@@ -478,7 +478,7 @@ describe(BoardUc.name, () => {
 			// TODO should not use course repo
 			courseRepo.findById.mockResolvedValueOnce(course);
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, {
 				action: Action.write,
@@ -489,7 +489,7 @@ describe(BoardUc.name, () => {
 		it('should call the service to copy the board', async () => {
 			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(
 				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId })
@@ -505,7 +505,7 @@ describe(BoardUc.name, () => {
 			};
 			columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
 
-			const result = await uc.copyBoard(user.id, boardId);
+			const result = await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(result).toEqual(copyStatus);
 		});

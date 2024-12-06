@@ -214,6 +214,7 @@ export class ShareTokenUC {
 			targetStorageLocationReference,
 			userId: user.id,
 			copyTitle,
+			targetSchoolId: user.school.id,
 		});
 		return copyStatus;
 	}
