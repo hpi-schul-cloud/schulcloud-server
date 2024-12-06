@@ -7,9 +7,8 @@ export class CoursesClientAdapter {
 
 	public async getCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataResponse> {
 		const response = await this.coursesApi.courseControllerGetCourseCcMetadataById(courseId);
-		const result = response.data;
 
-		return result;
+		return response.data;
 	}
 
 	public async createCourse(params: CreateCourseBodyParams): Promise<void> {
