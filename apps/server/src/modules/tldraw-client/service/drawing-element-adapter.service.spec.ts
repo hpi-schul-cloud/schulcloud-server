@@ -49,14 +49,12 @@ describe(DrawingElementAdapterService.name, () => {
 	});
 
 	describe('deleteDrawingBinData', () => {
-		describe('when WITH_TLDRAW2 env var is true', () => {
+		describe('when deleteDrawingBinData is called', () => {
 			const setup = () => {
 				const apiKey = 'a4a20e6a-8036-4603-aba6-378006fedce2';
 				const baseUrl = 'http://localhost:3349';
-				const WITH_TLDRAW2 = true;
 
 				configService.get.mockReturnValueOnce(baseUrl);
-				configService.get.mockReturnValueOnce(WITH_TLDRAW2);
 				configService.get.mockReturnValueOnce(apiKey);
 				httpService.delete.mockReturnValue(
 					of(
@@ -77,38 +75,6 @@ describe(DrawingElementAdapterService.name, () => {
 				await service.deleteDrawingBinData('test');
 
 				expect(httpService.delete).toHaveBeenCalledWith(`${baseUrl}/api/tldraw-document/test`, {
-					headers: { 'X-Api-Key': apiKey, Accept: 'Application/json' },
-				});
-			});
-		});
-
-		describe('when WITH_TLDRAW2 env var is false', () => {
-			const setup = () => {
-				const apiKey = 'a4a20e6a-8036-4603-aba6-378006fedce2';
-				const baseUrl = 'http://localhost:3349';
-				const WITH_TLDRAW2 = false;
-				configService.get.mockReturnValueOnce(baseUrl);
-				configService.get.mockReturnValueOnce(WITH_TLDRAW2);
-				configService.get.mockReturnValueOnce(apiKey);
-				httpService.delete.mockReturnValue(
-					of(
-						axiosResponseFactory.build({
-							data: '',
-							status: HttpStatus.OK,
-							statusText: 'OK',
-						})
-					)
-				);
-
-				return { apiKey, baseUrl };
-			};
-
-			it('should call axios delete method', async () => {
-				const { apiKey, baseUrl } = setup();
-
-				await service.deleteDrawingBinData('test');
-
-				expect(httpService.delete).toHaveBeenCalledWith(`${baseUrl}/api/v3/tldraw-document/test`, {
 					headers: { 'X-Api-Key': apiKey, Accept: 'Application/json' },
 				});
 			});
