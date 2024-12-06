@@ -20,12 +20,10 @@ describe(getTldrawClientConfig.name, () => {
 
 			Configuration.set('TLDRAW_ADMIN_API_CLIENT__BASE_URL', baseUrl);
 			Configuration.set('TLDRAW_ADMIN_API_CLIENT__API_KEY', apiKey);
-			Configuration.set('WITH_TLDRAW2', true);
 
 			const expectedConfig = {
 				TLDRAW_ADMIN_API_CLIENT_BASE_URL: baseUrl,
 				TLDRAW_ADMIN_API_CLIENT_API_KEY: apiKey,
-				WITH_TLDRAW2: true,
 			};
 
 			return { expectedConfig };

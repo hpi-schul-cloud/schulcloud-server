@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
+import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -15,14 +16,15 @@ export class RoomMembershipService {
 		private readonly groupService: GroupService,
 		private readonly roomMembershipRepo: RoomMembershipRepo,
 		private readonly roleService: RoleService,
-		private readonly roomService: RoomService
+		private readonly roomService: RoomService,
+		private readonly userService: UserService
 	) {}
 
 	private async createNewRoomMembership(
 		roomId: EntityId,
 		userId: EntityId,
 		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER
-	) {
+	): Promise<RoomMembership> {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const group = await this.groupService.createGroup(
@@ -65,7 +67,7 @@ export class RoomMembershipService {
 		return roomMembershipAuthorizable;
 	}
 
-	public async deleteRoomMembership(roomId: EntityId) {
+	public async deleteRoomMembership(roomId: EntityId): Promise<void> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) return;
 
@@ -90,6 +92,9 @@ export class RoomMembershipService {
 
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
 
+		const userIds = userIdsAndRoles.map((user) => user.userId);
+		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
+
 		return roomMembership.id;
 	}
 
@@ -101,6 +106,8 @@ export class RoomMembershipService {
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
+
+		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
@@ -140,5 +147,16 @@ export class RoomMembershipService {
 		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members);
 
 		return roomMembershipAuthorizable;
+	}
+
+	private async handleGuestRoleRemoval(userIds: EntityId[], schoolId: EntityId): Promise<void> {
+		const { data: groups } = await this.groupService.findGroups({ userIds, groupTypes: [GroupTypes.ROOM], schoolId });
+
+		const userIdsInGroups = groups.flatMap((group) => group.users.map((groupUser) => groupUser.userId));
+		const removeUserIds = userIds.filter((userId) => !userIdsInGroups.includes(userId));
+
+		if (removeUserIds.length > 0) {
+			await this.userService.removeSecondarySchoolFromUsers(removeUserIds, schoolId);
+		}
 	}
 }
