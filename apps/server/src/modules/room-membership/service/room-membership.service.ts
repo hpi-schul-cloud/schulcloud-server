@@ -51,7 +51,8 @@ export class RoomMembershipService {
 	private buildRoomMembershipAuthorizable(
 		roomId: EntityId,
 		group: Group,
-		roleSet: RoleDto[]
+		roleSet: RoleDto[],
+		schoolId: EntityId
 	): RoomMembershipAuthorizable {
 		const members = group.users.map((groupUser): UserWithRoomRoles => {
 			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
@@ -62,7 +63,7 @@ export class RoomMembershipService {
 			};
 		});
 
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members);
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, schoolId);
 
 		return roomMembershipAuthorizable;
 	}
@@ -120,7 +121,7 @@ export class RoomMembershipService {
 			.map((item) => {
 				const group = groupPage.data.find((g) => g.id === item.userGroupId);
 				if (!group) return null;
-				return this.buildRoomMembershipAuthorizable(item.roomId, group, roleSet);
+				return this.buildRoomMembershipAuthorizable(item.roomId, group, roleSet, item.schoolId);
 			})
 			.filter((item): item is RoomMembershipAuthorizable => item !== null);
 
@@ -130,7 +131,8 @@ export class RoomMembershipService {
 	public async getRoomMembershipAuthorizable(roomId: EntityId): Promise<RoomMembershipAuthorizable> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			return new RoomMembershipAuthorizable(roomId, []);
+			const room = await this.roomService.getSingleRoom(roomId);
+			return new RoomMembershipAuthorizable(roomId, [], room.schoolId);
 		}
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const roleSet = await this.roleService.findByIds(group.users.map((groupUser) => groupUser.roleId));
@@ -144,7 +146,7 @@ export class RoomMembershipService {
 			};
 		});
 
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members);
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, roomMembership.schoolId);
 
 		return roomMembershipAuthorizable;
 	}
