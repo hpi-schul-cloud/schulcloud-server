@@ -67,6 +67,11 @@ export interface SubmissionItemProps extends BoardNodeProps {
 	userId: EntityId;
 }
 
+export interface VideoConferenceElementProps extends BoardNodeProps {
+	title: string;
+	url: string;
+}
+
 export interface DeletedElementProps extends BoardNodeProps {
 	title: string;
 	deletedElementType: ContentElementType;
@@ -105,4 +110,5 @@ export type AnyBoardNodeProps =
 	| RichTextElementProps
 	| SubmissionContainerElementProps
 	| SubmissionItemProps
+	| VideoConferenceElementProps
 	| MediaBoardNodeProps;

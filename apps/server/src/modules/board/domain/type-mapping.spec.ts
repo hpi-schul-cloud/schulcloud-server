@@ -17,6 +17,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
+	videoConferenceElementFactory,
 } from '../testing';
 
 describe('getBoardNodeType', () => {
@@ -37,6 +38,7 @@ describe('getBoardNodeType', () => {
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT
 		);
 		expect(getBoardNodeType(submissionItemFactory.build())).toBe(BoardNodeType.SUBMISSION_ITEM);
+		expect(getBoardNodeType(videoConferenceElementFactory.build())).toBe(BoardNodeType.VIDEO_CONFERENCE_ELEMENT);
 	});
 
 	it('should throw error for unknown type', () => {

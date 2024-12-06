@@ -4,6 +4,8 @@ import { BaseEntityWithTimestamps } from './base.entity';
 export enum TargetModels {
 	COURSES = 'courses',
 	EVENTS = 'events',
+	ROOMS = 'rooms',
+	VIDEO_CONFERENCE_ELEMENTS = 'video-conference-elements',
 }
 
 export class VideoConferenceOptions {
