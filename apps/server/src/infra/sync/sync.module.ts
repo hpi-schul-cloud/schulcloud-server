@@ -18,11 +18,14 @@ import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 import { TspFetchService } from './tsp/tsp-fetch.service';
+import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
 
 @Module({
 	imports: [
 		LoggerModule,
 		ConsoleWriterModule,
+		SystemModule,
+		SchoolModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspClientModule,
@@ -43,6 +46,8 @@ import { TspFetchService } from './tsp/tsp-fetch.service';
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspFetchService, TspLegacyMigrationService]
 			: []),
+		VidisSyncService,
+		VidisSyncStrategy,
 	],
 	exports: [SyncConsole],
 })

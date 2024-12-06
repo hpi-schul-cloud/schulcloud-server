@@ -8,7 +8,12 @@ export class MediaSourceMapper {
 		const entityProps: EntityData<MediaSourceEntity> = {
 			name: entityDO.name,
 			sourceId: entityDO.sourceId,
-			config: entityDO.config ? MediaSourceConfigMapper.mapToEntity(entityDO.config) : undefined,
+			oauthConfig: entityDO.oauthConfig
+				? MediaSourceConfigMapper.mapOauthConfigToEntity(entityDO.oauthConfig)
+				: undefined,
+			basicConfig: entityDO.basicConfig
+				? MediaSourceConfigMapper.mapBasicConfigToEntity(entityDO.basicConfig)
+				: undefined,
 			format: entityDO.format,
 		};
 
@@ -20,7 +25,8 @@ export class MediaSourceMapper {
 			id: entity.id,
 			name: entity.name,
 			sourceId: entity.sourceId,
-			config: entity.config ? MediaSourceConfigMapper.mapToDo(entity.config) : undefined,
+			oauthConfig: entity.oauthConfig ? MediaSourceConfigMapper.mapOauthConfigToDo(entity.oauthConfig) : undefined,
+			basicConfig: entity.basicConfig ? MediaSourceConfigMapper.mapBasicConfigToDo(entity.basicConfig) : undefined,
 			format: entity.format,
 		});
 

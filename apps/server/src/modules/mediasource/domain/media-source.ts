@@ -1,4 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { MediaSourceBasicAuthConfig } from './media-source-basic-auth-config';
 import { MediaSourceOauthConfig } from './media-source-oauth-config';
 import { MediaSourceDataFormat } from '../enum';
 
@@ -9,9 +10,11 @@ export interface MediaSourceProps extends AuthorizableObject {
 
 	sourceId: string;
 
-	format?: MediaSourceDataFormat;
+	oauthConfig?: MediaSourceOauthConfig;
 
-	config?: MediaSourceOauthConfig;
+	basicConfig?: MediaSourceBasicAuthConfig;
+
+	format?: MediaSourceDataFormat;
 }
 
 export class MediaSource extends DomainObject<MediaSourceProps> {
@@ -27,7 +30,11 @@ export class MediaSource extends DomainObject<MediaSourceProps> {
 		return this.props.format;
 	}
 
-	get config(): MediaSourceOauthConfig | undefined {
-		return this.props.config;
+	get oauthConfig(): MediaSourceOauthConfig | undefined {
+		return this.props.oauthConfig;
+	}
+
+	get basicConfig(): MediaSourceBasicAuthConfig | undefined {
+		return this.props.basicConfig;
 	}
 }
