@@ -6,9 +6,8 @@ import { VidisSyncService } from '../service/vidis-sync.service';
 
 @Injectable()
 export class VidisSyncStrategy extends SyncStrategy {
-	constructor(private readonly logger: Logger, private readonly vidisSyncService: VidisSyncService) {
+	constructor(private readonly vidisSyncService: VidisSyncService) {
 		super();
-		this.logger.setContext(VidisSyncStrategy.name);
 	}
 
 	public override getType(): SyncStrategyTarget {
