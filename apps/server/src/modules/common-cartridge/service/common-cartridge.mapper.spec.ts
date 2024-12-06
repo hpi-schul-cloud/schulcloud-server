@@ -3,13 +3,15 @@ import { faker } from '@faker-js/faker';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import {
 	boardTaskFactory,
+	courseMetadataFactory,
 	lessonContentFactory,
+	lessonFactory,
 	lessonLinkedTaskFactory,
 	linkElementFactory,
 	richTextElementFactroy,
 } from '../testing/common-cartridge-dtos.factory';
-import { LessonContentDtoComponentValues } from '../common-cartridge-client/lesson-client/dto';
 import {
+	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
@@ -17,6 +19,11 @@ import {
 import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
 import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
 import { createIdentifier } from '../export/utils';
+import { LessonContentResponseContentInnerDto } from '../common-cartridge-client/lesson-client/dto/lesson-content-response-inner.dto';
+import {
+	LessonContentDtoComponent,
+	LessonContentDtoComponentValues,
+} from '../common-cartridge-client/lesson-client/dto';
 
 const GEOGEBRA_BASE_URL = 'https://geogebra.org';
 
@@ -35,8 +42,71 @@ describe('CommonCartridgeExportMapper', () => {
 	afterAll(async () => {
 		await module.close();
 	});
+
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
+	});
+
+	describe('mapCourseToManifest', () => {
+		const setup = () => {
+			const courseId = faker.string.uuid();
+			const version = CommonCartridgeVersion.V_1_1_0;
+			return { courseId, version };
+		};
+
+		describe('when mapping course to manifest', () => {
+			const { courseId, version } = setup();
+			it('should map course to manifest', () => {
+				const result = sut.mapCourseToManifest(version, courseId);
+
+				expect(result).toEqual({
+					version,
+					identifier: createIdentifier(courseId),
+				});
+			});
+		});
+	});
+
+	describe('mapCourseToMetadata', () => {
+		const setup = () => {
+			const courseMetadata = courseMetadataFactory.build();
+			return { courseMetadata };
+		};
+
+		describe('when mapping metadata of a course to DTO', () => {
+			const { courseMetadata } = setup();
+			it('should map metadata to a CourseCommonCartridgeMetadataDto', () => {
+				const result = sut.mapCourseToMetadata(courseMetadata);
+
+				expect(result).toEqual({
+					type: CommonCartridgeElementType.METADATA,
+					title: courseMetadata.courseName,
+					copyrightOwners: courseMetadata.copyRightOwners,
+					creationDate: courseMetadata.creationDate ? new Date(courseMetadata.creationDate) : new Date(),
+				});
+			});
+		});
+	});
+
+	describe('mapLessonToOrganization', () => {
+		const setup = () => {
+			const lesson = lessonFactory.build();
+
+			return { lesson };
+		};
+
+		describe('when mapping lesson to organization', () => {
+			const { lesson } = setup();
+
+			it('should map lesson identifier and title to organization', () => {
+				const result = sut.mapLessonToOrganization(lesson);
+
+				expect(result).toEqual({
+					identifier: createIdentifier(lesson.lessonId),
+					title: lesson.name,
+				});
+			});
+		});
 	});
 
 	describe('mapContentToResources', () => {
@@ -49,6 +119,7 @@ describe('CommonCartridgeExportMapper', () => {
 				};
 				return { lessonContent };
 			};
+
 			it('should map lesson content to GeoGebra resources', () => {
 				const { lessonContent } = setup();
 				const result = sut.mapContentToResources(lessonContent);
@@ -109,6 +180,23 @@ describe('CommonCartridgeExportMapper', () => {
 					title: '',
 					url: '',
 				});
+			});
+		});
+
+		describe('when lesson has no content', () => {
+			const setup = () => {
+				const lessonContent = lessonContentFactory.build();
+				lessonContent.content = {} as unknown as LessonContentResponseContentInnerDto;
+				lessonContent.component = {} as unknown as LessonContentDtoComponent;
+
+				return { lessonContent };
+			};
+
+			it('should return an empty array of contents', () => {
+				const { lessonContent } = setup();
+				const result = sut.mapContentToResources(lessonContent);
+
+				expect(result).toBeInstanceOf(Array);
 			});
 		});
 	});
