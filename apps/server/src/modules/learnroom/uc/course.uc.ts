@@ -32,8 +32,10 @@ export class CourseUc {
 		return role.permissions ?? [];
 	}
 
-	public findCourseById(courseId: EntityId): Promise<Course> {
-		return this.courseService.findById(courseId);
+	public async findCourseById(courseId: EntityId): Promise<Course> {
+		const course = await this.courseService.findById(courseId);
+
+		return course;
 	}
 
 	public async createCourse(currentUser: ICurrentUser, name: string): Promise<void> {

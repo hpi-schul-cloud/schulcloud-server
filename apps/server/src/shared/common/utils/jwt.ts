@@ -14,19 +14,19 @@ export class JwtExtractor {
 			return token;
 		};
 	}
+
+	public static extractJwtFromRequest(request: Request): string {
+		const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+
+		if (!jwt) {
+			throw new UnauthorizedException('No JWT token found');
+		}
+
+		return jwt;
+	}
 }
 
 export const extractJwtFromHeader = ExtractJwt.fromExtractors([
 	ExtractJwt.fromAuthHeaderAsBearerToken(),
 	JwtExtractor.fromCookie('jwt'),
 ]);
-
-export const extractJwtFromRequest = (request: Request): string => {
-	const jwt = extractJwtFromHeader(request);
-
-	if (!jwt) {
-		throw new UnauthorizedException('No JWT token found');
-	}
-
-	return jwt;
-};
