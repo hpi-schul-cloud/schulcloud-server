@@ -57,6 +57,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
 		const scope: GroupScope = new GroupScope();
 		scope.byUserId(filter.userId);
+		scope.byUserIds(filter.userIds);
 		scope.byOrganizationId(filter.schoolId);
 		scope.bySystemId(filter.systemId);
 

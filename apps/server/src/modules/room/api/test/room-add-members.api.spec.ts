@@ -9,6 +9,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 } from '@shared/testing';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
@@ -45,10 +46,13 @@ describe('Room Controller (API)', () => {
 
 	describe('PATCH /rooms/:roomId/members/add', () => {
 		const setupRoomWithMembers = async () => {
-			const room = roomEntityFactory.buildWithId();
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const school = schoolEntityFactory.buildWithId();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 				UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
+			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const role = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
@@ -67,6 +71,8 @@ describe('Room Controller (API)', () => {
 				roomMemberships,
 				teacherAccount,
 				teacherUser,
+				teacherGuestRole,
+				studentGuestRole,
 				otherTeacherUser,
 				otherTeacherAccount,
 				userGroupEntity,
