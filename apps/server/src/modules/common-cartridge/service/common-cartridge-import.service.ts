@@ -5,7 +5,7 @@ import { DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.t
 
 @Injectable()
 export class CommonCartridgeImportService {
-	constructor(private readonly courseClient: CoursesClientAdapter) {}
+	constructor(private readonly coursesClient: CoursesClientAdapter) {}
 
 	public async importFile(file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
@@ -13,11 +13,9 @@ export class CommonCartridgeImportService {
 		await this.createCourse(parser);
 	}
 
-	private createCourse(parser: CommonCartridgeFileParser): Promise<void> {
-		// TODO: better default name
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	private async createCourse(parser: CommonCartridgeFileParser): Promise<void> {
 		const courseName = parser.getTitle() || 'Untitled Course';
 
-		throw new Error('Not implemented');
+		await this.coursesClient.createCourse({ title: courseName });
 	}
 }
