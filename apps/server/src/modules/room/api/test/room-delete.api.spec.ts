@@ -10,6 +10,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 } from '@shared/testing';
 import { RoomMembershipEntity } from '@src/modules/room-membership';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
@@ -99,12 +100,17 @@ describe('Room Controller (API)', () => {
 					name: RoleName.ROOMEDITOR,
 					permissions: [Permission.ROOM_EDIT],
 				});
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
 					users: [{ role, user: teacherUser }],
 				});
-				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const roomMembership = roomMembershipEntityFactory.build({
+					roomId: room.id,
+					userGroupId: userGroup.id,
+					schoolId: teacherUser.school.id,
+				});
 				await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, role]);
 				em.clear();
 
