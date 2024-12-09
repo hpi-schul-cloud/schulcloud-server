@@ -81,7 +81,7 @@ export class SchulconnexGroupProvisioningService {
 		systemId: EntityId
 	): Promise<Group | null> {
 		let organizationId: string | undefined;
-		const beforeGetFilteredGroupUsersStart = performance.now();
+		// const beforeGetFilteredGroupUsersStart = performance.now();
 		if (externalSchool) {
 			const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
 				externalSchool.externalId,
@@ -117,19 +117,19 @@ export class SchulconnexGroupProvisioningService {
 					: undefined,
 			users: existingGroup?.users ?? [],
 		});
-		const beforeGetFilteredGroupUsers = performance.now() - beforeGetFilteredGroupUsersStart;
-		console.log('get School + findGroup + build new Group took: ', beforeGetFilteredGroupUsers);
+		// const beforeGetFilteredGroupUsers = performance.now() - beforeGetFilteredGroupUsersStart;
+		// console.log('get School + create Group: ', beforeGetFilteredGroupUsers);
 
-		const getGroupUsersStart = performance.now();
+		// const getGroupUsersStart = performance.now();
 		if (externalGroup.otherUsers !== undefined) {
 			const otherUsers: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
 
 			group.users = otherUsers;
 		}
-		const getGroupUsers = performance.now() - getGroupUsersStart;
-		console.log('getFilteredGroupUsers: ', getGroupUsers);
+		// const getGroupUsers = performance.now() - getGroupUsersStart;
+		// console.log('getFilteredGroupUsers: ', getGroupUsers);
 
-		const addSelfToGroupStart = performance.now();
+		// const addSelfToGroupStart = performance.now();
 		const self: GroupUser | null = await this.getGroupUser(externalGroup.user, systemId);
 
 		if (!self) {
@@ -137,14 +137,21 @@ export class SchulconnexGroupProvisioningService {
 		}
 
 		group.addUser(self);
-		const addSelfToGroup = performance.now() - addSelfToGroupStart;
-		console.log('getGroupUser(self) + group.addUser(self) took: ', addSelfToGroup);
+		// const addSelfToGroup = performance.now() - addSelfToGroupStart;
+		// console.log('getGroupUser(self) + group.addUser(self): ', addSelfToGroup);
 
-		const saveGroupStart = performance.now();
+		// const saveGroupStart = performance.now();
 		const savedGroup: Group = await this.groupService.save(group);
-		const saveGroup = performance.now() - saveGroupStart;
-		console.log('save group took: ', saveGroup);
+		// const saveGroup = performance.now() - saveGroupStart;
+		// console.log('save group: ', saveGroup);
 
+		/* const provisionLogs = {
+			getSchoolFindGroupBuildNewGroup: beforeGetFilteredGroupUsers,
+			getGroupUsers,
+			addSelfToGroup,
+			saveGroup,
+		};
+		console.log(provisionLogs); */
 		return savedGroup;
 	}
 
@@ -166,8 +173,15 @@ export class SchulconnexGroupProvisioningService {
 	}
 
 	private async getGroupUser(externalGroupUser: ExternalGroupUserDto, systemId: EntityId): Promise<GroupUser | null> {
+		// const getUserStart = performance.now();
 		const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+		// const getUser = performance.now() - getUserStart;
+		// console.log('getUser: ', getUser);
+
+		// const getRolesStart = performance.now();
 		const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
+		// const getRoles = performance.now() - getRolesStart;
+		// console.log('getRoles: ', getRoles);
 
 		if (!user?.id || roles.length !== 1 || !roles[0].id) {
 			// this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
