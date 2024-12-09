@@ -6,6 +6,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { legacySchoolDoFactory } from '@shared/testing';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';
@@ -13,12 +15,13 @@ import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
 import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolRef } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ContextExternalTool,
 	ContextExternalToolProps,
 	ContextRef,
+	CopyContextExternalToolRejectData,
 	RestrictedContextMismatchLoggableException,
 } from '../domain';
 import { contextExternalToolFactory } from '../testing';
@@ -430,64 +433,201 @@ describe(ContextExternalToolService.name, () => {
 			};
 		};
 
-		it('should find schoolExternalTool', async () => {
-			const { contextExternalTool, contextCopyId } = setup();
+		describe('when the tool to copy is from the same school', () => {
+			it('should find schoolExternalTool', async () => {
+				const { contextExternalTool, contextCopyId, schoolExternalTool } = setup();
 
-			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+				await service.copyContextExternalTool(contextExternalTool, contextCopyId, schoolExternalTool.schoolId);
 
-			expect(schoolExternalToolService.findById).toHaveBeenCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
+				expect(schoolExternalToolService.findById).toHaveBeenCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
+			});
+
+			it('should find externalTool', async () => {
+				const { contextExternalTool, contextCopyId, schoolExternalTool } = setup();
+
+				await service.copyContextExternalTool(contextExternalTool, contextCopyId, schoolExternalTool.schoolId);
+
+				expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+			});
+
+			it('should remove values from protected parameters', async () => {
+				const { contextExternalTool, contextCopyId, schoolExternalTool } = setup();
+
+				let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData = await service.copyContextExternalTool(
+					contextExternalTool,
+					contextCopyId,
+					schoolExternalTool.schoolId
+				);
+
+				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
+				copiedTool = copiedTool as ContextExternalTool;
+
+				expect(copiedTool).toEqual(
+					expect.objectContaining<ContextExternalToolProps>({
+						id: expect.any(String),
+						contextRef: { id: contextCopyId, type: ToolContextType.COURSE },
+						displayName: contextExternalTool.displayName,
+						schoolToolRef: contextExternalTool.schoolToolRef,
+						parameters: [
+							{
+								name: contextExternalTool.parameters[0].name,
+								value: undefined,
+							},
+							{
+								name: contextExternalTool.parameters[1].name,
+								value: contextExternalTool.parameters[1].value,
+							},
+						],
+					})
+				);
+			});
+
+			it('should not copy unused parameter', async () => {
+				const { contextExternalTool, contextCopyId, unusedParam, schoolExternalTool } = setup();
+
+				let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData = await service.copyContextExternalTool(
+					contextExternalTool,
+					contextCopyId,
+					schoolExternalTool.schoolId
+				);
+
+				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
+				copiedTool = copiedTool as ContextExternalTool;
+
+				expect(copiedTool.parameters.length).toEqual(2);
+				expect(copiedTool.parameters).not.toContain(unusedParam);
+			});
+
+			it('should save copied tool', async () => {
+				const { contextExternalTool, contextCopyId, schoolExternalTool } = setup();
+
+				await service.copyContextExternalTool(contextExternalTool, contextCopyId, schoolExternalTool.schoolId);
+
+				expect(contextExternalToolRepo.save).toHaveBeenCalledWith(
+					new ContextExternalTool({ ...contextExternalTool.getProps(), id: expect.any(String) })
+				);
+			});
 		});
 
-		it('should find externalTool', async () => {
-			const { contextExternalTool, contextCopyId, schoolExternalTool } = setup();
+		describe('when the tool to copy is from another school', () => {
+			describe('when the target school has the correct school external tool', () => {
+				const setupTools = () => {
+					const { contextCopyId, contextExternalTool, schoolExternalTool } = setup();
+					const sourceSchoolTool = schoolExternalTool;
 
-			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+					const targetSchool: School = schoolFactory.build();
+					const targetSchoolExternalTool = schoolExternalToolFactory.buildWithId({
+						toolId: sourceSchoolTool.toolId,
+						schoolId: targetSchool.id,
+					});
 
-			expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
-		});
+					schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([targetSchoolExternalTool]);
 
-		it('should remove values from protected parameters', async () => {
-			const { contextExternalTool, contextCopyId } = setup();
+					const expectedSchoolToolRef: SchoolExternalToolRef = {
+						schoolToolId: targetSchoolExternalTool.id,
+						schoolId: targetSchool.id,
+					};
 
-			const copiedTool: ContextExternalTool = await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+					return {
+						contextCopyId,
+						contextExternalTool,
+						targetSchool,
+						targetSchoolExternalTool,
+						expectedSchoolToolRef,
+					};
+				};
 
-			expect(copiedTool).toEqual(
-				expect.objectContaining<ContextExternalToolProps>({
-					id: expect.any(String),
-					contextRef: { id: contextCopyId, type: ToolContextType.COURSE },
-					displayName: contextExternalTool.displayName,
-					schoolToolRef: contextExternalTool.schoolToolRef,
-					parameters: [
-						{
-							name: contextExternalTool.parameters[0].name,
-							value: undefined,
-						},
-						{
-							name: contextExternalTool.parameters[1].name,
-							value: contextExternalTool.parameters[1].value,
-						},
-					],
-				})
-			);
-		});
+				it('should find the correct SchoolExternalTool for the target school', async () => {
+					const { contextExternalTool, contextCopyId, targetSchool, targetSchoolExternalTool } = setupTools();
 
-		it('should not copy unused parameter', async () => {
-			const { contextExternalTool, contextCopyId, unusedParam } = setup();
+					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
-			const copiedTool: ContextExternalTool = await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+					expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({
+						toolId: targetSchoolExternalTool.toolId,
+						schoolId: targetSchool.id,
+					});
+				});
 
-			expect(copiedTool.parameters.length).toEqual(2);
-			expect(copiedTool.parameters).not.toContain(unusedParam);
-		});
+				it('should return the copied tool as type ContextExternalTool', async () => {
+					const { contextExternalTool, contextCopyId, targetSchool } = setupTools();
 
-		it('should save copied tool', async () => {
-			const { contextExternalTool, contextCopyId } = setup();
+					const copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
+						await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
-			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+					expect(copiedTool instanceof ContextExternalTool).toEqual(true);
+				});
 
-			expect(contextExternalToolRepo.save).toHaveBeenCalledWith(
-				new ContextExternalTool({ ...contextExternalTool.getProps(), id: expect.any(String) })
-			);
+				it('should assign the copied tool the correct school tool', async () => {
+					const { contextExternalTool, contextCopyId, targetSchool, expectedSchoolToolRef } = setupTools();
+
+					let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
+						await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
+
+					expect(copiedTool instanceof ContextExternalTool).toEqual(true);
+					copiedTool = copiedTool as ContextExternalTool;
+
+					expect(copiedTool.schoolToolRef).toMatchObject(expectedSchoolToolRef);
+				});
+
+				it('should saved the copied tool with correct school tool', async () => {
+					const { contextExternalTool, contextCopyId, expectedSchoolToolRef, targetSchool } = setupTools();
+
+					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
+
+					expect(contextExternalToolRepo.save).toBeCalledWith(
+						new ContextExternalTool({
+							...contextExternalTool.getProps(),
+							schoolToolRef: expectedSchoolToolRef,
+							id: expect.any(String),
+						})
+					);
+				});
+			});
+
+			describe('when the target school does no have the correct school external tool', () => {
+				const setupTools = () => {
+					const { contextCopyId, contextExternalTool, schoolExternalTool } = setup();
+
+					const targetSchool: School = schoolFactory.build();
+
+					schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+
+					return {
+						contextCopyId,
+						contextExternalTool,
+						targetSchool,
+						sourceSchoolTool: schoolExternalTool,
+					};
+				};
+
+				it('should find the correct SchoolExternalTool for the target school', async () => {
+					const { contextExternalTool, contextCopyId, targetSchool, sourceSchoolTool } = setupTools();
+
+					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
+
+					expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({
+						toolId: sourceSchoolTool.toolId,
+						schoolId: targetSchool.id,
+					});
+				});
+
+				it('should return an object type CopyContextExternalToolRejectData', async () => {
+					const { contextExternalTool, contextCopyId, targetSchool } = setupTools();
+
+					const copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
+						await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
+
+					expect(copiedTool instanceof CopyContextExternalToolRejectData).toEqual(true);
+				});
+
+				it('should not save the copied tool to the database', async () => {
+					const { contextExternalTool, contextCopyId, targetSchool } = setupTools();
+
+					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
+
+					expect(contextExternalToolRepo.save).not.toBeCalled();
+				});
+			});
 		});
 	});
 });

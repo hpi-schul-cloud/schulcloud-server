@@ -1139,6 +1139,7 @@ describe('ShareTokenUC', () => {
 					targetStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
 					userId: user.id,
 					copyTitle: newName,
+					targetSchoolId: user.school.id,
 				});
 			});
 			it('should return the result', async () => {
