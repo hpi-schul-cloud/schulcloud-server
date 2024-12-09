@@ -1,1 +1,1 @@
-export * from './tsp';
+export * from './strategy/tsp';
