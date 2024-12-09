@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
+import { CoursesClientConfig } from '@infra/courses-client';
 import { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
@@ -11,6 +12,7 @@ import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
+import { CommonCartridgeConfig } from '@modules/common-cartridge';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
@@ -75,7 +77,9 @@ export interface ServerConfig
 		AlertConfig,
 		ShdConfig,
 		OauthConfig,
-		EncryptionConfig {
+		EncryptionConfig,
+		CoursesClientConfig,
+		CommonCartridgeConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -130,6 +134,7 @@ export interface ServerConfig
 }
 
 const config: ServerConfig = {
+	API_HOST: Configuration.get('API_HOST') as string,
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:

@@ -1,15 +1,15 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardClientAdapter } from '../common-cartridge-client/board-client';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CoursesClientAdapter } from '../common-cartridge-client/course-client';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -87,6 +87,7 @@ describe('CommonCartridgeExportService', () => {
 				id: courseId,
 				title: faker.lorem.sentence(),
 				copyRightOwners: [faker.lorem.word()],
+				creationDate: faker.date.recent().toString(),
 			};
 
 			coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(expected);
