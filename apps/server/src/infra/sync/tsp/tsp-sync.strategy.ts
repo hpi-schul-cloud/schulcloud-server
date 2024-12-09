@@ -28,6 +28,12 @@ import { TspFetchService } from './tsp-fetch.service';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
+	private readonly schoolLimit: number;
+
+	private readonly dataLimit: number;
+
+	private readonly migrationLimit: number;
+
 	private readonly schoolDaysToFetch: number;
 
 	private readonly schoolDataDaysToFetch: number;
@@ -46,13 +52,13 @@ export class TspSyncStrategy extends SyncStrategy {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
 
-		// this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
+		this.schoolLimit = configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT');
 		this.schoolDaysToFetch = configService.get<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', 1);
 
-		// this.dataLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT'));
+		this.dataLimit = configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
 		this.schoolDataDaysToFetch = configService.get<number>('TSP_SYNC_DATA_DAYS_TO_FETCH', 1);
 
-		// this.migrationLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT'));
+		this.migrationLimit = configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT');
 		this.migrationEnabled = configService.get<boolean>('FEATURE_TSP_MIGRATION_ENABLED', false);
 	}
 
@@ -144,17 +150,34 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspTeacherIds = await this.tspFetchService.fetchTspTeacherMigrations(system);
 		this.logger.info(new TspTeachersFetchedLoggable(tspTeacherIds.length));
 
-		const teacherMigrationPromises = tspTeacherIds.map(async ({ lehrerUidAlt, lehrerUidNeu }) => {
-			if (lehrerUidAlt && lehrerUidNeu) {
-				await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
-				return true;
-			}
-			return false;
-		});
+		const batches = tspTeacherIds.length / this.migrationLimit;
 
-		const migratedTspTeachers = await Promise.allSettled(teacherMigrationPromises);
+		let total = 0;
+		for await (const batch of Array.from(Array(batches).keys())) {
+			const currentBatch = tspTeacherIds.slice(batch * this.migrationLimit, (batch + 1) * this.migrationLimit);
+			const teacherMigrationPromises = currentBatch.map(async ({ lehrerUidAlt, lehrerUidNeu }) => {
+				if (lehrerUidAlt && lehrerUidNeu) {
+					await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
+					return true;
+				}
+				return false;
+			});
+			const migratedTspTeachers = await Promise.allSettled(teacherMigrationPromises);
+			const batchSuccess = migratedTspTeachers.filter(
+				(result) => result.status === 'fulfilled' && result.value === true
+			).length;
+			total += batchSuccess;
 
-		const total = migratedTspTeachers.filter((result) => result.status === 'fulfilled' && result.value === true).length;
+			const msg = `Batch ${batch} done: This batch: ${batchSuccess}, Total: ${total}`;
+			this.logger.info({
+				getLogMessage() {
+					return {
+						message: msg,
+					};
+				},
+			});
+		}
+
 		this.logger.info(new TspTeachersMigratedLoggable(total));
 
 		return { total };
