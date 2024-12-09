@@ -7,6 +7,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -48,17 +49,22 @@ describe('Sharing Controller (API)', () => {
 
 	describe('POST /sharetoken/:token/import', () => {
 		const setup = async () => {
-			const room = roomEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
+			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 			const role = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_EDIT],
 			});
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
 				users: [{ role, user: teacherUser }],
 			});
-			const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+			const roomMembership = roomMembershipEntityFactory.build({
+				roomId: room.id,
+				userGroupId: userGroup.id,
+				schoolId: school.id,
+			});
 			const board = columnBoardEntityFactory.build({
 				context: { id: room.id, type: BoardExternalReferenceType.Room },
 			});

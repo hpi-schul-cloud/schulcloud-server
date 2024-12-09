@@ -236,6 +236,7 @@ describe(BoardContextService.name, () => {
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
 					});
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
@@ -271,6 +272,7 @@ describe(BoardContextService.name, () => {
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
 					});
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
@@ -306,6 +308,7 @@ describe(BoardContextService.name, () => {
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
 					});
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);

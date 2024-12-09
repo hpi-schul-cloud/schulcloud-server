@@ -52,7 +52,7 @@ export class ShareTokenUC {
 		this.logger.setContext(ShareTokenUC.name);
 	}
 
-	async createShareToken(
+	public async createShareToken(
 		userId: EntityId,
 		payload: ShareTokenPayload,
 		options?: { schoolExclusive?: boolean; expiresInDays?: number }
@@ -80,7 +80,7 @@ export class ShareTokenUC {
 		return shareToken;
 	}
 
-	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
+	public async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
 		this.logger.debug({ action: 'lookupShareToken', userId, token });
 
 		const { shareToken, parentName } = await this.shareTokenService.lookupTokenWithParentName(token);
@@ -102,7 +102,7 @@ export class ShareTokenUC {
 		return shareTokenInfo;
 	}
 
-	async importShareToken(
+	public async importShareToken(
 		userId: EntityId,
 		token: string,
 		newName: string,
@@ -282,14 +282,14 @@ export class ShareTokenUC {
 		);
 	}
 
-	private async checkSchoolReadPermission(user: User, schoolId: EntityId) {
+	private async checkSchoolReadPermission(user: User, schoolId: EntityId): Promise<void> {
 		const school = await this.schoolService.getSchoolById(schoolId);
 		const authorizationContext = AuthorizationContextBuilder.read([]);
 
 		this.authorizationService.checkPermission(user, school, authorizationContext);
 	}
 
-	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
+	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.contextType === ShareTokenContextType.School) {

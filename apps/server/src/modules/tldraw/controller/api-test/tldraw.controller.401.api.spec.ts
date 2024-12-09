@@ -37,7 +37,7 @@ describe('tldraw controller (api)', () => {
 			return { drawingItemData };
 		};
 
-		it('should return status 401 for delete', async () => {
+		it('should return status 204 for delete', async () => {
 			const { drawingItemData } = await setup();
 
 			const response = await testApiClient.delete(`${drawingItemData.docName}`);

@@ -9,6 +9,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 } from '@shared/testing';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
@@ -57,9 +58,10 @@ describe('Room Controller (API)', () => {
 		};
 
 		const setupRoomWithMembers = async () => {
-			const room = roomEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
+			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherUser: inRoomEditor2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: inRoomEditor3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
@@ -81,7 +83,11 @@ describe('Room Controller (API)', () => {
 				externalSource: undefined,
 			});
 
-			const roomMemberships = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room.id,
+				schoolId: school.id,
+			});
 
 			await em.persistAndFlush([...Object.values(users), room, roomMemberships, teacherAccount, userGroupEntity]);
 			em.clear();
