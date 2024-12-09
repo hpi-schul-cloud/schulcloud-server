@@ -115,7 +115,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			}
 			groups = groupsTemp;
 			groups.forEach((group) => {
-				const groupUsers = Number(school?.previousExternalId?.split(',')[1]) || 100;
+				const groupUsers = Number(school?.previousExternalId?.split(',')[1]) || 60;
 				let n = 0;
 				const otherGroupUsers = [];
 				while (n < groupUsers) {
