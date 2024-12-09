@@ -3,15 +3,19 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
+import { CopyColumnBoardParams } from '@modules/board/service/internal';
 import { boardNodeAuthorizableFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { RoomService } from '@modules/room';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
-import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import {
 	courseFactory,
@@ -23,6 +27,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
@@ -81,6 +86,14 @@ describe('ShareTokenUC', () => {
 				{
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
+				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
+				{
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -673,6 +686,8 @@ describe('ShareTokenUC', () => {
 				const shareToken = shareTokenFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: columnBoard.title });
 
+				columnBoardService.findById.mockResolvedValueOnce(columnBoard);
+
 				return { user, shareToken, columnBoard, course };
 			};
 
@@ -849,7 +864,7 @@ describe('ShareTokenUC', () => {
 				Configuration.set('FEATURE_COURSE_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 
@@ -922,11 +937,11 @@ describe('ShareTokenUC', () => {
 				Configuration.set('FEATURE_LESSON_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 
-			it('should throw if the destinationCourseId is not passed', async () => {
+			it('should throw if the destinationId is not passed', async () => {
 				const { user, shareToken } = setup();
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
@@ -1008,11 +1023,11 @@ describe('ShareTokenUC', () => {
 				Configuration.set('FEATURE_TASK_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 
-			it('should throw if the destinationCourseId is not passed', async () => {
+			it('should throw if the destinationId is not passed', async () => {
 				const { user, shareToken } = setupTask();
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
@@ -1070,9 +1085,10 @@ describe('ShareTokenUC', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
-				courseService.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValue(course);
 
 				const columnBoard = columnBoardFactory.build();
+				columnBoardService.findById.mockResolvedValue(columnBoard);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
@@ -1090,7 +1106,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken } = setup();
 				Configuration.set('FEATURE_COLUMN_BOARD_SHARE', false);
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					InternalServerErrorException
+					FeatureDisabledLoggableException
 				);
 			});
 			it('should check the permission to create the columnboard', async () => {
@@ -1116,9 +1132,11 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken, course, columnBoard } = setup();
 				const newName = 'NewName';
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
-				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith({
+				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith<CopyColumnBoardParams[]>({
 					originalColumnBoardId: columnBoard.id,
-					destinationExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
+					targetExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
+					sourceStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
+					targetStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
 					userId: user.id,
 					copyTitle: newName,
 				});

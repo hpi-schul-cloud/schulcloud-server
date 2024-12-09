@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain/types';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
-import { ColumnBoardCopyService, ColumnBoardLinkService } from './internal';
+import { ColumnBoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams } from './internal';
 
 @Injectable()
 export class ColumnBoardService {
@@ -44,13 +44,8 @@ export class ColumnBoardService {
 		await this.boardNodeRepo.delete(boardNodes);
 	}
 
-	async copyColumnBoard(props: {
-		originalColumnBoardId: EntityId;
-		destinationExternalReference: BoardExternalReference;
-		userId: EntityId;
-		copyTitle?: string;
-	}): Promise<CopyStatus> {
-		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(props);
+	async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
+		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(params);
 
 		return copyStatus;
 	}
