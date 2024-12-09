@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson/service';
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -17,7 +19,10 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { contextExternalToolFactory } from '../../tool/context-external-tool/testing';
+import {
+	contextExternalToolFactory,
+	copyContextExternalToolRejectDataFactory,
+} from '../../tool/context-external-tool/testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
@@ -105,13 +110,20 @@ describe('course copy service', () => {
 
 	describe('copy course', () => {
 		const setup = () => {
-			const user = userFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
 			const allCourses = courseFactory.buildList(3, { teachers: [user] });
 			const course = allCourses[0];
 			const originalBoard = boardFactory.build({ course });
 			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
 			const boardCopy = boardFactory.build({ course: courseCopy });
-			const tools: ContextExternalTool[] = contextExternalToolFactory.buildList(2);
+			const schoolTool: SchoolExternalTool = schoolExternalToolFactory.build({ schoolId: school.id });
+			const tools: ContextExternalTool[] = contextExternalToolFactory.buildList(2, {
+				schoolToolRef: {
+					schoolToolId: schoolTool.id,
+					schoolId: school.id,
+				},
+			});
 
 			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
@@ -349,8 +361,112 @@ describe('course copy service', () => {
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 			const courseCopy = status.copyEntity as Course;
 
-			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[0], courseCopy.id);
-			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tools[1], courseCopy.id);
+			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
+				tools[0],
+				courseCopy.id,
+				tools[0].schoolToolRef.schoolId
+			);
+			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
+				tools[1],
+				courseCopy.id,
+				tools[0].schoolToolRef.schoolId
+			);
+		});
+
+		describe('when the all ctl tools of course are successfully copied', () => {
+			it('should return in the elements field the copy status for course tools as success', async () => {
+				const { course, user } = setup();
+				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+				);
+
+				expect(courseToolCopyStatus).not.toBeUndefined();
+				expect(courseToolCopyStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
+			});
+		});
+
+		describe('when only some of the ctl tools of course are successfully copied', () => {
+			const setupPartialCopySuccessTools = () => {
+				const { course, user, tools } = setup();
+
+				const copyRejectData = copyContextExternalToolRejectDataFactory.build();
+				const mockWithCorrectType = Object.create(
+					CopyContextExternalToolRejectData.prototype
+				) as CopyContextExternalToolRejectData;
+				Object.assign(mockWithCorrectType, { ...copyRejectData });
+
+				contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(mockWithCorrectType);
+				contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(tools[0]);
+
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
+
+				return { course, user };
+			};
+
+			it('should return in the elements field the copy status for course tools as partial', async () => {
+				const { course, user } = setupPartialCopySuccessTools();
+				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+				);
+
+				expect(courseToolCopyStatus).not.toBeUndefined();
+				expect(courseToolCopyStatus?.status).toEqual(CopyStatusEnum.PARTIAL);
+			});
+		});
+
+		describe('when the all ctl tools of course failed to be copied', () => {
+			const setupAllCopyFailedTools = () => {
+				const { course, user } = setup();
+
+				const copyRejectData = copyContextExternalToolRejectDataFactory.build();
+				const mockWithCorrectType = Object.create(
+					CopyContextExternalToolRejectData.prototype
+				) as CopyContextExternalToolRejectData;
+				Object.assign(mockWithCorrectType, { ...copyRejectData });
+
+				contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(mockWithCorrectType);
+				contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(mockWithCorrectType);
+
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.FAIL);
+
+				return { course, user };
+			};
+
+			it('should return in the elements field the copy status for course tools as partial', async () => {
+				const { course, user } = setupAllCopyFailedTools();
+				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+				);
+
+				expect(courseToolCopyStatus).not.toBeUndefined();
+				expect(courseToolCopyStatus?.status).toEqual(CopyStatusEnum.FAIL);
+			});
+		});
+
+		describe('when there are no ctl tools to copy', () => {
+			const setupNoTools = () => {
+				const { course, user } = setup();
+
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([]);
+
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
+
+				return { course, user };
+			};
+
+			it('should not return copy status of course tools in the elements field', async () => {
+				const { course, user } = setupNoTools();
+
+				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+				);
+
+				expect(courseToolCopyStatus).toBeUndefined();
+			});
 		});
 	});
 
@@ -402,6 +518,17 @@ describe('course copy service', () => {
 			await service.copyCourse({ userId: user.id, courseId: course.id });
 
 			expect(contextExternalToolService.copyContextExternalTool).not.toHaveBeenCalled();
+		});
+
+		it('should not return copy status of course tools in the elements field', async () => {
+			const { course, user } = setup();
+
+			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
+			const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
+				(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+			);
+
+			expect(courseToolCopyStatus).toBeUndefined();
 		});
 	});
 
