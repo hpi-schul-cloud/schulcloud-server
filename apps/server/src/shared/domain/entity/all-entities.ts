@@ -12,6 +12,7 @@ import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomEntity } from '@modules/room/repo/entity';
+import { MediaSchoolLicenseEntity } from '@modules/school-license/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
@@ -105,6 +106,7 @@ export const ALL_ENTITIES = [
 	MediaUserLicenseEntity,
 	InstanceEntity,
 	MediaSourceEntity,
+	MediaSchoolLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
 ];

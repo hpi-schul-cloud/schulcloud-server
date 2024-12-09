@@ -1,8 +1,10 @@
-import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { MediaSource } from '@src/modules/mediasource/domain';
 import { MediaSourceRepo } from '../../mediasource/repo';
 import { MediaSchoolLicense } from '../domain';
+import { SchoolLicenseType } from '../enum';
 import { MediaSchoolLicenseRepo } from '../repo/media-school-license-repo';
 
 @Injectable()
@@ -12,18 +14,21 @@ export class MediaSchoolLicenseService {
 		private readonly mediaSourceRepo: MediaSourceRepo
 	) {}
 
-	public async getMediaSchoolLicensesForSchool(schoolId: EntityId): Promise<MediaSchoolLicense[]> {
-		const mediaSchoolLicenses: MediaSchoolLicense[] =
-			await this.mediaSchoolLicenseRepo.findMediaSchoolLicensesForSchool(schoolId);
+	public async findMediaSchoolLicense(
+		mediaSource: MediaSource,
+		schoolId: EntityId,
+		mediumId: string
+	): Promise<MediaSchoolLicense> {
+		const mediaSchoolLicense: MediaSchoolLicense = await this.mediaSchoolLicenseRepo.findMediaSchoolLicense(
+			mediaSource,
+			schoolId,
+			mediumId
+		);
 
-		return mediaSchoolLicenses;
+		return mediaSchoolLicense;
 	}
 
 	public async saveSchoolLicense(license: MediaSchoolLicense): Promise<void> {
-		if (license.mediaSource) {
-			await this.mediaSourceRepo.save(license.mediaSource);
-		}
-
 		await this.mediaSchoolLicenseRepo.save(license);
 	}
 
@@ -31,14 +36,26 @@ export class MediaSchoolLicenseService {
 		await this.mediaSchoolLicenseRepo.delete(license);
 	}
 
-	public hasSchoolLicenseForExternalTool(
-		externalToolMedium: ExternalToolMedium,
-		mediaSchoolLicenses: MediaSchoolLicense[]
-	): boolean {
-		return mediaSchoolLicenses.some(
-			(license: MediaSchoolLicense) =>
-				license.mediumId === externalToolMedium.mediumId &&
-				license.mediaSource?.sourceId === externalToolMedium.mediaSourceId
-		);
+	public async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
+		const mediaSchoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseRepo.findMediaSchoolLicensesByMediumId(mediumId);
+
+		return mediaSchoolLicenses;
+	}
+
+	public async buildLicense(
+		mediaSource: MediaSource,
+		schoolId: EntityId,
+		mediumId: string
+	): Promise<MediaSchoolLicense> {
+		const mediaSchoolLicense: MediaSchoolLicense = new MediaSchoolLicense({
+			id: new ObjectId().toHexString(),
+			type: SchoolLicenseType.MEDIA_LICENSE,
+			schoolId,
+			mediaSource,
+			mediumId,
+		});
+
+		return mediaSchoolLicense;
 	}
 }

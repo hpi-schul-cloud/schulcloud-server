@@ -11,4 +11,16 @@ export interface MediaSourceBasicAuthConfigProps extends AuthorizableObject {
 	authEndpoint: string;
 }
 
-export class MediaSourceBasicAuthConfig extends DomainObject<MediaSourceBasicAuthConfigProps> {}
+export class MediaSourceBasicAuthConfig extends DomainObject<MediaSourceBasicAuthConfigProps> {
+	get username(): string {
+		return this.props.username;
+	}
+
+	get password(): string {
+		return this.props.password;
+	}
+
+	get authEndpoint(): string {
+		return this.props.authEndpoint;
+	}
+}

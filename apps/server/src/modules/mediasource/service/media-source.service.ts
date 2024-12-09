@@ -13,6 +13,12 @@ export class MediaSourceService {
 		return domainObject;
 	}
 
+	public async findByName(name: string): Promise<MediaSource | null> {
+		const domainObject: MediaSource | null = await this.mediaSourceRepo.findByName(name);
+
+		return domainObject;
+	}
+
 	public async save(domainObject: MediaSource): Promise<MediaSource> {
 		const savedObject: MediaSource = await this.mediaSourceRepo.save(domainObject);
 

@@ -12,7 +12,7 @@ export interface MediaSourceProps extends AuthorizableObject {
 
 	oauthConfig?: MediaSourceOauthConfig;
 
-	basicConfig?: MediaSourceBasicAuthConfig;
+	basicAuthConfig?: MediaSourceBasicAuthConfig;
 
 	format?: MediaSourceDataFormat;
 }
@@ -34,7 +34,7 @@ export class MediaSource extends DomainObject<MediaSourceProps> {
 		return this.props.oauthConfig;
 	}
 
-	get basicConfig(): MediaSourceBasicAuthConfig | undefined {
-		return this.props.basicConfig;
+	get basicAuthConfig(): MediaSourceBasicAuthConfig | undefined {
+		return this.props.basicAuthConfig;
 	}
 }

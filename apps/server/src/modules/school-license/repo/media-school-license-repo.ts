@@ -17,6 +17,38 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 		return MediaSchoolLicenseEntity.name;
 	}
 
+	public async findMediaSchoolLicense(
+		mediaSource: MediaSource,
+		schoolId: EntityId,
+		mediumId: string
+	): Promise<MediaSchoolLicense> {
+		const entity: MediaSchoolLicenseEntity = await this.em.findOneOrFail(
+			MediaSchoolLicenseEntity,
+			{ school: schoolId, mediumId, type: SchoolLicenseType.MEDIA_LICENSE, mediaSource },
+			{
+				populate: ['mediaSource'],
+			}
+		);
+
+		const domainObjects: MediaSchoolLicense = this.mapEntityToDomainObject(entity);
+
+		return domainObjects;
+	}
+
+	public async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
+		const entities: MediaSchoolLicenseEntity[] = await this.em.find(
+			MediaSchoolLicenseEntity,
+			{ mediumId, type: SchoolLicenseType.MEDIA_LICENSE },
+			{ populate: ['mediaSource'] }
+		);
+
+		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
+			this.mapEntityToDomainObject(entity)
+		);
+
+		return domainObjects;
+	}
+
 	private mapEntityToDomainObject(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
 		let mediaSource: MediaSource | undefined;
 
@@ -29,7 +61,7 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 				oauthConfig: entity.mediaSource.oauthConfig
 					? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
 					: undefined,
-				basicConfig: entity.mediaSource.basicConfig
+				basicAuthConfig: entity.mediaSource.basicConfig
 					? MediaSourceConfigMapper.mapBasicConfigToDo(entity.mediaSource.basicConfig)
 					: undefined,
 			});
@@ -55,21 +87,5 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 		};
 
 		return entityProps;
-	}
-
-	public async findMediaSchoolLicensesForSchool(schoolId: EntityId): Promise<MediaSchoolLicense[]> {
-		const entities: MediaSchoolLicenseEntity[] = await this.em.find(
-			MediaSchoolLicenseEntity,
-			{ school: schoolId, type: SchoolLicenseType.MEDIA_LICENSE },
-			{
-				populate: ['mediaSource'],
-			}
-		);
-
-		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
-			this.mapEntityToDomainObject(entity)
-		);
-
-		return domainObjects;
 	}
 }

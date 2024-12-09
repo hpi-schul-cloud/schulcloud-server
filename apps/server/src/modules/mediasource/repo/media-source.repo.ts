@@ -28,4 +28,16 @@ export class MediaSourceRepo extends BaseDomainObjectRepo<MediaSource, MediaSour
 
 		return domainObject;
 	}
+
+	public async findByName(name: string): Promise<MediaSource | null> {
+		const entity: MediaSourceEntity | null = await this.em.findOne(MediaSourceEntity, { name });
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: MediaSource = MediaSourceMapper.mapEntityToDo(entity);
+
+		return domainObject;
+	}
 }
