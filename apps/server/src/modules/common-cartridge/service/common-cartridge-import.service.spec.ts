@@ -1,7 +1,19 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
+import type { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
+
+jest.mock('../import/common-cartridge-file-parser', () => {
+	const fileParserMock = createMock<CommonCartridgeFileParser>();
+
+	fileParserMock.getTitle.mockReturnValue(faker.lorem.words());
+
+	return {
+		CommonCartridgeFileParser: jest.fn(() => fileParserMock),
+	};
+});
 
 describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
@@ -37,8 +49,10 @@ describe(CommonCartridgeImportService.name, () => {
 
 	describe('importFile', () => {
 		describe('when importing a file', () => {
-			it('should create a course', () => {
-				throw new Error('Test not implemented');
+			it('should create a course', async () => {
+				await sut.importFile(Buffer.from(''));
+
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: expect.any(String) });
 			});
 		});
 	});
