@@ -29,7 +29,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		super();
 	}
 
-	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
+	public override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
 		let school: LegacySchoolDo | undefined;
 		if (data.externalSchool) {
 			school = await this.schulconnexSchoolProvisioningService.provisionExternalSchool(

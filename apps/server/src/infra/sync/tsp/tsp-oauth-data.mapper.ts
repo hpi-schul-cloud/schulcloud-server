@@ -34,7 +34,7 @@ export class TspOauthDataMapper {
 		});
 
 		const externalSchools = new Map<string, ExternalSchoolDto>();
-		const externalClasses = new Map<string, ExternalUserDto>();
+		const externalClasses = new Map<string, ExternalClassDto>();
 		const teacherForClasses = new Map<string, Array<string>>();
 		const oauthDataDtos: OauthDataDto[] = [];
 
@@ -85,9 +85,9 @@ export class TspOauthDataMapper {
 			});
 
 			const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
-			const classes = classIds
+			const classes: ExternalClassDto[] = classIds
 				.map((classId) => externalClasses.get(classId))
-				.filter((externalClass) => !!externalClass);
+				.filter((externalClass: ExternalClassDto | undefined): externalClass is ExternalClassDto => !!externalClass);
 
 			const externalSchool = tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
 

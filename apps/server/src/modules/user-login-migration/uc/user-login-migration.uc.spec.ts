@@ -4,13 +4,7 @@ import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
-import {
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	ProvisioningService,
-	ProvisioningSystemDto,
-} from '@modules/provisioning';
+import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
 import { SystemEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
@@ -30,6 +24,7 @@ import {
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { externalUserDtoFactory } from '../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -294,9 +289,7 @@ describe(UserLoginMigrationUc.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: 'externalUserId',
-					}),
+					externalUser: externalUserDtoFactory.build(),
 				});
 
 				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
@@ -376,9 +369,7 @@ describe(UserLoginMigrationUc.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: 'externalUserId',
-					}),
+					externalUser: externalUserDtoFactory.build(),
 					externalSchool: new ExternalSchoolDto({
 						externalId: 'externalId',
 						officialSchoolNumber: 'officialSchoolNumber',
@@ -441,9 +432,7 @@ describe(UserLoginMigrationUc.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: 'externalUserId',
-					}),
+					externalUser: externalUserDtoFactory.build(),
 					externalSchool: new ExternalSchoolDto({
 						externalId: 'externalId',
 						officialSchoolNumber: 'officialSchoolNumber',
@@ -490,9 +479,7 @@ describe(UserLoginMigrationUc.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: 'externalUserId',
-					}),
+					externalUser: externalUserDtoFactory.build(),
 				});
 
 				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
@@ -531,9 +518,7 @@ describe(UserLoginMigrationUc.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: 'externalUserId',
-					}),
+					externalUser: externalUserDtoFactory.build(),
 					externalSchool: new ExternalSchoolDto({
 						externalId: 'externalId',
 						name: 'schoolName',

@@ -17,13 +17,13 @@ import {
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
-	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
+import { externalUserDtoFactory } from '../../testing';
 import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -141,9 +141,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						externalId: externalSchoolId,
 						name: 'schoolName',
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build(),
 				});
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
@@ -193,9 +191,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						externalId: externalSchoolId,
 						name: 'schoolName',
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 				});
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
@@ -252,9 +248,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 					externalGroups,
 				});
 
@@ -310,9 +304,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 					externalGroups: externalGroupDtoFactory.buildList(2),
 				});
 
@@ -354,9 +346,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 					externalGroups: undefined,
 				});
 
@@ -398,9 +388,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 					externalGroups,
 				});
 
@@ -448,9 +436,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 					externalGroups,
 				});
 
@@ -492,9 +478,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
+					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 					externalGroups: [],
 				});
 
@@ -532,9 +516,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 							systemId: new ObjectId().toHexString(),
 							provisioningStrategy: SystemProvisioningStrategy.OIDC,
 						}),
-						externalUser: new ExternalUserDto({
-							externalId: 'externalUserId',
-						}),
+						externalUser: externalUserDtoFactory.build(),
 						externalLicenses: [],
 					});
 					const user: UserDO = userDoFactory.build({
@@ -581,9 +563,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 							systemId: new ObjectId().toHexString(),
 							provisioningStrategy: SystemProvisioningStrategy.OIDC,
 						}),
-						externalUser: new ExternalUserDto({
-							externalId: 'externalUserId',
-						}),
+						externalUser: externalUserDtoFactory.build(),
 						externalLicenses: [],
 					});
 					const user: UserDO = userDoFactory.build({

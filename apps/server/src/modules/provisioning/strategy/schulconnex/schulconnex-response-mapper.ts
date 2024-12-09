@@ -27,7 +27,7 @@ import {
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 
-const RoleMapping: Record<SchulconnexRole, RoleName> = {
+const RoleMapping: Partial<Record<SchulconnexRole, RoleName>> = {
 	[SchulconnexRole.LEHR]: RoleName.TEACHER,
 	[SchulconnexRole.LERN]: RoleName.STUDENT,
 	[SchulconnexRole.LEIT]: RoleName.ADMINISTRATOR,
@@ -85,10 +85,12 @@ export class SchulconnexResponseMapper {
 			email = emailContact?.kennung;
 		}
 
+		const role: RoleName | undefined = SchulconnexResponseMapper.mapSanisRoleToRoleName(source);
+
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			roles: [SchulconnexResponseMapper.mapSanisRoleToRoleName(source)],
+			roles: role ? [role] : [],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
 			email,
@@ -97,7 +99,7 @@ export class SchulconnexResponseMapper {
 		return mapped;
 	}
 
-	public static mapSanisRoleToRoleName(source: SchulconnexResponse): RoleName {
+	public static mapSanisRoleToRoleName(source: SchulconnexResponse): RoleName | undefined {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 

@@ -4,7 +4,6 @@ import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
@@ -12,6 +11,8 @@ import { userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
+import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';
+import { externalUserDtoFactory } from '../../../testing';
 import { SchulconnexUserProvisioningService } from './schulconnex-user-provisioning.service';
 
 jest.mock('crypto-js');
@@ -88,7 +89,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				},
 				'userId'
 			);
-			const externalUser: ExternalUserDto = new ExternalUserDto({
+			const externalUser: ExternalUserDto = externalUserDtoFactory.build({
 				externalId: 'externalUserId',
 				firstName: 'firstName',
 				lastName: 'lastName',
@@ -96,7 +97,10 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				roles: [RoleName.USER],
 				birthday,
 			});
-			const minimalViableExternalUser: ExternalUserDto = new ExternalUserDto({ externalId: 'externalUserId' });
+			const minimalViableExternalUser: ExternalUserDto = new ExternalUserDto({
+				externalId: 'externalUserId',
+				roles: [RoleName.USER],
+			});
 			const userRole: RoleDto = new RoleDto({
 				id: new ObjectId().toHexString(),
 				name: RoleName.USER,
@@ -126,8 +130,32 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			};
 		};
 
+		describe('when the user has no role', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const schoolId = new ObjectId().toHexString();
+				const externalUser = externalUserDtoFactory.build({
+					roles: [],
+				});
+
+				return {
+					systemId,
+					schoolId,
+					externalUser,
+				};
+			};
+
+			it('should throw UserRoleUnknownLoggableException', async () => {
+				const { externalUser, schoolId, systemId } = setup();
+
+				await expect(service.provisionExternalUser(externalUser, systemId, schoolId)).rejects.toThrow(
+					UserRoleUnknownLoggableException
+				);
+			});
+		});
+
 		describe('when the user does not exist yet', () => {
-			describe('when the external user has no email or roles', () => {
+			describe('when the external user has no email', () => {
 				it('should return the saved user', async () => {
 					const { minimalViableExternalUser, schoolId, savedUser, systemId } = setupUser();
 
@@ -166,14 +194,14 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			});
 
 			describe('when no schoolId is provided', () => {
-				it('should throw UnprocessableEntityException', async () => {
+				it('should throw SchoolMissingLoggableException', async () => {
 					const { externalUser } = setupUser();
 
 					userService.findByExternalId.mockResolvedValue(null);
 
 					const promise: Promise<UserDO> = service.provisionExternalUser(externalUser, 'systemId', undefined);
 
-					await expect(promise).rejects.toThrow(UnprocessableEntityException);
+					await expect(promise).rejects.toThrow(SchoolMissingLoggableException);
 				});
 			});
 		});

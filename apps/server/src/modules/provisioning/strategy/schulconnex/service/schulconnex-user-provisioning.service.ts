@@ -1,12 +1,14 @@
 import { AccountSave, AccountService } from '@modules/account';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
+import { UserRoleUnknownLoggableException } from '../../../loggable';
+import { SchoolMissingLoggableException } from '../../../loggable/school-missing.loggable-exception';
 
 @Injectable()
 export class SchulconnexUserProvisioningService {
@@ -24,6 +26,9 @@ export class SchulconnexUserProvisioningService {
 		const foundUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
 
 		const roleRefs: RoleReference[] | undefined = await this.createRoleReferences(externalUser.roles);
+		if (!roleRefs?.length) {
+			throw new UserRoleUnknownLoggableException(externalUser);
+		}
 
 		let createNewAccount = false;
 		let user: UserDO;
@@ -31,9 +36,7 @@ export class SchulconnexUserProvisioningService {
 			user = this.updateUser(externalUser, foundUser, roleRefs, schoolId);
 		} else {
 			if (!schoolId) {
-				throw new UnprocessableEntityException(
-					`Unable to create new external user ${externalUser.externalId} without a school`
-				);
+				throw new SchoolMissingLoggableException(externalUser);
 			}
 
 			createNewAccount = true;
@@ -55,10 +58,10 @@ export class SchulconnexUserProvisioningService {
 	}
 
 	private async createRoleReferences(roles?: RoleName[]): Promise<RoleReference[] | undefined> {
-		if (roles) {
+		if (roles?.length) {
 			const foundRoles: RoleDto[] = await this.roleService.findByNames(roles);
-			const roleRefs = foundRoles.map(
-				(role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name })
+			const roleRefs: RoleReference[] = foundRoles.map(
+				(role: RoleDto): RoleReference => new RoleReference({ id: role.id, name: role.name })
 			);
 
 			return roleRefs;

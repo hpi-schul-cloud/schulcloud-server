@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { SchulconnexErreichbarkeitenResponse } from './schulconnex-erreichbarkeiten-response';
 import { SchulconnexGruppenResponse } from './schulconnex-gruppen-response';
 import { SchulconnexOrganisationResponse } from './schulconnex-organisation-response';
@@ -10,7 +10,7 @@ export class SchulconnexPersonenkontextResponse {
 	@IsString({ groups: [SchulconnexResponseValidationGroups.USER, SchulconnexResponseValidationGroups.GROUPS] })
 	id!: string;
 
-	@IsEnum(SchulconnexRole, { groups: [SchulconnexResponseValidationGroups.USER] })
+	@IsString({ groups: [SchulconnexResponseValidationGroups.USER] })
 	rolle!: SchulconnexRole;
 
 	@IsObject({ groups: [SchulconnexResponseValidationGroups.SCHOOL] })
