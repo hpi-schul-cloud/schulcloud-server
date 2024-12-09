@@ -395,13 +395,14 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
+						substitutionTeacherIds: [],
 						classIds: [],
 						groupIds: [],
-						substitutionTeacherIds: [],
 					}),
 				]);
 			});
 		});
+
 		describe('when synchronizing with a new group with substitute teacher', () => {
 			const setup = () => {
 				const studentId: string = new ObjectId().toHexString();
@@ -427,6 +428,10 @@ describe(CourseSyncService.name, () => {
 							userId: substituteTeacherId,
 							roleId: substituteTeacherRoleId,
 						},
+						{
+							userId: teacherId,
+							roleId: substituteTeacherRoleId,
+						},
 					],
 				});
 				const course: Course = courseFactory.build({
@@ -450,7 +455,7 @@ describe(CourseSyncService.name, () => {
 				};
 			};
 
-			it('should synchronize with the new group', async () => {
+			it('should synchronize the substitution teachers, without creating duplicates in teacherIds', async () => {
 				const { course, newGroup, studentId, teacherId, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
@@ -463,9 +468,9 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
+						substitutionTeacherIds: [substituteTeacherId],
 						classIds: [],
 						groupIds: [],
-						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);
 			});
