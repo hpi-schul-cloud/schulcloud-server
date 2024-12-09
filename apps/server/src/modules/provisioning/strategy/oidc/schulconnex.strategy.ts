@@ -174,7 +174,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			);
 
 			await Promise.all(groupProvisioningPromises);
-			console.log('Gruppenprovisionierung');
+			console.warn('Gruppenprovisionierung');
 			const newAllGroups = performance.now() - groupProvisioningStart;
 			console.log(newAllGroups);
 		}

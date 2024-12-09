@@ -66,7 +66,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			tokenDto.idToken
 		);
 		console.log('Login:::::');
-		console.log(performance.now() - login);
+		console.warn(performance.now() - login);
 
 		return currentUser;
 	}
