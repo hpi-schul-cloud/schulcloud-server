@@ -5,7 +5,7 @@ import { SchoolLicenseEntity, SchoolLicenseProps } from './school-license.entity
 
 export interface MediaSchoolLicenseEntityProps extends SchoolLicenseProps {
 	mediumId: string;
-	mediaSource?: MediaSourceEntity;
+	mediaSource: MediaSourceEntity;
 }
 
 @Entity({ discriminatorValue: SchoolLicenseType.MEDIA_LICENSE })
@@ -20,6 +20,6 @@ export class MediaSchoolLicenseEntity extends SchoolLicenseEntity {
 	@Property()
 	mediumId: string;
 
-	@ManyToOne(() => MediaSourceEntity, { nullable: true })
-	mediaSource?: MediaSourceEntity;
+	@ManyToOne(() => MediaSourceEntity, { nullable: false })
+	mediaSource: MediaSourceEntity;
 }

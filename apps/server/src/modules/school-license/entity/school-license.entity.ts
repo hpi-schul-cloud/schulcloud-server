@@ -1,5 +1,6 @@
 import { Entity, Enum, Index, ManyToOne } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, SchoolEntity } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { SchoolEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { SchoolLicenseType } from '../enum';
 
@@ -24,6 +25,6 @@ export abstract class SchoolLicenseEntity extends BaseEntityWithTimestamps {
 	@Enum({ nullable: false })
 	type: SchoolLicenseType;
 
-	@ManyToOne({ nullable: false })
+	@ManyToOne(() => SchoolEntity, { nullable: false })
 	school: SchoolEntity;
 }

@@ -24,7 +24,7 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 	): Promise<MediaSchoolLicense> {
 		const entity: MediaSchoolLicenseEntity = await this.em.findOneOrFail(
 			MediaSchoolLicenseEntity,
-			{ school: schoolId, mediumId, type: SchoolLicenseType.MEDIA_LICENSE, mediaSource },
+			{ school: schoolId, mediumId, type: SchoolLicenseType.MEDIA_LICENSE, mediaSource: mediaSource.id },
 			{
 				populate: ['mediaSource'],
 			}

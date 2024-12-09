@@ -20,6 +20,6 @@ export class MediaUserLicenseEntity extends UserLicenseEntity {
 	@Property()
 	mediumId: string;
 
-	@ManyToOne(() => MediaSourceEntity, { nullable: true })
+	@ManyToOne(() => MediaSourceEntity, { nullable: false })
 	mediaSource?: MediaSourceEntity;
 }

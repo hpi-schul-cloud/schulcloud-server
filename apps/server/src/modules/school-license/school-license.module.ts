@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MediasourceModule } from '../mediasource/mediasource.module';
+import { MediaSourceModule } from '../mediasource/media-source.module';
 import { MediaSchoolLicenseRepo } from './repo/media-school-license-repo';
 import { MediaSchoolLicenseService } from './service/school-license.service';
 
 @Module({
-	imports: [MediasourceModule],
+	imports: [MediaSourceModule],
 	providers: [MediaSchoolLicenseRepo, MediaSchoolLicenseService],
 	exports: [MediaSchoolLicenseService],
 })

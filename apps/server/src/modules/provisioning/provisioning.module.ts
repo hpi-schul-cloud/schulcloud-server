@@ -12,7 +12,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SchulconnexClientModule } from '@src/infra/schulconnex-client/schulconnex-client.module';
 import { ClassModule } from '../class';
-import { MediasourceModule } from '../mediasource/mediasource.module';
+import { MediaSourceModule } from '../mediasource/media-source.module';
 import { UserLicenseModule } from '../user-license';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
@@ -44,7 +44,7 @@ import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
 		LearnroomModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
-		MediasourceModule,
+		MediaSourceModule,
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		SchoolModule,

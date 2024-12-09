@@ -6,4 +6,4 @@ import { MediaSourceService } from './service';
 	providers: [MediaSourceRepo, MediaSourceService],
 	exports: [MediaSourceService, MediaSourceRepo],
 })
-export class MediasourceModule {}
+export class MediaSourceModule {}
