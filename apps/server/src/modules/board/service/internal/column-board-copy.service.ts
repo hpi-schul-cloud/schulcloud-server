@@ -15,6 +15,7 @@ export type CopyColumnBoardParams = {
 	targetStorageLocationReference: StorageLocationReference;
 	userId: EntityId;
 	copyTitle?: string;
+	targetSchoolId: EntityId;
 };
 
 @Injectable()
@@ -36,6 +37,7 @@ export class ColumnBoardCopyService {
 			targetStorageLocationReference: params.targetStorageLocationReference,
 			userId: params.userId,
 			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
+			targetSchoolId: params.targetSchoolId,
 		});
 
 		const copyStatus = await this.boardNodeCopyService.copy(originalBoard, copyContext);
