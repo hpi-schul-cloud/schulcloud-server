@@ -27,6 +27,8 @@ export class CommonCartridgeImportService {
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
+	counter = 0;
+
 	public async importFile(user: User, file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 		const course = new Course({ teachers: [user], school: user.school, name: parser.getTitle() });
@@ -50,6 +52,7 @@ export class CommonCartridgeImportService {
 		boardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
+		this.counter = 0;
 		const columnBoard = this.boardNodeFactory.buildColumnBoard({
 			context: {
 				type: BoardExternalReferenceType.Course,
@@ -94,10 +97,9 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
-		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
-		column.title = title;
+		column.title = `Column ${(this.counter += 1)}`;
 		await this.boardNodeService.addToParent(columnBoard, column);
-		await this.createCardWithElement(parser, column, columnProps, false);
+		await this.createCardWithElement(parser, column, columnProps);
 	}
 
 	private async createColumn(
@@ -107,9 +109,8 @@ export class CommonCartridgeImportService {
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
-		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
-		column.title = title;
 		await this.boardNodeService.addToParent(columnBoard, column);
+		column.title = `Column ${(this.counter += 1)}`;
 
 		const cards = organizations.filter(
 			(organization) => organization.pathDepth === 2 && organization.path.startsWith(columnProps.path)
@@ -118,7 +119,7 @@ export class CommonCartridgeImportService {
 		const cardsWithResource = cards.filter((card) => card.isResource);
 
 		for await (const card of cardsWithResource) {
-			await this.createCardWithElement(parser, column, card, true);
+			await this.createCardWithElement(parser, column, card);
 		}
 
 		const cardsWithoutResource = cards.filter((card) => !card.isResource);
@@ -131,13 +132,11 @@ export class CommonCartridgeImportService {
 	private async createCardWithElement(
 		parser: CommonCartridgeFileParser,
 		column: Column,
-		cardProps: CommonCartridgeImportOrganizationProps,
-		withTitle = true
+		cardProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
 		const card = this.boardNodeFactory.buildCard();
-		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, withTitle);
+		const { title } = this.mapper.mapOrganizationToCard(cardProps);
 		card.title = title;
-		card.height = height;
 		await this.boardNodeService.addToParent(column, card);
 		const resource = parser.getResource(cardProps);
 		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
@@ -158,9 +157,8 @@ export class CommonCartridgeImportService {
 		organizations: CommonCartridgeImportOrganizationProps[]
 	) {
 		const card = this.boardNodeFactory.buildCard();
-		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, true);
+		const { title } = this.mapper.mapOrganizationToCard(cardProps);
 		card.title = title;
-		card.height = height;
 		await this.boardNodeService.addToParent(column, card);
 
 		const cardElements = organizations.filter(

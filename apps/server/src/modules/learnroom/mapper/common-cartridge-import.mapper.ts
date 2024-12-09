@@ -11,16 +11,16 @@ import { InputFormat } from '@shared/domain/types';
 
 @Injectable()
 export class CommonCartridgeImportMapper {
-	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps) {
-		return {
-			title: organization.title,
-		};
-	}
-
-	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps, withTitle = true) {
+	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps, withTitle = true) {
 		return {
 			title: withTitle ? organization.title : '',
 			height: 150,
+		};
+	}
+
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps) {
+		return {
+			title: organization.title,
 		};
 	}
 
@@ -69,7 +69,7 @@ export class CommonCartridgeImportMapper {
 		const body = new RichTextContentBody();
 
 		body.text = resource.html;
-		body.inputFormat = InputFormat.RICH_TEXT_CK5_SIMPLE;
+		body.inputFormat = InputFormat.RICH_TEXT_CK4;
 
 		return body;
 	}
