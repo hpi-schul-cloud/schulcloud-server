@@ -6,3 +6,4 @@ export { ltiDeepLinkTokenFactory } from './lti-deep-link-token.factory';
 export { ltiDeepLinkTokenEntityFactory } from './lti-deep-link-token-entity.factory';
 export { Lti11DeepLinkParamsFactory } from './lti11-deep-link-params.factory';
 export { ltiDeepLinkEmbeddableFactory } from './lti-deep-link-embeddable.factory';
+export { copyContextExternalToolRejectDataFactory } from './copy-context-external-tool-reject-data.factory';
