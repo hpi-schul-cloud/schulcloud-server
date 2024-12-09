@@ -42,9 +42,7 @@ describe('tldraw controller (api)', () => {
 
 			const response = await testApiClient.delete(`${drawingItemData.docName}`);
 
-			// TODO: discuss:
-			// the apikey is not taken from this request but from the configuration... so the test can't fail here
-			expect(response.status).toEqual(204);
+			expect(response.status).toEqual(401);
 		});
 	});
 });
