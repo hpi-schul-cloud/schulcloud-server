@@ -3,9 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSource, MediaUserLicense } from '../domain';
-import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseType } from '../entity';
-import { MediaSourceConfigMapper } from './media-source-config.mapper';
+import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo/media-source-config.mapper';
+import { MediaSource } from '@src/modules/mediasource/domain';
+import { MediaSourceEntity } from '@src/modules/mediasource/entity';
+import { MediaUserLicense } from '../domain';
+import { MediaUserLicenseEntity, UserLicenseType } from '../entity';
 
 @Injectable()
 export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense, MediaUserLicenseEntity> {
@@ -22,7 +24,9 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 				name: entity.mediaSource.name,
 				sourceId: entity.mediaSource.sourceId,
 				format: entity.mediaSource.format,
-				config: entity.mediaSource.config ? MediaSourceConfigMapper.mapToDo(entity.mediaSource.config) : undefined,
+				oauthConfig: entity.mediaSource.oauthConfig
+					? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
+					: undefined,
 			});
 		}
 

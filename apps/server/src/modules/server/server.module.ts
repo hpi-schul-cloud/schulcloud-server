@@ -48,6 +48,7 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@sr
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { SchoolLicenseModule } from '../school-license/school-license.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -101,6 +102,7 @@ const serverModules = [
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,
+	SchoolLicenseModule,
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
