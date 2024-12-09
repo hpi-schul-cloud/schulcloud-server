@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CopyHelperService } from '@modules/copy-helper';
+import { CopyHelperService } from '@modules/copy-helper/service/copy-helper.service';
 import { BoardExternalReference } from '../../domain';
 import { ColumnBoardReferenceService } from './column-board-reference.service';
 

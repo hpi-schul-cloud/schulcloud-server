@@ -94,13 +94,13 @@ describe(`share token creation (api)`, () => {
 	};
 
 	describe('with the feature disabled', () => {
-		it('should return status 500', async () => {
+		it('should return status 403', async () => {
 			Configuration.set('FEATURE_COURSE_SHARE', false);
 			const { course } = await setup();
 
 			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
-			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+			expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 		});
 	});
 

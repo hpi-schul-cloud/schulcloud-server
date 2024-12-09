@@ -4,12 +4,15 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { StorageLocation } from '@modules/files-storage/interface';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { copyContextExternalToolRejectDataFactory } from '@modules/tool/context-external-tool/testing';
+import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
+
 import {
 	Card,
 	CollaborativeTextEditorElement,
@@ -40,7 +43,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '../../testing';
-import { BoardNodeCopyContext } from './board-node-copy-context';
+import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(BoardNodeCopyService.name, () => {
@@ -98,13 +101,12 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	const setupContext = () => {
-		const contextProps = {
-			sourceStorageLocationId: new ObjectId().toHexString(),
-			sourceStorageLocation: StorageLocation.SCHOOL,
-			targetStorageLocationId: new ObjectId().toHexString(),
-			targetStorageLocation: StorageLocation.SCHOOL,
+		const contextProps: BoardNodeCopyContextProps = {
+			sourceStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
+			targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
 			userId: new ObjectId().toHexString(),
 			filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+			targetSchoolId: new ObjectId().toHexString(),
 		};
 
 		const copyContext = new BoardNodeCopyContext(contextProps);
@@ -422,23 +424,68 @@ describe(BoardNodeCopyService.name, () => {
 				const setupToolElement = () => {
 					const { copyContext, externalToolElement } = setupCopyEnabled();
 
-					const tool = contextExternalToolFactory.build();
-					const toolCopy = contextExternalToolFactory.build();
-					contextExternalToolService.findById.mockResolvedValueOnce(tool);
-					contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(toolCopy);
-					externalToolElement.contextExternalToolId = tool.id;
+					const contextTool = contextExternalToolFactory.build();
+					contextExternalToolService.findById.mockResolvedValueOnce(contextTool);
+					externalToolElement.contextExternalToolId = contextTool.id;
 
-					return { copyContext, externalToolElement, tool, toolCopy };
+					return { copyContext, externalToolElement, contextTool };
 				};
 
-				it('should copy the external tool', async () => {
-					const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
+				describe('when the copying of context external tool is successful', () => {
+					const setupCopySuccess = () => {
+						const { copyContext, externalToolElement, contextTool } = setupToolElement();
 
-					const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+						const copiedTool = contextExternalToolFactory.build();
+						contextExternalToolService.copyContextExternalTool.mockResolvedValue(copiedTool);
 
-					expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
-					expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tool, result.copyEntity?.id);
-					expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+						return { copyContext, externalToolElement, contextTool, copiedTool };
+					};
+
+					it('should return the copied entity as ExternalTool', async () => {
+						const { copyContext, externalToolElement, contextTool, copiedTool } = setupCopySuccess();
+
+						const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+						expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
+							contextTool,
+							result.copyEntity?.id,
+							copyContext.targetSchoolId
+						);
+						expect(result.copyEntity instanceof ExternalToolElement).toEqual(true);
+						expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(copiedTool.id);
+						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+						expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+					});
+				});
+
+				describe('when the copying of context external tool is rejected', () => {
+					const setupCopyRejected = () => {
+						const { copyContext, externalToolElement, contextTool } = setupToolElement();
+
+						const copyRejectData = copyContextExternalToolRejectDataFactory.build();
+						const mockWithCorrectType = Object.create(
+							CopyContextExternalToolRejectData.prototype
+						) as CopyContextExternalToolRejectData;
+						Object.assign(mockWithCorrectType, { ...copyRejectData });
+						contextExternalToolService.copyContextExternalTool.mockResolvedValue(mockWithCorrectType);
+
+						return { copyContext, externalToolElement, contextTool };
+					};
+
+					it('should return the copied entity as DeletedElement', async () => {
+						const { externalToolElement, copyContext, contextTool } = setupCopyRejected();
+
+						const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+						expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
+							contextTool,
+							expect.any(String),
+							copyContext.targetSchoolId
+						);
+						expect(result.copyEntity instanceof DeletedElement).toEqual(true);
+						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+						expect(result.status).toEqual(CopyStatusEnum.FAIL);
+					});
 				});
 			});
 

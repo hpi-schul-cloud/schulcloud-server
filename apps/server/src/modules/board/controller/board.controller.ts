@@ -138,7 +138,7 @@ export class BoardController {
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId);
+		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId, currentUser.schoolId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
