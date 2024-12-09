@@ -150,10 +150,10 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspTeacherIds = await this.tspFetchService.fetchTspTeacherMigrations(system);
 		this.logger.info(new TspTeachersFetchedLoggable(tspTeacherIds.length));
 
-		const batches = tspTeacherIds.length / this.migrationLimit;
+		const batches = Math.ceil(tspTeacherIds.length / this.migrationLimit);
 
 		let total = 0;
-		for await (const batch of Array.from(Array(Math.ceil(batches)).keys())) {
+		for await (const batch of Array.from(Array(batches).keys())) {
 			const currentBatch = tspTeacherIds.slice(batch * this.migrationLimit, (batch + 1) * this.migrationLimit);
 			const teacherMigrationPromises = currentBatch.map(async ({ lehrerUidAlt, lehrerUidNeu }) => {
 				if (lehrerUidAlt && lehrerUidNeu) {
@@ -166,9 +166,13 @@ export class TspSyncStrategy extends SyncStrategy {
 			const batchSuccess = migratedTspTeachers.filter(
 				(result) => result.status === 'fulfilled' && result.value === true
 			).length;
+			const batchFulfilled = migratedTspTeachers.filter((result) => result.status === 'fulfilled').length;
+			const batchTotal = migratedTspTeachers.length;
+			const batchSize = currentBatch.length;
+
 			total += batchSuccess;
 
-			const msg = `Batch ${batch} done: This batch: ${batchSuccess}, Total: ${total}`;
+			const msg = `Batch ${batch} of ${batches} done: This batch: Successful:${batchSuccess}, Fulfilled: ${batchFulfilled}, BatchTotal: ${batchTotal}, BatchSize: ${batchSize} , Total: ${total}`;
 			this.logger.info({
 				getLogMessage() {
 					return {
