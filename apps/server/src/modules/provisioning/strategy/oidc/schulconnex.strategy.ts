@@ -105,7 +105,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			console.timeEnd('Group4'); */
 
 			console.log(groups.length, 'Ursprüngliche Gruppen gefunden');
-			const numberOfGroups = Number(school?.previousExternalId?.split(',')[0]) || 40;
+			const numberOfGroups = Number(school?.previousExternalId?.split(',')[0]) || 100;
 			let i = 0;
 			const groupsTemp = [];
 			while (i < numberOfGroups) {
@@ -115,7 +115,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			}
 			groups = groupsTemp;
 			groups.forEach((group) => {
-				const groupUsers = Number(school?.previousExternalId?.split(',')[1]) || 100;
+				const groupUsers = Number(school?.previousExternalId?.split(',')[1]) || 40;
 				let n = 0;
 				const otherGroupUsers = [];
 				while (n < groupUsers) {
