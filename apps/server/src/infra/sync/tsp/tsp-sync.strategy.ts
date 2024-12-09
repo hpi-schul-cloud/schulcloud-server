@@ -215,14 +215,18 @@ export class TspSyncStrategy extends SyncStrategy {
 		const newEmailAndUsername = `${newUid}@schul-cloud.org`;
 		const user = await this.tspSyncService.findUserByTspUid(oldUid);
 
+		console.log(`User found: ${user?.id ?? 'No Id'}`);
 		if (!user) {
 			throw new NotFoundLoggableException(UserDO.name, { oldUid });
 		}
 
 		const newEmail = newEmailAndUsername;
 		const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
+		console.log(`User updated: ${user?.id ?? 'No Id'}`);
 
 		const account = await this.tspSyncService.findAccountByExternalId(newUid, systemId);
+
+		console.log(`Account found: ${account?.id ?? 'No Id'}`);
 
 		if (!account) {
 			throw new NotFoundLoggableException(Account.name, { oldUid });
@@ -230,6 +234,8 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		const newUsername = newEmailAndUsername;
 		const updatedAccount = await this.tspSyncService.updateAccount(account, newUsername, systemId);
+
+		console.log(`Account updated: ${account?.id ?? 'No Id'}`);
 
 		return { updatedUser, updatedAccount };
 	}
