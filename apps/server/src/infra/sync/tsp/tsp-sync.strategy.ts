@@ -7,7 +7,6 @@ import { Logger } from '@src/core/logger';
 import { Account } from '@src/modules/account';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { System } from '@src/modules/system';
-import pLimit from 'p-limit';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
@@ -29,12 +28,6 @@ import { TspFetchService } from './tsp-fetch.service';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
-	private readonly schoolLimit: pLimit.Limit;
-
-	private readonly dataLimit: pLimit.Limit;
-
-	private readonly migrationLimit: pLimit.Limit;
-
 	private readonly schoolDaysToFetch: number;
 
 	private readonly schoolDataDaysToFetch: number;
@@ -53,13 +46,13 @@ export class TspSyncStrategy extends SyncStrategy {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
 
-		this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
+		// this.schoolLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT'));
 		this.schoolDaysToFetch = configService.get<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', 1);
 
-		this.dataLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT'));
+		// this.dataLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT'));
 		this.schoolDataDaysToFetch = configService.get<number>('TSP_SYNC_DATA_DAYS_TO_FETCH', 1);
 
-		this.migrationLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT'));
+		// this.migrationLimit = pLimit(configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT'));
 		this.migrationEnabled = configService.get<boolean>('FEATURE_TSP_MIGRATION_ENABLED', false);
 	}
 
@@ -90,28 +83,26 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, this.schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, this.schoolDaysToFetch));
 
-		const schoolPromises = tspSchools.map((tspSchool) =>
-			this.schoolLimit(async () => {
-				if (!tspSchool.schuleNummer) {
-					this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
-					return null;
-				}
+		const schoolPromises = tspSchools.map(async (tspSchool) => {
+			if (!tspSchool.schuleNummer) {
+				this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
+				return null;
+			}
 
-				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
+			const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
 
-				if (existingSchool) {
-					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
-					return { school: updatedSchool, created: false };
-				}
+			if (existingSchool) {
+				const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
+				return { school: updatedSchool, created: false };
+			}
 
-				const createdSchool = await this.tspSyncService.createSchool(
-					system,
-					tspSchool.schuleNummer,
-					tspSchool.schuleName ?? ''
-				);
-				return { school: createdSchool, created: true };
-			})
-		);
+			const createdSchool = await this.tspSyncService.createSchool(
+				system,
+				tspSchool.schuleNummer,
+				tspSchool.schuleName ?? ''
+			);
+			return { school: createdSchool, created: true };
+		});
 
 		const scSchools = await Promise.all(schoolPromises);
 
@@ -142,9 +133,7 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
-		const dataPromises = oauthDataDtos.map((oauthDataDto) =>
-			this.dataLimit(() => this.provisioningService.provisionData(oauthDataDto))
-		);
+		const dataPromises = oauthDataDtos.map((oauthDataDto) => this.provisioningService.provisionData(oauthDataDto));
 
 		const results = await Promise.allSettled(dataPromises);
 
@@ -155,15 +144,13 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspTeacherIds = await this.tspFetchService.fetchTspTeacherMigrations(system);
 		this.logger.info(new TspTeachersFetchedLoggable(tspTeacherIds.length));
 
-		const teacherMigrationPromises = tspTeacherIds.map(({ lehrerUidAlt, lehrerUidNeu }) =>
-			this.migrationLimit(async () => {
-				if (lehrerUidAlt && lehrerUidNeu) {
-					await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
-					return true;
-				}
-				return false;
-			})
-		);
+		const teacherMigrationPromises = tspTeacherIds.map(async ({ lehrerUidAlt, lehrerUidNeu }) => {
+			if (lehrerUidAlt && lehrerUidNeu) {
+				await this.migrateTspUser(lehrerUidAlt, lehrerUidNeu, system.id);
+				return true;
+			}
+			return false;
+		});
 
 		const migratedTspTeachers = await Promise.allSettled(teacherMigrationPromises);
 
@@ -177,15 +164,13 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspStudentIds = await this.tspFetchService.fetchTspStudentMigrations(system);
 		this.logger.info(new TspStudentsFetchedLoggable(tspStudentIds.length));
 
-		const studentMigrationPromises = tspStudentIds.map(({ schuelerUidAlt, schuelerUidNeu }) =>
-			this.migrationLimit(async () => {
-				if (schuelerUidAlt && schuelerUidNeu) {
-					await this.migrateTspUser(schuelerUidAlt, schuelerUidNeu, system.id);
-					return true;
-				}
-				return false;
-			})
-		);
+		const studentMigrationPromises = tspStudentIds.map(async ({ schuelerUidAlt, schuelerUidNeu }) => {
+			if (schuelerUidAlt && schuelerUidNeu) {
+				await this.migrateTspUser(schuelerUidAlt, schuelerUidNeu, system.id);
+				return true;
+			}
+			return false;
+		});
 
 		const migratedStudents = await Promise.allSettled(studentMigrationPromises);
 
