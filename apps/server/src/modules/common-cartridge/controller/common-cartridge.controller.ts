@@ -12,11 +12,10 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-// TODO: move this into common-cartridge module
-import { CommonCartridgeFileValidatorPipe } from '@src/modules/learnroom/utils';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeImportBodyParams, ExportCourseParams } from './dto';
 import { CourseExportBodyResponse } from './dto/course-export-body.response';
+import { CommonCartridgeFileValidatorPipe } from './utils';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -25,8 +24,10 @@ export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
 	@Get('export/:parentId')
-	public exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseExportBodyResponse> {
-		return this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
+	public async exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseExportBodyResponse> {
+		const response = await this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
+
+		return response;
 	}
 
 	@Post('import')

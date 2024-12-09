@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LearnroomConfig } from '../learnroom.config';
+import { LearnroomConfig } from '../../../learnroom/learnroom.config';
 
 @Injectable()
 export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.Multer.File, Express.Multer.File> {

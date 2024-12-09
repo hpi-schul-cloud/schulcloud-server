@@ -1,4 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CommonCartridgeFileValidatorPipe } from '@modules/common-cartridge/controller/utils';
 import {
 	Body,
 	Controller,
@@ -25,10 +26,8 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
-import { SchoolService } from '@modules/school';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
-import { CommonCartridgeFileValidatorPipe } from '../utils';
 import {
 	CourseImportBodyParams,
 	CourseMetadataListResponse,
@@ -45,8 +44,7 @@ export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
 		private readonly courseImportUc: CourseImportUc,
-		private readonly courseSyncUc: CourseSyncUc,
-		private readonly schoolService: SchoolService
+		private readonly courseSyncUc: CourseSyncUc
 	) {}
 
 	@Get()
