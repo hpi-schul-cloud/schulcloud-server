@@ -1,8 +1,9 @@
-import { AnyEntity, EntityName, FilterQuery, Primary } from '@mikro-orm/core';
+import { AnyEntity, EntityData, EntityName, FilterQuery, Primary } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
+import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { Account } from '../../domain/account';
 import { AccountEntity } from '../../domain/entity/account.entity';
 import { AccountEntityToDoMapper } from './mapper';
@@ -10,10 +11,18 @@ import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 import { AccountScope } from './scope/account-scope';
 
 @Injectable()
-export class AccountRepo {
-	constructor(private readonly em: EntityManager) {}
+export class AccountRepo extends BaseDomainObjectRepo<Account, AccountEntity> {
+	protected mapDOToEntityProperties(entityDO: Account): EntityData<AccountEntity> {
+		const entityProps: EntityData<AccountEntity> = AccountDoToEntityMapper.mapToEntity(entityDO);
 
-	get entityName() {
+		return entityProps;
+	}
+
+	constructor(protected readonly em: EntityManager) {
+		super(em);
+	}
+
+	get entityName(): EntityName<AccountEntity> {
 		return AccountEntity;
 	}
 
@@ -86,7 +95,7 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
-	getObjectReference<Entity extends AnyEntity<Entity>>(
+	public getObjectReference<Entity extends AnyEntity<Entity>>(
 		entityName: EntityName<Entity>,
 		id: Primary<Entity> | Primary<Entity>[]
 	): Entity {
@@ -175,7 +184,7 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapEntitiesToDos(result);
 	}
 
-	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+	public async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
 		const scope = new AccountScope();
 		const userIdScope = new AccountScope();
 
