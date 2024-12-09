@@ -20,7 +20,7 @@ describe(UserRoleUnknownLoggableException.name, () => {
 			const message = loggable.getLogMessage();
 
 			expect(message).toEqual({
-				type: 'USER_ROLE_UNKNOWN',
+				type: 'EXTERNAL_USER_ROLE_UNKNOWN',
 				stack: expect.any(String),
 				message: 'External user has no or no known role assigned to them',
 				data: {

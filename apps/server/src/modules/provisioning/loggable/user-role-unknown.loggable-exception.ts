@@ -7,7 +7,7 @@ export class UserRoleUnknownLoggableException extends BusinessError implements L
 	constructor(private readonly externalUser: ExternalUserDto) {
 		super(
 			{
-				type: 'USER_ROLE_UNKNOWN',
+				type: 'EXTERNAL_USER_ROLE_UNKNOWN',
 				title: 'Invalid user role',
 				defaultMessage: 'External user has no or no known role assigned to them',
 			},
