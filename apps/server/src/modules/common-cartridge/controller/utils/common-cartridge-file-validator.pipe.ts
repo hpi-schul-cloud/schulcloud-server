@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LearnroomConfig } from '../../../learnroom/learnroom.config';
+import { CommonCartridgeConfig } from '../../common-cartridge.config';
 
 @Injectable()
 export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.Multer.File, Express.Multer.File> {
 	private zipFileMagicNumber = '504b0304';
 
-	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
+	constructor(private readonly configService: ConfigService<CommonCartridgeConfig, true>) {}
 
 	public transform(value: Express.Multer.File): Express.Multer.File {
 		this.checkValue(value);

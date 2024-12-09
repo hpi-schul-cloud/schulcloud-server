@@ -12,6 +12,7 @@ import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
+import { CommonCartridgeConfig } from '@modules/common-cartridge';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
@@ -77,7 +78,8 @@ export interface ServerConfig
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
-		CoursesClientConfig {
+		CoursesClientConfig,
+		CommonCartridgeConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
