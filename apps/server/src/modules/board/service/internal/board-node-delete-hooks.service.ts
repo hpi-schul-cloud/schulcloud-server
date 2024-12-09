@@ -16,8 +16,10 @@ import {
 	isFileElement,
 	isLinkElement,
 	isMediaExternalToolElement,
+	isVideoConferenceElement,
 	LinkElement,
 	MediaExternalToolElement,
+	VideoConferenceElement,
 } from '../../domain';
 
 @Injectable()
@@ -49,6 +51,8 @@ export class BoardNodeDeleteHooksService {
 			await this.afterDeleteCollaborativeTextEditorElement(boardNode);
 		} else if (isMediaExternalToolElement(boardNode)) {
 			await this.afterDeleteMediaExternalToolElement(boardNode);
+		} else if (isVideoConferenceElement(boardNode)) {
+			await this.afterDeleteVideoConferenceElement(boardNode);
 		} else {
 			// noop
 		}
@@ -92,5 +96,9 @@ export class BoardNodeDeleteHooksService {
 		if (linkedTool) {
 			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
 		}
+	}
+
+	async afterDeleteVideoConferenceElement(videoConferenceElement: VideoConferenceElement): Promise<void> {
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(videoConferenceElement.id);
 	}
 }

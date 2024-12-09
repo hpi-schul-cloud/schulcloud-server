@@ -6,6 +6,7 @@ import { FileElementResponse } from './file-element.response';
 import { LinkElementResponse } from './link-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
 import { SubmissionContainerElementResponse } from './submission-container-element.response';
+import { VideoConferenceElementResponse } from './video-conference-element.response';
 
 export type AnyContentElementResponse =
 	| FileElementResponse
@@ -15,7 +16,8 @@ export type AnyContentElementResponse =
 	| ExternalToolElementResponse
 	| DrawingElementResponse
 	| CollaborativeTextEditorElementResponse
-	| DeletedElementResponse;
+	| DeletedElementResponse
+	| VideoConferenceElementResponse;
 
 export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
 	element instanceof FileElementResponse;

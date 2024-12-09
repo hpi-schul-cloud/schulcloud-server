@@ -31,6 +31,7 @@ import {
 	RenameBodyParams,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
+	VideoConferenceElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
@@ -124,7 +125,8 @@ export class CardController {
 		RichTextElementResponse,
 		SubmissionContainerElementResponse,
 		DrawingElementResponse,
-		DeletedElementResponse
+		DeletedElementResponse,
+		VideoConferenceElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -137,6 +139,7 @@ export class CardController {
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
+				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 			],
 		},
 	})
