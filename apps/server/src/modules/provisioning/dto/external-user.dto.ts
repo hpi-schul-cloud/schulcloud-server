@@ -1,17 +1,17 @@
 import { RoleName } from '@shared/domain/interface';
 
 export class ExternalUserDto {
-	externalId: string;
+	public externalId: string;
 
-	firstName?: string;
+	public firstName?: string;
 
-	lastName?: string;
+	public lastName?: string;
 
-	email?: string;
+	public email?: string;
 
-	roles?: RoleName[];
+	public roles: RoleName[];
 
-	birthday?: Date;
+	public birthday?: Date;
 
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;

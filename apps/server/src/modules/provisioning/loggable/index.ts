@@ -6,3 +6,5 @@ export * from './group-role-unknown.loggable';
 export { SchoolExternalToolCreatedLoggable } from './school-external-tool-created.loggable';
 export { FetchingPoliciesInfoFailedLoggable } from './fetching-policies-info-failed.loggable';
 export { PoliciesInfoErrorResponseLoggable } from './policies-info-error-response-loggable';
+export { UserRoleUnknownLoggableException } from './user-role-unknown.loggable-exception';
+export { SchoolMissingLoggableException } from './school-missing.loggable-exception';
