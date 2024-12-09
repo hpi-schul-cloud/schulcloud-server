@@ -153,7 +153,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const batches = tspTeacherIds.length / this.migrationLimit;
 
 		let total = 0;
-		for await (const batch of Array.from(Array(batches).keys())) {
+		for await (const batch of Array.from(Array(Math.ceil(batches)).keys())) {
 			const currentBatch = tspTeacherIds.slice(batch * this.migrationLimit, (batch + 1) * this.migrationLimit);
 			const teacherMigrationPromises = currentBatch.map(async ({ lehrerUidAlt, lehrerUidNeu }) => {
 				if (lehrerUidAlt && lehrerUidNeu) {
