@@ -3,6 +3,7 @@ export enum RoomColor {
 	PINK = 'pink',
 	RED = 'red',
 	ORANGE = 'orange',
+	YELLOW = 'yellow',
 	OLIVE = 'olive',
 	GREEN = 'green',
 	TURQUOISE = 'turquoise',
@@ -11,5 +12,4 @@ export enum RoomColor {
 	MAGENTA = 'magenta',
 	PURPLE = 'purple',
 	BROWN = 'brown',
-	YELLOW = 'yellow',
 }
