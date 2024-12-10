@@ -8,6 +8,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 } from '@shared/testing';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
@@ -92,8 +93,9 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
-				const room = roomEntityFactory.build();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const role = roleFactory.buildWithId({
 					name: RoleName.ROOMVIEWER,
 					permissions: [Permission.ROOM_VIEW],
@@ -104,7 +106,11 @@ describe('Room Controller (API)', () => {
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
-				const roomMembership = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
 				await em.persistAndFlush([room, studentAccount, studentUser, role, userGroupEntity, roomMembership]);
 				em.clear();
 
