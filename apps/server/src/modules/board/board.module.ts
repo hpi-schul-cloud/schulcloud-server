@@ -1,7 +1,7 @@
+import { TldrawClientModule } from '@infra/tldraw-client/tldraw-client.module';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
-import { TldrawClientModule } from '@modules/tldraw-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -42,8 +42,10 @@ import {
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
-		TldrawClientModule,
 		CqrsModule,
+		TldrawClientModule.register({
+			basePath: process.env.TLDRAW_API,
+		}),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,

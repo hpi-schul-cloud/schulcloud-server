@@ -1,7 +1,7 @@
+import { TldrawClientAdapter } from '@infra/tldraw-client/tldraw-client.adapter';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import {
@@ -25,7 +25,7 @@ export class BoardNodeDeleteHooksService {
 	constructor(
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly drawingElementAdapterService: DrawingElementAdapterService,
+		private readonly drawingElementAdapterService: TldrawClientAdapter,
 		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
 	) {}
 

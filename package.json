@@ -121,7 +121,9 @@
 		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization-client/authorization-api-client' -c 'openapitools-config.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'",
 		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'",
 		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
-		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api"
+		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
+		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
+		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
