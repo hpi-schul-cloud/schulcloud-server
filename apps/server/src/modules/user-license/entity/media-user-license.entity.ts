@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { MediaSourceEntity } from './media-source.entity';
-import { UserLicenseType } from '../enum/user-license-type';
+import { MediaSourceEntity } from '@src/modules/mediasource/entity';
+import { UserLicenseType } from '../enum';
 import { UserLicenseEntity, UserLicenseProps } from './user-license.entity';
 
 export interface MediaUserLicenseEntityProps extends UserLicenseProps {
@@ -20,6 +20,6 @@ export class MediaUserLicenseEntity extends UserLicenseEntity {
 	@Property()
 	mediumId: string;
 
-	@ManyToOne(() => MediaSourceEntity, { nullable: true })
+	@ManyToOne(() => MediaSourceEntity, { nullable: false })
 	mediaSource?: MediaSourceEntity;
 }

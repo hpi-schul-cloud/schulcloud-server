@@ -3,18 +3,15 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { cleanupCollections, userFactory } from '@shared/testing';
-import { MediaSource, MediaUserLicense } from '../domain';
-import { MediaSourceEntity, MediaUserLicenseEntity } from '../entity';
-import {
-	mediaSourceEntityFactory,
-	mediaSourceFactory,
-	mediaUserLicenseEntityFactory,
-	mediaUserLicenseFactory,
-} from '../testing';
+import { mediaSourceConfigEmbeddableFactory } from '@src/modules/mediasource/testing/media-source-config.embeddable.factory';
+import { mediaSourceEntityFactory } from '@src/modules/mediasource/testing/media-source-entity.factory';
+import { mediaSourceFactory } from '@src/modules/mediasource/testing/media-source.factory';
+import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo';
+import { MediaSourceOauthConfigEmbeddable } from '@src/modules/mediasource/entity';
+import { MediaUserLicense } from '../domain';
+import { MediaUserLicenseEntity } from '../entity';
+import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseRepo } from './media-user-license.repo';
-import { MediaSourceConfigMapper } from './media-source-config.mapper';
-import { MediaSourceConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
-import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
 
 describe(MediaUserLicenseRepo.name, () => {
 	let module: TestingModule;
@@ -43,7 +40,7 @@ describe(MediaUserLicenseRepo.name, () => {
 		describe('when searching for a users media licences', () => {
 			const setup = async () => {
 				const user: UserEntity = userFactory.build();
-				const config: MediaSourceConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
+				const config: MediaSourceOauthConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
 				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ config });
 				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({ user, mediaSource });
 				const otherMediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build();
@@ -76,7 +73,7 @@ describe(MediaUserLicenseRepo.name, () => {
 							name: mediaSource.name,
 							sourceId: mediaSource.sourceId,
 							format: mediaSource.format,
-							config: MediaSourceConfigMapper.mapToDo(config),
+							oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(config),
 						}),
 					}),
 				]);
