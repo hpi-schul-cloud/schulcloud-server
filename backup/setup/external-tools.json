@@ -114,7 +114,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -151,7 +151,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -181,7 +181,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -200,7 +200,7 @@
 		"config_baseUrl": "https://google.com",
 		"parameters": [],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": true,
 		"restrictToContexts": []
 	},
@@ -240,7 +240,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -307,7 +307,7 @@
 		],
 		"isHidden": false,
 		"isDeactivated": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"restrictToContexts": []
 	},
 	{
@@ -346,7 +346,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -782,7 +782,7 @@
 		"config_baseUrl": "https://google.com/search",
 		"parameters": [],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -822,7 +822,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -862,7 +862,7 @@
 			}
 		],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -881,7 +881,7 @@
 		"config_baseUrl": "https://google.com/search",
 		"parameters": [],
 		"isHidden": false,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -900,7 +900,7 @@
 		"config_baseUrl": "https://google.com/search",
 		"parameters": [],
 		"isHidden": true,
-		"openNewTab": false,
+		"openNewTab": true,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
