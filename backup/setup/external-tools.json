@@ -63,7 +63,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -84,7 +83,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"board-element"
@@ -117,7 +115,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -155,7 +152,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -186,7 +182,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -206,7 +201,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": true,
 		"restrictToContexts": []
 	},
@@ -247,7 +241,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -271,7 +264,6 @@
 			"$date": "2024-03-19T09:19:57.984Z"
 		},
 		"url": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -316,7 +308,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": false,
-		"version": 3,
 		"restrictToContexts": []
 	},
 	{
@@ -356,7 +347,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -411,7 +401,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 2,
 		"restrictToContexts": []
 	},
 	{
@@ -465,7 +454,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 1,
 		"restrictToContexts": []
 	},
 	{
@@ -499,7 +487,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 1,
 		"restrictToContexts": []
 	},
 	{
@@ -532,7 +519,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 1,
 		"restrictToContexts": []
 	},
 	{
@@ -600,7 +586,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 1,
 		"restrictToContexts": []
 	},
 	{
@@ -668,7 +653,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 1,
 		"restrictToContexts": []
 	},
 	{
@@ -725,7 +709,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 2,
 		"restrictToContexts": []
 	},
 	{
@@ -782,7 +765,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 1,
 		"restrictToContexts": []
 	},
 	{
@@ -801,7 +783,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -842,7 +823,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -883,7 +863,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -903,7 +882,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -923,7 +901,6 @@
 		"parameters": [],
 		"isHidden": true,
 		"openNewTab": false,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": []
 	},
@@ -944,7 +921,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"course"
@@ -967,7 +943,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"media-board"
@@ -990,7 +965,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"course",
@@ -1015,7 +989,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [],
 		"isPreferred": true,
@@ -1049,7 +1022,6 @@
 		],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [],
 		"isPreferred": true,
@@ -1072,7 +1044,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"course"
@@ -1097,7 +1068,6 @@
 		"parameters": [],
 		"isHidden": false,
 		"openNewTab": true,
-		"version": 1,
 		"isDeactivated": false,
 		"restrictToContexts": [
 			"board-element"
@@ -1185,7 +1155,6 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
-		"version": 2,
 		"restrictToContexts": []
 	}
 ]
