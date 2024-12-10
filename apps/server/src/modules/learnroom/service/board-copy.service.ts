@@ -153,6 +153,7 @@ export class BoardCopyService {
 			sourceStorageLocationReference: { id: originalCourse.school.id, type: StorageLocation.SCHOOL },
 			targetStorageLocationReference: { id: destinationCourse.school.id, type: StorageLocation.SCHOOL },
 			userId: user.id,
+			targetSchoolId: user.school.id,
 		});
 	}
 
