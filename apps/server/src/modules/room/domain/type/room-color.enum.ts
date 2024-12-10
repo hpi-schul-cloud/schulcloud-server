@@ -11,4 +11,5 @@ export enum RoomColor {
 	MAGENTA = 'magenta',
 	PURPLE = 'purple',
 	BROWN = 'brown',
+	YELLOW = 'yellow',
 }
