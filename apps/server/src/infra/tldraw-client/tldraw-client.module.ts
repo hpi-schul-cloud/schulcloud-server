@@ -1,20 +1,20 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { Configuration, ConfigurationParameters, TldrawDocumentApi } from './generated';
+import { Configuration, TldrawDocumentApi } from './generated';
 import { TldrawClientAdapter } from './tldraw-client.adapter';
-
-export interface TldrawClientConfig extends ConfigurationParameters {
-	basePath: string;
-}
+import { TldrawClientConfig } from './tldraw-client.config';
 
 @Module({})
 export class TldrawClientModule {
-	static register(config: ConfigurationParameters): DynamicModule {
+	public static register(config: TldrawClientConfig): DynamicModule {
 		const providers = [
 			TldrawClientAdapter,
 			{
 				provide: TldrawDocumentApi,
 				useFactory: () => {
-					const configuration = new Configuration(config);
+					const configuration = new Configuration({
+						basePath: config.TLDRAW_ADMIN_API_CLIENT_BASE_URL,
+						apiKey: config.TLDRAW_ADMIN_API_CLIENT_API_KEY,
+					});
 					return new TldrawDocumentApi(configuration);
 				},
 			},

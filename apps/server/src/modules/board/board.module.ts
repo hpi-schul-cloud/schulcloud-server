@@ -12,6 +12,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
+import { config } from './board-collaboration.config';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 import {
@@ -34,6 +35,8 @@ import {
 	ContentElementUpdateService,
 } from './service/internal';
 
+const boardCollaborationConfig = config();
+
 @Module({
 	imports: [
 		CopyHelperModule,
@@ -44,7 +47,8 @@ import {
 		HttpModule,
 		CqrsModule,
 		TldrawClientModule.register({
-			basePath: process.env.TLDRAW_API,
+			TLDRAW_ADMIN_API_CLIENT_BASE_URL: boardCollaborationConfig.TLDRAW_ADMIN_API_CLIENT_BASE_URL,
+			TLDRAW_ADMIN_API_CLIENT_API_KEY: boardCollaborationConfig.TLDRAW_ADMIN_API_CLIENT_API_KEY,
 		}),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
