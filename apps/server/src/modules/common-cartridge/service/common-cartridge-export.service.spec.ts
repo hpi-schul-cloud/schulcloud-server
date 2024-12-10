@@ -11,7 +11,6 @@ import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/le
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
-import { LessonDto } from '../common-cartridge-client/lesson-client/dto';
 import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
 import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
 import {
@@ -42,7 +41,6 @@ describe('CommonCartridgeExportService', () => {
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
 	const getFileContent = (archive: AdmZip, filePath: string): string | undefined =>
 		archive.getEntry(filePath)?.getData().toString();
-
 	const setupParams = async (
 		version: CommonCartridgeVersion,
 		exportTopics: boolean,
@@ -50,7 +48,8 @@ describe('CommonCartridgeExportService', () => {
 		exportColumnBoards: boolean
 	) => {
 		const courseMetadata: CourseCommonCartridgeMetadataDto = courseMetadataFactory.build();
-		const lesson: LessonDto = lessonFactory.build();
+		const lessons = lessonFactory.buildList(2);
+		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
 
 		const boardSkeleton: BoardSkeletonDto = columnBoardFactory.build();
@@ -89,6 +88,7 @@ describe('CommonCartridgeExportService', () => {
 			version,
 			room,
 			lesson,
+			lessons,
 			boardTask,
 			boardSkeleton,
 			listOfCardsResponse,
@@ -234,7 +234,7 @@ describe('CommonCartridgeExportService', () => {
 				);
 			});
 
-			it('should add lessons', async () => {
+			it('should add lesson', async () => {
 				const { archive, lesson } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
@@ -304,9 +304,11 @@ describe('CommonCartridgeExportService', () => {
 			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
 
 			it("shouldn't add lessons", async () => {
-				const { archive, lesson } = await setup();
+				const { archive, lessons } = await setup();
 
-				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
+				lessons.forEach((lesson) => {
+					expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
+				});
 			});
 		});
 

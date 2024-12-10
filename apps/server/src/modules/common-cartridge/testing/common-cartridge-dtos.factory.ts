@@ -136,12 +136,23 @@ export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskDto>(() =>
 	};
 });
 
+export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ sequence }) => {
+	return {
+		id: sequence.toString(),
+		type: 'lernstore',
+		content: { resources: [faker.internet.url(), faker.internet.url(), faker.internet.url()] },
+		title: faker.lorem.sentence(),
+		component: 'lernstore',
+		hidden: faker.datatype.boolean(),
+	};
+});
+
 export const lessonContentFactory = Factory.define<LessonContentDto>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
 		type: faker.lorem.word(),
 		content: { text: 'text' },
-		title: faker.lorem.word(),
+		title: faker.lorem.sentence(),
 		component: 'text',
 		hidden: faker.datatype.boolean(),
 	};
@@ -155,7 +166,7 @@ export const lessonFactory = Factory.define<LessonDto>(({ sequence }) => {
 		courseGroupId: faker.string.uuid(),
 		hidden: faker.datatype.boolean(),
 		position: faker.number.int(),
-		contents: lessonContentFactory.buildList(2),
+		contents: [lessonContentFactory.build(), lernstoreContentFactory.build()],
 		materials: [],
 		linkedTasks: [lessonLinkedTaskFactory.build(), lessonLinkedTaskFactory.build()],
 	};
