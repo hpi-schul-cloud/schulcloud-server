@@ -49,8 +49,9 @@ module.exports = {
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
+		'max-classes-per-file': ['warn', 1],
 	},
-	plugins: ['import', 'prettier', 'promise', 'no-only-tests'],
+	plugins: ['import', 'prettier', 'promise', 'no-only-tests', 'filename-rules'],
 	env: {
 		node: true,
 		mocha: true,
@@ -88,11 +89,27 @@ module.exports = {
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
 				'import/prefer-default-export': 'off',
 				'no-void': ['error', { allowAsStatement: true }],
-				'max-classes-per-file': 'off',
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
+				'filename-rules/match': [1, 'kebabcase'],
+				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
+				'@typescript-eslint/no-non-null-assertion': 'warn',
+				'@typescript-eslint/explicit-function-return-type': 'warn',
+				'@typescript-eslint/explicit-member-accessibility': [
+					'warn',
+					{
+						accessibility: 'explicit',
+						overrides: {
+							accessors: 'no-public',
+							constructors: 'no-public',
+							methods: 'explicit',
+							properties: 'explicit',
+							parameterProperties: 'explicit',
+						},
+					},
+				],
 				'@typescript-eslint/no-unused-vars': 'error',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
@@ -105,7 +122,11 @@ module.exports = {
 					{
 						patterns: [
 							{
-								group: ['@infra/*/*', '@modules/*/*', '!*.module'],
+								group: ['@src/apps/**', '@src/core/**', '@src/modules/*/*', '@src/shared/**'],
+								message: 'Remove src/ from import path',
+							},
+							{
+								group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
 								message: 'Do not deep import from a module',
 							},
 						],
@@ -122,7 +143,109 @@ module.exports = {
 					rules: {
 						// you should turn the original rule off *only* for test files
 						'@typescript-eslint/unbound-method': 'off',
+						'jest/prefer-spy-on': 'warn',
 						'jest/unbound-method': 'error',
+						'@typescript-eslint/explicit-function-return-type': 'off',
+						'max-classes-per-file': 'off',
+						'@typescript-eslint/explicit-member-accessibility': 'off',
+					},
+				},
+				{
+					files: ['apps/server/src/apps/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@infra/**', '@shared/**'],
+										message: 'apps-modules may NOT import from @apps, @infra or @shared',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/core/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**'],
+										message: 'core-modules may NOT import from @apps, @core, @infra or @modules',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/infra/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@core/**', '@modules/**'],
+										message: 'infra-modules may NOT import from @apps, @core or @modules',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/modules/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**'],
+										message: 'modules-modules may NOT import from @apps',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/shared/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**', '@shared/**'],
+										message: 'shared modules may NOT import from @apps, @core, @infra, @modules or @shared',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
+					files: ['apps/server/src/**/*.entity.ts'],
+					rules: {
+						'@typescript-eslint/explicit-member-accessibility': [
+							'warn',
+							{
+								accessibility: 'explicit',
+								overrides: {
+									accessors: 'no-public',
+									constructors: 'no-public',
+									methods: 'explicit',
+									properties: 'no-public',
+									parameterProperties: 'explicit',
+								},
+							},
+						],
 					},
 				},
 			],
