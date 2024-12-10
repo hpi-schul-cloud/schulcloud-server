@@ -256,9 +256,7 @@
 		"winston": "^3.8.2",
 		"ws": "^8.17.1",
 		"xml2js": "^0.6.2",
-		"y-protocols": "^1.0.6",
-		"yaml": "^2.5.0",
-		"yjs": "^13.6.11"
+		"yaml": "^2.5.0"
 	},
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.617.0",
