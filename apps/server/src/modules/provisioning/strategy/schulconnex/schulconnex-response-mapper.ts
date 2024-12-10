@@ -175,7 +175,7 @@ export class SchulconnexResponseMapper {
 		const userRole: RoleName | undefined = GroupRoleMapping[relation.rollen[0]];
 
 		if (!userRole) {
-			this.logger.info(new GroupRoleUnknownLoggable(relation));
+			this.logger.warning(new GroupRoleUnknownLoggable(relation));
 			return null;
 		}
 
