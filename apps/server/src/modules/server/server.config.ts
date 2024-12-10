@@ -212,12 +212,6 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
-	TLDRAW__WEBSOCKET_URL: Configuration.get('TLDRAW__WEBSOCKET_URL') as string,
-	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
-	TLDRAW__ASSETS_MAX_SIZE_BYTES: Configuration.get('TLDRAW__ASSETS_MAX_SIZE_BYTES') as number,
-	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: (Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string).split(
-		','
-	),
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
 		'FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED'
