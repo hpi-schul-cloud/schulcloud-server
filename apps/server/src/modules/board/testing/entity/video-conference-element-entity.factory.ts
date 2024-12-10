@@ -12,7 +12,7 @@ export const videoConferenceElementEntityFactory = BoardNodeEntityFactory.define
 		title: `video conference element #${sequence}`,
 		position: 0,
 		children: [],
-		url: `url #${sequence}`,
+		url: `https://example.org/#${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		type: BoardNodeType.VIDEO_CONFERENCE_ELEMENT,

@@ -67,7 +67,7 @@ describe(ContentElementResponseFactory.name, () => {
 		expect(result).toBeInstanceOf(DeletedElementResponse);
 	});
 
-	it('should return instance of DeletedElementResponse', () => {
+	it('should return instance of VideoConferenceElementResponse', () => {
 		const videoConferenceElement = videoConferenceElementFactory.build();
 
 		const result = ContentElementResponseFactory.mapToResponse(videoConferenceElement);

@@ -111,7 +111,7 @@ export class VideoConferenceService {
 		} else if (scope === VideoConferenceScope.ROOM) {
 			scopeRessource = await this.roomService.getSingleRoom(scopeId);
 		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
-			scopeRessource = (await this.boardNodeService.findById(scopeId)) as VideoConferenceElement;
+			scopeRessource = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
 		} else {
 			// Need to be solve the null with throw by it self.
 		}
@@ -228,7 +228,7 @@ export class VideoConferenceService {
 
 				return {
 					scopeId,
-					scopeName: 'courses',
+					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
 					title: course.name,
 				};
@@ -238,7 +238,7 @@ export class VideoConferenceService {
 
 				return {
 					scopeId: event.teamId,
-					scopeName: 'teams',
+					scopeName: VideoConferenceScope.EVENT,
 					logoutUrl: `${this.hostUrl}/teams/${event.teamId}?activeTab=events`,
 					title: event.title,
 				};
@@ -248,17 +248,17 @@ export class VideoConferenceService {
 
 				return {
 					scopeId: room.id,
-					scopeName: 'rooms',
+					scopeName: VideoConferenceScope.ROOM,
 					logoutUrl: `${this.hostUrl}/rooms/${room.id}`,
 					title: room.name,
 				};
 			}
 			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
-				const element = (await this.boardNodeService.findById(scopeId)) as VideoConferenceElement;
+				const element = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
 
 				return {
 					scopeId: element.id,
-					scopeName: 'video-conference-element',
+					scopeName: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
 					logoutUrl: `${this.hostUrl}/boards/${element.rootId}`,
 					title: element.title,
 				};

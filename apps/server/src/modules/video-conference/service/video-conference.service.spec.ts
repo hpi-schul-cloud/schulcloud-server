@@ -25,6 +25,7 @@ import { GroupTypes } from '@src/modules/group';
 import { roomMembershipFactory } from '@src/modules/room-membership/testing';
 import { roomFactory } from '@src/modules/room/testing';
 import { columnBoardFactory, videoConferenceElementFactory } from '@src/modules/board/testing';
+import { VideoConferenceElement } from '@src/modules/board/domain';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -531,7 +532,7 @@ describe(VideoConferenceService.name, () => {
 					rootNode: columnBoardFactory.build(),
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
-				boardNodeService.findById.mockResolvedValueOnce(element);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
 				return {
 					user,
@@ -718,7 +719,7 @@ describe(VideoConferenceService.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
 					.mockResolvedValueOnce(boardNodeAuthorizable);
-				boardNodeService.findById.mockResolvedValueOnce(element);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
 				return {
 					user,
@@ -835,7 +836,7 @@ describe(VideoConferenceService.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
 					.mockResolvedValueOnce(boardNodeAuthorizable);
-				boardNodeService.findById.mockResolvedValueOnce(element);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
 				return {
 					user,
@@ -939,7 +940,7 @@ describe(VideoConferenceService.name, () => {
 
 				expect(result).toEqual({
 					scopeId,
-					scopeName: 'courses',
+					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${service.hostUrl}/courses/${scopeId}?activeTab=tools`,
 					title: course.name,
 				});
@@ -958,7 +959,7 @@ describe(VideoConferenceService.name, () => {
 
 				expect(result).toEqual({
 					scopeId: room.id,
-					scopeName: 'rooms',
+					scopeName: VideoConferenceScope.ROOM,
 					logoutUrl: `${service.hostUrl}/rooms/${room.id}`,
 					title: room.name,
 				});
@@ -971,17 +972,17 @@ describe(VideoConferenceService.name, () => {
 				const { userId } = setup();
 				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
 				const element = videoConferenceElementFactory.build({ title: 'Element' });
-				boardNodeService.findById.mockResolvedValueOnce(element);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
 				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
 
 				expect(result).toEqual({
 					scopeId: element.id,
-					scopeName: 'video-conference-element',
+					scopeName: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
 					logoutUrl: `${service.hostUrl}/boards/${element.id}`,
 					title: element.title,
 				});
-				expect(boardNodeService.findById).toHaveBeenCalledWith(element.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(VideoConferenceElement, element.id);
 			});
 		});
 
@@ -996,7 +997,7 @@ describe(VideoConferenceService.name, () => {
 
 				expect(result).toEqual({
 					scopeId: teamId,
-					scopeName: 'teams',
+					scopeName: VideoConferenceScope.EVENT,
 					logoutUrl: `${service.hostUrl}/teams/${teamId}?activeTab=events`,
 					title: event.title,
 				});
@@ -1128,13 +1129,13 @@ describe(VideoConferenceService.name, () => {
 		});
 
 		describe('when conference scope is VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT', () => {
-			it('should call boardNodeService.findById', async () => {
+			it('should call boardNodeService.findByClassAndId', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
 				userService.findById.mockResolvedValue(user);
 
 				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
 
-				expect(boardNodeService.findById).toHaveBeenCalledWith(scopeId);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(VideoConferenceElement, scopeId);
 			});
 
 			it('should call userService.findById', async () => {

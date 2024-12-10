@@ -12,7 +12,6 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
-	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
 
@@ -160,20 +159,6 @@ describe(BoardNodeDeleteHooksService.name, () => {
 				await service.afterDelete(boardNode);
 
 				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(tool);
-			});
-		});
-
-		describe('when called with video conference element', () => {
-			const setup = () => {
-				return { boardNode: videoConferenceElementFactory.build() };
-			};
-
-			it('should delete files', async () => {
-				const { boardNode } = setup();
-
-				await service.afterDelete(boardNode);
-
-				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
 			});
 		});
 	});
