@@ -20,11 +20,7 @@ export class RoomMembershipService {
 		private readonly userService: UserService
 	) {}
 
-	private async createNewRoomMembership(
-		roomId: EntityId,
-		userId: EntityId,
-		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER
-	): Promise<RoomMembership> {
+	public async createNewRoomMembership(roomId: EntityId, ownerUserId: EntityId): Promise<RoomMembership> {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const group = await this.groupService.createGroup(
@@ -32,7 +28,7 @@ export class RoomMembershipService {
 			GroupTypes.ROOM,
 			room.schoolId
 		);
-		await this.groupService.addUsersToGroup(group.id, [{ userId, roleName }]);
+		await this.groupService.addUsersToGroup(group.id, [{ userId: ownerUserId, roleName: RoleName.ROOMOWNER }]);
 
 		const roomMembership = new RoomMembership({
 			id: new ObjectId().toHexString(),
@@ -79,16 +75,14 @@ export class RoomMembershipService {
 
 	public async addMembersToRoom(
 		roomId: EntityId,
-		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER }>
+		userIdsAndRoles: Array<{
+			userId: EntityId;
+			roleName: RoleName.ROOMADMIN | RoleName.ROOMEDITOR | RoleName.ROOMVIEWER;
+		}>
 	): Promise<EntityId> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			const firstUser = userIdsAndRoles.shift();
-			if (firstUser === undefined) {
-				throw new BadRequestException('No user provided');
-			}
-			const newRoomMembership = await this.createNewRoomMembership(roomId, firstUser.userId, firstUser.roleName);
-			return newRoomMembership.id;
+			throw new Error('Room membership not found');
 		}
 
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
@@ -106,6 +100,12 @@ export class RoomMembershipService {
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
+
+		// TODO: fail if trying to remove owner
+		// const hasOwner = group.users
+		// 	.filter((user) => userIds.includes(user.userId))
+		// 	.some((groupUser) => groupUser.roleName === RoleName.ROOMOWNER);
+
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
