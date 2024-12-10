@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { MediaSource } from '../domain';
+import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceRepo } from '../repo';
 
 @Injectable()
@@ -13,8 +14,8 @@ export class MediaSourceService {
 		return domainObject;
 	}
 
-	public async findByName(name: string): Promise<MediaSource | null> {
-		const domainObject: MediaSource | null = await this.mediaSourceRepo.findByName(name);
+	public async findByFormat(format: MediaSourceDataFormat): Promise<MediaSource | null> {
+		const domainObject: MediaSource | null = await this.mediaSourceRepo.findByFormat(format);
 
 		return domainObject;
 	}

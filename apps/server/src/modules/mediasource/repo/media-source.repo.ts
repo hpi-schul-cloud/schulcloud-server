@@ -2,7 +2,7 @@ import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MediaSource } from '../domain';
-import { MediaSourceEntity } from '../entity';
+import { MediaSourceDataFormat, MediaSourceEntity } from '../entity';
 import { MediaSourceMapper } from './media-source.mapper';
 
 @Injectable()
@@ -29,8 +29,8 @@ export class MediaSourceRepo extends BaseDomainObjectRepo<MediaSource, MediaSour
 		return domainObject;
 	}
 
-	public async findByName(name: string): Promise<MediaSource | null> {
-		const entity: MediaSourceEntity | null = await this.em.findOne(MediaSourceEntity, { name });
+	public async findByFormat(format: MediaSourceDataFormat): Promise<MediaSource | null> {
+		const entity: MediaSourceEntity | null = await this.em.findOne(MediaSourceEntity, { format });
 
 		if (!entity) {
 			return null;

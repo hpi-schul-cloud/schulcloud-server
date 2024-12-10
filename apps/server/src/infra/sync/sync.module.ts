@@ -4,9 +4,12 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { MediaSourceModule } from '@modules/mediasource/media-source.module';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { ProvisioningModule } from '@src/modules/provisioning';
@@ -26,6 +29,9 @@ import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
 		ConsoleWriterModule,
 		SystemModule,
 		SchoolModule,
+		MediaSourceModule,
+		HttpModule,
+		SchoolLicenseModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspClientModule,

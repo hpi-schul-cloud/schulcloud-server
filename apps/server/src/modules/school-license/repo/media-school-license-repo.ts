@@ -17,14 +17,10 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 		return MediaSchoolLicenseEntity.name;
 	}
 
-	public async findMediaSchoolLicense(
-		mediaSource: MediaSource,
-		schoolId: EntityId,
-		mediumId: string
-	): Promise<MediaSchoolLicense> {
+	public async findMediaSchoolLicense(schoolId: EntityId, mediumId: string): Promise<MediaSchoolLicense> {
 		const entity: MediaSchoolLicenseEntity = await this.em.findOneOrFail(
 			MediaSchoolLicenseEntity,
-			{ school: schoolId, mediumId, type: SchoolLicenseType.MEDIA_LICENSE, mediaSource: mediaSource.id },
+			{ school: schoolId, mediumId, type: SchoolLicenseType.MEDIA_LICENSE },
 			{
 				populate: ['mediaSource'],
 			}
@@ -50,22 +46,18 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 	}
 
 	private mapEntityToDomainObject(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
-		let mediaSource: MediaSource | undefined;
-
-		if (entity.mediaSource) {
-			mediaSource = new MediaSource({
-				id: entity.mediaSource.id,
-				name: entity.mediaSource.name,
-				sourceId: entity.mediaSource.sourceId,
-				format: entity.mediaSource.format,
-				oauthConfig: entity.mediaSource.oauthConfig
-					? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
-					: undefined,
-				basicAuthConfig: entity.mediaSource.basicConfig
-					? MediaSourceConfigMapper.mapBasicConfigToDo(entity.mediaSource.basicConfig)
-					: undefined,
-			});
-		}
+		const mediaSource = new MediaSource({
+			id: entity.mediaSource.id,
+			name: entity.mediaSource.name,
+			sourceId: entity.mediaSource.sourceId,
+			format: entity.mediaSource.format,
+			oauthConfig: entity.mediaSource.oauthConfig
+				? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
+				: undefined,
+			basicAuthConfig: entity.mediaSource.basicConfig
+				? MediaSourceConfigMapper.mapBasicConfigToDo(entity.mediaSource.basicConfig)
+				: undefined,
+		});
 
 		const schoolLicense: MediaSchoolLicense = new MediaSchoolLicense({
 			id: entity.id,
@@ -83,7 +75,7 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 			school: this.em.getReference(SchoolEntity, entityDO.schoolId),
 			type: SchoolLicenseType.MEDIA_LICENSE,
 			mediumId: entityDO.mediumId,
-			mediaSource: entityDO.mediaSource ? this.em.getReference(MediaSourceEntity, entityDO.mediaSource.id) : undefined,
+			mediaSource: this.em.getReference(MediaSourceEntity, entityDO.mediaSource.id),
 		};
 
 		return entityProps;
