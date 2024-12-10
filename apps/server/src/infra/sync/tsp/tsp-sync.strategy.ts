@@ -211,32 +211,37 @@ export class TspSyncStrategy extends SyncStrategy {
 		oldUid: string,
 		newUid: string,
 		systemId: string
-	): Promise<{ updatedUser: UserDO; updatedAccount: Account }> {
-		const newEmailAndUsername = `${newUid}@schul-cloud.org`;
-		const user = await this.tspSyncService.findUserByTspUid(oldUid);
+	): Promise<{ updatedUser: UserDO; updatedAccount: Account } | null> {
+		try {
+			const newEmailAndUsername = `${newUid}@schul-cloud.org`;
+			const user = await this.tspSyncService.findUserByTspUid(oldUid);
 
-		console.log(`User found: ${user?.id ?? 'No Id'}`);
-		if (!user) {
-			throw new NotFoundLoggableException(UserDO.name, { oldUid });
+			console.log(`User found: ${user?.id ?? 'No Id'}`);
+			if (!user) {
+				throw new NotFoundLoggableException(UserDO.name, { oldUid });
+			}
+
+			const newEmail = newEmailAndUsername;
+			const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
+			console.log(`User updated: ${user?.id ?? 'No Id'}`);
+
+			const account = await this.tspSyncService.findAccountByExternalId(newUid, systemId);
+
+			console.log(`Account found: ${account?.id ?? 'No Id'}`);
+
+			if (!account) {
+				throw new NotFoundLoggableException(Account.name, { oldUid });
+			}
+
+			const newUsername = newEmailAndUsername;
+			const updatedAccount = await this.tspSyncService.updateAccount(account, newUsername, systemId);
+
+			console.log(`Account updated: ${account?.id ?? 'No Id'}`);
+
+			return { updatedUser, updatedAccount };
+		} catch (e) {
+			console.log(`An error occurred: ${JSON.stringify(e)}`);
 		}
-
-		const newEmail = newEmailAndUsername;
-		const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
-		console.log(`User updated: ${user?.id ?? 'No Id'}`);
-
-		const account = await this.tspSyncService.findAccountByExternalId(newUid, systemId);
-
-		console.log(`Account found: ${account?.id ?? 'No Id'}`);
-
-		if (!account) {
-			throw new NotFoundLoggableException(Account.name, { oldUid });
-		}
-
-		const newUsername = newEmailAndUsername;
-		const updatedAccount = await this.tspSyncService.updateAccount(account, newUsername, systemId);
-
-		console.log(`Account updated: ${account?.id ?? 'No Id'}`);
-
-		return { updatedUser, updatedAccount };
+		return null;
 	}
 }
