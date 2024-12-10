@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
-import { TldrawClientConfig } from '@src/infra/tldraw-client/tldraw-client.config';
+import { TldrawClientConfig } from '@infra/tldraw-client/tldraw-client.config';
 import { Algorithm } from 'jsonwebtoken';
 
 export interface BoardCollaborationConfig extends JwtAuthGuardConfig, TldrawClientConfig {
