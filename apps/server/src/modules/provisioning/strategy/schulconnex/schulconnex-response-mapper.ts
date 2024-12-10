@@ -27,7 +27,7 @@ import {
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 
-const RoleMapping: Partial<Record<SchulconnexRole, RoleName>> = {
+const RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
 	[SchulconnexRole.LEHR]: RoleName.TEACHER,
 	[SchulconnexRole.LERN]: RoleName.STUDENT,
 	[SchulconnexRole.LEIT]: RoleName.ADMINISTRATOR,
@@ -39,7 +39,7 @@ const GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>>
 	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
 };
 
-const GroupTypeMapping: Partial<Record<SchulconnexGroupType, GroupTypes>> = {
+const GroupTypeMapping: Partial<Record<SchulconnexGroupType | string, GroupTypes>> = {
 	[SchulconnexGroupType.CLASS]: GroupTypes.CLASS,
 	[SchulconnexGroupType.COURSE]: GroupTypes.COURSE,
 	[SchulconnexGroupType.OTHER]: GroupTypes.OTHER,

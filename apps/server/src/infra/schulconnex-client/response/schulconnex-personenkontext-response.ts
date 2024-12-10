@@ -4,14 +4,13 @@ import { SchulconnexErreichbarkeitenResponse } from './schulconnex-erreichbarkei
 import { SchulconnexGruppenResponse } from './schulconnex-gruppen-response';
 import { SchulconnexOrganisationResponse } from './schulconnex-organisation-response';
 import { SchulconnexResponseValidationGroups } from './schulconnex-response-validation-groups';
-import { SchulconnexRole } from './schulconnex-role';
 
 export class SchulconnexPersonenkontextResponse {
 	@IsString({ groups: [SchulconnexResponseValidationGroups.USER, SchulconnexResponseValidationGroups.GROUPS] })
 	id!: string;
 
 	@IsString({ groups: [SchulconnexResponseValidationGroups.USER] })
-	rolle!: SchulconnexRole;
+	rolle!: string;
 
 	@IsObject({ groups: [SchulconnexResponseValidationGroups.SCHOOL] })
 	@ValidateNested({ groups: [SchulconnexResponseValidationGroups.SCHOOL] })
