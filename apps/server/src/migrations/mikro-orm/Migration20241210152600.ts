@@ -1,0 +1,37 @@
+import { Migration } from '@mikro-orm/migrations-mongodb';
+
+export class Migration20241210152600 extends Migration {
+	async up(): Promise<void> {
+		const roomEditorRoleUpdate = await this.getCollection('roles').updateOne(
+			{ name: 'roomeditor' },
+			{
+				$set: {
+					permissions: ['ROOM_VIEW', 'ROOM_EDIT', 'ROOM_MEMBERS_ADD', 'ROOM_MEMBERS_REMOVE'],
+				},
+			}
+		);
+
+		if (roomEditorRoleUpdate.modifiedCount > 0) {
+			console.info(
+				'Rollback: Permission ROOM_DELETE removed from and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE added to role roomeditor.'
+			);
+		}
+	}
+
+	async down(): Promise<void> {
+		const roomEditorRoleUpdate = await this.getCollection('roles').updateOne(
+			{ name: 'roomeditor' },
+			{
+				$set: {
+					permissions: ['ROOM_VIEW', 'ROOM_EDIT', 'ROOM_DELETE'],
+				},
+			}
+		);
+
+		if (roomEditorRoleUpdate.modifiedCount > 0) {
+			console.info(
+				'Permissions ROOM_DELETE added to and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE from role roomeditor.'
+			);
+		}
+	}
+}
