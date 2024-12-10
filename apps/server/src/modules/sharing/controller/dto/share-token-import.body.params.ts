@@ -15,9 +15,9 @@ export class ShareTokenImportBodyParams {
 	@IsOptional()
 	@IsString()
 	@ApiProperty({
-		description: 'Id of the course to which the lesson/task will be added',
+		description: 'Id of the parent to which the imported object will be added.',
 		required: false,
 		nullable: true,
 	})
-	destinationCourseId?: string;
+	destinationId?: string;
 }

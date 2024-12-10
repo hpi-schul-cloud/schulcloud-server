@@ -11,6 +11,7 @@ import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import metaTagExtractorConfig from './meta-tag-extractor.config';
 import { MetaTagExtractorService } from './service';
+import { MetaTagExternalUrlService } from './service/meta-tag-external-url.service';
 import { MetaTagInternalUrlService } from './service/meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './service/url-handler';
 
@@ -28,6 +29,7 @@ import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } f
 	],
 	providers: [
 		MetaTagExtractorService,
+		MetaTagExternalUrlService,
 		MetaTagInternalUrlService,
 		TaskUrlHandler,
 		LessonUrlHandler,

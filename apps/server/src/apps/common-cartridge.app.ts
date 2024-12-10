@@ -2,16 +2,16 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
-import {
-	addPrometheusMetricsMiddlewaresIfEnabled,
-	createAndStartPrometheusMetricsAppIfEnabled,
-} from '@src/apps/helpers/prometheus-metrics';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { CommonCartridgeApiModule } from '@src/modules/common-cartridge/common-cartridge-api.module';
+import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
+import {
+	AppStartLoggable,
+	enableOpenApiDocs,
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();

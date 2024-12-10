@@ -34,7 +34,7 @@ const RoleMapping: Record<SchulconnexRole, RoleName> = {
 	[SchulconnexRole.ORGADMIN]: RoleName.ADMINISTRATOR,
 };
 
-const GroupRoleMapping: Partial<Record<SchulconnexGroupRole, RoleName>> = {
+const GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>> = {
 	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
 	[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
 	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
@@ -147,7 +147,7 @@ export class SchulconnexResponseMapper {
 			otherUsers = group.sonstige_gruppenzugehoerige
 				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
-						.filter((otherUser: ExternalGroupUserDto | null) => otherUser !== null)
+						.filter((otherUser: ExternalGroupUserDto | null): otherUser is ExternalGroupUserDto => otherUser !== null)
 				: [];
 		}
 

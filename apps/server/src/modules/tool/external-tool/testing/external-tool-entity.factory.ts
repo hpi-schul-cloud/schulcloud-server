@@ -1,7 +1,7 @@
-import { DeepPartial } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory } from '@shared/testing';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { DeepPartial } from 'fishery';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -20,6 +20,43 @@ import {
 	Oauth2ToolConfigEntity,
 } from '../entity';
 
+export const basicToolConfigEntityFactory = BaseFactory.define<BasicToolConfigEntity, BasicToolConfigEntity>(
+	BasicToolConfigEntity,
+	() => {
+		return {
+			type: ToolConfigType.BASIC,
+			baseUrl: 'https://mock.de',
+		};
+	}
+);
+
+export const oauth2ToolConfigEntityFactory = BaseFactory.define<Oauth2ToolConfigEntity, Oauth2ToolConfigEntity>(
+	Oauth2ToolConfigEntity,
+	({ sequence }) => {
+		return {
+			type: ToolConfigType.OAUTH2,
+			baseUrl: 'https://mock.de',
+			clientId: `client-${sequence}`,
+			skipConsent: false,
+		};
+	}
+);
+
+export const lti11ToolConfigEntityFactory = BaseFactory.define<Lti11ToolConfigEntity, Lti11ToolConfigEntity>(
+	Lti11ToolConfigEntity,
+	() => {
+		return {
+			type: ToolConfigType.LTI11,
+			baseUrl: 'https://mock.de',
+			key: 'key',
+			secret: 'secret',
+			lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+			privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+			launch_presentation_locale: 'de-DE',
+		};
+	}
+);
+
 export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, ExternalToolEntityProps> {
 	withName(name: string): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
@@ -28,40 +65,27 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, E
 		return this.params(params);
 	}
 
-	withBasicConfig(): this {
+	withBasicConfig(customParam?: DeepPartial<BasicToolConfigEntity>): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
-			config: new BasicToolConfigEntity({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockBaseUrl',
-			}),
+			config: basicToolConfigEntityFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
-	withOauth2Config(clientId: string): this {
+	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfigEntity>): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
-			config: new Oauth2ToolConfigEntity({
-				type: ToolConfigType.OAUTH2,
-				baseUrl: 'mockBaseUrl',
-				clientId,
-				skipConsent: false,
-			}),
+			config: oauth2ToolConfigEntityFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
-	withLti11Config(): this {
+	withLti11Config(customParam?: DeepPartial<Lti11ToolConfigEntity>): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
-			config: new Lti11ToolConfigEntity({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockBaseUrl',
-				key: 'key',
-				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				secret: 'secret',
-				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
-				launch_presentation_locale: 'de-DE',
-			}),
+			config: lti11ToolConfigEntityFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
@@ -114,10 +138,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 			description: 'This is a tool description',
 			url: '',
 			logoUrl: 'https://logourl.com',
-			config: new BasicToolConfigEntity({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockBaseUrl',
-			}),
+			config: basicToolConfigEntityFactory.build(),
 			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
 			isDeactivated: false,

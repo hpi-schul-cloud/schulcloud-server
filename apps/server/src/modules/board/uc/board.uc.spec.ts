@@ -3,11 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { setupEntities, userFactory } from '@shared/testing';
 import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
-import { RoomMemberService } from '@src/modules/room-member';
+import { RoomService } from '@src/modules/room';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -49,12 +50,16 @@ describe(BoardUc.name, () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
+				{
 					provide: BoardNodeFactory,
 					useValue: createMock<BoardNodeFactory>(),
 				},
 				{
-					provide: RoomMemberService,
-					useValue: createMock<RoomMemberService>(),
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -427,58 +432,64 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('copyBoard', () => {
-		it('should call the service to find the user', async () => {
-			const { user, boardId } = globalSetup();
+		const setup = () => {
+			const { user, board, boardId } = globalSetup();
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
-			await uc.copyBoard(user.id, boardId);
+			return { user, board, boardId };
+		};
+
+		it('should call the service to find the user', async () => {
+			const { user, boardId } = setup();
+
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 		});
 
 		it('should call the service to find the board', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
 		});
 
 		it('[deprecated] should call course repo to find the course', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(courseRepo.findById).toHaveBeenCalled();
 		});
 
 		it('should call Board Permission Service to check permission', async () => {
-			const { user, board } = globalSetup();
-			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+			const { user, board } = setup();
 
-			await uc.copyBoard(user.id, board.id);
+			await uc.copyBoard(user.id, board.id, user.school.id);
 
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
 		it('should call authorization to check course permissions', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			const course = courseFactory.build();
 			// TODO should not use course repo
 			courseRepo.findById.mockResolvedValueOnce(course);
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, {
 				action: Action.write,
-				requiredPermissions: [],
+				requiredPermissions: ['COURSE_EDIT'],
 			});
 		});
 
 		it('should call the service to copy the board', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
-			await uc.copyBoard(user.id, boardId);
+			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(
 				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId })
@@ -486,7 +497,7 @@ describe(BoardUc.name, () => {
 		});
 
 		it('should return the copy status', async () => {
-			const { user, boardId } = globalSetup();
+			const { user, boardId } = setup();
 
 			const copyStatus: CopyStatus = {
 				type: CopyElementType.BOARD,
@@ -494,7 +505,7 @@ describe(BoardUc.name, () => {
 			};
 			columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
 
-			const result = await uc.copyBoard(user.id, boardId);
+			const result = await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(result).toEqual(copyStatus);
 		});

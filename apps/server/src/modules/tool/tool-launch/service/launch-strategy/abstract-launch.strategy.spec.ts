@@ -17,7 +17,7 @@ import { customParameterFactory, externalToolFactory } from '../../../external-t
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
-import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
@@ -59,6 +59,10 @@ class TestLaunchStrategy extends AbstractLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
 		return launchMethod;
+	}
+
+	determineLaunchType(): LaunchType {
+		return LaunchType.BASIC;
 	}
 }
 
@@ -345,8 +349,8 @@ describe(AbstractLaunchStrategy.name, () => {
 					url: expectedUrl.toString(),
 					method: strategy.determineLaunchRequestMethod(expectedProperties),
 					openNewTab: false,
-					isDeepLink: false,
 					payload: strategy.buildToolLaunchRequestPayload(expectedUrl.toString(), expectedProperties),
+					launchType: strategy.determineLaunchType(),
 				});
 			});
 		});
@@ -385,8 +389,8 @@ describe(AbstractLaunchStrategy.name, () => {
 					url: externalTool.config.baseUrl,
 					method: strategy.determineLaunchRequestMethod([concreteConfigParameter]),
 					openNewTab: false,
-					isDeepLink: false,
 					payload: strategy.buildToolLaunchRequestPayload(externalTool.config.baseUrl, [concreteConfigParameter]),
+					launchType: strategy.determineLaunchType(),
 				});
 			});
 		});

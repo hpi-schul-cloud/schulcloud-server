@@ -5,6 +5,17 @@ import { Consent } from './consent';
 import { RoleReference } from './role-reference';
 import { UserSourceOptions } from './user-source-options.do';
 
+export class SecondarySchoolReference {
+	schoolId: EntityId;
+
+	role: RoleReference;
+
+	constructor(props: SecondarySchoolReference) {
+		this.schoolId = props.schoolId;
+		this.role = props.role;
+	}
+}
+
 export class UserDO extends BaseDO {
 	createdAt?: Date;
 
@@ -23,6 +34,8 @@ export class UserDO extends BaseDO {
 	schoolId: EntityId;
 
 	schoolName?: string;
+
+	secondarySchools: SecondarySchoolReference[];
 
 	ldapDn?: string;
 
@@ -68,6 +81,7 @@ export class UserDO extends BaseDO {
 		this.roles = domainObject.roles;
 		this.schoolId = domainObject.schoolId;
 		this.schoolName = domainObject.schoolName;
+		this.secondarySchools = domainObject.secondarySchools || [];
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;
 		this.importHash = domainObject.importHash;

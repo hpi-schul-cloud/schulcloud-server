@@ -3,10 +3,11 @@ import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class LinkElementContent {
-	constructor({ url, title, description, imageUrl }: LinkElementContent) {
+	constructor({ url, title, description, originalImageUrl, imageUrl }: LinkElementContent) {
 		this.url = url;
 		this.title = title;
 		this.description = description;
+		this.originalImageUrl = originalImageUrl;
 		this.imageUrl = imageUrl;
 	}
 
@@ -18,6 +19,9 @@ export class LinkElementContent {
 
 	@ApiPropertyOptional()
 	description?: string;
+
+	@ApiPropertyOptional()
+	originalImageUrl?: string;
 
 	@ApiPropertyOptional()
 	imageUrl?: string;
