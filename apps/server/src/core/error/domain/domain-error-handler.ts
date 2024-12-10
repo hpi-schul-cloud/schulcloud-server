@@ -4,8 +4,7 @@ import { ErrorLogger, Loggable, LoggingUtils, LogMessageDataObject } from '@src/
 import { ICurrentUser } from '@src/infra/auth-guard';
 import { Request } from 'express';
 import util from 'util';
-import axios from 'axios';
-import { AxiosErrorLoggable, ErrorLoggable } from '../loggable';
+import { ErrorLoggable } from '../loggable';
 
 @Injectable()
 export class DomainErrorHandler {
@@ -38,8 +37,6 @@ export class DomainErrorHandler {
 
 		if (LoggingUtils.isInstanceOfLoggable(error)) {
 			loggable = error;
-		} else if (axios.isAxiosError(error)) {
-			loggable = new AxiosErrorLoggable(error, 'AXIOS_REQUEST_ERROR');
 		} else if (error instanceof Error) {
 			loggable = new ErrorLoggable(error, data);
 		} else {
