@@ -1,6 +1,6 @@
 export enum SchulconnexGroupRole {
 	TEACHER = 'Lehr',
-	SUBSTITUTE_TEACHER = 'Vertretung',
+	SUBSTITUTE_TEACHER = 'VLehr',
 	STUDENT = 'Lern',
 	CLASS_LEADER = 'KlLeit',
 	SUPPORT_TEACHER = 'Foerd',
