@@ -1,7 +1,7 @@
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 
@@ -19,6 +19,7 @@ export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
 
 		const externalUser: ExternalUserDto = new ExternalUserDto({
 			externalId: idToken.external_sub,
+			roles: [],
 		});
 
 		const oauthData: OauthDataDto = new OauthDataDto({
