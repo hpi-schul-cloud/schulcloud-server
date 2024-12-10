@@ -995,7 +995,12 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const groupId = setup();
 
-				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.INTERNAL_ERROR, { padId: groupId }, undefined, {});
+				const exception = new EtherpadErrorLoggableException(
+					EtherpadErrorType.INTERNAL_ERROR,
+					{ padId: groupId },
+					undefined,
+					{}
+				);
 				await expect(service.deleteGroup(groupId)).rejects.toThrowError(exception);
 			});
 		});
@@ -1084,7 +1089,12 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const sessionId = setup();
 
-				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.BAD_REQUEST, { sessionId }, undefined, {});
+				const exception = new EtherpadErrorLoggableException(
+					EtherpadErrorType.BAD_REQUEST,
+					{ sessionId },
+					undefined,
+					{}
+				);
 				await expect(service.deleteSession(sessionId)).rejects.toThrowError(exception);
 			});
 		});

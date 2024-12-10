@@ -62,7 +62,12 @@ export class EtherpadResponseMapper {
 		payload: EtherpadParams,
 		response: T | Error
 	): EtherpadErrorLoggableException {
-		return new EtherpadErrorLoggableException(type, payload, response.message, ErrorUtils.createHttpExceptionOptions(response.message));
+		return new EtherpadErrorLoggableException(
+			type,
+			payload,
+			response.message,
+			ErrorUtils.createHttpExceptionOptions(response.message)
+		);
 	}
 
 	static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {

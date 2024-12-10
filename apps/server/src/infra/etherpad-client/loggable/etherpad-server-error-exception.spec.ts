@@ -22,7 +22,7 @@ describe('EtherpadErrorLoggableException', () => {
 				data: {
 					userId: 'userId',
 					parentId: 'parentId',
-					originalMessage: 'hugo ist nudeln'
+					originalMessage: 'hugo ist nudeln',
 				},
 			});
 		});
