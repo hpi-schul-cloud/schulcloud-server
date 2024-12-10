@@ -2,7 +2,7 @@ import { VidisItemDto } from '@src/modules/school-license/dto';
 import { MediaSchoolLicenseService } from '@src/modules/school-license/service/media-school-license.service';
 import { MediaSource } from '@src/modules/mediasource/domain';
 import { MediaSourceDataFormat } from '@src/modules/mediasource/enum';
-import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/mediasource/loggable/media-source-for-sync-not-found-loggable.exception';
+import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/mediasource/loggable';
 import { MediaSourceService } from '@src/modules/mediasource/service';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
@@ -41,7 +41,7 @@ export class VidisSyncService {
 
 		// TODO Encrypted password needs to be decrypted before sending the request
 		const vidisResponse: VidisResponse = await this.getRequest<VidisResponse>(
-			new URL(mediaSource.basicAuthConfig.authEndpoint),
+			new URL(`${mediaSource.basicAuthConfig.authEndpoint}`),
 			mediaSource.basicAuthConfig.username,
 			mediaSource.basicAuthConfig.password
 		);
@@ -52,9 +52,11 @@ export class VidisSyncService {
 	}
 
 	private async getRequest<T>(url: URL, username: string, password: string): Promise<T> {
+		const encodedCredentials = btoa(`${username}:${password}`);
 		const observable: Observable<AxiosResponse<T>> = this.httpService.get(url.toString(), {
 			headers: {
-				Authorization: `Basic ${username} ${password}`,
+				Authorization: `Basic ${encodedCredentials}`,
+				'Content-Type': 'application/json',
 			},
 		});
 

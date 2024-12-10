@@ -3,18 +3,15 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { cleanupCollections, userFactory } from '@shared/testing';
-import { MediaSource, MediaUserLicense } from '../domain';
-import { MediaSourceEntity, MediaUserLicenseEntity } from '../entity';
-import {
-	mediaSourceEntityFactory,
-	mediaSourceFactory,
-	mediaUserLicenseEntityFactory,
-	mediaUserLicenseFactory,
-} from '../testing';
+import { mediaSourceConfigEmbeddableFactory } from '@src/modules/mediasource/testing/media-source-config.embeddable.factory';
+import { mediaSourceEntityFactory } from '@src/modules/mediasource/testing/media-source-entity.factory';
+import { mediaSourceFactory } from '@src/modules/mediasource/testing/media-source.factory';
+import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo';
+import { MediaSourceOauthConfigEmbeddable } from '@src/modules/mediasource/entity';
+import { MediaUserLicense } from '../domain';
+import { MediaUserLicenseEntity } from '../entity';
+import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseRepo } from './media-user-license.repo';
-import { MediaSourceConfigMapper } from '../../mediasource/repo/media-source-config.mapper';
-import { MediaSourceOauthConfigEmbeddable } from '../../mediasource/entity/media-source-oauth-config.embeddable';
-import { mediaSourceConfigEmbeddableFactory } from '../../mediasource/testing/media-source-config.embeddable.factory';
 
 describe(MediaUserLicenseRepo.name, () => {
 	let module: TestingModule;

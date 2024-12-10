@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSourceBasicAuthConfig } from '../domain/media-source-basic-auth-config';
-import { MediaSourceOauthConfig } from '../domain/media-source-oauth-config';
+import { MediaSourceBasicAuthConfig, MediaSourceOauthConfig } from '../domain';
 import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
 
 export class MediaSourceConfigMapper {

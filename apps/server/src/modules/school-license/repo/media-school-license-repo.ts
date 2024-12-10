@@ -54,8 +54,8 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 			oauthConfig: entity.mediaSource.oauthConfig
 				? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
 				: undefined,
-			basicAuthConfig: entity.mediaSource.basicConfig
-				? MediaSourceConfigMapper.mapBasicConfigToDo(entity.mediaSource.basicConfig)
+			basicAuthConfig: entity.mediaSource.basicAuthConfig
+				? MediaSourceConfigMapper.mapBasicConfigToDo(entity.mediaSource.basicAuthConfig)
 				: undefined,
 		});
 

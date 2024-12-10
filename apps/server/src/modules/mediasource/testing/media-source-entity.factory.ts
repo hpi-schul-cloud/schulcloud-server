@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSourceDataFormat, MediaSourceEntity, MediaSourceEntityProps } from '../entity';
+import { MediaSourceEntity, MediaSourceEntityProps } from '../entity';
+import { MediaSourceDataFormat } from '../enum';
 import { mediaSourceConfigEmbeddableFactory } from './media-source-config.embeddable.factory';
 
 export const mediaSourceEntityFactory = BaseFactory.define<MediaSourceEntity, MediaSourceEntityProps>(

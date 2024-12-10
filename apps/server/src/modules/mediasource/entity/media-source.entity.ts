@@ -14,9 +14,9 @@ export interface MediaSourceEntityProps {
 
 	oauthConfig?: MediaSourceOauthConfigEmbeddable;
 
-	basicConfig?: MediaSourceBasicAuthConfigEmbeddable;
+	basicAuthConfig?: MediaSourceBasicAuthConfigEmbeddable;
 
-	format?: MediaSourceDataFormat;
+	format: MediaSourceDataFormat;
 }
 
 @Entity({ tableName: 'media-sources' })
@@ -30,7 +30,7 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.format = props.format;
 		this.oauthConfig = props.oauthConfig;
-		this.basicConfig = props.basicConfig;
+		this.basicAuthConfig = props.basicAuthConfig;
 	}
 
 	@Index()
@@ -40,12 +40,12 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	name?: string;
 
-	@Property({ nullable: true })
-	format?: MediaSourceDataFormat;
+	@Property({ nullable: false })
+	format: MediaSourceDataFormat;
 
 	@Embedded(() => MediaSourceOauthConfigEmbeddable, { object: true, nullable: true })
 	oauthConfig?: MediaSourceOauthConfigEmbeddable;
 
 	@Embedded(() => MediaSourceBasicAuthConfigEmbeddable, { object: true, nullable: true })
-	basicConfig?: MediaSourceBasicAuthConfigEmbeddable;
+	basicAuthConfig?: MediaSourceBasicAuthConfigEmbeddable;
 }

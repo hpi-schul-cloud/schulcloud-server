@@ -8,8 +8,8 @@ import { Logger } from '@src/core/logger';
 import { MediaSchoolLicense } from '../domain';
 import { VidisItemDto } from '../dto';
 import { SchoolLicenseType } from '../enum';
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '../loggable/school-for-school-media-license-sync-not-found.loggable';
-import { MediaSchoolLicenseRepo } from '../repo/media-school-license-repo';
+import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '../loggable';
+import { MediaSchoolLicenseRepo } from '../repo';
 
 @Injectable()
 export class MediaSchoolLicenseService {
