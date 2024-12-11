@@ -51,18 +51,6 @@ export class ConfigResponse {
 	FEATURE_TLDRAW_ENABLED: boolean;
 
 	@ApiProperty()
-	TLDRAW__WEBSOCKET_URL: string;
-
-	@ApiProperty()
-	TLDRAW__ASSETS_ENABLED: boolean;
-
-	@ApiProperty()
-	TLDRAW__ASSETS_MAX_SIZE_BYTES: number;
-
-	@ApiProperty()
-	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: string[];
-
-	@ApiProperty()
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 
 	@ApiProperty({ type: String, nullable: true })
