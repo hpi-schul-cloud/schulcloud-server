@@ -48,7 +48,12 @@ describe('Room Controller (API)', () => {
 		const setupRoomRoles = () => {
 			const editorRole = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_MEMBERS_ADD, // for now room_editors have these two rights as room_admins are not yet available
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
 			});
 			const viewerRole = roleFactory.buildWithId({
 				name: RoleName.ROOMVIEWER,

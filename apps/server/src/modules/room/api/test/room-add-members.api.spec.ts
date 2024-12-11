@@ -55,7 +55,12 @@ describe('Room Controller (API)', () => {
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const role = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_MEMBERS_ADD,
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
 			});
 			// TODO: add more than one user
 			const userGroupEntity = groupEntityFactory.buildWithId({

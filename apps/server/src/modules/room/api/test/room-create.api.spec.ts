@@ -69,10 +69,20 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT, Permission.ROOM_VIEW],
+					name: RoleName.TEACHER,
+					permissions: [Permission.ROOM_CREATE, Permission.ROOM_EDIT, Permission.ROOM_VIEW],
 				});
-				await em.persistAndFlush([teacherAccount, teacherUser, role]);
+				const roomOwnerRole = roleFactory.buildWithId({
+					name: RoleName.ROOMOWNER,
+					permissions: [
+						Permission.ROOM_CREATE,
+						Permission.ROOM_EDIT,
+						Permission.ROOM_VIEW,
+						Permission.ROOM_MEMBERS_ADD,
+						Permission.ROOM_MEMBERS_REMOVE,
+					],
+				});
+				await em.persistAndFlush([teacherAccount, teacherUser, role, roomOwnerRole]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

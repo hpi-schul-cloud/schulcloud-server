@@ -10,18 +10,18 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		this.authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
-	public isApplicable(user: User, object: unknown): boolean {
+	public isApplicable(_: User, object: unknown): boolean {
 		const isMatched = object instanceof RoomMembershipAuthorizable;
 
 		return isMatched;
 	}
 
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
-		const primarySchoolId = user.school.id;
-		const secondarySchools = user.secondarySchools ?? [];
-		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
+		if (!this.hasAccessToSchool(user, object.schoolId)) {
+			return false;
+		}
 
-		if (![primarySchoolId, ...secondarySchoolIds].includes(object.schoolId)) {
+		if (!this.hasRequiredRoomPermissions(user, object, context.requiredPermissions)) {
 			return false;
 		}
 
@@ -35,5 +35,31 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 			return permissionsThisUserHas.includes(Permission.ROOM_VIEW);
 		}
 		return permissionsThisUserHas.includes(Permission.ROOM_EDIT);
+	}
+
+	private hasAccessToSchool(user: User, schoolId: string): boolean {
+		const primarySchoolId = user.school.id;
+		const secondarySchools = user.secondarySchools ?? [];
+		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
+
+		return [primarySchoolId, ...secondarySchoolIds].includes(schoolId);
+	}
+
+	private hasRequiredRoomPermissions(
+		user: User,
+		object: RoomMembershipAuthorizable,
+		requiredPermissions: string[]
+	): boolean {
+		const roomPermissionsOfUser = this.resolveRoomPermissions(user, object);
+		const missingPermissions = requiredPermissions.filter((permission) => !roomPermissionsOfUser.includes(permission));
+		return missingPermissions.length === 0;
+	}
+
+	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): string[] {
+		const member = object.members.find((m) => m.userId === user.id);
+		if (!member) {
+			return [];
+		}
+		return member.roles.flatMap((role) => role.permissions ?? []);
 	}
 }
