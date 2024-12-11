@@ -79,6 +79,10 @@ describe(GroupRepo.name, () => {
 							userId: group.users[1].user.id,
 							roleId: group.users[1].role.id,
 						}),
+						new GroupUser({
+							userId: group.users[2].user.id,
+							roleId: group.users[2].role.id,
+						}),
 					],
 					organizationId: group.organization?.id,
 					validPeriod: group.validPeriod,
@@ -848,6 +852,10 @@ describe(GroupRepo.name, () => {
 						new GroupUser({
 							userId: groupEntity.users[1].user.id,
 							roleId: groupEntity.users[1].role.id,
+						}),
+						new GroupUser({
+							userId: groupEntity.users[2].user.id,
+							roleId: groupEntity.users[2].role.id,
 						}),
 					],
 					organizationId: groupEntity.organization?.id,
