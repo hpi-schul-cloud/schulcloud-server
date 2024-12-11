@@ -22,7 +22,6 @@ export class VidisSyncService {
 
 	public async syncMediaSchoolLicenses(): Promise<void> {
 		const mediasource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
-		console.log('mediasource', mediasource);
 		if (!mediasource) {
 			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}

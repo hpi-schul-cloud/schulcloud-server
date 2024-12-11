@@ -23,8 +23,8 @@ export abstract class SchoolLicenseEntity extends BaseEntityWithTimestamps {
 	}
 
 	@Enum({ nullable: false })
-	type!: SchoolLicenseType;
+	type: SchoolLicenseType;
 
 	@ManyToOne(() => SchoolEntity, { nullable: false })
-	school!: SchoolEntity;
+	school: SchoolEntity;
 }

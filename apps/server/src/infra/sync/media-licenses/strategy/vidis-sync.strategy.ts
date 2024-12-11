@@ -15,11 +15,6 @@ export class VidisSyncStrategy extends SyncStrategy {
 	}
 
 	public async sync(): Promise<void> {
-		console.time('Synchronization Time');
-		console.log('Synchronize!');
-		await this.vidisSyncService.syncMediaSchoolLicenses();
-		console.timeEnd('Synchronization Time');
-
-		return Promise.resolve();
+		return await this.vidisSyncService.syncMediaSchoolLicenses();
 	}
 }
