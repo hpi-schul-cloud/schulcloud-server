@@ -214,6 +214,22 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		};
 	}
 
+	public async findByTspUids(tspUids: string[]): Promise<UserDO[]> {
+		const users = await this._em.find(
+			User,
+			{
+				sourceOptions: { tspUid: { $in: tspUids } },
+			},
+			{
+				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
+			}
+		);
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
+	}
+
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
 		const queryOrderMap: QueryOrderMap<User> = {
 			_id: sort.id,

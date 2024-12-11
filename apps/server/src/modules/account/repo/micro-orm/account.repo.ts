@@ -33,6 +33,13 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapToDo(saved);
 	}
 
+	public async saveAll(accounts: Account[]): Promise<Account[]> {
+		const savedAccounts = await Promise.all(accounts.map((account) => this.saveWithoutFlush(account)));
+		await this.flush();
+
+		return savedAccounts;
+	}
+
 	public async findById(id: EntityId | ObjectId): Promise<Account> {
 		const entity = await this.em.findOneOrFail(this.entityName, id as FilterQuery<AccountEntity>);
 
@@ -93,15 +100,19 @@ export class AccountRepo {
 		return this.em.getReference(entityName, id);
 	}
 
-	public async saveWithoutFlush(account: Account): Promise<void> {
+	public async saveWithoutFlush(account: Account): Promise<Account> {
 		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
 		const existing = await this.em.findOne(AccountEntity, { id: account.id });
 
+		let saved: AccountEntity;
 		if (existing) {
-			this.em.assign(existing, saveEntity);
+			saved = this.em.assign(existing, saveEntity);
 		} else {
 			this.em.persist(saveEntity);
+			saved = saveEntity;
 		}
+
+		return AccountEntityToDoMapper.mapToDo(saved);
 	}
 
 	public async flush(): Promise<void> {

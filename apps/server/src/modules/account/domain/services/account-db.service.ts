@@ -21,29 +21,29 @@ export class AccountServiceDb extends AbstractAccountService {
 		super();
 	}
 
-	async findById(id: EntityId): Promise<Account> {
+	public async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
 
 		return this.accountRepo.findById(internalId);
 	}
 
-	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
+	public findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
 		return this.accountRepo.findMultipleByUserId(userIds);
 	}
 
-	async findByUserId(userId: EntityId): Promise<Account | null> {
+	public findByUserId(userId: EntityId): Promise<Account | null> {
 		return this.accountRepo.findByUserId(userId);
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
+	public findByUserIdOrFail(userId: EntityId): Promise<Account> {
 		return this.accountRepo.findByUserIdOrFail(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
+	public findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
 		return this.accountRepo.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async save(accountSave: AccountSave): Promise<Account> {
+	public async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
 		if (accountSave.id) {
 			const internalId = await this.getInternalId(accountSave.id);
@@ -56,7 +56,28 @@ export class AccountServiceDb extends AbstractAccountService {
 		return this.accountRepo.save(account);
 	}
 
-	async updateUsername(accountId: EntityId, username: string): Promise<Account> {
+	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const updatedAccounts = await Promise.all(
+			accountSaves.map(async (accountSave) => {
+				let account: Account;
+				if (accountSave.id) {
+					const internalId = await this.getInternalId(accountSave.id);
+
+					account = await this.accountRepo.findById(internalId);
+				} else {
+					account = this.createAccount(accountSave);
+				}
+				await account.update(accountSave);
+				return account;
+			})
+		);
+
+		const savedAccounts = this.accountRepo.saveAll(updatedAccounts);
+
+		return savedAccounts;
+	}
+
+	public async updateUsername(accountId: EntityId, username: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
@@ -64,7 +85,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return account;
 	}
 
-	async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
+	public async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lastLogin = lastLogin;
@@ -72,7 +93,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return account;
 	}
 
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
+	public async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
@@ -80,7 +101,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return account;
 	}
 
-	async updatePassword(accountId: EntityId, password: string): Promise<Account> {
+	public async updatePassword(accountId: EntityId, password: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.password = await this.encryptPassword(password);
@@ -89,24 +110,24 @@ export class AccountServiceDb extends AbstractAccountService {
 		return account;
 	}
 
-	async delete(id: EntityId): Promise<void> {
+	public async delete(id: EntityId): Promise<void> {
 		const internalId = await this.getInternalId(id);
 		return this.accountRepo.deleteById(internalId);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
+	public deleteByUserId(userId: EntityId): Promise<EntityId[]> {
 		return this.accountRepo.deleteByUserId(userId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
+	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		return this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
+	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		return this.accountRepo.searchByUsernameExactMatch(userName);
 	}
 
-	validatePassword(account: Account, comparePassword: string): Promise<boolean> {
+	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
@@ -137,7 +158,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return bcrypt.hash(password, 10);
 	}
 
-	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+	public findMany(offset = 0, limit = 100): Promise<Account[]> {
 		return this.accountRepo.findMany(offset, limit);
 	}
 
