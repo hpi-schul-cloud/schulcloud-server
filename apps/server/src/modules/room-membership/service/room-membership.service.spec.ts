@@ -90,7 +90,7 @@ describe('RoomMembershipService', () => {
 			it('should create new roomMembership when not exists', async () => {
 				const { user, room } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
+				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMA }]);
 
 				expect(roomMembershipRepo.save).toHaveBeenCalled();
 			});
