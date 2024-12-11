@@ -171,7 +171,7 @@ describe('Room Controller (API)', () => {
 
 			describe('when the room does not exist', () => {
 				it('should return a 404 error', async () => {
-					const { teacherOwnerAccount, room } = await setup();
+					const { teacherOwnerAccount } = await setup();
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
 					const someId = new ObjectId().toHexString();
 
