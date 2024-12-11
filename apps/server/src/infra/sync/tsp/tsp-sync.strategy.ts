@@ -3,10 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
-import { Logger } from '@src/core/logger';
-import { Account } from '@src/modules/account';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
+import { Loggable, Logger } from '@src/core/logger';
+import { Account, AccountService } from '@src/modules/account';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { System } from '@src/modules/system';
+import { UserService } from '@src/modules/user';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
@@ -20,11 +22,11 @@ import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspTeachersFetchedLoggable } from './loggable/tsp-teachers-fetched.loggable';
 import { TspTeachersMigratedLoggable } from './loggable/tsp-teachers-migrated.loggable';
 import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable';
+import { TspFetchService } from './tsp-fetch.service';
+import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
-import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
-import { TspFetchService } from './tsp-fetch.service';
 
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
@@ -47,7 +49,9 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		configService: ConfigService<TspSyncConfig, true>,
-		private readonly provisioningService: ProvisioningService
+		private readonly provisioningService: ProvisioningService,
+		private readonly userService: UserService,
+		private readonly accountService: AccountService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
@@ -76,6 +80,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const schools = await this.tspSyncService.findSchoolsForSystem(system);
 
 		if (this.migrationEnabled) {
+			await this.migrateTspTeachersBatch(system);
 			const teacherMigrationResult = await this.migrateTspTeachers(system);
 			const studentMigrationResult = await this.migrateTspStudents(system);
 			const totalMigrations = teacherMigrationResult.total + studentMigrationResult.total;
@@ -146,6 +151,71 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
 
+	private async migrateTspTeachersBatch(system: System): Promise<{ total: number }> {
+		this.logger.info(this.logForMsg('NEW NEW NEW!!!'));
+		const tspTeacherIds = await this.tspFetchService.fetchTspTeacherMigrations(system);
+
+		const oldForNewIds = new Map<string, string>();
+		tspTeacherIds.forEach(({ lehrerUidAlt, lehrerUidNeu }) => {
+			if (lehrerUidAlt && lehrerUidNeu) {
+				oldForNewIds.set(lehrerUidAlt, lehrerUidNeu);
+			}
+		});
+
+		this.logger.info(new TspTeachersFetchedLoggable(tspTeacherIds.length));
+
+		const users = await this.userService.findByTspUids(tspTeacherIds.map(({ lehrerUidAlt }) => lehrerUidAlt ?? ''));
+		this.logger.info(this.logForMsg(`Users fetched: ${users.length}`));
+
+		const userIds = users.map((user) => user.id ?? '');
+		const accounts = await this.accountService.findMultipleByUserId(userIds);
+		this.logger.info(this.logForMsg(`Accounts loaded: ${accounts.length}`));
+
+		const accountsForUserid = new Map<string, Account>();
+		accounts.forEach((account) => accountsForUserid.set(account.userId ?? '', account));
+		this.logger.info(this.logForMsg(`Accounts mapped: ${accountsForUserid.size}`));
+
+		users.forEach((user) => {
+			const newUid = oldForNewIds.get(user.sourceOptions?.tspUid ?? '') ?? '';
+			const newEmailAndUsername = `${newUid}@schul-cloud.org`;
+
+			user.email = newEmailAndUsername;
+			user.externalId = newUid;
+			user.previousExternalId = user.sourceOptions?.tspUid;
+			user.sourceOptions = new UserSourceOptions({ tspUid: newUid });
+
+			const account = accountsForUserid.get(user.id ?? '');
+			if (account) {
+				account.username = newEmailAndUsername;
+				account.systemId = system.id;
+			}
+		});
+		this.logger.info(this.logForMsg('Updated users & accounts'));
+
+		await this.userService.saveAll(users);
+		this.logger.info(this.logForMsg('Users saved'));
+
+		// const chunkSize = 500;
+		// const accountChunks: Account[][] = [];
+		// for (let i = 0; i < accounts.length; i += chunkSize) {
+		// 	accountChunks.push(accounts.slice(i, i + chunkSize));
+		// }
+		// await Promise.all(
+		// 	accountChunks.map((accountChunk) =>
+		// 		Promise.allSettled(accountChunk.map((account) => this.accountService.save(account)))
+		// 	)
+		// );
+		// const accountLimit = pLimit(1);
+
+		// TODO bulk save
+		await Promise.all(accounts.map((account) => () => this.accountService.save(account)));
+		this.logger.info(this.logForMsg('Accounts saved'));
+
+		process.exit(0);
+
+		return { total: 0 };
+	}
+
 	private async migrateTspTeachers(system: System): Promise<{ total: number }> {
 		const tspTeacherIds = await this.tspFetchService.fetchTspTeacherMigrations(system);
 		this.logger.info(new TspTeachersFetchedLoggable(tspTeacherIds.length));
@@ -173,13 +243,7 @@ export class TspSyncStrategy extends SyncStrategy {
 			total += batchSuccess;
 
 			const msg = `Batch ${batch} of ${batches} done: This batch: Successful:${batchSuccess}, Fulfilled: ${batchFulfilled}, BatchTotal: ${batchTotal}, BatchSize: ${batchSize} , Total: ${total}`;
-			this.logger.info({
-				getLogMessage() {
-					return {
-						message: msg,
-					};
-				},
-			});
+			this.logger.info(this.logForMsg(msg));
 		}
 
 		this.logger.info(new TspTeachersMigratedLoggable(total));
@@ -216,18 +280,18 @@ export class TspSyncStrategy extends SyncStrategy {
 			const newEmailAndUsername = `${newUid}@schul-cloud.org`;
 			const user = await this.tspSyncService.findUserByTspUid(oldUid);
 
-			console.log(`User found: ${user?.id ?? 'No Id'}`);
+			// console.log(`User found: ${user?.id ?? 'No Id'}`);
 			if (!user) {
 				throw new NotFoundLoggableException(UserDO.name, { oldUid });
 			}
 
 			const newEmail = newEmailAndUsername;
 			const updatedUser = await this.tspSyncService.updateUser(user, newEmail, newUid, oldUid);
-			console.log(`User updated: ${user?.id ?? 'No Id'}`);
+			// console.log(`User updated: ${user?.id ?? 'No Id'}`);
 
-			const account = await this.tspSyncService.findAccountByExternalId(newUid, systemId);
+			const account = await this.accountService.findByUserId(updatedUser.id ?? '');
 
-			console.log(`Account found: ${account?.id ?? 'No Id'}`);
+			// console.log(`Account found: ${account?.id ?? 'No Id'}`);
 
 			if (!account) {
 				throw new NotFoundLoggableException(Account.name, { oldUid });
@@ -236,12 +300,22 @@ export class TspSyncStrategy extends SyncStrategy {
 			const newUsername = newEmailAndUsername;
 			const updatedAccount = await this.tspSyncService.updateAccount(account, newUsername, systemId);
 
-			console.log(`Account updated: ${account?.id ?? 'No Id'}`);
+			// console.log(`Account updated: ${account?.id ?? 'No Id'}`);
 
 			return { updatedUser, updatedAccount };
 		} catch (e) {
 			console.log(`An error occurred: ${JSON.stringify(e)}`);
 		}
 		return null;
+	}
+
+	private logForMsg(msg: string): Loggable {
+		return {
+			getLogMessage() {
+				return {
+					message: msg,
+				};
+			},
+		};
 	}
 }

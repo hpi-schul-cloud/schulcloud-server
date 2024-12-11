@@ -340,4 +340,10 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
 	}
+
+	public findByTspUids(tspUids: string[]): Promise<UserDO[]> {
+		const userDOs = this.userDORepo.findByTspUids(tspUids, true);
+
+		return userDOs;
+	}
 }

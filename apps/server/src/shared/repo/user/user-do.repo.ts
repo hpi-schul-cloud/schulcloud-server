@@ -214,6 +214,37 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		};
 	}
 
+	public async findByTspUids(tspUids: string[], populate: boolean): Promise<UserDO[]> {
+		const users = await this._em.find(
+			User,
+			{
+				sourceOptions: { tspUid: { $in: tspUids } },
+			},
+			{
+				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
+			}
+		);
+
+		// if (populate) {
+		// 	await Promise.all(
+		// 		users.map((user) =>
+		// 			this._em.populate(user, [
+		// 				'roles',
+		// 				'school.systems',
+		// 				'school.currentYear',
+		// 				'school.name',
+		// 				'secondarySchools.role',
+		// 			])
+		// 		)
+		// 	);
+		// 	await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
+		// }
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
+	}
+
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
 		const queryOrderMap: QueryOrderMap<User> = {
 			_id: sort.id,

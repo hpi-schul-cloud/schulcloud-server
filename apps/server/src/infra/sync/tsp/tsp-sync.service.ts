@@ -137,12 +137,7 @@ export class TspSyncService {
 		return account;
 	}
 
-	public async updateUser(
-		user: UserDO,
-		email: string,
-		externalId: string,
-		previousExternalId: string
-	): Promise<UserDO> {
+	public updateUser(user: UserDO, email: string, externalId: string, previousExternalId: string): Promise<UserDO> {
 		user.email = email;
 		user.externalId = externalId;
 		user.previousExternalId = previousExternalId;
@@ -151,7 +146,7 @@ export class TspSyncService {
 		return this.userService.save(user);
 	}
 
-	public async updateAccount(account: Account, username: string, systemId: string): Promise<Account> {
+	public updateAccount(account: Account, username: string, systemId: string): Promise<Account> {
 		account.username = username;
 		account.systemId = systemId;
 
