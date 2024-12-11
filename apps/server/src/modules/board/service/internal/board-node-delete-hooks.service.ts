@@ -1,4 +1,4 @@
-import { TldrawClientAdapter } from '@infra/tldraw-client/tldraw-client.adapter';
+import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -32,7 +32,7 @@ export class BoardNodeDeleteHooksService {
 	async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		const boardNodes = Utils.asArray(boardNode);
 
-		await Promise.allSettled(boardNodes.map(async (bn) => this.singleAfterDelete(bn)));
+		await Promise.all(boardNodes.map(async (bn) => this.singleAfterDelete(bn)));
 	}
 
 	private async singleAfterDelete(boardNode: AnyBoardNode): Promise<void> {

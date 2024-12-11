@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { TldrawClientAdapter } from '@infra/tldraw-client/tldraw-client.adapter';
+import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor';

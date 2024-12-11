@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
-import { TldrawClientAdapter } from '@infra/tldraw-client/tldraw-client.adapter';
+import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.module';
