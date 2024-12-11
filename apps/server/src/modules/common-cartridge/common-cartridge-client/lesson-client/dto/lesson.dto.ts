@@ -1,4 +1,5 @@
 import { LessonContentDto } from './lesson-contents.dto';
+import { LessonLinkedTaskDto } from './lesson-linked-task.dto';
 import { LessonMaterialsDto } from './lesson-materials.dto';
 
 export class LessonDto {
@@ -18,6 +19,8 @@ export class LessonDto {
 
 	materials: LessonMaterialsDto[];
 
+	linkedTasks?: LessonLinkedTaskDto[];
+
 	constructor(props: LessonDto) {
 		this.lessonId = props.lessonId;
 		this.name = props.name;
@@ -27,5 +30,6 @@ export class LessonDto {
 		this.position = props.position;
 		this.contents = props.contents;
 		this.materials = props.materials;
+		this.linkedTasks = props.linkedTasks;
 	}
 }
