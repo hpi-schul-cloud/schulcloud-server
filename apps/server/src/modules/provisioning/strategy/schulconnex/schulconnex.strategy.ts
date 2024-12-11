@@ -45,7 +45,16 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		);
 
 		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
-			await this.provisionGroups(data, school);
+			const usersInGroupsCount: number =
+				data.externalGroups?.reduce(
+					(count: number, group: ExternalGroupDto) => count + (group.otherUsers?.length ?? 0),
+					data.externalGroups?.length ?? 0
+				) ?? 0;
+
+			const limit: number | undefined = this.configService.get('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT');
+			if (!limit || usersInGroupsCount < limit) {
+				await this.provisionGroups(data, school);
+			}
 		}
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
