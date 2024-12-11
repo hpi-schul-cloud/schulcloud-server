@@ -101,11 +101,6 @@ export class RoomMembershipService {
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 
-		// TODO: fail if trying to remove owner
-		// const hasOwner = group.users
-		// 	.filter((user) => userIds.includes(user.userId))
-		// 	.some((groupUser) => groupUser.roleName === RoleName.ROOMOWNER);
-
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
