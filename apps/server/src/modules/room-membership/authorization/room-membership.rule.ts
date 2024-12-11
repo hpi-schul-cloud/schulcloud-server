@@ -1,7 +1,7 @@
+import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { AuthorizationInjectionService, Action, AuthorizationContext, Rule } from '@modules/authorization';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 
 @Injectable()
@@ -17,6 +17,14 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
+		const primarySchoolId = user.school.id;
+		const secondarySchools = user.secondarySchools ?? [];
+		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
+
+		if (![primarySchoolId, ...secondarySchoolIds].includes(object.schoolId)) {
+			return false;
+		}
+
 		const { action } = context;
 		const permissionsThisUserHas = object.members
 			.filter((member) => member.userId === user.id)
