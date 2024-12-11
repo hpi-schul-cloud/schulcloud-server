@@ -44,6 +44,7 @@ describe('CommonCartridgeController', () => {
 					id: courseId,
 					title: faker.lorem.sentence(),
 					copyRightOwners: [faker.lorem.words()],
+					creationDate: faker.date.recent().toISOString(),
 				},
 			});
 
