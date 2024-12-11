@@ -112,7 +112,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl),
 				});
-			case LessonContentResponseComponent.NE_XBOARD:
+			case LessonContentResponseComponent.NEX_BOARD:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
