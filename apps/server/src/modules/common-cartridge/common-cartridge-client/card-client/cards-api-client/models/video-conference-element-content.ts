@@ -24,10 +24,4 @@ export interface VideoConferenceElementContent {
 	 * @memberof VideoConferenceElementContent
 	 */
 	title: string;
-	/**
-	 *
-	 * @type {string}
-	 * @memberof VideoConferenceElementContent
-	 */
-	url: string;
 }

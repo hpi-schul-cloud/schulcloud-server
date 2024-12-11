@@ -18,7 +18,7 @@ export class VideoConferenceElementResponseMapper implements BaseResponseMapper 
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.VIDEO_CONFERENCE,
-			content: new VideoConferenceElementContent({ title: element.title, url: element.url }),
+			content: new VideoConferenceElementContent({ title: element.title }),
 		});
 
 		return result;

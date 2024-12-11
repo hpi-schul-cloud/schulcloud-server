@@ -17,7 +17,6 @@ describe('VideoConferenceElement', () => {
 	beforeEach(() => {
 		videoConferenceElement = new VideoConferenceElement({
 			...boardNodeProps,
-			url: 'https://example.com',
 			title: 'Example',
 		});
 	});
@@ -28,15 +27,6 @@ describe('VideoConferenceElement', () => {
 
 	it('should not be instance of VideoConferenceElement', () => {
 		expect(isVideoConferenceElement({})).toBe(false);
-	});
-
-	it('should return url', () => {
-		expect(videoConferenceElement.url).toBe('https://example.com');
-	});
-
-	it('should set url', () => {
-		videoConferenceElement.url = 'https://newurl.com';
-		expect(videoConferenceElement.url).toBe('https://newurl.com');
 	});
 
 	it('should return title', () => {

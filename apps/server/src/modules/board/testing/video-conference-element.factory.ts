@@ -14,7 +14,6 @@ export const videoConferenceElementFactory = BaseFactory.define<VideoConferenceE
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			title: `video conference element #${sequence}`,
-			url: `url #${sequence}`,
 		};
 	}
 );

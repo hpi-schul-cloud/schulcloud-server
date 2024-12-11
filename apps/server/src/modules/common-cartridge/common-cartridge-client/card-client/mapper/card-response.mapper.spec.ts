@@ -101,7 +101,6 @@ describe('CardResponseMapper', () => {
 				}) as RichTextElementResponse,
 
 				createMockElement(faker.string.uuid(), ContentElementType.VIDEO_CONFERENCE, {
-					url: faker.internet.url(),
 					title: faker.lorem.word(),
 				}) as VideoConferenceElementResponse,
 

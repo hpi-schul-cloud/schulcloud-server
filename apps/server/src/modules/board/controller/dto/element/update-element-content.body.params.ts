@@ -140,10 +140,6 @@ export class VideoConferenceContentBody {
 	@IsString()
 	@ApiProperty()
 	title!: string;
-
-	@IsString()
-	@ApiProperty()
-	url!: string;
 }
 
 export class VideoConferenceElementContentBody extends ElementContentBody {

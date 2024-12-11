@@ -3,16 +3,12 @@ import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class VideoConferenceElementContent {
-	constructor({ title, url }: VideoConferenceElementContent) {
+	constructor({ title }: VideoConferenceElementContent) {
 		this.title = title;
-		this.url = url;
 	}
 
 	@ApiProperty()
 	title: string;
-
-	@ApiProperty()
-	url: string;
 }
 
 export class VideoConferenceElementResponse {

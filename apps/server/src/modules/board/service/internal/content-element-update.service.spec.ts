@@ -129,12 +129,10 @@ describe('ContentElementUpdateService', () => {
 	it('should update VideoConferenceElement', async () => {
 		const element = videoConferenceElementFactory.build();
 		const content = new VideoConferenceContentBody();
-		content.url = 'http://example-vc.com/';
 		content.title = 'vc title';
 
 		await service.updateContent(element, content);
 
-		expect(element.url).toBe('http://example-vc.com/');
 		expect(element.title).toBe('vc title');
 		expect(repo.save).toHaveBeenCalledWith(element);
 	});

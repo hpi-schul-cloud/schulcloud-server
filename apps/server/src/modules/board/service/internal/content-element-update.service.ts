@@ -103,6 +103,5 @@ export class ContentElementUpdateService {
 
 	updateVideoConferenceElement(element: VideoConferenceElement, content: VideoConferenceContentBody): void {
 		element.title = content.title;
-		element.url = new URL(content.url).toString();
 	}
 }

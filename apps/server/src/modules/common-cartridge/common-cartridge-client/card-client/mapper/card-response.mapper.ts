@@ -165,7 +165,7 @@ export class CardResponseMapper {
 						new VideoConferenceElementResponseDto(
 							element.id,
 							ContentElementType.VIDEO_CONFERENCE,
-							new VideoConferenceElementContentDto(content.title, content.url),
+							new VideoConferenceElementContentDto(content.title),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);

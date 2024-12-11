@@ -91,7 +91,6 @@ export class BoardNodeFactory {
 				element = new VideoConferenceElement({
 					...this.getBaseProps(),
 					title: '',
-					url: '',
 				});
 				break;
 			default:
