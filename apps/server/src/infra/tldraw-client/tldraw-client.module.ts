@@ -13,7 +13,11 @@ export class TldrawClientModule {
 				useFactory: () => {
 					const configuration = new Configuration({
 						basePath: config.TLDRAW_ADMIN_API_CLIENT_BASE_URL,
-						apiKey: config.TLDRAW_ADMIN_API_CLIENT_API_KEY,
+						baseOptions: {
+							headers: {
+								'X-API-Key': config.TLDRAW_ADMIN_API_CLIENT_API_KEY,
+							},
+						},
 					});
 					return new TldrawDocumentApi(configuration);
 				},
