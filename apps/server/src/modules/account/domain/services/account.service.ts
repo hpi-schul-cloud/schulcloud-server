@@ -72,7 +72,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
-	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount) {
+	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount): Promise<void> {
 		await this.checkUpdateMyAccountPrerequisites(updateData, account);
 
 		const accountSave = new AccountSave({
@@ -144,7 +144,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return updateUserName;
 	}
 
-	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account) {
+	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account): Promise<void> {
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
@@ -244,35 +244,35 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	async findById(id: string): Promise<Account> {
+	public findById(id: string): Promise<Account> {
 		return this.accountImpl.findById(id);
 	}
 
-	async findMultipleByUserId(userIds: string[]): Promise<Account[]> {
+	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
 		return this.accountImpl.findMultipleByUserId(userIds);
 	}
 
-	async findByUserId(userId: string): Promise<Account | null> {
+	public findByUserId(userId: string): Promise<Account | null> {
 		return this.accountImpl.findByUserId(userId);
 	}
 
-	async findByUserIdOrFail(userId: string): Promise<Account> {
+	public findByUserIdOrFail(userId: string): Promise<Account> {
 		return this.accountImpl.findByUserIdOrFail(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
+	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
 		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
+	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
+	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
-	async save(accountSave: AccountSave): Promise<Account> {
+	public async save(accountSave: AccountSave): Promise<Account> {
 		const ret = await this.accountDb.save(accountSave);
 		const newAccount = new AccountSave({
 			...accountSave,
@@ -299,7 +299,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
+	public async validateAccountBeforeSaveOrReject(accountSave: AccountSave): Promise<void> {
 		// if username is undefined or empty, throw error ✔
 		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
@@ -335,12 +335,12 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		// }
 	}
 
-	async saveWithValidation(accountSave: AccountSave): Promise<void> {
+	public async saveWithValidation(accountSave: AccountSave): Promise<void> {
 		await this.validateAccountBeforeSaveOrReject(accountSave);
 		await this.save(accountSave);
 	}
 
-	async updateUsername(accountId: string, username: string): Promise<Account> {
+	public async updateUsername(accountId: string, username: string): Promise<Account> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new UpdatingAccountUsernameLoggable(accountId));
@@ -351,11 +351,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
+	public async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
 		await this.accountDb.updateLastLogin(accountId, lastLogin);
 	}
 
-	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
+	public async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new UpdatingLastFailedLoginLoggable(accountId));
@@ -366,7 +366,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async updatePassword(accountId: string, password: string): Promise<Account> {
+	public async updatePassword(accountId: string, password: string): Promise<Account> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new UpdatingAccountPasswordLoggable(accountId));
@@ -377,11 +377,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
+	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		return this.accountImpl.validatePassword(account, comparePassword);
 	}
 
-	async delete(accountId: string): Promise<void> {
+	public async delete(accountId: string): Promise<void> {
 		await this.accountDb.delete(accountId);
 		await this.executeIdmMethod(async () => {
 			this.logger.debug(new DeletingAccountLoggable(accountId));
@@ -418,11 +418,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+	public findMany(offset = 0, limit = 100): Promise<Account[]> {
 		return this.accountDb.findMany(offset, limit);
 	}
 
-	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {
+	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			try {
 				return await idmCallback();
@@ -439,7 +439,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
-	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
+	public async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
 		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
 
 		return foundAccounts;
