@@ -4,7 +4,7 @@ import { SchoolLicense, SchoolLicenseProps } from './school-license';
 export interface MediaSchoolLicenseProps extends SchoolLicenseProps {
 	mediumId: string;
 
-	mediaSource: MediaSource;
+	mediaSource?: MediaSource;
 }
 
 export class MediaSchoolLicense extends SchoolLicense<MediaSchoolLicenseProps> {
@@ -16,7 +16,7 @@ export class MediaSchoolLicense extends SchoolLicense<MediaSchoolLicenseProps> {
 		this.props.mediumId = value;
 	}
 
-	get mediaSource(): MediaSource {
+	get mediaSource(): MediaSource | undefined {
 		return this.props.mediaSource;
 	}
 }

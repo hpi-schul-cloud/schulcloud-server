@@ -10,7 +10,7 @@ export interface SchoolLicenseProps {
 	type: SchoolLicenseType;
 }
 
-@Entity({ tableName: 'school-licenses', discriminatorColumn: 'type', abstract: true })
+@Entity({ tableName: 'school-licenses', abstract: true })
 @Index({ properties: ['school', 'type'] })
 export abstract class SchoolLicenseEntity extends BaseEntityWithTimestamps {
 	protected constructor(props: SchoolLicenseProps) {

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { MediaSource } from '@src/modules/mediasource/domain';
 import { MediaSourceRepo } from '@src/modules/mediasource/repo';
-import { SchoolService } from '@src/modules/school';
+import { School, SchoolService } from '@src/modules/school';
 import { Logger } from '@src/core/logger';
 import { MediaSchoolLicense } from '../domain';
 import { VidisItemDto } from '../dto';
@@ -23,38 +23,44 @@ export class MediaSchoolLicenseService {
 	public async syncMediaSchoolLicenses(mediaSource: MediaSource, items: VidisItemDto[]): Promise<void> {
 		items.map(async (item: VidisItemDto) => {
 			const { schoolActivations } = item;
-			const schoolActivationsSet = new Set(schoolActivations.map((activation) => this.removePrefix(activation)));
-			const mediumId = item.offerId;
+			const schoolActivationsSet: Set<string> = new Set(
+				schoolActivations.map((activation) => this.removePrefix(activation))
+			);
 
-			const existingMediaSchoolLicenses: MediaSchoolLicense[] = await this.findMediaSchoolLicensesByMediumId(mediumId);
+			const existingMediaSchoolLicenses: MediaSchoolLicense[] = await this.findMediaSchoolLicensesByMediumId(
+				item.offerId
+			);
 
 			// delete existing licenses that are not in schoolActivations
-			for await (const license of existingMediaSchoolLicenses) {
-				const school = await this.schoolService.getSchoolById(license.schoolId);
-				if (!schoolActivationsSet.has(school.officialSchoolNumber ?? '')) {
-					await this.deleteSchoolLicense(license);
-				}
+			if (existingMediaSchoolLicenses.length !== 0) {
+				await this.updateMediaSchoolLicenses(existingMediaSchoolLicenses, schoolActivationsSet);
 			}
 
 			schoolActivations.map(async (activation) => {
-				const school = await this.schoolService.getSchoolByOfficialSchoolNumber(this.removePrefix(activation));
+				const school: School | null = await this.schoolService.getSchoolByOfficialSchoolNumber(
+					this.removePrefix(activation)
+				);
 
 				if (!school) {
-					this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(activation));
+					this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(this.removePrefix(activation)));
+					return;
 				}
 
-				const existingMediaSchoolLicense = await this.findMediaSchoolLicense(school.id, mediumId);
+				const existingMediaSchoolLicense: MediaSchoolLicense | null = await this.findMediaSchoolLicense(
+					school.id,
+					item.offerId
+				);
 
 				if (!existingMediaSchoolLicense) {
-					const newSchoolMediaLicense: MediaSchoolLicense = await this.buildLicense(mediaSource, school.id, mediumId);
+					const newSchoolMediaLicense: MediaSchoolLicense = this.buildLicense(mediaSource, school.id, item.offerId);
 					await this.saveSchoolLicense(newSchoolMediaLicense);
 				}
 			});
 		});
 	}
 
-	public async findMediaSchoolLicense(schoolId: EntityId, mediumId: string): Promise<MediaSchoolLicense> {
-		const mediaSchoolLicense: MediaSchoolLicense = await this.mediaSchoolLicenseRepo.findMediaSchoolLicense(
+	public async findMediaSchoolLicense(schoolId: EntityId, mediumId: string): Promise<MediaSchoolLicense | null> {
+		const mediaSchoolLicense: MediaSchoolLicense | null = await this.mediaSchoolLicenseRepo.findMediaSchoolLicense(
 			schoolId,
 			mediumId
 		);
@@ -77,11 +83,7 @@ export class MediaSchoolLicenseService {
 		return mediaSchoolLicenses;
 	}
 
-	public async buildLicense(
-		mediaSource: MediaSource,
-		schoolId: EntityId,
-		mediumId: string
-	): Promise<MediaSchoolLicense> {
+	public buildLicense(mediaSource: MediaSource, schoolId: EntityId, mediumId: string): MediaSchoolLicense {
 		const mediaSchoolLicense: MediaSchoolLicense = new MediaSchoolLicense({
 			id: new ObjectId().toHexString(),
 			type: SchoolLicenseType.MEDIA_LICENSE,
@@ -95,5 +97,17 @@ export class MediaSchoolLicenseService {
 
 	private removePrefix(input: string): string {
 		return input.replace(/^.*?(\d{5})$/, '$1');
+	}
+
+	private async updateMediaSchoolLicenses(
+		existingMediaSchoolLicenses: MediaSchoolLicense[],
+		schoolActivationsSet: Set<string>
+	): Promise<void> {
+		for await (const license of existingMediaSchoolLicenses) {
+			const school = await this.schoolService.getSchoolById(license.schoolId);
+			if (!schoolActivationsSet.has(school.officialSchoolNumber ?? '')) {
+				await this.deleteSchoolLicense(license);
+			}
+		}
 	}
 }

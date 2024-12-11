@@ -33,12 +33,13 @@ export class SchoolService {
 		return school;
 	}
 
-	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School> {
-		let school = await this.schoolRepo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
-
-		school = this.addInstanceFeatures(school);
-
-		return school;
+	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null> {
+		try {
+			const school: School = await this.schoolRepo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+			return school;
+		} catch (e) {
+			return null;
+		}
 	}
 
 	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
