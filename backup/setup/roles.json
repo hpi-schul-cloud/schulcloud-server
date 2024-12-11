@@ -600,7 +600,8 @@
 		"permissions": [
 			"ROOM_VIEW",
 			"ROOM_EDIT",
-			"ROOM_DELETE"
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE"
 		]
 	},
 	{
@@ -616,5 +617,31 @@
 		},
 		"name": "guestTeacher",
 		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "67599159f85fdde7abcda6be"
+		},
+		"name": "roomowner",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_DELETE",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE",
+			"ROOM_CHANGE_OWNER"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "67599159f85fdde7abcda6bf"
+		},
+		"name": "roomadmin",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE"
+		]
 	}
 ]
