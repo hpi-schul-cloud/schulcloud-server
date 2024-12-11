@@ -80,8 +80,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const schools = await this.tspSyncService.findSchoolsForSystem(system);
 
 		if (this.migrationEnabled) {
-			await this.migrateTspTeachersBatch(system);
-			const teacherMigrationResult = await this.migrateTspTeachers(system);
+			const teacherMigrationResult = await this.migrateTspTeachersBatch(system);
 			const studentMigrationResult = await this.migrateTspStudents(system);
 			const totalMigrations = teacherMigrationResult.total + studentMigrationResult.total;
 			this.logger.info(new TspUsersMigratedLoggable(totalMigrations));
@@ -195,25 +194,10 @@ export class TspSyncStrategy extends SyncStrategy {
 		await this.userService.saveAll(users);
 		this.logger.info(this.logForMsg('Users saved'));
 
-		// const chunkSize = 500;
-		// const accountChunks: Account[][] = [];
-		// for (let i = 0; i < accounts.length; i += chunkSize) {
-		// 	accountChunks.push(accounts.slice(i, i + chunkSize));
-		// }
-		// await Promise.all(
-		// 	accountChunks.map((accountChunk) =>
-		// 		Promise.allSettled(accountChunk.map((account) => this.accountService.save(account)))
-		// 	)
-		// );
-		// const accountLimit = pLimit(1);
-
-		// TODO bulk save
-		await Promise.all(accounts.map((account) => () => this.accountService.save(account)));
+		await this.accountService.saveAll(accounts);
 		this.logger.info(this.logForMsg('Accounts saved'));
 
-		process.exit(0);
-
-		return { total: 0 };
+		return { total: users.length };
 	}
 
 	private async migrateTspTeachers(system: System): Promise<{ total: number }> {

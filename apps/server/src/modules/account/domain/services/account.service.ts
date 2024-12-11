@@ -299,6 +299,34 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
+	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const savedDbAccounts = await this.accountDb.saveAll(accountSaves);
+
+		const newAccounts = savedDbAccounts.map((ret, idx) => {
+			const accountSave = accountSaves[idx];
+
+			return new AccountSave({
+				...accountSave,
+				id: accountSave.id,
+				idmReferenceId: ret.id,
+				password: accountSave.password,
+			});
+		});
+
+		const idmAccounts = await this.executeIdmMethod(async () => {
+			const account = await this.accountIdm.saveAll(newAccounts);
+
+			return account;
+		});
+
+		const combinedAccounts = savedDbAccounts.map((ret, idx) => {
+			const idmReferenceId = idmAccounts ? idmAccounts[idx].idmReferenceId : undefined;
+			return new Account({ ...ret.getProps(), idmReferenceId });
+		});
+
+		return combinedAccounts;
+	}
+
 	public async validateAccountBeforeSaveOrReject(accountSave: AccountSave): Promise<void> {
 		// if username is undefined or empty, throw error ✔
 		if (!accountSave.username || !isNotEmpty(accountSave.username)) {

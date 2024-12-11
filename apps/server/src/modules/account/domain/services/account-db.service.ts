@@ -56,6 +56,27 @@ export class AccountServiceDb extends AbstractAccountService {
 		return this.accountRepo.save(account);
 	}
 
+	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const updatedAccounts = await Promise.all(
+			accountSaves.map(async (accountSave) => {
+				let account: Account;
+				if (accountSave.id) {
+					const internalId = await this.getInternalId(accountSave.id);
+
+					account = await this.accountRepo.findById(internalId);
+				} else {
+					account = this.createAccount(accountSave);
+				}
+				await account.update(accountSave);
+				return account;
+			})
+		);
+
+		const savedAccounts = this.accountRepo.saveAll(updatedAccounts);
+
+		return savedAccounts;
+	}
+
 	public async updateUsername(accountId: EntityId, username: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);

@@ -214,7 +214,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		};
 	}
 
-	public async findByTspUids(tspUids: string[], populate: boolean): Promise<UserDO[]> {
+	public async findByTspUids(tspUids: string[]): Promise<UserDO[]> {
 		const users = await this._em.find(
 			User,
 			{
@@ -224,21 +224,6 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
 			}
 		);
-
-		// if (populate) {
-		// 	await Promise.all(
-		// 		users.map((user) =>
-		// 			this._em.populate(user, [
-		// 				'roles',
-		// 				'school.systems',
-		// 				'school.currentYear',
-		// 				'school.name',
-		// 				'secondarySchools.role',
-		// 			])
-		// 		)
-		// 	);
-		// 	await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
-		// }
 
 		const userDOs = users.map((user) => this.mapEntityToDO(user));
 

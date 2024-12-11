@@ -36,6 +36,8 @@ export abstract class AbstractAccountService {
 
 	public abstract save(accountSave: AccountSave): Promise<Account>;
 
+	public abstract saveAll(accountSaves: AccountSave[]): Promise<Account[]>;
+
 	public abstract updateUsername(accountId: EntityId, username: string): Promise<Account>;
 
 	/**

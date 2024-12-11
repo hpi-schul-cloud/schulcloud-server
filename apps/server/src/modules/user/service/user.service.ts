@@ -342,7 +342,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public findByTspUids(tspUids: string[]): Promise<UserDO[]> {
-		const userDOs = this.userDORepo.findByTspUids(tspUids, true);
+		const userDOs = this.userDORepo.findByTspUids(tspUids);
 
 		return userDOs;
 	}
