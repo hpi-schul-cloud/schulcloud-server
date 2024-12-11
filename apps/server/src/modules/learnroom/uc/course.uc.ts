@@ -3,15 +3,16 @@ import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
 import { Course } from '@shared/domain/entity';
-import { SortOrder } from '@shared/domain/interface';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
+import { ICurrentUser } from '@src/infra/auth-guard';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseService } from '../service';
 
 @Injectable()
 export class CourseUc {
-	public constructor(
+	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly courseService: CourseService,
 		private readonly authService: AuthorizationService,
@@ -32,6 +33,18 @@ export class CourseUc {
 	}
 
 	public async findCourseById(courseId: EntityId): Promise<Course> {
-		return this.courseService.findById(courseId);
+		const course = await this.courseService.findById(courseId);
+
+		return course;
+	}
+
+	public async createCourse(currentUser: ICurrentUser, name: string): Promise<void> {
+		const user = await this.authService.getUserWithPermissions(currentUser.userId);
+
+		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+
+		const course = new Course({ teachers: [user], school: user.school, name });
+
+		await this.courseService.create(course);
 	}
 }

@@ -8,6 +8,9 @@ describe('commonCartridgeConfig', () => {
 			expect(result).toStrictEqual<CommonCartridgeConfig>({
 				NEST_LOG_LEVEL: expect.any(String),
 				INCOMING_REQUEST_TIMEOUT: expect.any(Number),
+				FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: expect.any(Number),
+				JWT_PUBLIC_KEY: expect.any(String),
+				JWT_SIGNING_ALGORITHM: expect.any(String) as unknown as Algorithm,
 			});
 		});
 	});

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
@@ -13,6 +14,16 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [
+						() => {
+							return { FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000 };
+						},
+					],
+				}),
+			],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{
@@ -44,6 +55,7 @@ describe('CommonCartridgeController', () => {
 					id: courseId,
 					title: faker.lorem.sentence(),
 					copyRightOwners: [faker.lorem.words()],
+					creationDate: faker.date.recent().toISOString(),
 				},
 			});
 
