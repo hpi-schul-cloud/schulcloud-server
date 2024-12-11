@@ -173,7 +173,6 @@ export class RoomUc {
 	): Promise<RoomMembershipAuthorizable> {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		console.log('user.roles', user.roles);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
 
 		return roomMembershipAuthorizable;
