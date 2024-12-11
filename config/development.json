@@ -92,11 +92,5 @@
 		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
 	},
 	"TRAINING_URL": "https://lernen.dbildungscloud.de",
-	"FEATURE_ROOMS_ENABLED": true,
-	"TLDRAW": {
-		"WEBSOCKET_URL": "ws://localhost:3345",
-		"ASSETS_ENABLED": true,
-		"ASSETS_MAX_SIZE_BYTES": 25000000,
-		"ASSETS_ALLOWED_MIME_TYPES_LIST": ""
-	}
+	"FEATURE_ROOMS_ENABLED": true
 }
