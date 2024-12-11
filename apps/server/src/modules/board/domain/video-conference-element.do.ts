@@ -3,7 +3,7 @@ import type { VideoConferenceElementProps } from './types';
 
 export class VideoConferenceElement extends BoardNode<VideoConferenceElementProps> {
 	get title(): string {
-		return this.props.title ?? '';
+		return this.props.title;
 	}
 
 	set title(value: string) {

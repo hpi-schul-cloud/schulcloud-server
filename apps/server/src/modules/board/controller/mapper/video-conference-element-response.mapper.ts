@@ -24,7 +24,7 @@ export class VideoConferenceElementResponseMapper implements BaseResponseMapper 
 		return result;
 	}
 
-	canMap(element: VideoConferenceElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof VideoConferenceElement;
 	}
 }
