@@ -1,10 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaSource } from '@src/modules/mediasource/domain';
-import { MediaSourceRepo } from '@src/modules/mediasource/repo';
-import { School, SchoolService } from '@src/modules/school';
 import { Logger } from '@src/core/logger';
+import { MediaSource } from '@src/modules/mediasource/domain';
+import { School, SchoolService } from '@src/modules/school';
 import { MediaSchoolLicense } from '../domain';
 import { VidisItemDto } from '../dto';
 import { SchoolLicenseType } from '../enum';
@@ -15,7 +14,6 @@ import { MediaSchoolLicenseRepo } from '../repo';
 export class MediaSchoolLicenseService {
 	constructor(
 		private readonly mediaSchoolLicenseRepo: MediaSchoolLicenseRepo,
-		private readonly mediaSourceRepo: MediaSourceRepo,
 		private readonly schoolService: SchoolService,
 		private readonly logger: Logger
 	) {}

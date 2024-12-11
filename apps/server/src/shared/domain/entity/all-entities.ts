@@ -13,7 +13,7 @@ import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
-import { MediaSchoolLicenseEntity } from '@modules/school-license/entity';
+import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
@@ -106,6 +106,7 @@ export const ALL_ENTITIES = [
 	MediaUserLicenseEntity,
 	InstanceEntity,
 	MediaSourceEntity,
+	SchoolLicenseEntity,
 	MediaSchoolLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,

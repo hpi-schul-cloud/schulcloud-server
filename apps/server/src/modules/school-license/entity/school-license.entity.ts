@@ -10,7 +10,7 @@ export interface SchoolLicenseProps {
 	type: SchoolLicenseType;
 }
 
-@Entity({ tableName: 'school-licenses', abstract: true })
+@Entity({ tableName: 'school-licenses', discriminatorColumn: 'type', abstract: true })
 @Index({ properties: ['school', 'type'] })
 export abstract class SchoolLicenseEntity extends BaseEntityWithTimestamps {
 	protected constructor(props: SchoolLicenseProps) {
@@ -23,8 +23,8 @@ export abstract class SchoolLicenseEntity extends BaseEntityWithTimestamps {
 	}
 
 	@Enum({ nullable: false })
-	type: SchoolLicenseType;
+	type!: SchoolLicenseType;
 
 	@ManyToOne(() => SchoolEntity, { nullable: false })
-	school: SchoolEntity;
+	school!: SchoolEntity;
 }

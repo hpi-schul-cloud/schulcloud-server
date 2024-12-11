@@ -8,7 +8,7 @@ export interface MediaSchoolLicenseEntityProps extends SchoolLicenseProps {
 	mediaSource?: MediaSourceEntity;
 }
 
-@Entity()
+@Entity({ discriminatorValue: SchoolLicenseType.MEDIA_LICENSE })
 export class MediaSchoolLicenseEntity extends SchoolLicenseEntity {
 	constructor(props: MediaSchoolLicenseEntityProps) {
 		super(props);
