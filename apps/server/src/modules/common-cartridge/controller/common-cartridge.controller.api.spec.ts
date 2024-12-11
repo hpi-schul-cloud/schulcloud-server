@@ -39,7 +39,15 @@ describe('CommonCartridgeController (API)', () => {
 					isGlobal: true,
 					load: [
 						() => {
-							return { API_HOST: faker.internet.url() };
+							return {
+								SC_DOMAIN: faker.internet.url(),
+								API_HOST: faker.internet.url(),
+								JWT_PUBLIC_KEY: faker.string.alphanumeric(42),
+								JWT_SIGNING_ALGORITHM: 'RS256',
+								INCOMING_REQUEST_TIMEOUT: 10_000,
+								NEST_LOG_LEVEL: 'error',
+								FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000,
+							};
 						},
 					],
 				}),
