@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { TldrawClientModule } from '@infra/tldraw-client/tldraw-client.module';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -12,7 +13,6 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
-import { config } from './board-collaboration.config';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 import {
@@ -35,8 +35,6 @@ import {
 	ContentElementUpdateService,
 } from './service/internal';
 
-const boardCollaborationConfig = config();
-
 @Module({
 	imports: [
 		CopyHelperModule,
@@ -47,8 +45,8 @@ const boardCollaborationConfig = config();
 		HttpModule,
 		CqrsModule,
 		TldrawClientModule.register({
-			TLDRAW_ADMIN_API_CLIENT_BASE_URL: boardCollaborationConfig.TLDRAW_ADMIN_API_CLIENT_BASE_URL,
-			TLDRAW_ADMIN_API_CLIENT_API_KEY: boardCollaborationConfig.TLDRAW_ADMIN_API_CLIENT_API_KEY,
+			TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT_BASE_URL') as string,
+			TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
 		}),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
