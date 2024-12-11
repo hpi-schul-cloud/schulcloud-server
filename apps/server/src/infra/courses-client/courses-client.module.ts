@@ -17,7 +17,7 @@ import { Configuration, CoursesApi } from './generated';
 				const basePath = configService.getOrThrow<string>('API_HOST');
 				const accessToken = JwtExtractor.extractJwtFromRequest(request);
 				const configuration = new Configuration({
-					basePath: `${basePath}/api/v3`,
+					basePath: `${basePath}/v3`,
 					accessToken,
 				});
 
