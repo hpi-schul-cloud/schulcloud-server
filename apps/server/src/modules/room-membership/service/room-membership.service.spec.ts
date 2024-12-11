@@ -87,26 +87,6 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should create new roomMembership when not exists', async () => {
-				const { user, room } = setup();
-
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMA }]);
-
-				expect(roomMembershipRepo.save).toHaveBeenCalled();
-			});
-
-			it('should save the schoolId of the room in the roomMembership', async () => {
-				const { user, room } = setup();
-
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
-
-				expect(roomMembershipRepo.save).toHaveBeenCalledWith(
-					expect.objectContaining({
-						schoolId: room.schoolId,
-					})
-				);
-			});
-
 			describe('when no user is provided', () => {
 				it('should throw an exception', async () => {
 					const { room } = setup();

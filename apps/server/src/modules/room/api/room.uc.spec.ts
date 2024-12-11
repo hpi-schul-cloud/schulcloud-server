@@ -117,7 +117,7 @@ describe('RoomUc', () => {
 			authorizationService.checkOneOfPermissions.mockReturnValue(undefined);
 			const room = roomFactory.build();
 			roomService.createRoom.mockResolvedValue(room);
-			roomMembershipService.addMembersToRoom.mockRejectedValue(new Error('test'));
+			roomMembershipService.createNewRoomMembership.mockRejectedValue(new Error('test'));
 			return { user, room };
 		};
 
