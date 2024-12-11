@@ -5,7 +5,7 @@ export class ColumnSkeletonDto {
 
 	title: string;
 
-	cards?: CardSkeletonDto[];
+	cards: CardSkeletonDto[];
 
 	constructor(props: ColumnSkeletonDto) {
 		this.columnId = props.columnId;
