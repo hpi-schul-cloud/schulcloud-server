@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { SchulconnexGroupType } from './schulconnex-group-type';
+import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { SchulconnexLaufzeitResponse } from './schulconnex-laufzeit-response';
 
 export class SchulconnexGruppeResponse {
@@ -10,8 +9,8 @@ export class SchulconnexGruppeResponse {
 	@IsString()
 	bezeichnung!: string;
 
-	@IsEnum(SchulconnexGroupType)
-	typ!: SchulconnexGroupType;
+	@IsString()
+	typ!: string;
 
 	@IsOptional()
 	@IsObject()

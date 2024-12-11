@@ -6,8 +6,8 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@shared/testing';
 import { ExternalSchoolDto } from '../../../dto';
-import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
 import { SchoolNameRequiredLoggableException } from '../../../loggable';
+import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
 
 describe(SchulconnexSchoolProvisioningService.name, () => {
 	let module: TestingModule;
