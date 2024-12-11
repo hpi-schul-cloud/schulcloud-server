@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '@shared/testing';
 import { MediaSourceOauthConfig } from '../domain/media-source-oauth-config';
 import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
-import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
+import { mediaSourceOAuthConfigEmbeddableFactory } from '../testing/media-source-oauth-config.embeddable.factory';
 import { mediaSourceConfigFactory } from '../testing/media-source-config.factory';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
@@ -12,7 +12,7 @@ describe('MediaSourceConfigMapper', () => {
 			const setup = async () => {
 				await setupEntities();
 
-				const entity = mediaSourceConfigEmbeddableFactory.build();
+				const entity = mediaSourceOAuthConfigEmbeddableFactory.build();
 				const expected = new MediaSourceOauthConfig({
 					id: entity._id.toHexString(),
 					clientId: entity.clientId,

@@ -6,7 +6,7 @@ import {
 	MediaSourceOauthConfigEmbeddableProps,
 } from '../entity/media-source-oauth-config.embeddable';
 
-export const mediaSourceConfigEmbeddableFactory = BaseFactory.define<
+export const mediaSourceOAuthConfigEmbeddableFactory = BaseFactory.define<
 	MediaSourceOauthConfigEmbeddable,
 	MediaSourceOauthConfigEmbeddableProps
 >(MediaSourceOauthConfigEmbeddable, ({ sequence }) => {

@@ -4,11 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MediaSource } from '../domain';
 import { MediaSourceEntity } from '../entity';
-import { mediaSourceEntityFactory, mediaSourceFactory } from '../../user-license/testing';
 import { MediaSourceRepo } from './media-source.repo';
 import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
-import { mediaSourceConfigEmbeddableFactory } from '../testing/media-source-config.embeddable.factory';
+import { mediaSourceOAuthConfigEmbeddableFactory } from '../testing/media-source-oauth-config.embeddable.factory';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
+import { mediaSourceEntityFactory } from '../testing/media-source-entity.factory';
+import { mediaSourceFactory } from '../testing/media-source.factory';
 
 describe(MediaSourceRepo.name, () => {
 	let module: TestingModule;
@@ -36,9 +37,9 @@ describe(MediaSourceRepo.name, () => {
 	describe('findBySourceId', () => {
 		describe('when a media source exists', () => {
 			const setup = async () => {
-				const config: MediaSourceOauthConfigEmbeddable = mediaSourceConfigEmbeddableFactory.build();
+				const config: MediaSourceOauthConfigEmbeddable = mediaSourceOAuthConfigEmbeddableFactory.build();
 
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ config });
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ oauthConfig: config });
 
 				await em.persistAndFlush([mediaSource]);
 

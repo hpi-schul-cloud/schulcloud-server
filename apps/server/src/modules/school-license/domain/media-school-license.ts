@@ -19,4 +19,9 @@ export class MediaSchoolLicense extends SchoolLicense<MediaSchoolLicenseProps> {
 	get mediaSource(): MediaSource | undefined {
 		return this.props.mediaSource;
 	}
+
+	set mediaSource(value: MediaSource) {
+		this.props.mediaSource = value;
+	}
+
 }
