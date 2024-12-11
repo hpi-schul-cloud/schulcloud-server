@@ -8,4 +8,5 @@ export * from './link-element.response';
 export * from './rich-text-element.response';
 export * from './submission-container-element.response';
 export * from './update-element-content.body.params';
+export * from './video-conference-element.response';
 export * from './deleted-element.response';

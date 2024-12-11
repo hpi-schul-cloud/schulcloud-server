@@ -1,4 +1,4 @@
-import { Entity, Property, Unique } from '@mikro-orm/core';
+import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -14,6 +14,7 @@ export class RoomMembershipEntity extends BaseEntityWithTimestamps implements Ro
 	@Property({ type: ObjectIdType, fieldName: 'userGroup' })
 	userGroupId!: EntityId;
 
+	@Index()
 	@Property({ type: ObjectIdType, fieldName: 'school' })
 	schoolId!: EntityId;
 

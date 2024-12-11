@@ -196,7 +196,7 @@ describe('VideoConferenceUc', () => {
 			// Assert
 			expect(result.scopeInfo.scopeId).toEqual(course.id);
 			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/courses/${course.id}?activeTab=tools`);
-			expect(result.scopeInfo.scopeName).toEqual('courses');
+			expect(result.scopeInfo.scopeName).toEqual(VideoConferenceScope.COURSE);
 			expect(result.scopeInfo.title).toEqual(course.name);
 			expect(result.object).toEqual(course);
 		});
@@ -209,7 +209,7 @@ describe('VideoConferenceUc', () => {
 			expect(result.scopeInfo.scopeId).toEqual(event.teamId);
 			expect(result.scopeInfo.title).toEqual(event.title);
 			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event.teamId}?activeTab=events`);
-			expect(result.scopeInfo.scopeName).toEqual('teams');
+			expect(result.scopeInfo.scopeName).toEqual(VideoConferenceScope.EVENT);
 			expect(result.object).toEqual(team);
 		});
 

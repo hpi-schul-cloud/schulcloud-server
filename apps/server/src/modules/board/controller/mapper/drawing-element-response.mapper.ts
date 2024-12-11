@@ -25,7 +25,7 @@ export class DrawingElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: DrawingElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof DrawingElement;
 	}
 }

@@ -6,6 +6,7 @@ import {
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
 import {
 	DeletedElementResponse,
@@ -14,6 +15,7 @@ import {
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
+	VideoConferenceElementResponse,
 } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
@@ -63,6 +65,14 @@ describe(ContentElementResponseFactory.name, () => {
 		const result = ContentElementResponseFactory.mapToResponse(drawingElement);
 
 		expect(result).toBeInstanceOf(DeletedElementResponse);
+	});
+
+	it('should return instance of VideoConferenceElementResponse', () => {
+		const videoConferenceElement = videoConferenceElementFactory.build();
+
+		const result = ContentElementResponseFactory.mapToResponse(videoConferenceElement);
+
+		expect(result).toBeInstanceOf(VideoConferenceElementResponse);
 	});
 
 	it('should throw NotImplementedException', () => {

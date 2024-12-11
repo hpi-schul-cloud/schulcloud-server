@@ -136,13 +136,29 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 	content!: ExternalToolContentBody;
 }
 
+export class VideoConferenceContentBody {
+	@IsString()
+	@ApiProperty()
+	title!: string;
+}
+
+export class VideoConferenceElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.VIDEO_CONFERENCE })
+	type!: ContentElementType.VIDEO_CONFERENCE;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: VideoConferenceContentBody;
+}
+
 export type AnyElementContentBody =
 	| FileContentBody
 	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
-	| ExternalToolContentBody;
+	| ExternalToolContentBody
+	| VideoConferenceContentBody;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -156,6 +172,7 @@ export class UpdateElementContentBodyParams {
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
+				{ value: VideoConferenceElementContentBody, name: ContentElementType.VIDEO_CONFERENCE },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -168,6 +185,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 			{ $ref: getSchemaPath(DrawingElementContentBody) },
+			{ $ref: getSchemaPath(VideoConferenceElementContentBody) },
 		],
 	})
 	data!:
@@ -176,5 +194,6 @@ export class UpdateElementContentBodyParams {
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
 		| ExternalToolElementContentBody
-		| DrawingElementContentBody;
+		| DrawingElementContentBody
+		| VideoConferenceElementContentBody;
 }

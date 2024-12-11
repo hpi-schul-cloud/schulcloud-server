@@ -25,6 +25,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -100,6 +101,7 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyMediaLine').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaExternalToolElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyDeletedElement').mockResolvedValue(mockStatus);
+		jest.spyOn(service, 'copyVideoConferenceElement').mockResolvedValue(mockStatus);
 
 		return { copyContext, mockStatus };
 	};
@@ -280,6 +282,18 @@ describe(BoardNodeCopyService.name, () => {
 					const result = await service.copy(node, copyContext);
 
 					expect(service.copyDeletedElement).toHaveBeenCalledWith(node, copyContext);
+					expect(result).toEqual(mockStatus);
+				});
+			});
+
+			describe('when called with video conference element', () => {
+				it('should copy deleted element', async () => {
+					const { copyContext, mockStatus } = setup();
+					const node = videoConferenceElementFactory.build();
+
+					const result = await service.copy(node, copyContext);
+
+					expect(service.copyVideoConferenceElement).toHaveBeenCalledWith(node, copyContext);
 					expect(result).toEqual(mockStatus);
 				});
 			});
