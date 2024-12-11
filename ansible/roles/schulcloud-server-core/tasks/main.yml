@@ -222,15 +222,6 @@
     tags:
       - cronjob
 
-  - name: Delete Tldraw Files CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-delete-files-cronjob.yml.j2
-      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
-    tags:
-      - cronjob
-
   - name: Data deletion trigger CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -346,66 +337,6 @@
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-svc-monitor.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
-    tags:
-      - prometheus
-
-  - name: External Secret for TlDraw Server
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-server-external-secret.yml.j2
-      state: "{{ 'present' if WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool else 'absent'}}"
-    when:
-      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool 
-      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
-    tags:
-      - 1password
-
-  - name: TlDraw server Secret (from 1Password)
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-server-onepassword.yml.j2
-    when:
-     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-     - WITH_TLDRAW is defined and WITH_TLDRAW|bool
-    tags:
-      - 1password
-
-  - name: TlDraw server deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-deployment.yml.j2
-      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
-    tags:
-      - deployment
-
-  - name: TlDraw server service
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-server-svc.yml.j2
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
-    tags:
-      - service
-
-  - name: Tldraw ingress
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-ingress.yml.j2
-      apply: yes
-    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
-    tags:
-      - ingress
-
-  - name: TldrawServiceMonitor
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-svc-monitor.yml.j2
-      state: "{{ 'present' if WITH_TLDRAW else 'absent'}}"
     tags:
       - prometheus
 

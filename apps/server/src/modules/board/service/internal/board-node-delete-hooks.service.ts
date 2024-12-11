@@ -1,7 +1,7 @@
+import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import {
@@ -25,14 +25,14 @@ export class BoardNodeDeleteHooksService {
 	constructor(
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly drawingElementAdapterService: DrawingElementAdapterService,
+		private readonly drawingElementAdapterService: TldrawClientAdapter,
 		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
 	) {}
 
 	async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		const boardNodes = Utils.asArray(boardNode);
 
-		await Promise.allSettled(boardNodes.map(async (bn) => this.singleAfterDelete(bn)));
+		await Promise.all(boardNodes.map(async (bn) => this.singleAfterDelete(bn)));
 	}
 
 	private async singleAfterDelete(boardNode: AnyBoardNode): Promise<void> {
