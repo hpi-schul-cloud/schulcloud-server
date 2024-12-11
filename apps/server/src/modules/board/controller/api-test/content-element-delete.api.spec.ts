@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
+import { TldrawClientAdapter } from '@infra/tldraw-client/tldraw-client.adapter';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.module';
-import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -46,7 +46,7 @@ describe(`content element delete (api)`, () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
+	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let api: API;
 
 	beforeAll(async () => {
@@ -55,8 +55,8 @@ describe(`content element delete (api)`, () => {
 		})
 			.overrideProvider(FilesStorageClientAdapterService)
 			.useValue(createMock<FilesStorageClientAdapterService>())
-			.overrideProvider(DrawingElementAdapterService)
-			.useValue(createMock<DrawingElementAdapterService>())
+			.overrideProvider(TldrawClientAdapter)
+			.useValue(createMock<TldrawClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
@@ -71,7 +71,7 @@ describe(`content element delete (api)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		drawingElementAdapterService = module.get(DrawingElementAdapterService);
+		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		api = new API(app);
 	});
 
