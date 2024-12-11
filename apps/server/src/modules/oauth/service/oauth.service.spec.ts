@@ -18,6 +18,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { System } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { externalUserDtoFactory } from '../../provisioning/testing';
 import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
@@ -378,9 +379,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -429,9 +430,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -476,9 +477,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -544,9 +545,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -612,9 +613,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -675,9 +676,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -737,9 +738,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -804,9 +805,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
