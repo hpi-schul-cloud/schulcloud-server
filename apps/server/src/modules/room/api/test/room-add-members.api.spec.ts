@@ -65,7 +65,11 @@ describe('Room Controller (API)', () => {
 				externalSource: undefined,
 			});
 
-			const roomMemberships = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room.id,
+				schoolId: school.id,
+			});
 			await em.persistAndFlush([
 				room,
 				roomMemberships,
@@ -87,7 +91,9 @@ describe('Room Controller (API)', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithMembers();
+
 				const response = await testApiClient.patch(`/${room.id}/members/add`);
+
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -96,7 +102,9 @@ describe('Room Controller (API)', () => {
 			const setupLoggedInUser = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persistAndFlush([teacherAccount, teacherUser]);
+
 				const loggedInClient = await testApiClient.login(teacherAccount);
+
 				return { loggedInClient };
 			};
 

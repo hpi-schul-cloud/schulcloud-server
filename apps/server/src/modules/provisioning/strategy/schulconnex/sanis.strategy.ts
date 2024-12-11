@@ -24,7 +24,8 @@ import {
 } from '../../dto';
 import { FetchingPoliciesInfoFailedLoggable, PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
-import { SchulconnexProvisioningStrategy } from '../oidc';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
+import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
@@ -32,8 +33,7 @@ import {
 	SchulconnexSchoolProvisioningService,
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
-} from '../oidc/service';
-import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
+} from './service';
 
 @Injectable()
 export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
@@ -62,11 +62,11 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		);
 	}
 
-	getType(): SystemProvisioningStrategy {
+	public getType(): SystemProvisioningStrategy {
 		return SystemProvisioningStrategy.SANIS;
 	}
 
-	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
+	public override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		if (!input.system.provisioningUrl) {
 			throw new InternalServerErrorException(
 				`Sanis system with id: ${input.system.systemId} is missing a provisioning url`

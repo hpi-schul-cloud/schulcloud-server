@@ -34,6 +34,9 @@ import {
 } from '../../dto';
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
+import { externalUserDtoFactory } from '../../testing';
+import { SanisProvisioningStrategy } from './sanis.strategy';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
@@ -41,9 +44,7 @@ import {
 	SchulconnexSchoolProvisioningService,
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
-} from '../oidc/service';
-import { SanisProvisioningStrategy } from './sanis.strategy';
-import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
+} from './service';
 import ArgsType = jest.ArgsType;
 import SpyInstance = jest.SpyInstance;
 
@@ -156,9 +157,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					accessToken: 'sanisAccessToken',
 				});
 				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
+				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
@@ -280,9 +279,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					accessToken: 'sanisAccessToken',
 				});
 				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
+				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
@@ -334,9 +331,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					accessToken: 'sanisAccessToken',
 				});
 				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
+				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
@@ -385,9 +380,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					accessToken: 'sanisAccessToken',
 				});
 				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
+				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
@@ -428,9 +421,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					accessToken: 'sanisAccessToken',
 				});
 				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
+				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
@@ -535,9 +526,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					accessToken: 'sanisAccessToken',
 				});
 				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
+				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
