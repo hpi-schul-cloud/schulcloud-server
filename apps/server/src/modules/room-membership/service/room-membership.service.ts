@@ -101,6 +101,7 @@ export class RoomMembershipService {
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 
+		await this.ensureOwnerIsNotRemoved(group, userIds);
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
@@ -144,6 +145,17 @@ export class RoomMembershipService {
 		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, roomMembership.schoolId);
 
 		return roomMembershipAuthorizable;
+	}
+
+	private async ensureOwnerIsNotRemoved(group: Group, userIds: EntityId[]): Promise<void> {
+		const role = await this.roleService.findByName(RoleName.ROOMOWNER);
+		const includedOwner = group.users
+			.filter((groupUser) => userIds.includes(groupUser.userId))
+			.find((groupUser) => groupUser.roleId === role.id);
+
+		if (includedOwner) {
+			throw new BadRequestException('Cannot remove owner from room');
+		}
 	}
 
 	private async handleGuestRoleRemoval(userIds: EntityId[], schoolId: EntityId): Promise<void> {
