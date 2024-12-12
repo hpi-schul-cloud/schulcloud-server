@@ -5,19 +5,21 @@ import { MediaSourceDataFormat } from '@src/modules/mediasource/enum';
 import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/mediasource/loggable';
 import { MediaSourceService } from '@src/modules/mediasource/service';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom, Observable } from 'rxjs';
 import { VidisItemMapper } from '../mapper/vidis-item.mapper';
 import { VidisResponse } from '../response';
 import { VidisItemResponse } from '../response/vidis-item.response';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 
 @Injectable()
 export class VidisSyncService {
 	constructor(
 		private readonly httpService: HttpService,
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
 	public async syncMediaSchoolLicenses(): Promise<void> {
@@ -33,16 +35,17 @@ export class VidisSyncService {
 		await this.mediaSchoolLicenseService.syncMediaSchoolLicenses(mediasource, itemsDtos);
 	}
 
+	// FIXME: clarify; is there a reason why this is public?
 	public async fetchData(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
 		if (!mediaSource.basicAuthConfig || !mediaSource.basicAuthConfig.authEndpoint) {
 			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
 
-		// TODO Encrypted password needs to be decrypted before sending the request
+		// TODO: throw a vidis-specific error to make debugging easier
 		const vidisResponse: VidisResponse = await this.getRequest<VidisResponse>(
 			new URL(`${mediaSource.basicAuthConfig.authEndpoint}`),
-			mediaSource.basicAuthConfig.username,
-			mediaSource.basicAuthConfig.password
+			this.encryptionService.decrypt(mediaSource.basicAuthConfig.username),
+			this.encryptionService.decrypt(mediaSource.basicAuthConfig.password)
 		);
 
 		const { items } = vidisResponse;

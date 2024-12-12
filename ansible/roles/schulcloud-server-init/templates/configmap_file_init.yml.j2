@@ -611,5 +611,31 @@ data:
     fi
     # ========== End of TSP system creation
 
+    # ========== Start of inserting VIDIS media source section.
+    if [ -n "$MEDIA_SOURCE_VIDIS_USERNAME" ] && [ -n "$MEDIA_SOURCE_VIDIS_PASSWORD" ]; then
+         echo "Inserting VIDIS media source to the DB..."
+         # Encrypt the credentials for accessing the VIDIS media source
+         MEDIA_SOURCE_VIDIS_USERNAME=$(node scripts/secret.js -s $AES_KEY -e $MEDIA_SOURCE_VIDIS_USERNAME)
+         MEDIA_SOURCE_VIDIS_PASSWORD=$(node scripts/secret.js -s $AES_KEY -e $MEDIA_SOURCE_VIDIS_PASSWORD)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("media-sources").insertOne(
+             {
+                "format" : "VIDIS",
+                "name" : "vidis",
+                "sourceId" : "vidis.fwu.de",
+                "createdAt": new Date(),
+                "updatedAt": new Date(),
+                "basicAuthConfig" : {
+                "username" : "'$MEDIA_SOURCE_VIDIS_USERNAME'",
+                   "password" : "'$MEDIA_SOURCE_VIDIS_PASSWORD'",
+                   "authEndpoint" : "https://service-stage.vidis.schule/o/vidis-rest/v1.0/offers/activated/by-region/test-region",
+                   "_id" : new ObjectId()
+                }
+             }
+         );'
+    fi
+    echo "Inserted VIDIS media source to the DB."
+
+    # ========== End of inserting VIDIS media source section.
+
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
