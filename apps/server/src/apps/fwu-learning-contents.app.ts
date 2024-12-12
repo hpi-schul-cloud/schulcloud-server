@@ -8,8 +8,9 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
+import { createAppLoggerMiddleware } from '@src/apps/helpers/app-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
@@ -26,6 +27,7 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 	enableOpenApiDocs(nestApp, 'docs');
+	nestApp.use(createAppLoggerMiddleware(await nestApp.resolve(Logger)));
 
 	await nestApp.init();
 

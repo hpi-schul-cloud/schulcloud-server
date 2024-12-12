@@ -6,6 +6,7 @@ import { LegacyLogger, Logger } from '@src/core/logger';
 import { AdminApiServerModule } from '@modules/server/admin-api.server.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
+import { createAppLoggerMiddleware } from '@src/apps/helpers/app-logger-middleware';
 import {
 	AppStartLoggable,
 	enableOpenApiDocs,
@@ -23,6 +24,8 @@ async function bootstrap() {
 	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
 	const logger = await nestAdminServerApp.resolve(Logger);
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
+	nestAdminServerApp.use(createAppLoggerMiddleware(await nestAdminServerApp.resolve(Logger)));
+
 	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();
 

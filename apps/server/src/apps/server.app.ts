@@ -23,6 +23,7 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
+import { createAppLoggerMiddleware } from '@src/apps/helpers/app-logger-middleware';
 import {
 	AppStartLoggable,
 	enableOpenApiDocs,
@@ -34,7 +35,7 @@ import legacyAppPromise = require('../../../../src/app');
 async function bootstrap() {
 	sourceMapInstall();
 
-	// create the NestJS application on a seperate express instance
+	// create the NestJS application on a separate express instance
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
@@ -45,6 +46,7 @@ async function bootstrap() {
 	nestApp.useLogger(legacyLogger);
 
 	const logger = await nestApp.resolve(Logger);
+	nestApp.use(createAppLoggerMiddleware(await nestApp.resolve(Logger)));
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

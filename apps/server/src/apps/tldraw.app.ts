@@ -9,6 +9,7 @@ import * as WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
+import { createAppLoggerMiddleware } from '@src/apps/helpers/app-logger-middleware';
 import {
 	AppStartLoggable,
 	enableOpenApiDocs,
@@ -23,6 +24,7 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(TldrawApiModule, nestExpressAdapter);
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	nestApp.use(createAppLoggerMiddleware(await nestApp.resolve(Logger)));
 	nestApp.enableCors();
 
 	const nestAppWS = await NestFactory.create(TldrawWsModule);
