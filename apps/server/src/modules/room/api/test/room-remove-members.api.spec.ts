@@ -46,6 +46,16 @@ describe('Room Controller (API)', () => {
 
 	describe('PATCH /rooms/:roomId/members/remove', () => {
 		const setupRoomRoles = () => {
+			const ownerRole = roleFactory.buildWithId({
+				name: RoleName.ROOMOWNER,
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_DELETE,
+					Permission.ROOM_MEMBERS_ADD, // for now room_editors have these two rights as room_admins are not yet available
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
+			});
 			const editorRole = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
 				permissions: [
@@ -59,7 +69,7 @@ describe('Room Controller (API)', () => {
 				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
-			return { editorRole, viewerRole };
+			return { ownerRole, editorRole, viewerRole };
 		};
 
 		const setupRoomWithMembers = async () => {
@@ -74,7 +84,7 @@ describe('Room Controller (API)', () => {
 
 			const users = { teacherUser, inRoomEditor2, inRoomEditor3, inRoomViewer, outTeacher };
 
-			const { editorRole, viewerRole } = setupRoomRoles();
+			const { ownerRole, editorRole, viewerRole } = setupRoomRoles();
 
 			const roomUsers = [teacherUser, inRoomEditor2, inRoomEditor3].map((user) => {
 				return { role: editorRole, user };
@@ -94,7 +104,14 @@ describe('Room Controller (API)', () => {
 				schoolId: school.id,
 			});
 
-			await em.persistAndFlush([...Object.values(users), room, roomMemberships, teacherAccount, userGroupEntity]);
+			await em.persistAndFlush([
+				...Object.values(users),
+				room,
+				roomMemberships,
+				teacherAccount,
+				userGroupEntity,
+				ownerRole,
+			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
