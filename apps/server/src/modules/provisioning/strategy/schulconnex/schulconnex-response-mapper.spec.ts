@@ -47,6 +47,11 @@ describe(SchulconnexResponseMapper.name, () => {
 		mapper = module.get(SchulconnexResponseMapper);
 	});
 
+	beforeEach(() => {
+		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = false;
+		config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = undefined;
+	});
+
 	describe('mapToExternalSchoolDto', () => {
 		describe('when a schulconnex response is provided', () => {
 			const setup = () => {
@@ -316,6 +321,8 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when other participants have unknown roles', () => {
 			const setup = () => {
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
+
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
 					{
@@ -512,6 +519,56 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
 					InvalidLaufzeitResponseLoggableException
 				);
+			});
+		});
+
+		describe('when there are too many users in groups', () => {
+			const setup = () => {
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
+				config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = 1;
+
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should not map other group users', () => {
+				const { schulconnexResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).toEqual([
+					expect.objectContaining<Partial<ExternalGroupDto>>({
+						otherUsers: undefined,
+					}),
+				]);
+			});
+		});
+
+		describe('when there are not too many users in groups', () => {
+			const setup = () => {
+				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
+				config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = 10;
+
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+
+				return {
+					schulconnexResponse,
+				};
+			};
+
+			it('should not map other group users', () => {
+				const { schulconnexResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
+
+				expect(result).not.toEqual([
+					expect.objectContaining({
+						otherUsers: undefined,
+					}),
+				]);
 			});
 		});
 	});

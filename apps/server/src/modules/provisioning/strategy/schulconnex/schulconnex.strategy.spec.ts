@@ -116,7 +116,6 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
 		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = false;
 		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
-		config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = undefined;
 	});
 
 	afterAll(async () => {
@@ -329,42 +328,6 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 			});
 
 			it('should not provision groups', async () => {
-				const { oauthData } = setup();
-
-				await strategy.apply(oauthData);
-
-				expect(schulconnexGroupProvisioningService.provisionExternalGroup).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when there are too many users in groups', () => {
-			const setup = () => {
-				config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = 1;
-
-				const externalUserId = 'externalUserId';
-				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: new ObjectId().toHexString(),
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
-					externalGroups,
-				});
-
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
-					externalId: externalUserId,
-				});
-
-				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-
-				return {
-					oauthData,
-				};
-			};
-
-			it('should not run group provisioning', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
