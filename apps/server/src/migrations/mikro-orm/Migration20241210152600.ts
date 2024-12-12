@@ -13,7 +13,7 @@ export class Migration20241210152600 extends Migration {
 
 		if (roomEditorRoleUpdate.modifiedCount > 0) {
 			console.info(
-				'Rollback: Permission ROOM_DELETE removed from and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE added to role roomeditor.'
+				'Permission ROOM_DELETE removed from and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE added to role roomeditor.'
 			);
 		}
 	}
@@ -30,7 +30,7 @@ export class Migration20241210152600 extends Migration {
 
 		if (roomEditorRoleUpdate.modifiedCount > 0) {
 			console.info(
-				'Permissions ROOM_DELETE added to and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE from role roomeditor.'
+				'Rollback: Permissions ROOM_DELETE added to and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE removed from role roomeditor.'
 			);
 		}
 	}
