@@ -620,7 +620,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "67599159f85fdde7abcda6be"
+			"$oid": "675abdb4e76b1142cd4c89e3"
 		},
 		"name": "roomowner",
 		"permissions": [
@@ -634,7 +634,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "67599159f85fdde7abcda6bf"
+			"$oid": "675abdb4e76b1142cd4c89e4"
 		},
 		"name": "roomadmin",
 		"permissions": [
