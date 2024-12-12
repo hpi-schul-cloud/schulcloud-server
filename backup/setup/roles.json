@@ -643,31 +643,5 @@
 			"ROOM_MEMBERS_ADD",
 			"ROOM_MEMBERS_REMOVE"
 		]
-	},
-	{
-		"_id": {
-			"$oid": "6759c7f97deafc47bbd8f808"
-		},
-		"name": "roomowner",
-		"permissions": [
-			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_DELETE",
-			"ROOM_MEMBERS_ADD",
-			"ROOM_MEMBERS_REMOVE",
-			"ROOM_CHANGE_OWNER"
-		]
-	},
-	{
-		"_id": {
-			"$oid": "6759c7f97deafc47bbd8f809"
-		},
-		"name": "roomadmin",
-		"permissions": [
-			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_MEMBERS_ADD",
-			"ROOM_MEMBERS_REMOVE"
-		]
 	}
 ]
