@@ -6,6 +6,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -49,12 +50,17 @@ describe(`board copy with room relation (api)`, () => {
 				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_EDIT],
 			});
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const school = schoolEntityFactory.buildWithId();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
 				users: [{ role, user: teacherUser }],
 			});
-			const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+			const roomMembership = roomMembershipEntityFactory.build({
+				roomId: room.id,
+				userGroupId: userGroup.id,
+				schoolId: teacherUser.school.id,
+			});
 			const columnBoardNode = columnBoardEntityFactory.build({
 				...columnBoardProps,
 				context: { id: room.id, type: BoardExternalReferenceType.Room },

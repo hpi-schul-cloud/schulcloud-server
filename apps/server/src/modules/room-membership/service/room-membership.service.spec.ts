@@ -371,6 +371,7 @@ describe('RoomMembershipService', () => {
 		it('should return empty RoomMembershipAuthorizable when roomMembership not exists', async () => {
 			const roomId = 'nonexistent';
 			roomMembershipRepo.findByRoomId.mockResolvedValue(null);
+			roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
 			const result = await service.getRoomMembershipAuthorizable(roomId);
 
