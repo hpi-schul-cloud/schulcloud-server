@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { DrawingElementAdapterService } from '@src/modules/tldraw-client';
 import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
 import {
@@ -19,7 +19,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeDeleteHooksService;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
+	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let collaborativeTextEditorService: CollaborativeTextEditorService;
 
@@ -36,8 +36,8 @@ describe(BoardNodeDeleteHooksService.name, () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: DrawingElementAdapterService,
-					useValue: createMock<DrawingElementAdapterService>(),
+					provide: TldrawClientAdapter,
+					useValue: createMock<TldrawClientAdapter>(),
 				},
 				{
 					provide: CollaborativeTextEditorService,
@@ -48,7 +48,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 
 		service = module.get(BoardNodeDeleteHooksService);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		drawingElementAdapterService = module.get(DrawingElementAdapterService);
+		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
 
