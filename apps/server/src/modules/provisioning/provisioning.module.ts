@@ -1,4 +1,5 @@
 import { AccountModule } from '@modules/account';
+import { ClassModule } from '@modules/class';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -8,12 +9,11 @@ import { SystemModule } from '@modules/system/system.module';
 import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
+import { UserLicenseModule } from '@modules/user-license';
+import { MediaSourceModule } from '@modules/mediasource/media-source.module';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SchulconnexClientModule } from '@src/infra/schulconnex-client/schulconnex-client.module';
-import { ClassModule } from '../class';
-import { MediaSourceModule } from '../mediasource/media-source.module';
-import { UserLicenseModule } from '../user-license';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
@@ -29,8 +29,8 @@ import {
 	SchulconnexSchoolProvisioningService,
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
-} from './strategy/oidc/service';
-import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
+} from './strategy/schulconnex/service';
+import { TspProvisioningStrategy } from './strategy/tsp';
 
 @Module({
 	imports: [

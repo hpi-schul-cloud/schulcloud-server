@@ -16,7 +16,6 @@ import { RoomEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
@@ -101,7 +100,6 @@ export const ALL_ENTITIES = [
 	VideoConference,
 	GroupEntity,
 	RegistrationPinEntity,
-	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
 	InstanceEntity,
