@@ -4,6 +4,7 @@ import { MediaSource } from '@src/modules/mediasource/domain';
 import { MediaSourceDataFormat } from '@src/modules/mediasource/enum';
 import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/mediasource/loggable';
 import { MediaSourceService } from '@src/modules/mediasource/service';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
@@ -11,7 +12,6 @@ import { lastValueFrom, Observable } from 'rxjs';
 import { VidisItemMapper } from '../mapper/vidis-item.mapper';
 import { VidisResponse } from '../response';
 import { VidisItemResponse } from '../response/vidis-item.response';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 
 @Injectable()
 export class VidisSyncService {

@@ -7,6 +7,7 @@ import { VidisSyncStrategy } from './vidis-sync.strategy';
 describe(VidisSyncService.name, () => {
 	let module: TestingModule;
 	let sut: VidisSyncStrategy;
+	// TODO: cleanup
 	// let vidisSyncStrategy: DeepMocked<VidisSyncStrategy>;
 	let vidisSyncService: DeepMocked<VidisSyncService>;
 

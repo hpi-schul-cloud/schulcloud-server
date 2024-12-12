@@ -19,6 +19,7 @@ export class MediaSchoolLicenseService {
 	) {}
 
 	public async syncMediaSchoolLicenses(mediaSource: MediaSource, items: VidisItemDto[]): Promise<void> {
+		// TODO: use Promise.all instead of for-of
 		for (const item of items) {
 			const schoolNumbers = item.schoolActivations.map((activation) => this.removePrefix(activation));
 			const schoolActivationsSet = new Set(schoolNumbers);
