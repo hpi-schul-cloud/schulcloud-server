@@ -19,7 +19,7 @@ export class LessonDto {
 
 	public materials: LessonMaterialsDto[];
 
-	public linkedTasks?: LessonLinkedTaskDto[];
+	public linkedTasks: LessonLinkedTaskDto[];
 
 	constructor(props: LessonDto) {
 		this.lessonId = props.lessonId;

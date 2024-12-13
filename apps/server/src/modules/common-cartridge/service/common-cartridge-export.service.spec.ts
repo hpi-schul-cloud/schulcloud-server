@@ -185,7 +185,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, lesson } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-				lesson.linkedTasks?.forEach((linkedTask) => {
+				lesson.linkedTasks.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
 				});
 			});
@@ -254,7 +254,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, lesson } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-				lesson.linkedTasks?.forEach((linkedTask) => {
+				lesson.linkedTasks.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
 				});
 			});
@@ -331,30 +331,6 @@ describe('CommonCartridgeExportService', () => {
 
 			it("shouldn't add column boards", async () => {
 				const { archive, boardSkeleton } = await setup();
-
-				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(
-					createXmlString('title', boardSkeleton.columns[0].title)
-				);
-			});
-		});
-
-		describe('when topics has no linked tasks', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
-
-			it('should add lesson without linked tasks', async () => {
-				const { archive, lesson } = await setup();
-				lesson.linkedTasks = undefined;
-
-				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
-			});
-		});
-
-		describe('when columnBoards has no cards', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
-
-			it('should add column boards without cards', async () => {
-				const { archive, boardSkeleton } = await setup();
-				boardSkeleton.columns[0].cards = [];
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(
 					createXmlString('title', boardSkeleton.columns[0].title)

@@ -106,7 +106,7 @@ export class CommonCartridgeExportService {
 				this.addComponentToOrganization(content, lessonsOrganization);
 			});
 
-			lesson.linkedTasks?.forEach((task) => {
+			lesson.linkedTasks.forEach((task) => {
 				lessonsOrganization.addResource(this.mapper.mapLinkedTaskToResource(task, version));
 			});
 		});
