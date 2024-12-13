@@ -12,3 +12,4 @@ export { UserMigrationIsNotEnabledLoggableException } from './user-migration-not
 export { UserMigrationCanceledLoggable } from './user-migration-canceled.loggable';
 export { UserAlreadyMigratedLoggable } from './user-already-migrated.loggable';
 export { UserLoginMigrationNotActiveLoggableException } from './user-login-migration-not-active.loggable-exception';
+export { UserMigrationFailedLoggable } from './user-migration-failed.loggable';
