@@ -778,7 +778,53 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when user has neither editor nor viewer role in room scope', () => {
+		describe('when user has neither editor nor viewer role in room scope and is not authorized for the room', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const role = roleFactory.buildWithId();
+				const group = groupFactory.build({
+					type: GroupTypes.ROOM,
+					users: [{ userId: user.id, roleId: role.id }],
+				});
+				const room = roomFactory.build();
+				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+				const conferenceScope = VideoConferenceScope.ROOM;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roomMembershipService.getRoomMembershipAuthorizable
+					.mockResolvedValueOnce({
+						id: 'foo',
+						roomId: room.id,
+						members: [{ userId: 'anotherUserId', roles: [] }],
+						schoolId: room.schoolId,
+					})
+					.mockResolvedValueOnce({
+						id: 'foo',
+						roomId: room.id,
+						members: [{ userId: 'anotherUserId', roles: [] }],
+						schoolId: room.schoolId,
+					});
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				return {
+					user,
+					userId: user.id,
+					room,
+					roomId: room.id,
+					conferenceScope,
+				};
+			};
+
+			it('should throw a ForbiddenException', async () => {
+				const { userId, conferenceScope, roomId } = setup();
+
+				const callDetermineBbbRole = () => service.determineBbbRole(userId, roomId, conferenceScope);
+
+				await expect(callDetermineBbbRole).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+			});
+		});
+
+		describe('when user has neither editor nor viewer role in room scope but is authorized for the room', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const role = roleFactory.buildWithId();
@@ -824,7 +870,44 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when user has neither editor nor reader role in video conference node', () => {
+		describe('when user has neither editor nor reader role in video conference node and is not authorized for the node', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const element = videoConferenceElementFactory.build();
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					users: [{ userId: 'anotherUserId', roles: [] }],
+					id: element.id,
+					boardNode: element,
+					rootNode: columnBoardFactory.build(),
+				});
+				boardNodeAuthorizableService.getBoardAuthorizable
+					.mockResolvedValueOnce(boardNodeAuthorizable)
+					.mockResolvedValueOnce(boardNodeAuthorizable);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
+
+				return {
+					user,
+					userId: user.id,
+					element,
+					elementId: element.id,
+					conferenceScope,
+				};
+			};
+
+			it('should throw a ForbiddenException', async () => {
+				const { userId, conferenceScope, elementId } = setup();
+
+				const callDetermineBbbRole = () => service.determineBbbRole(userId, elementId, conferenceScope);
+
+				await expect(callDetermineBbbRole).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+			});
+		});
+
+		describe('when user has neither editor nor reader role in video conference node but is authorized for the node', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const element = videoConferenceElementFactory.build();
