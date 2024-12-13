@@ -20,11 +20,7 @@ export class RoomMembershipService {
 		private readonly userService: UserService
 	) {}
 
-	private async createNewRoomMembership(
-		roomId: EntityId,
-		userId: EntityId,
-		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER
-	): Promise<RoomMembership> {
+	public async createNewRoomMembership(roomId: EntityId, ownerUserId: EntityId): Promise<RoomMembership> {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const group = await this.groupService.createGroup(
@@ -32,7 +28,7 @@ export class RoomMembershipService {
 			GroupTypes.ROOM,
 			room.schoolId
 		);
-		await this.groupService.addUsersToGroup(group.id, [{ userId, roleName }]);
+		await this.groupService.addUsersToGroup(group.id, [{ userId: ownerUserId, roleName: RoleName.ROOMOWNER }]);
 
 		const roomMembership = new RoomMembership({
 			id: new ObjectId().toHexString(),
@@ -79,16 +75,14 @@ export class RoomMembershipService {
 
 	public async addMembersToRoom(
 		roomId: EntityId,
-		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER }>
+		userIdsAndRoles: Array<{
+			userId: EntityId;
+			roleName: RoleName.ROOMADMIN | RoleName.ROOMEDITOR | RoleName.ROOMVIEWER;
+		}>
 	): Promise<EntityId> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			const firstUser = userIdsAndRoles.shift();
-			if (firstUser === undefined) {
-				throw new BadRequestException('No user provided');
-			}
-			const newRoomMembership = await this.createNewRoomMembership(roomId, firstUser.userId, firstUser.roleName);
-			return newRoomMembership.id;
+			throw new Error('Room membership not found');
 		}
 
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
@@ -106,6 +100,8 @@ export class RoomMembershipService {
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
+
+		await this.ensureOwnerIsNotRemoved(group, userIds);
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
@@ -149,6 +145,17 @@ export class RoomMembershipService {
 		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, roomMembership.schoolId);
 
 		return roomMembershipAuthorizable;
+	}
+
+	private async ensureOwnerIsNotRemoved(group: Group, userIds: EntityId[]): Promise<void> {
+		const role = await this.roleService.findByName(RoleName.ROOMOWNER);
+		const includedOwner = group.users
+			.filter((groupUser) => userIds.includes(groupUser.userId))
+			.find((groupUser) => groupUser.roleId === role.id);
+
+		if (includedOwner) {
+			throw new BadRequestException('Cannot remove owner from room');
+		}
 	}
 
 	private async handleGuestRoleRemoval(userIds: EntityId[], schoolId: EntityId): Promise<void> {

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { RoomRole, RoomRoleArray } from '@shared/domain/interface';
+import { RoleName, RoomRoleArray } from '@shared/domain/interface';
 
 class UserIdAndRole {
 	@ApiProperty({
@@ -17,7 +17,7 @@ class UserIdAndRole {
 		enum: RoomRoleArray,
 	})
 	@IsString()
-	roleName!: RoomRole;
+	roleName!: RoleName.ROOMADMIN | RoleName.ROOMEDITOR | RoleName.ROOMVIEWER;
 }
 
 export class AddRoomMembersBodyParams {
