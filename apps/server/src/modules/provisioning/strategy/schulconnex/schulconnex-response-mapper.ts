@@ -125,7 +125,7 @@ export class SchulconnexResponseMapper {
 			groups.length
 		);
 		const limit: number | undefined = this.configService.get('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT');
-		const shouldProvisionOtherUsers: boolean = !limit || usersInGroupsCount < limit;
+		const shouldProvisionOtherUsers: boolean = limit === undefined || usersInGroupsCount < limit;
 
 		const mapped: ExternalGroupDto[] = groups
 			.map((group: SchulconnexGruppenResponse) => this.mapExternalGroup(source, group, shouldProvisionOtherUsers))
