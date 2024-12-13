@@ -1,12 +1,8 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { ExternalGroupDto, ExternalUserDto } from '../dto';
+import { ExternalGroupDto } from '../dto';
 
 export class GroupProvisioningInfoLoggable implements Loggable {
-	constructor(
-		private readonly groupUser: ExternalUserDto,
-		private readonly groups: ExternalGroupDto[],
-		private readonly durationMs: number
-	) {}
+	constructor(private readonly groups: ExternalGroupDto[], private readonly durationMs: number) {}
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		const userCount = this.groups.reduce(
@@ -17,7 +13,6 @@ export class GroupProvisioningInfoLoggable implements Loggable {
 		return {
 			message: 'Group provisioning has finished.',
 			data: {
-				externalUserId: this.groupUser.externalId,
 				groupCount: this.groups.length,
 				userCount,
 				durationMs: this.durationMs,
