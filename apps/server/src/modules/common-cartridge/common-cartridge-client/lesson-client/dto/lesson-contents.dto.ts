@@ -1,15 +1,15 @@
 import { LessonContentResponseContentInnerDto } from './lesson-content-response-inner.dto';
 
 export class LessonContentDto {
-	id: string | undefined;
+	public id: string | undefined;
 
-	content: LessonContentResponseContentInnerDto;
+	public content: LessonContentResponseContentInnerDto;
 
-	title: string;
+	public title: string;
 
-	component: LessonContentDtoComponent;
+	public component: LessonContentDtoComponent;
 
-	hidden: boolean;
+	public hidden: boolean;
 
 	constructor(props: LessonContentDto) {
 		this.content = props.content;

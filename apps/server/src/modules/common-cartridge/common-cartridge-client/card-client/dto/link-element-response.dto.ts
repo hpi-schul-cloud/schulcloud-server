@@ -3,13 +3,13 @@ import { LinkElementContentDto } from './link-element-content.dto';
 import { TimestampResponseDto } from './timestamp-response.dto';
 
 export class LinkElementResponseDto {
-	id: string;
+	public id: string;
 
-	type: ContentElementType;
+	public type: ContentElementType;
 
-	content: LinkElementContentDto;
+	public content: LinkElementContentDto;
 
-	timestamps: TimestampResponseDto;
+	public timestamps: TimestampResponseDto;
 
 	constructor(props: LinkElementResponseDto) {
 		this.id = props.id;

@@ -3,23 +3,23 @@ import { LessonLinkedTaskDto } from './lesson-linked-task.dto';
 import { LessonMaterialsDto } from './lesson-materials.dto';
 
 export class LessonDto {
-	lessonId: string;
+	public lessonId: string;
 
-	name: string;
+	public name: string;
 
-	courseId?: string;
+	public courseId?: string;
 
-	courseGroupId?: string;
+	public courseGroupId?: string;
 
-	hidden: boolean;
+	public hidden: boolean;
 
-	position: number;
+	public position: number;
 
-	contents: LessonContentDto[];
+	public contents: LessonContentDto[];
 
-	materials: LessonMaterialsDto[];
+	public materials: LessonMaterialsDto[];
 
-	linkedTasks?: LessonLinkedTaskDto[];
+	public linkedTasks?: LessonLinkedTaskDto[];
 
 	constructor(props: LessonDto) {
 		this.lessonId = props.lessonId;

@@ -3,13 +3,13 @@ import { RichTextElementContentDto } from './rich-text-element-content.dto';
 import { TimestampResponseDto } from './timestamp-response.dto';
 
 export class RichTextElementResponseDto {
-	id: string;
+	public id: string;
 
-	type: ContentElementType;
+	public type: ContentElementType;
 
-	content: RichTextElementContentDto;
+	public content: RichTextElementContentDto;
 
-	timestamps: TimestampResponseDto;
+	public timestamps: TimestampResponseDto;
 
 	constructor(props: Readonly<RichTextElementResponseDto>) {
 		this.id = props.id;

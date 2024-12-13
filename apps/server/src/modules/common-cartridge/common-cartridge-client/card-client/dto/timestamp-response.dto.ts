@@ -1,9 +1,9 @@
 export class TimestampResponseDto {
-	lastUpdatedAt: string;
+	public lastUpdatedAt: string;
 
-	createdAt: string;
+	public createdAt: string;
 
-	deletedAt?: string;
+	public deletedAt?: string;
 
 	constructor(props: Readonly<TimestampResponseDto>) {
 		this.lastUpdatedAt = props.lastUpdatedAt;

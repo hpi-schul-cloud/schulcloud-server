@@ -129,7 +129,7 @@ export class CommonCartridgeExportMapper {
 	}
 
 	public mapTaskToResource(task: BoardTaskDto, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
-		const intendedUse = (() => {
+		const intendedUse = ((): CommonCartridgeIntendedUseType => {
 			switch (version) {
 				case CommonCartridgeVersion.V_1_1_0:
 					return CommonCartridgeIntendedUseType.UNSPECIFIED;
@@ -153,7 +153,7 @@ export class CommonCartridgeExportMapper {
 		task: LessonLinkedTaskDto,
 		version: CommonCartridgeVersion
 	): CommonCartridgeResourceProps {
-		const intendedUse = (() => {
+		const intendedUse = ((): CommonCartridgeIntendedUseType => {
 			switch (version) {
 				case CommonCartridgeVersion.V_1_1_0:
 					return CommonCartridgeIntendedUseType.UNSPECIFIED;

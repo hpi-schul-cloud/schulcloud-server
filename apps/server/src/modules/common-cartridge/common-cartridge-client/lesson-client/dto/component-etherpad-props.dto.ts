@@ -1,9 +1,9 @@
 export class ComponentEtherpadPropsDto {
-	description: string;
+	public description: string;
 
-	title: string;
+	public title: string;
 
-	url: string;
+	public url: string;
 
 	constructor(props: Readonly<ComponentEtherpadPropsDto>) {
 		this.description = props.description;

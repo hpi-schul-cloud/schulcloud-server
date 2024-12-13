@@ -1,11 +1,11 @@
 export class LinkElementContentDto {
-	url: string;
+	public url: string;
 
-	title: string;
+	public title: string;
 
-	description?: string;
+	public description?: string;
 
-	imageUrl?: string;
+	public imageUrl?: string;
 
 	constructor(props: Readonly<LinkElementContentDto>) {
 		this.url = props.url;
