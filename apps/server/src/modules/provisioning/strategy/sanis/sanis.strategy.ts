@@ -46,9 +46,9 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
 		protected readonly configService: ConfigService<ProvisioningConfig, true>,
+		protected readonly logger: Logger,
 		private readonly responseMapper: SchulconnexResponseMapper,
-		private readonly schulconnexRestClient: SchulconnexRestClient,
-		private readonly logger: Logger
+		private readonly schulconnexRestClient: SchulconnexRestClient
 	) {
 		super(
 			schulconnexSchoolProvisioningService,
@@ -58,7 +58,8 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			schulconnexLicenseProvisioningService,
 			schulconnexToolProvisioningService,
 			groupService,
-			configService
+			configService,
+			logger
 		);
 	}
 

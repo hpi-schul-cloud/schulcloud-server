@@ -1675,6 +1675,11 @@
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
 				},
+				"PERSON_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching person info from schulconnex",
+					"default": 3000
+				},
 				"PERSONEN_INFO_TIMEOUT_IN_MS": {
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
@@ -1737,6 +1742,10 @@
 			"default": "",
 			"description": "URL for fetching policies info from moin.schule schulconnex",
 			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
+		},
+		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
+			"type": "number",
+			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",

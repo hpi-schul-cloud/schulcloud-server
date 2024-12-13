@@ -14,6 +14,7 @@ import {
 	legacySchoolDoFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -97,6 +98,10 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					useValue: {
 						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
 					},
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
