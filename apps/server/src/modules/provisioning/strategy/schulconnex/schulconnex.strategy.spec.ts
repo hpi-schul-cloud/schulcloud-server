@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
-import { NotImplementedException } from '@nestjs/common';
+import { Logger, NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
@@ -97,6 +97,10 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					useValue: {
 						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
 					},
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
