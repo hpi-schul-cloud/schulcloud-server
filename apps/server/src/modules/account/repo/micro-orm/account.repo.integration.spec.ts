@@ -36,6 +36,26 @@ describe('account repo', () => {
 		expect(repo.entityName).toBe(AccountEntity);
 	});
 
+	describe('mapDOToEntityProperties', () => {
+		describe('When an account is given', () => {
+			it('should map the account to an entity', () => {
+				const account = accountDoFactory.build();
+				const entityProps = AccountDoToEntityMapper.mapToEntity(account);
+
+				expect(entityProps).toEqual(expect.objectContaining(account.getProps()));
+			});
+		});
+
+		describe('When an account with partial props is given', () => {
+			it('should map the account to an entity', () => {
+				const account = accountDoFactory.build({ id: new ObjectId().toHexString(), username: 'John Doe' });
+				const entityProps = AccountDoToEntityMapper.mapToEntity(account);
+
+				expect(entityProps).toEqual(expect.objectContaining(account.getProps()));
+			});
+		});
+	});
+
 	describe('save', () => {
 		describe('When an account is given', () => {
 			it('should save an account', async () => {
