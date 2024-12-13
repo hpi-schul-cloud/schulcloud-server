@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { MediaSource } from '@src/modules/mediasource/domain';
+import { MediaSource } from '@src/modules/media-source/domain';
 import { School, SchoolService } from '@src/modules/school';
 import { MediaSchoolLicense } from '../domain';
 import { VidisItemDto } from '../dto';

@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo/media-source-config.mapper';
-import { MediaSource } from '@src/modules/mediasource/domain';
-import { MediaSourceEntity } from '@src/modules/mediasource/entity';
+import { MediaSourceConfigMapper } from '@src/modules/media-source/repo/media-source-config.mapper';
+import { MediaSource } from '@src/modules/media-source/domain';
+import { MediaSourceEntity } from '@src/modules/media-source/entity';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity, UserLicenseType } from '../entity';
 

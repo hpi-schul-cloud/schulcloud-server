@@ -1,9 +1,9 @@
 import { VidisItemDto } from '@src/modules/school-license/dto';
 import { MediaSchoolLicenseService } from '@src/modules/school-license/service/media-school-license.service';
-import { MediaSource } from '@src/modules/mediasource/domain';
-import { MediaSourceDataFormat } from '@src/modules/mediasource/enum';
-import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/mediasource/loggable';
-import { MediaSourceService } from '@src/modules/mediasource/service';
+import { MediaSource } from '@src/modules/media-source/domain';
+import { MediaSourceDataFormat } from '@src/modules/media-source/enum';
+import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/media-source/loggable';
+import { MediaSourceService } from '@src/modules/media-source/service';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';

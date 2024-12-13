@@ -1,17 +1,17 @@
 import { BaseFactory, schoolEntityFactory, userFactory } from '@shared/testing';
-import { mediaSourceEntityFactory } from '@src/modules/mediasource/testing/media-source-entity.factory';
+import { mediaSourceEntityFactory } from '@src/modules/media-source/testing/media-source-entity.factory';
 import { MediaSchoolLicenseEntity } from '../entity';
 import { SchoolLicenseType } from '../enum';
 import { MediaSchoolLicenseEntityProps } from '../entity/media-school-license.entity';
 
-export const mediaSchoolLicenseEntityFactory = BaseFactory.define<MediaSchoolLicenseEntity, MediaSchoolLicenseEntityProps>(
+export const mediaSchoolLicenseEntityFactory = BaseFactory.define<
 	MediaSchoolLicenseEntity,
-	({ sequence }) => {
-		return {
-			school: schoolEntityFactory.build(),
-			type: SchoolLicenseType.MEDIA_LICENSE,
-			mediumId: `medium-${sequence}`,
-			mediaSource: mediaSourceEntityFactory.buildWithId(),
-		};
-	}
-);
+	MediaSchoolLicenseEntityProps
+>(MediaSchoolLicenseEntity, ({ sequence }) => {
+	return {
+		school: schoolEntityFactory.build(),
+		type: SchoolLicenseType.MEDIA_LICENSE,
+		mediumId: `medium-${sequence}`,
+		mediaSource: mediaSourceEntityFactory.buildWithId(),
+	};
+});

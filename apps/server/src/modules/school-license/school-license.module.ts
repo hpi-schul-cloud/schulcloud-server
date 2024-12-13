@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '../../core/logger';
-import { MediaSourceModule } from '../mediasource/media-source.module';
+import { MediaSourceModule } from '../media-source/media-source.module';
 import { SchoolModule } from '../school';
 import { MediaSchoolLicenseRepo } from './repo/media-school-license-repo';
 import { MediaSchoolLicenseService } from './service/media-school-license.service';

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSourceService } from '@modules/mediasource/service';
+import { MediaSourceService } from '@modules/media-source/service';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { VidisSyncService } from './vidis-sync.service';

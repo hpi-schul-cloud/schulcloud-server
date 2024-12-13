@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSourceProps, MediaSource } from '@src/modules/mediasource/domain';
+import { MediaSourceProps, MediaSource } from '@src/modules/media-source/domain';
 
-import { MediaSourceDataFormat } from '@src/modules/mediasource/enum';
+import { MediaSourceDataFormat } from '@src/modules/media-source/enum';
 
 import { mediaSourceConfigFactory } from './media-source-config.factory';
 

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MediaSourceModule } from '../mediasource/media-source.module';
+import { MediaSourceModule } from '../media-source/media-source.module';
 import { MediaUserLicenseRepo } from './repo';
 import { MediaUserLicenseService } from './service';
 

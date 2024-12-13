@@ -1,19 +1,15 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User as UserEntity } from '@shared/domain/entity';
-import { cleanupCollections, schoolEntityFactory, userFactory } from '@shared/testing';
-import {
-	MediaSourceBasicAuthConfigEmbeddable,
-	MediaSourceEntity,
-} from '@src/modules/mediasource/entity';
-import { MediaSource } from '@src/modules/mediasource/domain';
-import { MediaSourceConfigMapper } from '@src/modules/mediasource/repo';
-import { mediaSourceEntityFactory } from '@src/modules/mediasource/testing/media-source-entity.factory';
-import { mediaSourceFactory } from '@src/modules/mediasource/testing/media-source.factory';
+import { SchoolEntity } from '@shared/domain/entity';
+import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceEntity } from '@src/modules/media-source/entity';
+import { MediaSource } from '@src/modules/media-source/domain';
+import { MediaSourceConfigMapper } from '@src/modules/media-source/repo';
+import { mediaSourceEntityFactory } from '@src/modules/media-source/testing/media-source-entity.factory';
 import { MediaSchoolLicenseRepo } from './media-school-license-repo';
 import { MediaSchoolLicenseEntity } from '../entity/media-school-license.entity';
-import { mediaSourceBasicConfigEmbeddableFactory } from '../../mediasource/testing/media-source-basic-auth-config.embeddable.factory';
+import { mediaSourceBasicConfigEmbeddableFactory } from '../../media-source/testing/media-source-basic-auth-config.embeddable.factory';
 import { MediaSchoolLicense } from '../domain';
 import { mediaSchoolLicenseEntityFactory } from '../testing';
 

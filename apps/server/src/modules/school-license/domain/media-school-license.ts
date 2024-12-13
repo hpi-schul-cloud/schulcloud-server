@@ -1,4 +1,4 @@
-import { MediaSource } from '@src/modules/mediasource/domain';
+import { MediaSource } from '@src/modules/media-source/domain';
 import { SchoolLicense, SchoolLicenseProps } from './school-license';
 
 export interface MediaSchoolLicenseProps extends SchoolLicenseProps {
@@ -23,5 +23,4 @@ export class MediaSchoolLicense extends SchoolLicense<MediaSchoolLicenseProps> {
 	set mediaSource(value: MediaSource) {
 		this.props.mediaSource = value;
 	}
-
 }

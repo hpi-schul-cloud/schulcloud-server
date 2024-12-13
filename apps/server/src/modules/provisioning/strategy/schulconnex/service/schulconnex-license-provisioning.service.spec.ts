@@ -1,13 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
-	MediaSource,
-	mediaSourceFactory,
-	MediaSourceService,
 	MediaUserLicense,
 	mediaUserLicenseFactory,
 	MediaUserLicenseService,
 	UserLicenseType,
 } from '@modules/user-license';
+import { MediaSource, mediaSourceFactory, MediaSourceService } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { setupEntities, userFactory } from '@shared/testing';

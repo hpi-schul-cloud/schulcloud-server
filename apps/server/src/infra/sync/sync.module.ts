@@ -5,7 +5,7 @@ import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { EncryptionModule } from '@infra/encryption';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { MediaSourceModule } from '@modules/mediasource/media-source.module';
+import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
 import { SystemModule } from '@modules/system';
