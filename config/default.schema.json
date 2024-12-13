@@ -1209,6 +1209,11 @@
 			"default": false,
 			"description": "Enable link elements in column board."
 		},
+		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable video conference elements in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
