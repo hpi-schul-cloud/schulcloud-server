@@ -304,7 +304,7 @@ describe('CommonCartridgeExportService', () => {
 			});
 		});
 
-		describe('When topics array is empty', () => {
+		describe('when topics array is empty', () => {
 			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
 
 			it("shouldn't add lessons", async () => {
@@ -316,7 +316,7 @@ describe('CommonCartridgeExportService', () => {
 			});
 		});
 
-		describe('When tasks array is empty', () => {
+		describe('when tasks array is empty', () => {
 			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
 
 			it("shouldn't add tasks", async () => {
@@ -326,11 +326,35 @@ describe('CommonCartridgeExportService', () => {
 			});
 		});
 
-		describe('When columnBoards array is empty', () => {
+		describe('when columnBoards array is empty', () => {
 			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
 
 			it("shouldn't add column boards", async () => {
 				const { archive, boardSkeleton } = await setup();
+
+				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(
+					createXmlString('title', boardSkeleton.columns[0].title)
+				);
+			});
+		});
+
+		describe('when topics has no linked tasks', () => {
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
+
+			it('should add lesson without linked tasks', async () => {
+				const { archive, lesson } = await setup();
+				lesson.linkedTasks = undefined;
+
+				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
+			});
+		});
+
+		describe('when columnBoards has no cards', () => {
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
+
+			it('should add column boards without cards', async () => {
+				const { archive, boardSkeleton } = await setup();
+				boardSkeleton.columns[0].cards = [];
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(
 					createXmlString('title', boardSkeleton.columns[0].title)

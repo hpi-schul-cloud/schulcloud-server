@@ -168,7 +168,7 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(columnId),
 		});
 
-		if (column.cards?.length) {
+		if (column.cards.length) {
 			const cardsIds = column.cards.map((card) => card.cardId);
 			const listOfCards: CardListResponseDto = await this.findAllCardsByIds(cardsIds);
 
