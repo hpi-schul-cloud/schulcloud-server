@@ -7,9 +7,9 @@ import {
 	lessonContentFactory,
 	lessonFactory,
 	lessonLinkedTaskFactory,
-	linkElementFactory,
-	richTextElementFactroy,
 } from '../testing/common-cartridge-dtos.factory';
+import { linkElementFactory } from '../testing/link-element.factory';
+import { richTextElementFactroy } from '../testing/rich-text-element.factory';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
