@@ -6,15 +6,13 @@ export class Migration20241210152600 extends Migration {
 			{ name: 'roomeditor' },
 			{
 				$set: {
-					permissions: ['ROOM_VIEW', 'ROOM_EDIT', 'ROOM_MEMBERS_ADD', 'ROOM_MEMBERS_REMOVE'],
+					permissions: ['ROOM_VIEW', 'ROOM_EDIT'],
 				},
 			}
 		);
 
 		if (roomEditorRoleUpdate.modifiedCount > 0) {
-			console.info(
-				'Permission ROOM_DELETE removed from and ROOM_MEMBERS_ADD and ROOM_MEMBERS_REMOVE added to role roomeditor.'
-			);
+			console.info('Permission ROOM_DELETE removed from role roomeditor.');
 		}
 	}
 

@@ -54,13 +54,17 @@ describe('Room Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const role = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
+				name: RoleName.ROOMADMIN,
 				permissions: [
 					Permission.ROOM_VIEW,
 					Permission.ROOM_EDIT,
 					Permission.ROOM_MEMBERS_ADD,
 					Permission.ROOM_MEMBERS_REMOVE,
 				],
+			});
+			const roomEditorRole = roleFactory.buildWithId({
+				name: RoleName.ROOMEDITOR,
+				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			// TODO: add more than one user
 			const userGroupEntity = groupEntityFactory.buildWithId({
@@ -82,6 +86,7 @@ describe('Room Controller (API)', () => {
 				teacherUser,
 				teacherGuestRole,
 				studentGuestRole,
+				roomEditorRole,
 				otherTeacherUser,
 				otherTeacherAccount,
 				userGroupEntity,

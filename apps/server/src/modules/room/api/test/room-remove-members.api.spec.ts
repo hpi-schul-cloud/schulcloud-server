@@ -52,16 +52,16 @@ describe('Room Controller (API)', () => {
 					Permission.ROOM_VIEW,
 					Permission.ROOM_EDIT,
 					Permission.ROOM_DELETE,
-					Permission.ROOM_MEMBERS_ADD, // for now room_editors have these two rights as room_admins are not yet available
+					Permission.ROOM_MEMBERS_ADD,
 					Permission.ROOM_MEMBERS_REMOVE,
 				],
 			});
-			const editorRole = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
+			const adminRole = roleFactory.buildWithId({
+				name: RoleName.ROOMADMIN,
 				permissions: [
 					Permission.ROOM_VIEW,
 					Permission.ROOM_EDIT,
-					Permission.ROOM_MEMBERS_ADD, // for now room_editors have these two rights as room_admins are not yet available
+					Permission.ROOM_MEMBERS_ADD,
 					Permission.ROOM_MEMBERS_REMOVE,
 				],
 			});
@@ -69,7 +69,7 @@ describe('Room Controller (API)', () => {
 				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
-			return { ownerRole, editorRole, viewerRole };
+			return { ownerRole, adminRole, viewerRole };
 		};
 
 		const setupRoomWithMembers = async () => {
@@ -77,17 +77,17 @@ describe('Room Controller (API)', () => {
 			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-			const { teacherUser: inRoomEditor2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
-			const { teacherUser: inRoomEditor3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: inRoomAdmin2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: inRoomAdmin3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: outTeacher } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 
-			const users = { teacherUser, inRoomEditor2, inRoomEditor3, inRoomViewer, outTeacher };
+			const users = { teacherUser, inRoomAdmin2, inRoomAdmin3, inRoomViewer, outTeacher };
 
-			const { ownerRole, editorRole, viewerRole } = setupRoomRoles();
+			const { ownerRole, adminRole, viewerRole } = setupRoomRoles();
 
-			const roomUsers = [teacherUser, inRoomEditor2, inRoomEditor3].map((user) => {
-				return { role: editorRole, user };
+			const roomUsers = [teacherUser, inRoomAdmin2, inRoomAdmin3].map((user) => {
+				return { role: adminRole, user };
 			});
 			roomUsers.push({ role: viewerRole, user: inRoomViewer });
 
@@ -159,9 +159,9 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			describe('when removing a user from the room', () => {
 				it('should return OK', async () => {
-					const { loggedInClient, room, inRoomEditor2 } = await setupRoomWithMembers();
+					const { loggedInClient, room, inRoomAdmin2 } = await setupRoomWithMembers();
 
-					const userIds = [inRoomEditor2.id];
+					const userIds = [inRoomAdmin2.id];
 					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
 					expect(response.status).toBe(HttpStatus.OK);
@@ -170,9 +170,9 @@ describe('Room Controller (API)', () => {
 
 			describe('when removing several users from the room', () => {
 				it('should return OK', async () => {
-					const { loggedInClient, room, inRoomEditor2, inRoomEditor3 } = await setupRoomWithMembers();
+					const { loggedInClient, room, inRoomAdmin2, inRoomAdmin3 } = await setupRoomWithMembers();
 
-					const userIds = [inRoomEditor2.id, inRoomEditor3.id];
+					const userIds = [inRoomAdmin2.id, inRoomAdmin3.id];
 					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
 					expect(response.status).toBe(HttpStatus.OK);

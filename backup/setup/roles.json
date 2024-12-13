@@ -599,9 +599,7 @@
 		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_MEMBERS_ADD",
-			"ROOM_MEMBERS_REMOVE"
+			"ROOM_EDIT"
 		]
 	},
 	{
