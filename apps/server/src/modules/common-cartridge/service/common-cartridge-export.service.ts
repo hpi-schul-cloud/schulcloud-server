@@ -2,20 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
+import {
+	RoomBoardDto,
+	BoardElementDto,
+	BoardColumnBoardDto,
+	BoardLessonDto,
+	BoardTaskDto,
+} from '../common-cartridge-client/room-client/dto';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { BoardColumnBoardDto } from '../common-cartridge-client/room-client/dto/board-column-board.dto';
-import { BoardLessonDto } from '../common-cartridge-client/room-client/dto/board-lesson.dto';
 import { LessonContentDto, LessonDto } from '../common-cartridge-client/lesson-client/dto';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
-import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
 import { createIdentifier } from '../export/utils';
-import { BoardElementDto } from '../common-cartridge-client/room-client/dto/board-element.dto';
 import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
 import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
 import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';

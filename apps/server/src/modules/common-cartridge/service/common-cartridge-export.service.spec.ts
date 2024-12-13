@@ -10,7 +10,12 @@ import { CardClientAdapter } from '../common-cartridge-client/card-client/card-c
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { RoomBoardDto } from '../common-cartridge-client/room-client/dto/room-board.dto';
+import {
+	RoomBoardDto,
+	BoardTaskDto,
+	BoardLessonDto,
+	BoardColumnBoardDto,
+} from '../common-cartridge-client/room-client/dto';
 import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
 import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
 import {
@@ -24,9 +29,6 @@ import {
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
-import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
-import { BoardLessonDto } from '../common-cartridge-client/room-client/dto/board-lesson.dto';
-import { BoardColumnBoardDto } from '../common-cartridge-client/room-client/dto/board-column-board.dto';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;

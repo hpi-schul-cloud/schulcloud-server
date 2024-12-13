@@ -2,9 +2,7 @@ import { Body, Controller, Param, Post, Query, Res, StreamableFile } from '@nest
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
-import { ExportCourseParams } from './dto';
-import { CourseQueryParams } from './dto/course.query.params';
-import { CourseExportBodyParams } from './dto/course-export.body.params';
+import { ExportCourseParams, CourseQueryParams, CourseExportBodyParams } from './dto';
 
 @ApiTags('common-cartridge')
 @Controller('common-cartridge')
