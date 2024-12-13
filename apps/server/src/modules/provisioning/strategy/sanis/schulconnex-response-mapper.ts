@@ -118,14 +118,25 @@ export class SchulconnexResponseMapper {
 			return undefined;
 		}
 
+		const usersInGroupsCount: number = groups.reduce(
+			(count: number, group: SchulconnexGruppenResponse) => count + (group.sonstige_gruppenzugehoerige?.length ?? 0),
+			groups.length
+		);
+		const limit: number | undefined = this.configService.get('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT');
+		const shouldProvisionOtherUsers: boolean = limit === undefined || usersInGroupsCount < limit;
+
 		const mapped: ExternalGroupDto[] = groups
-			.map((group) => this.mapExternalGroup(source, group))
-			.filter((group): group is ExternalGroupDto => group !== null);
+			.map((group: SchulconnexGruppenResponse) => this.mapExternalGroup(source, group, shouldProvisionOtherUsers))
+			.filter((group: ExternalGroupDto | null): group is ExternalGroupDto => group !== null);
 
 		return mapped;
 	}
 
-	private mapExternalGroup(source: SchulconnexResponse, group: SchulconnexGruppenResponse): ExternalGroupDto | null {
+	private mapExternalGroup(
+		source: SchulconnexResponse,
+		group: SchulconnexGruppenResponse,
+		shouldProvisionOtherUsers: boolean
+	): ExternalGroupDto | null {
 		const groupType: GroupTypes | undefined = GroupTypeMapping[group.gruppe.typ];
 
 		if (!groupType) {
@@ -142,7 +153,7 @@ export class SchulconnexResponseMapper {
 		}
 
 		let otherUsers: ExternalGroupUserDto[] | undefined;
-		if (this.configService.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED')) {
+		if (this.configService.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED') && shouldProvisionOtherUsers) {
 			otherUsers = group.sonstige_gruppenzugehoerige
 				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
