@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
-import { Logger, NotImplementedException } from '@nestjs/common';
+import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
@@ -14,6 +14,7 @@ import {
 	legacySchoolDoFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
