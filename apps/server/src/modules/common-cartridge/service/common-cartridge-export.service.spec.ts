@@ -16,8 +16,11 @@ import {
 	BoardLessonDto,
 	BoardColumnBoardDto,
 } from '../common-cartridge-client/room-client/dto';
-import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
-import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
+import {
+	RichTextElementContentDto,
+	LinkElementContentDto,
+	CardListResponseDto,
+} from '../common-cartridge-client/card-client/dto';
 import {
 	boardCloumnBoardFactory,
 	boardLessonFactory,
@@ -28,7 +31,6 @@ import {
 	listOfCardResponseFactory,
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
-import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;

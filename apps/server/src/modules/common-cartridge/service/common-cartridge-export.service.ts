@@ -10,7 +10,6 @@ import {
 	BoardTaskDto,
 } from '../common-cartridge-client/room-client/dto';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
-import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
 import { LessonContentDto, LessonDto } from '../common-cartridge-client/lesson-client/dto';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
@@ -19,10 +18,13 @@ import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import { createIdentifier } from '../export/utils';
 import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
-import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
 import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
-import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
-import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
+import {
+	RichTextElementResponseDto,
+	LinkElementResponseDto,
+	CardListResponseDto,
+	CardResponseDto,
+} from '../common-cartridge-client/card-client/dto';
 
 const isRichTextElement = (reference: unknown): reference is RichTextElementResponseDto =>
 	reference instanceof RichTextElementResponseDto;
