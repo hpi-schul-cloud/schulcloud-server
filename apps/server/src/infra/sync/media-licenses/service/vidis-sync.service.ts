@@ -4,10 +4,11 @@ import { MediaSource } from '@src/modules/media-source/domain';
 import { MediaSourceDataFormat } from '@src/modules/media-source/enum';
 import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/media-source/loggable';
 import { MediaSourceService } from '@src/modules/media-source/service';
+import { AxiosErrorLoggable } from '@src/core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 import { lastValueFrom, Observable } from 'rxjs';
 import { VidisItemMapper } from '../mapper/vidis-item.mapper';
 import { VidisResponse } from '../response';
@@ -35,13 +36,11 @@ export class VidisSyncService {
 		await this.mediaSchoolLicenseService.syncMediaSchoolLicenses(mediasource, itemsDtos);
 	}
 
-	// FIXME: clarify; is there a reason why this is public?
-	public async fetchData(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
+	private async fetchData(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
 		if (!mediaSource.basicAuthConfig || !mediaSource.basicAuthConfig.authEndpoint) {
 			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
 
-		// TODO: throw a vidis-specific error to make debugging easier
 		const vidisResponse: VidisResponse = await this.getRequest<VidisResponse>(
 			new URL(`${mediaSource.basicAuthConfig.authEndpoint}`),
 			this.encryptionService.decrypt(mediaSource.basicAuthConfig.username),
@@ -62,8 +61,15 @@ export class VidisSyncService {
 			},
 		});
 
-		const responseToken: AxiosResponse<T> = await lastValueFrom(observable);
-
-		return responseToken.data;
+		try {
+			const responseToken: AxiosResponse<T> = await lastValueFrom(observable);
+			return responseToken.data;
+		} catch (error: unknown) {
+			if (isAxiosError(error)) {
+				throw new AxiosErrorLoggable(error, 'VIDIS_GET_DATA_FAILED');
+			} else {
+				throw error;
+			}
+		}
 	}
 }

@@ -3,7 +3,7 @@ import { setupEntities } from '@shared/testing';
 import { MediaSourceOauthConfig } from '../domain/media-source-oauth-config';
 import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
 import { mediaSourceOAuthConfigEmbeddableFactory } from '../testing/media-source-oauth-config.embeddable.factory';
-import { mediaSourceConfigFactory } from '../testing/media-source-config.factory';
+import { mediaSourceOauthConfigFactory } from '../testing/media-source-oauth-config.factory';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
 describe('MediaSourceConfigMapper', () => {
@@ -47,7 +47,7 @@ describe('MediaSourceConfigMapper', () => {
 			const setup = async () => {
 				await setupEntities();
 
-				const configDo = mediaSourceConfigFactory.build();
+				const configDo = mediaSourceOauthConfigFactory.build();
 				const expected = new MediaSourceOauthConfigEmbeddable({
 					_id: new ObjectId(configDo.id),
 					clientId: configDo.getProps().clientId,

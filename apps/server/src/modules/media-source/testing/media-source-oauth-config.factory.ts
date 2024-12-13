@@ -3,7 +3,7 @@ import { BaseFactory } from '@shared/testing';
 import { MediaSourceOauthConfig, MediaSourceOauthConfigProps } from '../domain/media-source-oauth-config';
 import { MediaSourceAuthMethod } from '../enum';
 
-export const mediaSourceConfigFactory = BaseFactory.define<MediaSourceOauthConfig, MediaSourceOauthConfigProps>(
+export const mediaSourceOauthConfigFactory = BaseFactory.define<MediaSourceOauthConfig, MediaSourceOauthConfigProps>(
 	MediaSourceOauthConfig,
 	({ sequence }) => {
 		const config = {
