@@ -116,6 +116,17 @@ describe(RoomMembershipRule.name, () => {
 
 					expect(res).toBe(false);
 				});
+
+				it('should return false for change owner action', () => {
+					const { user, roomMembershipAuthorizable } = setup();
+
+					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
+					});
+
+					expect(res).toBe(false);
+				});
 			});
 
 			describe('when user is not member of room', () => {
