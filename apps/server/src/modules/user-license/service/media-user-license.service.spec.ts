@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceRepo } from '@src/modules/media-source/repo';
+import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseRepo } from '../repo';
 import { mediaUserLicenseFactory } from '../testing';

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaSourceRepo } from '../../user-license/repo';
-import { mediaSourceFactory } from '../../user-license/testing';
+import { MediaSourceRepo } from '../repo';
+import { mediaSourceFactory } from '../testing';
 import { MediaSourceService } from './media-source.service';
 
 describe(MediaSourceService.name, () => {
