@@ -20,6 +20,8 @@ import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 
+type ConferenceRessource = Course | Room | TeamEntity | VideoConferenceElement;
+
 @Injectable()
 export class VideoConferenceService {
 	constructor(
@@ -101,8 +103,8 @@ export class VideoConferenceService {
 	private async loadScopeRessources(
 		scopeId: EntityId,
 		scope: VideoConferenceScope
-	): Promise<Course | Room | TeamEntity | VideoConferenceElement | null> {
-		let scopeRessource: Course | Room | TeamEntity | VideoConferenceElement | null = null;
+	): Promise<ConferenceRessource | null> {
+		let scopeRessource: ConferenceRessource | null = null;
 
 		if (scope === VideoConferenceScope.COURSE) {
 			scopeRessource = await this.courseService.findById(scopeId);
@@ -123,10 +125,7 @@ export class VideoConferenceService {
 		return !value;
 	}
 
-	private async hasStartMeetingAndCanRead(
-		authorizableUser: User,
-		entity: Course | Room | TeamEntity | VideoConferenceElement
-	): Promise<boolean> {
+	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceRessource): Promise<boolean> {
 		if (entity instanceof Room) {
 			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
@@ -153,10 +152,7 @@ export class VideoConferenceService {
 		return hasPermission;
 	}
 
-	private async hasJoinMeetingAndCanRead(
-		authorizableUser: User,
-		entity: Course | Room | TeamEntity | VideoConferenceElement
-	): Promise<boolean> {
+	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceRessource): Promise<boolean> {
 		if (entity instanceof Room) {
 			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
@@ -185,11 +181,10 @@ export class VideoConferenceService {
 
 	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
-		const [authorizableUser, scopeRessource]: [User, Course | Room | TeamEntity | VideoConferenceElement | null] =
-			await Promise.all([
-				this.authorizationService.getUserWithPermissions(userId),
-				this.loadScopeRessources(scopeId, scope),
-			]);
+		const [authorizableUser, scopeRessource]: [User, ConferenceRessource | null] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.loadScopeRessources(scopeId, scope),
+		]);
 
 		if (!this.isNullOrUndefined(scopeRessource)) {
 			if (await this.hasStartMeetingAndCanRead(authorizableUser, scopeRessource)) {
