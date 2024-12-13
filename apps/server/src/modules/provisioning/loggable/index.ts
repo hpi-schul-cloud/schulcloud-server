@@ -8,3 +8,4 @@ export { FetchingPoliciesInfoFailedLoggable } from './fetching-policies-info-fai
 export { PoliciesInfoErrorResponseLoggable } from './policies-info-error-response-loggable';
 export { UserRoleUnknownLoggableException } from './user-role-unknown.loggable-exception';
 export { SchoolMissingLoggableException } from './school-missing.loggable-exception';
+export { GroupProvisioningInfoLoggable } from './group-provisioning-info.loggable';
