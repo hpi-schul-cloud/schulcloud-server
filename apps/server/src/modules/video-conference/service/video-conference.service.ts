@@ -20,7 +20,7 @@ import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 
-type ConferenceRessource = Course | Room | TeamEntity | VideoConferenceElement;
+type ConferenceResource = Course | Room | TeamEntity | VideoConferenceElement;
 
 @Injectable()
 export class VideoConferenceService {
@@ -100,32 +100,29 @@ export class VideoConferenceService {
 	}
 
 	// should be public to expose ressources to UC for passing it to authrisation and improve performance
-	private async loadScopeRessources(
-		scopeId: EntityId,
-		scope: VideoConferenceScope
-	): Promise<ConferenceRessource | null> {
-		let scopeRessource: ConferenceRessource | null = null;
+	private async loadScopeResources(scopeId: EntityId, scope: VideoConferenceScope): Promise<ConferenceResource | null> {
+		let scopeResource: ConferenceResource | null = null;
 
 		if (scope === VideoConferenceScope.COURSE) {
-			scopeRessource = await this.courseService.findById(scopeId);
+			scopeResource = await this.courseService.findById(scopeId);
 		} else if (scope === VideoConferenceScope.EVENT) {
-			scopeRessource = await this.teamsRepo.findById(scopeId);
+			scopeResource = await this.teamsRepo.findById(scopeId);
 		} else if (scope === VideoConferenceScope.ROOM) {
-			scopeRessource = await this.roomService.getSingleRoom(scopeId);
+			scopeResource = await this.roomService.getSingleRoom(scopeId);
 		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
-			scopeRessource = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
+			scopeResource = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
 		} else {
 			// Need to be solve the null with throw by it self.
 		}
 
-		return scopeRessource;
+		return scopeResource;
 	}
 
 	private isNullOrUndefined(value: unknown): value is null {
 		return !value;
 	}
 
-	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceRessource): Promise<boolean> {
+	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
 			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
@@ -152,7 +149,7 @@ export class VideoConferenceService {
 		return hasPermission;
 	}
 
-	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceRessource): Promise<boolean> {
+	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
 			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
@@ -181,16 +178,16 @@ export class VideoConferenceService {
 
 	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
-		const [authorizableUser, scopeRessource]: [User, ConferenceRessource | null] = await Promise.all([
+		const [authorizableUser, scopeResource]: [User, ConferenceResource | null] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.loadScopeRessources(scopeId, scope),
+			this.loadScopeResources(scopeId, scope),
 		]);
 
-		if (!this.isNullOrUndefined(scopeRessource)) {
-			if (await this.hasStartMeetingAndCanRead(authorizableUser, scopeRessource)) {
+		if (!this.isNullOrUndefined(scopeResource)) {
+			if (await this.hasStartMeetingAndCanRead(authorizableUser, scopeResource)) {
 				return BBBRole.MODERATOR;
 			}
-			if (await this.hasJoinMeetingAndCanRead(authorizableUser, scopeRessource)) {
+			if (await this.hasJoinMeetingAndCanRead(authorizableUser, scopeResource)) {
 				return BBBRole.VIEWER;
 			}
 		}
