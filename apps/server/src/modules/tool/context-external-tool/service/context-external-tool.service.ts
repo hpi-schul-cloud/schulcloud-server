@@ -84,6 +84,7 @@ export class ContextExternalToolService {
 		contextExternalTool: ContextExternalTool,
 		contextCopyId: EntityId,
 		targetSchoolId: EntityId
+		// copy execution method do the copy and return a non copy -> is this always a ContextExternalTool with only a flag?
 	): Promise<ContextExternalTool | CopyContextExternalToolRejectData> {
 		const copy = new ContextExternalTool({
 			...contextExternalTool.getProps(),
@@ -112,7 +113,9 @@ export class ContextExternalToolService {
 			}
 		});
 
+		// private method this.isNotSameSchool())
 		if (schoolExternalTool.schoolId !== targetSchoolId) {
+			// private method this.handleLicenceInTargetSchool()
 			const correctSchoolExternalTools: SchoolExternalTool[] =
 				await this.schoolExternalToolService.findSchoolExternalTools({
 					toolId: schoolExternalTool.toolId,
@@ -123,6 +126,7 @@ export class ContextExternalToolService {
 				copy.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
 				copy.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
 			} else {
+				// remove this and add key to ContextExternalTool
 				const copyRejectData = new CopyContextExternalToolRejectData(contextExternalTool.id, externalTool.name);
 
 				return copyRejectData;

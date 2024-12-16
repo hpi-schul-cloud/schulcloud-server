@@ -451,7 +451,7 @@ describe(BoardNodeCopyService.name, () => {
 							result.copyEntity?.id,
 							copyContext.targetSchoolId
 						);
-						expect(result.copyEntity instanceof ExternalToolElement).toEqual(true);
+						expect(result.copyEntity).toBeInstanceOf(ExternalToolElement);
 						expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(copiedTool.id);
 						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
 						expect(result.status).toEqual(CopyStatusEnum.SUCCESS);

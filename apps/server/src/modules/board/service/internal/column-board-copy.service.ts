@@ -27,7 +27,7 @@ export class ColumnBoardCopyService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
-	async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
+	public async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
 		const originalBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, params.originalColumnBoardId);
 
 		this.checkSupportedExternalReferenceType(params.targetExternalReference.type);

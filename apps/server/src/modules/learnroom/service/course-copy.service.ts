@@ -34,7 +34,7 @@ export class CourseCopyService {
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	async copyCourse({
+	public async copyCourse({
 		userId,
 		courseId,
 		newName,
@@ -59,23 +59,8 @@ export class CourseCopyService {
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 
 		let courseToolsCopyStatus: CopyStatus | null = null;
-		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
-			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
-			const contextExternalToolsInContext: ContextExternalTool[] =
-				await this.contextExternalToolService.findAllByContext(contextRef);
-
-			const copyCourseToolsResult = await Promise.all(
-				contextExternalToolsInContext.map(
-					async (tool: ContextExternalTool): Promise<ContextExternalTool | CopyContextExternalToolRejectData> => {
-						const copiedResult: ContextExternalTool | CopyContextExternalToolRejectData =
-							await this.contextExternalToolService.copyContextExternalTool(tool, courseCopy.id, user.school.id);
-
-						return copiedResult;
-					}
-				)
-			);
-
-			courseToolsCopyStatus = this.deriveCourseToolCopyStatus(copyCourseToolsResult);
+		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED', { infer: true })) {
+			const courseToolsCopyStatus = await this.yyy(courseId);
 		}
 
 		const boardStatus = await this.boardCopyService.copyBoard({
@@ -94,6 +79,32 @@ export class CourseCopyService {
 		);
 
 		return courseStatus;
+	}
+
+	private async yyy(courseId: string): Promise<CopyStatus | null> {
+		const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
+		const contextExternalToolsInContext = await this.contextExternalToolService.findAllByContext(contextRef);
+
+		const promises = contextExternalToolsInContext.map(this.xxx(tool, user, courseCopy.id));
+		const copyCourseToolsResult = await Promise.all(promises);
+
+		courseToolsCopyStatus = this.deriveCourseToolCopyStatus(copyCourseToolsResult);
+
+		return courseToolsCopyStatus;
+	}
+
+	private async xxx(
+		tool: ContextExternalTool,
+		user: User,
+		courseCopyId: string
+	): Promise<ContextExternalTool | CopyContextExternalToolRejectData> {
+		const copiedResult = await this.contextExternalToolService.copyContextExternalTool(
+			tool,
+			courseCopyId,
+			user.school.id
+		);
+
+		return copiedResult;
 	}
 
 	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {

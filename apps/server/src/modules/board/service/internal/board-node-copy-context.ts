@@ -19,6 +19,7 @@ export type BoardNodeCopyContextProps = {
 };
 
 export class BoardNodeCopyContext implements CopyContext {
+	// Remove and add public getter Method
 	readonly targetSchoolId: EntityId;
 
 	constructor(private readonly props: BoardNodeCopyContextProps) {

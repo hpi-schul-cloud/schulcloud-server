@@ -285,14 +285,15 @@ export class BoardNodeCopyService {
 		return Promise.resolve(result);
 	}
 
-	async copyExternalToolElement(original: ExternalToolElement, context: CopyContext): Promise<CopyStatus> {
+	public async copyExternalToolElement(original: ExternalToolElement, context: CopyContext): Promise<CopyStatus> {
 		let copy: ExternalToolElement | DeletedElement;
+		// ExternalToolElementFactory
 		copy = new ExternalToolElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
 
-		if (!this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') || !original.contextExternalToolId) {
+		if (!this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED', { infer: true }) || !original.contextExternalToolId) {
 			const copyStatus: CopyStatus = {
 				copyEntity: copy,
 				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
@@ -318,6 +319,7 @@ export class BoardNodeCopyService {
 
 		let copyStatus: CopyStatusEnum = CopyStatusEnum.SUCCESS;
 		if (contextToolCopyResult instanceof CopyContextExternalToolRejectData) {
+			// Naming DeletedContentElement and please add a factory for it.
 			copy = new DeletedElement({
 				id: new ObjectId().toHexString(),
 				path: copy.path,
@@ -335,6 +337,7 @@ export class BoardNodeCopyService {
 			copy.contextExternalToolId = contextToolCopyResult.id;
 		}
 
+		// factory ?
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
