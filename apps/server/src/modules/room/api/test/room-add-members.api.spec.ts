@@ -119,10 +119,12 @@ describe('Room Controller (API)', () => {
 			};
 
 			it('should return forbidden error', async () => {
-				const { room } = await setupRoomWithMembers();
+				const { room, otherTeacherUser } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
 
-				const response = await loggedInClient.patch(`/${room.id}/members/add`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [otherTeacherUser.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -130,10 +132,12 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				const { loggedInClient, room } = await setupRoomWithMembers();
+				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const response = await loggedInClient.patch(`/${room.id}/members/add`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [otherTeacherUser.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -144,7 +148,7 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
-					userIdsAndRoles: [{ userId: otherTeacherUser.id, roleName: RoleName.ROOMEDITOR }],
+					userIds: [otherTeacherUser.id],
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);
