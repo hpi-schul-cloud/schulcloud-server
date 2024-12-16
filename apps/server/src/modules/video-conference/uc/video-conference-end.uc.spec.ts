@@ -61,7 +61,7 @@ describe('VideoConferenceEndUc', () => {
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
-					scopeName: 'scopeName',
+					scopeName: VideoConferenceScope.COURSE,
 					title: 'title',
 					logoutUrl: 'logoutUrl',
 				};
@@ -97,7 +97,7 @@ describe('VideoConferenceEndUc', () => {
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
-					scopeName: 'scopeName',
+					scopeName: VideoConferenceScope.COURSE,
 					title: 'title',
 					logoutUrl: 'logoutUrl',
 				};

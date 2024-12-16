@@ -2,7 +2,9 @@ import { Group, GroupService } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
+import { GroupProvisioningInfoLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
 import {
@@ -24,7 +26,8 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		protected readonly schulconnexToolProvisioningService: SchulconnexToolProvisioningService,
 		protected readonly groupService: GroupService,
-		protected readonly configService: ConfigService<ProvisioningConfig, true>
+		protected readonly configService: ConfigService<ProvisioningConfig, true>,
+		protected readonly logger: Logger
 	) {
 		super();
 	}
@@ -61,6 +64,8 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 	}
 
 	private async provisionGroups(data: OauthDataDto, school?: LegacySchoolDo): Promise<void> {
+		const startTime = performance.now();
+
 		await this.removeUserFromGroups(data);
 
 		if (data.externalGroups) {
@@ -96,6 +101,9 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 
 			await Promise.all(groupProvisioningPromises);
 		}
+
+		const endTime = performance.now();
+		this.logger.warning(new GroupProvisioningInfoLoggable(data.externalGroups ?? [], endTime - startTime));
 	}
 
 	private async removeUserFromGroups(data: OauthDataDto): Promise<void> {

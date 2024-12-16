@@ -16,6 +16,7 @@ import { FileElementResponseMapper } from './file-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
 import { SubmissionContainerElementResponseMapper } from './submission-container-element-response.mapper';
+import { VideoConferenceElementResponseMapper } from './video-conference-element-response.mapper';
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] = [
@@ -27,6 +28,7 @@ export class ContentElementResponseFactory {
 		ExternalToolElementResponseMapper.getInstance(),
 		CollaborativeTextEditorElementResponseMapper.getInstance(),
 		DeletedElementResponseMapper.getInstance(),
+		VideoConferenceElementResponseMapper.getInstance(),
 	];
 
 	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {

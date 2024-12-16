@@ -11,6 +11,7 @@ import {
 	FileElementContent,
 	LinkElementContent,
 	RichTextElementContent,
+	VideoConferenceElementContent,
 } from '../cards-api-client';
 import { CardResponseDto } from '../dto/card-response.dto';
 import { CollaborativeTextEditorElementResponseDto } from '../dto/collaborative-text-editor-element-response.dto';
@@ -33,6 +34,8 @@ import { VisibilitySettingsResponseDto } from '../dto/visibility-settings-respon
 import { TimestampResponseDto } from '../dto/timestamp-response.dto';
 import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
 import { CardListResponseDto } from '../dto/card-list-response.dto';
+import { VideoConferenceElementResponseDto } from '../dto/video-conference-element-response.dto';
+import { VideoConferenceElementContentDto } from '../dto/video-conference-element-content.dto';
 
 export class CardResponseMapper {
 	public static mapToCardListResponseDto(cardListResponse: CardListResponse): CardListResponseDto {
@@ -157,6 +160,18 @@ export class CardResponseMapper {
 							content: new RichTextElementContentDto(content.text, content.inputFormat),
 							timestamps: this.mapToTimestampDto(element.timestamps),
 						})
+					);
+					break;
+				}
+				case ContentElementType.VIDEO_CONFERENCE: {
+					const content: VideoConferenceElementContent = element.content as VideoConferenceElementContent;
+					elements.push(
+						new VideoConferenceElementResponseDto(
+							element.id,
+							ContentElementType.VIDEO_CONFERENCE,
+							new VideoConferenceElementContentDto(content.title),
+							this.mapToTimestampDto(element.timestamps)
+						)
 					);
 					break;
 				}

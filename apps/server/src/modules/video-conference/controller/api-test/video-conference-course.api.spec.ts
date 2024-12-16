@@ -271,7 +271,7 @@ describe('VideoConferenceController (API)', () => {
 				});
 			});
 
-			describe('when user has the required permission', () => {
+			describe('when user has the required permission in course scope', () => {
 				const setup = async () => {
 					const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 

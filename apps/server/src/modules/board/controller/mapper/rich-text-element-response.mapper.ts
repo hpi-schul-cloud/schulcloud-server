@@ -25,7 +25,7 @@ export class RichTextElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: RichTextElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof RichTextElement;
 	}
 }
