@@ -11,7 +11,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 import { FilesStorageApiModule } from '@modules/files-storage/files-storage-api.module';
 import { API_VERSION_PATH } from '@modules/files-storage/files-storage.const';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
 
