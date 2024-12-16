@@ -23,7 +23,7 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { createAppLoggerMiddleware } from '@src/apps/helpers/app-logger-middleware';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import {
 	AppStartLoggable,
 	enableOpenApiDocs,
@@ -46,7 +46,7 @@ async function bootstrap() {
 	nestApp.useLogger(legacyLogger);
 
 	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createAppLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -3,7 +3,7 @@ import { Logger } from '@src/core/logger';
 import { RequestLoggable } from '@src/apps/helpers/request-loggable';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
-export const createAppLoggerMiddleware = (
+export const createRequestLoggerMiddleware = (
 	logger: Logger
 ): ((request: Request, response: Response, next: NextFunction) => void) => {
 	logger.setContext('AppLoggerMiddleware');

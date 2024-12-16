@@ -12,7 +12,7 @@ import { RedisIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { createAppLoggerMiddleware } from '@src/apps/helpers/app-logger-middleware';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import {
 	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
@@ -38,7 +38,7 @@ async function bootstrap() {
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
 	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createAppLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
 
 	await nestApp.init();
 
