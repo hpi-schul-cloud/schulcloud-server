@@ -8,7 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ManagementServerModule } from '@modules/management';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
@@ -16,7 +16,7 @@ import { enableOpenApiDocs } from './helpers';
 async function bootstrap() {
 	sourceMapInstall();
 
-	// create the NestJS application on a seperate express instance
+	// create the NestJS application on a separate express instance
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);

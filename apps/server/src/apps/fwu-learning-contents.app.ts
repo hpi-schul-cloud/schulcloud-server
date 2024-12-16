@@ -8,7 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
