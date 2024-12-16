@@ -4,12 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MediaSource } from '../domain';
 import { MediaSourceEntity } from '../entity';
-import { MediaSourceRepo } from './media-source.repo';
 import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
 import { mediaSourceOAuthConfigEmbeddableFactory } from '../testing/media-source-oauth-config.embeddable.factory';
-import { MediaSourceConfigMapper } from './media-source-config.mapper';
 import { mediaSourceEntityFactory } from '../testing/media-source-entity.factory';
 import { mediaSourceFactory } from '../testing/media-source.factory';
+import { MediaSourceRepo } from './media-source.repo';
+import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
 describe(MediaSourceRepo.name, () => {
 	let module: TestingModule;
@@ -39,7 +39,10 @@ describe(MediaSourceRepo.name, () => {
 			const setup = async () => {
 				const config: MediaSourceOauthConfigEmbeddable = mediaSourceOAuthConfigEmbeddableFactory.build();
 
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ oauthConfig: config });
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({
+					oauthConfig: config,
+					basicAuthConfig: undefined,
+				});
 
 				await em.persistAndFlush([mediaSource]);
 

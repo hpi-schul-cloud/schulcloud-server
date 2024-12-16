@@ -4,6 +4,7 @@ import { MediaSource } from '@src/modules/media-source/domain';
 import { MediaSourceDataFormat } from '@src/modules/media-source/enum';
 import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/media-source/loggable';
 import { MediaSourceService } from '@src/modules/media-source/service';
+import { Logger } from '@src/core/logger';
 import { AxiosErrorLoggable } from '@src/core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { HttpService } from '@nestjs/axios';
@@ -13,6 +14,11 @@ import { lastValueFrom, Observable } from 'rxjs';
 import { VidisItemMapper } from '../mapper/vidis-item.mapper';
 import { VidisResponse } from '../response';
 import { VidisItemResponse } from '../response/vidis-item.response';
+import { MediaSchoolLicense } from '@modules/school-license/domain';
+import { School, SchoolService } from '@modules/school';
+import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@modules/school-license/loggable';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolLicenseType } from '@modules/school-license/enum';
 
 @Injectable()
 export class VidisSyncService {
@@ -20,20 +26,87 @@ export class VidisSyncService {
 		private readonly httpService: HttpService,
 		private readonly mediaSourceService: MediaSourceService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
+		private readonly schoolService: SchoolService,
+		private readonly logger: Logger,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
-	public async syncMediaSchoolLicenses(): Promise<void> {
-		const mediasource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
-		if (!mediasource) {
+	public async getVidisMediaSource(): Promise<MediaSource> {
+		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
+		if (!mediaSource) {
 			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
 
-		const items: VidisItemResponse[] = await this.fetchData(mediasource);
+		return mediaSource;
+	}
 
-		const itemsDtos: VidisItemDto[] = VidisItemMapper.mapToVidisItems(items);
+	public async getLicenseDataFromVidis(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
+		const items: VidisItemResponse[] = await this.fetchData(mediaSource);
 
-		await this.mediaSchoolLicenseService.syncMediaSchoolLicenses(mediasource, itemsDtos);
+		return items;
+	}
+
+	public async syncMediaSchoolLicenses(mediaSource: MediaSource, items: VidisItemResponse[]): Promise<void> {
+		const syncItemPromises: Promise<void>[] = items.map(async (item: VidisItemResponse): Promise<void> => {
+			const schoolNumbersFromVidis = item.schoolActivations.map((activation) => this.removePrefix(activation));
+
+			let existingLicenses: MediaSchoolLicense[] =
+				await this.mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId(item.offerId);
+
+			if (existingLicenses.length) {
+				await this.removeNoLongerAvailableLicenses(existingLicenses, schoolNumbersFromVidis);
+				existingLicenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId(item.offerId);
+			}
+
+			const saveNewLicensesPromises: Promise<void>[] = schoolNumbersFromVidis.map(
+				async (schoolNumber: string): Promise<void> => {
+					const school: School | null = await this.schoolService.getSchoolByOfficialSchoolNumber(schoolNumber);
+
+					if (!school) {
+						this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolNumber));
+					} else {
+						const isExistingLicense: boolean = existingLicenses.some(
+							(license: MediaSchoolLicense): boolean => license.schoolId === school.id
+						);
+						if (!isExistingLicense) {
+							const newLicense: MediaSchoolLicense = new MediaSchoolLicense({
+								id: new ObjectId().toHexString(),
+								type: SchoolLicenseType.MEDIA_LICENSE,
+								schoolId: school.id,
+								mediaSource,
+								mediumId: item.offerId,
+							});
+							await this.mediaSchoolLicenseService.saveSchoolLicense(newLicense);
+						}
+					}
+				}
+			);
+
+			await Promise.all(saveNewLicensesPromises);
+		});
+
+		await Promise.all(syncItemPromises);
+	}
+
+	private async removeNoLongerAvailableLicenses(
+		existingLicenses: MediaSchoolLicense[],
+		schoolNumbersFromVidis: string[]
+	): Promise<void> {
+		const vidisSchoolNumberSet = new Set(schoolNumbersFromVidis);
+
+		const removalPromises: Promise<void>[] = existingLicenses.map(async (license: MediaSchoolLicense) => {
+			const school = await this.schoolService.getSchoolById(license.schoolId);
+			if (!school.officialSchoolNumber) {
+				return;
+			}
+
+			const isLicenseNoLongerInVidis = !vidisSchoolNumberSet.has(school.officialSchoolNumber);
+			if (isLicenseNoLongerInVidis) {
+				await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
+			}
+		});
+
+		await Promise.all(removalPromises);
 	}
 
 	private async fetchData(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
@@ -71,5 +144,9 @@ export class VidisSyncService {
 				throw error;
 			}
 		}
+	}
+
+	private removePrefix(input: string): string {
+		return input.replace(/^.*?(\d{5})$/, '$1');
 	}
 }

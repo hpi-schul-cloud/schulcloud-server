@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { VidisSyncService } from '../service/vidis-sync.service';
@@ -15,6 +14,8 @@ export class VidisSyncStrategy extends SyncStrategy {
 	}
 
 	public async sync(): Promise<void> {
-		return await this.vidisSyncService.syncMediaSchoolLicenses();
+		const mediaSource = await this.vidisSyncService.getVidisMediaSource();
+		const vidisItems = await this.vidisSyncService.getLicenseDataFromVidis(mediaSource);
+		await this.vidisSyncService.syncMediaSchoolLicenses(mediaSource, vidisItems);
 	}
 }

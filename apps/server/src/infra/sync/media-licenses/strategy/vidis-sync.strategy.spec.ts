@@ -53,7 +53,9 @@ describe(VidisSyncService.name, () => {
 		describe('when sync is called', () => {
 			const setup = () => {};
 
-			it('should find the vidis system', async () => {});
+			it('should find the vidis system', async () => {
+				setup();
+			});
 		});
 	});
 });

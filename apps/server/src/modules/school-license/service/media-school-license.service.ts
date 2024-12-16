@@ -19,13 +19,15 @@ export class MediaSchoolLicenseService {
 	) {}
 
 	public async syncMediaSchoolLicenses(mediaSource: MediaSource, items: VidisItemDto[]): Promise<void> {
+		// TODO: clarify; vidis logics should not be in this module; the preparation of vidis items -> licenses should be done by caller
 		// TODO: use Promise.all instead of for-of
 		for (const item of items) {
 			const schoolNumbers = item.schoolActivations.map((activation) => this.removePrefix(activation));
-			const schoolActivationsSet = new Set(schoolNumbers);
 
 			const existingLicenses: MediaSchoolLicense[] = await this.findMediaSchoolLicensesByMediumId(item.offerId);
 			if (existingLicenses.length) {
+				// TODO: clarify if it is needed outside
+				const schoolActivationsSet = new Set(schoolNumbers);
 				await this.updateMediaSchoolLicenses(existingLicenses, schoolActivationsSet);
 			}
 
@@ -45,7 +47,7 @@ export class MediaSchoolLicenseService {
 		}
 	}
 
-	private async findMediaSchoolLicense(schoolId: EntityId, mediumId: string): Promise<MediaSchoolLicense | null> {
+	public async findMediaSchoolLicense(schoolId: EntityId, mediumId: string): Promise<MediaSchoolLicense | null> {
 		const mediaSchoolLicense: MediaSchoolLicense | null = await this.mediaSchoolLicenseRepo.findMediaSchoolLicense(
 			schoolId,
 			mediumId
@@ -54,15 +56,18 @@ export class MediaSchoolLicenseService {
 		return mediaSchoolLicense;
 	}
 
-	private async saveSchoolLicense(license: MediaSchoolLicense): Promise<void> {
+	public async saveSchoolLicense(license: MediaSchoolLicense): Promise<void> {
 		await this.mediaSchoolLicenseRepo.save(license);
 	}
+	public async saveSchoolLicenses(licenses: MediaSchoolLicense[]): Promise<void> {
+		await this.mediaSchoolLicenseRepo.saveAll(licenses);
+	}
 
-	private async deleteSchoolLicense(license: MediaSchoolLicense): Promise<void> {
+	public async deleteSchoolLicense(license: MediaSchoolLicense): Promise<void> {
 		await this.mediaSchoolLicenseRepo.delete(license);
 	}
 
-	private async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
+	public async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
 		const mediaSchoolLicenses: MediaSchoolLicense[] =
 			await this.mediaSchoolLicenseRepo.findMediaSchoolLicensesByMediumId(mediumId);
 
@@ -90,9 +95,13 @@ export class MediaSchoolLicenseService {
 		schoolActivationsSet: Set<string>
 	): Promise<void> {
 		await Promise.all(
-			existingLicenses.map(async (license) => {
+			existingLicenses.map(async (license: MediaSchoolLicense) => {
 				const school = await this.schoolService.getSchoolById(license.schoolId);
-				if (!schoolActivationsSet.has(school.officialSchoolNumber ?? '')) {
+				if (!school.officialSchoolNumber) {
+					return;
+				}
+
+				if (!schoolActivationsSet.has(school.officialSchoolNumber)) {
 					await this.deleteSchoolLicense(license);
 				}
 			})

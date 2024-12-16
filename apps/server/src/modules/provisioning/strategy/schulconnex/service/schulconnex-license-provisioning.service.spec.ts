@@ -5,7 +5,8 @@ import {
 	MediaUserLicenseService,
 	UserLicenseType,
 } from '@modules/user-license';
-import { MediaSource, mediaSourceFactory, MediaSourceService } from '@modules/media-source';
+import { MediaSource, MediaSourceService } from '@modules/media-source';
+import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { setupEntities, userFactory } from '@shared/testing';
