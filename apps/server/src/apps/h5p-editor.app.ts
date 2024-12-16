@@ -25,7 +25,7 @@ async function bootstrap() {
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });

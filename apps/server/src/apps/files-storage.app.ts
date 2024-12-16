@@ -29,7 +29,7 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,

@@ -22,7 +22,7 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
 
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));

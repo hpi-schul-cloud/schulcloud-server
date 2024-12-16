@@ -24,7 +24,7 @@ async function bootstrap() {
 	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
 	const logger = await nestAdminServerApp.resolve(Logger);
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
-	nestAdminServerApp.use(createRequestLoggerMiddleware(await nestAdminServerApp.resolve(Logger)));
+	nestAdminServerApp.use(createRequestLoggerMiddleware());
 
 	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();

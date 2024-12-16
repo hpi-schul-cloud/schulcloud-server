@@ -46,7 +46,7 @@ async function bootstrap() {
 	nestApp.useLogger(legacyLogger);
 
 	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

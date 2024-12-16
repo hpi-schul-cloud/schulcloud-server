@@ -28,7 +28,7 @@ async function bootstrap() {
 
 	const rootExpress = express();
 	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
 

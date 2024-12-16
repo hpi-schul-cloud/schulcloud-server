@@ -27,7 +27,7 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 	enableOpenApiDocs(nestApp, 'docs');
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	await nestApp.init();
 

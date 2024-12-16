@@ -38,7 +38,7 @@ async function bootstrap() {
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
 	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createRequestLoggerMiddleware(await nestApp.resolve(Logger)));
+	nestApp.use(createRequestLoggerMiddleware());
 
 	await nestApp.init();
 
