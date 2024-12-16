@@ -8,11 +8,15 @@ import { BaseDORepo } from '@shared/repo/base.do.repo';
 const TargetModelsMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
 	[VideoConferenceScope.COURSE]: TargetModels.COURSES,
+	[VideoConferenceScope.ROOM]: TargetModels.ROOMS,
+	[VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT]: TargetModels.VIDEO_CONFERENCE_ELEMENTS,
 };
 
 const VideoConferencingScopeMapping = {
 	[TargetModels.EVENTS]: VideoConferenceScope.EVENT,
 	[TargetModels.COURSES]: VideoConferenceScope.COURSE,
+	[TargetModels.ROOMS]: VideoConferenceScope.ROOM,
+	[TargetModels.VIDEO_CONFERENCE_ELEMENTS]: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
 };
 
 @Injectable()
