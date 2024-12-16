@@ -126,41 +126,58 @@ export class TspSyncStrategy extends SyncStrategy {
 	private async migrateTspTeachersBatch(system: System, oldToNewMappings: Map<string, string>): Promise<number> {
 		this.logger.info(new TspTeachersFetchedLoggable(oldToNewMappings.size));
 
-		const migrationIds = Array.from(oldToNewMappings.keys());
+		const oldIds = Array.from(oldToNewMappings.keys());
+		const batchSize = this.configService.get<number>('TSP_SYNC_MIGRATION_LIMIT', 100);
 
-		const users = await this.userService.findByTspUids(migrationIds);
-		this.logger.info(this.logForMsg(`Users fetched: ${users.length}`));
+		const batchCount = Math.ceil(oldIds.length / batchSize);
+		const batches: string[][] = [];
+		for (let i = 0; i < batchCount; i += 1) {
+			const start = i * batchSize;
+			const end = Math.min((i + 1) * batchSize, oldIds.length);
+			batches.push(oldIds.slice(start, end));
+		}
 
-		const userIds = users.map((user) => user.id ?? '');
-		const accounts = await this.accountService.findMultipleByUserId(userIds);
-		this.logger.info(this.logForMsg(`Accounts loaded: ${accounts.length}`));
+		let total = 0;
+		for await (const oldIdsBatch of batches) {
+			this.logger.info(this.logForMsg('Start of new batch'));
 
-		const accountsForUserid = new Map<string, Account>();
-		accounts.forEach((account) => accountsForUserid.set(account.userId ?? '', account));
+			const users = await this.userService.findByTspUids(oldIdsBatch);
+			this.logger.info(this.logForMsg(`Users fetched: ${users.length}`));
 
-		users.forEach((user) => {
-			const newUid = oldToNewMappings.get(user.sourceOptions?.tspUid ?? '') ?? '';
-			const newEmailAndUsername = `${newUid}@schul-cloud.org`;
+			const userIds = users.map((user) => user.id ?? '');
+			const accounts = await this.accountService.findMultipleByUserId(userIds);
+			this.logger.info(this.logForMsg(`Accounts loaded: ${accounts.length}`));
 
-			user.email = newEmailAndUsername;
-			user.externalId = newUid;
-			user.previousExternalId = user.sourceOptions?.tspUid;
-			user.sourceOptions = new UserSourceOptions({ tspUid: newUid });
+			const accountsForUserid = new Map<string, Account>();
+			accounts.forEach((account) => accountsForUserid.set(account.userId ?? '', account));
 
-			const account = accountsForUserid.get(user.id ?? '');
-			if (account) {
-				account.username = newEmailAndUsername;
-				account.systemId = system.id;
-			}
-		});
+			users.forEach((user) => {
+				const newUid = oldToNewMappings.get(user.sourceOptions?.tspUid ?? '') ?? '';
+				const newEmailAndUsername = `${newUid}@schul-cloud.org`;
 
-		await this.userService.saveAll(users);
-		this.logger.info(this.logForMsg('Users saved'));
+				user.email = newEmailAndUsername;
+				user.externalId = newUid;
+				user.previousExternalId = user.sourceOptions?.tspUid;
+				user.sourceOptions = new UserSourceOptions({ tspUid: newUid });
 
-		await this.accountService.saveAll(accounts);
-		this.logger.info(this.logForMsg('Accounts saved'));
+				const account = accountsForUserid.get(user.id ?? '');
+				if (account) {
+					account.username = newEmailAndUsername;
+					account.systemId = system.id;
+				}
+			});
 
-		return users.length;
+			await this.userService.saveAll(users);
+			this.logger.info(this.logForMsg('Users saved'));
+
+			await this.accountService.saveAll(accounts);
+			this.logger.info(this.logForMsg('Accounts saved'));
+
+			total += users.length;
+			this.logger.info(this.logForMsg(`Users so far ${total}`));
+		}
+
+		return total;
 	}
 
 	private async runMigration(system: System): Promise<void> {
