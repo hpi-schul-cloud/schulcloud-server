@@ -10,6 +10,7 @@ import {
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
+	VideoConferenceElementResponse,
 } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
@@ -22,7 +23,8 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	DrawingElementResponse,
 	SubmissionContainerElementResponse,
 	CollaborativeTextEditorElementResponse,
-	DeletedElementResponse
+	DeletedElementResponse,
+	VideoConferenceElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -58,6 +60,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
+				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 			],
 		},
 	})
