@@ -6,6 +6,7 @@ import { type FileElement, isFileElement } from '../file-element.do';
 import { isLinkElement, type LinkElement } from '../link-element.do';
 import { isRichTextElement, type RichTextElement } from '../rich-text-element.do';
 import { isSubmissionContainerElement, type SubmissionContainerElement } from '../submission-container-element.do';
+import { isVideoConferenceElement, VideoConferenceElement } from '../video-conference-element.do';
 import { type AnyBoardNode } from './any-board-node';
 
 export type AnyContentElement =
@@ -16,7 +17,8 @@ export type AnyContentElement =
 	| LinkElement
 	| RichTextElement
 	| SubmissionContainerElement
-	| DeletedElement;
+	| DeletedElement
+	| VideoConferenceElement;
 
 export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
 	const result =
@@ -27,7 +29,8 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 		isLinkElement(boardNode) ||
 		isRichTextElement(boardNode) ||
 		isSubmissionContainerElement(boardNode) ||
-		isDeletedElement(boardNode);
+		isDeletedElement(boardNode) ||
+		isVideoConferenceElement(boardNode);
 
 	return result;
 };
