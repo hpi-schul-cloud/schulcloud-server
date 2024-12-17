@@ -35,8 +35,6 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
-		console.log(tokenDto);
-
 		const user: UserDO | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (!user || !user.id) {

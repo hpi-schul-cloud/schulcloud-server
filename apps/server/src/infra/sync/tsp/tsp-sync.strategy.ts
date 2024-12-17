@@ -2,7 +2,7 @@ import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { Loggable, Logger } from '@src/core/logger';
+import { Loggable, Logger, LogMessage } from '@src/core/logger';
 import { Account, AccountService } from '@src/modules/account';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { System } from '@src/modules/system';
@@ -65,6 +65,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, schoolDaysToFetch));
 
+		// Add pLimit again
 		const schoolPromises = tspSchools.map(async (tspSchool) => {
 			if (!tspSchool.schuleNummer) {
 				this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
@@ -116,6 +117,7 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
+		// Add pLimit again
 		const dataPromises = oauthDataDtos.map((oauthDataDto) => this.provisioningService.provisionData(oauthDataDto));
 
 		const results = await Promise.allSettled(dataPromises);
@@ -123,7 +125,8 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
 
-	private async migrateTspTeachersBatch(system: System, oldToNewMappings: Map<string, string>): Promise<number> {
+	// Split code: batchin, loading, updating, saving
+	private async migrateTspTeachersUsers(system: System, oldToNewMappings: Map<string, string>): Promise<number> {
 		this.logger.info(new TspTeachersFetchedLoggable(oldToNewMappings.size));
 
 		const oldIds = Array.from(oldToNewMappings.keys());
@@ -142,7 +145,7 @@ export class TspSyncStrategy extends SyncStrategy {
 			this.logger.info(this.logForMsg('Start of new batch'));
 
 			const users = await this.userService.findByTspUids(oldIdsBatch);
-			this.logger.info(this.logForMsg(`Users fetched: ${users.length}`));
+			this.logger.info(this.logForMsg(`Users loaded: ${users.length}`));
 
 			const userIds = users.map((user) => user.id ?? '');
 			const accounts = await this.accountService.findMultipleByUserId(userIds);
@@ -196,13 +199,14 @@ export class TspSyncStrategy extends SyncStrategy {
 			}
 		});
 
-		const migrationResult = await this.migrateTspTeachersBatch(system, oldToNewMappings);
+		const migrationResult = await this.migrateTspTeachersUsers(system, oldToNewMappings);
 		this.logger.info(new TspUsersMigratedLoggable(migrationResult));
 	}
 
+	// Remove
 	private logForMsg(msg: string): Loggable {
 		return {
-			getLogMessage() {
+			getLogMessage(): LogMessage {
 				return {
 					message: msg,
 				};
