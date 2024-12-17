@@ -87,14 +87,12 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			describe('when no user is provided', () => {
-				it('should throw an exception', async () => {
-					const { room } = setup();
+			it('should throw an exception', async () => {
+				const { room, user } = setup();
 
-					roomMembershipRepo.findByRoomId.mockResolvedValue(null);
+				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
 
-					await expect(service.addMembersToRoom(room.id, [])).rejects.toThrow();
-				});
+				await expect(service.addMembersToRoom(room.id, [user.id])).rejects.toThrow();
 			});
 		});
 
@@ -120,20 +118,21 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should add user to existing roomMembership', async () => {
+			it('should add user as admin to existing roomMembership', async () => {
+				// TODO: in the future, once room roles can be changed, this should become ROOMVIEWER
 				const { user, room, group } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
+				await service.addMembersToRoom(room.id, [user.id]);
 
 				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
-					{ userId: user.id, roleName: RoleName.ROOMEDITOR },
+					{ userId: user.id, roleName: RoleName.ROOMADMIN },
 				]);
 			});
 
 			it('should add user to school', async () => {
 				const { user, room } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
+				await service.addMembersToRoom(room.id, [user.id]);
 
 				expect(userService.addSecondarySchoolToUsers).toHaveBeenCalledWith([user.id], room.schoolId);
 			});
