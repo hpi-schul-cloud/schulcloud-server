@@ -58,7 +58,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncSchools(system: System): Promise<School[]> {
-		const schoolDaysToFetch = this.configService.get<number>('TSP_SYNC_SCHOOL_LIMIT', 1);
+		const schoolDaysToFetch = this.configService.get<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', 1);
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, schoolDaysToFetch));
 
