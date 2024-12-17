@@ -4,7 +4,7 @@ describe(TspUsersMigratedLoggable.name, () => {
 	let loggable: TspUsersMigratedLoggable;
 
 	beforeAll(() => {
-		loggable = new TspUsersMigratedLoggable(10);
+		loggable = new TspUsersMigratedLoggable(10, 5, 4);
 	});
 
 	describe('when loggable is initialized', () => {
@@ -16,9 +16,11 @@ describe(TspUsersMigratedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		it('should return a log message', () => {
 			expect(loggable.getLogMessage()).toEqual({
-				message: `Migrated users: 10 users migrated`,
+				message: `Migrated 5 users and 4 accounts. Total amount of migrations requested: 10`,
 				data: {
-					migratedUsers: 10,
+					totalMigrations: 10,
+					migratedUsers: 5,
+					migratedAccounts: 4,
 				},
 			});
 		});

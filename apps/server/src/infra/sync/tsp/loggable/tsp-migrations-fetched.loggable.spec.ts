@@ -1,10 +1,10 @@
-import { TspStudentsMigratedLoggable } from './tsp-students-migrated.loggable';
+import { TspMigrationsFetchedLoggable } from './tsp-migrations-fetched.loggable';
 
-describe(TspStudentsMigratedLoggable.name, () => {
-	let loggable: TspStudentsMigratedLoggable;
+describe(TspMigrationsFetchedLoggable.name, () => {
+	let loggable: TspMigrationsFetchedLoggable;
 
 	beforeAll(() => {
-		loggable = new TspStudentsMigratedLoggable(10);
+		loggable = new TspMigrationsFetchedLoggable(10);
 	});
 
 	describe('when loggable is initialized', () => {
@@ -16,9 +16,9 @@ describe(TspStudentsMigratedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		it('should return a log message', () => {
 			expect(loggable.getLogMessage()).toEqual({
-				message: `Migrated students: 10 students migrated`,
+				message: `Fetched 10 users for migration from TSP`,
 				data: {
-					migratedStudents: 10,
+					tspUserMigrationCount: 10,
 				},
 			});
 		});
