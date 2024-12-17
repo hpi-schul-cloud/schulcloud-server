@@ -240,27 +240,33 @@ const validateCounty = async (context) => {
 				$limit: 1,
 			},
 		});
-		const currentSchool = schools.data[0];
-		if (!currentSchool) {
-			throw new Error(`Internal error`);
-		}
 
 		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+		if (!isSuperHero) {
+			const currentSchool = schools.data[0];
+			if (!currentSchool) {
+				throw new Error(`Internal error`);
+			}
 
-		const { county } = context.data;
-		if (
-			!isSuperHero &&
-			(!currentSchool.federalState.counties.length ||
-				!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString()))
-		) {
-			throw new Error(`The state doesn't not have a matching county`);
+			const { county } = context.data;
+			if (
+				!currentSchool.federalState.counties.length ||
+				!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString())
+			) {
+				throw new Error(`The state doesn't not have a matching county`);
+			}
+
+			/* Tries to replace the existing county with a new one */
+			if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
+				throw new Error(`This school already have a county`);
+			}
 		}
 
-		/* Tries to replace the existing county with a new one */
-		if (!isSuperHero && currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
-			throw new Error(`This school already have a county`);
+		const federalState = await context.app.service('federalStates').get(context.data.federalState);
+		if (!federalState) {
+			throw new Error(`Unknown federal state was provided for the school`);
 		}
-		context.data.county = currentSchool.federalState.counties.find((c) => c._id.toString() === county.toString());
+		context.data.county = federalState.counties.find((c) => c._id.toString() === context.data.county.toString());
 	}
 	// checks for empty value and deletes it from context
 	if (context && context.data && Object.keys(context.data).includes('county') && !context.data.county) {
