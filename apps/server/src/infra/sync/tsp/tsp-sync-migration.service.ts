@@ -1,0 +1,140 @@
+import { Account, AccountService } from '@modules/account';
+import { System } from '@modules/system';
+import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { UserDO } from '@shared/domain/domainobject';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
+import { Logger } from '@src/core/logger';
+import { TspTeachersFetchedLoggable } from './loggable/tsp-teachers-fetched.loggable';
+import { TspSyncConfig } from './tsp-sync.config';
+import { TspMigrationBatchSummaryLoggable } from './loggable/tsp-migration-batch-summary.loggable';
+
+@Injectable()
+export class TspSyncMigrationService {
+	constructor(
+		private readonly logger: Logger,
+		private readonly userService: UserService,
+		private readonly accountService: AccountService,
+		private readonly configService: ConfigService<TspSyncConfig, true>
+	) {
+		this.logger.setContext(TspSyncMigrationService.name);
+	}
+
+	public async migrateTspUsers(
+		system: System,
+		oldToNewMappings: Map<string, string>
+	): Promise<{
+		totalAmount: number;
+		totalUsers: number;
+		totalAccounts: number;
+	}> {
+		const totalIdCount = oldToNewMappings.size;
+		this.logger.info(new TspTeachersFetchedLoggable(totalIdCount));
+
+		const batches = this.getOldIdBatches(oldToNewMappings);
+
+		let totalAmount = 0;
+		let totalUsers = 0;
+		let totalAccounts = 0;
+		for await (const oldIdsBatch of batches) {
+			const { users, accounts, accountsForUserId } = await this.loadUsersAndAccounts(oldIdsBatch);
+			const updated = this.updateUsersAndAccounts(system.id, oldToNewMappings, users, accountsForUserId);
+			await this.saveUsersAndAccounts(users, accounts);
+
+			totalAmount += oldIdsBatch.length;
+			totalUsers += updated.usersUpdated;
+			totalAccounts += updated.accountsUpdated;
+
+			this.logger.info(
+				new TspMigrationBatchSummaryLoggable(
+					oldIdsBatch.length,
+					updated.usersUpdated,
+					updated.accountsUpdated,
+					totalAmount,
+					totalIdCount
+				)
+			);
+		}
+
+		return {
+			totalAmount,
+			totalUsers,
+			totalAccounts,
+		};
+	}
+
+	private updateUsersAndAccounts(
+		systemId: string,
+		oldToNewMappings: Map<string, string>,
+		users: UserDO[],
+		accountsForUserId: Map<string, Account>
+	): { usersUpdated: number; accountsUpdated: number } {
+		let usersUpdated = 0;
+		let accountsUpdated = 0;
+		users.forEach((user) => {
+			const oldId = user.sourceOptions?.tspUid;
+
+			if (!oldId) {
+				return;
+			}
+
+			const newUid = oldToNewMappings.get(oldId);
+
+			if (!newUid) {
+				return;
+			}
+
+			const newEmailAndUsername = `${newUid}@schul-cloud.org`;
+
+			user.email = newEmailAndUsername;
+			user.externalId = newUid;
+			user.previousExternalId = oldId;
+			user.sourceOptions = new UserSourceOptions({ tspUid: newUid });
+			usersUpdated += 1;
+
+			const account = accountsForUserId.get(user.id ?? '');
+			if (account) {
+				account.username = newEmailAndUsername;
+				account.systemId = systemId;
+				accountsUpdated += 1;
+			}
+		});
+
+		return { usersUpdated, accountsUpdated };
+	}
+
+	private getOldIdBatches(oldToNewMappings: Map<string, string>): string[][] {
+		const oldIds = Array.from(oldToNewMappings.keys());
+		const batchSize = this.configService.get<number>('TSP_SYNC_MIGRATION_LIMIT', 100);
+
+		const batchCount = Math.ceil(oldIds.length / batchSize);
+		const batches: string[][] = [];
+		for (let i = 0; i < batchCount; i += 1) {
+			const start = i * batchSize;
+			const end = Math.min((i + 1) * batchSize, oldIds.length);
+			batches.push(oldIds.slice(start, end));
+		}
+
+		return batches;
+	}
+
+	private async loadUsersAndAccounts(
+		tspUids: string[]
+	): Promise<{ users: UserDO[]; accounts: Account[]; accountsForUserId: Map<string, Account> }> {
+		const users = await this.userService.findByTspUids(tspUids);
+
+		const userIds = users.map((user) => user.id ?? '');
+		const accounts = await this.accountService.findMultipleByUserId(userIds);
+
+		const accountsForUserId = new Map<string, Account>();
+		accounts.forEach((account) => accountsForUserId.set(account.userId ?? '', account));
+
+		return { users, accounts, accountsForUserId };
+	}
+
+	private async saveUsersAndAccounts(users: UserDO[], accounts: Account[]): Promise<void> {
+		await this.userService.saveAll(users);
+		await this.accountService.saveAll(accounts);
+	}
+}

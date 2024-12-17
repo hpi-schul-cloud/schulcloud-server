@@ -1,12 +1,10 @@
 import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { Loggable, Logger, LogMessage } from '@src/core/logger';
-import { Account, AccountService } from '@src/modules/account';
+import { Logger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { System } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
+import pLimit from 'p-limit';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
@@ -15,11 +13,11 @@ import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
 import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
-import { TspTeachersFetchedLoggable } from './loggable/tsp-teachers-fetched.loggable';
 import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 
@@ -33,8 +31,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
 		private readonly provisioningService: ProvisioningService,
-		private readonly userService: UserService,
-		private readonly accountService: AccountService
+		private readonly tspSyncMigrationService: TspSyncMigrationService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
@@ -65,27 +62,31 @@ export class TspSyncStrategy extends SyncStrategy {
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, schoolDaysToFetch));
 
-		// Add pLimit again
-		const schoolPromises = tspSchools.map(async (tspSchool) => {
-			if (!tspSchool.schuleNummer) {
-				this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
-				return null;
-			}
+		const schoolLimit = this.configService.get<number>('TSP_SYNC_SCHOOL_LIMIT', 1);
+		const schoolLimitFn = pLimit(schoolLimit);
 
-			const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
+		const schoolPromises = tspSchools.map((tspSchool) =>
+			schoolLimitFn(async () => {
+				if (!tspSchool.schuleNummer) {
+					this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
+					return null;
+				}
 
-			if (existingSchool) {
-				const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
-				return { school: updatedSchool, created: false };
-			}
+				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
 
-			const createdSchool = await this.tspSyncService.createSchool(
-				system,
-				tspSchool.schuleNummer,
-				tspSchool.schuleName ?? ''
-			);
-			return { school: createdSchool, created: true };
-		});
+				if (existingSchool) {
+					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
+					return { school: updatedSchool, created: false };
+				}
+
+				const createdSchool = await this.tspSyncService.createSchool(
+					system,
+					tspSchool.schuleNummer,
+					tspSchool.schuleName ?? ''
+				);
+				return { school: createdSchool, created: true };
+			})
+		);
 
 		const scSchools = await Promise.all(schoolPromises);
 
@@ -117,70 +118,16 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
-		// Add pLimit again
-		const dataPromises = oauthDataDtos.map((oauthDataDto) => this.provisioningService.provisionData(oauthDataDto));
+		const dataLimit = this.configService.get<number>('TSP_SYNC_DATA_LIMIT', 1);
+		const dataLimitFn = pLimit(dataLimit);
+
+		const dataPromises = oauthDataDtos.map((oauthDataDto) =>
+			dataLimitFn(() => this.provisioningService.provisionData(oauthDataDto))
+		);
 
 		const results = await Promise.allSettled(dataPromises);
 
 		this.logger.info(new TspSyncedUsersLoggable(results.length));
-	}
-
-	// Split code: batchin, loading, updating, saving
-	private async migrateTspTeachersUsers(system: System, oldToNewMappings: Map<string, string>): Promise<number> {
-		this.logger.info(new TspTeachersFetchedLoggable(oldToNewMappings.size));
-
-		const oldIds = Array.from(oldToNewMappings.keys());
-		const batchSize = this.configService.get<number>('TSP_SYNC_MIGRATION_LIMIT', 100);
-
-		const batchCount = Math.ceil(oldIds.length / batchSize);
-		const batches: string[][] = [];
-		for (let i = 0; i < batchCount; i += 1) {
-			const start = i * batchSize;
-			const end = Math.min((i + 1) * batchSize, oldIds.length);
-			batches.push(oldIds.slice(start, end));
-		}
-
-		let total = 0;
-		for await (const oldIdsBatch of batches) {
-			this.logger.info(this.logForMsg('Start of new batch'));
-
-			const users = await this.userService.findByTspUids(oldIdsBatch);
-			this.logger.info(this.logForMsg(`Users loaded: ${users.length}`));
-
-			const userIds = users.map((user) => user.id ?? '');
-			const accounts = await this.accountService.findMultipleByUserId(userIds);
-			this.logger.info(this.logForMsg(`Accounts loaded: ${accounts.length}`));
-
-			const accountsForUserid = new Map<string, Account>();
-			accounts.forEach((account) => accountsForUserid.set(account.userId ?? '', account));
-
-			users.forEach((user) => {
-				const newUid = oldToNewMappings.get(user.sourceOptions?.tspUid ?? '') ?? '';
-				const newEmailAndUsername = `${newUid}@schul-cloud.org`;
-
-				user.email = newEmailAndUsername;
-				user.externalId = newUid;
-				user.previousExternalId = user.sourceOptions?.tspUid;
-				user.sourceOptions = new UserSourceOptions({ tspUid: newUid });
-
-				const account = accountsForUserid.get(user.id ?? '');
-				if (account) {
-					account.username = newEmailAndUsername;
-					account.systemId = system.id;
-				}
-			});
-
-			await this.userService.saveAll(users);
-			this.logger.info(this.logForMsg('Users saved'));
-
-			await this.accountService.saveAll(accounts);
-			this.logger.info(this.logForMsg('Accounts saved'));
-
-			total += users.length;
-			this.logger.info(this.logForMsg(`Users so far ${total}`));
-		}
-
-		return total;
 	}
 
 	private async runMigration(system: System): Promise<void> {
@@ -199,18 +146,13 @@ export class TspSyncStrategy extends SyncStrategy {
 			}
 		});
 
-		const migrationResult = await this.migrateTspTeachersUsers(system, oldToNewMappings);
-		this.logger.info(new TspUsersMigratedLoggable(migrationResult));
-	}
-
-	// Remove
-	private logForMsg(msg: string): Loggable {
-		return {
-			getLogMessage(): LogMessage {
-				return {
-					message: msg,
-				};
-			},
-		};
+		const migrationResult = await this.tspSyncMigrationService.migrateTspUsers(system, oldToNewMappings);
+		this.logger.info(
+			new TspUsersMigratedLoggable(
+				migrationResult.totalAmount,
+				migrationResult.totalUsers,
+				migrationResult.totalAccounts
+			)
+		);
 	}
 }
