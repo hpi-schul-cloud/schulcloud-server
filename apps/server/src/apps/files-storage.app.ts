@@ -12,7 +12,7 @@ import { FilesStorageApiModule } from '@modules/files-storage/files-storage-api.
 import { API_VERSION_PATH } from '@modules/files-storage/files-storage.const';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();

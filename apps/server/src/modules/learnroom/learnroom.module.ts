@@ -19,7 +19,6 @@ import {
 	LegacyBoardRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import { ColumnBoardNodeRepo } from './repo';
@@ -63,7 +62,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 			useClass: DashboardRepo,
 		},
 		BoardCopyService,
-		BoardNodeRepo,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
 		CommonCartridgeImportMapper,

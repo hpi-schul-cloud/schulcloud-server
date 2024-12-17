@@ -8,6 +8,7 @@ export const roomFactory = BaseFactory.define<Room, RoomProps>(Room, ({ sequence
 		id: new ObjectId().toHexString(),
 		name: `room #${sequence}`,
 		color: [RoomColor.BLUE, RoomColor.RED, RoomColor.GREEN, RoomColor.MAGENTA][Math.floor(Math.random() * 4)],
+		schoolId: new ObjectId().toHexString(),
 		startDate: new Date(),
 		createdAt: new Date(),
 		updatedAt: new Date(),

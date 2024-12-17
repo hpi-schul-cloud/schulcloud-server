@@ -9,10 +9,11 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 } from '@shared/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomListResponse } from '../dto/response/room-list.response';
 
@@ -86,6 +87,7 @@ describe('Room Controller (API)', () => {
 						id: room.id,
 						name: room.name,
 						color: room.color,
+						schoolId: room.schoolId,
 						startDate: room.startDate?.toISOString(),
 						endDate: room.endDate?.toISOString(),
 						createdAt: room.createdAt.toISOString(),
@@ -127,10 +129,11 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
-				const rooms = roomEntityFactory.buildListWithId(2);
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const school = schoolEntityFactory.buildWithId();
+				const rooms = roomEntityFactory.buildListWithId(2, { schoolId: school.id });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_VIEWER,
+					name: RoleName.ROOMVIEWER,
 					permissions: [Permission.ROOM_VIEW],
 				});
 				const userGroupEntity = groupEntityFactory.buildWithId({
@@ -139,10 +142,10 @@ describe('Room Controller (API)', () => {
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
-				const roomMembers = rooms.map((room) =>
-					roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id })
+				const roomMemberships = rooms.map((room) =>
+					roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id, schoolId: school.id })
 				);
-				await em.persistAndFlush([...rooms, ...roomMembers, studentAccount, studentUser, userGroupEntity]);
+				await em.persistAndFlush([...rooms, ...roomMemberships, studentAccount, studentUser, userGroupEntity]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -152,6 +155,7 @@ describe('Room Controller (API)', () => {
 						id: room.id,
 						name: room.name,
 						color: room.color,
+						schoolId: room.schoolId,
 						startDate: room.startDate?.toISOString(),
 						endDate: room.endDate?.toISOString(),
 						createdAt: room.createdAt.toISOString(),

@@ -31,6 +31,7 @@ import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
+import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -55,14 +56,14 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	async getUserEntityWithRoles(userId: EntityId): Promise<User> {
+	public async getUserEntityWithRoles(userId: EntityId): Promise<User> {
 		// only roles required, no need for the other populates
 		const userWithRoles = await this.userRepo.findById(userId, true);
 
 		return userWithRoles;
 	}
 
-	async me(userId: EntityId): Promise<[User, string[]]> {
+	public async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
 		const permissions = user.resolvePermissions();
 
@@ -72,20 +73,20 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	/**
 	 * @deprecated use {@link UserService.findById} instead
 	 */
-	async getUser(id: string): Promise<UserDto> {
+	public async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 
 		return userDto;
 	}
 
-	async findById(id: string): Promise<UserDO> {
+	public async findById(id: string): Promise<UserDO> {
 		const userDO = await this.userDORepo.findById(id, true);
 
 		return userDO;
 	}
 
-	async findByIds(ids: string[]): Promise<UserDO[]> {
+	public async findByIds(ids: string[]): Promise<UserDO[]> {
 		const userDOs = await this.userDORepo.findByIds(ids, true);
 
 		return userDOs;
@@ -97,25 +98,25 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return userDO;
 	}
 
-	async save(user: UserDO): Promise<UserDO> {
-		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
+	public async save(user: UserDO): Promise<UserDO> {
+		const savedUser = await this.userDORepo.save(user);
 
 		return savedUser;
 	}
 
-	async saveAll(users: UserDO[]): Promise<UserDO[]> {
-		const savedUsers: Promise<UserDO[]> = this.userDORepo.saveAll(users);
+	public async saveAll(users: UserDO[]): Promise<UserDO[]> {
+		const savedUsers = await this.userDORepo.saveAll(users);
 
 		return savedUsers;
 	}
 
-	async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+	public async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
 		const users: Page<UserDO> = await this.userDORepo.find(query, options);
 
 		return users;
 	}
 
-	async findBySchoolRole(
+	public async findBySchoolRole(
 		schoolId: EntityId,
 		roleName: RoleName,
 		options?: IFindOptions<UserDO>
@@ -126,7 +127,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return result;
 	}
 
-	async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+	public async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
 		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 		if (discoverabilitySetting === 'disabled') {
 			return new Page<UserDO>([], 0);
@@ -146,19 +147,57 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return result;
 	}
 
-	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
-		const user: Promise<UserDO | null> = this.userDORepo.findByExternalId(externalId, systemId);
+	public async addSecondarySchoolToUsers(userIds: string[], schoolId: EntityId): Promise<void> {
+		const users = await this.userDORepo.findByIds(userIds, true);
+		const guestStudent = await this.roleService.findByName(RoleName.GUESTSTUDENT);
+		const guestTeacher = await this.roleService.findByName(RoleName.GUESTTEACHER);
+
+		const roleMapping: Record<string, RoleDto> = {
+			[RoleName.STUDENT]: guestStudent,
+			[RoleName.TEACHER]: guestTeacher,
+			[RoleName.ADMINISTRATOR]: guestTeacher,
+		};
+
+		users
+			.filter((user) => user.schoolId !== schoolId)
+			.filter((user) => !user.secondarySchools.some((school) => school.schoolId === schoolId))
+			.forEach((user) => {
+				const guestRole = roleMapping[user.roles[0].name];
+
+				if (!guestRole) {
+					throw new AddSecondarySchoolToUsersRoleErrorLoggableException({ roles: user.roles });
+				}
+				user.secondarySchools.push({ schoolId, role: new RoleReference(guestRole) });
+			});
+
+		await this.userDORepo.saveAll(users);
+		return Promise.resolve();
+	}
+
+	public async removeSecondarySchoolFromUsers(userIds: string[], schoolId: EntityId): Promise<void> {
+		const users = await this.userDORepo.findByIds(userIds, true);
+
+		users.forEach((user) => {
+			user.secondarySchools = user.secondarySchools.filter((school) => school.schoolId !== schoolId);
+		});
+
+		await this.userDORepo.saveAll(users);
+		return Promise.resolve();
+	}
+
+	public async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
+		const user = await this.userDORepo.findByExternalId(externalId, systemId);
 
 		return user;
 	}
 
-	async findByEmail(email: string): Promise<UserDO[]> {
-		const user: Promise<UserDO[]> = this.userDORepo.findByEmail(email);
+	public async findByEmail(email: string): Promise<UserDO[]> {
+		const user = await this.userDORepo.findByEmail(email);
 
 		return user;
 	}
 
-	async getDisplayName(user: UserDO): Promise<string> {
+	public async getDisplayName(user: UserDO): Promise<string> {
 		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
 		const isProtectedUser: boolean = user.roles.some(
 			(roleRef: RoleReference): boolean =>
@@ -170,7 +209,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return displayName;
 	}
 
-	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {
+	public async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {
 		this.checkAvailableLanguages(newLanguage);
 		const user = await this.userRepo.findById(userId);
 		user.language = newLanguage;
@@ -242,7 +281,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
-		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
+		const parentEmails = await this.userRepo.getParentEmailsFromUser(userId);
 
 		return parentEmails;
 	}
@@ -254,7 +293,9 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {
-		return this.userRepo.findByExternalIds(externalIds);
+		const userIds = await this.userRepo.findByExternalIds(externalIds);
+
+		return userIds;
 	}
 
 	public async updateLastSyncedAt(userIds: string[]): Promise<void> {
@@ -287,7 +328,8 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const unsyncedForMiliseconds = unsyncedForMinutes * 60000;
 		const differenceBetweenCurrentDateAndUnsyncedTime = new Date().getTime() - unsyncedForMiliseconds;
 		const dateOfLastSyncToBeLookedFrom = new Date(differenceBetweenCurrentDateAndUnsyncedTime);
-		return this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
+		const userIds = await this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
+		return userIds;
 	}
 
 	public async removeCalendarEvents(userId: EntityId): Promise<DomainDeletionReport> {

@@ -12,7 +12,7 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleService } from '@modules/role';
+import { RoleDto, RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -500,6 +500,170 @@ describe('UserService', () => {
 				const result = await service.findPublicTeachersBySchool(school.id);
 
 				expect(result).toEqual(expect.objectContaining({ data: [], total: 0 }));
+			});
+		});
+	});
+
+	describe('updateSecondarySchoolRole', () => {
+		const setupGuestRoles = () => {
+			const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+			const guestStudent = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+
+			roleService.findByName.mockImplementation((name) => {
+				if (name === RoleName.GUESTTEACHER) {
+					return Promise.resolve(new RoleDto(guestTeacher));
+				}
+				if (name === RoleName.GUESTSTUDENT) {
+					return Promise.resolve(new RoleDto(guestStudent));
+				}
+				throw new Error('Unexpected role name');
+			});
+
+			return { guestTeacher, guestStudent };
+		};
+
+		describe('when user is not in targetSchool yet', () => {
+			const setupUserWithRole = (rolename: RoleName) => {
+				const role = roleFactory.buildWithId({ name: rolename });
+				const user = userDoFactory.buildWithId({ roles: [role] });
+				const targetSchool = schoolFactory.build();
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, role, targetSchool };
+			};
+
+			it('should add teacher as guestteacher to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.TEACHER);
+				const { guestTeacher } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+						],
+					}),
+				]);
+			});
+
+			it('should add admin as guestteacher to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.ADMINISTRATOR);
+				const { guestTeacher } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+						],
+					}),
+				]);
+			});
+
+			it('should add student as gueststudent to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.STUDENT);
+				const { guestStudent } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestStudent.id, name: RoleName.GUESTSTUDENT } },
+						],
+					}),
+				]);
+			});
+
+			it('should throw when user has no recognized role', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.USER);
+				setupGuestRoles();
+
+				await expect(() =>
+					service.addSecondarySchoolToUsers([user.id as string], targetSchool.id)
+				).rejects.toThrowError();
+			});
+		});
+
+		describe('when user is already in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const user = userDoFactory.buildWithId({ roles: [role], schoolId: targetSchool.id });
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool };
+			};
+
+			it('should not change the user', async () => {
+				const { user, targetSchool } = setup();
+				setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+				);
+			});
+		});
+
+		describe('when user is already a guest in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const guestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const user = userDoFactory.buildWithId({
+					roles: [role],
+					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestRole) }],
+				});
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool };
+			};
+
+			it('should not change the user', async () => {
+				const { user, targetSchool } = setup();
+				setupGuestRoles();
+				const expectedSecondarySchools = [...user.secondarySchools];
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: expectedSecondarySchools })])
+				);
+			});
+		});
+	});
+
+	describe('removeSecondarySchool', () => {
+		describe('when user is guest in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const user = userDoFactory.buildWithId({
+					roles: [role],
+					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestTeacher) }],
+				});
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool, guestTeacher };
+			};
+
+			it('should remove user from secondary school', async () => {
+				const { user, targetSchool } = setup();
+
+				await service.removeSecondarySchoolFromUsers([user.id as EntityId], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+				);
 			});
 		});
 	});
