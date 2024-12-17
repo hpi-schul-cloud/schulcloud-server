@@ -121,9 +121,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
-		throw new Error('Method not implemented.');
+	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const savePromises = accountSaves.map((accountSave) => this.save(accountSave));
+		const savedAccounts = await Promise.all(savePromises);
+
+		return savedAccounts;
 	}
 
 	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
