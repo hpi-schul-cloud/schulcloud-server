@@ -1,24 +1,21 @@
-import { VidisItemDto } from '@src/modules/school-license/dto';
-import { MediaSchoolLicenseService } from '@src/modules/school-license/service/media-school-license.service';
-import { MediaSource } from '@src/modules/media-source/domain';
-import { MediaSourceDataFormat } from '@src/modules/media-source/enum';
-import { MediaSourceForSyncNotFoundLoggableException } from '@src/modules/media-source/loggable';
-import { MediaSourceService } from '@src/modules/media-source/service';
+import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
+import {
+	MediaSourceForSyncNotFoundLoggableException,
+	MediaSourceBasicAuthConfigNotFoundLoggableException,
+} from '@modules/media-source/loggable';
+import { MediaSchoolLicenseService, MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
+import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@modules/school-license/loggable';
+import { School, SchoolService } from '@modules/school';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Logger } from '@src/core/logger';
 import { AxiosErrorLoggable } from '@src/core/error/loggable';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { lastValueFrom, Observable } from 'rxjs';
-import { VidisItemMapper } from '../mapper/vidis-item.mapper';
 import { VidisResponse } from '../response';
 import { VidisItemResponse } from '../response/vidis-item.response';
-import { MediaSchoolLicense } from '@modules/school-license/domain';
-import { School, SchoolService } from '@modules/school';
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@modules/school-license/loggable';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { SchoolLicenseType } from '@modules/school-license/enum';
 
 @Injectable()
 export class VidisSyncService {
@@ -40,8 +37,18 @@ export class VidisSyncService {
 		return mediaSource;
 	}
 
-	public async getLicenseDataFromVidis(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
-		const items: VidisItemResponse[] = await this.fetchData(mediaSource);
+	public async getSchoolActivationsFromVidis(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
+		if (!mediaSource.basicAuthConfig || !mediaSource.basicAuthConfig.authEndpoint) {
+			throw new MediaSourceBasicAuthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
+		}
+
+		const vidisResponse: VidisResponse = await this.getRequest<VidisResponse>(
+			new URL(`${mediaSource.basicAuthConfig.authEndpoint}`),
+			this.encryptionService.decrypt(mediaSource.basicAuthConfig.username),
+			this.encryptionService.decrypt(mediaSource.basicAuthConfig.password)
+		);
+
+		const { items } = vidisResponse;
 
 		return items;
 	}
@@ -107,22 +114,6 @@ export class VidisSyncService {
 		});
 
 		await Promise.all(removalPromises);
-	}
-
-	private async fetchData(mediaSource: MediaSource): Promise<VidisItemResponse[]> {
-		if (!mediaSource.basicAuthConfig || !mediaSource.basicAuthConfig.authEndpoint) {
-			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
-		}
-
-		const vidisResponse: VidisResponse = await this.getRequest<VidisResponse>(
-			new URL(`${mediaSource.basicAuthConfig.authEndpoint}`),
-			this.encryptionService.decrypt(mediaSource.basicAuthConfig.username),
-			this.encryptionService.decrypt(mediaSource.basicAuthConfig.password)
-		);
-
-		const { items } = vidisResponse;
-
-		return items;
 	}
 
 	private async getRequest<T>(url: URL, username: string, password: string): Promise<T> {

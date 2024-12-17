@@ -34,7 +34,7 @@ export class MediaSourceRepo extends BaseDomainObjectRepo<MediaSource, MediaSour
 		const entity: MediaSourceEntity | null = await this.em.findOne(
 			MediaSourceEntity,
 			{ format },
-			{ populate: ['oauthConfig', 'basicAuthConfig'] }
+			{ populate: ['oauthConfig'] }
 		);
 
 		if (!entity) {

@@ -1,16 +1,21 @@
+import { MediaSourceService, MediaSourceDataFormat } from '@modules/media-source';
+import {
+	MediaSourceBasicAuthConfigNotFoundLoggableException,
+	MediaSourceForSyncNotFoundLoggableException,
+} from '@modules/media-source/loggable';
+import { mediaSourceFactory } from '@modules/media-source/testing';
+import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
+import { SchoolService } from '@modules/school';
+import { axiosResponseFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSourceService } from '@modules/media-source/service';
-import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
-import { mediaSourceFactory } from '@modules/media-source/testing';
-import { MediaSourceDataFormat } from '@modules/media-source/enum';
-import { MediaSourceForSyncNotFoundLoggableException } from '@modules/media-source/loggable';
-import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
-import { AxiosErrorLoggable } from '@src/core/error/loggable';
-import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
+import { AxiosResponse } from 'axios';
 import { vidisResponseFactory } from '../testing/vidis.response.factory';
+import { VidisResponse } from '../response';
 import { VidisSyncService } from './vidis-sync.service';
 
 describe(VidisSyncService.name, () => {
@@ -19,6 +24,8 @@ describe(VidisSyncService.name, () => {
 	let httpService: DeepMocked<HttpService>;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
+	let schoolService: DeepMocked<SchoolService>;
+	let logger: DeepMocked<Logger>;
 	let encryptionService: DeepMocked<SymetricKeyEncryptionService>;
 
 	beforeAll(async () => {
@@ -38,6 +45,14 @@ describe(VidisSyncService.name, () => {
 					useValue: createMock<MediaSchoolLicenseService>(),
 				},
 				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
@@ -48,6 +63,8 @@ describe(VidisSyncService.name, () => {
 		httpService = module.get(HttpService);
 		mediaSourceService = module.get(MediaSourceService);
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
+		schoolService = module.get(SchoolService);
+		logger = module.get(Logger);
 		encryptionService = module.get(DefaultEncryptionService);
 	});
 
@@ -58,10 +75,38 @@ describe(VidisSyncService.name, () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
-	// TODO: sync service was refactored, update this test file
 
-	describe('syncMediaSchoolLicenses', () => {
-		describe('when the VIDIS media source is not found', () => {
+	// TODO: incomplete
+	describe('getVidisMediaSource', () => {
+		describe('when the vidis media source exists', () => {
+			const setup = () => {
+				const vidisMediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS });
+
+				mediaSourceService.findByFormat.mockResolvedValueOnce(vidisMediaSource);
+
+				return {
+					vidisMediaSource,
+				};
+			};
+
+			it('should find the media source by format', async () => {
+				setup();
+
+				await vidisSyncService.getVidisMediaSource();
+
+				expect(mediaSourceService.findByFormat).toBeCalledWith(MediaSourceDataFormat.VIDIS);
+			});
+
+			it('should return the vidis media source', async () => {
+				const { vidisMediaSource } = setup();
+
+				const result = await vidisSyncService.getVidisMediaSource();
+
+				expect(result).toEqual(vidisMediaSource);
+			});
+		});
+
+		describe('when the vidis media source does not exist', () => {
 			const setup = () => {
 				mediaSourceService.findByFormat.mockResolvedValueOnce(null);
 			};
@@ -69,98 +114,60 @@ describe(VidisSyncService.name, () => {
 			it('should throw an MediaSourceForSyncNotFoundLoggableException', async () => {
 				setup();
 
-				// const promise = vidisSyncService.getLicenseDataFromVidis();
-				//
-				// await expect(promise).rejects.toThrowError(
-				// 	new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS)
-				// );
-			});
-		});
+				const promise = vidisSyncService.getVidisMediaSource();
 
-		describe('when the VIDIS media source is found', () => {
-			describe('when VIDIS returns valid licenses', () => {
-				const setup = () => {
-					const vidisMediaSource = mediaSourceFactory.withBasicAuthConfig().build({
-						format: MediaSourceDataFormat.VIDIS,
-					});
-					const axiosResponse = axiosResponseFactory.build({
-						data: vidisResponseFactory.build(),
-					});
-
-					mediaSourceService.findByFormat.mockResolvedValueOnce(vidisMediaSource);
-					encryptionService.decrypt.mockReturnValueOnce('username');
-					encryptionService.decrypt.mockReturnValueOnce('password');
-					httpService.get.mockReturnValueOnce(of(axiosResponse));
-				};
-
-				it('should not throw any error', async () => {
-					setup();
-
-					// const promise = vidisSyncService.getLicenseDataFromVidis();
-					//
-					// await expect(promise).resolves.not.toThrowError();
-				});
-
-				it('should fetch media source config, fetch license data and start the license sync', async () => {
-					setup();
-
-					// await vidisSyncService.getLicenseDataFromVidis();
-
-					// expect(mediaSourceService.findByFormat).toBeCalledWith(MediaSourceDataFormat.VIDIS);
-					// expect(httpService.get).toHaveBeenCalled();
-					// expect(mediaSchoolLicenseService.syncMediaSchoolLicenses).toHaveBeenCalled();
-				});
-			});
-
-			describe('when there is a axios error fetching licenses from VIDIS', () => {
-				const setup = () => {
-					const vidisMediaSource = mediaSourceFactory.withBasicAuthConfig().build({
-						format: MediaSourceDataFormat.VIDIS,
-					});
-					const axiosErrorResponse = axiosErrorFactory.build();
-
-					mediaSourceService.findByFormat.mockResolvedValueOnce(vidisMediaSource);
-					encryptionService.decrypt.mockReturnValueOnce('username');
-					encryptionService.decrypt.mockReturnValueOnce('password');
-					httpService.get.mockReturnValue(throwError(() => axiosErrorResponse));
-
-					return { axiosErrorResponse };
-				};
-
-				it('should throw a AxiosErrorLoggable', async () => {
-					const { axiosErrorResponse } = setup();
-
-					// const promise = vidisSyncService.getLicenseDataFromVidis();
-					//
-					// await expect(promise).rejects.toThrowError(
-					// 	new AxiosErrorLoggable(axiosErrorResponse, 'VIDIS_GET_DATA_FAILED')
-					// );
-				});
-			});
-
-			describe('when there is an unknown error fetching licenses from VIDIS', () => {
-				const setup = () => {
-					const vidisMediaSource = mediaSourceFactory.withBasicAuthConfig().build({
-						format: MediaSourceDataFormat.VIDIS,
-					});
-					const error = new Error('test-unknown-error');
-
-					mediaSourceService.findByFormat.mockResolvedValueOnce(vidisMediaSource);
-					encryptionService.decrypt.mockReturnValueOnce('username');
-					encryptionService.decrypt.mockReturnValueOnce('password');
-					httpService.get.mockReturnValue(throwError(() => error));
-
-					return { error };
-				};
-
-				it('should throw a the unknown error', async () => {
-					const { error } = setup();
-
-					// const promise = vidisSyncService.getLicenseDataFromVidis();
-					//
-					// await expect(promise).rejects.toThrowError(error);
-				});
+				await expect(promise).rejects.toThrow(
+					new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS)
+				);
 			});
 		});
 	});
+
+	describe('getSchoolActivationsFromVidis', () => {
+		describe('when the provided media source has a valid basic auth config', () => {
+			const setup = () => {
+				const mediaSource = mediaSourceFactory.withBasicAuthConfig().build();
+				const axiosResponse: AxiosResponse<VidisResponse> = axiosResponseFactory.build({
+					data: vidisResponseFactory.build(),
+				});
+
+				httpService.get.mockReturnValueOnce(of(axiosResponse));
+
+				return {
+					mediaSource,
+					axiosResponse,
+				};
+			};
+
+			it('should return school activations from vidis', async () => {
+				const { mediaSource, axiosResponse } = setup();
+
+				// const result = await vidisSyncService.getSchoolActivationsFromVidis(mediaSource);
+				//
+				// expect(result).toEqual(axiosResponse.data);
+			});
+		});
+
+		describe('when the provided media source has no basic auth config', () => {
+			const setup = () => {
+				const mediaSource = mediaSourceFactory.build({ basicAuthConfig: undefined });
+
+				return {
+					mediaSource,
+				};
+			};
+
+			it('should throw an MediaSourceBasicAuthConfigNotFoundLoggableException', async () => {
+				const { mediaSource } = setup();
+
+				const promise = vidisSyncService.getSchoolActivationsFromVidis(mediaSource);
+
+				await expect(promise).rejects.toThrow(
+					new MediaSourceBasicAuthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS)
+				);
+			});
+		});
+	});
+
+	// describe('syncMediaSchoolLicenses', () => {});
 });
