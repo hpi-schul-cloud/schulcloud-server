@@ -34,13 +34,9 @@ export class SchoolService {
 	}
 
 	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null> {
-		// TODO: test
-		try {
-			const school: School = await this.schoolRepo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
-			return school;
-		} catch (e) {
-			return null;
-		}
+		const school: School | null = await this.schoolRepo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+		return school;
 	}
 
 	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {

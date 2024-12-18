@@ -1,4 +1,4 @@
-import { BaseFactory, schoolEntityFactory, userFactory } from '@shared/testing';
+import { BaseFactory, schoolEntityFactory } from '@shared/testing';
 import { mediaSourceEntityFactory } from '@src/modules/media-source/testing/media-source-entity.factory';
 import { MediaSchoolLicenseEntity } from '../entity';
 import { SchoolLicenseType } from '../enum';
@@ -12,6 +12,6 @@ export const mediaSchoolLicenseEntityFactory = BaseFactory.define<
 		school: schoolEntityFactory.build(),
 		type: SchoolLicenseType.MEDIA_LICENSE,
 		mediumId: `medium-${sequence}`,
-		mediaSource: mediaSourceEntityFactory.buildWithId(),
+		mediaSource: mediaSourceEntityFactory.build(),
 	};
 });

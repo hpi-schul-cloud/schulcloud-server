@@ -20,10 +20,4 @@ export class SchoolScope extends Scope<SchoolEntity> {
 			this.addQuery({ systems: { $in: [systemId] } });
 		}
 	}
-
-	byOfficialSchoolNumber(officialSchoolNumber?: string) {
-		if (officialSchoolNumber) {
-			this.addQuery({ officialSchoolNumber });
-		}
-	}
 }

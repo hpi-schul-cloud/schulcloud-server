@@ -14,7 +14,7 @@ import {
 } from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { FileStorageType, SCHOOL_REPO } from '../../domain';
+import { FileStorageType, School, SCHOOL_REPO } from '../../domain';
 import { federalStateFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';
 import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
@@ -312,6 +312,45 @@ describe('SchoolMikroOrmRepo', () => {
 
 				const updatedSchool = await repo.getSchoolById(newSchool.id);
 				expect(updatedSchool.getProps()).toEqual(expect.objectContaining(expectedProps));
+			});
+		});
+	});
+
+	describe('getSchoolByOfficialSchoolNumber', () => {
+		describe('when a school with the provided official school number exists', () => {
+			const setup = async () => {
+				const officialSchoolNumber = '00100';
+				const schoolEntity = schoolEntityFactory.build({
+					officialSchoolNumber,
+				});
+
+				await em.persistAndFlush([schoolEntity]);
+				em.clear();
+
+				const expectedSchoolDO = SchoolEntityMapper.mapToDo(schoolEntity);
+
+				return {
+					officialSchoolNumber,
+					expectedSchoolDO,
+				};
+			};
+
+			it('should return the existing school', async () => {
+				const { officialSchoolNumber, expectedSchoolDO } = await setup();
+
+				const school = await repo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school).toEqual(expectedSchoolDO);
+			});
+		});
+
+		describe('when a school with the provided official school number does not exist', () => {
+			it('should return null', async () => {
+				const officialSchoolNumber = '00100';
+
+				const school = await repo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school).toBeNull();
 			});
 		});
 	});
