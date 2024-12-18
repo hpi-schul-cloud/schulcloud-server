@@ -7,6 +7,7 @@ import { WsException } from '@nestjs/websockets';
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 import { Response } from 'express';
+import { AxiosError } from 'axios';
 import { DomainErrorHandler } from '../domain';
 import { ErrorResponse } from '../dto';
 import { ErrorUtils } from '../utils';
@@ -97,6 +98,26 @@ describe('GlobalErrorFilter', () => {
 
 				expect(domainErrorHandler.exec).toBeCalledWith(error);
 				expect(domainErrorHandler.exec).toBeCalledTimes(allContextTypes.length - 1);
+				expect(domainErrorHandler.execHttpContext).toBeCalledWith(error, {});
+				expect(domainErrorHandler.execHttpContext).toBeCalledTimes(1);
+			});
+		});
+
+		describe('given context is axios', () => {
+			const setup = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce(UseableContextType.http);
+
+				const error = new AxiosError('test');
+
+				return { error, argumentsHost };
+			};
+
+			it('should call exec on domain error handler', () => {
+				const { error, argumentsHost } = setup();
+
+				service.catch(error, argumentsHost);
+
 				expect(domainErrorHandler.execHttpContext).toBeCalledWith(error, {});
 				expect(domainErrorHandler.execHttpContext).toBeCalledTimes(1);
 			});

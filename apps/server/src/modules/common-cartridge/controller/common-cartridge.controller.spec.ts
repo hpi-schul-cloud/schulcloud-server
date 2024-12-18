@@ -1,10 +1,14 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Response } from 'express';
+import { StreamableFile } from '@nestjs/common';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
-import { CourseFileIdsResponse, ExportCourseParams } from './dto';
-import { CourseExportBodyResponse } from './dto/course-export-body.response';
+import { ExportCourseParams } from './dto';
+import { CourseQueryParams } from './dto/course.query.params';
+import { CourseExportBodyParams } from './dto/course-export.body.params';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;
@@ -37,28 +41,33 @@ describe('CommonCartridgeController', () => {
 	describe('exportCourse', () => {
 		const setup = () => {
 			const courseId = faker.string.uuid();
-			const request = new ExportCourseParams();
-			const expected = new CourseExportBodyResponse({
-				courseFileIds: new CourseFileIdsResponse([]),
-				courseCommonCartridgeMetadata: {
-					id: courseId,
-					title: faker.lorem.sentence(),
-					copyRightOwners: [faker.lorem.words()],
-				},
-			});
+			const params = { courseId } as ExportCourseParams;
+			const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
+			const body = {
+				topics: [faker.string.uuid(), faker.string.uuid()],
+				tasks: [faker.string.uuid()],
+				columnBoards: [faker.string.uuid(), faker.string.uuid()],
+			} as CourseExportBodyParams;
+			const expected = Buffer.from(faker.lorem.paragraphs(100));
+			const mockResponse = {
+				set: jest.fn(),
+			} as unknown as Response;
 
-			Reflect.set(request, 'parentId', courseId);
 			commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
 
-			return { request, expected };
+			return { params, expected, query, body, mockResponse };
 		};
 
-		it('should return a list of found FileRecords', async () => {
-			const { request, expected } = setup();
+		it('should return a streamable file', async () => {
+			const { params, query, body, mockResponse } = setup();
 
-			const result = await sut.exportCourse(request);
+			const result = await sut.exportCourse(params, query, body, mockResponse);
 
-			expect(result).toEqual(expected);
+			expect(mockResponse.set).toHaveBeenCalledWith({
+				'Content-Type': 'application/zip',
+				'Content-Disposition': `attachment; filename=course_${params.courseId}.zip`,
+			});
+			expect(result).toBeInstanceOf(StreamableFile);
 		});
 	});
 });
