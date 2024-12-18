@@ -323,7 +323,7 @@ describe('AccountDbService', () => {
 					if (mockTeacherUser.id === userId) {
 						return Promise.resolve(mockTeacherAccount);
 					}
-					throw new EntityNotFoundError(AccountEntity.name);
+					return Promise.reject(new EntityNotFoundError(AccountEntity.name));
 				});
 				return {};
 			};
