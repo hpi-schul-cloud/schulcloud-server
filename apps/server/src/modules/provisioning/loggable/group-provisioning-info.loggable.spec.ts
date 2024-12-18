@@ -11,7 +11,7 @@ describe(GroupProvisioningInfoLoggable.name, () => {
 				otherUsers: externalGroupUserDtoFactory.buildList(otherUserCount),
 			});
 
-			const loggable = new GroupProvisioningInfoLoggable(externalGroups, 100);
+			const loggable = new GroupProvisioningInfoLoggable(externalGroups, 100, 'igorHatGesagt');
 
 			return {
 				loggable,
@@ -31,6 +31,7 @@ describe(GroupProvisioningInfoLoggable.name, () => {
 					groupCount,
 					userCount: totalUserCount,
 					durationMs: 100,
+					externalUserId: 'igorHatGesagt',
 				},
 			});
 		});
