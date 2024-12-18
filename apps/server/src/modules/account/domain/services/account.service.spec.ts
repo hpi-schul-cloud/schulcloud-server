@@ -125,7 +125,13 @@ describe('AccountService', () => {
 
 	describe('findById', () => {
 		describe('When calling findById in accountService', () => {
+			const setup = () => {
+				accountServiceDb.findById.mockResolvedValueOnce(accountDoFactory.build());
+			};
+
 			it('should call findById in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.findById('id')).resolves.not.toThrow();
 				expect(accountServiceDb.findById).toHaveBeenCalledTimes(1);
 			});
@@ -134,6 +140,8 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.findById.mockResolvedValueOnce(accountDoFactory.build());
+
 				return newAccountService();
 			};
 
@@ -147,7 +155,13 @@ describe('AccountService', () => {
 
 	describe('findByUserId', () => {
 		describe('When calling findByUserId in accountService', () => {
+			const setup = () => {
+				accountServiceDb.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
+			};
+
 			it('should call findByUserId in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.findByUserId('userId')).resolves.not.toThrow();
 				expect(accountServiceDb.findByUserId).toHaveBeenCalledTimes(1);
 			});
@@ -156,6 +170,8 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
+
 				return newAccountService();
 			};
 
@@ -169,7 +185,13 @@ describe('AccountService', () => {
 
 	describe('findByUsernameAndSystemId', () => {
 		describe('When calling findByUsernameAndSystemId in accountService', () => {
+			const setup = () => {
+				accountServiceDb.findByUsernameAndSystemId.mockResolvedValueOnce(accountDoFactory.build());
+			};
+
 			it('should call findByUsernameAndSystemId in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.findByUsernameAndSystemId('username', 'systemId')).resolves.not.toThrow();
 				expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
 			});
@@ -178,6 +200,8 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.findByUsernameAndSystemId.mockResolvedValueOnce(accountDoFactory.build());
+
 				return newAccountService();
 			};
 
@@ -191,7 +215,13 @@ describe('AccountService', () => {
 
 	describe('findMultipleByUserId', () => {
 		describe('When calling findMultipleByUserId in accountService', () => {
+			const setup = () => {
+				accountServiceDb.findMultipleByUserId.mockResolvedValueOnce([accountDoFactory.build()]);
+			};
+
 			it('should call findMultipleByUserId in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.findMultipleByUserId(['userId1, userId2'])).resolves.not.toThrow();
 				expect(accountServiceDb.findMultipleByUserId).toHaveBeenCalledTimes(1);
 			});
@@ -200,6 +230,8 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.findMultipleByUserId.mockResolvedValueOnce([accountDoFactory.build()]);
+
 				return newAccountService();
 			};
 
@@ -213,7 +245,13 @@ describe('AccountService', () => {
 
 	describe('findByUserIdOrFail', () => {
 		describe('When calling findByUserIdOrFail in accountService', () => {
+			const setup = () => {
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(accountDoFactory.build());
+			};
+
 			it('should call findByUserIdOrFail in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.findByUserIdOrFail('userId')).resolves.not.toThrow();
 				expect(accountServiceDb.findByUserIdOrFail).toHaveBeenCalledTimes(1);
 			});
@@ -222,6 +260,8 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.findByUserIdOrFail.mockResolvedValueOnce(accountDoFactory.build());
+
 				return newAccountService();
 			};
 
@@ -690,15 +730,25 @@ describe('AccountService', () => {
 	});
 
 	describe('validatePassword', () => {
-		it('should call validatePassword in accountServiceDb', async () => {
-			await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
-			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
-			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
+		describe('when validating a password', () => {
+			const setup = () => {
+				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
+			};
+
+			it('should call validatePassword in accountServiceDb', async () => {
+				setup();
+
+				await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
+				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
+				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
+			});
 		});
 
 		describe('When calling validatePassword in accountService if feature is enabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.validatePassword.mockResolvedValueOnce(true);
+
 				return newAccountService();
 			};
 
@@ -846,7 +896,13 @@ describe('AccountService', () => {
 
 	describe('findMany', () => {
 		describe('When calling findMany in accountService', () => {
+			const setup = () => {
+				accountServiceDb.findMany.mockResolvedValueOnce(accountDoFactory.buildList(1));
+			};
+
 			it('should call findMany in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.findMany()).resolves.not.toThrow();
 				expect(accountServiceDb.findMany).toHaveBeenCalledTimes(1);
 			});
@@ -855,7 +911,13 @@ describe('AccountService', () => {
 
 	describe('searchByUsernamePartialMatch', () => {
 		describe('When calling searchByUsernamePartialMatch in accountService', () => {
+			const setup = () => {
+				accountServiceDb.searchByUsernamePartialMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+			};
+
 			it('should call searchByUsernamePartialMatch in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.searchByUsernamePartialMatch('username', 1, 1)).resolves.not.toThrow();
 				expect(accountServiceDb.searchByUsernamePartialMatch).toHaveBeenCalledTimes(1);
 			});
@@ -863,7 +925,13 @@ describe('AccountService', () => {
 	});
 
 	describe('searchByUsernameExactMatch', () => {
+		const setup = () => {
+			accountServiceDb.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+		};
+
 		it('should call searchByUsernameExactMatch in accountServiceDb', async () => {
+			setup();
+
 			await expect(accountService.searchByUsernameExactMatch('username')).resolves.not.toThrow();
 			expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
 		});
@@ -873,6 +941,8 @@ describe('AccountService', () => {
 		describe('findById', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.findById.mockResolvedValueOnce(accountDoFactory.build());
+
 				return newAccountService();
 			};
 
@@ -886,6 +956,8 @@ describe('AccountService', () => {
 		describe('searchByUsernamePartialMatch', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.searchByUsernamePartialMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+
 				return newAccountService();
 			};
 
@@ -899,7 +971,13 @@ describe('AccountService', () => {
 
 	describe('searchByUsernameExactMatch', () => {
 		describe('When calling searchByUsernameExactMatch in accountService', () => {
+			const setup = () => {
+				accountServiceDb.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+			};
+
 			it('should call searchByUsernameExactMatch in accountServiceDb', async () => {
+				setup();
+
 				await expect(accountService.searchByUsernameExactMatch('username')).resolves.not.toThrow();
 				expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
 			});
@@ -908,6 +986,8 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
+				accountServiceIdm.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+
 				return newAccountService();
 			};
 
