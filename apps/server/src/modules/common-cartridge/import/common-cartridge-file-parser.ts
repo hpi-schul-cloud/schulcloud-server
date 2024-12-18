@@ -39,6 +39,7 @@ export class CommonCartridgeFileParser {
 	public getTitle(): string | undefined {
 		const title = this.manifestParser.getTitle();
 
+		if (title === '' || title === undefined) return 'Importiertes Spaltenboard';
 		return title;
 	}
 
