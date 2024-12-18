@@ -2,7 +2,11 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ExternalGroupDto } from '../dto';
 
 export class GroupProvisioningInfoLoggable implements Loggable {
-	constructor(private readonly groups: ExternalGroupDto[], private readonly durationMs: number) {}
+	constructor(
+		private readonly groups: ExternalGroupDto[],
+		private readonly durationMs: number,
+		private readonly externalUserId: string
+	) {}
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		const userCount = this.groups.reduce(
@@ -16,6 +20,7 @@ export class GroupProvisioningInfoLoggable implements Loggable {
 				groupCount: this.groups.length,
 				userCount,
 				durationMs: this.durationMs,
+				externalUserId: this.externalUserId,
 			},
 		};
 	}
