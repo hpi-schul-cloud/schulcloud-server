@@ -103,7 +103,9 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		}
 
 		const endTime = performance.now();
-		this.logger.warning(new GroupProvisioningInfoLoggable(data.externalGroups ?? [], endTime - startTime));
+		this.logger.warning(
+			new GroupProvisioningInfoLoggable(data.externalGroups ?? [], endTime - startTime, data.externalUser.externalId)
+		);
 	}
 
 	private async removeUserFromGroups(data: OauthDataDto): Promise<void> {
