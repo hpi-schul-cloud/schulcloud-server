@@ -233,16 +233,18 @@ const validateOfficialSchoolNumber = async (context) => {
 // school County
 const validateCounty = async (context) => {
 	if (context && context.data && context.data.county) {
-		const schools = await context.app.service('schools').find({
-			query: {
-				_id: context.id,
-				$populate: 'federalState',
-				$limit: 1,
-			},
-		});
+		let federalState;
 
 		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
 		if (!isSuperHero) {
+			const schools = await context.app.service('schools').find({
+				query: {
+					_id: context.id,
+					$populate: 'federalState',
+					$limit: 1,
+				},
+			});
+
 			const currentSchool = schools.data[0];
 			if (!currentSchool) {
 				throw new Error(`Internal error`);
@@ -260,9 +262,14 @@ const validateCounty = async (context) => {
 			if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
 				throw new Error(`This school already have a county`);
 			}
+
+			// eslint-disable-next-line prefer-destructuring
+			federalState = currentSchool.federalState;
 		}
 
-		const federalState = await context.app.service('federalStates').get(context.data.federalState);
+		if (!federalState) {
+			federalState = await context.app.service('federalStates').get(context.data.federalState);
+		}
 		if (!federalState) {
 			throw new Error(`Unknown federal state was provided for the school`);
 		}
