@@ -3,23 +3,22 @@ import { RichTextElementContentDto } from './rich-text-element-content.dto';
 import { TimestampResponseDto } from './timestamp-response.dto';
 
 export class RichTextElementResponseDto {
-	id: string;
+	public id: string;
 
-	type: ContentElementType;
+	public type: ContentElementType;
 
-	content: RichTextElementContentDto;
+	public content: RichTextElementContentDto;
 
-	timestamps: TimestampResponseDto;
+	public timestamps: TimestampResponseDto;
 
-	constructor(
-		id: string,
-		type: ContentElementType,
-		content: RichTextElementContentDto,
-		timestamps: TimestampResponseDto
-	) {
-		this.id = id;
-		this.type = type;
-		this.content = content;
-		this.timestamps = timestamps;
+	constructor(props: Readonly<RichTextElementResponseDto>) {
+		this.id = props.id;
+		this.type = props.type;
+		this.content = props.content;
+		this.timestamps = props.timestamps;
+	}
+
+	public static isRichTextElement(reference: unknown): reference is RichTextElementResponseDto {
+		return reference instanceof RichTextElementResponseDto;
 	}
 }

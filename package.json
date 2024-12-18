@@ -119,6 +119,7 @@
 		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'",
 		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
+		"generate-client:lessons-api":"openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api",
 		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
 		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api"
 	},
