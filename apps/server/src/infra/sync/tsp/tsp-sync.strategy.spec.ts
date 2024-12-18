@@ -37,6 +37,7 @@ describe(TspSyncStrategy.name, () => {
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
 	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
+	let configService: DeepMocked<ConfigService<TspSyncConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -84,6 +85,7 @@ describe(TspSyncStrategy.name, () => {
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
 		tspSyncMigrationService = module.get(TspSyncMigrationService);
+		configService = module.get(ConfigService);
 	});
 
 	afterEach(() => {
@@ -125,6 +127,12 @@ describe(TspSyncStrategy.name, () => {
 		foundSystem?: System;
 		updatedAccount?: Account;
 		updatedUser?: UserDO;
+		configValues?: unknown[];
+		migrationResult?: {
+			totalAmount: number;
+			totalUsers: number;
+			totalAccounts: number;
+		};
 	}) => {
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
@@ -138,6 +146,16 @@ describe(TspSyncStrategy.name, () => {
 		tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(params.foundSystem ?? systemFactory.build());
 
 		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
+
+		params.configValues?.forEach((value) => configService.getOrThrow.mockReturnValueOnce(value));
+
+		tspSyncMigrationService.migrateTspUsers.mockResolvedValueOnce(
+			params.migrationResult ?? {
+				totalAccounts: faker.number.int(),
+				totalAmount: faker.number.int(),
+				totalUsers: faker.number.int(),
+			}
+		);
 	};
 
 	describe('sync', () => {
@@ -167,12 +185,15 @@ describe(TspSyncStrategy.name, () => {
 					fetchedStudentMigrations: [tspStudent],
 					fetchedTeacherMigrations: [tspTeacher],
 					mappedOauthDto: [oauthDataDto],
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 
 				return { oauthDataDto };
 			};
 
 			it('should find the tsp system', async () => {
+				setup();
+
 				await sut.sync();
 
 				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalled();
@@ -265,6 +286,7 @@ describe(TspSyncStrategy.name, () => {
 
 				setupMockServices({
 					fetchedSchools: tspSchools,
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 			};
 
@@ -289,6 +311,7 @@ describe(TspSyncStrategy.name, () => {
 				setupMockServices({
 					fetchedSchools: tspSchools,
 					foundSchool: school,
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 			};
 
@@ -311,6 +334,7 @@ describe(TspSyncStrategy.name, () => {
 
 				setupMockServices({
 					fetchedSchools: tspSchools,
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 			};
 
