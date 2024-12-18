@@ -21,7 +21,6 @@ import { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
-import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
 import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
@@ -56,7 +55,6 @@ export interface ServerConfig
 		LearnroomConfig,
 		AuthenticationConfig,
 		ToolConfig,
-		TldrawClientConfig,
 		UserLoginMigrationConfig,
 		LessonConfig,
 		BoardConfig,
@@ -98,6 +96,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
@@ -115,10 +114,6 @@ export interface ServerConfig
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
-	TLDRAW__WEBSOCKET_URL: string;
-	TLDRAW__ASSETS_ENABLED: boolean;
-	TLDRAW__ASSETS_MAX_SIZE_BYTES: number;
-	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: string[];
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 	I18N__FALLBACK_LANGUAGE: LanguageType;
@@ -157,6 +152,9 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: Configuration.get(
+		'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'
+	) as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
@@ -218,12 +216,6 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
-	TLDRAW__WEBSOCKET_URL: Configuration.get('TLDRAW__WEBSOCKET_URL') as string,
-	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
-	TLDRAW__ASSETS_MAX_SIZE_BYTES: Configuration.get('TLDRAW__ASSETS_MAX_SIZE_BYTES') as number,
-	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: (Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string).split(
-		','
-	),
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
 		'FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED'
@@ -267,14 +259,19 @@ const config: ServerConfig = {
 	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_SECRET')
 		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string)
 		: undefined,
+	SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS: Configuration.get(
+		'SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS'
+	) as number,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
 	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
+	PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT: Configuration.has('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT')
+		? (Configuration.get('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT') as number)
+		: undefined,
 	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
-	...getTldrawClientConfig(),
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'

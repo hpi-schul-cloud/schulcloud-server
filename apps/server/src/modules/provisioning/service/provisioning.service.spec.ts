@@ -7,13 +7,7 @@ import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.fact
 import { provisioningDtoFactory } from '@shared/testing/factory/provisioning-dto.factory';
 import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
 import { systemFactory } from '@src/modules/system/testing';
-import {
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../dto';
+import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
 import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
 import { ProvisioningService } from './provisioning.service';
@@ -93,9 +87,6 @@ describe('ProvisioningService', () => {
 		});
 		const oauthDataDto: OauthDataDto = oauthDataDtoFactory.build({
 			system: provisioningSystemDto,
-			externalUser: new ExternalUserDto({
-				externalId: 'externalUserId',
-			}),
 		});
 		const provisioningDto: ProvisioningDto = provisioningDtoFactory.build({
 			externalUserId: 'externalUserId',

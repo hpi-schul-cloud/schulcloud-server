@@ -177,6 +177,7 @@ describe(TspSyncStrategy.name, () => {
 					}),
 					externalUser: externalUserDtoFactory.build({
 						externalId: faker.string.alpha(),
+						roles: [],
 					}),
 				});
 				const tspTeacher: RobjExportLehrerMigration = {

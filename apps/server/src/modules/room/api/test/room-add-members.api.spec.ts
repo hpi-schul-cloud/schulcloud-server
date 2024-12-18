@@ -54,6 +54,15 @@ describe('Room Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const role = roleFactory.buildWithId({
+				name: RoleName.ROOMADMIN,
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_MEMBERS_ADD,
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
+			});
+			const roomEditorRole = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
@@ -65,7 +74,11 @@ describe('Room Controller (API)', () => {
 				externalSource: undefined,
 			});
 
-			const roomMemberships = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room.id,
+				schoolId: school.id,
+			});
 			await em.persistAndFlush([
 				room,
 				roomMemberships,
@@ -73,6 +86,7 @@ describe('Room Controller (API)', () => {
 				teacherUser,
 				teacherGuestRole,
 				studentGuestRole,
+				roomEditorRole,
 				otherTeacherUser,
 				otherTeacherAccount,
 				userGroupEntity,
@@ -87,7 +101,9 @@ describe('Room Controller (API)', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithMembers();
+
 				const response = await testApiClient.patch(`/${room.id}/members/add`);
+
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -96,15 +112,19 @@ describe('Room Controller (API)', () => {
 			const setupLoggedInUser = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persistAndFlush([teacherAccount, teacherUser]);
+
 				const loggedInClient = await testApiClient.login(teacherAccount);
+
 				return { loggedInClient };
 			};
 
 			it('should return forbidden error', async () => {
-				const { room } = await setupRoomWithMembers();
+				const { room, otherTeacherUser } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
 
-				const response = await loggedInClient.patch(`/${room.id}/members/add`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [otherTeacherUser.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -112,10 +132,12 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				const { loggedInClient, room } = await setupRoomWithMembers();
+				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const response = await loggedInClient.patch(`/${room.id}/members/add`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [otherTeacherUser.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -126,7 +148,7 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
-					userIdsAndRoles: [{ userId: otherTeacherUser.id, roleName: RoleName.ROOMEDITOR }],
+					userIds: [otherTeacherUser.id],
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);

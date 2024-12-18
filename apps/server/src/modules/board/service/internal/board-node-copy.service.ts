@@ -28,6 +28,7 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
+	VideoConferenceElement,
 } from '../../domain';
 
 export interface CopyContext {
@@ -81,6 +82,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.COLLABORATIVE_TEXT_EDITOR:
 				result = await this.copyCollaborativeTextEditorElement(boardNode as CollaborativeTextEditorElement, context);
+				break;
+			case BoardNodeType.VIDEO_CONFERENCE_ELEMENT:
+				result = await this.copyVideoConferenceElement(boardNode as VideoConferenceElement, context);
 				break;
 			case BoardNodeType.DELETED_ELEMENT:
 				result = await this.copyDeletedElement(boardNode as DeletedElement, context);
@@ -359,6 +363,16 @@ export class BoardNodeCopyService {
 			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
 		};
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyVideoConferenceElement(original: VideoConferenceElement, context: CopyContext): Promise<CopyStatus> {
+		const result: CopyStatus = {
+			type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
+			status: CopyStatusEnum.NOT_DOING,
+		};
+
 		return Promise.resolve(result);
 	}
 

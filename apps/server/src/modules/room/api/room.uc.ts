@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
-import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
+import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { Room, RoomService } from '../domain';
@@ -40,14 +40,13 @@ export class RoomUc {
 
 		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
 
-		await this.roomMembershipService
-			.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }])
-			.catch(async (err) => {
-				await this.roomService.deleteRoom(room);
-				throw err;
-			});
-
-		return room;
+		try {
+			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
+			return room;
+		} catch (err) {
+			await this.roomService.deleteRoom(room);
+			throw err;
+		}
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
@@ -126,17 +125,13 @@ export class RoomUc {
 		return memberResponses;
 	}
 
-	public async addMembersToRoom(
-		currentUserId: EntityId,
-		roomId: EntityId,
-		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoomRole }>
-	): Promise<void> {
+	public async addMembersToRoom(currentUserId: EntityId, roomId: EntityId, userIds: Array<EntityId>): Promise<void> {
 		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(currentUserId, roomId, Action.write);
-		await this.roomMembershipService.addMembersToRoom(roomId, userIdsAndRoles);
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.roomMembershipService.addMembersToRoom(roomId, userIds);
 	}
 
-	private mapToMember(member: UserWithRoomRoles, user: UserDO) {
+	private mapToMember(member: UserWithRoomRoles, user: UserDO): RoomMemberResponse {
 		return new RoomMemberResponse({
 			userId: member.userId,
 			firstName: user.firstName,
@@ -148,7 +143,7 @@ export class RoomUc {
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
 		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(currentUserId, roomId, Action.write);
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_REMOVE]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
 

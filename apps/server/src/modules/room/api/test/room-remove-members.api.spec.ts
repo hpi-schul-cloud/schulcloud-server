@@ -9,6 +9,7 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 } from '@shared/testing';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
@@ -45,32 +46,48 @@ describe('Room Controller (API)', () => {
 
 	describe('PATCH /rooms/:roomId/members/remove', () => {
 		const setupRoomRoles = () => {
-			const editorRole = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
+			const ownerRole = roleFactory.buildWithId({
+				name: RoleName.ROOMOWNER,
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_DELETE,
+					Permission.ROOM_MEMBERS_ADD,
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
+			});
+			const adminRole = roleFactory.buildWithId({
+				name: RoleName.ROOMADMIN,
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_MEMBERS_ADD,
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
 			});
 			const viewerRole = roleFactory.buildWithId({
 				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
-			return { editorRole, viewerRole };
+			return { ownerRole, adminRole, viewerRole };
 		};
 
 		const setupRoomWithMembers = async () => {
-			const room = roomEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
+			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const { teacherUser: inRoomEditor2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
-			const { teacherUser: inRoomEditor3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherUser: inRoomAdmin2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: inRoomAdmin3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: outTeacher } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 
-			const users = { teacherUser, inRoomEditor2, inRoomEditor3, inRoomViewer, outTeacher };
+			const users = { teacherUser, inRoomAdmin2, inRoomAdmin3, inRoomViewer, outTeacher };
 
-			const { editorRole, viewerRole } = setupRoomRoles();
+			const { ownerRole, adminRole, viewerRole } = setupRoomRoles();
 
-			const roomUsers = [teacherUser, inRoomEditor2, inRoomEditor3].map((user) => {
-				return { role: editorRole, user };
+			const roomUsers = [teacherUser, inRoomAdmin2, inRoomAdmin3].map((user) => {
+				return { role: adminRole, user };
 			});
 			roomUsers.push({ role: viewerRole, user: inRoomViewer });
 
@@ -81,9 +98,20 @@ describe('Room Controller (API)', () => {
 				externalSource: undefined,
 			});
 
-			const roomMemberships = roomMembershipEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room.id,
+				schoolId: school.id,
+			});
 
-			await em.persistAndFlush([...Object.values(users), room, roomMemberships, teacherAccount, userGroupEntity]);
+			await em.persistAndFlush([
+				...Object.values(users),
+				room,
+				roomMemberships,
+				teacherAccount,
+				userGroupEntity,
+				ownerRole,
+			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -131,9 +159,9 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			describe('when removing a user from the room', () => {
 				it('should return OK', async () => {
-					const { loggedInClient, room, inRoomEditor2 } = await setupRoomWithMembers();
+					const { loggedInClient, room, inRoomAdmin2 } = await setupRoomWithMembers();
 
-					const userIds = [inRoomEditor2.id];
+					const userIds = [inRoomAdmin2.id];
 					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
 					expect(response.status).toBe(HttpStatus.OK);
@@ -142,9 +170,9 @@ describe('Room Controller (API)', () => {
 
 			describe('when removing several users from the room', () => {
 				it('should return OK', async () => {
-					const { loggedInClient, room, inRoomEditor2, inRoomEditor3 } = await setupRoomWithMembers();
+					const { loggedInClient, room, inRoomAdmin2, inRoomAdmin3 } = await setupRoomWithMembers();
 
-					const userIds = [inRoomEditor2.id, inRoomEditor3.id];
+					const userIds = [inRoomAdmin2.id, inRoomAdmin3.id];
 					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
 
 					expect(response.status).toBe(HttpStatus.OK);
