@@ -17,4 +17,8 @@ export class LinkElementResponseDto {
 		this.content = props.content;
 		this.timestamps = props.timestamps;
 	}
+
+	public static isLinkElement(reference: unknown): reference is LinkElementResponseDto {
+		return reference instanceof LinkElementResponseDto;
+	}
 }

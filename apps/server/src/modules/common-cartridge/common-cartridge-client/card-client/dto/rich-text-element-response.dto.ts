@@ -17,4 +17,8 @@ export class RichTextElementResponseDto {
 		this.content = props.content;
 		this.timestamps = props.timestamps;
 	}
+
+	public static isRichTextElement(reference: unknown): reference is RichTextElementResponseDto {
+		return reference instanceof RichTextElementResponseDto;
+	}
 }

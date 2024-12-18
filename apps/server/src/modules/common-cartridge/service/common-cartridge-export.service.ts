@@ -26,12 +26,6 @@ import {
 	CardResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 
-const isRichTextElement = (reference: unknown): reference is RichTextElementResponseDto =>
-	reference instanceof RichTextElementResponseDto;
-
-const isLinkElement = (reference: unknown): reference is LinkElementResponseDto =>
-	reference instanceof LinkElementResponseDto;
-
 @Injectable()
 export class CommonCartridgeExportService {
 	constructor(
@@ -193,13 +187,13 @@ export class CommonCartridgeExportService {
 		element: CardResponseElementsInnerDto,
 		cardOrganization: CommonCartridgeOrganizationNode
 	): void {
-		if (isRichTextElement(element)) {
+		if (RichTextElementResponseDto.isRichTextElement(element)) {
 			const resource = this.mapper.mapRichTextElementToResource(element);
 
 			cardOrganization.addResource(resource);
 		}
 
-		if (isLinkElement(element)) {
+		if (LinkElementResponseDto.isLinkElement(element)) {
 			const resource = this.mapper.mapLinkElementToResource(element);
 
 			cardOrganization.addResource(resource);
