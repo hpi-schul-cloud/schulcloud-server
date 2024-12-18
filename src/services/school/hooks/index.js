@@ -205,21 +205,25 @@ const isNotAuthenticated = async (context) => {
 const validateOfficialSchoolNumber = async (context) => {
 	if (context && context.data && context.data.officialSchoolNumber) {
 		const { officialSchoolNumber } = context.data;
-		const schools = await context.app.service('schools').find({
-			query: {
-				_id: context.id,
-				$populate: 'federalState',
-				$limit: 1,
-			},
-		});
-		const currentSchool = schools.data[0];
-		if (!currentSchool) {
-			throw new Error(`Internal error`);
-		}
 		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
-		if (!isSuperHero && currentSchool.officialSchoolNumber) {
-			throw new Error(`This school already have an officialSchoolNumber`);
+		if (!isSuperHero) {
+			const schools = await context.app.service('schools').find({
+				query: {
+					_id: context.id,
+					$populate: 'federalState',
+					$limit: 1,
+				},
+			});
+
+			const currentSchool = schools.data[0];
+			if (!currentSchool) {
+				throw new Error(`Internal error`);
+			}
+			if (currentSchool.officialSchoolNumber) {
+				throw new Error(`This school already have an officialSchoolNumber`);
+			}
 		}
+
 		const officialSchoolNumberFormat = /^[a-zA-Z0-9-]+$/;
 		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
 			throw new Error(
