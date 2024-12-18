@@ -73,21 +73,17 @@ export class RoomMembershipService {
 		await this.roomMembershipRepo.delete(roomMembership);
 	}
 
-	public async addMembersToRoom(
-		roomId: EntityId,
-		userIdsAndRoles: Array<{
-			userId: EntityId;
-			roleName: RoleName.ROOMADMIN | RoleName.ROOMEDITOR | RoleName.ROOMVIEWER;
-		}>
-	): Promise<EntityId> {
+	public async addMembersToRoom(roomId: EntityId, userIds: Array<EntityId>): Promise<EntityId> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
 			throw new Error('Room membership not found');
 		}
 
+		const userIdsAndRoles = userIds.map((userId) => {
+			return { userId, roleName: RoleName.ROOMADMIN };
+		});
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
 
-		const userIds = userIdsAndRoles.map((user) => user.userId);
 		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
 
 		return roomMembership.id;
