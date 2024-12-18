@@ -11,6 +11,7 @@ import {
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
 
+// eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
 	@ApiProperty({ nullable: false })
 	text!: string;

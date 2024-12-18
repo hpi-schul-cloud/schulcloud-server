@@ -1,7 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { FilesStorageRestClientModule } from '@infra/files-storage-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
@@ -20,7 +19,6 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		FilesStorageClientModule,
 		FilesStorageRestClientModule,
 		LoggerModule,
 		MikroOrmModule.forRoot({
@@ -37,7 +35,6 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		CourseRoomsModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
-
 		CardClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),

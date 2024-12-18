@@ -1,8 +1,5 @@
-import { FileDto } from '@src/modules/files-storage-client';
 import sanitizeHtml from 'sanitize-html';
-import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
-import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
-import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
+import { FileDto } from '@src/modules/files-storage-client/dto';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
 import {
 	LessonContentDto,
@@ -10,11 +7,6 @@ import {
 	LessonDto,
 	LessonLinkedTaskDto,
 } from '../common-cartridge-client/lesson-client/dto';
-import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
-import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
-import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
-import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
-import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
 import { CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
 import {
 	CommonCartridgeElementType,
@@ -23,8 +15,16 @@ import {
 	CommonCartridgeVersion,
 } from '../export/common-cartridge.enums';
 import { CommonCartridgeElementProps } from '../export/elements/common-cartridge-element-factory';
-import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
 import { createIdentifier } from '../export/utils';
+import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
+import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
+import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
+import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
+import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
+import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
+import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
+import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
+import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -87,16 +87,40 @@ export class CommonCartridgeExportMapper {
 					}`,
 					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				};
-			case LessonContentDtoComponentValues.LERNSTORE:
-				return {
-					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: createIdentifier(lessonContent.id),
-					title: (lessonContent.content as ComponentLernstorePropsDto).resources.join(', '),
-					url: (lessonContent.content as ComponentLernstorePropsDto & { url: string }).url,
-				};
+			case LessonContentDtoComponentValues.LERNSTORE: {
+				const { resources } = lessonContent.content as ComponentLernstorePropsDto;
+				const extractedResources = this.extractResources(resources);
+				return (
+					extractedResources.map((resource) => {
+						return {
+							type: CommonCartridgeResourceType.WEB_LINK,
+							identifier: createIdentifier(lessonContent.id),
+							title: resource.title,
+							url: resource.url,
+						};
+					}) || []
+				);
+			}
 			default:
 				return [];
 		}
+	}
+
+	// should be removed after fixing the issue with the Lernstore component
+	private extractResources(resources: string[]): { title: string; url: string }[] {
+		return resources.map((resource) => {
+			const fields = resource.split(',').map((field) => field.trim());
+			let title = '';
+			let url = '';
+
+			fields.forEach((field) => {
+				const [key, value] = field.split('=').map((part) => part.trim());
+				if (key === 'title') title = value;
+				if (key === 'url') url = value;
+			});
+
+			return { title, url };
+		});
 	}
 
 	public mapContentToOrganization(content: LessonContentDto): CommonCartridgeOrganizationProps {
@@ -107,7 +131,7 @@ export class CommonCartridgeExportMapper {
 	}
 
 	public mapTaskToResource(task: BoardTaskDto, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
-		const intendedUse = (() => {
+		const intendedUse = ((): CommonCartridgeIntendedUseType => {
 			switch (version) {
 				case CommonCartridgeVersion.V_1_1_0:
 					return CommonCartridgeIntendedUseType.UNSPECIFIED;
@@ -131,7 +155,7 @@ export class CommonCartridgeExportMapper {
 		task: LessonLinkedTaskDto,
 		version: CommonCartridgeVersion
 	): CommonCartridgeResourceProps {
-		const intendedUse = (() => {
+		const intendedUse = ((): CommonCartridgeIntendedUseType => {
 			switch (version) {
 				case CommonCartridgeVersion.V_1_1_0:
 					return CommonCartridgeIntendedUseType.UNSPECIFIED;
@@ -190,6 +214,6 @@ export class CommonCartridgeExportMapper {
 			allowedAttributes: {},
 		}).slice(0, 20);
 
-		return `${title}...`;
+		return title.length > 20 ? `${title}...` : title;
 	}
 }

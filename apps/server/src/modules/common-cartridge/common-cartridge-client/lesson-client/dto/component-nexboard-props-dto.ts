@@ -1,13 +1,13 @@
 import { ComponentNexboardPropsImpl } from '../lessons-api-client';
 
 export class ComponentNexboardPropsDto {
-	board!: string;
+	public board: string;
 
-	description!: string;
+	public description: string;
 
-	title!: string;
+	public title: string;
 
-	url!: string;
+	public url: string;
 
 	constructor(nexboardContent: ComponentNexboardPropsImpl) {
 		this.board = nexboardContent.board;

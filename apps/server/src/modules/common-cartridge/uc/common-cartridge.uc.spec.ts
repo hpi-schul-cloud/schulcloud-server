@@ -51,6 +51,13 @@ describe('CommonCartridgeUc', () => {
 			const { courseId, expected, version, tasks, columnBoards, topics } = setup();
 
 			expect(await sut.exportCourse(courseId, version, topics, tasks, columnBoards)).toEqual(expected);
+			expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(
+				courseId,
+				version,
+				topics,
+				tasks,
+				columnBoards
+			);
 		});
 	});
 });

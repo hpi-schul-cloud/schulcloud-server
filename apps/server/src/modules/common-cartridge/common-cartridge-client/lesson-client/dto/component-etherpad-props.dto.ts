@@ -1,15 +1,13 @@
-import { ComponentEtherpadPropsImpl } from '../lessons-api-client';
-
 export class ComponentEtherpadPropsDto {
-	description!: string;
+	public description: string;
 
-	title!: string;
+	public title: string;
 
-	url!: string;
+	public url: string;
 
-	constructor(etherpadContent: ComponentEtherpadPropsImpl) {
-		this.description = etherpadContent.description;
-		this.title = etherpadContent.title;
-		this.url = etherpadContent.url;
+	constructor(props: Readonly<ComponentEtherpadPropsDto>) {
+		this.description = props.description;
+		this.title = props.title;
+		this.url = props.url;
 	}
 }
