@@ -83,7 +83,7 @@ export class VidisSyncService {
 								mediaSource,
 								mediumId: item.offerId,
 							});
-							await this.mediaSchoolLicenseService.saveSchoolLicense(newLicense);
+							await this.mediaSchoolLicenseService.saveMediaSchoolLicense(newLicense);
 						}
 					}
 				}
@@ -130,7 +130,7 @@ export class VidisSyncService {
 			return responseToken.data;
 		} catch (error: unknown) {
 			if (isAxiosError(error)) {
-				throw new AxiosErrorLoggable(error, 'VIDIS_GET_DATA_FAILED');
+				throw new AxiosErrorLoggable(error, 'VIDIS_GET_SCHOOL_ACTIVATIONS_FAILED');
 			} else {
 				throw error;
 			}

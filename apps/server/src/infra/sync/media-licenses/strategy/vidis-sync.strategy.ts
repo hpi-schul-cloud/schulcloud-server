@@ -15,7 +15,9 @@ export class VidisSyncStrategy extends SyncStrategy {
 
 	public async sync(): Promise<void> {
 		const mediaSource = await this.vidisSyncService.getVidisMediaSource();
+
 		const vidisItems = await this.vidisSyncService.getSchoolActivationsFromVidis(mediaSource);
+
 		await this.vidisSyncService.syncMediaSchoolLicenses(mediaSource, vidisItems);
 	}
 }

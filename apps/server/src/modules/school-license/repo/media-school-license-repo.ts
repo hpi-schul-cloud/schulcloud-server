@@ -5,7 +5,6 @@ import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MediaSource } from '@src/modules/media-source/domain';
 import { MediaSourceEntity } from '@src/modules/media-source/entity';
-
 import { MediaSourceConfigMapper } from '@src/modules/media-source/repo';
 import { MediaSchoolLicense } from '../domain';
 import { MediaSchoolLicenseEntity } from '../entity';
@@ -17,6 +16,7 @@ export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLice
 		return MediaSchoolLicenseEntity;
 	}
 
+	// TODO: remove redundant
 	public async findMediaSchoolLicense(schoolId: EntityId, mediumId: string): Promise<MediaSchoolLicense | null> {
 		const entity: MediaSchoolLicenseEntity | null = await this.em.findOne(
 			MediaSchoolLicenseEntity,
