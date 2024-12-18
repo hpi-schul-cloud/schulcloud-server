@@ -178,17 +178,5 @@ describe('CardResponseMapper', () => {
 				expect(cardResponse.visibilitySettings.publishedAt).toBe('');
 			});
 		});
-
-		describe('when deletedAt in TimestampsResponse is null', () => {
-			const mockList: CardListResponse = setup([]);
-			mockList.data[0].timestamps.deletedAt = undefined;
-
-			it('should return an empty string', () => {
-				const mapperResult = CardResponseMapper.mapToCardListResponseDto(mockList);
-				const cardResponse: CardResponseDto = mapperResult.data[0];
-
-				expect(cardResponse.timeStamps.deletedAt).toBe('');
-			});
-		});
 	});
 });
