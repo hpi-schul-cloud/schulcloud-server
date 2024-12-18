@@ -30,7 +30,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: LinkElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof LinkElement;
 	}
 }
