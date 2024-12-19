@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { LoggerConfig } from '@src/core/logger';
-import { JwtAuthGuardConfig } from '@src/infra/auth-guard';
-import { CoursesClientConfig } from '@src/infra/courses-client';
+import { JwtAuthGuardConfig } from '@infra/auth-guard';
+import { CoursesClientConfig } from '@infra/courses-client';
 import { Algorithm } from 'jsonwebtoken';
 
 export interface CommonCartridgeConfig extends LoggerConfig, JwtAuthGuardConfig, CoursesClientConfig {
