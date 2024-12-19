@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
+import { mediaSourceFactory } from '@src/modules/media-source/testing/media-source.factory';
 import { MediaUserLicense, MediaUserLicenseProps } from '../domain';
 import { UserLicenseType } from '../entity';
-import { mediaSourceFactory } from './media-source.factory';
 
 export const mediaUserLicenseFactory = BaseFactory.define<MediaUserLicense, MediaUserLicenseProps>(
 	MediaUserLicense,

@@ -4,4 +4,5 @@ export interface SchoolQuery {
 	federalStateId?: EntityId;
 	externalId?: string;
 	systemId?: EntityId;
+	officialSchoolNumber?: string;
 }

@@ -2,9 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MediaSourceRepo } from '@src/modules/media-source/repo';
+import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaUserLicense } from '../domain';
-import { MediaSourceRepo, MediaUserLicenseRepo } from '../repo';
-import { mediaSourceFactory, mediaUserLicenseFactory } from '../testing';
+import { MediaUserLicenseRepo } from '../repo';
+import { mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseService } from './media-user-license.service';
 
 describe(MediaUserLicenseService.name, () => {
