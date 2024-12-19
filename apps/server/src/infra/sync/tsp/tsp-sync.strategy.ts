@@ -100,7 +100,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncData(system: System, schools: School[]): Promise<void> {
-		const schoolDataDaysToFetch = this.configService.getOrThrow<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH');
+		const schoolDataDaysToFetch = this.configService.getOrThrow<number>('TSP_SYNC_DATA_DAYS_TO_FETCH');
 		const tspTeachers = await this.tspFetchService.fetchTspTeachers(system, schoolDataDaysToFetch);
 		const tspStudents = await this.tspFetchService.fetchTspStudents(system, schoolDataDaysToFetch);
 		const tspClasses = await this.tspFetchService.fetchTspClasses(system, schoolDataDaysToFetch);
