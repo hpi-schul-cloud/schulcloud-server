@@ -3,7 +3,7 @@ export class CourseCommonCartridgeMetadataDto {
 
 	public title: string;
 
-	public creationDate?: string;
+	public creationDate: string;
 
 	public copyRightOwners: Array<string>;
 

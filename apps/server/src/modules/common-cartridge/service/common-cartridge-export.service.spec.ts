@@ -1,36 +1,37 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { TestingModule, Test } from '@nestjs/testing';
-import { lessonFactory } from '@shared/testing';
-import { CoursesClientAdapter } from '@src/infra/courses-client';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { roomFactory } from '@src/modules/room';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
+import { CoursesClientAdapter } from '@infra/courses-client';
+import { CourseCommonCartridgeMetadataDto } from '@src/infra/courses-client/dto';
 import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
-import { CardClientAdapter } from '../common-cartridge-client/card-client';
-import {
-	CardListResponseDto,
-	RichTextElementContentDto,
-	LinkElementContentDto,
-} from '../common-cartridge-client/card-client/dto';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
+import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
+import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import {
-	BoardTaskDto,
 	RoomBoardDto,
+	BoardTaskDto,
 	BoardLessonDto,
 	BoardColumnBoardDto,
 } from '../common-cartridge-client/room-client/dto';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import {
-	courseMetadataFactory,
-	columnBoardFactory,
-	listOfCardResponseFactory,
-	boardTaskFactory,
-	boardLessonFactory,
+	RichTextElementContentDto,
+	LinkElementContentDto,
+	CardListResponseDto,
+} from '../common-cartridge-client/card-client/dto';
+import {
 	boardCloumnBoardFactory,
+	boardLessonFactory,
+	boardTaskFactory,
+	columnBoardFactory,
+	courseMetadataFactory,
+	lessonFactory,
+	listOfCardResponseFactory,
+	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -51,7 +52,7 @@ describe('CommonCartridgeExportService', () => {
 		exportTasks: boolean,
 		exportColumnBoards: boolean
 	) => {
-		const courseMetadata = courseMetadataFactory.build();
+		const courseMetadata: CourseCommonCartridgeMetadataDto = courseMetadataFactory.build();
 		const lessons = lessonFactory.buildList(2);
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
@@ -151,7 +152,7 @@ describe('CommonCartridgeExportService', () => {
 
 	describe('exportCourse', () => {
 		describe('when using version 1.1', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, true);
 
 			it('should use schema version 1.1.0', async () => {
 				const { archive } = await setup();
@@ -222,7 +223,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when using version 1.3', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_3_0, true, true, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_3_0, true, true, true);
 
 			it('should use schema version 1.3.0', async () => {
 				const { archive } = await setup();
@@ -305,7 +306,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when topics array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
 
 			it("shouldn't add lessons", async () => {
 				const { archive, lessons } = await setup();
@@ -317,7 +318,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when tasks array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
 
 			it("shouldn't add tasks", async () => {
 				const { archive, boardTask } = await setup();
@@ -327,7 +328,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when columnBoards array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
 
 			it("shouldn't add column boards", async () => {
 				const { archive, boardSkeleton } = await setup();
