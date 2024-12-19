@@ -1,11 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseFileIdsResponse } from '../controller/dto';
-import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
-import { CommonCartridgeImportService } from '../service/common-cartridge-import.service';
 import { CommonCartridgeUc } from './common-cartridge.uc';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeImportService } from '../service';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
@@ -44,30 +43,28 @@ describe('CommonCartridgeUc', () => {
 	describe('exportCourse', () => {
 		const setup = () => {
 			const courseId = faker.string.uuid();
-			const expected = new CourseExportBodyResponse({
-				courseFileIds: new CourseFileIdsResponse([]),
-				courseCommonCartridgeMetadata: {
-					id: courseId,
-					title: faker.lorem.sentence(),
-					copyRightOwners: [],
-					creationDate: faker.date.recent().toDateString(),
-				},
-			});
+			const version = CommonCartridgeVersion.V_1_1_0;
+			const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
+			const tasks = [faker.lorem.sentence(), faker.lorem.sentence()];
+			const columnBoards = [faker.lorem.sentence(), faker.lorem.sentence()];
+			const expected = Buffer.alloc(0);
 
-			commonCartridgeExportServiceMock.findCourseFileRecords.mockResolvedValue([]);
-			commonCartridgeExportServiceMock.findCourseCommonCartridgeMetadata.mockResolvedValue(
-				expected.courseCommonCartridgeMetadata
-			);
+			commonCartridgeExportServiceMock.exportCourse.mockResolvedValue(expected);
 
-			return { courseId, expected };
+			return { courseId, version, topics, tasks, columnBoards, expected };
 		};
 
 		it('should return a course export response with file IDs and metadata of a course', async () => {
-			const { courseId, expected } = setup();
+			const { courseId, expected, version, tasks, columnBoards, topics } = setup();
 
-			const result = await sut.exportCourse(courseId);
-
-			expect(result).toEqual(expected);
+			expect(await sut.exportCourse(courseId, version, topics, tasks, columnBoards)).toEqual(expected);
+			expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(
+				courseId,
+				version,
+				topics,
+				tasks,
+				columnBoards
+			);
 		});
 	});
 

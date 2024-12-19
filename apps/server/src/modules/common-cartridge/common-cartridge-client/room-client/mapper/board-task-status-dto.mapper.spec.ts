@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { BoardTaskStatusResponse } from '../room-api-client';
 import { BoardTaskStatusMapper } from './board-task-status-dto.mapper';
-import { BoardTaskStatusDto } from '../dto/board-task-status.dto';
+import { BoardTaskStatusDto } from '../dto';
 
 describe(BoardTaskStatusMapper.name, () => {
 	describe('mapBoardTaskStatusToDto', () => {

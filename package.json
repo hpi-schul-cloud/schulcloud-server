@@ -86,9 +86,6 @@
 		"nest:start:h5p:library-management": "nest start h5p-library-management",
 		"nest:start:h5p:library-management:dev": "nest start h5p-library-management --debug --watch",
 		"nest:start:h5p:library-management:prod": "node dist/apps/server/apps/h5p-library-management.app",
-		"nest:start:tldraw": "nest start tldraw",
-		"nest:start:tldraw:dev": "nest start tldraw --debug --watch",
-		"nest:start:tldraw:prod": "node dist/apps/server/apps/tldraw.app",
 		"nest:start:console": "nest start console --",
 		"nest:start:console:dev": "nest start console --watch --",
 		"nest:start:console:debug": "nest start console --debug --watch --",
@@ -98,9 +95,6 @@
 		"nest:start:idp-console": "nest start idp-console --",
 		"nest:start:idp-console:dev": "nest start idp-console --watch --",
 		"nest:start:idp-console:debug": "nest start idp-console --debug --watch --",
-		"nest:start:tldraw-console": "nest start tldraw-console --",
-		"nest:start:tldraw-console:dev": "nest start tldraw-console --watch --",
-		"nest:start:tldraw-console:debug": "nest start tldraw-console --debug --watch --",
 		"nest:start:common-cartridge": "node dist/apps/server/apps/common-cartridge.app",
 		"nest:start:common-cartridge:dev": "nest start common-cartridge --watch --",
 		"nest:start:common-cartridge:debug": "nest start common-cartridge --debug --watch --",
@@ -123,7 +117,10 @@
 		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
 		"pregenerate-client:courses-api": "rimraf ./apps/server/src/infra/courses-client/generated",
-		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api"
+		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api",
+		"generate-client:lessons-api":"openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api",
+		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
+		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
@@ -262,9 +259,7 @@
 		"winston": "^3.8.2",
 		"ws": "^8.17.1",
 		"xml2js": "^0.6.2",
-		"y-protocols": "^1.0.6",
-		"yaml": "^2.5.0",
-		"yjs": "^13.6.11"
+		"yaml": "^2.5.0"
 	},
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.617.0",

@@ -1,6 +1,14 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+	Body,
+	Controller,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+	UploadedFile,
+	UseInterceptors,
+} from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -12,9 +20,11 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthentication, CurrentUser, ICurrentUser } from '@src/infra/auth-guard';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
-import { CommonCartridgeImportBodyParams, ExportCourseParams } from './dto';
-import { CourseExportBodyResponse } from './dto/course-export-body.response';
+import { ExportCourseParams, CourseQueryParams, CourseExportBodyParams, CommonCartridgeImportBodyParams } from './dto';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
 @JwtAuthentication()
@@ -23,11 +33,27 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
-	@Get('export/:parentId')
-	public async exportCourse(@Param() exportCourseParams: ExportCourseParams): Promise<CourseExportBodyResponse> {
-		const response = await this.commonCartridgeUC.exportCourse(exportCourseParams.parentId);
+	@Post('export/:courseId')
+	public async exportCourse(
+		@Param() exportCourseParams: ExportCourseParams,
+		@Query() queryParams: CourseQueryParams,
+		@Body() bodyParams: CourseExportBodyParams,
+		@Res({ passthrough: true }) response: Response
+	): Promise<StreamableFile> {
+		const result = await this.commonCartridgeUC.exportCourse(
+			exportCourseParams.courseId,
+			queryParams.version,
+			bodyParams.topics,
+			bodyParams.tasks,
+			bodyParams.columnBoards
+		);
 
-		return response;
+		response.set({
+			'Content-Type': 'application/zip',
+			'Content-Disposition': `attachment; filename=course_${exportCourseParams.courseId}.zip`,
+		});
+
+		return new StreamableFile(result);
 	}
 
 	@Post('import')
