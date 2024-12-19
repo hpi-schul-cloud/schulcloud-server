@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { StreamableFile } from '@nestjs/common';
@@ -17,6 +18,16 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [
+						() => {
+							return { FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000 };
+						},
+					],
+				}),
+			],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{
