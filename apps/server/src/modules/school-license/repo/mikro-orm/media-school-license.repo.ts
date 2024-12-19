@@ -44,4 +44,18 @@ export class MediaSchoolLicenseMikroOrmRepo
 
 		return entityProps;
 	}
+
+	public async findMediaSchoolLicensesBySchoolId(schoolId: string): Promise<MediaSchoolLicense[]> {
+		const entities: MediaSchoolLicenseEntity[] = await this.em.find(
+			MediaSchoolLicenseEntity,
+			{ school: schoolId, type: SchoolLicenseType.MEDIA_LICENSE },
+			{ populate: ['mediaSource'] }
+		);
+
+		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
+			this.mapEntityToDomainObject(entity)
+		);
+
+		return domainObjects;
+	}
 }

@@ -6,6 +6,8 @@ export interface MediaSchoolLicenseRepo {
 	save(domainObject: MediaSchoolLicense): Promise<MediaSchoolLicense>;
 
 	delete(domainObjects: MediaSchoolLicense[] | MediaSchoolLicense): Promise<void>;
+
+	findMediaSchoolLicensesBySchoolId(schoolId: string): Promise<MediaSchoolLicense[]>;
 }
 
 export const MEDIA_SCHOOL_LICENSE_REPO = 'MEDIA_SCHOOL_LICENSE_REPO';
