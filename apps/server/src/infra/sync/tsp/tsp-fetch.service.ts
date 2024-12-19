@@ -22,42 +22,42 @@ export class TspFetchService {
 		this.logger.setContext(TspFetchService.name);
 	}
 
-	public async fetchTspSchools(system: System, daysToFetch: number): Promise<RobjExportSchule[]> {
+	public fetchTspSchools(system: System, daysToFetch: number): Promise<RobjExportSchule[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const schools = await this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
+		const schools = this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
 
 		return schools;
 	}
 
-	public async fetchTspTeachers(system: System, daysToFetch: number): Promise<RobjExportLehrer[]> {
+	public fetchTspTeachers(system: System, daysToFetch: number): Promise<RobjExportLehrer[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const teachers = await this.fetchTsp(system, (client) => client.exportLehrerList(lastChangeDate), []);
+		const teachers = this.fetchTsp(system, (client) => client.exportLehrerList(lastChangeDate), []);
 
 		return teachers;
 	}
 
-	public async fetchTspStudents(system: System, daysToFetch: number): Promise<RobjExportSchueler[]> {
+	public fetchTspStudents(system: System, daysToFetch: number): Promise<RobjExportSchueler[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const students = await this.fetchTsp(system, (client) => client.exportSchuelerList(lastChangeDate), []);
+		const students = this.fetchTsp(system, (client) => client.exportSchuelerList(lastChangeDate), []);
 
 		return students;
 	}
 
-	public async fetchTspClasses(system: System, daysToFetch: number): Promise<RobjExportKlasse[]> {
+	public fetchTspClasses(system: System, daysToFetch: number): Promise<RobjExportKlasse[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const classes = await this.fetchTsp(system, (client) => client.exportKlasseList(lastChangeDate), []);
+		const classes = this.fetchTsp(system, (client) => client.exportKlasseList(lastChangeDate), []);
 
 		return classes;
 	}
 
-	public async fetchTspTeacherMigrations(system: System): Promise<RobjExportLehrerMigration[]> {
-		const migrations = await this.fetchTsp(system, (client) => client.exportLehrerListMigration(), []);
+	public fetchTspTeacherMigrations(system: System): Promise<RobjExportLehrerMigration[]> {
+		const migrations = this.fetchTsp(system, (client) => client.exportLehrerListMigration(), []);
 
 		return migrations;
 	}
 
-	public async fetchTspStudentMigrations(system: System): Promise<RobjExportSchuelerMigration[]> {
-		const migrations = await this.fetchTsp(system, (client) => client.exportSchuelerListMigration(), []);
+	public fetchTspStudentMigrations(system: System): Promise<RobjExportSchuelerMigration[]> {
+		const migrations = this.fetchTsp(system, (client) => client.exportSchuelerListMigration(), []);
 
 		return migrations;
 	}
