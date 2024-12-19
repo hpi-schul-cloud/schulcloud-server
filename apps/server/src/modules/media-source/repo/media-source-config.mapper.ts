@@ -3,7 +3,7 @@ import { MediaSourceBasicAuthConfig, MediaSourceOauthConfig } from '../domain';
 import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
 
 export class MediaSourceConfigMapper {
-	static mapOauthConfigToEntity(config: MediaSourceOauthConfig): MediaSourceOauthConfigEmbeddable {
+	static mapOauthConfigToEmbeddable(config: MediaSourceOauthConfig): MediaSourceOauthConfigEmbeddable {
 		const configProps = config.getProps();
 
 		const configEmbeddable = new MediaSourceOauthConfigEmbeddable({
@@ -17,7 +17,7 @@ export class MediaSourceConfigMapper {
 		return configEmbeddable;
 	}
 
-	static mapBasicConfigToEntity(config: MediaSourceBasicAuthConfig): MediaSourceBasicAuthConfigEmbeddable {
+	static mapBasicAuthConfigToEmbeddable(config: MediaSourceBasicAuthConfig): MediaSourceBasicAuthConfigEmbeddable {
 		const configProps = config.getProps();
 
 		const configEmbeddable = new MediaSourceBasicAuthConfigEmbeddable({
@@ -42,7 +42,7 @@ export class MediaSourceConfigMapper {
 		return config;
 	}
 
-	static mapBasicConfigToDo(embeddable: MediaSourceBasicAuthConfigEmbeddable): MediaSourceBasicAuthConfig {
+	static mapBasicAuthConfigToDo(embeddable: MediaSourceBasicAuthConfigEmbeddable): MediaSourceBasicAuthConfig {
 		const config = new MediaSourceBasicAuthConfig({
 			id: embeddable._id.toHexString(),
 			username: embeddable.username,

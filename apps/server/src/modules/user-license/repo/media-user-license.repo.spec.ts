@@ -80,7 +80,7 @@ describe(MediaUserLicenseRepo.name, () => {
 							sourceId: mediaSource.sourceId,
 							format: mediaSource.format,
 							oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(oauthConfig),
-							basicAuthConfig: MediaSourceConfigMapper.mapBasicConfigToDo(basicAuthConfig),
+							basicAuthConfig: MediaSourceConfigMapper.mapBasicAuthConfigToDo(basicAuthConfig),
 						}),
 					}),
 				]);

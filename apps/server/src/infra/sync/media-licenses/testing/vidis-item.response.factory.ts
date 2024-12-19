@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { VidisItemResponse } from '@infra/sync/media-licenses/response/vidis-item.response';
+import { VidisItemResponse } from '../response';
 
 export const vidisItemResponseFactory = Factory.define<VidisItemResponse>(({ sequence }) => {
 	return {

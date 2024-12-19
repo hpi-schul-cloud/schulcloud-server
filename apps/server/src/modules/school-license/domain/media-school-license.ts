@@ -12,15 +12,7 @@ export class MediaSchoolLicense extends SchoolLicense<MediaSchoolLicenseProps> {
 		return this.props.mediumId;
 	}
 
-	set mediumId(value: string) {
-		this.props.mediumId = value;
-	}
-
 	get mediaSource(): MediaSource | undefined {
 		return this.props.mediaSource;
-	}
-
-	set mediaSource(value: MediaSource) {
-		this.props.mediaSource = value;
 	}
 }

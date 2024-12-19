@@ -1,52 +1,18 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { setupEntities } from '@shared/testing';
-import { MediaSourceOauthConfig } from '../domain/media-source-oauth-config';
-import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
-import { mediaSourceOAuthConfigEmbeddableFactory } from '../testing/media-source-oauth-config.embeddable.factory';
-import { mediaSourceOauthConfigFactory } from '../testing/media-source-oauth-config.factory';
+import { MediaSourceBasicAuthConfig, MediaSourceOauthConfig } from '../domain';
+import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
+import {
+	mediaSourceBasicAuthConfigFactory,
+	mediaSourceOauthConfigFactory,
+	mediaSourceBasicConfigEmbeddableFactory,
+	mediaSourceOAuthConfigEmbeddableFactory,
+} from '../testing';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
 describe('MediaSourceConfigMapper', () => {
-	describe('mapToDo', () => {
-		describe('when entity is passed', () => {
-			const setup = async () => {
-				await setupEntities();
-
-				const entity = mediaSourceOAuthConfigEmbeddableFactory.build();
-				const expected = new MediaSourceOauthConfig({
-					id: entity._id.toHexString(),
-					clientId: entity.clientId,
-					clientSecret: entity.clientSecret,
-					authEndpoint: entity.authEndpoint,
-					method: entity.method,
-				});
-
-				return { entity, expected };
-			};
-
-			it('should return an instance of config', async () => {
-				const { entity } = await setup();
-
-				const result = MediaSourceConfigMapper.mapOauthConfigToDo(entity);
-
-				expect(result).toBeInstanceOf(MediaSourceOauthConfig);
-			});
-
-			it('should return a do with all properties', async () => {
-				const { entity, expected } = await setup();
-
-				const result = MediaSourceConfigMapper.mapOauthConfigToDo(entity);
-
-				expect(result).toEqual(expected);
-			});
-		});
-	});
-
-	describe('mapToEntity', () => {
-		describe('when config do is passed', () => {
-			const setup = async () => {
-				await setupEntities();
-
+	describe('mapOauthConfigToEmbeddable', () => {
+		describe('when an oauth config domain object is passed', () => {
+			const setup = () => {
 				const configDo = mediaSourceOauthConfigFactory.build();
 				const expected = new MediaSourceOauthConfigEmbeddable({
 					_id: new ObjectId(configDo.id),
@@ -59,18 +25,115 @@ describe('MediaSourceConfigMapper', () => {
 				return { configDo, expected };
 			};
 
-			it('should return an instance of config embeddable', async () => {
-				const { configDo } = await setup();
+			it('should return an instance of config embeddable', () => {
+				const { configDo } = setup();
 
-				const result = MediaSourceConfigMapper.mapOauthConfigToEntity(configDo);
+				const result = MediaSourceConfigMapper.mapOauthConfigToEmbeddable(configDo);
 
 				expect(result).toBeInstanceOf(MediaSourceOauthConfigEmbeddable);
 			});
 
-			it('should return an embeddable with all properties', async () => {
-				const { configDo, expected } = await setup();
+			it('should return an embeddable with all properties', () => {
+				const { configDo, expected } = setup();
 
-				const result = MediaSourceConfigMapper.mapOauthConfigToEntity(configDo);
+				const result = MediaSourceConfigMapper.mapOauthConfigToEmbeddable(configDo);
+
+				expect(result).toEqual(expected);
+			});
+		});
+	});
+
+	describe('mapBasicAuthConfigToEmbeddable', () => {
+		describe('when a basic auth config domain object is passed', () => {
+			const setup = () => {
+				const domainObject = mediaSourceBasicAuthConfigFactory.build();
+				const expected = new MediaSourceBasicAuthConfigEmbeddable({
+					_id: new ObjectId(domainObject.id),
+					username: domainObject.username,
+					password: domainObject.password,
+					authEndpoint: domainObject.authEndpoint,
+				});
+
+				return { domainObject, expected };
+			};
+
+			it('should return an instance of config embeddable', () => {
+				const { domainObject } = setup();
+
+				const result = MediaSourceConfigMapper.mapBasicAuthConfigToEmbeddable(domainObject);
+
+				expect(result).toBeInstanceOf(MediaSourceBasicAuthConfigEmbeddable);
+			});
+
+			it('should return an embeddable with all properties', () => {
+				const { domainObject, expected } = setup();
+
+				const result = MediaSourceConfigMapper.mapBasicAuthConfigToEmbeddable(domainObject);
+
+				expect(result).toEqual(expected);
+			});
+		});
+	});
+
+	describe('mapOauthConfigToDo', () => {
+		describe('when an oauth config embeddable is passed', () => {
+			const setup = () => {
+				const embeddable = mediaSourceOAuthConfigEmbeddableFactory.build();
+				const expected = new MediaSourceOauthConfig({
+					id: embeddable._id.toHexString(),
+					clientId: embeddable.clientId,
+					clientSecret: embeddable.clientSecret,
+					authEndpoint: embeddable.authEndpoint,
+					method: embeddable.method,
+				});
+
+				return { embeddable, expected };
+			};
+
+			it('should return an instance of config', () => {
+				const { embeddable } = setup();
+
+				const result = MediaSourceConfigMapper.mapOauthConfigToDo(embeddable);
+
+				expect(result).toBeInstanceOf(MediaSourceOauthConfig);
+			});
+
+			it('should return a domain object with all properties', () => {
+				const { embeddable, expected } = setup();
+
+				const result = MediaSourceConfigMapper.mapOauthConfigToDo(embeddable);
+
+				expect(result).toEqual(expected);
+			});
+		});
+	});
+
+	describe('mapBasicAuthConfigToDo', () => {
+		describe('when a basic auth config embeddable is passed', () => {
+			const setup = () => {
+				const embeddable = mediaSourceBasicConfigEmbeddableFactory.build();
+				const expected = new MediaSourceBasicAuthConfig({
+					id: embeddable._id.toHexString(),
+					username: embeddable.username,
+					password: embeddable.password,
+					authEndpoint: embeddable.authEndpoint,
+				});
+
+				return { embeddable, expected };
+			};
+
+			it('should return an instance of config', () => {
+				const { embeddable } = setup();
+
+				const result = MediaSourceConfigMapper.mapBasicAuthConfigToDo(embeddable);
+
+				expect(result).toBeInstanceOf(MediaSourceBasicAuthConfig);
+			});
+
+			it('should return a domain object with all properties', () => {
+				const { embeddable, expected } = setup();
+
+				const result = MediaSourceConfigMapper.mapBasicAuthConfigToDo(embeddable);
 
 				expect(result).toEqual(expected);
 			});

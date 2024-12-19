@@ -12,10 +12,6 @@ export abstract class SchoolLicense<T extends SchoolLicenseProps> extends Domain
 		return this.props.schoolId;
 	}
 
-	set schoolId(value: EntityId) {
-		this.props.schoolId = value;
-	}
-
 	get type(): SchoolLicenseType {
 		return this.props.type;
 	}

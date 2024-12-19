@@ -4,7 +4,6 @@ import {
 	MediaSourceBasicAuthConfigNotFoundLoggableException,
 } from '@modules/media-source/loggable';
 import { MediaSchoolLicenseService, MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@modules/school-license/loggable';
 import { School, SchoolService } from '@modules/school';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Logger } from '@src/core/logger';
@@ -14,8 +13,8 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { lastValueFrom, Observable } from 'rxjs';
-import { VidisResponse } from '../response';
-import { VidisItemResponse } from '../response/vidis-item.response';
+import { VidisResponse, VidisItemResponse } from '../response';
+import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '../loggable';
 
 @Injectable()
 export class VidisSyncService {
@@ -95,27 +94,6 @@ export class VidisSyncService {
 		await Promise.all(syncItemPromises);
 	}
 
-	private async removeNoLongerAvailableLicenses(
-		existingLicenses: MediaSchoolLicense[],
-		schoolNumbersFromVidis: string[]
-	): Promise<void> {
-		const vidisSchoolNumberSet = new Set(schoolNumbersFromVidis);
-
-		const removalPromises: Promise<void>[] = existingLicenses.map(async (license: MediaSchoolLicense) => {
-			const school = await this.schoolService.getSchoolById(license.schoolId);
-			if (!school.officialSchoolNumber) {
-				return;
-			}
-
-			const isLicenseNoLongerInVidis = !vidisSchoolNumberSet.has(school.officialSchoolNumber);
-			if (isLicenseNoLongerInVidis) {
-				await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
-			}
-		});
-
-		await Promise.all(removalPromises);
-	}
-
 	private async getRequest<T>(url: URL, username: string, password: string): Promise<T> {
 		const encodedCredentials = btoa(`${username}:${password}`);
 		const observable: Observable<AxiosResponse<T>> = this.httpService.get(url.toString(), {
@@ -139,5 +117,26 @@ export class VidisSyncService {
 
 	private removePrefix(input: string): string {
 		return input.replace(/^.*?(\d{5})$/, '$1');
+	}
+
+	private async removeNoLongerAvailableLicenses(
+		existingLicenses: MediaSchoolLicense[],
+		schoolNumbersFromVidis: string[]
+	): Promise<void> {
+		const vidisSchoolNumberSet = new Set(schoolNumbersFromVidis);
+
+		const removalPromises: Promise<void>[] = existingLicenses.map(async (license: MediaSchoolLicense) => {
+			const school = await this.schoolService.getSchoolById(license.schoolId);
+			if (!school.officialSchoolNumber) {
+				return;
+			}
+
+			const isLicenseNoLongerInVidis = !vidisSchoolNumberSet.has(school.officialSchoolNumber);
+			if (isLicenseNoLongerInVidis) {
+				await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
+			}
+		});
+
+		await Promise.all(removalPromises);
 	}
 }

@@ -3,13 +3,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MediaSource } from '../domain';
-import { MediaSourceEntity } from '../entity';
-import { MediaSourceOauthConfigEmbeddable } from '../entity/media-source-oauth-config.embeddable';
-import { mediaSourceOAuthConfigEmbeddableFactory } from '../testing/media-source-oauth-config.embeddable.factory';
-import { mediaSourceEntityFactory } from '../testing/media-source-entity.factory';
-import { mediaSourceFactory } from '../testing/media-source.factory';
+import { MediaSourceEntity, MediaSourceOauthConfigEmbeddable } from '../entity';
+import { MediaSourceDataFormat } from '../enum';
+import { mediaSourceFactory, mediaSourceEntityFactory, mediaSourceOAuthConfigEmbeddableFactory } from '../testing';
 import { MediaSourceRepo } from './media-source.repo';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
+import { MediaSourceMapper } from './media-source.mapper';
 
 describe(MediaSourceRepo.name, () => {
 	let module: TestingModule;
@@ -104,6 +103,31 @@ describe(MediaSourceRepo.name, () => {
 				await repo.save(mediaSource);
 
 				expect(await em.findOne(MediaSourceEntity, { id: mediaSource.id })).toBeDefined();
+			});
+		});
+	});
+
+	describe('findByFormat', () => {
+		describe('when a media source data format is provided', () => {
+			const setup = async () => {
+				const format = MediaSourceDataFormat.VIDIS;
+				const mediaSourceEntity = mediaSourceEntityFactory.build({ format });
+				const otherMediaSourceEntity = mediaSourceEntityFactory.build({ format: MediaSourceDataFormat.BILDUNGSLOGIN });
+
+				await em.persistAndFlush([mediaSourceEntity, otherMediaSourceEntity]);
+				em.clear();
+
+				const expectedDO = MediaSourceMapper.mapEntityToDo(mediaSourceEntity);
+
+				return { format, expectedDO };
+			};
+
+			it('should return the media source', async () => {
+				const { format, expectedDO } = await setup();
+
+				const result = await repo.findByFormat(format);
+
+				expect(result).toEqual(expectedDO);
 			});
 		});
 	});

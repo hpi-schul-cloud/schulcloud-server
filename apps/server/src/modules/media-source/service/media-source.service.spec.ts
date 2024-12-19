@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceRepo } from '../repo';
 import { mediaSourceFactory } from '../testing';
 import { MediaSourceService } from './media-source.service';
+import { MediaSourceDataFormat } from '@modules/media-source';
 
 describe(MediaSourceService.name, () => {
 	let module: TestingModule;
@@ -50,6 +51,31 @@ describe(MediaSourceService.name, () => {
 
 				const result = await service.findBySourceId(mediaSource.sourceId);
 
+				expect(result).toEqual(mediaSource);
+			});
+		});
+	});
+
+	describe('findByFormat', () => {
+		describe('when a media source data format is given', () => {
+			const setup = () => {
+				const format = MediaSourceDataFormat.VIDIS;
+				const mediaSource = mediaSourceFactory.build({ format });
+
+				mediaSourceRepo.findByFormat.mockResolvedValueOnce(mediaSource);
+
+				return {
+					format,
+					mediaSource,
+				};
+			};
+
+			it('should return the media source', async () => {
+				const { format, mediaSource } = setup();
+
+				const result = await service.findByFormat(format);
+
+				expect(mediaSourceRepo.findByFormat).toBeCalledWith(format);
 				expect(result).toEqual(mediaSource);
 			});
 		});

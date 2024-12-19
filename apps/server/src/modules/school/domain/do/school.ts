@@ -32,12 +32,12 @@ export class School extends DomainObject<SchoolProps> {
 		return this.props.externalId;
 	}
 
-	get officialSchoolNumber(): string | undefined {
-		return this.props.officialSchoolNumber;
-	}
-
 	set externalId(externalId: string | undefined) {
 		this.props.externalId = externalId;
+	}
+
+	get officialSchoolNumber(): string | undefined {
+		return this.props.officialSchoolNumber;
 	}
 
 	set ldapLastSync(ldapLastSync: string | undefined) {

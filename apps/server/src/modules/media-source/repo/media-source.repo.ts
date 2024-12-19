@@ -31,11 +31,7 @@ export class MediaSourceRepo extends BaseDomainObjectRepo<MediaSource, MediaSour
 	}
 
 	public async findByFormat(format: MediaSourceDataFormat): Promise<MediaSource | null> {
-		const entity: MediaSourceEntity | null = await this.em.findOne(
-			MediaSourceEntity,
-			{ format },
-			{ populate: ['oauthConfig'] }
-		);
+		const entity: MediaSourceEntity | null = await this.em.findOne(MediaSourceEntity, { format });
 
 		if (!entity) {
 			return null;

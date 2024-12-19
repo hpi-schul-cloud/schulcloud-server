@@ -2,18 +2,13 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import {
-	MediaSourceEntity,
-	MediaSourceBasicAuthConfigEmbeddable,
-	MediaSourceOauthConfigEmbeddable,
-} from '@modules/media-source/entity';
-import { MediaSource } from '@modules/media-source';
+import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { MediaSourceConfigMapper } from '@modules/media-source/repo';
 import { MediaSchoolLicenseRepo } from './media-school-license-repo';
 import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
+import { MediaSchoolLicenseEntityMapper } from '../mapper/media-school-license.entity.mapper';
 
 describe(MediaSchoolLicenseRepo.name, () => {
 	let module: TestingModule;
@@ -42,39 +37,27 @@ describe(MediaSchoolLicenseRepo.name, () => {
 		describe('when a medium id of existing media school licenses is provided', () => {
 			const setup = async () => {
 				const mediumId = 'test-medium-id';
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
-				const mediaSchoolLicenses: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(3, {
+				const mediaSourceEntity: MediaSourceEntity = mediaSourceEntityFactory.build();
+				const mediaSchoolLicenses: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(2, {
+					mediaSource: mediaSourceEntity,
 					mediumId,
-					mediaSource,
 				});
+
+				const mediaSchoolLicenseWithNoId: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.buildWithId(
+					{
+						mediaSource: mediaSourceEntity,
+						mediumId,
+					},
+					undefined
+				);
+
+				mediaSchoolLicenses.push(mediaSchoolLicenseWithNoId);
 
 				await em.persistAndFlush(mediaSchoolLicenses);
 				em.clear();
 
 				const expectedDOs: MediaSchoolLicense[] = mediaSchoolLicenses.map(
-					(mediaSchoolLicense: MediaSchoolLicenseEntity): MediaSchoolLicense => {
-						const mediaSource = mediaSchoolLicense.mediaSource as MediaSourceEntity;
-						const domainObject = mediaSchoolLicenseFactory.build({
-							id: mediaSchoolLicense.id,
-							schoolId: mediaSchoolLicense.school.id,
-							type: mediaSchoolLicense.type,
-							mediumId: mediaSchoolLicense.mediumId,
-							mediaSource: new MediaSource({
-								id: mediaSource.id,
-								name: mediaSource.name,
-								sourceId: mediaSource.sourceId,
-								format: mediaSource.format,
-								basicAuthConfig: MediaSourceConfigMapper.mapBasicConfigToDo(
-									mediaSource.basicAuthConfig as MediaSourceBasicAuthConfigEmbeddable
-								),
-								oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(
-									mediaSource.oauthConfig as MediaSourceOauthConfigEmbeddable
-								),
-							}),
-						});
-
-						return domainObject;
-					}
+					(entity: MediaSchoolLicenseEntity): MediaSchoolLicense => MediaSchoolLicenseEntityMapper.mapEntityToDo(entity)
 				);
 
 				return {

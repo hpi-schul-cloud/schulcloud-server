@@ -8,7 +8,7 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@modules/school-license/loggable';
+import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
