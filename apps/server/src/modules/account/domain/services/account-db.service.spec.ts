@@ -691,6 +691,57 @@ describe('AccountDbService', () => {
 		});
 	});
 
+	describe('saveAll', () => {
+		describe('when given account that does not exist', () => {
+			const setup = () => {
+				const account = accountDoFactory.build({
+					id: undefined,
+				});
+				const savedAccount = accountDoFactory.build({
+					...account,
+					id: new ObjectId().toHexString(),
+				});
+
+				accountRepo.saveAll.mockResolvedValueOnce([savedAccount]);
+
+				return { account, savedAccount };
+			};
+
+			it('should save it', async () => {
+				const { account, savedAccount } = setup();
+
+				const result = await accountService.saveAll([account]);
+
+				expect(result.length).toBe(1);
+				expect(result[0]).toStrictEqual(savedAccount);
+				expect(accountRepo.saveAll).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when given account that exist', () => {
+			const setup = () => {
+				const account = accountDoFactory.build();
+				const foundAccount = accountDoFactory.build();
+				const updateSpy = jest.spyOn(foundAccount, 'update');
+
+				accountRepo.findById.mockResolvedValueOnce(foundAccount);
+				accountRepo.saveAll.mockResolvedValueOnce([foundAccount]);
+
+				return { account, foundAccount, updateSpy };
+			};
+
+			it('should update it', async () => {
+				const { account, foundAccount, updateSpy } = setup();
+
+				const result = await accountService.saveAll([account]);
+
+				expect(updateSpy).toHaveBeenCalledTimes(1);
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe(foundAccount.id);
+			});
+		});
+	});
+
 	describe('updateUsername', () => {
 		describe('when updating username', () => {
 			const setup = () => {

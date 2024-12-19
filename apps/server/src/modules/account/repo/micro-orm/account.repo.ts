@@ -13,7 +13,7 @@ import { AccountScope } from './scope/account-scope';
 export class AccountRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): typeof AccountEntity {
 		return AccountEntity;
 	}
 
@@ -93,7 +93,7 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
-	getObjectReference<Entity extends AnyEntity<Entity>>(
+	public getObjectReference<Entity extends AnyEntity<Entity>>(
 		entityName: EntityName<Entity>,
 		id: Primary<Entity> | Primary<Entity>[]
 	): Entity {
@@ -186,7 +186,7 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapEntitiesToDos(result);
 	}
 
-	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+	public async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
 		const scope = new AccountScope();
 		const userIdScope = new AccountScope();
 

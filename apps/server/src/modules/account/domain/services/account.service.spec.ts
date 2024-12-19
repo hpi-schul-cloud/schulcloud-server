@@ -380,6 +380,30 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('saveAll', () => {
+		describe('when saving accounts', () => {
+			const setup = () => {
+				const accounts = accountDoFactory.buildList(1);
+
+				configService.get.mockReturnValue(true);
+				accountServiceDb.saveAll.mockResolvedValueOnce(accounts);
+				accountServiceIdm.saveAll.mockResolvedValueOnce(accounts);
+
+				return { accounts, sut: newAccountService() };
+			};
+
+			it('should delegate to db and idm service', async () => {
+				const { accounts, sut } = setup();
+
+				const result = await sut.saveAll(accounts);
+
+				expect(result).toBeDefined();
+				expect(accountServiceDb.saveAll).toHaveBeenCalledTimes(1);
+				expect(accountServiceIdm.saveAll).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
 	describe('saveWithValidation', () => {
 		describe('When calling with an empty username', () => {
 			it('should throw an ValidationError', async () => {
