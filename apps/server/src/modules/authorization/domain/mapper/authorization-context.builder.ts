@@ -8,13 +8,13 @@ export class AuthorizationContextBuilder {
 		return context;
 	}
 
-	static write(requiredPermissions: Permission[]): AuthorizationContext {
+	public static write(requiredPermissions: Permission[]): AuthorizationContext {
 		const context = this.build(requiredPermissions, Action.write);
 
 		return context;
 	}
 
-	static read(requiredPermissions: Permission[]): AuthorizationContext {
+	public static read(requiredPermissions: Permission[]): AuthorizationContext {
 		const context = this.build(requiredPermissions, Action.read);
 
 		return context;

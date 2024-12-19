@@ -7,7 +7,7 @@ import { cleanupCollections, groupEntityFactory, roleFactory, TestApiClient, use
 import { Permission, RoleName } from '@shared/domain/interface';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { BoardResponse } from '../dto';
@@ -49,8 +49,8 @@ describe(`board lookup in room (api)`, () => {
 		const noAccessUser = userFactory.buildWithId();
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const roleRoomEdit = roleFactory.buildWithId({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
-		const roleRoomView = roleFactory.buildWithId({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+		const roleRoomEdit = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+		const roleRoomView = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
@@ -62,7 +62,7 @@ describe(`board lookup in room (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId();
 
-		const roomMember = roomMemberEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
 			accountWithEditRole,
@@ -75,7 +75,7 @@ describe(`board lookup in room (api)`, () => {
 			roleRoomView,
 			userGroup,
 			room,
-			roomMember,
+			roomMembership,
 		]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

@@ -15,6 +15,7 @@ import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
 import { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps, ContentElementType } from './types';
+import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()
 export class BoardNodeFactory {
@@ -84,6 +85,12 @@ export class BoardNodeFactory {
 			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
 				element = new CollaborativeTextEditorElement({
 					...this.getBaseProps(),
+				});
+				break;
+			case ContentElementType.VIDEO_CONFERENCE:
+				element = new VideoConferenceElement({
+					...this.getBaseProps(),
+					title: '',
 				});
 				break;
 			default:

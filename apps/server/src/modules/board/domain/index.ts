@@ -16,4 +16,5 @@ export * from './submission-item.do';
 export * from './path-utils';
 export * from './types';
 export * from './type-mapping';
+export * from './video-conference-element.do';
 export * from './deleted-element.do';

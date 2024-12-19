@@ -35,7 +35,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post()
-	async createShareToken(
+	public async createShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ShareTokenBodyParams
 	): Promise<ShareTokenResponse> {
@@ -62,7 +62,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':token')
-	async lookupShareToken(
+	public async lookupShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams
 	): Promise<ShareTokenInfoResponse> {
@@ -81,7 +81,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Post(':token/import')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async importShareToken(
+	public async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,
 		@Body() body: ShareTokenImportBodyParams
@@ -90,7 +90,7 @@ export class ShareTokenController {
 			currentUser.userId,
 			urlParams.token,
 			body.newName,
-			body.destinationCourseId
+			body.destinationId
 		);
 
 		const response = CopyMapper.mapToResponse(copyStatus);

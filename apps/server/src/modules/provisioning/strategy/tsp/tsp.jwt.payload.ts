@@ -27,8 +27,8 @@ export class TspJwtPayload implements JwtPayload {
 	public ptscSchuleNummer!: string;
 
 	@IsString()
-	@IsNotEmpty()
-	public ptscListKlasseId!: string;
+	@IsOptional()
+	public ptscListKlasseId?: string;
 
 	constructor(data: Partial<TspJwtPayload>) {
 		Object.assign(this, data);

@@ -121,16 +121,16 @@ export class UserRepo extends BaseRepo<User> {
 		return users;
 	}
 
-	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
+	public async findByExternalIds(externalIds: EntityId[]): Promise<EntityId[]> {
 		const foundUsers = await this._em.find(
 			User,
 			{ externalId: { $in: externalIds } },
 			{ fields: ['id', 'externalId'] }
 		);
 
-		const users = foundUsers.map(({ id }) => id);
+		const userIds = foundUsers.map(({ id }) => id);
 
-		return users;
+		return userIds;
 	}
 
 	public async updateAllUserByLastSyncedAt(userIds: string[]): Promise<void> {

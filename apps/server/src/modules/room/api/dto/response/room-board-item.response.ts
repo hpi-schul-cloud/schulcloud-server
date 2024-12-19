@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BoardLayout } from '@src/modules/board';
+import { BoardLayout } from '@modules/board';
 
 export class RoomBoardItemResponse {
 	@ApiProperty()

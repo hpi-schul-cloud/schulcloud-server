@@ -183,7 +183,7 @@ describe('IservProvisioningStrategy', () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.ISERV,
 					}),
-					externalUser: new ExternalUserDto({ externalId: userUUID }),
+					externalUser: new ExternalUserDto({ externalId: userUUID, roles: [] }),
 				});
 
 				const result: ProvisioningDto = await strategy.apply(data);

@@ -15,7 +15,7 @@ export class CoursesClientAdapter {
 		const response = await this.coursesApi.courseControllerGetCourseCcMetadataById(courseId, options);
 		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto = new CourseCommonCartridgeMetadataDto({
 			id: response.data.id,
-			title: response.data.title,
+			courseName: response.data.title,
 			creationDate: response.data.creationDate,
 			copyRightOwners: response.data.copyRightOwners,
 		});

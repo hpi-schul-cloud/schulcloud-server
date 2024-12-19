@@ -6,14 +6,15 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { BoardExternalReferenceType } from '@src/modules/board';
-import { columnBoardEntityFactory } from '@src/modules/board/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@src/modules/server';
+import { BoardExternalReferenceType } from '@modules/board';
+import { columnBoardEntityFactory } from '@modules/board/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
+import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { roomEntityFactory } from '../../testing';
 
 describe('Room Controller (API)', () => {
@@ -94,13 +95,14 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
-				const room = roomEntityFactory.build();
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: school.id });
 				const board = columnBoardEntityFactory.build({
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOM_VIEWER,
+					name: RoleName.ROOMVIEWER,
 					permissions: [Permission.ROOM_VIEW],
 				});
 				const userGroupEntity = groupEntityFactory.buildWithId({
@@ -109,8 +111,12 @@ describe('Room Controller (API)', () => {
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
-				const roomMember = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
-				await em.persistAndFlush([room, board, studentAccount, studentUser, role, userGroupEntity, roomMember]);
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				await em.persistAndFlush([room, board, studentAccount, studentUser, role, userGroupEntity, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

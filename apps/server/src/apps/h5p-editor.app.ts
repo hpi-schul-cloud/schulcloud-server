@@ -10,7 +10,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger } from '@src/core/logger';
 import { H5PEditorModule } from '@modules/h5p-editor';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();

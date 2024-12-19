@@ -8,12 +8,13 @@ export interface RoomProps extends AuthorizableObject {
 	color: RoomColor;
 	startDate?: Date;
 	endDate?: Date;
+	schoolId: EntityId;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate'>;
-export type RoomUpdateProps = RoomCreateProps; // will probably change in the future
+export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId'>;
+export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 
 export class Room extends DomainObject<RoomProps> {
 	public constructor(props: RoomProps) {
@@ -46,11 +47,15 @@ export class Room extends DomainObject<RoomProps> {
 		this.props.color = value;
 	}
 
+	public get schoolId(): EntityId {
+		return this.props.schoolId;
+	}
+
 	public get startDate(): Date | undefined {
 		return this.props.startDate;
 	}
 
-	public set startDate(value: Date) {
+	public set startDate(value: Date | undefined) {
 		this.props.startDate = value;
 	}
 
@@ -58,7 +63,7 @@ export class Room extends DomainObject<RoomProps> {
 		return this.props.endDate;
 	}
 
-	public set endDate(value: Date) {
+	public set endDate(value: Date | undefined) {
 		this.props.endDate = value;
 	}
 

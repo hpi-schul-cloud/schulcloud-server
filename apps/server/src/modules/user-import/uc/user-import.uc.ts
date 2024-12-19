@@ -15,6 +15,10 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { isError } from 'lodash';
+
+import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
+import { ImportUser, MatchCreator } from '../entity';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -23,10 +27,8 @@ import {
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
 	UserAlreadyMigratedLoggable,
+	UserMigrationFailedLoggable,
 } from '../loggable';
-
-import { ImportUserMatchCreatorScope, ImportUserNameMatchFilter, ImportUserFilter } from '../domain/interface';
-import { ImportUser, MatchCreator } from '../entity';
 import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
@@ -200,12 +202,18 @@ export class UserImportUc {
 				},
 			});
 			for (const importUser of importUsers) {
-				// TODO: Find a better solution for this loop
-				// this needs to be synchronous, because otherwise it was leading to
-				// server crush when working with larger number of users (e.g. 1000)
-				// eslint-disable-next-line no-await-in-loop
-				await this.updateUserAndAccount(importUser, school);
-				migratedUser += 1;
+				try {
+					// TODO: Find a better solution for this loop
+					// this needs to be synchronous, because otherwise it was leading to
+					// server crush when working with larger number of users (e.g. 1000)
+					// eslint-disable-next-line no-await-in-loop
+					await this.updateUserAndAccount(importUser, school);
+					migratedUser += 1;
+				} catch (error: unknown) {
+					if (isError(error)) {
+						this.logger.warning(new UserMigrationFailedLoggable(importUser, error));
+					}
+				}
 			}
 		}
 

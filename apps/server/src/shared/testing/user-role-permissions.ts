@@ -103,6 +103,7 @@ export const teacherPermissions = [
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
 	Permission.CONTEXT_TOOL_ADMIN,
+	Permission.ROOM_CREATE,
 ];
 
 export const adminPermissions = [

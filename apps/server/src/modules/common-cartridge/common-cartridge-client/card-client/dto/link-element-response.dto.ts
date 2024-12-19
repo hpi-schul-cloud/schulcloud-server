@@ -3,18 +3,22 @@ import { LinkElementContentDto } from './link-element-content.dto';
 import { TimestampResponseDto } from './timestamp-response.dto';
 
 export class LinkElementResponseDto {
-	id: string;
+	public id: string;
 
-	type: ContentElementType;
+	public type: ContentElementType;
 
-	content: LinkElementContentDto;
+	public content: LinkElementContentDto;
 
-	timestamps: TimestampResponseDto;
+	public timestamps: TimestampResponseDto;
 
-	constructor(id: string, type: ContentElementType, content: LinkElementContentDto, timestamps: TimestampResponseDto) {
-		this.id = id;
-		this.type = type;
-		this.content = content;
-		this.timestamps = timestamps;
+	constructor(props: LinkElementResponseDto) {
+		this.id = props.id;
+		this.type = props.type;
+		this.content = props.content;
+		this.timestamps = props.timestamps;
+	}
+
+	public static isLinkElement(reference: unknown): reference is LinkElementResponseDto {
+		return reference instanceof LinkElementResponseDto;
 	}
 }

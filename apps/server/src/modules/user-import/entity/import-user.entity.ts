@@ -117,7 +117,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 	@Property({ nullable: true })
 	externalRoleNames?: string[];
 
-	setMatch(user: User, matchedBy: MatchCreator) {
+	public setMatch(user: User, matchedBy: MatchCreator): void {
 		if (this.school.id !== user.school.id) {
 			throw new Error('not same school');
 		}
@@ -125,12 +125,12 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		this.matchedBy = matchedBy;
 	}
 
-	revokeMatch() {
+	public revokeMatch(): void {
 		this.user = undefined;
 		this.matchedBy = undefined;
 	}
 
-	static isImportUserRole(role: RoleName): role is ImportUserRoleName {
+	public static isImportUserRole(role: unknown): role is ImportUserRoleName {
 		return role === RoleName.ADMINISTRATOR || role === RoleName.STUDENT || role === RoleName.TEACHER;
 	}
 }

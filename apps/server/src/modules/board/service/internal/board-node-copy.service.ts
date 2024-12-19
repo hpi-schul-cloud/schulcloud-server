@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +14,7 @@ import {
 	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
+	ContentElementType,
 	DeletedElement,
 	DrawingElement,
 	ExternalToolElement,
@@ -27,9 +28,11 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
+	VideoConferenceElement,
 } from '../../domain';
 
 export interface CopyContext {
+	targetSchoolId: EntityId;
 	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]>;
 }
 
@@ -79,6 +82,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.COLLABORATIVE_TEXT_EDITOR:
 				result = await this.copyCollaborativeTextEditorElement(boardNode as CollaborativeTextEditorElement, context);
+				break;
+			case BoardNodeType.VIDEO_CONFERENCE_ELEMENT:
+				result = await this.copyVideoConferenceElement(boardNode as VideoConferenceElement, context);
 				break;
 			case BoardNodeType.DELETED_ELEMENT:
 				result = await this.copyDeletedElement(boardNode as DeletedElement, context);
@@ -283,35 +289,60 @@ export class BoardNodeCopyService {
 		return Promise.resolve(result);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async copyExternalToolElement(original: ExternalToolElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new ExternalToolElement({
+		let copy: ExternalToolElement | DeletedElement;
+		copy = new ExternalToolElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
 
-		let status: CopyStatusEnum;
-		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') && original.contextExternalToolId) {
-			const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
+		if (!this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') || !original.contextExternalToolId) {
+			const copyStatus: CopyStatus = {
+				copyEntity: copy,
+				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+				status: CopyStatusEnum.SUCCESS,
+			};
 
-			if (linkedTool) {
-				const contextExternalToolCopy: ContextExternalTool =
-					await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
+			return Promise.resolve(copyStatus);
+		}
 
-				copy.contextExternalToolId = contextExternalToolCopy.id;
+		const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
+		if (!linkedTool) {
+			const copyStatus: CopyStatus = {
+				copyEntity: copy,
+				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+				status: CopyStatusEnum.FAIL,
+			};
 
-				status = CopyStatusEnum.SUCCESS;
-			} else {
-				status = CopyStatusEnum.FAIL;
-			}
+			return copyStatus;
+		}
+
+		const contextToolCopyResult: ContextExternalTool | CopyContextExternalToolRejectData =
+			await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id, context.targetSchoolId);
+
+		let copyStatus: CopyStatusEnum = CopyStatusEnum.SUCCESS;
+		if (contextToolCopyResult instanceof CopyContextExternalToolRejectData) {
+			copy = new DeletedElement({
+				id: new ObjectId().toHexString(),
+				path: copy.path,
+				level: copy.level,
+				position: copy.position,
+				children: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				deletedElementType: ContentElementType.EXTERNAL_TOOL,
+				title: contextToolCopyResult.externalToolName,
+			});
+
+			copyStatus = CopyStatusEnum.FAIL;
 		} else {
-			status = CopyStatusEnum.SUCCESS;
+			copy.contextExternalToolId = contextToolCopyResult.id;
 		}
 
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
-			status,
+			status: copyStatus,
 		};
 
 		return Promise.resolve(result);
@@ -332,6 +363,16 @@ export class BoardNodeCopyService {
 			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
 		};
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyVideoConferenceElement(original: VideoConferenceElement, context: CopyContext): Promise<CopyStatus> {
+		const result: CopyStatus = {
+			type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
+			status: CopyStatusEnum.NOT_DOING,
+		};
+
 		return Promise.resolve(result);
 	}
 

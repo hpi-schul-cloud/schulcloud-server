@@ -1,5 +1,5 @@
-import type { Course, LessonEntity, SchoolEntity, Submission, User } from '@shared/domain/entity';
-import type { InputFormat } from '@shared/domain/types';
+import type { Course, LessonEntity, SchoolEntity, Submission, User } from '../entity';
+import type { InputFormat } from './input-format.types';
 
 interface ITask {
 	name: string;

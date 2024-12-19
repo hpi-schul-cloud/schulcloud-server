@@ -5,6 +5,7 @@ import { FileElementContentDto } from '../dto/file-element-content.dto';
 import { LinkElementContentDto } from '../dto/link-element-content.dto';
 import { RichTextElementContentDto } from '../dto/rich-text-element-content.dto';
 import { SubmissionContainerElementContentDto } from '../dto/submission-container-element-content.dto';
+import { VideoConferenceElementContentDto } from '../dto/video-conference-element-content.dto';
 
 export type CardContentElementInner =
 	| LinkElementContentDto
@@ -14,4 +15,5 @@ export type CardContentElementInner =
 	| FileElementContentDto
 	| RichTextElementContentDto
 	| SubmissionContainerElementContentDto
+	| VideoConferenceElementContentDto
 	| object;

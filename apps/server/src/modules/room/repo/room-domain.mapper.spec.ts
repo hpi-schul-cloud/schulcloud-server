@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Room, RoomProps } from '../domain/do/room.do';
 import { RoomColor } from '../domain/type';
 import { roomEntityFactory } from '../testing';
@@ -32,6 +33,7 @@ describe('RoomDomainMapper', () => {
 				id: '1',
 				name: 'Existing Room',
 				color: RoomColor.GREEN,
+				schoolId: new ObjectId().toHexString(),
 				startDate: new Date('2023-01-01'),
 				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
@@ -42,6 +44,7 @@ describe('RoomDomainMapper', () => {
 				id: '2',
 				name: 'Test Room',
 				color: RoomColor.RED,
+				schoolId: new ObjectId().toHexString(),
 				startDate: new Date('2023-02-01'),
 				endDate: new Date('2023-11-30'),
 				domainObject: existingRoom,
@@ -55,6 +58,7 @@ describe('RoomDomainMapper', () => {
 				id: '1',
 				name: 'Existing Room',
 				color: RoomColor.GREEN,
+				schoolId: existingRoom.schoolId,
 				startDate: new Date('2023-01-01'),
 				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
@@ -69,6 +73,7 @@ describe('RoomDomainMapper', () => {
 				id: '1',
 				name: 'Test Room',
 				color: RoomColor.RED,
+				schoolId: new ObjectId().toHexString(),
 				startDate: new Date('2023-01-01'),
 				endDate: new Date('2023-12-31'),
 			} as RoomEntity;
@@ -99,6 +104,7 @@ describe('RoomDomainMapper', () => {
 					id: '66d581c3ef74c548a4efea1d',
 					name: 'Test Room #1',
 					color: RoomColor.RED,
+					schoolId: new ObjectId().toHexString(),
 					startDate: new Date('2023-01-01'),
 					endDate: new Date('2023-12-31'),
 					createdAt: new Date('2024-10-1'),

@@ -10,7 +10,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger } from '@src/core/logger';
 import { ManagementServerModule } from '@modules/management';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();

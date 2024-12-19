@@ -22,11 +22,13 @@ import {
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { StorageLocation } from '@src/modules/files-storage/interface';
 import { sortBy } from 'lodash';
 import { ColumnBoardNodeRepo } from '../repo';
 
-type BoardCopyParams = {
+export type BoardCopyParams = {
 	originalBoard: LegacyBoard;
+	originalCourse: Course;
 	destinationCourse: Course;
 	user: User;
 };
@@ -45,10 +47,10 @@ export class BoardCopyService {
 	) {}
 
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
-		const { originalBoard, user, destinationCourse } = params;
+		const { originalBoard, user, originalCourse, destinationCourse } = params;
 
 		const boardElements: LegacyBoardElement[] = originalBoard.getElements();
-		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
+		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, originalCourse, destinationCourse);
 
 		const references: LegacyBoardElement[] = await this.extractReferences(elements);
 
@@ -82,6 +84,7 @@ export class BoardCopyService {
 	private async copyBoardElements(
 		boardElements: LegacyBoardElement[],
 		user: User,
+		originalCourse: Course,
 		destinationCourse: Course
 	): Promise<CopyStatus[]> {
 		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
@@ -101,7 +104,10 @@ export class BoardCopyService {
 				element.boardElementType === LegacyBoardElementType.ColumnBoard &&
 				element.target instanceof ColumnBoardNode
 			) {
-				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) => [pos, status]);
+				return this.copyColumnBoard(element.target, user, originalCourse, destinationCourse).then((status) => [
+					pos,
+					status,
+				]);
 			}
 
 			/* istanbul ignore next */
@@ -135,15 +141,19 @@ export class BoardCopyService {
 	private async copyColumnBoard(
 		columnBoard: ColumnBoardNode,
 		user: User,
+		originalCourse: Course,
 		destinationCourse: Course
 	): Promise<CopyStatus> {
 		return this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: columnBoard.id,
-			userId: user.id,
-			destinationExternalReference: {
+			targetExternalReference: {
 				id: destinationCourse.id,
 				type: BoardExternalReferenceType.Course,
 			},
+			sourceStorageLocationReference: { id: originalCourse.school.id, type: StorageLocation.SCHOOL },
+			targetStorageLocationReference: { id: destinationCourse.school.id, type: StorageLocation.SCHOOL },
+			userId: user.id,
+			targetSchoolId: user.school.id,
 		});
 	}
 

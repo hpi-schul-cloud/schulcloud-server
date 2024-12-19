@@ -1,7 +1,7 @@
 export class RichTextElementContentDto {
-	text: string;
+	public text: string;
 
-	inputFormat: string;
+	public inputFormat: string;
 
 	constructor(text: string, inputFormat: string) {
 		this.text = text;

@@ -10,19 +10,29 @@ import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity'
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
+import { VideoConferenceElement } from '@src/modules/board/domain';
+import { Room, RoomService } from '@src/modules/room';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 
+type ConferenceResource = Course | Room | TeamEntity | VideoConferenceElement;
+
 @Injectable()
 export class VideoConferenceService {
 	constructor(
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly configService: ConfigService<VideoConferenceConfig, true>,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly roomService: RoomService,
 		private readonly schoolService: LegacySchoolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
@@ -51,7 +61,9 @@ export class VideoConferenceService {
 	): Promise<boolean> {
 		let isExpert = false;
 		switch (conferenceScope) {
-			case VideoConferenceScope.COURSE: {
+			case VideoConferenceScope.COURSE:
+			case VideoConferenceScope.ROOM:
+			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
 				const user: UserDO = await this.userService.findById(userId);
 				isExpert = this.existsOnlyExpertRole(user.roles);
 
@@ -88,35 +100,76 @@ export class VideoConferenceService {
 	}
 
 	// should be public to expose ressources to UC for passing it to authrisation and improve performance
-	private async loadScopeRessources(
-		scopeId: EntityId,
-		scope: VideoConferenceScope
-	): Promise<Course | TeamEntity | null> {
-		let scopeRessource: Course | TeamEntity | null = null;
+	private async loadScopeResources(scopeId: EntityId, scope: VideoConferenceScope): Promise<ConferenceResource | null> {
+		let scopeResource: ConferenceResource | null = null;
 
 		if (scope === VideoConferenceScope.COURSE) {
-			scopeRessource = await this.courseService.findById(scopeId);
+			scopeResource = await this.courseService.findById(scopeId);
 		} else if (scope === VideoConferenceScope.EVENT) {
-			scopeRessource = await this.teamsRepo.findById(scopeId);
+			scopeResource = await this.teamsRepo.findById(scopeId);
+		} else if (scope === VideoConferenceScope.ROOM) {
+			scopeResource = await this.roomService.getSingleRoom(scopeId);
+		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
+			scopeResource = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
 		} else {
 			// Need to be solve the null with throw by it self.
 		}
 
-		return scopeRessource;
+		return scopeResource;
 	}
 
 	private isNullOrUndefined(value: unknown): value is null {
 		return !value;
 	}
 
-	private hasStartMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
+	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
+		if (entity instanceof Room) {
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
+			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+
+			if (roomMember) {
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR);
+			}
+
+			return false;
+		}
+		if (entity instanceof VideoConferenceElement) {
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
+
+			if (boardAuthorisedUser) {
+				return boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
+			}
+
+			return false;
+		}
 		const context = AuthorizationContextBuilder.read([Permission.START_MEETING]);
 		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
 
 		return hasPermission;
 	}
 
-	private hasJoinMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
+	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
+		if (entity instanceof Room) {
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
+			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+
+			if (roomMember) {
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER);
+			}
+
+			return false;
+		}
+		if (entity instanceof VideoConferenceElement) {
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
+
+			if (boardAuthorisedUser) {
+				return boardAuthorisedUser?.roles.includes(BoardRoles.READER);
+			}
+
+			return false;
+		}
 		const context = AuthorizationContextBuilder.read([Permission.JOIN_MEETING]);
 		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
 
@@ -125,16 +178,16 @@ export class VideoConferenceService {
 
 	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
-		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course | null] = await Promise.all([
+		const [authorizableUser, scopeResource]: [User, ConferenceResource | null] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.loadScopeRessources(scopeId, scope),
+			this.loadScopeResources(scopeId, scope),
 		]);
 
-		if (!this.isNullOrUndefined(scopeRessource)) {
-			if (this.hasStartMeetingAndCanRead(authorizableUser, scopeRessource)) {
+		if (!this.isNullOrUndefined(scopeResource)) {
+			if (await this.hasStartMeetingAndCanRead(authorizableUser, scopeResource)) {
 				return BBBRole.MODERATOR;
 			}
-			if (this.hasJoinMeetingAndCanRead(authorizableUser, scopeRessource)) {
+			if (await this.hasJoinMeetingAndCanRead(authorizableUser, scopeResource)) {
 				return BBBRole.VIEWER;
 			}
 		}
@@ -167,7 +220,7 @@ export class VideoConferenceService {
 
 				return {
 					scopeId,
-					scopeName: 'courses',
+					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
 					title: course.name,
 				};
@@ -177,9 +230,29 @@ export class VideoConferenceService {
 
 				return {
 					scopeId: event.teamId,
-					scopeName: 'teams',
+					scopeName: VideoConferenceScope.EVENT,
 					logoutUrl: `${this.hostUrl}/teams/${event.teamId}?activeTab=events`,
 					title: event.title,
+				};
+			}
+			case VideoConferenceScope.ROOM: {
+				const room: Room = await this.roomService.getSingleRoom(scopeId);
+
+				return {
+					scopeId: room.id,
+					scopeName: VideoConferenceScope.ROOM,
+					logoutUrl: `${this.hostUrl}/rooms/${room.id}`,
+					title: room.name,
+				};
+			}
+			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
+				const element = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
+
+				return {
+					scopeId: element.id,
+					scopeName: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
+					logoutUrl: `${this.hostUrl}/boards/${element.rootId}`,
+					title: element.title,
 				};
 			}
 			default:

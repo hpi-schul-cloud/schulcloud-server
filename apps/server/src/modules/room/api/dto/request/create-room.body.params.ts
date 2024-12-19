@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
-import { RoomCreateProps } from '@src/modules/room/domain';
-import { RoomColor } from '@src/modules/room/domain/type';
+import { NullToUndefined, SanitizeHtml } from '@shared/controller';
+import { RoomCreateProps } from '@modules/room/domain';
+import { RoomColor } from '@modules/room/domain/type';
 import { IsDate, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class CreateRoomBodyParams implements RoomCreateProps {
+export class CreateRoomBodyParams implements Omit<RoomCreateProps, 'schoolId'> {
 	@ApiProperty({
 		description: 'The name of the room',
 		required: true,
@@ -23,8 +23,9 @@ export class CreateRoomBodyParams implements RoomCreateProps {
 	@IsEnum(RoomColor)
 	color!: RoomColor;
 
-	@IsDate()
 	@IsOptional()
+	@NullToUndefined()
+	@IsDate()
 	@ApiPropertyOptional({
 		description: 'Start date of the room',
 		required: false,
@@ -32,8 +33,9 @@ export class CreateRoomBodyParams implements RoomCreateProps {
 	})
 	startDate?: Date;
 
-	@IsDate()
 	@IsOptional()
+	@NullToUndefined()
+	@IsDate()
 	@ApiPropertyOptional({
 		description: 'End date of the room',
 		required: false,

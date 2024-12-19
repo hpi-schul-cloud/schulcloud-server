@@ -25,8 +25,9 @@ describe(SchulconnexRestClient.name, () => {
 		clientId: 'clientId',
 		clientSecret: 'clientSecret',
 		tokenEndpoint: 'https://schulconnex.url/token',
-		personenInfoTimeoutInMs: 30000,
-		policiesInfoTimeoutInMs: 30000,
+		personInfoTimeoutInMs: 30001,
+		personenInfoTimeoutInMs: 30002,
+		policiesInfoTimeoutInMs: 30003,
 	};
 
 	beforeAll(() => {
@@ -100,6 +101,7 @@ describe(SchulconnexRestClient.name, () => {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
 					},
+					timeout: options.personInfoTimeoutInMs,
 				});
 			});
 

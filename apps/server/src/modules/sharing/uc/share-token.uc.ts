@@ -1,16 +1,26 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardNodeAuthorizableService,
+	ColumnBoardService,
+} from '@modules/board';
+import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyStatus } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { RoomService } from '@modules/room';
+import { SchoolService } from '@modules/school';
 import { TaskCopyService, TaskService } from '@modules/task';
-import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { BoardNodeAuthorizableService, BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
+import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolService } from '@src/modules/school';
+import { RoomMembershipService } from '@src/modules/room-membership';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -29,10 +39,12 @@ export class ShareTokenUC {
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly columnBoardService: ColumnBoardService,
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
+		private readonly roomService: RoomService,
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly schoolService: SchoolService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly logger: LegacyLogger
@@ -40,7 +52,7 @@ export class ShareTokenUC {
 		this.logger.setContext(ShareTokenUC.name);
 	}
 
-	async createShareToken(
+	public async createShareToken(
 		userId: EntityId,
 		payload: ShareTokenPayload,
 		options?: { schoolExclusive?: boolean; expiresInDays?: number }
@@ -68,14 +80,14 @@ export class ShareTokenUC {
 		return shareToken;
 	}
 
-	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
+	public async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
 		this.logger.debug({ action: 'lookupShareToken', userId, token });
 
 		const { shareToken, parentName } = await this.shareTokenService.lookupTokenWithParentName(token);
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
-		await this.checkLookupPermission(userId, shareToken.payload.parentType);
+		await this.checkTokenLookupPermission(userId, shareToken.payload);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -90,11 +102,11 @@ export class ShareTokenUC {
 		return shareTokenInfo;
 	}
 
-	async importShareToken(
+	public async importShareToken(
 		userId: EntityId,
 		token: string,
 		newName: string,
-		destinationCourseId?: string
+		destinationId?: EntityId
 	): Promise<CopyStatus> {
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
@@ -115,22 +127,22 @@ export class ShareTokenUC {
 				result = await this.copyCourse(user, shareToken.payload.parentId, newName);
 				break;
 			case ShareTokenParentType.Lesson:
-				if (destinationCourseId === undefined) {
-					throw new BadRequestException('Destination course id is required to copy lesson');
+				if (destinationId === undefined) {
+					throw new BadRequestException('Cannot copy lesson without destination course reference');
 				}
-				result = await this.copyLesson(user, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyLesson(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 			case ShareTokenParentType.Task:
-				if (destinationCourseId === undefined) {
-					throw new BadRequestException('Destination course id is required to copy task');
+				if (destinationId === undefined) {
+					throw new BadRequestException('Cannot copy task without destination course reference');
 				}
-				result = await this.copyTask(user, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyTask(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				if (destinationCourseId === undefined) {
-					throw new BadRequestException('Destination course id is required to copy task');
+				if (destinationId === undefined) {
+					throw new BadRequestException('Cannot copy board without destination course or room reference');
 				}
-				result = await this.copyColumnBoard(user, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyColumnBoard(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 		}
 
@@ -180,16 +192,29 @@ export class ShareTokenUC {
 	private async copyColumnBoard(
 		user: User,
 		originalColumnBoardId: string,
-		courseId: string,
+		destinationId: EntityId,
 		copyTitle?: string
 	): Promise<CopyStatus> {
-		await this.checkCourseWritePermission(user, courseId, Permission.COURSE_EDIT);
+		const originalBoard = await this.columnBoardService.findById(originalColumnBoardId, 0);
+
+		const targetExternalReference: BoardExternalReference = {
+			id: destinationId,
+			type: originalBoard.context.type,
+		};
+
+		await this.checkBoardContextWritePermission(user, targetExternalReference);
+
+		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
+		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
 
 		const copyStatus = this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
-			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
+			targetExternalReference,
+			sourceStorageLocationReference,
+			targetStorageLocationReference,
 			userId: user.id,
 			copyTitle,
+			targetSchoolId: user.school.id,
 		});
 		return copyStatus;
 	}
@@ -206,7 +231,7 @@ export class ShareTokenUC {
 				await this.checkTaskWritePermission(user, payload.parentId, Permission.HOMEWORK_CREATE);
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				await this.checkColumnBoardWritePermission(user, payload.parentId, Permission.COURSE_EDIT);
+				await this.checkColumnBoardSharePermission(user, payload.parentId);
 				break;
 			default:
 		}
@@ -225,6 +250,16 @@ export class ShareTokenUC {
 		};
 	}
 
+	private async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []) {
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		this.authorizationService.checkPermission(
+			user,
+			roomMembershipAuthorizable,
+			AuthorizationContextBuilder.write(permissions)
+		);
+	}
+
 	private async checkLessonWritePermission(user: User, lessonId: EntityId, permission: Permission) {
 		const lesson = await this.lessonService.findById(lessonId);
 		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([permission]));
@@ -235,25 +270,26 @@ export class ShareTokenUC {
 		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([permission]));
 	}
 
-	private async checkColumnBoardWritePermission(user: User, boardNodeId: EntityId, permission: Permission) {
-		const columBoard = await this.columnBoardService.findById(boardNodeId);
-		const boardNodeAuthorizableService = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
+	private async checkColumnBoardSharePermission(user: User, boardNodeId: EntityId) {
+		const columBoard = await this.columnBoardService.findById(boardNodeId, 0);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
+		const permissions = columBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 
 		this.authorizationService.checkPermission(
 			user,
-			boardNodeAuthorizableService,
-			AuthorizationContextBuilder.write([permission])
+			boardNodeAuthorizable,
+			AuthorizationContextBuilder.write(permissions)
 		);
 	}
 
-	private async checkSchoolReadPermission(user: User, schoolId: EntityId) {
+	private async checkSchoolReadPermission(user: User, schoolId: EntityId): Promise<void> {
 		const school = await this.schoolService.getSchoolById(schoolId);
 		const authorizationContext = AuthorizationContextBuilder.read([]);
 
 		this.authorizationService.checkPermission(user, school, authorizationContext);
 	}
 
-	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
+	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.contextType === ShareTokenContextType.School) {
@@ -263,11 +299,11 @@ export class ShareTokenUC {
 		}
 	}
 
-	private async checkLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {
+	private async checkTokenLookupPermission(userId: EntityId, payload: ShareTokenPayload) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		let requiredPermissions: Permission[] = [];
 		// eslint-disable-next-line default-case
-		switch (parentType) {
+		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
 				break;
@@ -277,9 +313,12 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Task:
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 				break;
-			case ShareTokenParentType.ColumnBoard:
-				requiredPermissions = [Permission.COURSE_EDIT];
+			case ShareTokenParentType.ColumnBoard: {
+				const columnBoard = await this.columnBoardService.findById(payload.parentId, 0);
+				requiredPermissions =
+					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 				break;
+			}
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
@@ -295,29 +334,58 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Course:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COURSE_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Course Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_COURSE_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Lesson:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_LESSON_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Lesson Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_LESSON_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Task:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_TASK_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Task Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_TASK_SHARE');
 				}
 				break;
 			case ShareTokenParentType.ColumnBoard:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean)) {
-					throw new InternalServerErrorException('Import Task Feature not enabled');
+					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
 				}
 				break;
 			default:
 				throw new NotImplementedException('Import Feature not implemented');
 		}
+	}
+
+	// ---- Move to shared service? (see apps/server/src/modules/board/uc/board.uc.ts)
+
+	private async checkBoardContextWritePermission(user: User, boardContext: BoardExternalReference) {
+		if (boardContext.type === BoardExternalReferenceType.Course) {
+			await this.checkCourseWritePermission(user, boardContext.id, Permission.COURSE_EDIT);
+		} else if (boardContext.type === BoardExternalReferenceType.Room) {
+			await this.checkRoomWritePermission(user, boardContext.id);
+		} else {
+			/* istanbul ignore next */
+			throw new Error(`Unsupported board reference type ${boardContext.type as string}`);
+		}
+	}
+
+	private async getStorageLocationReference(boardContext: BoardExternalReference): Promise<StorageLocationReference> {
+		if (boardContext.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseService.findById(boardContext.id);
+
+			return { id: course.school.id, type: StorageLocation.SCHOOL };
+		}
+
+		if (boardContext.type === BoardExternalReferenceType.Room) {
+			const room = await this.roomService.getSingleRoom(boardContext.id);
+
+			return { id: room.schoolId, type: StorageLocation.SCHOOL };
+		}
+		/* istanbul ignore next */
+		throw new Error(`Unsupported board reference type ${boardContext.type as string}`);
 	}
 }

@@ -11,6 +11,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Put,
 	Query,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -46,7 +47,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getRooms(
+	public async getRooms(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: RoomPaginationParams
 	): Promise<RoomListResponse> {
@@ -66,7 +67,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async createRoom(
+	public async createRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createRoomParams: CreateRoomBodyParams
 	): Promise<RoomItemResponse> {
@@ -85,13 +86,13 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getRoomDetails(
+	public async getRoomDetails(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
+		const { room, permissions } = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
 
 		return response;
 	}
@@ -104,7 +105,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getRoomBoards(
+	public async getRoomBoards(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomBoardListResponse> {
@@ -115,22 +116,22 @@ export class RoomController {
 		return response;
 	}
 
-	@Patch(':roomId')
-	@ApiOperation({ summary: 'Create a new room' })
+	@Put(':roomId')
+	@ApiOperation({ summary: 'Update an existing room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomDetailsResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async updateRoom(
+	public async updateRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
 		@Body() updateRoomParams: UpdateRoomBodyParams
 	): Promise<RoomDetailsResponse> {
-		const room = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
+		const { room, permissions } = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
 
 		return response;
 	}
@@ -144,7 +145,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@HttpCode(204)
-	async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
+	public async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
 	}
 
@@ -155,12 +156,12 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async addMembers(
+	public async addMembers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
 		@Body() bodyParams: AddRoomMembersBodyParams
 	): Promise<void> {
-		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIdsAndRoles);
+		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
 	}
 
 	@Patch(':roomId/members/remove')
@@ -170,7 +171,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async removeMembers(
+	public async removeMembers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
 		@Body() bodyParams: RemoveRoomMembersBodyParams
@@ -189,7 +190,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	async getMembers(
+	public async getMembers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomMemberListResponse> {

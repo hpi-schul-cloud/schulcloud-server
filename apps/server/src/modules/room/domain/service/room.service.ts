@@ -26,7 +26,12 @@ export class RoomService {
 	public async createRoom(props: RoomCreateProps): Promise<Room> {
 		const roomProps: RoomProps = {
 			id: new ObjectId().toHexString(),
-			...props,
+			name: props.name,
+			color: props.color,
+			schoolId: props.schoolId,
+			// make sure that the dates are not null at runtime
+			startDate: props.startDate ?? undefined,
+			endDate: props.endDate ?? undefined,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -46,7 +51,12 @@ export class RoomService {
 
 	public async updateRoom(room: Room, props: RoomUpdateProps): Promise<void> {
 		this.validateTimeSpan(props, room.id);
-		Object.assign(room, props);
+
+		room.name = props.name;
+		room.color = props.color;
+		// make sure that the dates are not null at runtime
+		room.startDate = props.startDate ?? undefined;
+		room.endDate = props.endDate ?? undefined;
 
 		await this.roomRepo.save(room);
 	}

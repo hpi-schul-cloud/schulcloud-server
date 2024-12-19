@@ -9,11 +9,12 @@ import {
 	cleanupCollections,
 	groupEntityFactory,
 	roleFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity/group.entity';
-import { roomMemberEntityFactory } from '@src/modules/room-member/testing/room-member-entity.factory';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@src/modules/server';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member.response';
 
@@ -47,18 +48,19 @@ describe('Room Controller (API)', () => {
 
 	describe('GET /rooms/:roomId/members', () => {
 		const setupRoomWithMembers = async () => {
+			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId();
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const editRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_EDITOR,
+				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOM_VIEWER,
+				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
-			const students = userFactory.buildList(2);
-			const teachers = userFactory.buildList(2);
+			const students = userFactory.buildList(2, { school });
+			const teachers = userFactory.buildList(2, { school });
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
 					{ role: editRole, user: teacherUser },
@@ -71,10 +73,14 @@ describe('Room Controller (API)', () => {
 				organization: teacherUser.school,
 				externalSource: undefined,
 			});
-			const roomMembers = roomMemberEntityFactory.build({ userGroupId: userGroupEntity.id, roomId: room.id });
+			const roomMemberships = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room.id,
+				schoolId: school.id,
+			});
 			await em.persistAndFlush([
 				room,
-				roomMembers,
+				roomMemberships,
 				teacherAccount,
 				teacherUser,
 				userGroupEntity,

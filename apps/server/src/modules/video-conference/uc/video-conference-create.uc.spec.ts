@@ -91,7 +91,7 @@ describe('VideoConferenceCreateUc', () => {
 
 					const scopeInfo: ScopeInfo = {
 						scopeId: scope.id,
-						scopeName: 'scopeName',
+						scopeName: VideoConferenceScope.COURSE,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};
@@ -166,7 +166,7 @@ describe('VideoConferenceCreateUc', () => {
 
 					const scopeInfo: ScopeInfo = {
 						scopeId: scope.id,
-						scopeName: 'scopeName',
+						scopeName: VideoConferenceScope.COURSE,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};

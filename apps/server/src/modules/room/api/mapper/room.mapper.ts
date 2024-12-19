@@ -1,5 +1,6 @@
+import { ColumnBoard } from '@modules/board';
 import { Page } from '@shared/domain/domainobject';
-import { ColumnBoard } from '@src/modules/board';
+import { Permission } from '@shared/domain/interface';
 import { Room } from '../../domain/do/room.do';
 import { RoomPaginationParams } from '../dto/request/room-pagination.params';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
@@ -14,6 +15,7 @@ export class RoomMapper {
 			id: room.id,
 			name: room.name,
 			color: room.color,
+			schoolId: room.schoolId,
 			startDate: room.startDate,
 			endDate: room.endDate,
 			createdAt: room.createdAt,
@@ -32,15 +34,17 @@ export class RoomMapper {
 		return response;
 	}
 
-	static mapToRoomDetailsResponse(room: Room): RoomDetailsResponse {
+	static mapToRoomDetailsResponse(room: Room, permissions: Permission[]): RoomDetailsResponse {
 		const response = new RoomDetailsResponse({
 			id: room.id,
 			name: room.name,
 			color: room.color,
+			schoolId: room.schoolId,
 			startDate: room.startDate,
 			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
+			permissions,
 		});
 
 		return response;

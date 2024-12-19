@@ -1,30 +1,30 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { GroupTypes } from '@modules/group';
+import { RoomMembershipService } from '@modules/room-membership';
+import { roomMembershipFactory } from '@modules/room-membership/testing';
+import { roomFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
 import { courseFactory, groupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { GroupTypes } from '@src/modules/group';
-import { RoomMemberService } from '@src/modules/room-member';
-import { roomMemberFactory } from '@src/modules/room-member/testing';
-import { roomFactory } from '@src/modules/room/testing';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
 
-describe(`${BoardContextService.name}`, () => {
+describe(BoardContextService.name, () => {
 	let module: TestingModule;
 	let service: BoardContextService;
 	let courseRepo: DeepMocked<CourseRepo>;
-	let roomMemberService: DeepMocked<RoomMemberService>;
+	let roomMembershipService: DeepMocked<RoomMembershipService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextService,
 				{
-					provide: RoomMemberService,
-					useValue: createMock<RoomMemberService>(),
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
 				},
 				{
 					provide: CourseRepo,
@@ -34,7 +34,7 @@ describe(`${BoardContextService.name}`, () => {
 		}).compile();
 
 		service = module.get(BoardContextService);
-		roomMemberService = module.get(RoomMemberService);
+		roomMembershipService = module.get(RoomMembershipService);
 		courseRepo = module.get(CourseRepo);
 
 		await setupEntities();
@@ -218,10 +218,10 @@ describe(`${BoardContextService.name}`, () => {
 			describe('when user with editor role is associated with the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const role = roleFactory.build({ name: RoleName.ROOM_EDITOR, permissions: [Permission.ROOM_EDIT] });
+					const role = roleFactory.build({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
 					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
 					const room = roomFactory.build();
-					roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
@@ -232,10 +232,11 @@ describe(`${BoardContextService.name}`, () => {
 				it('should return their information + editor role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMemberService.getRoomMemberAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
 					});
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
@@ -253,10 +254,10 @@ describe(`${BoardContextService.name}`, () => {
 			describe('when user with view role is associated with the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const role = roleFactory.build({ name: RoleName.ROOM_VIEWER, permissions: [Permission.ROOM_VIEW] });
+					const role = roleFactory.build({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
 					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
 					const room = roomFactory.build();
-					roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
@@ -267,10 +268,11 @@ describe(`${BoardContextService.name}`, () => {
 				it('should return their information + reader role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMemberService.getRoomMemberAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
 					});
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
@@ -291,7 +293,7 @@ describe(`${BoardContextService.name}`, () => {
 					const role = roleFactory.build();
 					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
 					const room = roomFactory.build();
-					roomMemberFactory.build({ roomId: room.id, userGroupId: group.id });
+					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
@@ -302,10 +304,11 @@ describe(`${BoardContextService.name}`, () => {
 				it('should return their information + no role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMemberService.getRoomMemberAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
 					});
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);

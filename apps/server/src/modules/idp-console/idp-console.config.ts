@@ -1,12 +1,12 @@
-import { ConsoleWriterConfig } from '@infra/console';
-import { LoggerConfig } from '@src/core/logger';
-import { AccountConfig } from '@modules/account';
-import { UserConfig } from '@modules/user';
-import { SynchronizationConfig } from '@modules/synchronization';
-import { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { LanguageType } from '@shared/domain/interface';
+import { ConsoleWriterConfig } from '@infra/console';
 import { RabbitMqConfig } from '@infra/rabbitmq';
+import { SchulconnexClientConfig } from '@infra/schulconnex-client';
+import { AccountConfig } from '@modules/account';
+import { SynchronizationConfig } from '@modules/synchronization';
+import { UserConfig } from '@modules/user';
+import { LanguageType } from '@shared/domain/interface';
+import { LoggerConfig } from '@src/core/logger';
 
 export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,
@@ -33,6 +33,9 @@ const config: IdpConsoleConfig = {
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
+	SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS: Configuration.get(
+		'SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS'
+	) as number,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,

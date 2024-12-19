@@ -8,7 +8,7 @@ import {
 	SingleColumnBoardResponse,
 } from '../room-api-client';
 import { RoomBoardDtoMapper } from './room-board-dto.mapper';
-import { BoardTaskStatusDto } from '../dto/board-task-status.dto';
+import { BoardTaskStatusDto } from '../dto';
 
 describe(RoomBoardDtoMapper.name, () => {
 	describe('mapResponseToRoomBoardDto', () => {

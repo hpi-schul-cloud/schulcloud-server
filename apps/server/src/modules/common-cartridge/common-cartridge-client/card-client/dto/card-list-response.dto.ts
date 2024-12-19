@@ -1,7 +1,7 @@
 import { CardResponseDto } from './card-response.dto';
 
 export class CardListResponseDto {
-	data: CardResponseDto[];
+	public data: CardResponseDto[];
 
 	constructor(data: CardResponseDto[]) {
 		this.data = data;

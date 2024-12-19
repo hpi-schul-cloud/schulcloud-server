@@ -11,6 +11,7 @@ import {
 	FileElementContent,
 	LinkElementContent,
 	RichTextElementContent,
+	VideoConferenceElementContent,
 } from '../cards-api-client';
 import { CardResponseDto } from '../dto/card-response.dto';
 import { CollaborativeTextEditorElementResponseDto } from '../dto/collaborative-text-editor-element-response.dto';
@@ -33,6 +34,8 @@ import { VisibilitySettingsResponseDto } from '../dto/visibility-settings-respon
 import { TimestampResponseDto } from '../dto/timestamp-response.dto';
 import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
 import { CardListResponseDto } from '../dto/card-list-response.dto';
+import { VideoConferenceElementResponseDto } from '../dto/video-conference-element-response.dto';
+import { VideoConferenceElementContentDto } from '../dto/video-conference-element-content.dto';
 
 export class CardResponseMapper {
 	public static mapToCardListResponseDto(cardListResponse: CardListResponse): CardListResponseDto {
@@ -45,14 +48,14 @@ export class CardResponseMapper {
 	}
 
 	private static mapToCardResponseDto(cardResponse: CardResponse): CardResponseDto {
-		return new CardResponseDto(
-			cardResponse.id,
-			cardResponse.title ?? '',
-			cardResponse.height,
-			this.mapToCardResponseElementsInnerDto(cardResponse.elements),
-			this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
-			this.mapToTimestampDto(cardResponse.timestamps)
-		);
+		return new CardResponseDto({
+			id: cardResponse.id,
+			title: cardResponse.title,
+			height: cardResponse.height,
+			elements: this.mapToCardResponseElementsInnerDto(cardResponse.elements),
+			visibilitySettings: this.mapToVisibilitySettingsDto(cardResponse.visibilitySettings),
+			timeStamps: this.mapToTimestampDto(cardResponse.timestamps),
+		});
 	}
 
 	private static mapToCardResponseElementsInnerDto(
@@ -135,22 +138,38 @@ export class CardResponseMapper {
 				case ContentElementType.LINK: {
 					const content: LinkElementContent = element.content as LinkElementContent;
 					elements.push(
-						new LinkElementResponseDto(
-							element.id,
-							ContentElementType.LINK,
-							new LinkElementContentDto(content.url, content.title, content.description ?? '', content.imageUrl ?? ''),
-							this.mapToTimestampDto(element.timestamps)
-						)
+						new LinkElementResponseDto({
+							id: element.id,
+							type: ContentElementType.LINK,
+							content: new LinkElementContentDto({
+								url: content.url,
+								title: content.title,
+								description: content.description,
+							}),
+							timestamps: this.mapToTimestampDto(element.timestamps),
+						})
 					);
 					break;
 				}
 				case ContentElementType.RICH_TEXT: {
 					const content: RichTextElementContent = element.content as RichTextElementContent;
 					elements.push(
-						new RichTextElementResponseDto(
+						new RichTextElementResponseDto({
+							id: element.id,
+							type: ContentElementType.RICH_TEXT,
+							content: new RichTextElementContentDto(content.text, content.inputFormat),
+							timestamps: this.mapToTimestampDto(element.timestamps),
+						})
+					);
+					break;
+				}
+				case ContentElementType.VIDEO_CONFERENCE: {
+					const content: VideoConferenceElementContent = element.content as VideoConferenceElementContent;
+					elements.push(
+						new VideoConferenceElementResponseDto(
 							element.id,
-							ContentElementType.RICH_TEXT,
-							new RichTextElementContentDto(content.text, content.inputFormat),
+							ContentElementType.VIDEO_CONFERENCE,
+							new VideoConferenceElementContentDto(content.title),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);
@@ -170,6 +189,10 @@ export class CardResponseMapper {
 	}
 
 	private static mapToTimestampDto(timestamp: TimestampsResponse): TimestampResponseDto {
-		return new TimestampResponseDto(timestamp.lastUpdatedAt, timestamp.createdAt, timestamp.deletedAt ?? '');
+		return new TimestampResponseDto({
+			lastUpdatedAt: timestamp.lastUpdatedAt,
+			createdAt: timestamp.createdAt,
+			deletedAt: timestamp.deletedAt,
+		});
 	}
 }
