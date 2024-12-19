@@ -13,7 +13,7 @@ import { AccountScope } from './scope/account-scope';
 export class AccountRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): typeof AccountEntity {
 		return AccountEntity;
 	}
 
@@ -31,6 +31,13 @@ export class AccountRepo {
 		await this.flush();
 
 		return AccountEntityToDoMapper.mapToDo(saved);
+	}
+
+	public async saveAll(accounts: Account[]): Promise<Account[]> {
+		const savedAccounts = await Promise.all(accounts.map((account) => this.saveWithoutFlush(account)));
+		await this.flush();
+
+		return savedAccounts;
 	}
 
 	public async findById(id: EntityId | ObjectId): Promise<Account> {
@@ -86,22 +93,26 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
-	getObjectReference<Entity extends AnyEntity<Entity>>(
+	public getObjectReference<Entity extends AnyEntity<Entity>>(
 		entityName: EntityName<Entity>,
 		id: Primary<Entity> | Primary<Entity>[]
 	): Entity {
 		return this.em.getReference(entityName, id);
 	}
 
-	public async saveWithoutFlush(account: Account): Promise<void> {
+	public async saveWithoutFlush(account: Account): Promise<Account> {
 		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
 		const existing = await this.em.findOne(AccountEntity, { id: account.id });
 
+		let saved: AccountEntity;
 		if (existing) {
-			this.em.assign(existing, saveEntity);
+			saved = this.em.assign(existing, saveEntity);
 		} else {
 			this.em.persist(saveEntity);
+			saved = saveEntity;
 		}
+
+		return AccountEntityToDoMapper.mapToDo(saved);
 	}
 
 	public async flush(): Promise<void> {
@@ -175,7 +186,7 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapEntitiesToDos(result);
 	}
 
-	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+	public async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
 		const scope = new AccountScope();
 		const userIdScope = new AccountScope();
 
