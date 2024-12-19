@@ -3,6 +3,7 @@ import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
@@ -23,7 +24,6 @@ import { SchoolExternalToolUc } from './school-external-tool/uc';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
-
 @Module({
 	imports: [
 		ToolModule,
@@ -36,6 +36,7 @@ import { ToolModule } from './tool.module';
 		BoardModule,
 		SchoolModule,
 		UserLicenseModule,
+		SchoolLicenseModule,
 		EncryptionModule,
 	],
 	controllers: [

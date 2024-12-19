@@ -1,4 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
+import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
@@ -25,7 +26,8 @@ export class MediaAvailableLineUc {
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly mediaUserLicenseService: MediaUserLicenseService
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -97,10 +99,18 @@ export class MediaAvailableLineUc {
 			userId
 		);
 
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		const mediaSchoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(user.school.id);
+
 		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
 			if (externalToolMedium) {
-				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+				return (
+					this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses) ||
+					this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaSchoolLicenses)
+				);
 			}
 			return true;
 		});

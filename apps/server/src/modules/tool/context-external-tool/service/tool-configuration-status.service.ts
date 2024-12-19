@@ -1,4 +1,6 @@
+import { AuthorizationService } from '@modules/authorization';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
+import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +21,9 @@ export class ToolConfigurationStatusService {
 	constructor(
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
+		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	public async determineToolConfigurationStatus(
@@ -80,10 +84,17 @@ export class ToolConfigurationStatusService {
 			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
 				userId
 			);
+			const user = await this.authorizationService.getUserWithPermissions(userId);
+
+			const mediaSchoolLicenses: MediaSchoolLicense[] =
+				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(user.school.id);
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium) {
-				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+				return (
+					this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses) ||
+					this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaSchoolLicenses)
+				);
 			}
 		}
 		return true;

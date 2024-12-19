@@ -1,4 +1,5 @@
 import { AuthorizationModule } from '@modules/authorization';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
@@ -24,6 +25,7 @@ import { ContextExternalToolValidationService } from './service/context-external
 		SchoolExternalToolModule,
 		LoggerModule,
 		UserLicenseModule,
+		SchoolLicenseModule,
 		AuthorizationModule,
 	],
 	providers: [
