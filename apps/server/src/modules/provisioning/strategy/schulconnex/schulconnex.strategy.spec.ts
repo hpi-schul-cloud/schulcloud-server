@@ -7,13 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	externalGroupDtoFactory,
-	externalSchoolDtoFactory,
-	groupFactory,
-	legacySchoolDoFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { groupFactory, legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	ExternalGroupDto,
@@ -24,7 +18,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
-import { externalUserDtoFactory } from '../../testing';
+import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,

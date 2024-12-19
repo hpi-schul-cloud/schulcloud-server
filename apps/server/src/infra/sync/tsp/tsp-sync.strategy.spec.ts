@@ -13,10 +13,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
+
+import {
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '@src/modules/provisioning/testing';
+import {
+	robjExportSchuleFactory,
+	robjExportLehrerMigrationFactory,
+	robjExportSchuelerMigrationFactory,
+} from '@src/infra/tsp-client/testing';
 import { Logger } from '@src/core/logger';
 import { Account } from '@src/modules/account';
 import { accountDoFactory } from '@src/modules/account/testing';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
+import { OauthDataDto, ProvisioningService } from '@src/modules/provisioning';
 import { School } from '@src/modules/school';
 import { schoolFactory } from '@src/modules/school/testing';
 import { System } from '@src/modules/system';
@@ -164,12 +175,12 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
-				const oauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
+				const oauthDataDto = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build({
 						systemId: faker.string.alpha(),
 						provisioningStrategy: SystemProvisioningStrategy.TSP,
 					}),
-					externalUser: new ExternalUserDto({
+					externalUser: externalUserDtoFactory.build({
 						externalId: faker.string.alpha(),
 						roles: [],
 					}),
@@ -302,10 +313,7 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does not exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
@@ -324,10 +332,7 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 				const school = schoolFactory.build();
 
@@ -348,10 +353,8 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when tsp school does not have a schulnummer', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: undefined,
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
+				tspSchool.schuleNummer = undefined;
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
@@ -372,14 +375,14 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when UidAlt or UidNeu is missing during migration', () => {
 			const setup = () => {
-				const tspTeacher: RobjExportLehrerMigration = {
+				const tspTeacher = robjExportLehrerMigrationFactory.build({
 					lehrerUidAlt: undefined,
 					lehrerUidNeu: faker.string.alpha(),
-				};
-				const tspStudent: RobjExportSchuelerMigration = {
+				});
+				const tspStudent = robjExportSchuelerMigrationFactory.build({
 					schuelerUidAlt: faker.string.alpha(),
 					schuelerUidNeu: undefined,
-				};
+				});
 
 				setupMockServices({
 					fetchedStudentMigrations: [tspStudent],
@@ -398,10 +401,10 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when no user is found during migration', () => {
 			const setup = () => {
-				const tspTeacher: RobjExportLehrerMigration = {
+				const tspTeacher = robjExportLehrerMigrationFactory.build({
 					lehrerUidAlt: faker.string.alpha(),
 					lehrerUidNeu: faker.string.alpha(),
-				};
+				});
 
 				setupMockServices({
 					fetchedTeacherMigrations: [tspTeacher],
@@ -422,10 +425,10 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when no account is found during migration', () => {
 			const setup = () => {
-				const tspTeacher: RobjExportLehrerMigration = {
+				const tspTeacher = robjExportLehrerMigrationFactory.build({
 					lehrerUidAlt: faker.string.alpha(),
 					lehrerUidNeu: faker.string.alpha(),
-				};
+				});
 
 				setupMockServices({
 					fetchedTeacherMigrations: [tspTeacher],
