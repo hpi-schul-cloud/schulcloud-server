@@ -1,4 +1,5 @@
 import sanitizeHtml from 'sanitize-html';
+import { FileDto } from '@src/modules/files-storage-client/dto';
 import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
 import {
 	LessonContentDto,
@@ -23,6 +24,7 @@ import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/
 import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
 import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
+import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -189,6 +191,20 @@ export class CommonCartridgeExportMapper {
 			identifier: createIdentifier(element.id),
 			title: element.content.title,
 			url: element.content.url,
+		};
+	}
+
+	public mapFileElementToResource(
+		file: { fileRecord: FileDto; file: Buffer },
+		element?: FileElementResponseDto
+	): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.FILE,
+			identifier: createIdentifier(element?.id),
+			title:
+				element?.content.caption && element.content.caption.trim() ? element.content.caption : file.fileRecord.name,
+			fileName: file.fileRecord.name,
+			fileContent: file.file,
 		};
 	}
 

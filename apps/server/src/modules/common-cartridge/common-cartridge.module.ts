@@ -1,22 +1,26 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { FilesStorageRestClientModule } from '@infra/files-storage-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { LoggerModule } from '@src/core/logger';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { BoardClientModule } from './common-cartridge-client/board-client';
-import { CoursesClientModule } from './common-cartridge-client/course-client';
-import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
-import { CommonCartridgeUc } from './uc/common-cartridge.uc';
-import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
+import { CoursesClientModule } from './common-cartridge-client/course-client';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
+import { CourseRoomsModule } from './common-cartridge-client/room-client';
+import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
+import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
+		FilesStorageRestClientModule,
+		LoggerModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -31,7 +35,6 @@ import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
 		CourseRoomsModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
-
 		CardClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
