@@ -226,8 +226,9 @@ export class CommonCartridgeExportService {
 
 	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
 		const courseMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+		const dto = new CourseCommonCartridgeMetadataDto(courseMetadata);
 
-		return courseMetadata;
+		return dto;
 	}
 
 	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
