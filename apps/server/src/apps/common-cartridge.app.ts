@@ -6,6 +6,7 @@ import { LegacyLogger, Logger } from '@src/core/logger';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import {
 	AppStartLoggable,
 	enableOpenApiDocs,
@@ -27,6 +28,7 @@ async function bootstrap() {
 
 	const rootExpress = express();
 	const logger = await nestApp.resolve(Logger);
+	nestApp.use(createRequestLoggerMiddleware());
 
 	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
 
