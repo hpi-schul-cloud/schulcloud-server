@@ -7,6 +7,7 @@ export class CourseQueryParams {
 	@Matches(Object.values(CommonCartridgeVersion).join('|'))
 	@ApiProperty({
 		description: 'The version of CC export',
+		required: true,
 		nullable: false,
 		enum: CommonCartridgeVersion,
 	})
