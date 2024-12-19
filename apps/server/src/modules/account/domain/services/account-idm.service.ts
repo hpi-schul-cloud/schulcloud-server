@@ -121,9 +121,9 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
-	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+	public saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
 		const savePromises = accountSaves.map((accountSave) => this.save(accountSave));
-		const savedAccounts = await Promise.all(savePromises);
+		const savedAccounts = Promise.all(savePromises);
 
 		return savedAccounts;
 	}

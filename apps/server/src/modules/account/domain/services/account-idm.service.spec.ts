@@ -219,7 +219,7 @@ describe('AccountIdmService', () => {
 	});
 
 	describe('saveAll', () => {
-		describe('when save multiple accounts', () => {
+		describe('when saving multiple accounts', () => {
 			const setup = () => {
 				const mockAccountSaves = [
 					{
