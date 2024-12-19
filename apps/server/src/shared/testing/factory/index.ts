@@ -10,8 +10,6 @@ export * from './coursegroup.factory';
 export * from './currentuser.factory';
 export * from './domainobject';
 export * from './entity.factory';
-export * from './external-group-dto.factory';
-export { externalSchoolDtoFactory } from './external-school-dto.factory';
 export * from './external-tool-pseudonym.factory';
 export * from './federal-state.factory';
 export * from './filerecord.factory';

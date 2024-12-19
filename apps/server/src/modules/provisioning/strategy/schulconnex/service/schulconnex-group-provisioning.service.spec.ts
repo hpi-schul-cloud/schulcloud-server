@@ -16,16 +16,9 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	externalGroupDtoFactory,
-	externalSchoolDtoFactory,
-	groupFactory,
-	legacySchoolDoFactory,
-	roleDtoFactory,
-	roleFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { groupFactory, legacySchoolDoFactory, roleDtoFactory, roleFactory, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalSchoolDto } from '@modules/provisioning/dto';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '../../../shared/testing/factory/base.factory';
 
 class ExternalSchoolDtoFactory extends BaseFactory<ExternalSchoolDto, Readonly<ExternalSchoolDto>> {}
 

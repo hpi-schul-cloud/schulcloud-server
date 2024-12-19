@@ -3,11 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
-import { externalSchoolDtoFactory, roleDtoFactory, roleFactory, userDoFactory } from '@shared/testing';
-import { externalClassDtoFactory } from '@shared/testing/factory/external-class-dto.factory';
-import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
-import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
-import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
+import { roleDtoFactory, roleFactory, userDoFactory } from '@shared/testing';
 import { AccountService } from '@src/modules/account';
 import { ClassService } from '@src/modules/class';
 import { classFactory } from '@src/modules/class/domain/testing';
@@ -17,6 +13,13 @@ import { schoolFactory } from '@src/modules/school/testing';
 import { UserService } from '@src/modules/user';
 import { BadDataLoggableException } from '../loggable';
 import { TspProvisioningService } from './tsp-provisioning.service';
+import {
+	provisioningSystemDtoFactory,
+	externalClassDtoFactory,
+	oauthDataDtoFactory,
+	externalUserDtoFactory,
+	externalSchoolDtoFactory,
+} from '../testing';
 
 describe('TspProvisioningService', () => {
 	let module: TestingModule;

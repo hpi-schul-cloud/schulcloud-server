@@ -1,17 +1,21 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ProvisioningSystemDto } from '@modules/provisioning';
+import {
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	externalClassDtoFactory,
+	provisioningSystemDtoFactory,
+	externalSchoolDtoFactory,
+} from '@modules/provisioning/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { externalSchoolDtoFactory } from '@shared/testing';
-import { externalClassDtoFactory } from '@shared/testing/factory/external-class-dto.factory';
-import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
-import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
-import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
-import { robjExportKlasseFactory } from '@shared/testing/factory/robj-export-klasse.factory';
-import { robjExportLehrerFactory } from '@shared/testing/factory/robj-export-lehrer.factory';
-import { robjExportSchuelerFactory } from '@shared/testing/factory/robj-export-schueler.factory';
+import {
+	robjExportSchuelerFactory,
+	robjExportLehrerFactory,
+	robjExportKlasseFactory,
+} from '@src/infra/tsp-client/testing';
 import { Logger } from '@src/core/logger';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { schoolFactory } from '@src/modules/school/testing';
@@ -104,6 +108,7 @@ describe(TspOauthDataMapper.name, () => {
 					lastName: tspTeachers[0].lehrerNachname,
 					roles: [RoleName.TEACHER],
 					email: undefined,
+					birthday: undefined,
 				});
 
 				const externalStudentUserDto = externalUserDtoFactory.build({
@@ -112,6 +117,7 @@ describe(TspOauthDataMapper.name, () => {
 					lastName: tspStudents[0].schuelerNachname,
 					roles: [RoleName.STUDENT],
 					email: undefined,
+					birthday: undefined,
 				});
 
 				const externalSchoolDto = externalSchoolDtoFactory.build({

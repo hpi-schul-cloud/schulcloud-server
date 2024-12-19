@@ -13,12 +13,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { userDoFactory } from '@shared/testing';
-import { externalUserDtoFactory } from '@shared/testing/factory/external-user-dto.factory';
-import { oauthDataDtoFactory } from '@shared/testing/factory/oauth-data-dto.factory';
-import { provisioningSystemDtoFactory } from '@shared/testing/factory/provisioning-system-dto.factory';
-import { robjExportLehrerMigrationFactory } from '@shared/testing/factory/robj-export-lehrer-migration.factory';
-import { robjExportSchuelerMigrationFactory } from '@shared/testing/factory/robj-export-schueler-migration.factory';
-import { robjExportSchuleFactory } from '@shared/testing/factory/robj-export-schule.factory';
+
+import {
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '@src/modules/provisioning/testing';
+import {
+	robjExportSchuleFactory,
+	robjExportLehrerMigrationFactory,
+	robjExportSchuelerMigrationFactory,
+} from '@src/infra/tsp-client/testing';
 import { Logger } from '@src/core/logger';
 import { Account } from '@src/modules/account';
 import { accountDoFactory } from '@src/modules/account/testing';
