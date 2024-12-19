@@ -51,7 +51,7 @@ describe('CommonCartridgeExportService', () => {
 		exportTasks: boolean,
 		exportColumnBoards: boolean
 	) => {
-		const courseMetadata: CourseCommonCartridgeMetadataDto = courseMetadataFactory.build();
+		const courseMetadata = courseMetadataFactory.build();
 		const lessons = lessonFactory.buildList(2);
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;

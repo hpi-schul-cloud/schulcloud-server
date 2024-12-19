@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';

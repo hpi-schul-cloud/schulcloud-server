@@ -1,5 +1,5 @@
 import sanitizeHtml from 'sanitize-html';
-import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
+import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import {
 	LessonContentDto,
 	LessonContentDtoComponentValues,

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Factory } from 'fishery';
-import { CourseCommonCartridgeMetadataDto } from '../common-cartridge-client/course-client';
+import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import { LessonContentDto, LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
 import { BoardSkeletonDto, CardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
