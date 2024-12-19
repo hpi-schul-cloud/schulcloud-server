@@ -59,10 +59,10 @@ describe('CommonCartridgeExportService', () => {
 		const boardSkeleton: BoardSkeletonDto = columnBoardFactory.build();
 		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.build();
 		const boardTask: BoardTaskDto = boardTaskFactory.build();
-		boardTask.courseName = courseMetadata.courseName;
+		boardTask.courseName = courseMetadata.title;
 
 		const room: RoomBoardDto = roomFactory.build();
-		room.title = courseMetadata.courseName;
+		room.title = courseMetadata.title;
 		room.elements[0].content = boardTask;
 		room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
 		room.elements[1].content.id = lesson.lessonId;
@@ -163,7 +163,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.courseName)
+					createXmlString('mnf:string', courseMetadata.title)
 				);
 			});
 
@@ -234,7 +234,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.courseName)
+					createXmlString('mnf:string', courseMetadata.title)
 				);
 			});
 

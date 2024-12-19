@@ -20,7 +20,7 @@ import { linkElementFactory } from './link-element.factory';
 export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataDto>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
-		courseName: faker.lorem.sentence(),
+		title: faker.lorem.sentence(),
 		creationDate: faker.date.recent().toISOString(),
 		copyRightOwners: [faker.person.fullName(), faker.person.fullName()],
 	};

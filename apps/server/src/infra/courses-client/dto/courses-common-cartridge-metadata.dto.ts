@@ -1,7 +1,7 @@
 export class CourseCommonCartridgeMetadataDto {
 	public id: string;
 
-	public courseName: string;
+	public title: string;
 
 	public creationDate?: string;
 
@@ -9,7 +9,7 @@ export class CourseCommonCartridgeMetadataDto {
 
 	constructor(props: CourseCommonCartridgeMetadataDto) {
 		this.id = props.id;
-		this.courseName = props.courseName;
+		this.title = props.title;
 		this.creationDate = props.creationDate;
 		this.copyRightOwners = props.copyRightOwners;
 	}
