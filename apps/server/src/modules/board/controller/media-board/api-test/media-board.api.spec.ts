@@ -4,7 +4,8 @@ import { contextExternalToolEntityFactory } from '@modules/tool/context-external
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicenseEntity } from '@modules/user-license/entity';
-import { mediaSourceEntityFactory, mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
+import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DateToString, fileRecordFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
