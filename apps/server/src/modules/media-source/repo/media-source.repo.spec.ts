@@ -109,25 +109,39 @@ describe(MediaSourceRepo.name, () => {
 
 	describe('findByFormat', () => {
 		describe('when a media source data format is provided', () => {
-			const setup = async () => {
-				const format = MediaSourceDataFormat.VIDIS;
-				const mediaSourceEntity = mediaSourceEntityFactory.build({ format });
-				const otherMediaSourceEntity = mediaSourceEntityFactory.build({ format: MediaSourceDataFormat.BILDUNGSLOGIN });
+			describe('when there the media source exists', () => {
+				const setup = async () => {
+					const format = MediaSourceDataFormat.VIDIS;
+					const mediaSourceEntity = mediaSourceEntityFactory.build({ format });
+					const otherMediaSourceEntity = mediaSourceEntityFactory.build({
+						format: MediaSourceDataFormat.BILDUNGSLOGIN,
+					});
 
-				await em.persistAndFlush([mediaSourceEntity, otherMediaSourceEntity]);
-				em.clear();
+					await em.persistAndFlush([mediaSourceEntity, otherMediaSourceEntity]);
+					em.clear();
 
-				const expectedDO = MediaSourceMapper.mapEntityToDo(mediaSourceEntity);
+					const expectedDO = MediaSourceMapper.mapEntityToDo(mediaSourceEntity);
 
-				return { format, expectedDO };
-			};
+					return { format, expectedDO };
+				};
 
-			it('should return the media source', async () => {
-				const { format, expectedDO } = await setup();
+				it('should return the media source', async () => {
+					const { format, expectedDO } = await setup();
 
-				const result = await repo.findByFormat(format);
+					const result: MediaSource | null = await repo.findByFormat(format);
 
-				expect(result).toEqual(expectedDO);
+					expect(result).toEqual(expectedDO);
+				});
+			});
+
+			describe('when there the media source does not exist', () => {
+				it('should return null', async () => {
+					const format = MediaSourceDataFormat.VIDIS;
+
+					const result: MediaSource | null = await repo.findByFormat(format);
+
+					expect(result).toBeNull();
+				});
 			});
 		});
 	});

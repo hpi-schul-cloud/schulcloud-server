@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSchoolLicenseRepo } from '../repo';
+import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
 import { mediaSchoolLicenseFactory } from '../testing';
 import { MediaSchoolLicenseService } from './media-school-license.service';
 
@@ -14,14 +14,14 @@ describe(MediaSchoolLicenseService.name, () => {
 			providers: [
 				MediaSchoolLicenseService,
 				{
-					provide: MediaSchoolLicenseRepo,
+					provide: MEDIA_SCHOOL_LICENSE_REPO,
 					useValue: createMock<MediaSchoolLicenseRepo>(),
 				},
 			],
 		}).compile();
 
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
-		mediaSchoolLicenseRepo = module.get(MediaSchoolLicenseRepo);
+		mediaSchoolLicenseRepo = module.get(MEDIA_SCHOOL_LICENSE_REPO);
 	});
 
 	afterAll(async () => {

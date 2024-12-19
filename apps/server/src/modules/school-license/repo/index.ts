@@ -1,1 +1,1 @@
-export { MediaSchoolLicenseRepo } from './mikro-orm/media-school-license-repo';
+export { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from './media-school-license-repo.interface';

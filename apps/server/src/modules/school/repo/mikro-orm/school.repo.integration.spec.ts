@@ -14,7 +14,7 @@ import {
 } from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { FileStorageType, School, SCHOOL_REPO } from '../../domain';
+import { FileStorageType, SCHOOL_REPO } from '../../domain';
 import { federalStateFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';
 import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
@@ -324,7 +324,11 @@ describe('SchoolMikroOrmRepo', () => {
 					officialSchoolNumber,
 				});
 
-				await em.persistAndFlush([schoolEntity]);
+				const otherSchoolEntity = schoolEntityFactory.build({
+					officialSchoolNumber: '11011',
+				});
+
+				await em.persistAndFlush([schoolEntity, otherSchoolEntity]);
 				em.clear();
 
 				const expectedSchoolDO = SchoolEntityMapper.mapToDo(schoolEntity);

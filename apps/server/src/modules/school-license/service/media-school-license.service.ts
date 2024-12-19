@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { MediaSchoolLicense } from '../domain';
-import { MediaSchoolLicenseRepo } from '../repo';
+import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 
-@Injectable()
 export class MediaSchoolLicenseService {
-	constructor(private readonly mediaSchoolLicenseRepo: MediaSchoolLicenseRepo) {}
+	constructor(@Inject(MEDIA_SCHOOL_LICENSE_REPO) private readonly mediaSchoolLicenseRepo: MediaSchoolLicenseRepo) {}
 
 	public async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
 		const mediaSchoolLicenses: MediaSchoolLicense[] =

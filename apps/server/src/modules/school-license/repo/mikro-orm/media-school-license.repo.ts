@@ -5,9 +5,13 @@ import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { SchoolLicenseType } from '../../enum';
 import { MediaSchoolLicenseEntityMapper } from '../mapper/media-school-license.entity.mapper';
+import { MediaSchoolLicenseRepo } from '../media-school-license-repo.interface';
 
 @Injectable()
-export class MediaSchoolLicenseRepo extends BaseDomainObjectRepo<MediaSchoolLicense, MediaSchoolLicenseEntity> {
+export class MediaSchoolLicenseMikroOrmRepo
+	extends BaseDomainObjectRepo<MediaSchoolLicense, MediaSchoolLicenseEntity>
+	implements MediaSchoolLicenseRepo
+{
 	protected get entityName(): EntityName<MediaSchoolLicenseEntity> {
 		return MediaSchoolLicenseEntity;
 	}

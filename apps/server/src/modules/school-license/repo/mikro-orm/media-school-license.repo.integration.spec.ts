@@ -4,24 +4,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { MediaSchoolLicenseRepo } from './media-school-license-repo';
+import { MediaSchoolLicenseMikroOrmRepo } from './media-school-license.repo';
 import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
 import { MediaSchoolLicenseEntityMapper } from '../mapper/media-school-license.entity.mapper';
 
-describe(MediaSchoolLicenseRepo.name, () => {
+describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 	let module: TestingModule;
-	let repo: MediaSchoolLicenseRepo;
+	let repo: MediaSchoolLicenseMikroOrmRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [MediaSchoolLicenseRepo],
+			providers: [MediaSchoolLicenseMikroOrmRepo],
 		}).compile();
 
-		repo = module.get(MediaSchoolLicenseRepo);
+		repo = module.get(MediaSchoolLicenseMikroOrmRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -43,17 +43,12 @@ describe(MediaSchoolLicenseRepo.name, () => {
 					mediumId,
 				});
 
-				const mediaSchoolLicenseWithNoId: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.buildWithId(
-					{
-						mediaSource: mediaSourceEntity,
-						mediumId,
-					},
-					undefined
-				);
+				const otherMediaSchoolLicense: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build({
+					mediaSource: mediaSourceEntity,
+					mediumId: 'test-other-medium-id',
+				});
 
-				mediaSchoolLicenses.push(mediaSchoolLicenseWithNoId);
-
-				await em.persistAndFlush(mediaSchoolLicenses);
+				await em.persistAndFlush([otherMediaSchoolLicense, ...mediaSchoolLicenses]);
 				em.clear();
 
 				const expectedDOs: MediaSchoolLicense[] = mediaSchoolLicenses.map(
@@ -105,8 +100,9 @@ describe(MediaSchoolLicenseRepo.name, () => {
 					{},
 					mediaSchoolLicenseDO.id
 				);
+				const otherEntity: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build();
 
-				await em.persistAndFlush([mediaSchoolLicenseEntity]);
+				await em.persistAndFlush([mediaSchoolLicenseEntity, otherEntity]);
 				em.clear();
 
 				return { mediaSchoolLicenseDO };
@@ -117,7 +113,9 @@ describe(MediaSchoolLicenseRepo.name, () => {
 
 				await repo.delete(mediaSchoolLicenseDO);
 
-				const savedMediaSchoolLicense: MediaSchoolLicenseEntity | null = await em.findOne(MediaSchoolLicenseEntity, {});
+				const savedMediaSchoolLicense: MediaSchoolLicenseEntity | null = await em.findOne(MediaSchoolLicenseEntity, {
+					id: mediaSchoolLicenseDO.id,
+				});
 				expect(savedMediaSchoolLicense).toBeNull();
 			});
 		});

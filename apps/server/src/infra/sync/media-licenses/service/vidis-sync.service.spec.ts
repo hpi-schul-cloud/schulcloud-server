@@ -346,36 +346,71 @@ describe(VidisSyncService.name, () => {
 			});
 
 			describe('when vidis no longer provides school activations for existing media school licenses in SVS', () => {
-				const setup = () => {
-					const mediaSource = mediaSourceFactory.build();
-					const items = vidisItemResponseFactory.buildList(2, { schoolActivations: [] });
-					const school = schoolFactory.build({ officialSchoolNumber: '00100' });
+				describe('when the school has an official school number', () => {
+					const setup = () => {
+						const mediaSource = mediaSourceFactory.build();
+						const items = vidisItemResponseFactory.buildList(2, { schoolActivations: [] });
+						const school = schoolFactory.build({ officialSchoolNumber: '00100' });
 
-					const existingMediaSchoolLicense = mediaSchoolLicenseFactory.build({
-						schoolId: school.id,
-						mediumId: items[0].offerId,
-						mediaSource,
-					});
+						const existingMediaSchoolLicense = mediaSchoolLicenseFactory.build({
+							schoolId: school.id,
+							mediumId: items[0].offerId,
+							mediaSource,
+						});
 
-					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([
-						existingMediaSchoolLicense,
-					]);
-					schoolService.getSchoolById.mockResolvedValueOnce(school);
-					schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(school);
+						mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([
+							existingMediaSchoolLicense,
+						]);
+						schoolService.getSchoolById.mockResolvedValueOnce(school);
+						schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(school);
 
-					return {
-						mediaSource,
-						items,
-						existingMediaSchoolLicense,
+						return {
+							mediaSource,
+							items,
+							existingMediaSchoolLicense,
+						};
 					};
-				};
 
-				it('it should delete the unavailable existing media school licenses', async () => {
-					const { mediaSource, items, existingMediaSchoolLicense } = setup();
+					it('it should delete the unavailable existing media school licenses', async () => {
+						const { mediaSource, items, existingMediaSchoolLicense } = setup();
 
-					await vidisSyncService.syncMediaSchoolLicenses(mediaSource, items);
+						await vidisSyncService.syncMediaSchoolLicenses(mediaSource, items);
 
-					expect(mediaSchoolLicenseService.deleteSchoolLicense).toHaveBeenCalledWith(existingMediaSchoolLicense);
+						expect(mediaSchoolLicenseService.deleteSchoolLicense).toHaveBeenCalledWith(existingMediaSchoolLicense);
+					});
+				});
+
+				describe('when the school does not have an official school number', () => {
+					const setup = () => {
+						const mediaSource = mediaSourceFactory.build();
+						const items = vidisItemResponseFactory.buildList(2, { schoolActivations: [] });
+						const school = schoolFactory.build({ officialSchoolNumber: undefined });
+
+						const existingMediaSchoolLicense = mediaSchoolLicenseFactory.build({
+							schoolId: school.id,
+							mediumId: items[0].offerId,
+							mediaSource,
+						});
+
+						mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([
+							existingMediaSchoolLicense,
+						]);
+						schoolService.getSchoolById.mockResolvedValueOnce(school);
+						schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(null);
+
+						return {
+							mediaSource,
+							items,
+						};
+					};
+
+					it('it should not delete the existing media school licenses', async () => {
+						const { mediaSource, items } = setup();
+
+						await vidisSyncService.syncMediaSchoolLicenses(mediaSource, items);
+
+						expect(mediaSchoolLicenseService.deleteSchoolLicense).not.toHaveBeenCalled();
+					});
 				});
 			});
 
