@@ -7,6 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { accountDoFactory } from '@src/modules/account/testing';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 
@@ -62,13 +63,18 @@ describe(TspSyncMigrationService.name, () => {
 	});
 
 	describe('migrateTspUsers', () => {
-		describe('when tsp users are to be migrated who have an old and new id', () => {
+		describe('when old id, new id and user exist', () => {
 			const setup = () => {
 				const system = systemFactory.build();
 				const oldToNewMappings = new Map<string, string>();
 				oldToNewMappings.set('oldId', 'newId');
 
+				const user = userDoFactory.build();
+				user.sourceOptions = new UserSourceOptions({ tspUid: 'oldId' });
+
 				configService.getOrThrow.mockReturnValueOnce(1);
+				userService.findByTspUids.mockResolvedValueOnce([user]);
+				accountService.findMultipleByUserId.mockResolvedValueOnce(accountDoFactory.buildList(1));
 
 				return { system, oldToNewMappings };
 			};
@@ -78,10 +84,13 @@ describe(TspSyncMigrationService.name, () => {
 				const result = await sut.migrateTspUsers(system, oldToNewMappings);
 
 				expect(result).toBeDefined();
+				expect(result.totalAmount).toBe(1);
+				expect(result.totalUsers).toBe(1);
+				expect(result.totalAccounts).toBe(1);
 			});
 		});
 
-		describe('when tsp users are to be migrated who have no old id', () => {
+		describe('when tsp user does not have a tspUid', () => {
 			const setup = () => {
 				const system = systemFactory.build();
 				const oldToNewMappings = new Map<string, string>();
@@ -92,11 +101,36 @@ describe(TspSyncMigrationService.name, () => {
 
 				configService.getOrThrow.mockReturnValueOnce(1);
 				userService.findByTspUids.mockResolvedValueOnce([user]);
+				accountService.findMultipleByUserId.mockResolvedValueOnce(accountDoFactory.buildList(1));
 
 				return { system, oldToNewMappings };
 			};
 
-			it('should not migrate the tsp users', async () => {
+			it('should not migrate the tsp user', async () => {
+				const { system, oldToNewMappings } = setup();
+				const result = await sut.migrateTspUsers(system, oldToNewMappings);
+
+				expect(result.totalUsers).toBe(0);
+			});
+		});
+
+		describe('when newUid does not exist for a user', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+				const oldToNewMappings = new Map<string, string>();
+				oldToNewMappings.set('oldId', 'newId');
+
+				const user = userDoFactory.build();
+				user.sourceOptions = new UserSourceOptions({ tspUid: 'oldIdWithoutNewIdMapping' });
+
+				configService.getOrThrow.mockReturnValueOnce(1);
+				userService.findByTspUids.mockResolvedValueOnce([user]);
+				accountService.findMultipleByUserId.mockResolvedValueOnce(accountDoFactory.buildList(1));
+
+				return { system, oldToNewMappings };
+			};
+
+			it('should not migrate the tsp user', async () => {
 				const { system, oldToNewMappings } = setup();
 				const result = await sut.migrateTspUsers(system, oldToNewMappings);
 
