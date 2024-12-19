@@ -14,7 +14,7 @@ export class CommonCartridgeImportService {
 	}
 
 	private async createCourse(parser: CommonCartridgeFileParser): Promise<void> {
-		const courseName = parser.getTitle() || 'Untitled Course';
+		const courseName = parser.getTitle() ?? 'Untitled Course';
 
 		await this.coursesClient.createCourse({ title: courseName });
 	}
