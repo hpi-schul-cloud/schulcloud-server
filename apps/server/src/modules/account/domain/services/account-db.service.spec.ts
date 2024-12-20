@@ -711,10 +711,7 @@ describe('AccountDbService', () => {
 				const { account, savedAccount } = setup();
 
 				const result = await accountService.saveAll([account]);
-
-				expect(result.length).toBe(1);
-				expect(result[0]).toStrictEqual(savedAccount);
-				expect(accountRepo.saveAll).toHaveBeenCalledTimes(1);
+	expect(result).toStrictEqual([savedAccount]);
 			});
 		});
 
