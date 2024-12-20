@@ -32,6 +32,7 @@ import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
+import { VidisClientConfig } from '@infra/vidis-client';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -73,7 +74,8 @@ export interface ServerConfig
 		AlertConfig,
 		ShdConfig,
 		OauthConfig,
-		EncryptionConfig {
+		EncryptionConfig,
+		VidisClientConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -321,6 +323,7 @@ const config: ServerConfig = {
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	VIDIS_API_CLIENT_BASE_URL: Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string,
 };
 
 export const serverConfig = () => config;

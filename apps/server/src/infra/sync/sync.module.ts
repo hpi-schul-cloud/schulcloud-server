@@ -3,6 +3,7 @@ import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { EncryptionModule } from '@infra/encryption';
+import { VidisClientModule } from '@infra/vidis-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -22,7 +23,7 @@ import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 import { TspFetchService } from './tsp/tsp-fetch.service';
-import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
+import { VidisSyncService, VidisSyncStrategy, VidisFetchService } from './media-licenses';
 
 @Module({
 	imports: [
@@ -34,6 +35,7 @@ import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
 		HttpModule,
 		SchoolLicenseModule,
 		EncryptionModule,
+		VidisClientModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspClientModule,
@@ -56,6 +58,7 @@ import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
 			: []),
 		VidisSyncService,
 		VidisSyncStrategy,
+		VidisFetchService,
 	],
 	exports: [SyncConsole],
 })

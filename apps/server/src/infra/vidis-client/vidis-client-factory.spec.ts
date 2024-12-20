@@ -3,12 +3,13 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { VidisClientConfig } from './vidis-client-config';
 import { VidisClientFactory } from './vidis-client-factory';
 
-describe('TspClientFactory', () => {
+describe(VidisClientFactory.name, () => {
 	let module: TestingModule;
-	let sut: VidisClientFactory;
-	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
+	let factory: VidisClientFactory;
+	let configService: DeepMocked<ConfigService<VidisClientConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -16,22 +17,15 @@ describe('TspClientFactory', () => {
 				VidisClientFactory,
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ServerConfig, true>>({
-						getOrThrow: (key: string) => {
-							switch (key) {
-								case 'VIDIS_API_CLIENT_BASE_URL':
-									return faker.internet.url();
-								default:
-									throw new Error(`Unknown key: ${key}`);
-							}
-						},
-					}),
+					useValue: createMock<ConfigService<ServerConfig, true>>(),
 				},
 			],
 		}).compile();
 
-		sut = module.get(VidisClientFactory);
-		configServiceMock = module.get(ConfigService);
+		factory = module.get(VidisClientFactory);
+		configService = module.get(ConfigService);
+
+		configService.getOrThrow.mockReturnValueOnce(faker.internet.url());
 	});
 
 	afterAll(async () => {
@@ -39,25 +33,34 @@ describe('TspClientFactory', () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
-		jest.restoreAllMocks();
 		jest.clearAllMocks();
 	});
 
 	it('should be defined', () => {
-		expect(sut).toBeDefined();
+		expect(factory).toBeDefined();
 	});
 
-	describe('createExportClient', () => {
-		describe('when createExportClient is called', () => {
-			it('should return ExportApiInterface', () => {
-				const result = sut.createExportClient({
-					password: faker.string.alpha(),
-					username: faker.string.alpha(),
+	describe('createVidisClient', () => {
+		describe('when the function is called', () => {
+			const setup = () => {
+				const username = faker.string.alpha();
+				const password = faker.string.alpha();
+
+				return {
+					username,
+					password,
+				};
+			};
+
+			it('should return a vidis api client as an IDMBetreiberApiInterface', () => {
+				const { username, password } = setup();
+
+				const result = factory.createVidisClient({
+					username,
+					password,
 				});
 
 				expect(result).toBeDefined();
-				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 			});
 		});
 	});

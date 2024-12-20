@@ -1,11 +1,17 @@
+import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
+import { MediaSourceForSyncNotFoundLoggableException } from '@modules/media-source/loggable';
 import { Injectable } from '@nestjs/common';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
-import { VidisSyncService } from '../service/vidis-sync.service';
+import { VidisSyncService, VidisFetchService } from '../service';
 
 @Injectable()
 export class VidisSyncStrategy extends SyncStrategy {
-	constructor(private readonly vidisSyncService: VidisSyncService) {
+	constructor(
+		private readonly vidisSyncService: VidisSyncService,
+		private readonly vidisFetchService: VidisFetchService,
+		private readonly mediaSourceService: MediaSourceService
+	) {
 		super();
 	}
 
@@ -14,10 +20,14 @@ export class VidisSyncStrategy extends SyncStrategy {
 	}
 
 	public async sync(): Promise<void> {
-		const mediaSource = await this.vidisSyncService.getVidisMediaSource();
+		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
 
-		const vidisItems = await this.vidisSyncService.getSchoolActivationsFromVidis(mediaSource);
+		if (!mediaSource) {
+			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
+		}
 
-		await this.vidisSyncService.syncMediaSchoolLicenses(mediaSource, vidisItems);
+		const vidisOfferItems = await this.vidisFetchService.getOfferItemsFromVidis(mediaSource);
+
+		await this.vidisSyncService.syncMediaSchoolLicenses(mediaSource, vidisOfferItems);
 	}
 }

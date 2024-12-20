@@ -1,2 +1,2 @@
-export { vidisResponseFactory } from './vidis.response.factory';
-export { vidisItemResponseFactory } from './vidis-item.response.factory';
+export { vidisPageOfferFactory } from './vidis-page-offer.factory';
+export { vidisOfferItemFactory } from './vidis-offer-item.factory';

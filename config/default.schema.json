@@ -1675,6 +1675,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
+		},
+		"VIDIS_API_CLIENT_BASE_URL": {
+			"type": "string",
+			"default": "https://service-stage.vidis.schule/o/vidis-rest",
+			"description": "The VIDIS API base URL"
 		}
 	},
 	"required": []

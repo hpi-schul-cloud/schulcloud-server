@@ -30,18 +30,18 @@ import type { PageOfferDTO } from '../models';
 export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * List all offers, that has activated by the selected school.
-         * @param {string} schoolName 
+         * List all offers, that has activated by any schools in the selected region.
+         * @param {string} regionName 
          * @param {string} [page] 
          * @param {string} [pageSize] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivatedOffersBySchool: async (schoolName: string, page?: string, pageSize?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'schoolName' is not null or undefined
-            assertParamExists('getActivatedOffersBySchool', 'schoolName', schoolName)
-            const localVarPath = `/v1.0/offers/activated/by-school/{schoolName}`
-                .replace(`{${"schoolName"}}`, encodeURIComponent(String(schoolName)));
+        getActivatedOffersByRegion: async (regionName: string, page?: string, pageSize?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'regionName' is not null or undefined
+            assertParamExists('getActivatedOffersByRegion', 'regionName', regionName)
+            const localVarPath = `/v1.0/offers/activated/by-region/{regionName}`
+                .replace(`{${"regionName"}}`, encodeURIComponent(String(regionName)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -83,17 +83,17 @@ export const IDMBetreiberApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = IDMBetreiberApiAxiosParamCreator(configuration)
     return {
         /**
-         * List all offers, that has activated by the selected school.
-         * @param {string} schoolName 
+         * List all offers, that has activated by any schools in the selected region.
+         * @param {string} regionName 
          * @param {string} [page] 
          * @param {string} [pageSize] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageOfferDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getActivatedOffersBySchool(schoolName, page, pageSize, options);
+        async getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageOfferDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getActivatedOffersByRegion(regionName, page, pageSize, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['IDMBetreiberApi.getActivatedOffersBySchool']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['IDMBetreiberApi.getActivatedOffersByRegion']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -107,15 +107,15 @@ export const IDMBetreiberApiFactory = function (configuration?: Configuration, b
     const localVarFp = IDMBetreiberApiFp(configuration)
     return {
         /**
-         * List all offers, that has activated by the selected school.
-         * @param {string} schoolName 
+         * List all offers, that has activated by any schools in the selected region.
+         * @param {string} regionName 
          * @param {string} [page] 
          * @param {string} [pageSize] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
-            return localVarFp.getActivatedOffersBySchool(schoolName, page, pageSize, options).then((request) => request(axios, basePath));
+        getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
+            return localVarFp.getActivatedOffersByRegion(regionName, page, pageSize, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -127,15 +127,15 @@ export const IDMBetreiberApiFactory = function (configuration?: Configuration, b
  */
 export interface IDMBetreiberApiInterface {
     /**
-     * List all offers, that has activated by the selected school.
-     * @param {string} schoolName 
+     * List all offers, that has activated by any schools in the selected region.
+     * @param {string} regionName 
      * @param {string} [page] 
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDMBetreiberApiInterface
      */
-    getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
+    getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
 
 }
 
@@ -147,16 +147,16 @@ export interface IDMBetreiberApiInterface {
  */
 export class IDMBetreiberApi extends BaseAPI implements IDMBetreiberApiInterface {
     /**
-     * List all offers, that has activated by the selected school.
-     * @param {string} schoolName 
+     * List all offers, that has activated by any schools in the selected region.
+     * @param {string} regionName 
      * @param {string} [page] 
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDMBetreiberApi
      */
-    public getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
-        return IDMBetreiberApiFp(this.configuration).getActivatedOffersBySchool(schoolName, page, pageSize, options).then((request) => request(this.axios, this.basePath));
+    public getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
+        return IDMBetreiberApiFp(this.configuration).getActivatedOffersByRegion(regionName, page, pageSize, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
