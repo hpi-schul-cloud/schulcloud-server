@@ -711,7 +711,7 @@ describe('AccountDbService', () => {
 				const { account, savedAccount } = setup();
 
 				const result = await accountService.saveAll([account]);
-	expect(result).toStrictEqual([savedAccount]);
+				expect(result).toStrictEqual([savedAccount]);
 			});
 		});
 
