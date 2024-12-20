@@ -119,9 +119,10 @@
 		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'",
 		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
-		"generate-client:lessons-api":"openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api",
+		"generate-client:lessons-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api",
 		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
-		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api"
+		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
+		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
@@ -245,6 +246,7 @@
 		"rss-parser": "^3.13.0",
 		"rxjs": "^7.3.1",
 		"sanitize-html": "^2.13.0",
+		"schulcloud-server": "file:",
 		"serve-favicon": "^2.3.2",
 		"service": "^0.1.4",
 		"socket.io": "^4.7.5",
