@@ -5,11 +5,14 @@ import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { AxiosErrorLoggable } from '@src/core/error/loggable';
+import { ConfigService } from '@nestjs/config';
+import { VidisSyncConfig } from '../vidis-sync-config';
 
 @Injectable()
 export class VidisFetchService {
 	constructor(
 		private readonly vidisClientFactory: VidisClientFactory,
+		private readonly configService: ConfigService<VidisSyncConfig, true>,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
@@ -20,11 +23,11 @@ export class VidisFetchService {
 
 		const vidisClient: IDMBetreiberApiInterface = this.vidisClientFactory.createVidisClient();
 
-		// TODO: env var
-		const region = 'test-region';
 		const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
 		const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
 		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
+
+		const region = this.configService.getOrThrow<string>('VIDIS_SYNC_REGION');
 
 		try {
 			const axiosResponse: AxiosResponse<PageOfferDTO> = await vidisClient.getActivatedOffersByRegion(

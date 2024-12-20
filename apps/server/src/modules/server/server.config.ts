@@ -33,6 +33,7 @@ import type { CoreModuleConfig } from '@src/core';
 import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 import { VidisClientConfig } from '@infra/vidis-client';
+import { VidisSyncConfig } from '@infra/sync/media-licenses/vidis-sync-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -75,7 +76,8 @@ export interface ServerConfig
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
-		VidisClientConfig {
+		VidisClientConfig,
+		VidisSyncConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -324,6 +326,7 @@ const config: ServerConfig = {
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	VIDIS_API_CLIENT_BASE_URL: Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string,
+	VIDIS_SYNC_REGION: Configuration.get('VIDIS_SYNC_REGION') as string,
 };
 
 export const serverConfig = () => config;

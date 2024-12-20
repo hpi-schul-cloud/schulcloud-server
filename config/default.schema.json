@@ -1680,6 +1680,11 @@
 			"type": "string",
 			"default": "https://service-stage.vidis.schule/o/vidis-rest",
 			"description": "The VIDIS API base URL"
+		},
+		"VIDIS_SYNC_REGION": {
+			"type": "string",
+			"default": "test-region",
+			"description": "The region for fetching activated offers from VIDIS"
 		}
 	},
 	"required": []

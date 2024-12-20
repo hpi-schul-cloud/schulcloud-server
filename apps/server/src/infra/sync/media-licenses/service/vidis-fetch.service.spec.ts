@@ -6,9 +6,10 @@ import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/me
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { AxiosErrorLoggable } from '@src/core/error/loggable';
 import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, RawAxiosRequestConfig } from 'axios';
 import { vidisPageOfferFactory } from '../testing';
 import { VidisFetchService } from './vidis-fetch.service';
 
@@ -29,6 +30,19 @@ describe(VidisFetchService.name, () => {
 				{
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>({
+						getOrThrow: (key: string) => {
+							switch (key) {
+								case 'VIDIS_SYNC_REGION':
+									return 'test-region';
+								default:
+									throw new Error(`Unknown key: ${key}`);
+							}
+						},
+					}),
 				},
 			],
 		}).compile();
@@ -93,22 +107,29 @@ describe(VidisFetchService.name, () => {
 				});
 
 				it('should create a vidis api client', async () => {
-					const { mediaSource, decryptedUsername, decryptedPassword } = setup();
+					const { mediaSource } = setup();
 
 					await service.getOfferItemsFromVidis(mediaSource);
 
-					expect(vidisClientFactory.createVidisClient).toBeCalledWith({
-						username: decryptedUsername,
-						password: decryptedPassword,
-					});
+					expect(vidisClientFactory.createVidisClient).toBeCalledWith();
 				});
 
-				it('should call the vidis endpoint for activated offer items', async () => {
-					const { mediaSource, vidisApiClientMock } = setup();
+				it('should call the vidis endpoint for activated offer items with basic auth', async () => {
+					const { mediaSource, vidisApiClientMock, decryptedUsername, decryptedPassword } = setup();
 
 					await service.getOfferItemsFromVidis(mediaSource);
 
-					expect(vidisApiClientMock.getActivatedOffersByRegion).toBeCalledWith('test-region');
+					const encodedBasicAuth = btoa(`${decryptedUsername}:${decryptedPassword}`);
+					const expectedAxiosOptions: RawAxiosRequestConfig = {
+						headers: { Authorization: expect.stringMatching(`Basic ${encodedBasicAuth}`) },
+					};
+
+					expect(vidisApiClientMock.getActivatedOffersByRegion).toBeCalledWith(
+						'test-region',
+						undefined,
+						undefined,
+						expectedAxiosOptions
+					);
 				});
 			});
 
