@@ -1,3 +1,3 @@
 export interface VidisSyncConfig {
-	VIDIS_SYNC_REGION: string;
+	VIDIS_SYNC_REGION: string | undefined;
 }

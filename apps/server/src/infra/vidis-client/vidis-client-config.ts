@@ -1,3 +1,3 @@
 export interface VidisClientConfig {
-	VIDIS_API_CLIENT_BASE_URL: string;
+	VIDIS_API_CLIENT_BASE_URL: string | undefined;
 }

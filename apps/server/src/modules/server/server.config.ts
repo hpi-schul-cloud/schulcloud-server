@@ -325,8 +325,12 @@ const config: ServerConfig = {
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
-	VIDIS_API_CLIENT_BASE_URL: Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string,
-	VIDIS_SYNC_REGION: Configuration.get('VIDIS_SYNC_REGION') as string,
+	VIDIS_API_CLIENT_BASE_URL: Configuration.has('VIDIS_API_CLIENT_BASE_URL')
+		? (Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string)
+		: undefined,
+	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
+		? (Configuration.get('VIDIS_SYNC_REGION') as string)
+		: undefined,
 };
 
 export const serverConfig = () => config;
