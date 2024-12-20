@@ -1,17 +1,23 @@
-export * from './course-export.body.params';
-export * from './course-import.body.params';
-export * from './course-metadata.response';
-export * from './course-room-element.url.params';
-export * from './course-room.url.params';
-export * from './course-sync.body.params';
-export * from './course.query.params';
-export * from './course.url.params';
+export { CourseExportBodyParams } from './course-export.body.params';
+export { CourseImportBodyParams } from './course-import.body.params';
+export { CourseMetadataListResponse, CourseMetadataResponse } from './course-metadata.response';
+export { CourseRoomElementUrlParams } from './course-room-element.url.params';
+export { CourseRoomUrlParams } from './course-room.url.params';
+export { CourseSyncBodyParams } from './course-sync.body.params';
+export { CourseQueryParams } from './course.query.params';
+export { CourseUrlParams } from './course.url.params';
 export { CreateCourseBodyParams } from './create-course-body.params';
-export * from './dashboard.response';
-export * from './dashboard.url.params';
-export * from './lesson';
-export * from './move-element.body.params';
-export * from './patch-group.params';
-export * from './patch-order.params';
-export * from './patch-visibility.params';
-export * from './single-column-board';
+export { DashboardGridElementResponse, DashboardGridSubElementResponse, DashboardResponse } from './dashboard.response';
+export { DashboardUrlParams } from './dashboard.url.params';
+export { LessonCopyApiParams, LessonUrlParams } from './lesson';
+export { MoveElementParams, MoveElementPositionParams } from './move-element.body.params';
+export { PatchGroupParams } from './patch-group.params';
+export { PatchOrderParams } from './patch-order.params';
+export { PatchVisibilityParams } from './patch-visibility.params';
+export {
+	BoardElementResponse,
+	BoardLessonResponse,
+	BoardTaskResponse,
+	BoardTaskStatusResponse,
+	SingleColumnBoardResponse,
+} from './single-column-board';
