@@ -9,5 +9,5 @@ export class AccountSearchListResponse extends PaginationResponse<AccountRespons
 	}
 
 	@ApiProperty({ type: [AccountResponse] })
-	data: AccountResponse[];
+	public data: AccountResponse[];
 }
