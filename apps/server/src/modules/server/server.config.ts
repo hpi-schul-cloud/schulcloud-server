@@ -6,6 +6,8 @@ import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
+import { VidisClientConfig } from '@infra/vidis-client';
+import { VidisSyncConfig } from '@infra/sync/media-licenses';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -32,8 +34,6 @@ import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
-import { VidisClientConfig } from '@infra/vidis-client';
-import { VidisSyncConfig } from '@infra/sync/media-licenses/vidis-sync-config';
 
 export enum NodeEnvType {
 	TEST = 'test',

@@ -121,7 +121,7 @@ describe(VidisFetchService.name, () => {
 
 					const encodedBasicAuth = btoa(`${decryptedUsername}:${decryptedPassword}`);
 					const expectedAxiosOptions: RawAxiosRequestConfig = {
-						headers: { Authorization: expect.stringMatching(`Basic ${encodedBasicAuth}`) },
+						headers: { Authorization: expect.stringMatching(`Basic ${encodedBasicAuth}`) as string },
 					};
 
 					expect(vidisApiClientMock.getActivatedOffersByRegion).toBeCalledWith(

@@ -53,7 +53,7 @@ describe(VidisSyncService.name, () => {
 	});
 
 	describe('syncMediaSchoolLicenses', () => {
-		describe('when the vidis media source and school activation items are given', () => {
+		describe('when the vidis media source and activated offer items are given', () => {
 			describe('when the school activations provided does not exist in SVS', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.build();
@@ -64,9 +64,7 @@ describe(VidisSyncService.name, () => {
 						schoolFactory.build({ officialSchoolNumber })
 					);
 
-					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId
-						.mockResolvedValueOnce([])
-						.mockResolvedValueOnce([]);
+					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValue([]);
 					schoolService.getSchoolByOfficialSchoolNumber
 						.mockResolvedValueOnce(schools[0])
 						.mockResolvedValueOnce(schools[1])
@@ -117,9 +115,7 @@ describe(VidisSyncService.name, () => {
 						mediaSource,
 					});
 
-					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([
-						existingMediaSchoolLicense,
-					]);
+					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValue([existingMediaSchoolLicense]);
 					schoolService.getSchoolById.mockResolvedValueOnce(school);
 					schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(school);
 
@@ -142,7 +138,7 @@ describe(VidisSyncService.name, () => {
 				describe('when the school has an official school number', () => {
 					const setup = () => {
 						const mediaSource = mediaSourceFactory.build();
-						const items: OfferDTO[] = vidisOfferItemFactory.buildList(2, { schoolActivations: [] });
+						const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations: [] });
 						const school = schoolFactory.build({ officialSchoolNumber: '00100' });
 
 						const mediumId = `${items[0].offerId as number}`;
@@ -152,9 +148,9 @@ describe(VidisSyncService.name, () => {
 							mediaSource,
 						});
 
-						mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([
-							existingMediaSchoolLicense,
-						]);
+						mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId
+							.mockResolvedValueOnce([existingMediaSchoolLicense])
+							.mockResolvedValueOnce([]);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(school);
 
@@ -177,7 +173,7 @@ describe(VidisSyncService.name, () => {
 				describe('when the school does not have an official school number', () => {
 					const setup = () => {
 						const mediaSource = mediaSourceFactory.build();
-						const items: OfferDTO[] = vidisOfferItemFactory.buildList(2, { schoolActivations: [] });
+						const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations: [] });
 						const school = schoolFactory.build({ officialSchoolNumber: undefined });
 
 						const mediumId = `${items[0].offerId as number}`;
@@ -187,9 +183,9 @@ describe(VidisSyncService.name, () => {
 							mediaSource,
 						});
 
-						mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([
-							existingMediaSchoolLicense,
-						]);
+						mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId
+							.mockResolvedValueOnce([existingMediaSchoolLicense])
+							.mockResolvedValueOnce([existingMediaSchoolLicense]);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(null);
 
@@ -215,7 +211,7 @@ describe(VidisSyncService.name, () => {
 					const missingSchoolNumbers = ['00100', '00200'];
 					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations: missingSchoolNumbers });
 
-					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([]);
+					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValue([]);
 					schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(null);
 
 					return {
@@ -247,7 +243,7 @@ describe(VidisSyncService.name, () => {
 						schoolFactory.build({ officialSchoolNumber })
 					);
 
-					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([]);
+					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValue([]);
 					schoolService.getSchoolByOfficialSchoolNumber
 						.mockResolvedValueOnce(schools[0])
 						.mockResolvedValueOnce(schools[1])
@@ -290,7 +286,7 @@ describe(VidisSyncService.name, () => {
 						schoolFactory.build({ officialSchoolNumber })
 					);
 
-					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce([]);
+					mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId.mockResolvedValue([]);
 					schoolService.getSchoolByOfficialSchoolNumber
 						.mockResolvedValueOnce(schools[0])
 						.mockResolvedValueOnce(schools[1])
@@ -319,6 +315,48 @@ describe(VidisSyncService.name, () => {
 					const promise = service.syncMediaSchoolLicenses(mediaSource, items);
 
 					await expect(promise).resolves.not.toThrow();
+				});
+			});
+
+			describe('when the offer item does not has school activations', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.build();
+					const schoolActivations = undefined;
+					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations });
+
+					return {
+						mediaSource,
+						items,
+					};
+				};
+
+				it('should skip the offer item', async () => {
+					const { mediaSource, items } = setup();
+
+					await service.syncMediaSchoolLicenses(mediaSource, items);
+
+					expect(mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when the offer item does not has a medium id', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.build();
+					const schoolActivations = ['00100'];
+					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations, offerId: undefined });
+
+					return {
+						mediaSource,
+						items,
+					};
+				};
+
+				it('should skip the offer item', async () => {
+					const { mediaSource, items } = setup();
+
+					await service.syncMediaSchoolLicenses(mediaSource, items);
+
+					expect(mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId).not.toHaveBeenCalled();
 				});
 			});
 		});
