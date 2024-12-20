@@ -22,7 +22,7 @@ export class CommonCartridgeResourceFactory {
 		}
 
 		const content = this.archive.readAsText(organization.resourcePath);
-		const { title } = organization;
+		const { title } = organization ?? "Importiertes Spaltenboard";
 
 		switch (organization.resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
