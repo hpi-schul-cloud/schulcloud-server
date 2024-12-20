@@ -10,16 +10,19 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger } from '@src/core/logger';
 import { ManagementServerModule } from '@modules/management';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
 
-	// create the NestJS application on a seperate express instance
+	// create the NestJS application on a separate express instance
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
+
+	nestApp.use(createRequestLoggerMiddleware());
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
