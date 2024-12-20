@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
 import { Logger } from '@src/core/logger';
-import { ExportApiInterface, TspClientFactory } from '@src/infra/tsp-client';
+import {
+	ExportApiInterface,
+	RobjExportKlasse,
+	RobjExportLehrer,
+	RobjExportLehrerMigration,
+	RobjExportSchueler,
+	RobjExportSchuelerMigration,
+	RobjExportSchule,
+	TspClientFactory,
+} from '@src/infra/tsp-client';
 import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
 import { System } from '@src/modules/system';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -13,41 +22,41 @@ export class TspFetchService {
 		this.logger.setContext(TspFetchService.name);
 	}
 
-	public async fetchTspSchools(system: System, daysToFetch: number) {
+	public fetchTspSchools(system: System, daysToFetch: number): Promise<RobjExportSchule[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const schools = await this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
+		const schools = this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
 
 		return schools;
 	}
 
-	public async fetchTspTeachers(system: System, daysToFetch: number) {
+	public fetchTspTeachers(system: System, daysToFetch: number): Promise<RobjExportLehrer[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const teachers = await this.fetchTsp(system, (client) => client.exportLehrerList(lastChangeDate), []);
+		const teachers = this.fetchTsp(system, (client) => client.exportLehrerList(lastChangeDate), []);
 
 		return teachers;
 	}
 
-	public async fetchTspStudents(system: System, daysToFetch: number) {
+	public fetchTspStudents(system: System, daysToFetch: number): Promise<RobjExportSchueler[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const students = await this.fetchTsp(system, (client) => client.exportSchuelerList(lastChangeDate), []);
+		const students = this.fetchTsp(system, (client) => client.exportSchuelerList(lastChangeDate), []);
 
 		return students;
 	}
 
-	public async fetchTspClasses(system: System, daysToFetch: number) {
+	public fetchTspClasses(system: System, daysToFetch: number): Promise<RobjExportKlasse[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const classes = await this.fetchTsp(system, (client) => client.exportKlasseList(lastChangeDate), []);
+		const classes = this.fetchTsp(system, (client) => client.exportKlasseList(lastChangeDate), []);
 
 		return classes;
 	}
 
-	public async fetchTspTeacherMigrations(system: System) {
+	public fetchTspTeacherMigrations(system: System): Promise<RobjExportLehrerMigration[]> {
 		const migrations = this.fetchTsp(system, (client) => client.exportLehrerListMigration(), []);
 
 		return migrations;
 	}
 
-	public async fetchTspStudentMigrations(system: System) {
+	public fetchTspStudentMigrations(system: System): Promise<RobjExportSchuelerMigration[]> {
 		const migrations = this.fetchTsp(system, (client) => client.exportSchuelerListMigration(), []);
 
 		return migrations;
@@ -78,7 +87,7 @@ export class TspFetchService {
 		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 
-	private createClient(system: System) {
+	private createClient(system: System): ExportApiInterface {
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}
