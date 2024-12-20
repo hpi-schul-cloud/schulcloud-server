@@ -19,7 +19,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return User;
 	}
 
-	public async find(query: UserQuery, options?: IFindOptions<UserDO>) {
+	public async find(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
