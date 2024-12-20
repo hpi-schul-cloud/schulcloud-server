@@ -52,7 +52,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 				em.clear();
 
 				const expectedDOs: MediaSchoolLicense[] = mediaSchoolLicenses.map(
-					(entity: MediaSchoolLicenseEntity): MediaSchoolLicense => MediaSchoolLicenseEntityMapper.mapEntityToDo(entity)
+					(entity: MediaSchoolLicenseEntity): MediaSchoolLicense => MediaSchoolLicenseEntityMapper.mapEntityToDO(entity)
 				);
 
 				return {

@@ -20,7 +20,7 @@ import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { of, throwError } from 'rxjs';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { VidisResponse } from '../response';
+import { VidisItemResponse, VidisResponse } from '../response';
 import { vidisResponseFactory, vidisItemResponseFactory } from '../testing';
 import { VidisSyncService } from './vidis-sync.service';
 
@@ -134,8 +134,15 @@ describe(VidisSyncService.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withBasicAuthConfig().build();
 					const basicAuthConfig = mediaSource.basicAuthConfig as MediaSourceBasicAuthConfig;
+
+					const vidisItemResponse: VidisItemResponse[] = vidisItemResponseFactory.buildList(3);
+					vidisItemResponse[0].offerTitle = 'Other Title';
+
+					const vidisResponse: VidisResponse = vidisResponseFactory.build();
+					vidisResponse.items = vidisItemResponse;
+
 					const axiosResponse: AxiosResponse<VidisResponse> = axiosResponseFactory.build({
-						data: vidisResponseFactory.build(),
+						data: vidisResponse,
 					});
 
 					httpService.get.mockReturnValueOnce(of(axiosResponse));

@@ -71,9 +71,9 @@ export class VidisSyncService {
 					if (!school) {
 						this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolNumber));
 					} else {
-						const isExistingLicense: boolean = existingLicenses.some((license: MediaSchoolLicense): boolean => {
-							return license.schoolId === school.id;
-						});
+						const isExistingLicense = !!existingLicenses.find(
+							(license: MediaSchoolLicense): boolean => license.schoolId === school.id
+						);
 						if (!isExistingLicense) {
 							const newLicense: MediaSchoolLicense = new MediaSchoolLicense({
 								id: new ObjectId().toHexString(),

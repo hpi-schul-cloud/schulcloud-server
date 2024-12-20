@@ -27,7 +27,7 @@ describe(MediaSchoolLicenseEntityMapper.name, () => {
 			it('should return the domain object of the entity', () => {
 				const { mediaSchoolLicenseEntity, expectedDomainObject } = setup();
 
-				const domainObject: MediaSchoolLicense = MediaSchoolLicenseEntityMapper.mapEntityToDo(mediaSchoolLicenseEntity);
+				const domainObject: MediaSchoolLicense = MediaSchoolLicenseEntityMapper.mapEntityToDO(mediaSchoolLicenseEntity);
 
 				expect(domainObject).toEqual(expectedDomainObject);
 			});
