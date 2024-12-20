@@ -41,7 +41,7 @@ describe('TspProvisioningService', () => {
 		return new ExternalClassDto({ ...baseProps, ...props });
 	};
 	const setupExternalUser = (props?: Partial<ExternalUserDto>) => {
-		const baseProps = { externalId: faker.string.uuid(), username: faker.internet.userName() };
+		const baseProps = { externalId: faker.string.uuid(), username: faker.internet.userName(), roles: [] };
 
 		return new ExternalUserDto({ ...baseProps, ...props });
 	};

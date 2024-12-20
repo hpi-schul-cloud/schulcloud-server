@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
@@ -13,11 +12,11 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
+import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		FilesStorageClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -43,7 +42,7 @@ import { LessonClientModule } from './common-cartridge-client/lesson-client/less
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 	],
-	providers: [CommonCartridgeUc, CommonCartridgeExportService],
+	providers: [CommonCartridgeExportMapper, CommonCartridgeUc, CommonCartridgeExportService],
 	exports: [CommonCartridgeUc],
 })
 export class CommonCartridgeModule {}

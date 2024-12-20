@@ -12,3 +12,4 @@ export * from './media-line-entity.factory';
 export * from './rich-text-element-entity.factory';
 export * from './submission-container-element-entity.factory';
 export * from './submission-item-entity.factory';
+export * from './video-conference-element-entity.factory';
