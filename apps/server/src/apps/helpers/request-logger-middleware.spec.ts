@@ -1,7 +1,7 @@
-import { createRequestLoggerMiddleware } from './request-logger-middleware';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { createRequestLoggerMiddleware } from './request-logger-middleware';
 
 jest.mock('@hpi-schul-cloud/commons/lib', () => {
 	return {
