@@ -36,6 +36,10 @@ export class School extends DomainObject<SchoolProps> {
 		this.props.externalId = externalId;
 	}
 
+	get officialSchoolNumber(): string | undefined {
+		return this.props.officialSchoolNumber;
+	}
+
 	set ldapLastSync(ldapLastSync: string | undefined) {
 		this.props.ldapLastSync = ldapLastSync;
 	}
