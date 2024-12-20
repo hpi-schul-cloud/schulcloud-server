@@ -12,11 +12,11 @@ like this:
 ```typescript
 export class MyNewService {
     // inject the factory into the constructor
-    constructor(private readonly tspClientFactory: TspClientFactory) {}
+    constructor(private readonly vidisClientFactory: VidisClientFactory) {}
 
     public async doSomeStuff(): Promise<void> {
         // this will create a fully initialized client
-        const exportClient = tspClientFactory.createExportClient();
+        const exportClient = vidisClientFactory.createExportClient();
 
         // calling the api
         const versionResponse = await exportClient.version();
@@ -39,8 +39,8 @@ We are using the openapi-generator-cli to generate apis, models and supporting f
 `generated` directory. **DO NOT** modify anything in the `generated` folder, because it will
 be deleted on the next client generation.
 
-The client generation is done with the npm command `npm run generate-client:tsp-api`. This
-will delete the old and create new files. We are using the `tsp-api` generator configuration 
+The client generation is done with the npm command `npm run generate-client:vidis-api`. This
+will delete the old and create new files. We are using the `vidis-api` generator configuration 
 from the `openapitools.json` found in the repository root. You can add new endpoints by
 extending the `FILTER` list in the `openapiNormalizer` section with new `operationId` entries.
 New models must be added to the list of `models` in the `globalProperty` section.

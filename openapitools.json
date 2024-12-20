@@ -65,6 +65,9 @@
 				"output": "./apps/server/src/infra/vidis-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:getActivatedOffersBySchool"
+				},
 				"additionalProperties": {
 					"apiPackage": "api",
 					"enumNameSuffix": "",
