@@ -212,7 +212,7 @@
 		"moment": "^2.19.2",
 		"mongodb-memory-server-global": "^9.1.8",
 		"mongodb-uri": "^0.9.7",
-		"mongoose": "^6.12.3",
+		"mongoose": "^8.9.2",
 		"mongoose-delete": "^0.5.4",
 		"mongoose-id-validator": "^0.6.0",
 		"mongoose-lean-virtuals": "^0.8.1",
