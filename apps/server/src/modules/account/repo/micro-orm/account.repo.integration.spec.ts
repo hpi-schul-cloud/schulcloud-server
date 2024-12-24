@@ -1,5 +1,5 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { NotFoundError } from '@mikro-orm/core';
+import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -9,18 +9,24 @@ import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountRepo } from './account.repo';
 import { AccountEntityToDoMapper } from './mapper';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { Account } from '../../domain';
 
+class AccountRepoSpec extends AccountRepo {
+	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
+		return super.mapDOToEntityProperties(entityDO);
+	}
+}
 describe('account repo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
-	let repo: AccountRepo;
+	let repo: AccountRepoSpec;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [AccountRepo],
+			providers: [AccountRepoSpec],
 		}).compile();
-		repo = module.get(AccountRepo);
+		repo = module.get(AccountRepoSpec);
 		em = module.get(EntityManager);
 	});
 
@@ -40,16 +46,7 @@ describe('account repo', () => {
 		describe('When an account is given', () => {
 			it('should map the account to an entity', () => {
 				const account = accountDoFactory.build();
-				const entityProps = AccountDoToEntityMapper.mapToEntity(account);
-
-				expect(entityProps).toEqual(expect.objectContaining(account.getProps()));
-			});
-		});
-
-		describe('When an account with partial props is given', () => {
-			it('should map the account to an entity', () => {
-				const account = accountDoFactory.build({ id: new ObjectId().toHexString(), username: 'John Doe' });
-				const entityProps = AccountDoToEntityMapper.mapToEntity(account);
+				const entityProps: EntityData<AccountEntity> = repo.mapDOToEntityPropertiesSpec(account);
 
 				expect(entityProps).toEqual(expect.objectContaining(account.getProps()));
 			});
