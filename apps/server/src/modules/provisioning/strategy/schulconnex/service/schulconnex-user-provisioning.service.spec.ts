@@ -70,6 +70,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'existingFirstName',
+					preferredName: 'existingPreferredName',
 					lastName: 'existingLastName',
 					email: 'existingEmail',
 					schoolId: 'existingSchoolId',
@@ -81,6 +82,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'firstName',
+					preferredName: 'preferredName',
 					lastName: 'lastName',
 					email: 'email',
 					schoolId,
@@ -92,6 +94,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			const externalUser: ExternalUserDto = externalUserDtoFactory.build({
 				externalId: 'externalUserId',
 				firstName: 'firstName',
+				preferredName: 'preferredName',
 				lastName: 'lastName',
 				email: 'email',
 				roles: [RoleName.USER],

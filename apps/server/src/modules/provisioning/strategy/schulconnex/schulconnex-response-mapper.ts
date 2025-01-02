@@ -89,6 +89,7 @@ export class SchulconnexResponseMapper {
 
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
+			preferredName: source.person.name.rufname,
 			lastName: source.person.name.familienname,
 			roles: role ? [role] : [],
 			externalId: source.pid,

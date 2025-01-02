@@ -70,6 +70,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 			ldapDn: `uid=${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname}.${externalUserData.pid},`,
 			externalId: externalUserData.pid,
 			firstName: externalUserData.person.name.vorname,
+			preferredName: externalUserData.person.name.rufname,
 			lastName: externalUserData.person.name.familienname,
 			email: `${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname}.${externalUserData.pid}@schul-cloud.org`,
 			roleNames: [RoleName.ADMINISTRATOR],

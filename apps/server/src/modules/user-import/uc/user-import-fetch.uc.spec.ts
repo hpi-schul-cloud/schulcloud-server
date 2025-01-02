@@ -147,7 +147,7 @@ describe(UserImportFetchUc.name, () => {
 
 				await uc.populateImportUsers(user.id);
 
-				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser], userLoginMigration);
+				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser], userLoginMigration, false);
 			});
 
 			it('should delete all existing imported users of the school', async () => {
@@ -164,6 +164,43 @@ describe(UserImportFetchUc.name, () => {
 				await uc.populateImportUsers(user.id);
 
 				expect(userImportService.saveImportUsers).toHaveBeenCalledWith([importUser]);
+			});
+		});
+
+		describe('when matching users by preferred name', () => {
+			const setup = () => {
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build({ id: systemEntity.id });
+				const user: User = userFactory.buildWithId();
+				const importUser: ImportUser = importUserFactory.build({
+					system: systemEntity,
+				});
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					targetSystemId: system.id,
+				});
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				systemService.findByIdOrFail.mockResolvedValueOnce(system);
+				schulconnexFetchImportUsersService.getData.mockResolvedValueOnce([importUser]);
+				schulconnexFetchImportUsersService.filterAlreadyMigratedUser.mockResolvedValueOnce([importUser]);
+				userImportService.matchUsers.mockResolvedValueOnce([importUser]);
+
+				return {
+					user,
+					systemEntity,
+					system,
+					importUser,
+					userLoginMigration,
+				};
+			};
+
+			it('should match the users by preferred name', async () => {
+				const { user, importUser, userLoginMigration } = setup();
+
+				await uc.populateImportUsers(user.id, true);
+
+				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser], userLoginMigration, true);
 			});
 		});
 	});
