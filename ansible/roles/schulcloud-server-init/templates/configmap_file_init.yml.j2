@@ -8,11 +8,6 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
-    # necessary for secret handling and legacy indexes
-    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
-    cd /schulcloud-server
-    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm ci
     echo "seeding database"
     curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
