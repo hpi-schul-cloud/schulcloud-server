@@ -28,6 +28,7 @@ import {
 	UpdateMatchParams,
 	UserMatchListResponse,
 } from './dto';
+import { PopulateImportUserParams } from './dto/populate-import-user.params';
 
 @ApiTags('UserImport')
 @JwtAuthentication()
@@ -135,8 +136,11 @@ export class ImportUserController {
 	@ApiServiceUnavailableResponse()
 	@ApiBadRequestResponse()
 	@ApiForbiddenResponse()
-	async populateImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.userImportFetchUc.populateImportUsers(currentUser.userId);
+	async populateImportUsers(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() query: PopulateImportUserParams
+	): Promise<void> {
+		await this.userImportFetchUc.populateImportUsers(currentUser.userId, query.matchByPreferredName);
 	}
 
 	@Post('cancel')
