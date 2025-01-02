@@ -4,12 +4,11 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 
-// register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-
-// application imports
 import { LegacyLogger } from '@src/core/logger';
 import { ManagementServerModule } from '@modules/management';
+import { MikroORM } from '@mikro-orm/core';
+import legacyAppPromise = require('../../../../src/app');
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
 
@@ -21,11 +20,23 @@ async function bootstrap() {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
+	const orm = nestApp.get(MikroORM);
 
 	nestApp.use(createRequestLoggerMiddleware());
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+
+	// load the legacy feathers/express server
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const feathersExpress = await legacyAppPromise(orm);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+	await feathersExpress.setup();
+
+	// set reference to legacy app as an express setting so we can
+	// access it over the current request within FeathersServiceProvider
+	// TODO remove if not needed anymore, needed for legacy indexes
+	nestExpress.set('feathersApp', feathersExpress);
 
 	// customize nest app settings
 	nestApp.enableCors();
@@ -45,8 +56,8 @@ async function bootstrap() {
 
 	console.log('#################################');
 	console.log(`### Start Management Server   ###`);
-	console.log(`### Port:     ${port}            ###`);
-	console.log(`### Base path: ${basePath}           ###`);
+	console.log(`### Port:     ${port}         ###`);
+	console.log(`### Base path: ${basePath}    ###`);
 	console.log('#################################');
 }
 void bootstrap();

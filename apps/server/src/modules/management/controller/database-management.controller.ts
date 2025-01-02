@@ -1,9 +1,13 @@
 import { Controller, Param, Post, All, Query } from '@nestjs/common';
+import { FeathersServiceProvider } from '@infra/feathers';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 @Controller('management/database')
 export class DatabaseManagementController {
-	constructor(private databaseManagementUc: DatabaseManagementUc) {}
+	constructor(
+		private databaseManagementUc: DatabaseManagementUc,
+		private feathersServiceProvider: FeathersServiceProvider
+	) {}
 
 	@All('seed')
 	async importCollections(@Query('with-indexes') withIndexes: boolean): Promise<string[]> {
@@ -30,7 +34,9 @@ export class DatabaseManagementController {
 	}
 
 	@Post('sync-indexes')
-	syncIndexes() {
+	async syncIndexes() {
+		// it is absolutely crucial to call the legacy stuff first, otherwise it will drop newly created indexes!
+		await this.feathersServiceProvider.getService('sync-legacy-indexes').create();
 		return this.databaseManagementUc.syncIndexes();
 	}
 }

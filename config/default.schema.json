@@ -1675,6 +1675,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
+		},
+		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
+			"type": "boolean",
+			"default": "false",
+			"description": "if calling sync legacy indexes is allowed, only management module should have access to this, this should not exist in the long term when all entites and their indexes have been migrated"
 		}
 	},
 	"required": []
