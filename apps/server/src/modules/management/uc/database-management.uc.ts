@@ -374,7 +374,7 @@ export class DatabaseManagementUc {
 	/**
 	 * Removes all known secrets (hard coded) from the export.
 	 * Manual replacement with the intend placeholders or value is mandatory.
-	 * Currently this affects system and storageproviders collections.
+	 * Currently, this affects system and storageproviders collections.
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
@@ -417,5 +417,9 @@ export class DatabaseManagementUc {
 
 	public async migrationPending(): Promise<UmzugMigration[]> {
 		return this.databaseManagementService.migrationPending();
+	}
+
+	public async encryptPlainText(plainText: string): Promise<string> {
+		return this.defaultEncryptionService.encrypt(plainText);
 	}
 }

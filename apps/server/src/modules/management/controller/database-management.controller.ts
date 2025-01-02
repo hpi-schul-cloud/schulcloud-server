@@ -1,5 +1,6 @@
-import { Controller, Param, Post, All, Query } from '@nestjs/common';
+import { Controller, Param, Post, All, Query, Body, HttpCode } from '@nestjs/common';
 import { FeathersServiceProvider } from '@infra/feathers';
+import { EncryptDto } from '@modules/management/controller/dto';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 @Controller('management/database')
@@ -38,5 +39,11 @@ export class DatabaseManagementController {
 		// it is absolutely crucial to call the legacy stuff first, otherwise it will drop newly created indexes!
 		await this.feathersServiceProvider.getService('sync-legacy-indexes').create();
 		return this.databaseManagementUc.syncIndexes();
+	}
+
+	@Post('encrypt-plain-text')
+	@HttpCode(200)
+	async encryptPlainText(@Body() encryptDto: EncryptDto) {
+		return this.databaseManagementUc.encryptPlainText(encryptDto.plainText);
 	}
 }
