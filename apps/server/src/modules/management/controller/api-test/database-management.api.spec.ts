@@ -5,6 +5,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createCollections } from '@shared/testing';
 import request from 'supertest';
+import { FeathersServiceProvider } from '@infra/feathers';
+import { createMock } from '@golevelup/ts-jest';
 
 describe('Database Management Controller (API)', () => {
 	let app: INestApplication;
@@ -14,7 +16,16 @@ describe('Database Management Controller (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ManagementServerTestModule],
-		}).compile();
+			providers: [
+				{
+					provide: FeathersServiceProvider,
+					useValue: createMock<FeathersServiceProvider>(),
+				},
+			],
+		})
+			.overrideProvider(FeathersServiceProvider)
+			.useValue(createMock<FeathersServiceProvider>())
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -60,7 +71,7 @@ describe('Database Management Controller (API)', () => {
 
 			expect(result.status).toEqual(201);
 		});
-		it('should export a collection to filesystem', async () => {
+		it('should create indexes', async () => {
 			const result = await request(app.getHttpServer()).post(`/management/database/sync-indexes`);
 
 			expect(result.status).toEqual(201);
