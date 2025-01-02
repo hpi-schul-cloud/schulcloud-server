@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { createMock } from '@golevelup/ts-jest';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 import { DatabaseManagementController } from './database-management.controller';
+import { FeathersServiceProvider } from '@infra/feathers';
 
 describe('DatabaseManagementController', () => {
 	let controller: DatabaseManagementController;
@@ -25,6 +27,10 @@ describe('DatabaseManagementController', () => {
 							return Promise.resolve();
 						},
 					},
+				},
+				{
+					provide: FeathersServiceProvider,
+					useValue: createMock<FeathersServiceProvider>(),
 				},
 			],
 		}).compile();

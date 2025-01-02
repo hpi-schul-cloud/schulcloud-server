@@ -44,7 +44,7 @@ export class DatabaseManagementUc {
 	}
 
 	/**
-	 * absolute path reference for seed data base folder.
+	 * absolute path reference for seed database folder.
 	 */
 	private get baseDir(): string {
 		const folderPath = this.fileSystemAdapter.joinPath(__dirname, this.basePath);

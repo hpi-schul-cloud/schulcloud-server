@@ -13,18 +13,6 @@ data:
     cd /schulcloud-server
     git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
     npm ci
-    until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
-      do
-        sleep 1
-      done
-    mongosh $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
-    sleep 3
-    if [[ $(mongosh --quiet --eval "db.isMaster().setName") != rs0 ]]
-    then
-        echo "replicaset config failed :("
-    else
-        echo "gg, hacky mongo replicaset"
-    fi
     echo "seeding database"
     curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
