@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
 export class CommonCartridgeUc {

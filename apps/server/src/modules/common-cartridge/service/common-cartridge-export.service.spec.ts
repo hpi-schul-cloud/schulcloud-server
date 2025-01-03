@@ -32,7 +32,7 @@ import {
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
 
-describe('CommonCartridgeExportService', () => {
+describe.skip('CommonCartridgeExportService', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeExportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;

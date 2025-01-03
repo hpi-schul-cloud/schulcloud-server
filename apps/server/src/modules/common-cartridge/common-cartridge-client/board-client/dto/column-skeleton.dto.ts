@@ -1,11 +1,11 @@
 import { CardSkeletonDto } from './card-skeleton.dto';
 
 export class ColumnSkeletonDto {
-	columnId: string;
+	public columnId: string;
 
-	title: string;
+	public title: string;
 
-	cards: CardSkeletonDto[];
+	public cards: CardSkeletonDto[];
 
 	constructor(props: ColumnSkeletonDto) {
 		this.columnId = props.columnId;

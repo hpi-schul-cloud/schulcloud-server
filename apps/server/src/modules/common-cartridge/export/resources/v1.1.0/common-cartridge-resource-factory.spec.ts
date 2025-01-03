@@ -1,9 +1,11 @@
 import {
+	createCommonCartridgeFileResourcePropsV110,
 	createCommonCartridgeManifestResourcePropsV110,
 	createCommonCartridgeWebContentResourcePropsV110,
 	createCommonCartridgeWeblinkResourcePropsV110,
 } from '../../../testing/common-cartridge-resource-props.factory';
 import { ResourceTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeFileResourceV110 } from './common-cartridge-file-resource';
 import { CommonCartridgeManifestResourceV110 } from './common-cartridge-manifest-resource';
 import { CommonCartridgeResourceFactoryV110 } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourceV110 } from './common-cartridge-web-content-resource';
@@ -37,6 +39,14 @@ describe('CommonCartridgeResourceFactoryV110', () => {
 				const result = CommonCartridgeResourceFactoryV110.createResource(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebLinkResourceV110);
+			});
+
+			it('should return file resource', () => {
+				const props = createCommonCartridgeFileResourcePropsV110();
+
+				const result = CommonCartridgeResourceFactoryV110.createResource(props);
+
+				expect(result).toBeInstanceOf(CommonCartridgeFileResourceV110);
 			});
 		});
 
