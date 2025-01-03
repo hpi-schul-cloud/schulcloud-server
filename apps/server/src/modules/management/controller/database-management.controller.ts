@@ -43,7 +43,7 @@ export class DatabaseManagementController {
 
 	@Post('encrypt-plain-text')
 	@HttpCode(200)
-	async encryptPlainText(@Body() encryptDto: EncryptDto) {
+	encryptPlainText(@Body() encryptDto: EncryptDto) {
 		return this.databaseManagementUc.encryptPlainText(encryptDto.plainText);
 	}
 }

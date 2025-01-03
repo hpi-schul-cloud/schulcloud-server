@@ -419,7 +419,7 @@ export class DatabaseManagementUc {
 		return this.databaseManagementService.migrationPending();
 	}
 
-	public async encryptPlainText(plainText: string): Promise<string> {
+	public encryptPlainText(plainText: string): string {
 		return this.defaultEncryptionService.encrypt(plainText);
 	}
 }

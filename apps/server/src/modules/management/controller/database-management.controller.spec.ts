@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
+import { FeathersServiceProvider } from '@infra/feathers';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 import { DatabaseManagementController } from './database-management.controller';
-import { FeathersServiceProvider } from '@infra/feathers';
 
 describe('DatabaseManagementController', () => {
 	let controller: DatabaseManagementController;
