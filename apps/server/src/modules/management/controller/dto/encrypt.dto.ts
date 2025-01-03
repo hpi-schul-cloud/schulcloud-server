@@ -5,9 +5,5 @@ export class EncryptDto {
 	@ApiProperty()
 	@IsNotEmpty()
 	@IsString()
-	public plainText: string;
-
-	constructor(encryptDto: EncryptDto) {
-		this.plainText = encryptDto.plainText;
-	}
+	public plainText!: string;
 }
