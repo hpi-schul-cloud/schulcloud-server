@@ -29,7 +29,7 @@ describe('AccountIdmService Integration', () => {
 		systemId: new ObjectId().toString(),
 		idmReferenceId: testDbcAccountId,
 	} as AccountSave;
-	const createAccount = async (): Promise<string> =>
+	const createAccount = (): Promise<string> =>
 		identityManagementService.createAccount(
 			{
 				username: testAccount.username,

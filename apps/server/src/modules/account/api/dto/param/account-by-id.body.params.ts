@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PrivacyProtect, SanitizeHtml } from '@shared/controller';
 import { IsBoolean, IsString, IsOptional, Matches, IsEmail } from 'class-validator';
-import { passwordPattern } from '../password-pattern';
+import { passwordPattern } from '../../../domain/password-pattern';
 
 export class AccountByIdBodyParams {
 	@IsOptional()
@@ -13,7 +13,7 @@ export class AccountByIdBodyParams {
 		required: false,
 		nullable: true,
 	})
-	username?: string;
+	public username?: string;
 
 	@PrivacyProtect()
 	@IsOptional()
@@ -24,7 +24,7 @@ export class AccountByIdBodyParams {
 		required: false,
 		nullable: true,
 	})
-	password?: string;
+	public password?: string;
 
 	@IsOptional()
 	@IsBoolean()
@@ -33,5 +33,5 @@ export class AccountByIdBodyParams {
 		required: false,
 		nullable: true,
 	})
-	activated?: boolean;
+	public activated?: boolean;
 }

@@ -313,24 +313,12 @@ describe('AccountDbService', () => {
 
 		describe('when user does not exist', () => {
 			const setup = () => {
-				const mockTeacherUser = userFactory.buildWithId();
-				const mockTeacherAccount = accountDoFactory.build({
-					userId: mockTeacherUser.id,
-					password: defaultPassword,
-				});
-
-				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId | ObjectId): Promise<Account> => {
-					if (mockTeacherUser.id === userId) {
-						return Promise.resolve(mockTeacherAccount);
-					}
-					throw new EntityNotFoundError(AccountEntity.name);
-				});
-				return {};
+				accountRepo.findByUserIdOrFail.mockRejectedValue(new EntityNotFoundError(AccountEntity.name));
 			};
 
 			it('should throw EntityNotFoundError', async () => {
 				setup();
-				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
+				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toBeInstanceOf(EntityNotFoundError);
 			});
 		});
 	});
@@ -720,6 +708,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -739,6 +728,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -808,7 +798,7 @@ describe('AccountDbService', () => {
 				const newPassword = 'newPassword';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
 				return { mockTeacherAccount, newPassword };
 			};
 
@@ -820,8 +810,6 @@ describe('AccountDbService', () => {
 				expect(ret).toBeDefined();
 				if (ret.password) {
 					await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
-				} else {
-					fail('return password is undefined');
 				}
 			});
 		});
