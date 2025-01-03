@@ -108,7 +108,6 @@
 		"nest:test:cov": "jest \"^((?!\\.load\\.spec\\.ts).)*\\.spec\\.ts$\" --coverage --force-exit --maxWorkers='50%'",
 		"nest:test:debug": "jest --runInBand",
 		"nest:lint": "eslint apps --ignore-path .gitignore",
-		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
