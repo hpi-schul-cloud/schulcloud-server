@@ -1,3 +1,4 @@
+export { CommonCartridgeConfig } from './common-cartridge.config';
 export {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeFileBuilderProps,
