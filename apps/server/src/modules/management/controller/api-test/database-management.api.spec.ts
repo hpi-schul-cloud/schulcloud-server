@@ -76,5 +76,13 @@ describe('Database Management Controller (API)', () => {
 
 			expect(result.status).toEqual(201);
 		});
+		it('should encrypt plain text', async () => {
+			const result = await request(app.getHttpServer())
+				.post(`/management/database/encrypt-plain-text`)
+				.send({ plainText: 'hallo uwe' });
+
+			expect(result.status).toEqual(200);
+			expect(result.text).not.toHaveLength(0);
+		});
 	});
 });

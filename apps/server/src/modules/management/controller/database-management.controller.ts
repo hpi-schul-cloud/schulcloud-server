@@ -1,4 +1,4 @@
-import { Controller, Param, Post, All, Query, Body, HttpCode } from '@nestjs/common';
+import { Controller, Param, Post, All, Query, Body, HttpCode, Header } from '@nestjs/common';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { EncryptDto } from '@modules/management/controller/dto';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
@@ -42,6 +42,7 @@ export class DatabaseManagementController {
 	}
 
 	@Post('encrypt-plain-text')
+	@Header('content-type', 'text/plain')
 	@HttpCode(200)
 	encryptPlainText(@Body() encryptDto: EncryptDto) {
 		return this.databaseManagementUc.encryptPlainText(encryptDto.plainText);
