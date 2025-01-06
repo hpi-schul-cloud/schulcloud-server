@@ -4,11 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './common-cartridge.uc';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeImportService } from '../service';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeUc;
 	let commonCartridgeExportServiceMock: DeepMocked<CommonCartridgeExportService>;
+	let commonCartridgeImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -18,11 +20,16 @@ describe('CommonCartridgeUc', () => {
 					provide: CommonCartridgeExportService,
 					useValue: createMock<CommonCartridgeExportService>(),
 				},
+				{
+					provide: CommonCartridgeImportService,
+					useValue: createMock<CommonCartridgeImportService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeUc);
 		commonCartridgeExportServiceMock = module.get(CommonCartridgeExportService);
+		commonCartridgeImportServiceMock = module.get(CommonCartridgeImportService);
 	});
 
 	afterAll(async () => {
@@ -58,6 +65,22 @@ describe('CommonCartridgeUc', () => {
 				tasks,
 				columnBoards
 			);
+		});
+	});
+
+	describe('importCourse', () => {
+		const setup = () => {
+			const file = Buffer.from(faker.lorem.paragraphs());
+
+			return { file };
+		};
+
+		it('should class the import service', async () => {
+			const { file } = setup();
+
+			await sut.importCourse(file);
+
+			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file);
 		});
 	});
 });

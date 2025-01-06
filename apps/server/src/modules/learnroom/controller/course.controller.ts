@@ -1,4 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CommonCartridgeFileValidatorPipe } from '@modules/common-cartridge/controller/utils';
 import {
 	Body,
 	Controller,
@@ -20,14 +21,20 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiOperation,
+	ApiProduces,
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
-import { CommonCartridgeFileValidatorPipe } from '../utils';
-import { CourseImportBodyParams, CourseMetadataListResponse, CourseSyncBodyParams, CourseUrlParams } from './dto';
+import {
+	CourseImportBodyParams,
+	CourseMetadataListResponse,
+	CourseSyncBodyParams,
+	CourseUrlParams,
+	CreateCourseBodyParams,
+} from './dto';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
 @ApiTags('Courses')
@@ -41,7 +48,7 @@ export class CourseController {
 	) {}
 
 	@Get()
-	async findForUser(
+	public async findForUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<CourseMetadataListResponse> {
@@ -51,6 +58,17 @@ export class CourseController {
 
 		const result = new CourseMetadataListResponse(courseResponses, total, skip, limit);
 		return result;
+	}
+
+	@Post()
+	@ApiOperation({ summary: 'Create a new course.' })
+	@ApiConsumes('application/json')
+	@ApiProduces('application/json')
+	@ApiCreatedResponse({ description: 'Course was successfully created.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async createCourse(@CurrentUser() user: ICurrentUser, @Body() body: CreateCourseBodyParams): Promise<void> {
+		await this.courseUc.createCourse(user, body.title);
 	}
 
 	@Post('import')

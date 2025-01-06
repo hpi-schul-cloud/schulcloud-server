@@ -19,6 +19,7 @@ import {
 	LegacyBoardRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import { ColumnBoardNodeRepo } from './repo';
@@ -35,7 +36,6 @@ import {
 	DashboardService,
 	GroupDeletedHandlerService,
 } from './service';
-import { CommonCartridgeFileValidatorPipe } from './utils';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future

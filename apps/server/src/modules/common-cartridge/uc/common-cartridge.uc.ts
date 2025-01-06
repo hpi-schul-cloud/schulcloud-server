@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { CommonCartridgeExportService, CommonCartridgeImportService } from '../service';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
 export class CommonCartridgeUc {
-	constructor(private readonly exportService: CommonCartridgeExportService) {}
+	constructor(
+		private readonly exportService: CommonCartridgeExportService,
+		private readonly importService: CommonCartridgeImportService
+	) {}
 
 	public async exportCourse(
 		courseId: EntityId,
@@ -17,5 +20,9 @@ export class CommonCartridgeUc {
 		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
 
 		return exportedCourse;
+	}
+
+	public async importCourse(file: Buffer): Promise<void> {
+		await this.importService.importFile(file);
 	}
 }

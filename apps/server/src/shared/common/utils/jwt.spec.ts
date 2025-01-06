@@ -8,7 +8,7 @@ import { extractJwtFromRequest, JwtExtractor } from './jwt';
 describe('JwtExtractor', () => {
 	let request: DeepMocked<Request>;
 
-	beforeAll(() => {
+	beforeEach(() => {
 		request = createMock<Request>();
 	});
 

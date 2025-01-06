@@ -23,6 +23,7 @@ const createTeacher = () => {
 	const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
 		Permission.COURSE_VIEW,
 		Permission.COURSE_EDIT,
+		Permission.COURSE_CREATE,
 	]);
 	return { account: teacherAccount, user: teacherUser };
 };
@@ -374,6 +375,28 @@ describe('Course Controller (API)', () => {
 
 			expect(response.statusCode).toBe(200);
 			expect(data.id).toBe(course.id);
+		});
+	});
+
+	describe('[POST] /courses', () => {
+		const setup = async () => {
+			const teacher = createTeacher();
+			const course = courseFactory.build();
+
+			await em.persistAndFlush([teacher.account, teacher.user]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { loggedInClient, course };
+		};
+
+		it('should create course', async () => {
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.post().send({ title: faker.lorem.words() });
+
+			expect(response.statusCode).toEqual(201);
 		});
 	});
 });
