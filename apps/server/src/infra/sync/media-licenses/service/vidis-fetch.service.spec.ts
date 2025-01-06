@@ -1,14 +1,14 @@
-import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { IDMBetreiberApiInterface, PageOfferDTO, VidisClientFactory } from '@infra/vidis-client';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceBasicAuthConfig } from '@modules/media-source/domain';
 import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { AxiosErrorLoggable } from '@src/core/error/loggable';
-import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
+import { AxiosErrorLoggable } from '@src/core/error/loggable';
 import { AxiosResponse, RawAxiosRequestConfig } from 'axios';
 import { vidisPageOfferFactory } from '../testing';
 import { VidisFetchService } from './vidis-fetch.service';
@@ -17,7 +17,7 @@ describe(VidisFetchService.name, () => {
 	let module: TestingModule;
 	let service: VidisFetchService;
 	let vidisClientFactory: DeepMocked<VidisClientFactory>;
-	let encryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let encryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
