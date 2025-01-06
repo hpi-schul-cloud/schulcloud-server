@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
+import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
@@ -8,24 +10,24 @@ import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
-import { LessonContentDto, LessonDto } from '../common-cartridge-client/lesson-client/dto';
+import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import {
 	BoardColumnBoardDto,
 	BoardElementDto,
 	BoardLessonDto,
 	BoardTaskDto,
-	RoomBoardDto,
 } from '../common-cartridge-client/room-client/dto';
+import { createIdentifier } from '../export/utils';
+import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
+import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
 import {
 	CardListResponseDto,
 	CardResponseDto,
 	RichTextElementResponseDto,
 	LinkElementResponseDto,
+	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
-import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
-import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
-import { createIdentifier } from '../export/utils';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -35,6 +37,8 @@ export class CommonCartridgeExportService {
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClientAdapter: LessonClientAdapter,
+		private readonly filesMetadataClientAdapter: FilesStorageClientAdapterService,
+		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 
@@ -47,18 +51,19 @@ export class CommonCartridgeExportService {
 	): Promise<Buffer> {
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
-		const courseCommonCartridgeMetadata = await this.findCourseCommonCartridgeMetadata(courseId);
+		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
+			await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
-		const roomBoard = await this.findRoomBoardByCourseId(courseId);
+		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
 		// add lessons to organization
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
 
 		// add tasks to organization
-		this.addTasks(builder, version, roomBoard.elements, exportedTasks);
+		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
 
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
@@ -91,7 +96,7 @@ export class CommonCartridgeExportService {
 	): Promise<void> {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
-		const lessons = await Promise.all(lessonsIds.map((elementId) => this.findLessonById(elementId)));
+		const lessons = await Promise.all(lessonsIds.map((elementId) => this.lessonClientAdapter.getLessonById(elementId)));
 
 		lessons.forEach((lesson) => {
 			const lessonsOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
@@ -106,12 +111,12 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	private addTasks(
+	private async addTasks(
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
 		elements: BoardElementDto[],
 		exportedTasks: string[]
-	): void {
+	): Promise<void> {
 		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements).filter((task) =>
 			exportedTasks.includes(task.id)
 		);
@@ -120,9 +125,26 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(),
 		});
 
-		tasks.forEach((task) => {
-			tasksOrganization.addResource(this.mapper.mapTaskToResource(task, version));
-		});
+		for await (const task of tasks) {
+			const taskOrganization = tasksOrganization.createChild({
+				title: task.name,
+				identifier: createIdentifier(),
+			});
+
+			taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
+
+			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
+
+			for await (const fileMetadata of filesMetadata) {
+				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+
+				if (file) {
+					const resource = this.mapper.mapFileToResource(fileMetadata, file);
+
+					taskOrganization.addResource(resource);
+				}
+			}
+		}
 	}
 
 	private async addColumnBoards(
@@ -135,7 +157,7 @@ export class CommonCartridgeExportService {
 			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
 			.map((columBoard) => columBoard.columnBoardId);
 		const boardSkeletons: BoardSkeletonDto[] = await Promise.all(
-			columnBoardsIds.map((columnBoardId) => this.findBoardSkeletonById(columnBoardId))
+			columnBoardsIds.map((columnBoardId) => this.boardClientAdapter.getBoardSkeletonById(columnBoardId))
 		);
 
 		await Promise.all(
@@ -164,29 +186,32 @@ export class CommonCartridgeExportService {
 
 		if (column.cards.length) {
 			const cardsIds = column.cards.map((card) => card.cardId);
-			const listOfCards: CardListResponseDto = await this.findAllCardsByIds(cardsIds);
+			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 
-			listOfCards.data.forEach((card) => {
-				this.addCardToOrganization(card, columnOrganization);
-			});
+			for await (const card of listOfCards.data) {
+				await this.addCardToOrganization(card, columnOrganization);
+			}
 		}
 	}
 
-	private addCardToOrganization(card: CardResponseDto, columnOrganization: CommonCartridgeOrganizationNode): void {
+	private async addCardToOrganization(
+		card: CardResponseDto,
+		columnOrganization: CommonCartridgeOrganizationNode
+	): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
 
-		card.elements.forEach((element) => {
-			this.addCardElementToOrganization(element, cardOrganization);
-		});
+		for await (const element of card.elements) {
+			await this.addCardElementToOrganization(element, cardOrganization);
+		}
 	}
 
-	private addCardElementToOrganization(
+	private async addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
 		cardOrganization: CommonCartridgeOrganizationNode
-	): void {
+	): Promise<void> {
 		if (RichTextElementResponseDto.isRichTextElement(element)) {
 			const resource = this.mapper.mapRichTextElementToResource(element);
 
@@ -197,6 +222,20 @@ export class CommonCartridgeExportService {
 			const resource = this.mapper.mapLinkElementToResource(element);
 
 			cardOrganization.addResource(resource);
+		}
+
+		if (FileElementResponseDto.isFileElement(element)) {
+			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+
+			for await (const fileMetadata of filesMetadata) {
+				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+
+				if (file) {
+					const resource = this.mapper.mapFileToResource(fileMetadata, file, element);
+
+					cardOrganization.addResource(resource);
+				}
+			}
 		}
 	}
 
@@ -222,36 +261,5 @@ export class CommonCartridgeExportService {
 			.map((element) => element.content as BoardColumnBoardDto);
 
 		return columnBoard;
-	}
-
-	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
-		const courseMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
-		const dto = new CourseCommonCartridgeMetadataDto(courseMetadata);
-
-		return dto;
-	}
-
-	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
-		const roomBoardDto = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
-
-		return roomBoardDto;
-	}
-
-	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
-		const boardSkeletonDto = await this.boardClientAdapter.getBoardSkeletonById(boardId);
-
-		return boardSkeletonDto;
-	}
-
-	private async findAllCardsByIds(ids: Array<string>): Promise<CardListResponseDto> {
-		const cardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(ids);
-
-		return cardListResponseDto;
-	}
-
-	private async findLessonById(lessonId: string): Promise<LessonDto> {
-		const lessonDto = await this.lessonClientAdapter.getLessonById(lessonId);
-
-		return lessonDto;
 	}
 }

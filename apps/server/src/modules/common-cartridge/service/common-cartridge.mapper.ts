@@ -194,17 +194,17 @@ export class CommonCartridgeExportMapper {
 		};
 	}
 
-	public mapFileElementToResource(
-		file: { fileRecord: FileDto; file: Buffer },
+	public mapFileToResource(
+		fileRecord: FileDto,
+		file: Buffer,
 		element?: FileElementResponseDto
 	): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.FILE,
 			identifier: createIdentifier(element?.id),
-			title:
-				element?.content.caption && element.content.caption.trim() ? element.content.caption : file.fileRecord.name,
-			fileName: file.fileRecord.name,
-			fileContent: file.file,
+			title: element?.content.caption && element.content.caption.trim() ? element.content.caption : fileRecord.name,
+			fileName: fileRecord.name,
+			fileContent: file,
 		};
 	}
 
