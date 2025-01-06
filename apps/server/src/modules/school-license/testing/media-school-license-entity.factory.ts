@@ -1,14 +1,15 @@
 import { BaseFactory, schoolEntityFactory } from '@shared/testing';
-import { mediaSourceEntityFactory } from '@src/modules/media-source/testing/media-source-entity.factory';
-import { MediaSchoolLicenseEntity } from '../entity';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaSchoolLicenseEntity, MediaSchoolLicenseEntityProps } from '../entity';
 import { SchoolLicenseType } from '../enum';
-import { MediaSchoolLicenseEntityProps } from '../entity/media-school-license.entity';
 
 export const mediaSchoolLicenseEntityFactory = BaseFactory.define<
 	MediaSchoolLicenseEntity,
 	MediaSchoolLicenseEntityProps
 >(MediaSchoolLicenseEntity, ({ sequence }) => {
 	return {
+		id: new ObjectId().toHexString(),
 		school: schoolEntityFactory.build(),
 		type: SchoolLicenseType.MEDIA_LICENSE,
 		mediumId: `medium-${sequence}`,

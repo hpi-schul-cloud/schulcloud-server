@@ -9,7 +9,7 @@ import { MediaSchoolLicense } from '../../domain';
 import { SchoolLicenseType } from '../../enum';
 
 export class MediaSchoolLicenseEntityMapper {
-	public static mapEntityToDo(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
+	public static mapEntityToDO(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
 		let mediaSource: MediaSource | undefined;
 
 		if (entity.mediaSource) {
