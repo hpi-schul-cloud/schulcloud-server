@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
@@ -92,7 +92,7 @@ describe('HydraService', () => {
 				},
 				{
 					provide: DefaultEncryptionService,
-					useValue: createMock<SymetricKeyEncryptionService>(),
+					useValue: createMock<SymmetricKeyEncryptionService>(),
 				},
 				{
 					provide: LegacyLogger,
