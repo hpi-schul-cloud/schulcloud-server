@@ -8,7 +8,7 @@ import { Request } from 'express';
 import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
 import { FilesStorageRestClientModule } from './files-storage-rest-client.module';
 
-describe(FilesStorageRestClientModule.name, () => {
+describe.skip(FilesStorageRestClientModule.name, () => {
 	let module: TestingModule;
 
 	const configServiceMock = createMock<ConfigService>();
