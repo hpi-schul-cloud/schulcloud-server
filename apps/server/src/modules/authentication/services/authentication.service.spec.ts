@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadFactory } from '@infra/auth-guard';
-import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
 import { OauthConfig } from '@modules/system';
 import { OauthSessionTokenService } from '@modules/oauth';
@@ -46,7 +46,7 @@ describe(AuthenticationService.name, () => {
 	let configService: DeepMocked<ConfigService>;
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
 	let httpService: DeepMocked<HttpService>;
-	let oauthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let oauthEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 
 	const mockAccount: Account = new Account({
 		id: 'mockAccountId',

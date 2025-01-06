@@ -16,8 +16,6 @@ const ignorePathsList = [
 	/|(.*\/activation\/api($|\/$))/,
 	/|(.*\/alert($|\/$))/,
 	/|(.*\/alert\/api($|\/$))/,
-	/|(.*\/analytics($|\/$))/,
-	/|(.*\/analytics\/api($|\/$))/,
 	/|(.*\/authentication($|\/$))/, // todo: make sure external systems work with spec
 	/|(.*\/authentication\/api($|\/$))/,
 	/|(.*\/base64Files($|\/$))/,

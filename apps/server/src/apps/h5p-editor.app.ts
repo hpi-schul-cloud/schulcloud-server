@@ -10,6 +10,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger } from '@src/core/logger';
 import { H5PEditorModule } from '@modules/h5p-editor';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
@@ -23,6 +24,8 @@ async function bootstrap() {
 	const nestApp = await NestFactory.create(H5PEditorModule, nestExpressAdapter);
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+
+	nestApp.use(createRequestLoggerMiddleware());
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
