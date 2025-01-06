@@ -12,7 +12,8 @@ import { FilesStorageApiModule } from '@modules/files-storage/files-storage-api.
 import { API_VERSION_PATH } from '@modules/files-storage/files-storage.const';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -28,6 +29,7 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
+	nestApp.use(createRequestLoggerMiddleware());
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,

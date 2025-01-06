@@ -1,14 +1,15 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ColumnBoardService } from './column-board.service';
-import { BoardNodeRepo } from '../repo';
-import { BoardNodeService } from './board-node.service';
-import { ColumnBoardCopyService, ColumnBoardLinkService } from './internal';
-import { ColumnBoard, BoardExternalReference, BoardExternalReferenceType } from '../domain';
-
-import { columnBoardFactory } from '../testing';
+import { StorageLocation } from '@src/modules/files-storage/interface';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '../domain';
+import { BoardNodeRepo } from '../repo';
+import { columnBoardFactory } from '../testing';
+import { BoardNodeService } from './board-node.service';
+import { ColumnBoardService } from './column-board.service';
+import { ColumnBoardCopyService, ColumnBoardLinkService } from './internal';
 
 describe('ColumnBoardService', () => {
 	let module: TestingModule;
@@ -107,11 +108,14 @@ describe('ColumnBoardService', () => {
 		columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
 		const result = await service.copyColumnBoard({
 			originalColumnBoardId: '1',
-			destinationExternalReference: {
+			targetExternalReference: {
 				type: BoardExternalReferenceType.Course,
 				id: '1',
 			},
+			sourceStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
+			targetStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			userId: '1',
+			targetSchoolId: new ObjectId().toHexString(),
 		});
 
 		expect(result).toEqual(copyStatus);

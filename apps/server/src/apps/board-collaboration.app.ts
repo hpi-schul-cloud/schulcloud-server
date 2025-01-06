@@ -8,15 +8,16 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { RedisIoAdapter } from '@src/infra/socketio';
-import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { RedisIoAdapter } from '@infra/socketio';
+import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import express from 'express';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import {
+	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from '@src/apps/helpers/prometheus-metrics';
-import { ExpressAdapter } from '@nestjs/platform-express';
+} from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -37,6 +38,7 @@ async function bootstrap() {
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
 	const logger = await nestApp.resolve(Logger);
+	nestApp.use(createRequestLoggerMiddleware());
 
 	await nestApp.init();
 

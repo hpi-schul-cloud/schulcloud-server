@@ -1,19 +1,26 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { UserLicenseModule } from '@modules/user-license';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
-import { ContextExternalToolAuthorizableService, ContextExternalToolService, ToolReferenceService } from './service';
+import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenMikroOrmRepo } from './repo';
+import {
+	ContextExternalToolAuthorizableService,
+	ContextExternalToolService,
+	LtiDeepLinkingService,
+	LtiDeepLinkTokenService,
+	ToolConfigurationStatusService,
+	ToolReferenceService,
+} from './service';
 import { ContextExternalToolValidationService } from './service/context-external-tool-validation.service';
-import { ToolConfigurationStatusService } from './service/tool-configuration-status.service';
 
 @Module({
 	imports: [
-		forwardRef(() => CommonToolModule),
-		forwardRef(() => ExternalToolModule),
+		CommonToolModule,
+		ExternalToolModule,
 		SchoolExternalToolModule,
 		LoggerModule,
 		UserLicenseModule,
@@ -26,12 +33,20 @@ import { ToolConfigurationStatusService } from './service/tool-configuration-sta
 		ToolReferenceService,
 		ToolConfigurationStatusService,
 		ContextExternalToolRule,
+		LtiDeepLinkTokenService,
+		LtiDeepLinkingService,
+		{
+			provide: LTI_DEEP_LINK_TOKEN_REPO,
+			useClass: LtiDeepLinkTokenMikroOrmRepo,
+		},
 	],
 	exports: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,
 		ToolReferenceService,
 		ToolConfigurationStatusService,
+		LtiDeepLinkTokenService,
+		LtiDeepLinkingService,
 	],
 })
 export class ContextExternalToolModule {}

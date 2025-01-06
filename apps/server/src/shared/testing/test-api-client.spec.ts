@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { ApiKeyGuard } from '@infra/auth-guard';
+import { XApiKeyGuard } from '@infra/auth-guard';
 import { accountFactory } from '@src/modules/account/testing';
 import { TestApiClient } from './test-api-client';
 
@@ -262,7 +262,7 @@ describe(TestApiClient.name, () => {
 			const moduleFixture = await Test.createTestingModule({
 				controllers: [TestXApiKeyController],
 			})
-				.overrideGuard(ApiKeyGuard)
+				.overrideGuard(XApiKeyGuard)
 				.useValue({
 					canActivate(context: ExecutionContext) {
 						const req: Request = context.switchToHttp().getRequest();

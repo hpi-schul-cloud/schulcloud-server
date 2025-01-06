@@ -214,7 +214,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2024-04-19T10:32:51.070Z"
+			"$date": "2024-11-12T16:35:53.763Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -263,7 +263,8 @@
 			"USERGROUP_CREATE",
 			"USERGROUP_EDIT",
 			"USER_CHANGE_OWN_NAME",
-			"USER_CREATE"
+			"USER_CREATE",
+			"ROOM_CREATE"
 		],
 		"__v": 2
 	},
@@ -581,5 +582,64 @@
 		],
 		"permissions": [],
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6720b8621b61c9dd7ebd193b"
+		},
+		"name": "roomviewer",
+		"permissions": [
+			"ROOM_VIEW"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "6720b8621b61c9dd7ebd193c"
+		},
+		"name": "roomeditor",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "674444262ba8186272dc8abb"
+		},
+		"name": "guestStudent",
+		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "674444262ba8186272dc8abc"
+		},
+		"name": "guestTeacher",
+		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e3"
+		},
+		"name": "roomowner",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_DELETE",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE",
+			"ROOM_CHANGE_OWNER"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e4"
+		},
+		"name": "roomadmin",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE"
+		]
 	}
 ]

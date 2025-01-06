@@ -10,7 +10,8 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger } from '@src/core/logger';
 import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -26,6 +27,7 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 	enableOpenApiDocs(nestApp, 'docs');
+	nestApp.use(createRequestLoggerMiddleware());
 
 	await nestApp.init();
 

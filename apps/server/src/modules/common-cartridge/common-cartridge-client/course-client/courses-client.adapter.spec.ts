@@ -74,7 +74,7 @@ describe(CoursesClientAdapter.name, () => {
 
 				expect(coursesApi.courseControllerGetCourseCcMetadataById).toHaveBeenCalledWith(courseId, expectedOptions);
 				expect(result.id).toBeDefined();
-				expect(result.title).toBeDefined();
+				expect(result.courseName).toBeDefined();
 				expect(result.creationDate).toBeDefined();
 				expect(result.copyRightOwners).toBeDefined();
 			});

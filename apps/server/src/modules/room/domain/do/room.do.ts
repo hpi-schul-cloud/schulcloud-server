@@ -1,4 +1,3 @@
-import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { RoomColor } from '../type';
@@ -9,17 +8,17 @@ export interface RoomProps extends AuthorizableObject {
 	color: RoomColor;
 	startDate?: Date;
 	endDate?: Date;
+	schoolId: EntityId;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate'>;
-export type RoomUpdateProps = RoomCreateProps; // will probably change in the future
+export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId'>;
+export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 
 export class Room extends DomainObject<RoomProps> {
 	public constructor(props: RoomProps) {
 		super(props);
-		this.validateTimeSpan();
 	}
 
 	public getProps(): RoomProps {
@@ -48,22 +47,24 @@ export class Room extends DomainObject<RoomProps> {
 		this.props.color = value;
 	}
 
+	public get schoolId(): EntityId {
+		return this.props.schoolId;
+	}
+
 	public get startDate(): Date | undefined {
 		return this.props.startDate;
 	}
 
-	public set startDate(value: Date) {
+	public set startDate(value: Date | undefined) {
 		this.props.startDate = value;
-		this.validateTimeSpan();
 	}
 
 	public get endDate(): Date | undefined {
 		return this.props.endDate;
 	}
 
-	public set endDate(value: Date) {
+	public set endDate(value: Date | undefined) {
 		this.props.endDate = value;
-		this.validateTimeSpan();
 	}
 
 	public get createdAt(): Date {
@@ -72,15 +73,5 @@ export class Room extends DomainObject<RoomProps> {
 
 	public get updatedAt(): Date {
 		return this.props.updatedAt;
-	}
-
-	private validateTimeSpan() {
-		if (this.props.startDate != null && this.props.endDate != null && this.props.startDate > this.props.endDate) {
-			throw new ValidationError(
-				`Invalid room timespan. Start date '${this.props.startDate.toISOString()}' has to be before end date: '${this.props.endDate.toISOString()}'. Room id='${
-					this.id
-				}'`
-			);
-		}
 	}
 }

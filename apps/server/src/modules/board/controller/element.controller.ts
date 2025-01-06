@@ -35,6 +35,8 @@ import {
 	SubmissionContainerElementResponse,
 	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
+	VideoConferenceElementContentBody,
+	VideoConferenceElementResponse,
 } from './dto';
 import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
 
@@ -71,10 +73,11 @@ export class ElementController {
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
-		DrawingElementContentBody
+		DrawingElementContentBody,
+		VideoConferenceElementContentBody
 	)
 	@ApiResponse({
-		status: 201,
+		status: 200,
 		schema: {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
@@ -83,13 +86,14 @@ export class ElementController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 			],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(201)
+	@HttpCode(200)
 	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,

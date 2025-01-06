@@ -8,33 +8,46 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
-    # necessary for secret handling and legacy indexes
-    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
-    cd /schulcloud-server
-    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm install
-    until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
-      do
-        sleep 1
-      done
-    mongosh $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
-    sleep 3
-    if [[ $(mongosh --quiet --eval "db.isMaster().setName") != rs0 ]]
-    then
-        echo "replicaset config failed :("
-    else
-        echo "gg, hacky mongo replicaset"
-    fi
     echo "seeding database"
     curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
+    get_secret() {
+      local plainText="$1"
+      local url="http://mgmt-svc:3333/api/management/database/encrypt-plain-text"
+
+      if [[ -z "$plainText" ]]; then
+        echo "Error: No plainText argument provided."
+        return 1
+      fi
+
+      # Use curl to capture both the response body and status code
+      local response
+      local http_code
+      response=$(curl -s -w "\n%{http_code}" -X POST "$url" \
+        -H "Content-Type: text/plain" \
+        --data "$plainText")
+
+      # Split the response into body and status code
+      http_code=$(echo "$response" | tail -n 1)
+      response_body=$(echo "$response" | head -n -1)
+
+      # Check if the response status code is 200
+      if [[ "$http_code" -ne 200 ]]; then
+        echo "Error: Request failed with status code $http_code."
+        return 1
+      fi
+
+      # Return the response body (presumably the secret)
+      echo "$response_body"
+      return 0
+    }
     # Below is a series of a MongoDB-data initializations, meant for the development and testing
     # purposes on various dev environments - most of them will only work there.
 
     # Test OIDC system configuration used in conjunction with OIDCMOCK deployment.
-    OIDCMOCK_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $OIDCMOCK__CLIENT_SECRET)
+    OIDCMOCK_CLIENT_SECRET=$(get_secret $OIDCMOCK__CLIENT_SECRET)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
-    SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
+    SEARCH_USER_PASSWORD=$(get_secret $SC_COMMON_LDAP_PASSWORD)
     mongosh $DATABASE__URL --quiet --eval 'db.systems.insertMany([
     {
       "type" : "ldap",
@@ -149,7 +162,7 @@ data:
                                      } );'
 
     # Sanis configuration (stored in the 'systems' collection + some related documents in other collections).
-    SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
+    SANIS_CLIENT_SECRET=$(get_secret $SANIS_CLIENT_SECRET)
     SANIS_SYSTEM_ID=0000d186816abba584714c93
     if [[ $SC_THEME == "n21" ]]; then
       mongosh $DATABASE__URL --quiet --eval 'db.schools.updateMany(
@@ -184,7 +197,8 @@ data:
               "authEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
               "provider": "sanis",
               "jwksEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
-              "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS"
+              "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS",
+              "endSessionEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
             }
           }
       );'
@@ -222,8 +236,8 @@ data:
         ISERV_SYSTEM_ID=0000d186816abba584714c92
 
         # Encrypt secrets that contain IServ's OAuth client secret and LDAP server's search user password.
-        ISERV_OAUTH_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_OAUTH_CLIENT_SECRET)
-        ISERV_LDAP_SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $AES_KEY -e $ISERV_LDAP_SEARCH_USER_PASSWORD)
+        ISERV_OAUTH_CLIENT_SECRET=$(get_secret $ISERV_OAUTH_CLIENT_SECRET)
+        ISERV_LDAP_SEARCH_USER_PASSWORD=$(get_secret $ISERV_LDAP_SEARCH_USER_PASSWORD)
 
         # Add (or replace) document with the Dev IServ configuration.
         mongosh $DATABASE__URL --quiet --eval 'db.systems.replaceOne(
@@ -268,7 +282,7 @@ data:
         UNIVENTION_LDAP_FEDERAL_STATE_ID=0000b186816abba584714c53
 
         # Encrypt LDAP server's search user password.
-        UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $AES_KEY -e $UNIVENTION_LDAP_SEARCH_USER_PASSWORD)
+        UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(get_secret $UNIVENTION_LDAP_SEARCH_USER_PASSWORD)
 
         # Add (or replace) document with the test BRB Univention LDAP system configuration.
         mongosh $DATABASE__URL --quiet --eval 'db.systems.replaceOne(
@@ -328,40 +342,6 @@ data:
 
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
         if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ] && [ -n "$BETTERMARKS_REDIRECT_DOMAIN" ]; then
-            # Add document to the 'ltitools' collection with Bettermarks tool configuration.
-            mongosh $DATABASE__URL --quiet --eval 'db.getCollection("ltitools").replaceOne(
-                {
-                  "name": "bettermarks",
-                  "isTemplate": true
-                },
-                {
-                  "roles": [],
-                  "privacy_permission": "anonymous",
-                  "openNewTab": true,
-                  "name": "bettermarks",
-                  "url": "'$BETTERMARKS_URL'",
-                  "key": null,
-                  "secret": "'$BETTERMARKS_CLIENT_SECRET'",
-                  "logo_url": "'$BETTERMARKS_LOGO_URL'",
-                  "oAuthClientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
-                  "isLocal": true,
-                  "resource_link_id": null,
-                  "lti_version": null,
-                  "lti_message_type": null,
-                  "isTemplate": true,
-                  "skipConsent": false,
-                  "customs": [],
-                  "createdAt": new Date(),
-                  "updatedAt": new Date(),
-                  "__v": 0,
-                  "isHidden": false,
-                  "frontchannel_logout_uri": null
-                },
-                {
-                  "upsert": true
-                }
-            );'
-
             # The two steps below (Hydra call and MongoDB insert) were added to automate the actions performed inside
             # the server when Bettermarks' OAuth client configuration is added manually in SuperHero Dashboard.
 
@@ -422,42 +402,6 @@ data:
 
     # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
-         echo "Inserting nextcloud to ltitools..."
-         # Add document to the 'ltitools' collection
-         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("ltitools").updateOne(
-             {
-               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-               "isTemplate": true
-             },
-             { $setOnInsert: {
-               "roles": [],
-               "privacy_permission": "anonymous",
-               "openNewTab": true,
-               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-               "url": "'$NEXTCLOUD_BASE_URL'",
-               "key": null,
-               "secret": "'$NEXTCLOUD_CLIENT_SECRET'",
-               "logo_url": "",
-               "oAuthClientId": "'$NEXTCLOUD_CLIENT_ID'",
-               "isLocal": true,
-               "resource_link_id": null,
-               "lti_version": null,
-               "lti_message_type": null,
-               "isTemplate": true,
-               "skipConsent": true,
-               "customs": [],
-               "createdAt": new Date(),
-               "updatedAt": new Date(),
-               "__v": 0,
-               "isHidden": true,
-               "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout"
-             } },
-             {
-               "upsert": true
-             }
-         );'
-         echo "Inserted nextcloud to ltitools."
-
          # Add Nextcloud client in hydra
          echo "POSTing nextcloud to hydra..."
          curl --retry 10 --retry-all-errors --retry-delay 10 \
@@ -518,32 +462,51 @@ data:
     # ========== Start of the CTL seed data configuration section.
     echo "Inserting ctl seed data secrets to external-tools..."
 
+    if [ -n "$CTL_SEED_SECRET_ONLINE_DIA_MATHE" ]; then
          # Encrypt secrets of external tools that contain an lti11 config.
-                CTL_SEED_SECRET_ONLINE_DIA_MATHE=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_MATHE)
-                CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH=$(node scripts/secret.js -s $AES_KEY -e $CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH)
-
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-           {
-             "name": "Product Test Onlinediagnose Grundschule - Mathematik",
-           },
-           { $set: {
-             "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_MATHE'",
-           } },
-           {
-             "upsert": true
-           }
-       );'
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-           {
-             "name": "Product Test Onlinediagnose Grundschule - Deutsch",
-           },
-           { $set: {
-             "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'",
-           } },
-           {
-             "upsert": true
-           }
-       );'
+         CTL_SEED_SECRET_ONLINE_DIA_MATHE=$(get_secret $CTL_SEED_SECRET_ONLINE_DIA_MATHE)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+                {
+                  "name": "Product Test Onlinediagnose Grundschule - Mathematik",
+                },
+                { $set: {
+                  "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_MATHE'",
+                } },
+                {
+                  "upsert": true
+                }
+            );'
+    fi
+    if [ -n "$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH" ]; then
+         # Encrypt secrets of external tools that contain an lti11 config.
+         CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH=$(get_secret $CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+                {
+                  "name": "Product Test Onlinediagnose Grundschule - Deutsch",
+                },
+                { $set: {
+                  "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'",
+                } },
+                {
+                  "upsert": true
+                }
+            );'
+    fi
+    if [ -n "$CTL_SEED_SECRET_MERLIN" ]; then
+         # Encrypt secrets of external tools that contain an lti11 config.
+         CTL_SEED_SECRET_MERLIN=$(get_secret $CTL_SEED_SECRET_MERLIN)
+         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+                {
+                  "name": "Merlin Bibliothek",
+                },
+                { $set: {
+                  "config_secret": "'$CTL_SEED_SECRET_MERLIN'",
+                } },
+                {
+                  "upsert": true
+                }
+            );'
+    fi
     echo "Inserted ctl seed data secrets to external-tools."
 
     # ========== End of the CTL seed data configuration section.
@@ -559,5 +522,35 @@ data:
 
         # ========== End of the Instance seed data configuration section.
 
-    # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
-    npm run syncIndexes
+    # ========== Start of TSP system creation
+    if [[ $SC_THEME == "thr" ]]; then
+      echo "Adding TSP system to systems collection"
+
+      TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(get_secret $TSP_SYSTEM_OAUTH_CLIENT_SECRET)
+      mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
+          {
+            "_id": ObjectId("66d707f5c5202ba10c5e6256"),
+            "alias": "TSP",
+            "displayName": "Thüringer Schulportal",
+            "type": "oauth",
+            "provisioningStrategy": "tsp",
+            "oauthConfig": {
+              "clientId": "'$TSP_SYSTEM_OAUTH_CLIENT_ID'",
+              "clientSecret": "'$TSP_SYSTEM_OAUTH_CLIENT_SECRET'",
+              "tokenEndpoint": "https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/token",
+              "grantType": "authorization_code",
+              "scope": "openid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.thr.dbildungscloud.dev/api/v3/sso/oauth",
+              "authEndpoint": "https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/auth",
+              "provider": "tsp",
+              "jwksEndpoint": "https://test2.schulportal-thueringen.de/auth/realms/TIS/protocol/openid-connect/certs",
+              "issuer": "https://test2.schulportal-thueringen.de/auth/realms/TIS"
+            }
+          }
+      );'
+
+      echo "Successfully added TSP system"
+    fi
+    # ========== End of TSP system creation
+

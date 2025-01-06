@@ -1,22 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Action } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@shared/testing/setup-entities';
+import { userFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
-import { Action } from '@modules/authorization';
-import { ElementUc } from './element.uc';
-import { BoardNodePermissionService, BoardNodeAuthorizableService, BoardNodeService } from '../service';
+import { RichTextContentBody } from '../controller/dto';
 import { BoardNodeFactory } from '../domain';
-
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 import {
 	boardNodeAuthorizableFactory,
-	richTextElementFactory,
 	drawingElementFactory,
+	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '../testing';
-import { RichTextContentBody } from '../controller/dto';
+import { ElementUc } from './element.uc';
 
 describe(ElementUc.name, () => {
 	let module: TestingModule;

@@ -1,7 +1,9 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { forwardRef, Module } from '@nestjs/common';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { LoggerModule } from '@src/core/logger';
+import { RoomMembershipModule } from '@src/modules/room-membership';
+import { BoardModule } from './board.module';
 import {
 	BoardController,
 	BoardSubmissionController,
@@ -9,12 +11,12 @@ import {
 	ColumnController,
 	ElementController,
 } from './controller';
-import { BoardModule } from './board.module';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { RoomModule } from '../room';
 
 @Module({
-	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
+	imports: [BoardModule, LoggerModule, RoomMembershipModule, RoomModule, forwardRef(() => AuthorizationModule)],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
 	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CourseRepo],
 })

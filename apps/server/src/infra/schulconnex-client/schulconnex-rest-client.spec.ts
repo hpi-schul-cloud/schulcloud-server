@@ -25,6 +25,9 @@ describe(SchulconnexRestClient.name, () => {
 		clientId: 'clientId',
 		clientSecret: 'clientSecret',
 		tokenEndpoint: 'https://schulconnex.url/token',
+		personInfoTimeoutInMs: 30001,
+		personenInfoTimeoutInMs: 30002,
+		policiesInfoTimeoutInMs: 30003,
 	};
 
 	beforeAll(() => {
@@ -98,6 +101,7 @@ describe(SchulconnexRestClient.name, () => {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
 					},
+					timeout: options.personInfoTimeoutInMs,
 				});
 			});
 
@@ -144,47 +148,31 @@ describe(SchulconnexRestClient.name, () => {
 				});
 				const response: SchulconnexResponse[] = schulconnexResponseFactory.buildList(2);
 
-				const optionsWithTimeout: SchulconnexRestClientOptions = {
-					...options,
-					personenInfoTimeoutInMs: 30000,
-				};
-
-				const optionsClient: SchulconnexRestClient = new SchulconnexRestClient(
-					optionsWithTimeout,
-					httpService,
-					oauthAdapterService,
-					logger
-				);
-
 				oauthAdapterService.sendTokenRequest.mockResolvedValueOnce(tokens);
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
 				return {
 					tokens,
 					response,
-					optionsClient,
-					optionsWithTimeout,
 				};
 			};
 
 			it('should make a request to a SchulConneX-API', async () => {
-				const { tokens, optionsClient, optionsWithTimeout } = setup();
+				const { tokens } = setup();
 
-				await optionsClient.getPersonenInfo({
+				await client.getPersonenInfo({
 					'organisation.id': '1234',
 					vollstaendig: ['personen', 'organisationen'],
 				});
 
 				expect(httpService.get).toHaveBeenCalledWith(
-					`${
-						optionsWithTimeout.apiUrl ?? ''
-					}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
+					`${options.apiUrl ?? ''}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
 					{
 						headers: {
 							Authorization: `Bearer ${tokens.accessToken}`,
 							'Accept-Encoding': 'gzip',
 						},
-						timeout: optionsWithTimeout.personenInfoTimeoutInMs,
+						timeout: options.personenInfoTimeoutInMs,
 					}
 				);
 			});
@@ -223,6 +211,7 @@ describe(SchulconnexRestClient.name, () => {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
 					},
+					timeout: options.policiesInfoTimeoutInMs,
 				});
 			});
 

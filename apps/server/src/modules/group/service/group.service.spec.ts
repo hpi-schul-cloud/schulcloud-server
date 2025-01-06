@@ -1,15 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import type { ProvisioningConfig } from '@modules/provisioning';
+import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
+import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { groupFactory, roleDtoFactory, userDoFactory } from '@shared/testing';
-import { RoleService } from '@src/modules/role';
+import {
+	groupFactory,
+	roleDtoFactory,
+	schoolEntityFactory,
+	setupEntities,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
+import { RoleDto, RoleService } from '@src/modules/role';
 import { UserService } from '@src/modules/user';
-import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
+import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
 
@@ -20,8 +29,11 @@ describe('GroupService', () => {
 	let userService: DeepMocked<UserService>;
 	let groupRepo: DeepMocked<GroupRepo>;
 	let eventBus: DeepMocked<EventBus>;
+	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				GroupService,
@@ -41,6 +53,10 @@ describe('GroupService', () => {
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -49,6 +65,7 @@ describe('GroupService', () => {
 		userService = module.get(UserService);
 		groupRepo = module.get(GroupRepo);
 		eventBus = module.get(EventBus);
+		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -253,74 +270,128 @@ describe('GroupService', () => {
 		});
 	});
 
-	describe('findAvailableGroups', () => {
-		describe('when available groups exist', () => {
+	describe('findGroupsForUser', () => {
+		describe('when available groups exist and the feature is enabled', () => {
 			const setup = () => {
-				const userId: EntityId = new ObjectId().toHexString();
-				const schoolId: EntityId = new ObjectId().toHexString();
+				const user = userFactory.buildWithId({ school: schoolEntityFactory.buildWithId() });
 				const nameQuery = 'name';
 				const groups: Group[] = groupFactory.buildList(2);
 
-				groupRepo.findAvailableGroups.mockResolvedValue(new Page<Group>([groups[1]], 1));
+				const options: IFindOptions<Group> = {
+					pagination: {
+						skip: 1,
+						limit: 1,
+					},
+					order: {
+						name: SortOrder.asc,
+					},
+				};
+
+				configService.get.mockReturnValueOnce(true);
+				groupRepo.findGroupsForScope.mockResolvedValueOnce(new Page<Group>(groups, 2));
 
 				return {
-					userId,
-					schoolId,
+					user,
 					nameQuery,
+					groups,
+					options,
+				};
+			};
+
+			it('should call repo', async () => {
+				const { user, nameQuery, options } = setup();
+
+				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_CLASSES, true, nameQuery, options);
+
+				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
+					new GroupAggregateScope(options)
+						.byUserPermission(user.id, user.school.id, GroupVisibilityPermission.ALL_SCHOOL_CLASSES)
+						.byName(nameQuery)
+						.byAvailableForSync(true)
+				);
+			});
+
+			it('should return the groups', async () => {
+				const { user, groups, nameQuery, options } = setup();
+
+				const result: Page<Group> = await service.findGroupsForUser(
+					user,
+					GroupVisibilityPermission.ALL_SCHOOL_CLASSES,
+					true,
+					nameQuery,
+					options
+				);
+
+				expect(result.data).toEqual(groups);
+			});
+		});
+
+		describe('when available groups exist but the feature is disabled', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const groups: Group[] = groupFactory.buildList(2);
+
+				configService.get.mockReturnValueOnce(false);
+				groupRepo.findGroupsForScope.mockResolvedValueOnce(new Page<Group>(groups, 2));
+
+				return {
+					user,
 					groups,
 				};
 			};
 
-			it('should return groups for user', async () => {
-				const { userId, groups } = setup();
-
-				const result: Page<Group> = await service.findAvailableGroups({ userId });
-
-				expect(result.data).toEqual([groups[1]]);
-			});
-
-			it('should return groups for school', async () => {
-				const { schoolId, groups } = setup();
-
-				const result: Page<Group> = await service.findAvailableGroups({ schoolId });
-
-				expect(result.data).toEqual([groups[1]]);
-			});
-
 			it('should call repo', async () => {
-				const { userId, schoolId, nameQuery } = setup();
+				const { user } = setup();
 
-				await service.findAvailableGroups({ userId, schoolId, nameQuery });
+				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_GROUPS, true);
 
-				expect(groupRepo.findAvailableGroups).toHaveBeenCalledWith({ userId, schoolId, nameQuery }, undefined);
+				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
+					new GroupAggregateScope().byUserPermission(
+						user.id,
+						user.school.id,
+						GroupVisibilityPermission.ALL_SCHOOL_GROUPS
+					)
+				);
+			});
+
+			it('should return the groups', async () => {
+				const { user, groups } = setup();
+
+				const result: Page<Group> = await service.findGroupsForUser(
+					user,
+					GroupVisibilityPermission.ALL_SCHOOL_GROUPS,
+					true
+				);
+
+				expect(result.data).toEqual(groups);
 			});
 		});
 
-		describe('when no groups exist', () => {
+		describe('when no groups exists', () => {
 			const setup = () => {
-				const userId: EntityId = new ObjectId().toHexString();
-				const schoolId: EntityId = new ObjectId().toHexString();
+				const user = userFactory.buildWithId();
 
-				groupRepo.findAvailableGroups.mockResolvedValue(new Page<Group>([], 0));
+				groupRepo.findGroupsForScope.mockResolvedValueOnce(new Page<Group>([], 0));
 
 				return {
-					userId,
-					schoolId,
+					user,
 				};
 			};
 
-			it('should return empty array for user', async () => {
-				const { userId } = setup();
+			it('should call repo', async () => {
+				const { user } = setup();
 
-				const result: Page<Group> = await service.findAvailableGroups({ userId });
+				await service.findGroupsForUser(user, GroupVisibilityPermission.OWN_GROUPS, false);
 
-				expect(result.data).toEqual([]);
+				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
+					new GroupAggregateScope().byUserPermission(user.id, user.school.id, GroupVisibilityPermission.OWN_GROUPS)
+				);
 			});
 
-			it('should return empty array for school', async () => {
-				const { schoolId } = setup();
+			it('should return an empty array', async () => {
+				const { user } = setup();
 
-				const result: Page<Group> = await service.findAvailableGroups({ schoolId });
+				const result: Page<Group> = await service.findGroupsForUser(user, GroupVisibilityPermission.OWN_GROUPS, false);
 
 				expect(result.data).toEqual([]);
 			});
@@ -488,6 +559,115 @@ describe('GroupService', () => {
 				await service.addUserToGroup('groupId', 'userId', RoleName.STUDENT);
 
 				expect(groupRepo.save).toHaveBeenCalledWith(group);
+			});
+		});
+	});
+
+	describe('addUsersToGroup', () => {
+		const setup = (roleDtos: RoleDto[] = []) => {
+			roleService.findByNames.mockResolvedValue(roleDtos);
+
+			const userDo = userDoFactory.build();
+			userService.findById.mockResolvedValue(userDo);
+			userService.findByIds.mockResolvedValue([userDo]);
+
+			const group = groupFactory.build();
+			groupRepo.findGroupById.mockResolvedValue(group);
+
+			return { group, userDo };
+		};
+
+		describe('when adding a user to a group', () => {
+			it('should call group.addUser', async () => {
+				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+				const { group, userDo } = setup([roleDto]);
+				jest.spyOn(group, 'addUser');
+
+				await service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: roleDto.name }]);
+
+				expect(group.addUser).toHaveBeenCalledWith(expect.objectContaining({ userId: userDo.id, roleId: roleDto.id }));
+			});
+
+			it('should call groupRepo.save', async () => {
+				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+				const { group, userDo } = setup([roleDto]);
+
+				await service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: roleDto.name }]);
+
+				expect(groupRepo.save).toHaveBeenCalledWith(group);
+			});
+
+			describe('when role does not exist', () => {
+				it('should fail', async () => {
+					const { userDo } = setup();
+
+					const method = () => service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: RoleName.STUDENT }]);
+
+					await expect(method).rejects.toThrow();
+				});
+			});
+
+			describe('when user does not exist', () => {
+				it('should fail', async () => {
+					const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+					setup([roleDto]);
+					userService.findByIds.mockResolvedValue([]);
+
+					const method = () =>
+						service.addUsersToGroup('groupId', [{ userId: 'unknown-userid', roleName: roleDto.name }]);
+
+					await expect(method).rejects.toThrow();
+				});
+			});
+		});
+	});
+
+	describe('removeUsersFromGroup', () => {
+		const setup = (roleDtos: RoleDto[] = []) => {
+			roleService.findByNames.mockResolvedValue(roleDtos);
+
+			const userDo = userDoFactory.buildWithId();
+			userService.findById.mockResolvedValue(userDo);
+			userService.findByIds.mockResolvedValue([userDo]);
+
+			const group = groupFactory.build();
+			groupRepo.findGroupById.mockResolvedValue(group);
+
+			return { group, userDo };
+		};
+
+		describe('when removing a user from a group', () => {
+			it('should call group.removeUser', async () => {
+				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+				const { group, userDo } = setup([roleDto]);
+				jest.spyOn(group, 'removeUser');
+				const userId = userDo.id ?? '';
+
+				await service.removeUsersFromGroup('groupId', [userId]);
+
+				expect(group.removeUser).toHaveBeenCalledWith(expect.objectContaining({ id: userDo.id }));
+			});
+
+			it('should call groupRepo.save', async () => {
+				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+				const { group, userDo } = setup([roleDto]);
+				const userId = userDo.id ?? '';
+
+				await service.removeUsersFromGroup('groupId', [userId]);
+
+				expect(groupRepo.save).toHaveBeenCalledWith(group);
+			});
+
+			describe('when user does not exist', () => {
+				it('should fail', async () => {
+					const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
+					setup([roleDto]);
+					userService.findByIds.mockResolvedValue([]);
+
+					const method = () => service.removeUsersFromGroup('groupId', ['unknown-userid']);
+
+					await expect(method).rejects.toThrow();
+				});
 			});
 		});
 	});

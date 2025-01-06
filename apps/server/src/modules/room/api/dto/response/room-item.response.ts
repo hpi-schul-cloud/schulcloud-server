@@ -13,6 +13,9 @@ export class RoomItemResponse {
 	@IsEnum(RoomColor)
 	color: RoomColor;
 
+	@ApiProperty()
+	schoolId: string;
+
 	@ApiPropertyOptional({ type: Date })
 	startDate?: Date;
 
@@ -29,6 +32,7 @@ export class RoomItemResponse {
 		this.id = room.id;
 		this.name = room.name;
 		this.color = room.color;
+		this.schoolId = room.schoolId;
 
 		this.startDate = room.startDate;
 		this.endDate = room.endDate;

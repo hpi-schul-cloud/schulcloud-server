@@ -30,10 +30,14 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		this.SCHULCONNEX_API_BASE_URL = options.apiUrl || '';
 	}
 
-	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
+	public getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/person-info`);
 
-		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(url, accessToken);
+		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(
+			url,
+			accessToken,
+			this.options.personInfoTimeoutInMs
+		);
 
 		return response;
 	}
@@ -62,7 +66,8 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		const response: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[] =
 			await this.getRequest<(SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]>(
 				url,
-				accessToken
+				accessToken,
+				this.options.policiesInfoTimeoutInMs
 			);
 
 		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };

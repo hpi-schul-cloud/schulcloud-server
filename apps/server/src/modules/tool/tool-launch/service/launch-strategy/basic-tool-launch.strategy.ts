@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation } from '../../types';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 
@@ -40,5 +40,9 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 			: LaunchRequestMethod.GET;
 
 		return launchRequestMethod;
+	}
+
+	public override determineLaunchType(): LaunchType {
+		return LaunchType.BASIC;
 	}
 }

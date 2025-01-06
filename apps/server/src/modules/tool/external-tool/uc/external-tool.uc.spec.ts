@@ -1055,7 +1055,7 @@ describe(ExternalToolUc.name, () => {
 
 				const lti11ToolConfig: Lti11ToolConfigUpdate = {
 					type: ToolConfigType.LTI11,
-					baseUrl: 'https://www.basic-baseUrl.com/',
+					baseUrl: 'https://www.basic-baseurl.com/',
 					key: 'key',
 					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,

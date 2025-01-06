@@ -1,16 +1,19 @@
-import { TspClientFactory } from '@infra/tsp-client';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
+import { UserDO } from '@shared/domain/domainobject';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SchoolFeature } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { Account, AccountService } from '@src/modules/account';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
-import { FederalState } from '@src/modules/school/domain';
+import { FederalState, FileStorageType } from '@src/modules/school/domain';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
+import { SchoolPermissions } from '@src/modules/school/domain/type';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
+import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
-import moment from 'moment/moment';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
 
 @Injectable()
@@ -18,11 +21,12 @@ export class TspSyncService {
 	private federalState: FederalState | undefined;
 
 	constructor(
-		private readonly tspClientFactory: TspClientFactory,
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly federalStateService: FederalStateService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly userService: UserService,
+		private readonly accountService: AccountService
 	) {}
 
 	public async findTspSystemOrFail(): Promise<System> {
@@ -37,46 +41,6 @@ export class TspSyncService {
 		}
 
 		return systems[0];
-	}
-
-	public async fetchTspSchools(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
-
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const schoolsResponse = await client.exportSchuleList(lastChangeDate);
-		const schools = schoolsResponse.data;
-
-		return schools;
-	}
-
-	public async fetchTspTeachers(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
-
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const teachersResponse = await client.exportLehrerList(lastChangeDate);
-		const teachers = teachersResponse.data;
-
-		return teachers;
-	}
-
-	public async fetchTspStudents(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
-
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const studentsResponse = await client.exportSchuelerList(lastChangeDate);
-		const students = studentsResponse.data;
-
-		return students;
-	}
-
-	public async fetchTspClasses(system: System, daysToFetch: number) {
-		const client = this.createClient(system);
-
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const classesResponse = await client.exportKlasseList(lastChangeDate);
-		const classes = classesResponse.data;
-
-		return classes;
 	}
 
 	public async findSchool(system: System, identifier: string): Promise<School | undefined> {
@@ -116,6 +80,12 @@ export class TspSyncService {
 		const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 		const federalState = await this.findFederalState();
 
+		const permissions: SchoolPermissions = {
+			teacher: {
+				STUDENT_LIST: true,
+			},
+		};
+
 		const school = SchoolFactory.build({
 			externalId: identifier,
 			name,
@@ -126,6 +96,8 @@ export class TspSyncService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			id: new ObjectId().toHexString(),
+			fileStorageType: FileStorageType.AWS_S3,
+			permissions,
 		});
 
 		const savedSchool = await this.schoolService.save(school);
@@ -143,17 +115,46 @@ export class TspSyncService {
 		return this.federalState;
 	}
 
-	private formatChangeDate(daysToFetch: number): string {
-		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+	public async findUserByTspUid(tspUid: string): Promise<UserDO | null> {
+		const tspUser = await this.userService.findUsers({ tspUid });
+
+		if (tspUser.data.length === 0) {
+			return null;
+		}
+
+		return tspUser.data[0];
 	}
 
-	private createClient(system: System) {
-		const client = this.tspClientFactory.createExportClient({
-			clientId: system.oauthConfig?.clientId ?? '',
-			clientSecret: system.oauthConfig?.clientSecret ?? '',
-			tokenEndpoint: system.oauthConfig?.tokenEndpoint ?? '',
-		});
+	public async findAccountByExternalId(externalId: string, systemId: EntityId): Promise<Account | null> {
+		const user = await this.userService.findByExternalId(externalId, systemId);
 
-		return client;
+		if (!user || !user.id) {
+			return null;
+		}
+
+		const account = await this.accountService.findByUserId(user.id);
+
+		return account;
+	}
+
+	public async updateUser(
+		user: UserDO,
+		email: string,
+		externalId: string,
+		previousExternalId: string
+	): Promise<UserDO> {
+		user.email = email;
+		user.externalId = externalId;
+		user.previousExternalId = previousExternalId;
+		user.sourceOptions = new UserSourceOptions({ tspUid: user.externalId });
+
+		return this.userService.save(user);
+	}
+
+	public async updateAccount(account: Account, username: string, systemId: string): Promise<Account> {
+		account.username = username;
+		account.systemId = systemId;
+
+		return this.accountService.save(account);
 	}
 }

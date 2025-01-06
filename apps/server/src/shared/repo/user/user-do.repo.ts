@@ -4,8 +4,10 @@ import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
+import { SecondarySchoolReference, UserDO } from '@shared/domain/domainobject/user.do';
+import { Role, SchoolEntity, User, UserSchoolEmbeddable } from '@shared/domain/entity';
+import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
@@ -22,6 +24,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
+			.byTspUid(query.tspUid)
 			.byRoleId(query.roleId)
 			.withDiscoverableTrue(query.discoverable)
 			.isOutdated(query.isOutdated)
@@ -50,11 +53,34 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear']);
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 
 		return this.mapEntityToDO(userEntity);
+	}
+
+	async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
+		const users = await this._em.find(User, { id: { $in: ids } });
+
+		if (populate) {
+			await Promise.all(
+				users.map((user) =>
+					this._em.populate(user, [
+						'roles',
+						'school.systems',
+						'school.currentYear',
+						'school.name',
+						'secondarySchools.role',
+					])
+				)
+			);
+			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
+		}
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
 	}
 
 	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
@@ -65,7 +91,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		}
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -121,6 +147,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			preferredName: entity.preferredName,
 			roles: [],
 			schoolId: entity.school.id,
+			schoolName: entity.school.name,
+			secondarySchools: [],
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
 			importHash: entity.importHash,
@@ -134,12 +162,23 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
+			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 		});
 
 		if (entity.roles.isInitialized()) {
 			user.roles = entity.roles
 				.getItems()
 				.map((role: Role): RoleReference => new RoleReference({ id: role.id, name: role.name }));
+		}
+
+		if (entity.secondarySchools) {
+			user.secondarySchools = entity.secondarySchools.map(
+				(school) =>
+					new SecondarySchoolReference({
+						schoolId: school.school.id,
+						role: new RoleReference({ id: school.role.id, name: school.role.name }),
+					})
+			);
 		}
 
 		return user;
@@ -153,6 +192,13 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			preferredName: entityDO.preferredName,
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
+			secondarySchools: entityDO.secondarySchools.map(
+				(secondarySchool) =>
+					new UserSchoolEmbeddable({
+						school: this._em.getReference(SchoolEntity, secondarySchool.schoolId),
+						role: this._em.getReference(Role, secondarySchool.role.id),
+					})
+			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
@@ -162,6 +208,9 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
 			birthday: entityDO.birthday,
+			sourceOptions: entityDO.sourceOptions
+				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
+				: undefined,
 		};
 	}
 
@@ -176,8 +225,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
-		for (let i = 0; i < roles.length; i += 1) {
-			const role = roles[i];
+		for (const role of roles) {
 			if (!role.roles.isInitialized(true)) {
 				// eslint-disable-next-line no-await-in-loop
 				await this._em.populate(role, ['roles']);

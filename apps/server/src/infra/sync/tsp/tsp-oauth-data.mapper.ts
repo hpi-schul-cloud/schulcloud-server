@@ -34,7 +34,7 @@ export class TspOauthDataMapper {
 		});
 
 		const externalSchools = new Map<string, ExternalSchoolDto>();
-		const externalClasses = new Map<string, ExternalUserDto>();
+		const externalClasses = new Map<string, ExternalClassDto>();
 		const teacherForClasses = new Map<string, Array<string>>();
 		const oauthDataDtos: OauthDataDto[] = [];
 
@@ -79,15 +79,15 @@ export class TspOauthDataMapper {
 
 			const externalUser = new ExternalUserDto({
 				externalId: tspTeacher.lehrerUid,
-				firstName: tspTeacher.lehrerNachname,
+				firstName: tspTeacher.lehrerVorname,
 				lastName: tspTeacher.lehrerNachname,
 				roles: [RoleName.TEACHER],
 			});
 
 			const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
-			const classes = classIds
+			const classes: ExternalClassDto[] = classIds
 				.map((classId) => externalClasses.get(classId))
-				.filter((externalClass) => !!externalClass);
+				.filter((externalClass: ExternalClassDto | undefined): externalClass is ExternalClassDto => !!externalClass);
 
 			const externalSchool = tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
 
@@ -109,7 +109,7 @@ export class TspOauthDataMapper {
 
 			const externalUser = new ExternalUserDto({
 				externalId: tspStudent.schuelerUid,
-				firstName: tspStudent.schuelerNachname,
+				firstName: tspStudent.schuelerVorname,
 				lastName: tspStudent.schuelerNachname,
 				roles: [RoleName.STUDENT],
 			});
