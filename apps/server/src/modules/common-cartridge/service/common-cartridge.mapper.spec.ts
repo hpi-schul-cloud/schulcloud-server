@@ -80,7 +80,7 @@ describe('CommonCartridgeExportMapper', () => {
 
 				expect(result).toEqual({
 					type: CommonCartridgeElementType.METADATA,
-					title: courseMetadata.courseName,
+					title: courseMetadata.title,
 					copyrightOwners: courseMetadata.copyRightOwners,
 					creationDate: courseMetadata.creationDate ? new Date(courseMetadata.creationDate) : new Date(),
 				});
