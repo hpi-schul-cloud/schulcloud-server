@@ -6,9 +6,10 @@ import { ConfigService } from '@nestjs/config';
 import { UserDO } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { Logger } from '@src/core/logger';
+import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
+import { TspMigrationBatchSummaryLoggable } from './loggable/tsp-migration-batch-summary.loggable';
 import { TspMigrationsFetchedLoggable } from './loggable/tsp-migrations-fetched.loggable';
 import { TspSyncConfig } from './tsp-sync.config';
-import { TspMigrationBatchSummaryLoggable } from './loggable/tsp-migration-batch-summary.loggable';
 
 @Injectable()
 export class TspSyncMigrationService {
@@ -76,12 +77,22 @@ export class TspSyncMigrationService {
 			const oldId = user.sourceOptions?.tspUid;
 
 			if (!oldId) {
+				this.logger.warning(
+					new BadDataLoggableException(`Can't migrate TSP User. Old tspUid is not set for TSP User: ${user.id ?? ''}`, {
+						userId: user.id,
+					})
+				);
 				return;
 			}
 
 			const newUid = oldToNewMappings.get(oldId);
 
 			if (!newUid) {
+				this.logger.warning(
+					new BadDataLoggableException(`Can't migrate TSP User. No new Uid is given for oldId: ${oldId}`, {
+						oldId,
+					})
+				);
 				return;
 			}
 
