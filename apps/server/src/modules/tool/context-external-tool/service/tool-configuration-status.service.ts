@@ -80,21 +80,36 @@ export class ToolConfigurationStatusService {
 	}
 
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const isToolLicensedForUser = await this.isToolLicensedForUser(externalTool, userId);
+		const isToolLicensedForSchool = await this.isToolLicensedForSchool(externalTool, user.school.id);
+		const isToolLicensed = isToolLicensedForUser || isToolLicensedForSchool;
+
+		return isToolLicensed;
+	}
+
+	private async isToolLicensedForUser(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
 			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
 				userId
 			);
-			const user = await this.authorizationService.getUserWithPermissions(userId);
-
-			const mediaSchoolLicenses: MediaSchoolLicense[] =
-				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(user.school.id);
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium) {
-				return (
-					this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses) ||
-					this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaSchoolLicenses)
-				);
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+			}
+		}
+		return true;
+	}
+
+	private async isToolLicensedForSchool(externalTool: ExternalTool, schoolId: EntityId): Promise<boolean> {
+		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+			const mediaSchoolLicenses: MediaSchoolLicense[] =
+				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+			const externalToolMedium = externalTool.medium;
+			if (externalToolMedium) {
+				return this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaSchoolLicenses);
 			}
 		}
 		return true;
