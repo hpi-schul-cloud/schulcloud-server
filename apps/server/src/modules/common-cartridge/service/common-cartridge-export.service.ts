@@ -1,30 +1,31 @@
 import { Injectable } from '@nestjs/common';
+import { CoursesClientAdapter } from '@infra/courses-client';
+import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
-import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
+import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
+import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
+import { LessonContentDto, LessonDto } from '../common-cartridge-client/lesson-client/dto';
+import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import {
-	RoomBoardDto,
-	BoardElementDto,
 	BoardColumnBoardDto,
+	BoardElementDto,
 	BoardLessonDto,
 	BoardTaskDto,
+	RoomBoardDto,
 } from '../common-cartridge-client/room-client/dto';
-import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { LessonContentDto, LessonDto } from '../common-cartridge-client/lesson-client/dto';
-import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
-import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
-import { createIdentifier } from '../export/utils';
-import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
-import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
 import {
-	RichTextElementResponseDto,
-	LinkElementResponseDto,
 	CardListResponseDto,
 	CardResponseDto,
+	RichTextElementResponseDto,
+	LinkElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
+import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
+import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
+import { createIdentifier } from '../export/utils';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -46,13 +47,12 @@ export class CommonCartridgeExportService {
 	): Promise<Buffer> {
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
-		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
-			await this.findCourseCommonCartridgeMetadata(courseId);
+		const courseCommonCartridgeMetadata = await this.findCourseCommonCartridgeMetadata(courseId);
 
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
-		const roomBoard: RoomBoardDto = await this.findRoomBoardByCourseId(courseId);
+		const roomBoard = await this.findRoomBoardByCourseId(courseId);
 
 		// add lessons to organization
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
@@ -226,8 +226,9 @@ export class CommonCartridgeExportService {
 
 	private async findCourseCommonCartridgeMetadata(courseId: string): Promise<CourseCommonCartridgeMetadataDto> {
 		const courseMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+		const dto = new CourseCommonCartridgeMetadataDto(courseMetadata);
 
-		return courseMetadata;
+		return dto;
 	}
 
 	private async findRoomBoardByCourseId(courseId: string): Promise<RoomBoardDto> {
