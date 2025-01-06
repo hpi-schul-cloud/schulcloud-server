@@ -15,11 +15,13 @@ import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
+import { FilesStorageClientModule } from '../files-storage-client';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
 		FilesStorageRestClientModule,
+		FilesStorageClientModule,
 		LoggerModule,
 		CoursesClientModule,
 		MikroOrmModule.forRoot({
