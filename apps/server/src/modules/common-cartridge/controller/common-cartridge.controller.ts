@@ -1,9 +1,33 @@
-import { Body, Controller, Param, Post, Query, Res, StreamableFile } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+	UploadedFile,
+	UseInterceptors,
+} from '@nestjs/common';
+import {
+	ApiBadRequestResponse,
+	ApiBody,
+	ApiConsumes,
+	ApiCreatedResponse,
+	ApiInternalServerErrorResponse,
+	ApiOperation,
+	ApiProduces,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthentication, CurrentUser, ICurrentUser } from '@src/infra/auth-guard';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
-import { ExportCourseParams, CourseQueryParams, CourseExportBodyParams } from './dto';
+import { ExportCourseParams, CourseQueryParams, CourseExportBodyParams, CommonCartridgeImportBodyParams } from './dto';
+import { CommonCartridgeFileValidatorPipe } from './utils';
 
+@JwtAuthentication()
 @ApiTags('common-cartridge')
 @Controller('common-cartridge')
 export class CommonCartridgeController {
@@ -30,5 +54,23 @@ export class CommonCartridgeController {
 		});
 
 		return new StreamableFile(result);
+	}
+
+	@Post('import')
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiOperation({ summary: 'Imports a course from a Common Cartridge file.' })
+	@ApiConsumes('application/octet-stream')
+	@ApiProduces('application/json')
+	@ApiBody({ type: CommonCartridgeImportBodyParams, required: true })
+	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
+	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async importCourse(
+		@CurrentUser() currentUser: ICurrentUser,
+		@UploadedFile(CommonCartridgeFileValidatorPipe)
+		file: Express.Multer.File
+	): Promise<void> {
+		await this.commonCartridgeUC.importCourse(file.buffer);
 	}
 }
