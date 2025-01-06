@@ -1,28 +1,31 @@
+import { faker } from '@faker-js/faker';
 import { TspUsersMigratedLoggable } from './tsp-users-migrated.loggable';
 
 describe(TspUsersMigratedLoggable.name, () => {
-	let loggable: TspUsersMigratedLoggable;
+	describe('getLogMessage is called', () => {
+		const setup = () => {
+			const totalMigrations = faker.number.int();
+			const migratedUsers = faker.number.int();
+			const migratedAccounts = faker.number.int();
 
-	beforeAll(() => {
-		loggable = new TspUsersMigratedLoggable(10, 5, 4);
-	});
-
-	describe('when loggable is initialized', () => {
-		it('should be defined', () => {
-			expect(loggable).toBeDefined();
-		});
-	});
-
-	describe('getLogMessage', () => {
-		it('should return a log message', () => {
-			expect(loggable.getLogMessage()).toEqual({
-				message: `Migrated 5 users and 4 accounts. Total amount of migrations requested: 10`,
+			const expected = {
+				message: `Migrated ${migratedUsers} users and ${migratedAccounts} accounts. Total amount of migrations requested: ${totalMigrations}`,
 				data: {
-					totalMigrations: 10,
-					migratedUsers: 5,
-					migratedAccounts: 4,
+					totalMigrations,
+					migratedUsers,
+					migratedAccounts,
 				},
-			});
+			};
+
+			return { totalMigrations, migratedUsers, migratedAccounts, expected };
+		};
+
+		it('should return a log message', () => {
+			const { totalMigrations, migratedUsers, migratedAccounts, expected } = setup();
+
+			const loggable = new TspUsersMigratedLoggable(totalMigrations, migratedUsers, migratedAccounts);
+
+			expect(loggable.getLogMessage()).toEqual(expected);
 		});
 	});
 });

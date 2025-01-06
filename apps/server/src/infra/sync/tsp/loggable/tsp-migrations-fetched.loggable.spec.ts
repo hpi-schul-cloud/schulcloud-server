@@ -1,26 +1,27 @@
+import { faker } from '@faker-js/faker';
 import { TspMigrationsFetchedLoggable } from './tsp-migrations-fetched.loggable';
 
 describe(TspMigrationsFetchedLoggable.name, () => {
-	let loggable: TspMigrationsFetchedLoggable;
+	describe('getLogMessage is called', () => {
+		const setup = () => {
+			const tspUserMigrationCount = faker.number.int();
 
-	beforeAll(() => {
-		loggable = new TspMigrationsFetchedLoggable(10);
-	});
-
-	describe('when loggable is initialized', () => {
-		it('should be defined', () => {
-			expect(loggable).toBeDefined();
-		});
-	});
-
-	describe('getLogMessage', () => {
-		it('should return a log message', () => {
-			expect(loggable.getLogMessage()).toEqual({
-				message: `Fetched 10 users for migration from TSP`,
+			const expected = {
+				message: `Fetched ${tspUserMigrationCount} users for migration from TSP`,
 				data: {
-					tspUserMigrationCount: 10,
+					tspUserMigrationCount,
 				},
-			});
+			};
+
+			return { tspUserMigrationCount, expected };
+		};
+
+		it('should return a log message', () => {
+			const { tspUserMigrationCount, expected } = setup();
+
+			const loggable = new TspMigrationsFetchedLoggable(tspUserMigrationCount);
+
+			expect(loggable.getLogMessage()).toEqual(expected);
 		});
 	});
 });

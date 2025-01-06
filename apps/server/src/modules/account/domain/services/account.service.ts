@@ -302,13 +302,13 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
 		const savedDbAccounts = await this.accountDb.saveAll(accountSaves);
 
-		const newAccounts = savedDbAccounts.map((ret, idx) => {
-			const accountSave = accountSaves[idx];
+		const newAccounts = savedDbAccounts.map((savedDbAccount, index) => {
+			const accountSave = accountSaves[index];
 
 			return new AccountSave({
 				...accountSave,
 				id: accountSave.id,
-				idmReferenceId: ret.id,
+				idmReferenceId: savedDbAccount.id,
 				password: accountSave.password,
 			});
 		});
@@ -319,9 +319,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			return account;
 		});
 
-		const combinedAccounts = savedDbAccounts.map((ret, idx) => {
-			const idmReferenceId = idmAccounts ? idmAccounts[idx].idmReferenceId : undefined;
-			return new Account({ ...ret.getProps(), idmReferenceId });
+		const combinedAccounts = savedDbAccounts.map((savedDbAccount, index) => {
+			const idmReferenceId = idmAccounts ? idmAccounts[index].idmReferenceId : undefined;
+			return new Account({ ...savedDbAccount.getProps(), idmReferenceId });
 		});
 
 		return combinedAccounts;
