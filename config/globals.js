@@ -62,7 +62,6 @@ const globals = {
 
 	//
 	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
-	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,
 	CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: parseInt(process.env.CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS || 16, 10),
 
 	/** used in tests only currently */
