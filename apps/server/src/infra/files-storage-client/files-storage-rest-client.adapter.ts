@@ -26,12 +26,6 @@ export class FilesStorageRestClientAdapter {
 	}
 
 	public async download(fileRecordId: string, fileName: string): Promise<Buffer | null> {
-		console.debug({
-			message: `Downloading file ${fileName} with fileRecordId ${fileRecordId}`,
-			fileRecordId,
-			fileName,
-		});
-
 		try {
 			// INFO: we need to download the file from the files storage service without using the generated client,
 			// because the generated client does not support downloading files as arraybuffer. Otherwise files with
@@ -53,13 +47,6 @@ export class FilesStorageRestClientAdapter {
 				},
 			});
 			const response = await lastValueFrom(observable);
-
-			console.debug({
-				message: 'File downloaded',
-				fileRecordId,
-				response: response as unknown as string,
-			});
-
 			const data = Buffer.isBuffer(response.data) ? response.data : null;
 
 			return data;

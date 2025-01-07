@@ -47,41 +47,26 @@ export class CommonCartridgeExportService {
 		version: CommonCartridgeVersion,
 		exportedTopics: string[],
 		exportedTasks: string[],
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		exportedColumnBoards: string[]
 	): Promise<Buffer> {
-		console.info(FilesStorageRestClientAdapter.name, this.filesStorageClientAdapter);
-
-		console.info('Exporting course', { courseId, version });
-
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
 		const courseCommonCartridgeMetadata: CourseCommonCartridgeMetadataDto =
 			await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
-
-		console.info('Course metadata', courseCommonCartridgeMetadata);
 
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
 		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
 
-		console.info('Exporting lessons');
-
 		// add lessons to organization
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
-
-		console.info('Exporting tasks');
 
 		// add tasks to organization
 		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
 
-		// console.info('Exporting column boards');
-
-		// // add column boards and cards to organization
-		// await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
-
-		console.info('Building the common cartridge file');
+		// add column boards and cards to organization
+		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
 		return builder.build();
 	}
@@ -150,12 +135,8 @@ export class CommonCartridgeExportService {
 
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
 
-			console.info('Files metadata', filesMetadata);
-
 			for await (const fileMetadata of filesMetadata) {
 				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-
-				console.info('File', file);
 
 				if (file) {
 					const resource = this.mapper.mapFileToResource(fileMetadata, file);
@@ -245,8 +226,6 @@ export class CommonCartridgeExportService {
 
 		if (FileElementResponseDto.isFileElement(element)) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
-
-			console.info('Files metadata', filesMetadata);
 
 			for await (const fileMetadata of filesMetadata) {
 				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
