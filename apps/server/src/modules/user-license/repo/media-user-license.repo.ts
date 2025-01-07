@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSourceConfigMapper } from '@src/modules/media-source/repo/media-source-config.mapper';
 import { MediaSource } from '@src/modules/media-source/domain';
 import { MediaSourceEntity } from '@src/modules/media-source/entity';
+import { MediaSourceMapper } from '@modules/media-source/repo';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity, UserLicenseType } from '../entity';
 
@@ -19,18 +19,7 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 		let mediaSource: MediaSource | undefined;
 
 		if (entity.mediaSource) {
-			mediaSource = new MediaSource({
-				id: entity.mediaSource.id,
-				name: entity.mediaSource.name,
-				sourceId: entity.mediaSource.sourceId,
-				format: entity.mediaSource.format,
-				oauthConfig: entity.mediaSource.oauthConfig
-					? MediaSourceConfigMapper.mapOauthConfigToDo(entity.mediaSource.oauthConfig)
-					: undefined,
-				basicAuthConfig: entity.mediaSource.basicAuthConfig
-					? MediaSourceConfigMapper.mapBasicAuthConfigToDo(entity.mediaSource.basicAuthConfig)
-					: undefined,
-			});
+			mediaSource = MediaSourceMapper.mapEntityToDo(entity.mediaSource);
 		}
 
 		const userLicense: MediaUserLicense = new MediaUserLicense({

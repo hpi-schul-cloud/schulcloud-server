@@ -29,6 +29,7 @@ import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
 import { SchoolApiModule } from '@modules/school/school-api.module';
+import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
@@ -48,7 +49,6 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@sr
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { SchoolLicenseModule } from '../school-license/school-license.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 

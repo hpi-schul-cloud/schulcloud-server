@@ -1678,12 +1678,10 @@
 		},
 		"VIDIS_API_CLIENT_BASE_URL": {
 			"type": "string",
-			"default": "https://service-stage.vidis.schule/o/vidis-rest",
 			"description": "The VIDIS API base URL"
 		},
 		"VIDIS_SYNC_REGION": {
 			"type": "string",
-			"default": "test-region",
 			"description": "The region for fetching activated offers from VIDIS"
 		},
 		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {

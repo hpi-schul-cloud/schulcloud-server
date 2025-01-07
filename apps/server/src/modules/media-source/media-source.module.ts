@@ -3,7 +3,7 @@ import { MediaSourceRepo } from './repo';
 import { MediaSourceService } from './service';
 
 @Module({
-	providers: [MediaSourceRepo, MediaSourceService],
+	providers: [MediaSourceService, MediaSourceRepo],
 	exports: [MediaSourceService, MediaSourceRepo],
 })
 export class MediaSourceModule {}

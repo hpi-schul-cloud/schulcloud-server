@@ -1,6 +1,8 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { EntityId } from '@shared/domain/types';
 import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { SchoolLicenseType } from '../../enum';
@@ -16,11 +18,14 @@ export class MediaSchoolLicenseMikroOrmRepo
 		return MediaSchoolLicenseEntity;
 	}
 
-	public async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
+	public async findAllByMediaSourceAndMediumId(
+		mediaSourceId: EntityId,
+		mediumId: string
+	): Promise<MediaSchoolLicense[]> {
 		const entities: MediaSchoolLicenseEntity[] = await this.em.find(
 			MediaSchoolLicenseEntity,
-			{ mediumId, type: SchoolLicenseType.MEDIA_LICENSE },
-			{ populate: ['mediaSource'] }
+			{ type: SchoolLicenseType.MEDIA_LICENSE, mediaSource: new ObjectId(mediaSourceId), mediumId },
+			{ populate: ['mediaSource', 'school'] }
 		);
 
 		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>

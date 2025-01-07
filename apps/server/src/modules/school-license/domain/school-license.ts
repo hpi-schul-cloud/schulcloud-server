@@ -1,15 +1,15 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { School } from '@modules/school';
 import { SchoolLicenseType } from '../enum';
 
 export interface SchoolLicenseProps extends AuthorizableObject {
-	schoolId: EntityId;
+	school: School;
 	type: SchoolLicenseType;
 }
 
 export abstract class SchoolLicense<T extends SchoolLicenseProps> extends DomainObject<T> {
-	get schoolId(): EntityId {
-		return this.props.schoolId;
+	get school(): School {
+		return this.props.school;
 	}
 
 	get type(): SchoolLicenseType {

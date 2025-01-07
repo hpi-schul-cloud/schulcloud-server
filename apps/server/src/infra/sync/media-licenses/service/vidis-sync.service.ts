@@ -21,39 +21,31 @@ export class VidisSyncService {
 				return;
 			}
 
-			const mediumId = `${item.offerId}`;
+			const mediumId = item.offerId.toString();
 
 			const officialSchoolNumbers = item.schoolActivations.map((activation) => this.removePrefix(activation));
 
-			let existingLicenses: MediaSchoolLicense[] =
-				await this.mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId(mediumId);
+			let existingLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseService.findAllByMediaSourceAndMediumId(
+				mediaSource.id,
+				mediumId
+			);
 
 			if (existingLicenses.length) {
-				await this.removeNoLongerAvailableLicenses(existingLicenses, officialSchoolNumbers);
-				existingLicenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId(mediumId);
+				existingLicenses = await this.removeNoLongerAvailableLicenses(existingLicenses, officialSchoolNumbers);
 			}
+
+			const existingLicenseSchoolNumberSet = new Set(
+				existingLicenses.reduce((acc: string[], license: MediaSchoolLicense) => {
+					if (license.school.officialSchoolNumber) {
+						acc.push(license.school.officialSchoolNumber);
+					}
+					return acc;
+				}, [] as string[])
+			);
 
 			const saveNewLicensesPromises: Promise<void>[] = officialSchoolNumbers.map(
 				async (schoolNumber: string): Promise<void> => {
-					const school: School | null = await this.schoolService.getSchoolByOfficialSchoolNumber(schoolNumber);
-
-					if (!school) {
-						this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolNumber));
-					} else {
-						const hasSchoolExistingLicense = existingLicenses.some(
-							(license: MediaSchoolLicense): boolean => license.schoolId === school.id
-						);
-						if (!hasSchoolExistingLicense) {
-							const newLicense: MediaSchoolLicense = new MediaSchoolLicense({
-								id: new ObjectId().toHexString(),
-								type: SchoolLicenseType.MEDIA_LICENSE,
-								schoolId: school.id,
-								mediaSource,
-								mediumId,
-							});
-							await this.mediaSchoolLicenseService.saveMediaSchoolLicense(newLicense);
-						}
-					}
+					await this.saveNonExistingLicense(existingLicenseSchoolNumberSet, schoolNumber, mediaSource, mediumId);
 				}
 			);
 
@@ -70,21 +62,53 @@ export class VidisSyncService {
 	private async removeNoLongerAvailableLicenses(
 		existingLicenses: MediaSchoolLicense[],
 		schoolNumbersFromVidis: string[]
-	): Promise<void> {
+	): Promise<MediaSchoolLicense[]> {
 		const vidisSchoolNumberSet = new Set(schoolNumbersFromVidis);
 
-		const removalPromises: Promise<void>[] = existingLicenses.map(async (license: MediaSchoolLicense) => {
-			const school = await this.schoolService.getSchoolById(license.schoolId);
-			if (!school.officialSchoolNumber) {
-				return;
-			}
+		const removalPromises: Promise<MediaSchoolLicense | null>[] = existingLicenses.map(
+			async (license: MediaSchoolLicense) => {
+				if (!license.school.officialSchoolNumber) {
+					await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
+					return null;
+				}
 
-			const isLicenseNoLongerInVidis = !vidisSchoolNumberSet.has(school.officialSchoolNumber);
-			if (isLicenseNoLongerInVidis) {
-				await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
-			}
-		});
+				const isLicenseNoLongerInVidis = !vidisSchoolNumberSet.has(license.school.officialSchoolNumber);
+				if (isLicenseNoLongerInVidis) {
+					await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
+					return null;
+				}
 
-		await Promise.all(removalPromises);
+				return license;
+			}
+		);
+
+		const availableLicensesWithNull = await Promise.all(removalPromises);
+		return availableLicensesWithNull.filter((license: MediaSchoolLicense | null) => !!license);
+	}
+
+	private async saveNonExistingLicense(
+		existingLicenseSchoolNumberSet: Set<string>,
+		officialSchoolNumber: string,
+		mediaSource: MediaSource,
+		mediumId: string
+	): Promise<void> {
+		if (existingLicenseSchoolNumberSet.has(officialSchoolNumber)) {
+			return;
+		}
+
+		const school: School | null = await this.schoolService.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+		if (!school) {
+			this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(officialSchoolNumber));
+		} else {
+			const newLicense: MediaSchoolLicense = new MediaSchoolLicense({
+				id: new ObjectId().toHexString(),
+				type: SchoolLicenseType.MEDIA_LICENSE,
+				school,
+				mediaSource,
+				mediumId,
+			});
+			await this.mediaSchoolLicenseService.saveMediaSchoolLicense(newLicense);
+		}
 	}
 }

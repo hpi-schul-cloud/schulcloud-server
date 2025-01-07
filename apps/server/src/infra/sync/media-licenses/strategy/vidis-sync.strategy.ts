@@ -1,9 +1,9 @@
 import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
-import { MediaSourceForSyncNotFoundLoggableException } from '@modules/media-source/loggable';
 import { Injectable } from '@nestjs/common';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { VidisSyncService, VidisFetchService } from '../service';
+import { MediaSourceForSyncNotFoundLoggableException } from '../loggable';
 
 @Injectable()
 export class VidisSyncStrategy extends SyncStrategy {

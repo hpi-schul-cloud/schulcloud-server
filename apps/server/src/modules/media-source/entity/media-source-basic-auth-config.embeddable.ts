@@ -1,32 +1,17 @@
 import { Embeddable, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-
-export interface MediaSourceBasicAuthConfigEmbeddableProps {
-	_id: ObjectId;
-
-	username: string;
-
-	password: string;
-
-	authEndpoint: string;
-}
 
 @Embeddable()
 export class MediaSourceBasicAuthConfigEmbeddable {
 	@Property()
-	_id: ObjectId;
+	public username: string;
 
 	@Property()
-	username: string;
+	public password: string;
 
 	@Property()
-	password: string;
+	public authEndpoint: string;
 
-	@Property()
-	authEndpoint: string;
-
-	constructor(props: MediaSourceBasicAuthConfigEmbeddableProps) {
-		this._id = props._id;
+	constructor(props: MediaSourceBasicAuthConfigEmbeddable) {
 		this.username = props.username;
 		this.password = props.password;
 		this.authEndpoint = props.authEndpoint;

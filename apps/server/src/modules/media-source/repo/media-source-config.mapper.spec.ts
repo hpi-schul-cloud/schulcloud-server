@@ -1,4 +1,3 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceBasicAuthConfig, MediaSourceOauthConfig } from '../domain';
 import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
 import {
@@ -15,11 +14,10 @@ describe('MediaSourceConfigMapper', () => {
 			const setup = () => {
 				const configDo = mediaSourceOauthConfigFactory.build();
 				const expected = new MediaSourceOauthConfigEmbeddable({
-					_id: new ObjectId(configDo.id),
-					clientId: configDo.getProps().clientId,
-					clientSecret: configDo.getProps().clientSecret,
-					authEndpoint: configDo.getProps().authEndpoint,
-					method: configDo.getProps().method,
+					clientId: configDo.clientId,
+					clientSecret: configDo.clientSecret,
+					authEndpoint: configDo.authEndpoint,
+					method: configDo.method,
 				});
 
 				return { configDo, expected };
@@ -48,7 +46,6 @@ describe('MediaSourceConfigMapper', () => {
 			const setup = () => {
 				const domainObject = mediaSourceBasicAuthConfigFactory.build();
 				const expected = new MediaSourceBasicAuthConfigEmbeddable({
-					_id: new ObjectId(domainObject.id),
 					username: domainObject.username,
 					password: domainObject.password,
 					authEndpoint: domainObject.authEndpoint,
@@ -80,7 +77,6 @@ describe('MediaSourceConfigMapper', () => {
 			const setup = () => {
 				const embeddable = mediaSourceOAuthConfigEmbeddableFactory.build();
 				const expected = new MediaSourceOauthConfig({
-					id: embeddable._id.toHexString(),
 					clientId: embeddable.clientId,
 					clientSecret: embeddable.clientSecret,
 					authEndpoint: embeddable.authEndpoint,
@@ -113,7 +109,6 @@ describe('MediaSourceConfigMapper', () => {
 			const setup = () => {
 				const embeddable = mediaSourceBasicConfigEmbeddableFactory.build();
 				const expected = new MediaSourceBasicAuthConfig({
-					id: embeddable._id.toHexString(),
 					username: embeddable.username,
 					password: embeddable.password,
 					authEndpoint: embeddable.authEndpoint,

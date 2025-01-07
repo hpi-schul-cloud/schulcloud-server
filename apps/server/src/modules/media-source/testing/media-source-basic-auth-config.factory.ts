@@ -1,13 +1,11 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSourceBasicAuthConfig, MediaSourceBasicAuthConfigProps } from '../domain';
+import { MediaSourceBasicAuthConfig } from '../domain';
 
 export const mediaSourceBasicAuthConfigFactory = BaseFactory.define<
 	MediaSourceBasicAuthConfig,
-	MediaSourceBasicAuthConfigProps
+	MediaSourceBasicAuthConfig
 >(MediaSourceBasicAuthConfig, ({ sequence }) => {
-	const config: MediaSourceBasicAuthConfigProps = {
-		id: new ObjectId().toHexString(),
+	const config: MediaSourceBasicAuthConfig = {
 		username: `media-source-user-${sequence}`,
 		password: `media-source-password-${sequence}`,
 		authEndpoint: 'https://media-source-endpoint.com/test',

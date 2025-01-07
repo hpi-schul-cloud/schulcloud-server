@@ -1,26 +1,13 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+export class MediaSourceBasicAuthConfig {
+	public username: string;
 
-export interface MediaSourceBasicAuthConfigProps extends AuthorizableObject {
-	id: EntityId;
+	public password: string;
 
-	username: string;
+	public authEndpoint: string;
 
-	password: string;
-
-	authEndpoint: string;
-}
-
-export class MediaSourceBasicAuthConfig extends DomainObject<MediaSourceBasicAuthConfigProps> {
-	get username(): string {
-		return this.props.username;
-	}
-
-	get password(): string {
-		return this.props.password;
-	}
-
-	get authEndpoint(): string {
-		return this.props.authEndpoint;
+	constructor(props: MediaSourceBasicAuthConfig) {
+		this.username = props.username;
+		this.password = props.password;
+		this.authEndpoint = props.authEndpoint;
 	}
 }

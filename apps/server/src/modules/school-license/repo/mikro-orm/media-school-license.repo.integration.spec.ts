@@ -37,6 +37,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 		describe('when a medium id of existing media school licenses is provided', () => {
 			const setup = async () => {
 				const mediumId = 'test-medium-id';
+
 				const mediaSourceEntity: MediaSourceEntity = mediaSourceEntityFactory.build();
 				const mediaSchoolLicenses: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(2, {
 					mediaSource: mediaSourceEntity,
@@ -44,11 +45,16 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 				});
 
 				const otherMediaSchoolLicense: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build({
-					mediaSource: mediaSourceEntity,
+					mediaSource: mediaSourceEntityFactory.build(),
 					mediumId: 'test-other-medium-id',
 				});
 
-				await em.persistAndFlush([otherMediaSchoolLicense, ...mediaSchoolLicenses]);
+				const licenseWithOtherMediaSource: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build({
+					mediaSource: mediaSourceEntityFactory.build(),
+					mediumId,
+				});
+
+				await em.persistAndFlush([otherMediaSchoolLicense, licenseWithOtherMediaSource, ...mediaSchoolLicenses]);
 				em.clear();
 
 				const expectedDOs: MediaSchoolLicense[] = mediaSchoolLicenses.map(
@@ -56,17 +62,27 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 				);
 
 				return {
+					mediaSourceId: mediaSourceEntity.id,
 					mediumId,
 					expectedDOs,
 				};
 			};
 
 			it('should return the existing media school licenses', async () => {
-				const { mediumId, expectedDOs } = await setup();
+				const { mediaSourceId, mediumId, expectedDOs } = await setup();
 
-				const result = await repo.findMediaSchoolLicensesByMediumId(mediumId);
+				const results: MediaSchoolLicense[] = await repo.findAllByMediaSourceAndMediumId(mediaSourceId, mediumId);
 
-				expect(result.sort()).toEqual(expectedDOs.sort());
+				const sortedExpectedDOs = expectedDOs.sort();
+				expect(results.length).toEqual(expectedDOs.length);
+				results.sort().forEach((result, i) => {
+					expect(result.id).toEqual(sortedExpectedDOs[i].id);
+					expect(result.mediumId).toEqual(sortedExpectedDOs[i].mediumId);
+					expect(result.type).toEqual(sortedExpectedDOs[i].type);
+					expect(result.mediaSource).toEqual(sortedExpectedDOs[i].mediaSource);
+					expect(result.school.id).toEqual(sortedExpectedDOs[i].school.id);
+					expect(result.school.officialSchoolNumber).toEqual(sortedExpectedDOs[i].school.officialSchoolNumber);
+				});
 			});
 		});
 	});
@@ -86,7 +102,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 
 				const savedMediaSchoolLicense: MediaSchoolLicenseEntity = await em.findOneOrFail(MediaSchoolLicenseEntity, {});
 				expect(savedMediaSchoolLicense.mediumId).toEqual(mediaSchoolLicense.mediumId);
-				expect(savedMediaSchoolLicense.school.id).toEqual(mediaSchoolLicense.schoolId);
+				expect(savedMediaSchoolLicense.school.id).toEqual(mediaSchoolLicense.school.id);
 				expect(savedMediaSchoolLicense.mediaSource?.id).toEqual(mediaSchoolLicense.mediaSource?.id);
 			});
 		});

@@ -16,7 +16,7 @@ export interface MediaSourceEntityProps {
 
 	basicAuthConfig?: MediaSourceBasicAuthConfigEmbeddable;
 
-	format: MediaSourceDataFormat;
+	format?: MediaSourceDataFormat;
 }
 
 @Entity({ tableName: 'media-sources' })
@@ -40,8 +40,8 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	name?: string;
 
-	@Property({ nullable: false })
-	format: MediaSourceDataFormat;
+	@Property({ nullable: true })
+	format?: MediaSourceDataFormat;
 
 	@Embedded(() => MediaSourceOauthConfigEmbeddable, { object: true, nullable: true })
 	oauthConfig?: MediaSourceOauthConfigEmbeddable;

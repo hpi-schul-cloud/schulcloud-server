@@ -1,11 +1,11 @@
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
-import { MediaSourceForSyncNotFoundLoggableException } from '@modules/media-source/loggable';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { VidisFetchService, VidisSyncService } from '../service';
 import { vidisOfferItemFactory } from '../testing';
+import { MediaSourceForSyncNotFoundLoggableException } from '../loggable';
 import { VidisSyncStrategy } from './vidis-sync.strategy';
 
 describe(VidisSyncService.name, () => {

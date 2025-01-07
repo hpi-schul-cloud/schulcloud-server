@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { MediaSchoolLicense } from '../domain';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 import { ExternalToolMedium } from '../../tool/external-tool/domain';
@@ -6,9 +7,14 @@ import { ExternalToolMedium } from '../../tool/external-tool/domain';
 export class MediaSchoolLicenseService {
 	constructor(@Inject(MEDIA_SCHOOL_LICENSE_REPO) private readonly mediaSchoolLicenseRepo: MediaSchoolLicenseRepo) {}
 
-	public async findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]> {
-		const mediaSchoolLicenses: MediaSchoolLicense[] =
-			await this.mediaSchoolLicenseRepo.findMediaSchoolLicensesByMediumId(mediumId);
+	public async findAllByMediaSourceAndMediumId(
+		mediaSourceId: EntityId,
+		mediumId: string
+	): Promise<MediaSchoolLicense[]> {
+		const mediaSchoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseRepo.findAllByMediaSourceAndMediumId(
+			mediaSourceId,
+			mediumId
+		);
 
 		return mediaSchoolLicenses;
 	}
