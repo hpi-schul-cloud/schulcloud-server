@@ -64,6 +64,6 @@ export class TaskRule implements Rule<Task> {
 
 			return hasCoursePermission;
 		}
-		return true;
+		return false;
 	}
 }

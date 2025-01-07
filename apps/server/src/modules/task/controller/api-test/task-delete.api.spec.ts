@@ -56,30 +56,64 @@ describe('Task Controller (API)', () => {
 	});
 
 	describe('[DELETE] :taskId', () => {
-		const setup = async () => {
-			const teacher = createTeacher();
-			const student = createStudent();
-			const course = courseFactory.build({
-				teachers: [teacher.user],
-				students: [student.user],
-			});
-			const task = taskFactory.isPublished().build({ course });
-
-			await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, task]);
-			em.clear();
-
-			const teacherClient = await testApiClient.login(teacher.account);
-
-			return { teacherClient, teacher, student, course, task };
-		};
-
 		describe('when logged in as a teacher', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const student = createStudent();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+					students: [student.user],
+				});
+				const task = taskFactory.isPublished().build({ course });
+
+				await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, task]);
+				em.clear();
+
+				const teacherClient = await testApiClient.login(teacher.account);
+
+				return { teacherClient, teacher, student, course, task };
+			};
+
 			it('should return status 200 for valid task', async () => {
 				const { teacherClient, task } = await setup();
 
 				const response = await teacherClient.delete(`${task.id}`);
 
 				expect(response.status).toEqual(200);
+			});
+		});
+
+		describe('when logged in as another teacher', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const anotherTeacher = createTeacher();
+
+				const task = taskFactory.isPublished().build();
+
+				await em.persistAndFlush([teacher.user, teacher.account, anotherTeacher.user, anotherTeacher.account, task]);
+				em.clear();
+
+				const anotherTeacherClient = await testApiClient.login(anotherTeacher.account);
+
+				return { anotherTeacherClient, anotherTeacher, task };
+			};
+
+			it('should return status 403 for valid task', async () => {
+				const { anotherTeacherClient, task } = await setup();
+
+				const response = await anotherTeacherClient.delete(`${task.id}`);
+
+				expect(response.status).toEqual(403);
+			});
+
+			it('should not actually delete the task', async () => {
+				const { anotherTeacherClient, task } = await setup();
+
+				await anotherTeacherClient.delete(`${task.id}`);
+
+				const taskAfterDelete = await em.findOneOrFail('Task', task.id);
+
+				expect(taskAfterDelete).toBeDefined();
 			});
 		});
 	});
