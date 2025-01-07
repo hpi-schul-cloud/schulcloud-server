@@ -68,6 +68,26 @@ describe('account repo', () => {
 		});
 	});
 
+	describe('saveAll', () => {
+		describe('When multiple accounts are given', () => {
+			const setup = () => {
+				const accounts = accountDoFactory.buildList(3);
+				const accountIds = accounts.map((account) => account.id);
+
+				return { accounts, accountIds };
+			};
+
+			it('should save all accounts', async () => {
+				const { accounts, accountIds } = setup();
+
+				await repo.saveAll(accounts);
+
+				const foundAccounts = await em.find(AccountEntity, { id: { $in: accountIds } });
+				expect(foundAccounts.length).toBe(accounts.length);
+			});
+		});
+	});
+
 	describe('findById', () => {
 		describe('When the account exists', () => {
 			const setup = async () => {
