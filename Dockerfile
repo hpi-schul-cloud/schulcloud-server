@@ -24,11 +24,11 @@ RUN npm run build
 
 # Remove dev dependencies. The modules transpiled by esbuild are pruned too and must be copied separately.
 RUN mkdir temp
-COPY node_modules/@keycloak/keycloak-admin-client-cjs temp
-COPY node_modules/file-type-cjs temp
+RUN cp -r node_modules/@keycloak/keycloak-admin-client-cjs temp
+RUN cp -r node_modules/file-type-cjs temp
 RUN npm prune --omit=dev
-COPY temp/keycloak-admin-client-cjs node_modules/@keycloak
-COPY temp/file-type-cjs node_modules
+RUN cp -r temp/keycloak-admin-client-cjs node_modules/@keycloak
+RUN cp -r temp/file-type-cjs node_modules
 RUN rm -rf temp
 
 ENV NODE_ENV=production
