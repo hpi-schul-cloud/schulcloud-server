@@ -408,6 +408,40 @@ describe(ContextExternalToolUc.name, () => {
 				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
 			});
 		});
+
+		describe('when working on a columnBoard of a room', () => {
+			describe('when the user is from a different school', () => {
+				it('should use the boardContextApiHelperService to determine the right schoolId', async () => {
+					const school = schoolEntityFactory.buildWithId();
+					const user: User = userFactory.buildWithId({ school });
+					const schoolId: EntityId = school.id;
+
+					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+						schoolId,
+					});
+
+					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+						displayName: 'Course',
+						schoolToolRef: {
+							schoolToolId: schoolExternalTool.id,
+							schoolId,
+						},
+						contextRef: {
+							id: 'contextId',
+							type: ToolContextType.BOARD_ELEMENT,
+						},
+					});
+
+					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					boardContextApiHelperService.getSchoolIdForBoardNode.mockResolvedValueOnce(schoolId);
+
+					await uc.createContextExternalTool(user.id, contextExternalTool.getProps());
+
+					expect(boardContextApiHelperService.getSchoolIdForBoardNode).toHaveBeenCalledWith('contextId');
+				});
+			});
+		});
 	});
 
 	describe('updateContextExternalTool', () => {
