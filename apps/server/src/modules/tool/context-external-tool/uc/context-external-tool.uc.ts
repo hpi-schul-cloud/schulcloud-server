@@ -61,7 +61,7 @@ export class ContextExternalToolUc {
 		let schoolId = user.school.id;
 		if (contextExternalToolDto.contextRef.type === ToolContextType.BOARD_ELEMENT) {
 			const contextId = contextExternalToolDto.contextRef.id;
-			schoolId = await this.boardContextApiHelperService.getSchoolIdForBoardNode(userId, contextId);
+			schoolId = await this.boardContextApiHelperService.getSchoolIdForBoardNode(contextId);
 		}
 
 		if (schoolExternalTool.schoolId !== schoolId) {
