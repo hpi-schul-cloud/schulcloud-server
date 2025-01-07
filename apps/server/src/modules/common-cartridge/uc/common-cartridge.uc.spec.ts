@@ -1,15 +1,16 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseFileIdsResponse } from '../controller/dto';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './common-cartridge.uc';
-import { CourseExportBodyResponse } from '../controller/dto/course-export-body.response';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeImportService } from '../service';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeUc;
 	let commonCartridgeExportServiceMock: DeepMocked<CommonCartridgeExportService>;
+	let commonCartridgeImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -19,11 +20,16 @@ describe('CommonCartridgeUc', () => {
 					provide: CommonCartridgeExportService,
 					useValue: createMock<CommonCartridgeExportService>(),
 				},
+				{
+					provide: CommonCartridgeImportService,
+					useValue: createMock<CommonCartridgeImportService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeUc);
 		commonCartridgeExportServiceMock = module.get(CommonCartridgeExportService);
+		commonCartridgeImportServiceMock = module.get(CommonCartridgeImportService);
 	});
 
 	afterAll(async () => {
@@ -37,31 +43,44 @@ describe('CommonCartridgeUc', () => {
 	describe('exportCourse', () => {
 		const setup = () => {
 			const courseId = faker.string.uuid();
-			const expected = new CourseExportBodyResponse({
-				courseFileIds: new CourseFileIdsResponse([]),
-				courseCommonCartridgeMetadata: {
-					id: courseId,
-					title: faker.lorem.sentence(),
-					copyRightOwners: [],
-				},
-			});
+			const version = CommonCartridgeVersion.V_1_1_0;
+			const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
+			const tasks = [faker.lorem.sentence(), faker.lorem.sentence()];
+			const columnBoards = [faker.lorem.sentence(), faker.lorem.sentence()];
+			const expected = Buffer.alloc(0);
 
-			commonCartridgeExportServiceMock.findCourseFileRecords.mockResolvedValue([]);
-			commonCartridgeExportServiceMock.findCourseCommonCartridgeMetadata.mockResolvedValue({
-				id: expected.courseCommonCartridgeMetadata?.id ?? '',
-				title: expected.courseCommonCartridgeMetadata?.title ?? '',
-				copyRightOwners: expected.courseCommonCartridgeMetadata?.copyRightOwners ?? [],
-			});
+			commonCartridgeExportServiceMock.exportCourse.mockResolvedValue(expected);
 
-			return { courseId, expected };
+			return { courseId, version, topics, tasks, columnBoards, expected };
 		};
 
 		it('should return a course export response with file IDs and metadata of a course', async () => {
-			const { courseId, expected } = setup();
+			const { courseId, expected, version, tasks, columnBoards, topics } = setup();
 
-			const result = await sut.exportCourse(courseId);
+			expect(await sut.exportCourse(courseId, version, topics, tasks, columnBoards)).toEqual(expected);
+			expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(
+				courseId,
+				version,
+				topics,
+				tasks,
+				columnBoards
+			);
+		});
+	});
 
-			expect(result).toEqual(expected);
+	describe('importCourse', () => {
+		const setup = () => {
+			const file = Buffer.from(faker.lorem.paragraphs());
+
+			return { file };
+		};
+
+		it('should class the import service', async () => {
+			const { file } = setup();
+
+			await sut.importCourse(file);
+
+			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file);
 		});
 	});
 });

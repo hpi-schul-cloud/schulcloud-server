@@ -57,6 +57,8 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: api-management-configmap
         - secretRef:
             name: api-secret
         - secretRef:

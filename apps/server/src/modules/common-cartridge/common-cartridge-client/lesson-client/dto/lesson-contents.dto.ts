@@ -1,11 +1,15 @@
+import { LessonContentResponseContentInnerDto } from './lesson-content-response-inner.dto';
+
 export class LessonContentDto {
-	content: object;
+	public id: string | undefined;
 
-	title: string;
+	public content: LessonContentResponseContentInnerDto;
 
-	component: LessonContentDtoComponent;
+	public title: string;
 
-	hidden: boolean;
+	public component: LessonContentDtoComponent;
+
+	public hidden: boolean;
 
 	constructor(props: LessonContentDto) {
 		this.content = props.content;
@@ -22,6 +26,7 @@ export const LessonContentDtoComponentValues = {
 	RESOURCES: 'resources',
 	TEXT: 'text',
 	NE_XBOARD: 'neXboard',
+	LERNSTORE: 'lernstore',
 } as const;
 
 export type LessonContentDtoComponent =

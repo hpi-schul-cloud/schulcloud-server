@@ -9,6 +9,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
+import { FeathersModule } from '@infra/feathers';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
@@ -20,6 +21,7 @@ const baseImports = [
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	EncryptionModule,
+	FeathersModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)

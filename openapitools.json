@@ -28,6 +28,36 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
+			"courses-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/courses-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CourseController_getCourseCcMetadataById|CourseController_createCourse"
+				},
+				"globalProperty": {
+					"models": "CourseCommonCartridgeMetadataResponse:CreateCourseBodyParams",
+					"apis": "",
+					"supportingFiles": ""
+				}
+			},
+			"svs-lesson-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/new-lesson-api-client",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:LessonController_getLesson|LessonController_getLessonTasks"
+				},
+				"globalProperty": {
+					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentNexboardPropsImpl",
+					"apis": "",
+					"supportingFiles": ""
+				}
+			},
 			"tldraw-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3349/docs-json",
