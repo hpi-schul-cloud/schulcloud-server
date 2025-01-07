@@ -9,4 +9,4 @@ import { LearnroomModule } from '../learnroom';
 	providers: [BoardContextApiHelperService],
 	exports: [BoardContextApiHelperService],
 })
-export class BoardContextApiHelperModule {}
+export class BoardContextModule {}
