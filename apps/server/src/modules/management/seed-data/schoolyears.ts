@@ -1,6 +1,6 @@
 import { SchoolYearProperties } from '@shared/domain/entity';
-import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { DeepPartial } from 'fishery';
+import { schoolYearFactory } from './factory/schoolyear.factory';
 
 type SeedSchoolYearProperties = Pick<SchoolYearProperties, 'name'> & {
 	id: string;
