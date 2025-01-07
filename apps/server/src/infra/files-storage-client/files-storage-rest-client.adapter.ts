@@ -26,14 +26,10 @@ export class FilesStorageRestClientAdapter {
 	}
 
 	public async download(fileRecordId: string, fileName: string): Promise<Buffer | null> {
-		this.logger.warning({
-			getLogMessage() {
-				return {
-					message: `Downloading file ${fileName} with fileRecordId ${fileRecordId}`,
-					fileRecordId,
-					fileName,
-				};
-			},
+		console.debug({
+			message: `Downloading file ${fileName} with fileRecordId ${fileRecordId}`,
+			fileRecordId,
+			fileName,
 		});
 
 		try {
@@ -58,14 +54,10 @@ export class FilesStorageRestClientAdapter {
 			});
 			const response = await lastValueFrom(observable);
 
-			this.logger.warning({
-				getLogMessage() {
-					return {
-						message: 'File downloaded',
-						fileRecordId,
-						response: response as unknown as string,
-					};
-				},
+			console.debug({
+				message: 'File downloaded',
+				fileRecordId,
+				response: response as unknown as string,
 			});
 
 			const data = Buffer.isBuffer(response.data) ? response.data : null;
