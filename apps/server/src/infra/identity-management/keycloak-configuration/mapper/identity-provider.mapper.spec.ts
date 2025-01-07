@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { OidcConfig } from '@modules/system/domain';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,7 +8,7 @@ import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 describe('OidcIdentityProviderMapper', () => {
 	let module: TestingModule;
 	let mapper: OidcIdentityProviderMapper;
-	let defaultEncryptionService: SymetricKeyEncryptionService;
+	let defaultEncryptionService: SymmetricKeyEncryptionService;
 
 	afterAll(async () => {
 		await module.close();
@@ -19,7 +19,7 @@ describe('OidcIdentityProviderMapper', () => {
 			imports: [],
 			providers: [
 				OidcIdentityProviderMapper,
-				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
+				{ provide: DefaultEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
 			],
 		}).compile();
 		defaultEncryptionService = module.get(DefaultEncryptionService);

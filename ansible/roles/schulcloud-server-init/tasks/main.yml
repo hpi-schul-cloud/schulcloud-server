@@ -20,6 +20,27 @@
     tags:
       - configmap
 
+  - name: Management Api Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: management-configmap.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+    tags:
+      - configmap
+
+  - name: Remove Management Api Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: v1
+      kind: ConfigMap
+      name: api-management-configmap
+    when: not WITH_SCHULCLOUD_INIT
+    tags:
+      - configmap
+
   - name: Management Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
