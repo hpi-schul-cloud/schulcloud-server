@@ -4,12 +4,13 @@ import { REQUEST } from '@nestjs/core';
 import { extractJwtFromRequest } from '@shared/common/utils/jwt';
 import { LoggerModule } from '@src/core/logger';
 import { Request } from 'express';
+import { HttpModule } from '@nestjs/axios';
 import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
 import { FilesStorageRestClientConfig } from './files-storage-rest-client.config';
 import { Configuration, FileApi } from './generated';
 
 @Module({
-	imports: [LoggerModule],
+	imports: [LoggerModule, HttpModule],
 	providers: [
 		FilesStorageRestClientAdapter,
 		{
