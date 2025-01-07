@@ -167,7 +167,6 @@ describe('TaskRule', () => {
 				const res = service.hasPermission(otherUser, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(false);
 			});
-
 		});
 
 		describe('when user is student and is task creator with Permission A,B', () => {
