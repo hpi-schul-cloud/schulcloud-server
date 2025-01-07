@@ -1,10 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { schoolFactory } from '@modules/school/testing';
-import { systemFactory } from '@modules/system/testing';
-import { BadDataLoggableException } from '@modules/provisioning/loggable';
-import { SystemProvisioningStrategy, RoleName } from '@shared/domain/interface';
 import {
 	ExternalClassDto,
 	ExternalSchoolDto,
@@ -12,9 +7,14 @@ import {
 	OauthDataDto,
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
+import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { schoolFactory } from '@modules/school/testing';
+import { systemFactory } from '@modules/system/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain/interface';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../tsp-client';
-
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../../tsp-client';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 

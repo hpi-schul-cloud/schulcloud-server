@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/interface';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
@@ -24,6 +25,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -48,6 +50,10 @@ describe(BoardNodeCopyService.name, () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
+				},
 			],
 		}).compile();
 
@@ -70,6 +76,7 @@ describe(BoardNodeCopyService.name, () => {
 			targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
 			userId: new ObjectId().toHexString(),
 			filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+			targetSchoolId: new ObjectId().toHexString(),
 		};
 
 		const copyContext = new BoardNodeCopyContext(contextProps);
@@ -94,6 +101,7 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyMediaLine').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaExternalToolElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyDeletedElement').mockResolvedValue(mockStatus);
+		jest.spyOn(service, 'copyVideoConferenceElement').mockResolvedValue(mockStatus);
 
 		return { copyContext, mockStatus };
 	};
@@ -274,6 +282,18 @@ describe(BoardNodeCopyService.name, () => {
 					const result = await service.copy(node, copyContext);
 
 					expect(service.copyDeletedElement).toHaveBeenCalledWith(node, copyContext);
+					expect(result).toEqual(mockStatus);
+				});
+			});
+
+			describe('when called with video conference element', () => {
+				it('should copy deleted element', async () => {
+					const { copyContext, mockStatus } = setup();
+					const node = videoConferenceElementFactory.build();
+
+					const result = await service.copy(node, copyContext);
+
+					expect(service.copyVideoConferenceElement).toHaveBeenCalledWith(node, copyContext);
 					expect(result).toEqual(mockStatus);
 				});
 			});

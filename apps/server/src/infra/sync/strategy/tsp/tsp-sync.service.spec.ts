@@ -1,18 +1,15 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from '@modules/account';
-import { School, SchoolService } from '@modules/school';
-import { SystemService, SystemType } from '@modules/system';
-import { UserService } from '@modules/user';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { federalStateFactory, schoolYearFactory, userDoFactory } from '@shared/testing';
-import { accountDoFactory } from '@modules/account/testing';
 import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
+import { School, SchoolService } from '@modules/school';
 import { FileStorageType, SchoolProps } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@modules/school/testing';
+import { SystemService, SystemType } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { federalStateFactory, schoolYearFactory } from '@shared/testing';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
@@ -22,8 +19,6 @@ describe(TspSyncService.name, () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
-	let userService: DeepMocked<UserService>;
-	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -45,14 +40,6 @@ describe(TspSyncService.name, () => {
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
 				},
-				{
-					provide: UserService,
-					useValue: createMock<UserService>(),
-				},
-				{
-					provide: AccountService,
-					useValue: createMock<AccountService>(),
-				},
 			],
 		}).compile();
 
@@ -61,8 +48,6 @@ describe(TspSyncService.name, () => {
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
-		userService = module.get(UserService);
-		accountService = module.get(AccountService);
 	});
 
 	afterEach(() => {
@@ -296,139 +281,6 @@ describe(TspSyncService.name, () => {
 					}) as Partial<SchoolProps>,
 				});
 				expect(federalStateService.findFederalStateByName).not.toHaveBeenCalled();
-			});
-		});
-	});
-
-	describe('findUserByTspUid', () => {
-		describe('when user is found', () => {
-			const setup = () => {
-				const tspUid = faker.string.alpha();
-				const user = userDoFactory.build();
-
-				userService.findUsers.mockResolvedValueOnce({ data: [user], total: 1 });
-
-				return { tspUid, user };
-			};
-
-			it('should return the user', async () => {
-				const { tspUid, user } = setup();
-
-				const result = await sut.findUserByTspUid(tspUid);
-
-				expect(result).toBe(user);
-			});
-		});
-
-		describe('when user is not found', () => {
-			const setup = () => {
-				const tspUid = faker.string.alpha();
-
-				userService.findUsers.mockResolvedValueOnce({ data: [], total: 0 });
-
-				return { tspUid };
-			};
-
-			it('should return null', async () => {
-				const { tspUid } = setup();
-
-				const result = await sut.findUserByTspUid(tspUid);
-
-				expect(result).toBeNull();
-			});
-		});
-	});
-
-	describe('findAccountByExternalId', () => {
-		describe('when account is found', () => {
-			const setup = () => {
-				const externalId = faker.string.alpha();
-				const systemId = faker.string.alpha();
-
-				const user = userDoFactory.build();
-				const account = accountDoFactory.build();
-
-				user.id = faker.string.alpha();
-				user.externalId = externalId;
-				account.userId = user.id;
-
-				userService.findByExternalId.mockResolvedValueOnce(user);
-				accountService.findByUserId.mockResolvedValueOnce(account);
-
-				return { externalId, systemId, account };
-			};
-
-			it('should return the account', async () => {
-				const { externalId, systemId, account } = setup();
-
-				const result = await sut.findAccountByExternalId(externalId, systemId);
-
-				expect(result).toBe(account);
-			});
-		});
-
-		describe('when account is not found', () => {
-			const setup = () => {
-				const externalId = faker.string.alpha();
-				const systemId = faker.string.alpha();
-
-				userService.findByExternalId.mockResolvedValueOnce(null);
-				accountService.findByUserId.mockResolvedValueOnce(null);
-
-				return { externalId, systemId };
-			};
-
-			it('should return null', async () => {
-				const { externalId, systemId } = setup();
-
-				const result = await sut.findAccountByExternalId(externalId, systemId);
-
-				expect(result).toBeNull();
-			});
-		});
-	});
-
-	describe('updateUser', () => {
-		describe('when user is updated', () => {
-			const setup = () => {
-				const oldUid = faker.string.alpha();
-				const newUid = faker.string.alpha();
-				const email = faker.internet.email();
-				const user = userDoFactory.build();
-
-				userService.save.mockResolvedValueOnce(user);
-
-				return { oldUid, newUid, email, user };
-			};
-
-			it('should return the updated user', async () => {
-				const { oldUid, newUid, email, user } = setup();
-
-				const result = await sut.updateUser(user, email, newUid, oldUid);
-
-				expect(result).toBe(user);
-			});
-		});
-	});
-
-	describe('updateAccount', () => {
-		describe('when account is updated', () => {
-			const setup = () => {
-				const username = faker.internet.userName();
-				const systemId = faker.string.alpha();
-				const account = accountDoFactory.build();
-
-				accountService.save.mockResolvedValueOnce(account);
-
-				return { username, systemId, account };
-			};
-
-			it('should return the updated account', async () => {
-				const { username, systemId, account } = setup();
-
-				const result = await sut.updateAccount(account, username, systemId);
-
-				expect(result).toBe(account);
 			});
 		});
 	});

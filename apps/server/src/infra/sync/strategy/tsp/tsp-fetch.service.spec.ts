@@ -15,7 +15,7 @@ import {
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
 	TspClientFactory,
-} from '../../tsp-client';
+} from '../../../tsp-client';
 import { TspFetchService } from './tsp-fetch.service';
 
 describe(TspFetchService.name, () => {

@@ -52,6 +52,7 @@ export enum CopyElementType {
 	TASK_GROUP = 'TASK_GROUP',
 	TIME_GROUP = 'TIME_GROUP',
 	USER_GROUP = 'USER_GROUP',
+	VIDEO_CONFERENCE_ELEMENT = 'VIDEO_CONFERENCE_ELEMENT',
 }
 
 export enum CopyStatusEnum {

@@ -19,9 +19,9 @@ export class VideoConferenceInfoUc {
 
 	async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceInfo> {
 		/* need to be replace with
-		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+			this.videoConferenceService.loadScopeResources(scopeId, scope),
 		]);
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);

@@ -5,5 +5,5 @@ import { IsMongoId } from 'class-validator';
 export class ExportCourseParams {
 	@IsMongoId()
 	@ApiProperty()
-	public readonly parentId!: EntityId;
+	public readonly courseId!: EntityId;
 }

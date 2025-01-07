@@ -1,8 +1,4 @@
-import { BoardColumnBoardDto } from '../dto/board-column-board.dto';
-import { BoardElementDto } from '../dto/board-element.dto';
-import { BoardLessonDto } from '../dto/board-lesson.dto';
-import { BoardTaskDto } from '../dto/board-task.dto';
-import { RoomBoardDto } from '../dto/room-board.dto';
+import { RoomBoardDto, BoardTaskDto, BoardLessonDto, BoardElementDto, BoardColumnBoardDto } from '../dto';
 import { BoardElementDtoType } from '../enums/board-element.enum';
 import {
 	BoardColumnBoardResponse,

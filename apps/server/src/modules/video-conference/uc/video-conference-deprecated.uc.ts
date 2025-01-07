@@ -337,7 +337,7 @@ export class VideoConferenceDeprecatedUc {
 				return {
 					scopeInfo: {
 						scopeId: refId,
-						scopeName: 'courses',
+						scopeName: VideoConferenceScope.COURSE,
 						logoutUrl: `${this.hostURL}/courses/${refId}?activeTab=tools`,
 						title: course.name,
 					},
@@ -351,7 +351,7 @@ export class VideoConferenceDeprecatedUc {
 				return {
 					scopeInfo: {
 						scopeId: event.teamId,
-						scopeName: 'teams',
+						scopeName: VideoConferenceScope.EVENT,
 						logoutUrl: `${this.hostURL}/teams/${event.teamId}?activeTab=events`,
 						title: event.title,
 					},

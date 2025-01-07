@@ -1,18 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '@modules/account';
-import { accountDoFactory } from '@modules/account/testing';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
-import { School } from '@modules/school';
-import { schoolFactory } from '@modules/school/testing';
-import { System } from '@modules/system';
-import { systemFactory } from '@modules/system/testing';
-import { userDoFactory } from '@shared/testing';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { UserDO } from '@shared/domain/domainobject';
-import { Logger } from '@src/core/logger';
 import {
 	RobjExportKlasse,
 	RobjExportLehrer,
@@ -20,11 +7,23 @@ import {
 	RobjExportSchueler,
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
-} from '../../../tsp-client';
+} from '@infra/tsp-client';
+import { Account } from '@modules/account';
+import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
+import { System } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO } from '@shared/domain/domainobject';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { Logger } from '@src/core/logger';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
-import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspFetchService } from './tsp-fetch.service';
+import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
@@ -37,6 +36,8 @@ describe(TspSyncStrategy.name, () => {
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
+	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
+	let configService: DeepMocked<ConfigService<TspSyncConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,26 +57,7 @@ describe(TspSyncStrategy.name, () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<TspSyncConfig, true>>({
-						getOrThrow: (key: string) => {
-							switch (key) {
-								case 'TSP_SYNC_SCHOOL_LIMIT':
-									return 10;
-								case 'TSP_SYNC_SCHOOL_DAYS_TO_FETCH':
-									return 1;
-								case 'TSP_SYNC_DATA_LIMIT':
-									return 10;
-								case 'TSP_SYNC_DATA_DAYS_TO_FETCH':
-									return 1;
-								case 'TSP_SYNC_MIGRATION_LIMIT':
-									return 10;
-								case 'FEATURE_TSP_MIGRATION_ENABLED':
-									return true;
-								default:
-									throw new Error(`Unknown key: ${key}`);
-							}
-						},
-					}),
+					useValue: createMock<ConfigService<TspSyncConfig, true>>(),
 				},
 				{
 					provide: ProvisioningService,
@@ -89,6 +71,10 @@ describe(TspSyncStrategy.name, () => {
 					provide: TspLegacyMigrationService,
 					useValue: createMock<TspLegacyMigrationService>(),
 				},
+				{
+					provide: TspSyncMigrationService,
+					useValue: createMock<TspSyncMigrationService>(),
+				},
 			],
 		}).compile();
 
@@ -98,11 +84,14 @@ describe(TspSyncStrategy.name, () => {
 		provisioningService = module.get(ProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
+		tspSyncMigrationService = module.get(TspSyncMigrationService);
+		configService = module.get(ConfigService);
 	});
 
 	afterEach(() => {
 		jest.clearAllMocks();
 		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -138,6 +127,12 @@ describe(TspSyncStrategy.name, () => {
 		foundSystem?: System;
 		updatedAccount?: Account;
 		updatedUser?: UserDO;
+		configValues?: unknown[];
+		migrationResult?: {
+			totalAmount: number;
+			totalUsers: number;
+			totalAccounts: number;
+		};
 	}) => {
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
@@ -148,17 +143,19 @@ describe(TspSyncStrategy.name, () => {
 
 		tspSyncService.findSchool.mockResolvedValue(params.foundSchool ?? undefined);
 		tspSyncService.findSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
-		tspSyncService.findUserByTspUid.mockResolvedValueOnce(
-			params.foundTspUidUser !== undefined ? params.foundTspUidUser : userDoFactory.build()
-		);
-		tspSyncService.updateUser.mockResolvedValueOnce(params.updatedUser ?? userDoFactory.build());
-		tspSyncService.findAccountByExternalId.mockResolvedValueOnce(
-			params.foundTspUidAccount !== undefined ? params.foundTspUidAccount : accountDoFactory.build()
-		);
-		tspSyncService.updateAccount.mockResolvedValueOnce(params.updatedAccount ?? accountDoFactory.build());
 		tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(params.foundSystem ?? systemFactory.build());
 
 		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
+
+		params.configValues?.forEach((value) => configService.getOrThrow.mockReturnValueOnce(value));
+
+		tspSyncMigrationService.migrateTspUsers.mockResolvedValueOnce(
+			params.migrationResult ?? {
+				totalAccounts: faker.number.int(),
+				totalAmount: faker.number.int(),
+				totalUsers: faker.number.int(),
+			}
+		);
 	};
 
 	describe('sync', () => {
@@ -171,6 +168,7 @@ describe(TspSyncStrategy.name, () => {
 					}),
 					externalUser: new ExternalUserDto({
 						externalId: faker.string.alpha(),
+						roles: [],
 					}),
 				});
 				const tspTeacher: RobjExportLehrerMigration = {
@@ -187,12 +185,15 @@ describe(TspSyncStrategy.name, () => {
 					fetchedStudentMigrations: [tspStudent],
 					fetchedTeacherMigrations: [tspTeacher],
 					mappedOauthDto: [oauthDataDto],
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 
 				return { oauthDataDto };
 			};
 
 			it('should find the tsp system', async () => {
+				setup();
+
 				await sut.sync();
 
 				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalled();
@@ -265,36 +266,12 @@ describe(TspSyncStrategy.name, () => {
 					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalled();
 				});
 
-				it('find user by tsp Uid', async () => {
+				it('should call tspSyncMigrationService', async () => {
 					setup();
 
 					await sut.sync();
 
-					expect(tspSyncService.findUserByTspUid).toHaveBeenCalled();
-				});
-
-				it('should update user', async () => {
-					setup();
-
-					await sut.sync();
-
-					expect(tspSyncService.updateUser).toHaveBeenCalled();
-				});
-
-				it('should find account by tsp Uid', async () => {
-					setup();
-
-					await sut.sync();
-
-					expect(tspSyncService.findAccountByExternalId).toHaveBeenCalled();
-				});
-
-				it('should update account', async () => {
-					setup();
-
-					await sut.sync();
-
-					expect(tspSyncService.updateAccount).toHaveBeenCalled();
+					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalled();
 				});
 			});
 		});
@@ -309,6 +286,7 @@ describe(TspSyncStrategy.name, () => {
 
 				setupMockServices({
 					fetchedSchools: tspSchools,
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 			};
 
@@ -333,6 +311,7 @@ describe(TspSyncStrategy.name, () => {
 				setupMockServices({
 					fetchedSchools: tspSchools,
 					foundSchool: school,
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 			};
 
@@ -355,6 +334,7 @@ describe(TspSyncStrategy.name, () => {
 
 				setupMockServices({
 					fetchedSchools: tspSchools,
+					configValues: [1, 10, true, 10, 1, 50],
 				});
 			};
 
@@ -366,78 +346,6 @@ describe(TspSyncStrategy.name, () => {
 				expect(tspSyncService.findSchool).not.toHaveBeenCalled();
 				expect(tspSyncService.updateSchool).not.toHaveBeenCalled();
 				expect(tspSyncService.createSchool).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when UidAlt or UidNeu is missing during migration', () => {
-			const setup = () => {
-				const tspTeacher: RobjExportLehrerMigration = {
-					lehrerUidAlt: undefined,
-					lehrerUidNeu: faker.string.alpha(),
-				};
-				const tspStudent: RobjExportSchuelerMigration = {
-					schuelerUidAlt: faker.string.alpha(),
-					schuelerUidNeu: undefined,
-				};
-
-				setupMockServices({
-					fetchedStudentMigrations: [tspStudent],
-					fetchedTeacherMigrations: [tspTeacher],
-				});
-			};
-
-			it('should return false and not call findUserByTspUid', async () => {
-				setup();
-
-				await sut.sync();
-
-				expect(tspSyncService.findUserByTspUid).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when no user is found during migration', () => {
-			const setup = () => {
-				const tspTeacher: RobjExportLehrerMigration = {
-					lehrerUidAlt: faker.string.alpha(),
-					lehrerUidNeu: faker.string.alpha(),
-				};
-
-				setupMockServices({
-					fetchedTeacherMigrations: [tspTeacher],
-					foundTspUidUser: null,
-				});
-
-				return { tspTeacher };
-			};
-
-			it('should throw and not call updateUser', async () => {
-				setup();
-
-				await sut.sync();
-
-				expect(tspSyncService.updateUser).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when no account is found during migration', () => {
-			const setup = () => {
-				const tspTeacher: RobjExportLehrerMigration = {
-					lehrerUidAlt: faker.string.alpha(),
-					lehrerUidNeu: faker.string.alpha(),
-				};
-
-				setupMockServices({
-					fetchedTeacherMigrations: [tspTeacher],
-					foundTspUidAccount: null,
-				});
-			};
-
-			it('should throw and not call updateAccount', async () => {
-				setup();
-
-				await sut.sync();
-
-				expect(tspSyncService.updateAccount).not.toHaveBeenCalled();
 			});
 		});
 	});

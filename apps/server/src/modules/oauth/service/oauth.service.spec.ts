@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
@@ -18,6 +18,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { System } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { externalUserDtoFactory } from '../../provisioning/testing';
 import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
@@ -46,7 +47,7 @@ describe('OAuthService', () => {
 	let module: TestingModule;
 	let service: OAuthService;
 
-	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let oAuthEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
 	let systemService: DeepMocked<SystemService>;
@@ -378,9 +379,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -429,9 +430,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -476,9 +477,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -544,9 +545,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -612,9 +613,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -675,9 +676,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -737,9 +738,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -804,9 +805,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,

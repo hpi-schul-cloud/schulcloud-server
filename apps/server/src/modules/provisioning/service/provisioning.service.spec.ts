@@ -4,16 +4,11 @@ import { systemFactory } from '@modules/system/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	ExternalUserDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../dto';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '..';
-import { ProvisioningService } from './provisioning.service';
+import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
+import { externalUserDtoFactory } from '../testing';
+import { ProvisioningService } from './provisioning.service';
 
 describe('ProvisioningService', () => {
 	let module: TestingModule;
@@ -88,14 +83,13 @@ describe('ProvisioningService', () => {
 			provisioningUrl: 'https://api.moin.schule/',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
+		const externalUser = externalUserDtoFactory.build();
 		const oauthDataDto: OauthDataDto = new OauthDataDto({
 			system: provisioningSystemDto,
-			externalUser: new ExternalUserDto({
-				externalId: 'externalUserId',
-			}),
+			externalUser,
 		});
 		const provisioningDto: ProvisioningDto = new ProvisioningDto({
-			externalUserId: 'externalUserId',
+			externalUserId: externalUser.externalId,
 		});
 
 		return {

@@ -10,7 +10,7 @@ import { RoomMembershipDomainMapper } from './room-membership-domain.mapper';
 export class RoomMembershipRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findByRoomId(roomId: EntityId): Promise<RoomMembership | null> {
+	public async findByRoomId(roomId: EntityId): Promise<RoomMembership | null> {
 		const roomMembershipEntities = await this.em.findOne(RoomMembershipEntity, { roomId });
 		if (!roomMembershipEntities) return null;
 
@@ -19,28 +19,28 @@ export class RoomMembershipRepo {
 		return roomMemberships;
 	}
 
-	async findByRoomIds(roomIds: EntityId[]): Promise<RoomMembership[]> {
+	public async findByRoomIds(roomIds: EntityId[]): Promise<RoomMembership[]> {
 		const entities = await this.em.find(RoomMembershipEntity, { roomId: { $in: roomIds } });
 		const roomMemberships = entities.map((entity) => RoomMembershipDomainMapper.mapEntityToDo(entity));
 
 		return roomMemberships;
 	}
 
-	async findByGroupId(groupId: EntityId): Promise<RoomMembership[]> {
+	public async findByGroupId(groupId: EntityId): Promise<RoomMembership[]> {
 		const entities = await this.em.find(RoomMembershipEntity, { userGroupId: groupId });
 		const roomMemberships = entities.map((entity) => RoomMembershipDomainMapper.mapEntityToDo(entity));
 
 		return roomMemberships;
 	}
 
-	async findByGroupIds(groupIds: EntityId[]): Promise<RoomMembership[]> {
+	public async findByGroupIds(groupIds: EntityId[]): Promise<RoomMembership[]> {
 		const entities = await this.em.find(RoomMembershipEntity, { userGroupId: { $in: groupIds } });
 		const roomMemberships = entities.map((entity) => RoomMembershipDomainMapper.mapEntityToDo(entity));
 
 		return roomMemberships;
 	}
 
-	async save(roomMembership: RoomMembership | RoomMembership[]): Promise<void> {
+	public async save(roomMembership: RoomMembership | RoomMembership[]): Promise<void> {
 		const roomMemberships = Utils.asArray(roomMembership);
 
 		roomMemberships.forEach((member) => {
@@ -51,7 +51,7 @@ export class RoomMembershipRepo {
 		await this.em.flush();
 	}
 
-	async delete(roomMembership: RoomMembership | RoomMembership[]): Promise<void> {
+	public async delete(roomMembership: RoomMembership | RoomMembership[]): Promise<void> {
 		const roomMemberships = Utils.asArray(roomMembership);
 
 		roomMemberships.forEach((member) => {

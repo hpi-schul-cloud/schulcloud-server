@@ -6,11 +6,7 @@ export { TspMissingExternalIdLoggable } from './tsp-missing-external-id.loggable
 export { TspSchoolsFetchedLoggable } from './tsp-schools-fetched.loggable';
 export { TspSchoolsSyncedLoggable } from './tsp-schools-synced.loggable';
 export { TspSchulnummerMissingLoggable } from './tsp-schulnummer-missing.loggable';
-export { TspStudentsFetchedLoggable } from './tsp-students-fetched.loggable';
-export { TspStudentsMigratedLoggable } from './tsp-students-migrated.loggable';
 export { TspSyncedUsersLoggable } from './tsp-synced-users.loggable';
 export { TspSyncingUsersLoggable } from './tsp-syncing-users.loggable';
 export { TspSystemNotFoundLoggableException } from './tsp-system-not-found.loggable-exception';
-export { TspTeachersFetchedLoggable } from './tsp-teachers-fetched.loggable';
-export { TspTeachersMigratedLoggable } from './tsp-teachers-migrated.loggable';
 export { TspUsersMigratedLoggable } from './tsp-users-migrated.loggable';

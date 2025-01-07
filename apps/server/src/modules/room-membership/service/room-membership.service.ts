@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
+import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -15,14 +16,11 @@ export class RoomMembershipService {
 		private readonly groupService: GroupService,
 		private readonly roomMembershipRepo: RoomMembershipRepo,
 		private readonly roleService: RoleService,
-		private readonly roomService: RoomService
+		private readonly roomService: RoomService,
+		private readonly userService: UserService
 	) {}
 
-	private async createNewRoomMembership(
-		roomId: EntityId,
-		userId: EntityId,
-		roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER
-	) {
+	public async createNewRoomMembership(roomId: EntityId, ownerUserId: EntityId): Promise<RoomMembership> {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const group = await this.groupService.createGroup(
@@ -30,7 +28,7 @@ export class RoomMembershipService {
 			GroupTypes.ROOM,
 			room.schoolId
 		);
-		await this.groupService.addUsersToGroup(group.id, [{ userId, roleName }]);
+		await this.groupService.addUsersToGroup(group.id, [{ userId: ownerUserId, roleName: RoleName.ROOMOWNER }]);
 
 		const roomMembership = new RoomMembership({
 			id: new ObjectId().toHexString(),
@@ -49,7 +47,8 @@ export class RoomMembershipService {
 	private buildRoomMembershipAuthorizable(
 		roomId: EntityId,
 		group: Group,
-		roleSet: RoleDto[]
+		roleSet: RoleDto[],
+		schoolId: EntityId
 	): RoomMembershipAuthorizable {
 		const members = group.users.map((groupUser): UserWithRoomRoles => {
 			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
@@ -60,12 +59,12 @@ export class RoomMembershipService {
 			};
 		});
 
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members);
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, schoolId);
 
 		return roomMembershipAuthorizable;
 	}
 
-	public async deleteRoomMembership(roomId: EntityId) {
+	public async deleteRoomMembership(roomId: EntityId): Promise<void> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) return;
 
@@ -74,21 +73,18 @@ export class RoomMembershipService {
 		await this.roomMembershipRepo.delete(roomMembership);
 	}
 
-	public async addMembersToRoom(
-		roomId: EntityId,
-		userIdsAndRoles: Array<{ userId: EntityId; roleName: RoleName.ROOMEDITOR | RoleName.ROOMVIEWER }>
-	): Promise<EntityId> {
+	public async addMembersToRoom(roomId: EntityId, userIds: Array<EntityId>): Promise<EntityId> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			const firstUser = userIdsAndRoles.shift();
-			if (firstUser === undefined) {
-				throw new BadRequestException('No user provided');
-			}
-			const newRoomMembership = await this.createNewRoomMembership(roomId, firstUser.userId, firstUser.roleName);
-			return newRoomMembership.id;
+			throw new Error('Room membership not found');
 		}
 
+		const userIdsAndRoles = userIds.map((userId) => {
+			return { userId, roleName: RoleName.ROOMADMIN };
+		});
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
+
+		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
 
 		return roomMembership.id;
 	}
@@ -100,7 +96,11 @@ export class RoomMembershipService {
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
+
+		await this.ensureOwnerIsNotRemoved(group, userIds);
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
+
+		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
@@ -113,7 +113,7 @@ export class RoomMembershipService {
 			.map((item) => {
 				const group = groupPage.data.find((g) => g.id === item.userGroupId);
 				if (!group) return null;
-				return this.buildRoomMembershipAuthorizable(item.roomId, group, roleSet);
+				return this.buildRoomMembershipAuthorizable(item.roomId, group, roleSet, item.schoolId);
 			})
 			.filter((item): item is RoomMembershipAuthorizable => item !== null);
 
@@ -123,7 +123,8 @@ export class RoomMembershipService {
 	public async getRoomMembershipAuthorizable(roomId: EntityId): Promise<RoomMembershipAuthorizable> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			return new RoomMembershipAuthorizable(roomId, []);
+			const room = await this.roomService.getSingleRoom(roomId);
+			return new RoomMembershipAuthorizable(roomId, [], room.schoolId);
 		}
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const roleSet = await this.roleService.findByIds(group.users.map((groupUser) => groupUser.roleId));
@@ -137,8 +138,30 @@ export class RoomMembershipService {
 			};
 		});
 
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members);
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, roomMembership.schoolId);
 
 		return roomMembershipAuthorizable;
+	}
+
+	private async ensureOwnerIsNotRemoved(group: Group, userIds: EntityId[]): Promise<void> {
+		const role = await this.roleService.findByName(RoleName.ROOMOWNER);
+		const includedOwner = group.users
+			.filter((groupUser) => userIds.includes(groupUser.userId))
+			.find((groupUser) => groupUser.roleId === role.id);
+
+		if (includedOwner) {
+			throw new BadRequestException('Cannot remove owner from room');
+		}
+	}
+
+	private async handleGuestRoleRemoval(userIds: EntityId[], schoolId: EntityId): Promise<void> {
+		const { data: groups } = await this.groupService.findGroups({ userIds, groupTypes: [GroupTypes.ROOM], schoolId });
+
+		const userIdsInGroups = groups.flatMap((group) => group.users.map((groupUser) => groupUser.userId));
+		const removeUserIds = userIds.filter((userId) => !userIdsInGroups.includes(userId));
+
+		if (removeUserIds.length > 0) {
+			await this.userService.removeSecondarySchoolFromUsers(removeUserIds, schoolId);
+		}
 	}
 }

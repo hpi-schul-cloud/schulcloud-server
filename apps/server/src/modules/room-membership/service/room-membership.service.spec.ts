@@ -1,13 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { GroupService, GroupTypes } from '@modules/group';
-import { RoleService } from '@modules/role';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Group, GroupService, GroupTypes } from '@modules/group';
+import { RoleDto, RoleService } from '@modules/role';
+import { RoomService } from '@modules/room/domain';
 import { roomFactory } from '@modules/room/testing';
+import { schoolFactory } from '@modules/school/testing';
+import { UserService } from '@modules/user';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { groupFactory, roleDtoFactory, userFactory } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { RoomService } from '@src/modules/room/domain';
+import { groupFactory, roleDtoFactory, roleFactory, userDoFactory, userFactory } from '@shared/testing';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { roomMembershipFactory } from '../testing';
@@ -20,6 +22,7 @@ describe('RoomMembershipService', () => {
 	let groupService: DeepMocked<GroupService>;
 	let roleService: DeepMocked<RoleService>;
 	let roomService: DeepMocked<RoomService>;
+	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,6 +45,10 @@ describe('RoomMembershipService', () => {
 					provide: RoomService,
 					useValue: createMock<RoomService>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 			],
 		}).compile();
 
@@ -50,6 +57,7 @@ describe('RoomMembershipService', () => {
 		groupService = module.get(GroupService);
 		roleService = module.get(RoleService);
 		roomService = module.get(RoomService);
+		userService = module.get(UserService);
 	});
 
 	afterAll(async () => {
@@ -79,43 +87,26 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should create new roomMembership when not exists', async () => {
-				const { user, room } = setup();
+			it('should throw an exception', async () => {
+				const { room, user } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
+				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
 
-				expect(roomMembershipRepo.save).toHaveBeenCalled();
-			});
-
-			it('should save the schoolId of the room in the roomMembership', async () => {
-				const { user, room } = setup();
-
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
-
-				expect(roomMembershipRepo.save).toHaveBeenCalledWith(
-					expect.objectContaining({
-						schoolId: room.schoolId,
-					})
-				);
-			});
-
-			describe('when no user is provided', () => {
-				it('should throw an exception', async () => {
-					const { room } = setup();
-
-					roomMembershipRepo.findByRoomId.mockResolvedValue(null);
-
-					await expect(service.addMembersToRoom(room.id, [])).rejects.toThrow();
-				});
+				await expect(service.addMembersToRoom(room.id, [user.id])).rejects.toThrow();
 			});
 		});
 
 		describe('when roomMembership exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const group = groupFactory.build({ type: GroupTypes.ROOM });
-				const room = roomFactory.build();
-				const roomMembership = roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+				const school = schoolFactory.build();
+				const group = groupFactory.build({ type: GroupTypes.ROOM, organizationId: school.id });
+				const room = roomFactory.build({ schoolId: school.id });
+				const roomMembership = roomMembershipFactory.build({
+					roomId: room.id,
+					userGroupId: group.id,
+					schoolId: school.id,
+				});
 
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
@@ -127,14 +118,23 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should add user to existing roomMembership', async () => {
+			it('should add user as admin to existing roomMembership', async () => {
+				// TODO: in the future, once room roles can be changed, this should become ROOMVIEWER
 				const { user, room, group } = setup();
 
-				await service.addMembersToRoom(room.id, [{ userId: user.id, roleName: RoleName.ROOMEDITOR }]);
+				await service.addMembersToRoom(room.id, [user.id]);
 
 				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
-					{ userId: user.id, roleName: RoleName.ROOMEDITOR },
+					{ userId: user.id, roleName: RoleName.ROOMADMIN },
 				]);
+			});
+
+			it('should add user to school', async () => {
+				const { user, room } = setup();
+
+				await service.addMembersToRoom(room.id, [user.id]);
+
+				expect(userService.addSecondarySchoolToUsers).toHaveBeenCalledWith([user.id], room.schoolId);
 			});
 		});
 	});
@@ -168,29 +168,148 @@ describe('RoomMembershipService', () => {
 		});
 
 		describe('when roomMembership exists', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
+			const setupGroupAndRoom = (schoolId: string) => {
 				const group = groupFactory.build({ type: GroupTypes.ROOM });
-				const room = roomFactory.build();
-				const roomMembership = roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+				const room = roomFactory.build({ schoolId });
+				const roomMembership = roomMembershipFactory.build({
+					roomId: room.id,
+					userGroupId: group.id,
+					schoolId,
+				});
 
-				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 				groupService.findById.mockResolvedValue(group);
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
-				return {
-					user,
-					room,
-					roomMembership,
-					group,
-				};
+				return { group, room, roomMembership };
 			};
 
-			it('should remove roomMembership', async () => {
-				const { user, room, group } = setup();
+			const mockGroupsAtSchoolAfterRemoval = (groups: Group[]) => {
+				groupService.findGroups.mockResolvedValue({ total: groups.length, data: groups });
+			};
 
-				await service.removeMembersFromRoom(room.id, [user.id]);
+			const setupRoomRoles = () => {
+				const roomOwnerRole = roleFactory.buildWithId({ name: RoleName.ROOMOWNER });
+				const roomEditorRole = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR });
+				roleService.findByName.mockResolvedValue(roomOwnerRole);
 
-				expect(groupService.removeUsersFromGroup).toHaveBeenCalledWith(group.id, [user.id]);
+				return { roomOwnerRole, roomEditorRole };
+			};
+
+			const setupUserWithSecondarySchool = () => {
+				const secondarySchool = schoolFactory.build();
+				const otherSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const externalUser = userDoFactory.buildWithId({
+					roles: [role],
+					secondarySchools: [{ schoolId: secondarySchool.id, role: new RoleDto(guestTeacher) }],
+				});
+				const externalUserId = externalUser.id as string;
+
+				return { secondarySchool, externalUser, externalUserId, otherSchool };
+			};
+
+			describe('when removing user from a different school, with no further groups on host school', () => {
+				const setup = () => {
+					const { secondarySchool, externalUserId } = setupUserWithSecondarySchool();
+					const { roomEditorRole } = setupRoomRoles();
+
+					const { room, group } = setupGroupAndRoom(secondarySchool.id);
+					group.addUser({ userId: externalUserId, roleId: roomEditorRole.id });
+
+					mockGroupsAtSchoolAfterRemoval([]);
+
+					return { secondarySchool, externalUserId, room, group };
+				};
+
+				it('should pass the schoolId of the room', async () => {
+					const { secondarySchool, externalUserId, room } = setup();
+
+					await service.removeMembersFromRoom(room.id, [externalUserId]);
+
+					expect(groupService.findGroups).toHaveBeenCalledWith(
+						expect.objectContaining({ schoolId: secondarySchool.id })
+					);
+				});
+
+				it('should remove user from room', async () => {
+					const { group, externalUserId, room } = setup();
+
+					await service.removeMembersFromRoom(room.id, [externalUserId]);
+
+					expect(groupService.removeUsersFromGroup).toHaveBeenCalledWith(group.id, [externalUserId]);
+				});
+
+				it('should remove user from secondary school', async () => {
+					const { secondarySchool, externalUserId, room } = setup();
+
+					await service.removeMembersFromRoom(room.id, [externalUserId]);
+
+					expect(userService.removeSecondarySchoolFromUsers).toHaveBeenCalledWith([externalUserId], secondarySchool.id);
+				});
+			});
+
+			describe('when removing user from a different school, with further groups on host school', () => {
+				const setup = () => {
+					const { secondarySchool, externalUser } = setupUserWithSecondarySchool();
+					const { roomEditorRole } = setupRoomRoles();
+
+					const { room, group } = setupGroupAndRoom(secondarySchool.id);
+					group.addUser({ userId: externalUser.id as string, roleId: roomEditorRole.id });
+					const { group: group2 } = setupGroupAndRoom(secondarySchool.id);
+					group2.addUser({ userId: externalUser.id as string, roleId: roomEditorRole.id });
+
+					mockGroupsAtSchoolAfterRemoval([group2]);
+
+					return { externalUser, room };
+				};
+
+				it('should not remove user from secondary school', async () => {
+					const { externalUser, room } = setup();
+
+					await service.removeMembersFromRoom(room.id, [externalUser.id as string]);
+
+					expect(userService.removeSecondarySchoolFromUsers).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when removing user from the same school', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const { roomEditorRole } = setupRoomRoles();
+					const { room, group } = setupGroupAndRoom(user.school.id);
+					group.addUser({ userId: user.id, roleId: roomEditorRole.id });
+
+					mockGroupsAtSchoolAfterRemoval([group]);
+
+					return { user, room, group };
+				};
+
+				it('should remove user from room', async () => {
+					const { user, group, room } = setup();
+
+					await service.removeMembersFromRoom(room.id, [user.id]);
+
+					expect(groupService.removeUsersFromGroup).toHaveBeenCalledWith(group.id, [user.id]);
+				});
+			});
+
+			describe('when removing the owner of the room', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const { room, group } = setupGroupAndRoom(user.school.id);
+					const { roomOwnerRole } = setupRoomRoles();
+
+					group.addUser({ userId: user.id, roleId: roomOwnerRole.id });
+
+					return { user, room };
+				};
+
+				it('should throw a badrequest exception', async () => {
+					const { user, room } = setup();
+
+					await expect(service.removeMembersFromRoom(room.id, [user.id])).rejects.toThrowError(BadRequestException);
+				});
 			});
 		});
 	});
@@ -261,6 +380,7 @@ describe('RoomMembershipService', () => {
 		it('should return empty RoomMembershipAuthorizable when roomMembership not exists', async () => {
 			const roomId = 'nonexistent';
 			roomMembershipRepo.findByRoomId.mockResolvedValue(null);
+			roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
 			const result = await service.getRoomMembershipAuthorizable(roomId);
 
