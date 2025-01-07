@@ -1,6 +1,7 @@
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
+import { BoardContextApiHelperModule } from '@modules/board/board-context-api-helper.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
@@ -34,6 +35,7 @@ import { ToolModule } from './tool.module';
 		LegacySchoolModule,
 		LearnroomModule,
 		BoardModule,
+		BoardContextApiHelperModule,
 		SchoolModule,
 		UserLicenseModule,
 		EncryptionModule,
