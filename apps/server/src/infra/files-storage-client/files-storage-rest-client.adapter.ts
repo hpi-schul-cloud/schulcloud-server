@@ -24,7 +24,7 @@ export class FilesStorageRestClientAdapter {
 	) {}
 
 	public async download(fileRecordId: string, fileName: string): Promise<Buffer | null> {
-		this.logger.debug({
+		this.logger.warning({
 			getLogMessage() {
 				return {
 					message: `Downloading file ${fileName} with fileRecordId ${fileRecordId}`,
@@ -56,7 +56,7 @@ export class FilesStorageRestClientAdapter {
 			});
 			const response = await lastValueFrom(observable);
 
-			this.logger.debug({
+			this.logger.warning({
 				getLogMessage() {
 					return {
 						message: 'File downloaded',
