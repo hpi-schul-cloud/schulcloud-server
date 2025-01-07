@@ -3,19 +3,21 @@ import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@mod
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, schoolEntityFactory } from '@shared/testing';
-import { columnBoardFactory } from '../board/testing';
+import { courseFactory, schoolEntityFactory, setupEntities } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';
 import { roomFactory } from '../room/testing';
 import { BoardContextApiHelperService } from './board-context-api-helper.service';
 
 describe('BoardContextApiHelperService', () => {
+	let module: TestingModule;
 	let service: BoardContextApiHelperService;
 	let courseService: jest.Mocked<CourseService>;
 	let roomService: jest.Mocked<RoomService>;
 	let boardNodeService: jest.Mocked<BoardNodeService>;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		await setupEntities();
+		module = await Test.createTestingModule({
 			providers: [
 				BoardContextApiHelperService,
 				{
@@ -39,19 +41,27 @@ describe('BoardContextApiHelperService', () => {
 		boardNodeService = module.get(BoardNodeService);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
 	describe('getSchoolIdForBoardNode', () => {
 		it('should return schoolId for course context', async () => {
-			const course = courseFactory.build({ students: [] });
+			const school = schoolEntityFactory.build();
+			const course = courseFactory.build({ school });
+			const cardNode = cardFactory.build();
+			const columnNode = columnFactory.build();
+			columnNode.addChild(cardNode);
 			const columnBoard = columnBoardFactory.build({
-				context: { type: BoardExternalReferenceType.Course, id: course.id },
-			}) as AnyBoardNode;
-			const boardNode = { id: 'boardId' };
+				context: { type: BoardExternalReferenceType.Course, id: 'course.id' },
+			});
+			columnBoard.addChild(columnNode);
 
-			jest.spyOn(service as any, 'getBoardNode').mockResolvedValueOnce(boardNode);
+			boardNodeService.findById.mockResolvedValueOnce(cardNode);
 			boardNodeService.findRoot.mockResolvedValueOnce(columnBoard);
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(columnBoard);
 			courseService.findById.mockResolvedValueOnce(course);
@@ -67,9 +77,7 @@ describe('BoardContextApiHelperService', () => {
 			const columnBoard = columnBoardFactory.build({
 				context: { type: BoardExternalReferenceType.Room, id: room.id },
 			}) as AnyBoardNode;
-			const boardNode = { id: 'boardId' };
 
-			jest.spyOn(service as any, 'getBoardNode').mockResolvedValueOnce(boardNode);
 			boardNodeService.findRoot.mockResolvedValueOnce(columnBoard);
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(columnBoard);
 			roomService.getSingleRoom.mockResolvedValueOnce(room);
