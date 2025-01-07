@@ -23,6 +23,7 @@ import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 import { TspFetchService } from './tsp/tsp-fetch.service';
+import { TspSyncMigrationService } from './tsp/tsp-sync-migration.service';
 import { VidisSyncService, VidisSyncStrategy, VidisFetchService } from './media-licenses';
 
 @Module({
@@ -54,7 +55,14 @@ import { VidisSyncService, VidisSyncStrategy, VidisFetchService } from './media-
 		SyncUc,
 		SyncService,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspFetchService, TspLegacyMigrationService]
+			? [
+					TspSyncStrategy,
+					TspSyncService,
+					TspOauthDataMapper,
+					TspFetchService,
+					TspLegacyMigrationService,
+					TspSyncMigrationService,
+			  ]
 			: []),
 		VidisSyncService,
 		VidisSyncStrategy,
