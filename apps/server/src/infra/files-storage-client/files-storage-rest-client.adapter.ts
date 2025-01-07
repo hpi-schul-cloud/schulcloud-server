@@ -46,7 +46,7 @@ export class FilesStorageRestClientAdapter {
 			});
 			const response = await lastValueFrom(observable);
 
-			this.logger.warning({
+			this.logger.debug({
 				getLogMessage() {
 					return {
 						message: 'File downloaded',
@@ -56,8 +56,9 @@ export class FilesStorageRestClientAdapter {
 				},
 			});
 
-			// we can safely cast the response to Buffer because we are using responseType: 'arraybuffer'
-			return response.data as unknown as Buffer;
+			const data = Buffer.isBuffer(response.data) ? response.data : null;
+
+			return data;
 		} catch (error: unknown) {
 			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageRestClientAdapter.download'));
 
