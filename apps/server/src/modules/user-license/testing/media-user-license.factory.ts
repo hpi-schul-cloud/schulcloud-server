@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { mediaSourceFactory } from '@src/modules/media-source/testing/media-source.factory';
+import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaUserLicense, MediaUserLicenseProps } from '../domain';
 import { UserLicenseType } from '../entity';
 

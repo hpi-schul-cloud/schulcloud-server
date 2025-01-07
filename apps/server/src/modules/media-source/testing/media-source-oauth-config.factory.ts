@@ -1,13 +1,11 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { MediaSourceOauthConfig, MediaSourceOauthConfigProps } from '../domain/media-source-oauth-config';
+import { MediaSourceOauthConfig } from '../domain';
 import { MediaSourceAuthMethod } from '../enum';
 
-export const mediaSourceOauthConfigFactory = BaseFactory.define<MediaSourceOauthConfig, MediaSourceOauthConfigProps>(
+export const mediaSourceOauthConfigFactory = BaseFactory.define<MediaSourceOauthConfig, MediaSourceOauthConfig>(
 	MediaSourceOauthConfig,
 	({ sequence }) => {
-		const config = {
-			id: new ObjectId().toHexString(),
+		const config: MediaSourceOauthConfig = {
 			clientId: `media-source-client-id-${sequence}`,
 			clientSecret: `media-source-client-secret-${sequence}`,
 			authEndpoint: `media-source-auth-endpoint-${sequence}`,

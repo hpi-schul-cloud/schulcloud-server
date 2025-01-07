@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
 import { mediaSchoolLicenseFactory } from '../testing';
 import { MediaSchoolLicenseService } from './media-school-license.service';
@@ -32,27 +33,29 @@ describe(MediaSchoolLicenseService.name, () => {
 		jest.clearAllMocks();
 	});
 
-	describe('findMediaSchoolLicensesByMediumId', () => {
-		describe('when a medium id of existing media school licenses is given', () => {
+	describe('findAllByMediaSourceAndMediumId', () => {
+		describe('when a media source and medium id of existing media school licenses is given', () => {
 			const setup = () => {
 				const mediumId = 'test-medium-id';
-				const mediaSchooLicenses = mediaSchoolLicenseFactory.buildList(3, { mediumId });
+				const mediaSource = mediaSourceFactory.build();
+				const mediaSchooLicenses = mediaSchoolLicenseFactory.buildList(3, { mediaSource, mediumId });
 
-				mediaSchoolLicenseRepo.findMediaSchoolLicensesByMediumId.mockResolvedValueOnce(mediaSchooLicenses);
+				mediaSchoolLicenseRepo.findAllByMediaSourceAndMediumId.mockResolvedValueOnce(mediaSchooLicenses);
 
 				return {
+					mediaSource,
 					mediumId,
 					mediaSchooLicenses,
 				};
 			};
 
 			it('should find and return the existing media school licenses', async () => {
-				const { mediumId, mediaSchooLicenses } = setup();
+				const { mediaSource, mediumId, mediaSchooLicenses } = setup();
 
-				const result = await mediaSchoolLicenseService.findMediaSchoolLicensesByMediumId(mediumId);
+				const result = await mediaSchoolLicenseService.findAllByMediaSourceAndMediumId(mediaSource.id, mediumId);
 
 				expect(result).toEqual(expect.arrayContaining(mediaSchooLicenses));
-				expect(mediaSchoolLicenseRepo.findMediaSchoolLicensesByMediumId).toBeCalledWith(mediumId);
+				expect(mediaSchoolLicenseRepo.findAllByMediaSourceAndMediumId).toBeCalledWith(mediaSource.id, mediumId);
 			});
 		});
 	});

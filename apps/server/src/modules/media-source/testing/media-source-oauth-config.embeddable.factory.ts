@@ -1,20 +1,17 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
 import { MediaSourceAuthMethod } from '../enum';
-import {
-	MediaSourceOauthConfigEmbeddable,
-	MediaSourceOauthConfigEmbeddableProps,
-} from '../entity/media-source-oauth-config.embeddable';
+import { MediaSourceOauthConfigEmbeddable } from '../entity';
 
 export const mediaSourceOAuthConfigEmbeddableFactory = BaseFactory.define<
 	MediaSourceOauthConfigEmbeddable,
-	MediaSourceOauthConfigEmbeddableProps
+	MediaSourceOauthConfigEmbeddable
 >(MediaSourceOauthConfigEmbeddable, ({ sequence }) => {
-	return {
-		_id: new ObjectId(),
+	const embeddable: MediaSourceOauthConfigEmbeddable = {
 		clientId: `media-source-client-id-${sequence}`,
 		clientSecret: `media-source-client-secret-${sequence}`,
 		authEndpoint: `media-source-auth-endpoint-${sequence}`,
 		method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
 	};
+
+	return embeddable;
 });

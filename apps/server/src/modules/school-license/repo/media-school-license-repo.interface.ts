@@ -1,7 +1,8 @@
+import { EntityId } from '@shared/domain/types';
 import { MediaSchoolLicense } from '../domain';
 
 export interface MediaSchoolLicenseRepo {
-	findMediaSchoolLicensesByMediumId(mediumId: string): Promise<MediaSchoolLicense[]>;
+	findAllByMediaSourceAndMediumId(mediaSourceId: EntityId, mediumId: string): Promise<MediaSchoolLicense[]>;
 
 	save(domainObject: MediaSchoolLicense): Promise<MediaSchoolLicense>;
 

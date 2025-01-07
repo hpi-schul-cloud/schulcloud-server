@@ -1,3 +1,3 @@
 export { MediaSource, MediaSourceProps } from './media-source';
-export { MediaSourceBasicAuthConfig, MediaSourceBasicAuthConfigProps } from './media-source-basic-auth-config';
-export { MediaSourceOauthConfig, MediaSourceOauthConfigProps } from './media-source-oauth-config';
+export { MediaSourceBasicAuthConfig } from './media-source-basic-auth-config';
+export { MediaSourceOauthConfig } from './media-source-oauth-config';
