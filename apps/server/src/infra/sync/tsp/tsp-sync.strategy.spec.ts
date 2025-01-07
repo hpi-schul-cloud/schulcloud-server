@@ -14,9 +14,7 @@ import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 
 import { Logger } from '@src/core/logger';
-import {
-	robjExportSchuleFactory
-} from '@src/infra/tsp-client/testing';
+import { robjExportSchuleFactory } from '@src/infra/tsp-client/testing';
 import { Account } from '@src/modules/account';
 import { OauthDataDto, ProvisioningService } from '@src/modules/provisioning';
 import {
