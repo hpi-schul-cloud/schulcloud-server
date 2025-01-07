@@ -1678,10 +1678,12 @@
 		},
 		"VIDIS_API_CLIENT_BASE_URL": {
 			"type": "string",
+			"default": "",
 			"description": "The VIDIS API base URL"
 		},
 		"VIDIS_SYNC_REGION": {
 			"type": "string",
+			"default": "",
 			"description": "The region for fetching activated offers from VIDIS"
 		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
