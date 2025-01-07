@@ -10,6 +10,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardContextApiHelperService } from '@modules/board/board-context-api-helper.service';
 import { Authorization } from 'oauth-1.0a';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
@@ -43,18 +44,25 @@ export class ContextExternalToolUc {
 		private readonly ltiDeepLinkTokenService: LtiDeepLinkTokenService,
 		private readonly ltiDeepLinkingService: LtiDeepLinkingService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
-	async createContextExternalTool(
+	public async createContextExternalTool(
 		userId: EntityId,
-		schoolId: EntityId,
 		contextExternalToolDto: ContextExternalToolDto
 	): Promise<ContextExternalTool> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalToolDto.schoolToolRef.schoolToolId
 		);
+
+		let schoolId = user.school.id;
+		if (contextExternalToolDto.contextRef.type === ToolContextType.BOARD_ELEMENT) {
+			const contextId = contextExternalToolDto.contextRef.id;
+			schoolId = await this.boardContextApiHelperService.getSchoolIdForBoardNode(userId, contextId);
+		}
 
 		if (schoolExternalTool.schoolId !== schoolId) {
 			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
@@ -63,7 +71,6 @@ export class ContextExternalToolUc {
 		contextExternalToolDto.schoolToolRef.schoolId = schoolId;
 		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		await this.contextExternalToolService.checkContextRestrictions(contextExternalTool);
@@ -77,7 +84,7 @@ export class ContextExternalToolUc {
 		return createdTool;
 	}
 
-	async updateContextExternalTool(
+	public async updateContextExternalTool(
 		userId: EntityId,
 		schoolId: EntityId,
 		contextExternalToolId: EntityId,
@@ -139,7 +146,7 @@ export class ContextExternalToolUc {
 		return toolsWithPermission;
 	}
 
-	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
+	public async getContextExternalTool(userId: EntityId, contextToolId: EntityId): Promise<ContextExternalTool> {
 		const tool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(contextToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
