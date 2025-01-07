@@ -11,8 +11,9 @@ import { Configuration, FileApi } from './generated';
 @Module({
 	imports: [LoggerModule],
 	providers: [
+		FilesStorageRestClientAdapter,
 		{
-			provide: FilesStorageRestClientAdapter,
+			provide: FileApi,
 			scope: Scope.REQUEST,
 			useFactory: (configService: ConfigService<FilesStorageRestClientConfig, true>, request: Request): FileApi => {
 				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
