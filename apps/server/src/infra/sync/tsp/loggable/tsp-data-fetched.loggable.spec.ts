@@ -1,29 +1,33 @@
+import { faker } from '@faker-js/faker';
 import { TspDataFetchedLoggable } from './tsp-data-fetched.loggable';
 
 describe(TspDataFetchedLoggable.name, () => {
-	let loggable: TspDataFetchedLoggable;
+	describe('getLogMessage is called', () => {
+		const setup = () => {
+			const tspTeacherCount = faker.number.int();
+			const tspStudentCount = faker.number.int();
+			const tspClassesCount = faker.number.int();
+			const daysFetched = faker.number.int();
 
-	beforeAll(() => {
-		loggable = new TspDataFetchedLoggable(1, 2, 3, 4);
-	});
-
-	describe('when loggable is initialized', () => {
-		it('should be defined', () => {
-			expect(loggable).toBeDefined();
-		});
-	});
-
-	describe('getLogMessage', () => {
-		it('should return a log message', () => {
-			expect(loggable.getLogMessage()).toEqual({
-				message: `Fetched 1 teachers, 2 students and 3 classes for the last 4 days from TSP`,
+			const expected = {
+				message: `Fetched ${tspTeacherCount} teachers, ${tspStudentCount} students and ${tspClassesCount} classes for the last ${daysFetched} days from TSP`,
 				data: {
-					tspTeacherCount: 1,
-					tspStudentCount: 2,
-					tspClassesCount: 3,
-					daysFetched: 4,
+					tspTeacherCount,
+					tspStudentCount,
+					tspClassesCount,
+					daysFetched,
 				},
-			});
+			};
+
+			return { tspTeacherCount, tspStudentCount, tspClassesCount, daysFetched, expected };
+		};
+
+		it('should return a log message', () => {
+			const { tspTeacherCount, tspStudentCount, tspClassesCount, daysFetched, expected } = setup();
+
+			const loggable = new TspDataFetchedLoggable(tspTeacherCount, tspStudentCount, tspClassesCount, daysFetched);
+
+			expect(loggable.getLogMessage()).toEqual(expected);
 		});
 	});
 });
