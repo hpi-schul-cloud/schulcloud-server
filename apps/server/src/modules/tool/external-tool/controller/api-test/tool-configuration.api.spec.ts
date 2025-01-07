@@ -1,20 +1,21 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { accountFactory } from '@modules/account/testing';
+import { BoardExternalReferenceType } from '@modules/board';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '@modules/board/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, LegacyBoard, SchoolEntity, User } from '@shared/domain/entity';
+import { Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	boardFactory,
 	courseFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
 import { Response } from 'supertest';
 import {
 	CustomParameterLocationParams,
@@ -31,10 +32,10 @@ import { customParameterFactory, externalToolEntityFactory } from '../../testing
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
+	PreferredToolListResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
-	PreferredToolListResponse,
 } from '../dto';
 
 describe('ToolConfigurationController (API)', () => {
@@ -128,7 +129,11 @@ describe('ToolConfigurationController (API)', () => {
 				]);
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
-				const board: LegacyBoard = boardFactory.buildWithId({ course });
+				const board = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+				});
+				const columnNode = columnEntityFactory.withParent(board).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build({ position: 0 });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
@@ -156,6 +161,8 @@ describe('ToolConfigurationController (API)', () => {
 					school,
 					course,
 					board,
+					columnNode,
+					cardNode,
 					teacherUser,
 					teacherAccount,
 					externalTool,
