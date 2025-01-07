@@ -15,7 +15,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { courseFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { UUID } from 'bson';
 import { LtiMessageType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
@@ -218,13 +218,9 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when tool is restricted to a different context', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
+				const schoolId: EntityId = school.id;
 				const user: User = userFactory.buildWithId({ school });
 				const userId = user.id;
-
-				const otherSchool = schoolEntityFactory.buildWithId();
-				const schoolId: EntityId = otherSchool.id;
-
-				const course = courseFactory.buildWithId({ school: otherSchool });
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
@@ -237,7 +233,7 @@ describe(ContextExternalToolUc.name, () => {
 						schoolId,
 					},
 					contextRef: {
-						id: course.id,
+						id: 'aCourseId',
 						type: ToolContextType.COURSE,
 					},
 				});
@@ -249,6 +245,7 @@ describe(ContextExternalToolUc.name, () => {
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
 				contextExternalToolService.checkContextRestrictions.mockRejectedValueOnce(error);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					contextExternalTool,
