@@ -146,6 +146,30 @@ describe('TaskRule', () => {
 			});
 		});
 
+		describe('when task has no course or lesson', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.TEACHER });
+				const creator = userFactory.build({ roles: [role] });
+				const otherUser = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+
+				return { role, creator, otherUser, task };
+			};
+
+			it('creator should have access to task', () => {
+				const { creator, task } = setup();
+				const res = service.hasPermission(creator, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
+
+			it('otherUser should not have access to task', () => {
+				const { otherUser, task } = setup();
+				const res = service.hasPermission(otherUser, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
+
+		});
+
 		describe('when user is student and is task creator with Permission A,B', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
