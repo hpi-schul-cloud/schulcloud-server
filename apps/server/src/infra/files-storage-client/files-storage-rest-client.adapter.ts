@@ -24,6 +24,16 @@ export class FilesStorageRestClientAdapter {
 	) {}
 
 	public async download(fileRecordId: string, fileName: string): Promise<Buffer | null> {
+		this.logger.debug({
+			getLogMessage() {
+				return {
+					message: `Downloading file ${fileName} with fileRecordId ${fileRecordId}`,
+					fileRecordId,
+					fileName,
+				};
+			},
+		});
+
 		try {
 			// INFO: we need to download the file from the files storage service without using the generated client,
 			// because the generated client does not support downloading files as arraybuffer. Otherwise files with
