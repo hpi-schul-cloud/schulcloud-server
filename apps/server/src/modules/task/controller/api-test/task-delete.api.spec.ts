@@ -71,7 +71,6 @@ describe('Task Controller (API)', () => {
 
 				const teacherClient = await testApiClient.login(teacher.account);
 
-
 				return { teacherClient, teacher, student, course, task };
 			};
 
@@ -95,7 +94,6 @@ describe('Task Controller (API)', () => {
 				em.clear();
 
 				const anotherTeacherClient = await testApiClient.login(anotherTeacher.account);
-
 
 				return { anotherTeacherClient, anotherTeacher, task };
 			};
