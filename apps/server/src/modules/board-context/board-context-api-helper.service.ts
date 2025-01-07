@@ -1,4 +1,10 @@
-import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import {
+	AnyBoardNode,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardNodeService,
+	ColumnBoard,
+} from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { Injectable } from '@nestjs/common';
@@ -12,12 +18,25 @@ export class BoardContextApiHelperService {
 		private readonly boardNodeService: BoardNodeService
 	) {}
 
-	public async getSchoolIdForBoardNode(nodeId: EntityId): Promise<EntityId> {
-		const boardNode = await this.boardNodeService.findById(nodeId);
+	public async getSchoolIdForBoardNode(nodeId: EntityId, fallbackSchoolId: EntityId): Promise<EntityId> {
+		const boardNode: AnyBoardNode | undefined = await this.getBoardNode(nodeId);
+		if (!boardNode) {
+			//
+			return fallbackSchoolId;
+		}
 		const board = await this.boardNodeService.findRoot(boardNode);
 		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, board.id);
 		const schoolId = await this.getSchoolIdForBoard(columnBoard.context);
 		return schoolId;
+	}
+
+	private async getBoardNode(nodeId: EntityId): Promise<AnyBoardNode | undefined> {
+		try {
+			const node = await this.boardNodeService.findById(nodeId);
+			return node;
+		} catch (_err) {
+			return undefined;
+		}
 	}
 
 	private async getSchoolIdForBoard(context: BoardExternalReference): Promise<EntityId> {

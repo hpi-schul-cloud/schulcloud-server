@@ -9,7 +9,7 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { BoardContextApiHelperService } from '@modules/board/board-context-api-helper.service'; // TODO: move module
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
