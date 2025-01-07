@@ -47,8 +47,11 @@ export class CommonCartridgeExportService {
 		version: CommonCartridgeVersion,
 		exportedTopics: string[],
 		exportedTasks: string[],
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		exportedColumnBoards: string[]
 	): Promise<Buffer> {
+		console.info(FilesStorageRestClientAdapter.name, this.filesStorageClientAdapter);
+
 		console.info('Exporting course', { courseId, version });
 
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
@@ -73,10 +76,10 @@ export class CommonCartridgeExportService {
 		// add tasks to organization
 		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
 
-		console.info('Exporting column boards');
+		// console.info('Exporting column boards');
 
-		// add column boards and cards to organization
-		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
+		// // add column boards and cards to organization
+		// await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
 		console.info('Building the common cartridge file');
 
@@ -151,6 +154,8 @@ export class CommonCartridgeExportService {
 
 			for await (const fileMetadata of filesMetadata) {
 				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+
+				console.info('File', file);
 
 				if (file) {
 					const resource = this.mapper.mapFileToResource(fileMetadata, file);
