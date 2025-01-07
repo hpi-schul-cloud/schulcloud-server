@@ -21,7 +21,9 @@ export class FilesStorageRestClientAdapter {
 		private readonly httpService: HttpService,
 		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,
 		@Inject(REQUEST) private readonly req: Request
-	) {}
+	) {
+		this.logger.setContext(FilesStorageRestClientAdapter.name);
+	}
 
 	public async download(fileRecordId: string, fileName: string): Promise<Buffer | null> {
 		this.logger.warning({
