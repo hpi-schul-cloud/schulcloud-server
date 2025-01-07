@@ -15,7 +15,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { UUID } from 'bson';
 import { LtiMessageType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
@@ -220,7 +220,11 @@ describe(ContextExternalToolUc.name, () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user: User = userFactory.buildWithId({ school });
 				const userId = user.id;
-				const schoolId: EntityId = new ObjectId().toHexString();
+
+				const otherSchool = schoolEntityFactory.buildWithId();
+				const schoolId: EntityId = otherSchool.id;
+
+				const course = courseFactory.buildWithId({ school: otherSchool });
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
@@ -233,7 +237,7 @@ describe(ContextExternalToolUc.name, () => {
 						schoolId,
 					},
 					contextRef: {
-						id: 'contextId',
+						id: course.id,
 						type: ToolContextType.COURSE,
 					},
 				});
