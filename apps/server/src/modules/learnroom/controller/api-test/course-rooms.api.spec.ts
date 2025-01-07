@@ -1,6 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CopyApiResponse } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -16,7 +17,6 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { CopyApiResponse } from '@src/modules/copy-helper';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;

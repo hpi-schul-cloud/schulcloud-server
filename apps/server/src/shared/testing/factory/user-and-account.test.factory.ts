@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { accountFactory } from '@modules/account/testing/account.factory';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing/account.factory';
 import _ from 'lodash';
 import { userFactory } from './user.factory';
 

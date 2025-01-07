@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { FeathersAuthorizationService } from '@modules/authorization';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@modules/news/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
@@ -7,7 +8,6 @@ import { News, User } from '@shared/domain/entity';
 import { EntityId, NewsTargetModel } from '@shared/domain/types';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { FeathersAuthorizationService } from '@src/modules/authorization';
 import moment from 'moment';
 
 describe('News Controller (API)', () => {
