@@ -5,7 +5,8 @@ import { Page } from '@shared/domain/domainobject/page';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { School, SchoolService } from '@src/modules/school';
+import { BoardContextApiHelperService } from '@modules/board-context';
+import { School, SchoolService } from '@modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -27,7 +28,8 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	public async getToolContextTypes(userId: EntityId): Promise<ToolContextType[]> {
@@ -76,10 +78,16 @@ export class ExternalToolConfigurationUc {
 
 	public async getAvailableToolsForContext(
 		userId: EntityId,
-		schoolId: EntityId,
 		contextId: EntityId,
 		contextType: ToolContextType
 	): Promise<ContextExternalToolTemplateInfo[]> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+
+		let schoolId = user.school.id;
+		if (contextType === ToolContextType.BOARD_ELEMENT) {
+			schoolId = await this.boardContextApiHelperService.getSchoolIdForBoardNode(contextId);
+		}
+
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
 			Page<ExternalTool>,
 			SchoolExternalTool[],
@@ -93,7 +101,6 @@ export class ExternalToolConfigurationUc {
 				context: { id: contextId, type: contextType },
 			}),
 		]);
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.ensureContextPermissions(user, contextExternalToolsInUse, context);
