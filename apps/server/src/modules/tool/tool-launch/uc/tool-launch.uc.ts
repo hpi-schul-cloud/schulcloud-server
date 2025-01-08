@@ -23,7 +23,7 @@ export class ToolLaunchUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async getContextExternalToolLaunchRequest(
+	public async getContextExternalToolLaunchRequest(
 		userId: EntityId,
 		contextExternalToolId: EntityId
 	): Promise<ToolLaunchRequest> {
@@ -43,7 +43,7 @@ export class ToolLaunchUc {
 		return launchRequest;
 	}
 
-	async getSchoolExternalToolLaunchRequest(
+	public async getSchoolExternalToolLaunchRequest(
 		userId: EntityId,
 		pseudoContextExternalTool: ContextExternalToolLaunchable
 	): Promise<ToolLaunchRequest> {
