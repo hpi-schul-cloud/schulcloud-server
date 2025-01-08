@@ -54,6 +54,7 @@ const setupApp = async (orm) => {
 		.use(cors())
 		.configure(setupConfiguration)
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+		.use('/wopi/files', bodyParser.raw({ type: () => true, limit: Configuration.get('WOPI_MAX_FILE_SIZE') }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
