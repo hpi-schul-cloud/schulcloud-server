@@ -11,8 +11,8 @@ import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
+	JwtAuthenticationFactory,
 	schoolEntityFactory,
-	SCJwtTestFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -72,7 +72,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 				const validId = user.school.id;
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
@@ -154,7 +154,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
@@ -229,7 +229,7 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
@@ -267,7 +267,7 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
