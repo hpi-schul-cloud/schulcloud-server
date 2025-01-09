@@ -22,7 +22,7 @@ COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
 COPY scripts/ldapSync.sh /schulcloud-server/scripts/
 RUN npm run build
 
-# Remove dev dependencies. The modules transpiled by esbuild are pruned too and must be copied separately.
+# Remove devDependencies. The modules transpiled by esbuild are pruned too and must be added again after pruning.
 RUN mkdir temp
 RUN cp -r node_modules/@keycloak/keycloak-admin-client-cjs temp
 RUN cp -r node_modules/file-type-cjs temp
