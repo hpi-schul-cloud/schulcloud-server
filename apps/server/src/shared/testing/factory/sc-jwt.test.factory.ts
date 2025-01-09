@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 const publicKey: string = Configuration.get('JWT_PUBLIC_KEY') as string;
 const privateKey: string = Configuration.get('JWT_PRIVATE_KEY') as string;
+const domain: string = Configuration.get('SC_DOMAIN') as string;
 
 export class SCJwtTestFactory {
 	public static getPublicKey(): string | Buffer {
@@ -14,8 +15,8 @@ export class SCJwtTestFactory {
 		const validJwt = jwt.sign(
 			{
 				sub: 'testUser',
-				iss: 'issuer',
-				aud: 'audience',
+				iss: domain,
+				aud: domain,
 				jti: 'jti',
 				iat: Date.now() / 1000,
 				exp: (Date.now() + 1000000) / 1000,

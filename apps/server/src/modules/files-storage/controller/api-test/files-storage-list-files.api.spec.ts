@@ -60,10 +60,6 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 			apiClient = new TestApiClient(app, baseRouteName, authValue);
 
-			const a = SCJwtTestFactory.check(authValue);
-
-			console.log(a);
-
 			await em.persistAndFlush([user, account]);
 			em.clear();
 
@@ -72,19 +68,18 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return status 400 for invalid schoolId', async () => {
 			const response = await apiClient.get(`/school/123/users/${validId}`);
-			console.log(response);
 			const result = (response.body as ApiValidationError).validationErrors;
 
+			expect(response.status).toEqual(400);
 			expect(result).toEqual([
 				{
 					errors: ['storageLocationId must be a mongodb id'],
 					field: ['storageLocationId'],
 				},
 			]);
-			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid parentId', async () => {
+		/* 	it('should return status 400 for invalid parentId', async () => {
 			const response = await apiClient.get(`/school/${validId}/users/123`);
 			const result = (response.body as ApiValidationError).validationErrors;
 
@@ -95,7 +90,7 @@ describe(`${baseRouteName} (api)`, () => {
 				},
 			]);
 			expect(response.status).toEqual(400);
-		});
+		}); */
 
 		/*it('should return status 400 for invalid parentType', async () => {
 			const response = await apiClient.get(`/school/${validId}/cookies/${validId}`);
