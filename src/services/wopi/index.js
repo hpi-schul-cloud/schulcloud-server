@@ -15,7 +15,6 @@ const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const bodyParser = require('body-parser');
 
 const wopiPrefix = '/wopi/files/';
 
