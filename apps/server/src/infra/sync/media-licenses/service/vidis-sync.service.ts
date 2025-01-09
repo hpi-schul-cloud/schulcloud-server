@@ -92,11 +92,13 @@ export class VidisSyncService {
 			[]
 		);
 
-		await this.mediaSchoolLicenseService.deleteSchoolLicenses(licensesToDelete);
-
-		const licensesAfterDelete: MediaSchoolLicense[] = existingLicenses.filter(
-			(existingLicense: MediaSchoolLicense) => !licensesToDelete.includes(existingLicense)
-		);
+		let licensesAfterDelete: MediaSchoolLicense[] = [...existingLicenses];
+		if (licensesToDelete.length) {
+			await this.mediaSchoolLicenseService.deleteSchoolLicenses(licensesToDelete);
+			licensesAfterDelete = existingLicenses.filter(
+				(existingLicense: MediaSchoolLicense) => !licensesToDelete.includes(existingLicense)
+			);
+		}
 
 		return licensesAfterDelete;
 	}
