@@ -12,14 +12,14 @@ RUN apk add --no-cache git make python3
 RUN apk add --no-cache curl
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
-COPY esbuild ./esbuild
+COPY esbuild esbuild
 RUN npm ci && npm cache clean --force
-COPY config /schulcloud-server/config
-COPY backup /schulcloud-server/backup
-COPY src /schulcloud-server/src
-COPY apps /schulcloud-server/apps
-COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
-COPY scripts/ldapSync.sh /schulcloud-server/scripts/
+COPY config config
+COPY backup backup
+COPY src src
+COPY apps apps
+COPY --from=git /app/serverversion apps/server/static-assets
+COPY scripts/ldapSync.sh scripts/
 RUN npm run build
 
 # Remove devDependencies. The modules transpiled by esbuild are pruned too and must be added again after pruning.
