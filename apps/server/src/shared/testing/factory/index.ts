@@ -26,6 +26,7 @@ export * from './material.factory';
 export * from './news.factory';
 export * from './role-dto.factory';
 export * from './role.factory';
+export * from './sc-jwt.test.factory';
 export * from './school-entity.factory';
 export { schoolSystemOptionsEntityFactory } from './school-system-options-entity.factory';
 export * from './schoolyear.factory';
