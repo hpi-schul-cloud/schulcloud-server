@@ -8,12 +8,11 @@ import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
+	JwtAuthenticationFactory,
 	schoolEntityFactory,
-	SCJwtTestFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { JwtValidationAdapter } from '@src/infra/auth-guard';
 import NodeClam from 'clamscan';
 import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
@@ -35,8 +34,6 @@ describe(`${baseRouteName} (api)`, () => {
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
 			.useValue(createMock<AuthorizationClientAdapter>())
-			.overrideProvider(JwtValidationAdapter)
-			.useValue(createMock<JwtValidationAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -54,7 +51,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const school = schoolEntityFactory.build();
 			const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-			const authValue = SCJwtTestFactory.createJwt({
+			const authValue = JwtAuthenticationFactory.createJwt({
 				accountId: account.id,
 				userId: user.id,
 				schoolId: user.school.id,
@@ -121,7 +118,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const school = schoolEntityFactory.build();
 			const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-			const authValue = SCJwtTestFactory.createJwt({
+			const authValue = JwtAuthenticationFactory.createJwt({
 				accountId: account.id,
 				userId: user.id,
 				schoolId: user.school.id,

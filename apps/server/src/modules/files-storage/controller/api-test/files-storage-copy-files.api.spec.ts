@@ -1,6 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
-import { JwtValidationAdapter } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -11,8 +10,8 @@ import {
 	cleanupCollections,
 	courseFactory,
 	fileRecordFactory,
+	JwtAuthenticationFactory,
 	schoolEntityFactory,
-	SCJwtTestFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -48,8 +47,6 @@ describe(`${baseRouteName} (api)`, () => {
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
 			.useValue(createMock<AuthorizationClientAdapter>())
-			.overrideProvider(JwtValidationAdapter)
-			.useValue(createMock<JwtValidationAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -84,7 +81,7 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
@@ -181,7 +178,7 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
@@ -243,7 +240,7 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
@@ -295,7 +292,7 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const authValue = SCJwtTestFactory.createJwt({
+				const authValue = JwtAuthenticationFactory.createJwt({
 					accountId: account.id,
 					userId: user.id,
 					schoolId: user.school.id,
