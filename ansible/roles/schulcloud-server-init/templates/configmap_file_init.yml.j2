@@ -558,10 +558,12 @@ data:
     if [ -n "$MEDIA_SOURCE_VIDIS_USERNAME" ] && [ -n "$MEDIA_SOURCE_VIDIS_PASSWORD" ]; then
          echo "Inserting VIDIS media source to the DB..."
          # Encrypt the credentials for accessing the VIDIS media source
+         MEDIA_SOURCE_VIDIS_ID=675b0b71553441da9a893bf9
          MEDIA_SOURCE_VIDIS_USERNAME=$(get_secret $MEDIA_SOURCE_VIDIS_USERNAME)
          MEDIA_SOURCE_VIDIS_PASSWORD=$(get_secret $MEDIA_SOURCE_VIDIS_PASSWORD)
          mongosh $DATABASE__URL --quiet --eval 'db.getCollection("media-sources").insertOne(
              {
+                "_id": ObjectId("'$MEDIA_SOURCE_VIDIS_ID'"),
                 "format" : "VIDIS",
                 "name" : "vidis",
                 "sourceId" : "vidis.fwu.de",
