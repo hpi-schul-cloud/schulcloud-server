@@ -14,6 +14,7 @@ import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interf
 import { BBBService, VideoConferenceService } from '../service';
 import { ScopeInfo, VideoConferenceInfo, VideoConferenceState } from './dto';
 import { VideoConferenceInfoUc } from './video-conference-info.uc';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 
 describe('VideoConferenceInfoUc', () => {
 	let module: TestingModule;
@@ -21,6 +22,7 @@ describe('VideoConferenceInfoUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
+	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,6 +40,10 @@ describe('VideoConferenceInfoUc', () => {
 					provide: VideoConferenceService,
 					useValue: createMock<VideoConferenceService>(),
 				},
+				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
 			],
 		}).compile();
 
@@ -45,6 +51,7 @@ describe('VideoConferenceInfoUc', () => {
 		bbbService = module.get(BBBService);
 		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
+		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 	});
 
 	afterAll(async () => {
@@ -369,6 +376,65 @@ describe('VideoConferenceInfoUc', () => {
 							bbbResponse: bbbMeetingInfoResponse,
 							permission: Permission.JOIN_MEETING,
 						});
+					});
+				});
+			});
+		});
+
+		describe('feature check', () => {
+			describe('when scope is a video conference element', () => {
+				const setup = (scopeName: VideoConferenceScope) => {
+					const user: UserDO = userDoFactory.buildWithId();
+					const currentUserId: string = user.id as string;
+					const scope = { scope: scopeName, id: new ObjectId().toHexString() };
+					const scopeInfo: ScopeInfo = {
+						scopeId: scope.id,
+						scopeName: scopeName,
+						title: 'title',
+						logoutUrl: 'logoutUrl',
+					};
+					const videoConferenceDO: VideoConferenceDO = videoConferenceDOFactory.buildWithId({
+						options: {
+							everyAttendeeJoinsMuted: true,
+							everybodyJoinsAsModerator: true,
+							moderatorMustApproveJoinRequests: true,
+						},
+					});
+
+					const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
+						scope.id
+					);
+
+					userService.findById.mockResolvedValue(user);
+					videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
+					bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
+					videoConferenceService.hasExpertRole.mockResolvedValue(true);
+					videoConferenceService.canGuestJoin.mockReturnValue(true);
+					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+
+					return { user, scope };
+				};
+
+				it("should use the board context's schoolId", async () => {
+					const { user, scope } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+
+					boardContextApiHelperService.getSchoolIdForBoardNode.mockResolvedValue('contextSchoolId');
+
+					await uc.getMeetingInfo(user.id!, scope);
+
+					expect(boardContextApiHelperService.getSchoolIdForBoardNode).toBeCalledWith(scope.id);
+					expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalledWith('contextSchoolId');
+				});
+
+				describe('when scope is not a video conference element', () => {
+					it("should use the user's schoolId", async () => {
+						const { user, scope } = setup(VideoConferenceScope.COURSE);
+
+						await uc.getMeetingInfo(user.id!, scope);
+
+						expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalledWith(user.schoolId);
 					});
 				});
 			});

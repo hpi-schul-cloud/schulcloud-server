@@ -7,13 +7,16 @@ import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef, VideoConference, VideoConferenceState } from './dto';
+import { VideoConferenceScope } from '@shared/domain/interface';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 
 @Injectable()
 export class VideoConferenceEndUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
@@ -26,7 +29,12 @@ export class VideoConferenceEndUc {
 		const user: UserDO = await this.userService.findById(currentUserId);
 		const userId: string = user.id as string;
 
-		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
+		const schoolId =
+			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
+				: user.schoolId;
+
+		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
 
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(userId, scope.id, scope.scope);
 

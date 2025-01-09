@@ -15,13 +15,16 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
+import { VideoConferenceScope } from '@shared/domain/interface';
 
 @Injectable()
 export class VideoConferenceCreateUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	async createIfNotRunning(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
@@ -47,7 +50,12 @@ export class VideoConferenceCreateUc {
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 
-		await this.verifyFeaturesEnabled(user.schoolId);
+		const schoolId =
+			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
+				: user.schoolId;
+
+		await this.verifyFeaturesEnabled(schoolId);
 
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
