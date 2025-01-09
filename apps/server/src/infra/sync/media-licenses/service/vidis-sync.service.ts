@@ -35,21 +35,38 @@ export class VidisSyncService {
 			}
 
 			const existingLicenseSchoolNumberSet = new Set(
-				existingLicenses.reduce((acc: string[], license: MediaSchoolLicense) => {
+				existingLicenses.reduce<string[]>((acc: string[], license: MediaSchoolLicense) => {
 					if (license.school.officialSchoolNumber) {
 						acc.push(license.school.officialSchoolNumber);
 					}
 					return acc;
-				}, [] as string[])
+				}, [])
 			);
 
-			const saveNewLicensesPromises: Promise<void>[] = officialSchoolNumbers.map(
-				async (schoolNumber: string): Promise<void> => {
-					await this.saveNonExistingLicense(existingLicenseSchoolNumberSet, schoolNumber, mediaSource, mediumId);
+			const newLicensesPromises: Promise<MediaSchoolLicense | null>[] = officialSchoolNumbers.map(
+				async (schoolNumber: string): Promise<MediaSchoolLicense | null> => {
+					if (existingLicenseSchoolNumberSet.has(schoolNumber)) {
+						return null;
+					}
+
+					const newLicense: MediaSchoolLicense | null = await this.buildMediaSchoolLicense(
+						schoolNumber,
+						mediaSource,
+						mediumId
+					);
+
+					return newLicense;
 				}
 			);
 
-			await Promise.all(saveNewLicensesPromises);
+			const newLicenses = await Promise.all(newLicensesPromises);
+			const filteredLicenses = newLicenses.filter<MediaSchoolLicense>(
+				(license: MediaSchoolLicense | null) => !!license
+			);
+
+			if (filteredLicenses.length) {
+				await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(filteredLicenses);
+			}
 		});
 
 		await Promise.all(syncItemPromises);
@@ -65,50 +82,45 @@ export class VidisSyncService {
 	): Promise<MediaSchoolLicense[]> {
 		const vidisSchoolNumberSet = new Set(schoolNumbersFromVidis);
 
-		const removalPromises: Promise<MediaSchoolLicense | null>[] = existingLicenses.map(
-			async (license: MediaSchoolLicense) => {
-				if (!license.school.officialSchoolNumber) {
-					await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
-					return null;
+		const licensesToDelete: MediaSchoolLicense[] = existingLicenses.reduce<MediaSchoolLicense[]>(
+			(acc: MediaSchoolLicense[], license: MediaSchoolLicense) => {
+				if (!license.school.officialSchoolNumber || !vidisSchoolNumberSet.has(license.school.officialSchoolNumber)) {
+					acc.push(license);
 				}
-
-				const isLicenseNoLongerInVidis = !vidisSchoolNumberSet.has(license.school.officialSchoolNumber);
-				if (isLicenseNoLongerInVidis) {
-					await this.mediaSchoolLicenseService.deleteSchoolLicense(license);
-					return null;
-				}
-
-				return license;
-			}
+				return acc;
+			},
+			[]
 		);
 
-		const availableLicensesWithNull = await Promise.all(removalPromises);
-		return availableLicensesWithNull.filter((license: MediaSchoolLicense | null) => !!license);
+		await this.mediaSchoolLicenseService.deleteSchoolLicenses(licensesToDelete);
+
+		const licensesAfterDelete: MediaSchoolLicense[] = existingLicenses.filter(
+			(existingLicense: MediaSchoolLicense) => !licensesToDelete.includes(existingLicense)
+		);
+
+		return licensesAfterDelete;
 	}
 
-	private async saveNonExistingLicense(
-		existingLicenseSchoolNumberSet: Set<string>,
+	private async buildMediaSchoolLicense(
 		officialSchoolNumber: string,
 		mediaSource: MediaSource,
 		mediumId: string
-	): Promise<void> {
-		if (existingLicenseSchoolNumberSet.has(officialSchoolNumber)) {
-			return;
-		}
-
+	): Promise<MediaSchoolLicense | null> {
 		const school: School | null = await this.schoolService.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
 
 		if (!school) {
 			this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(officialSchoolNumber));
-		} else {
-			const newLicense: MediaSchoolLicense = new MediaSchoolLicense({
-				id: new ObjectId().toHexString(),
-				type: SchoolLicenseType.MEDIA_LICENSE,
-				school,
-				mediaSource,
-				mediumId,
-			});
-			await this.mediaSchoolLicenseService.saveMediaSchoolLicense(newLicense);
+			return null;
 		}
+
+		const license: MediaSchoolLicense = new MediaSchoolLicense({
+			id: new ObjectId().toHexString(),
+			type: SchoolLicenseType.MEDIA_LICENSE,
+			school,
+			mediaSource,
+			mediumId,
+		});
+
+		return license;
 	}
 }

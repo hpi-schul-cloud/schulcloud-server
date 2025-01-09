@@ -73,8 +73,8 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 
 				const results: MediaSchoolLicense[] = await repo.findAllByMediaSourceAndMediumId(mediaSourceId, mediumId);
 
-				const sortedExpectedDOs = expectedDOs.sort();
 				expect(results.length).toEqual(expectedDOs.length);
+				const sortedExpectedDOs = expectedDOs.sort();
 				results.sort().forEach((result, i) => {
 					expect(result.id).toEqual(sortedExpectedDOs[i].id);
 					expect(result.mediumId).toEqual(sortedExpectedDOs[i].mediumId);
@@ -87,23 +87,31 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 		});
 	});
 
-	describe('save', () => {
-		describe('when a media school license is provided', () => {
+	describe('saveAll', () => {
+		describe('when media school licenses is provided', () => {
 			const setup = () => {
-				const mediaSchoolLicense = mediaSchoolLicenseFactory.build();
+				const mediaSchoolLicenses = mediaSchoolLicenseFactory.buildList(3);
 
-				return { mediaSchoolLicense };
+				return { mediaSchoolLicenses };
 			};
 
-			it('should save the media school license', async () => {
-				const { mediaSchoolLicense } = setup();
+			it('should save all the media school licenses', async () => {
+				const { mediaSchoolLicenses } = setup();
 
-				await repo.save(mediaSchoolLicense);
+				await repo.saveAll(mediaSchoolLicenses);
 
-				const savedMediaSchoolLicense: MediaSchoolLicenseEntity = await em.findOneOrFail(MediaSchoolLicenseEntity, {});
-				expect(savedMediaSchoolLicense.mediumId).toEqual(mediaSchoolLicense.mediumId);
-				expect(savedMediaSchoolLicense.school.id).toEqual(mediaSchoolLicense.school.id);
-				expect(savedMediaSchoolLicense.mediaSource?.id).toEqual(mediaSchoolLicense.mediaSource?.id);
+				const savedMediaSchoolLicenses: MediaSchoolLicenseEntity[] = await em.find(MediaSchoolLicenseEntity, {});
+
+				expect(savedMediaSchoolLicenses.length).toEqual(mediaSchoolLicenses.length);
+			});
+
+			it('should return all the saved media school licenses', async () => {
+				const { mediaSchoolLicenses } = setup();
+
+				const result = await repo.saveAll(mediaSchoolLicenses);
+
+				expect(result.length).toEqual(mediaSchoolLicenses.length);
+				expect(result.sort()).toEqual(mediaSchoolLicenses.sort());
 			});
 		});
 	});

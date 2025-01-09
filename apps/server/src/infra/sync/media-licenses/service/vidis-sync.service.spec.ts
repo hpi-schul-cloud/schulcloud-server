@@ -1,14 +1,17 @@
 import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
 import { OfferDTO } from '@infra/vidis-client';
+import { MediaSource } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
+import { MediaSchoolLicenseProps } from '@modules/school-license/domain';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { Logger } from '@src/core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepPartial } from 'fishery';
 import { vidisOfferItemFactory } from '../testing';
 import { VidisSyncService } from './vidis-sync.service';
 
@@ -54,6 +57,36 @@ describe(VidisSyncService.name, () => {
 
 	describe('syncMediaSchoolLicenses', () => {
 		describe('when the vidis media source and activated offer items are given', () => {
+			const getAllLicencesFromArgsPassedToSaveAll = (): MediaSchoolLicense[] => {
+				const allSavedLicenses = mediaSchoolLicenseService.saveAllMediaSchoolLicenses.mock.calls.reduce<
+					MediaSchoolLicense[]
+				>((acc: MediaSchoolLicense[], argsPassed: [MediaSchoolLicense[]]) => {
+					const licensesArg: MediaSchoolLicense[] = argsPassed[0];
+					acc.push(...licensesArg);
+					return acc;
+				}, []);
+
+				return allSavedLicenses;
+			};
+
+			const buildAllLicensesExpectedToBeSaved = (items: OfferDTO[], schools: School[], mediaSource: MediaSource) => {
+				const expectedSavedLicenses: unknown[] = [];
+				items.forEach((item: OfferDTO) => {
+					schools.forEach((school: School) => {
+						expectedSavedLicenses.push(
+							expect.objectContaining<DeepPartial<MediaSchoolLicenseProps>>({
+								type: SchoolLicenseType.MEDIA_LICENSE,
+								mediumId: `${item.offerId as number}`,
+								school,
+								mediaSource,
+							})
+						);
+					});
+				});
+
+				return expectedSavedLicenses;
+			};
+
 			describe('when the school activations provided does not exist in SVS', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.build();
@@ -71,33 +104,24 @@ describe(VidisSyncService.name, () => {
 						.mockResolvedValueOnce(schools[0])
 						.mockResolvedValueOnce(schools[1]);
 
-					const expectedSavedLicenseCount = officialSchoolNumbers.length * items.length;
+					const expectedSavedLicenses = buildAllLicensesExpectedToBeSaved(items, schools, mediaSource);
 
 					return {
 						mediaSource,
 						items,
 						schools,
-						expectedSavedLicenseCount,
+						expectedSavedLicenses,
 					};
 				};
 
 				it('should save the school activations as new school media licenses', async () => {
-					const { mediaSource, items, schools, expectedSavedLicenseCount } = setup();
+					const { mediaSource, items, expectedSavedLicenses } = setup();
 
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
-					expect(mediaSchoolLicenseService.saveMediaSchoolLicense).toHaveBeenCalledTimes(expectedSavedLicenseCount);
-					schools.forEach((school: School) => {
-						expect(mediaSchoolLicenseService.saveMediaSchoolLicense).toHaveBeenCalledWith(
-							expect.objectContaining({
-								id: expect.any(String),
-								type: SchoolLicenseType.MEDIA_LICENSE,
-								mediumId: `${items[0].offerId as number}`,
-								school,
-								mediaSource,
-							} as MediaSchoolLicense)
-						);
-					});
+					expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toBeCalledTimes(items.length);
+					const allSavedLicenses = getAllLicencesFromArgsPassedToSaveAll();
+					expect(allSavedLicenses).toEqual(expect.arrayContaining(expectedSavedLicenses));
 				});
 			});
 
@@ -130,7 +154,7 @@ describe(VidisSyncService.name, () => {
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
 					expect(schoolService.getSchoolByOfficialSchoolNumber).not.toHaveBeenCalled();
-					expect(mediaSchoolLicenseService.saveMediaSchoolLicense).not.toHaveBeenCalled();
+					expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).not.toHaveBeenCalled();
 				});
 			});
 
@@ -165,7 +189,7 @@ describe(VidisSyncService.name, () => {
 
 						await service.syncMediaSchoolLicenses(mediaSource, items);
 
-						expect(mediaSchoolLicenseService.deleteSchoolLicense).toHaveBeenCalledWith(existingMediaSchoolLicense);
+						expect(mediaSchoolLicenseService.deleteSchoolLicenses).toHaveBeenCalledWith([existingMediaSchoolLicense]);
 					});
 
 					it('it should not save the unavailable existing media school licenses', async () => {
@@ -174,7 +198,7 @@ describe(VidisSyncService.name, () => {
 						await service.syncMediaSchoolLicenses(mediaSource, items);
 
 						expect(schoolService.getSchoolByOfficialSchoolNumber).not.toHaveBeenCalled();
-						expect(mediaSchoolLicenseService.saveMediaSchoolLicense).not.toHaveBeenCalled();
+						expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).not.toHaveBeenCalled();
 					});
 				});
 
@@ -208,7 +232,7 @@ describe(VidisSyncService.name, () => {
 
 						await service.syncMediaSchoolLicenses(mediaSource, items);
 
-						expect(mediaSchoolLicenseService.deleteSchoolLicense).toHaveBeenCalledWith(existingMediaSchoolLicense);
+						expect(mediaSchoolLicenseService.deleteSchoolLicenses).toHaveBeenCalledWith([existingMediaSchoolLicense]);
 					});
 
 					it('it should not save the media school licenses with no official school number', async () => {
@@ -217,7 +241,7 @@ describe(VidisSyncService.name, () => {
 						await service.syncMediaSchoolLicenses(mediaSource, items);
 
 						expect(schoolService.getSchoolByOfficialSchoolNumber).not.toHaveBeenCalled();
-						expect(mediaSchoolLicenseService.saveMediaSchoolLicense).not.toHaveBeenCalled();
+						expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).not.toHaveBeenCalled();
 					});
 				});
 			});
@@ -254,7 +278,7 @@ describe(VidisSyncService.name, () => {
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
 					expect(schoolService.getSchoolByOfficialSchoolNumber).toHaveBeenCalled();
-					expect(mediaSchoolLicenseService.saveMediaSchoolLicense).not.toHaveBeenCalled();
+					expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).not.toHaveBeenCalled();
 				});
 			});
 
@@ -275,11 +299,13 @@ describe(VidisSyncService.name, () => {
 						.mockResolvedValueOnce(schools[1])
 						.mockResolvedValueOnce(schools[2]);
 
+					const expectedSavedLicenses = buildAllLicensesExpectedToBeSaved(items, schools, mediaSource);
+
 					return {
 						mediaSource,
 						items,
 						expectedSchoolNumbers,
-						schools,
+						expectedSavedLicenses,
 					};
 				};
 
@@ -302,22 +328,13 @@ describe(VidisSyncService.name, () => {
 				});
 
 				it('should save the school activations as new school media licenses', async () => {
-					const { mediaSource, items, schools } = setup();
+					const { mediaSource, items, expectedSavedLicenses } = setup();
 
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
-					expect(mediaSchoolLicenseService.saveMediaSchoolLicense).toHaveBeenCalledTimes(schools.length);
-					schools.forEach((school: School) => {
-						expect(mediaSchoolLicenseService.saveMediaSchoolLicense).toHaveBeenCalledWith(
-							expect.objectContaining({
-								id: expect.any(String),
-								type: SchoolLicenseType.MEDIA_LICENSE,
-								mediumId: `${items[0].offerId as number}`,
-								school,
-								mediaSource,
-							} as MediaSchoolLicense)
-						);
-					});
+					expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toBeCalledTimes(items.length);
+					const allSavedLicenses = getAllLicencesFromArgsPassedToSaveAll();
+					expect(allSavedLicenses).toEqual(expect.arrayContaining(expectedSavedLicenses));
 				});
 			});
 
@@ -338,11 +355,13 @@ describe(VidisSyncService.name, () => {
 						.mockResolvedValueOnce(schools[1])
 						.mockResolvedValueOnce(schools[2]);
 
+					const expectedSavedLicenses = buildAllLicensesExpectedToBeSaved(items, schools, mediaSource);
+
 					return {
 						mediaSource,
 						items,
 						expectedSchoolNumbers,
-						schools,
+						expectedSavedLicenses,
 					};
 				};
 
@@ -365,22 +384,13 @@ describe(VidisSyncService.name, () => {
 				});
 
 				it('should save the school activations as new school media licenses', async () => {
-					const { mediaSource, items, schools } = setup();
+					const { mediaSource, items, expectedSavedLicenses } = setup();
 
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
-					expect(mediaSchoolLicenseService.saveMediaSchoolLicense).toHaveBeenCalledTimes(schools.length);
-					schools.forEach((school: School) => {
-						expect(mediaSchoolLicenseService.saveMediaSchoolLicense).toHaveBeenCalledWith(
-							expect.objectContaining({
-								id: expect.any(String),
-								type: SchoolLicenseType.MEDIA_LICENSE,
-								mediumId: `${items[0].offerId as number}`,
-								school,
-								mediaSource,
-							} as MediaSchoolLicense)
-						);
-					});
+					expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toBeCalledTimes(items.length);
+					const allSavedLicenses = getAllLicencesFromArgsPassedToSaveAll();
+					expect(allSavedLicenses).toEqual(expect.arrayContaining(expectedSavedLicenses));
 				});
 			});
 

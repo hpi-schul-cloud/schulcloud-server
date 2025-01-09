@@ -60,27 +60,38 @@ describe(MediaSchoolLicenseService.name, () => {
 		});
 	});
 
-	describe('saveMediaSchoolLicense', () => {
-		describe('when a media school license is given', () => {
+	describe('saveAllMediaSchoolLicenses', () => {
+		describe('when media school licenses are given', () => {
 			const setup = () => {
-				const mediaSchooLicense = mediaSchoolLicenseFactory.build();
+				const mediaSchooLicenses = mediaSchoolLicenseFactory.buildList(3);
+
+				mediaSchoolLicenseRepo.saveAll.mockResolvedValueOnce(mediaSchooLicenses);
 
 				return {
-					mediaSchooLicense,
+					mediaSchooLicenses,
 				};
 			};
 
-			it('should save the media school license', async () => {
-				const { mediaSchooLicense } = setup();
+			it('should save the media school licenses', async () => {
+				const { mediaSchooLicenses } = setup();
 
-				await mediaSchoolLicenseService.saveMediaSchoolLicense(mediaSchooLicense);
+				await mediaSchoolLicenseService.saveAllMediaSchoolLicenses(mediaSchooLicenses);
 
-				expect(mediaSchoolLicenseRepo.save).toBeCalledWith(mediaSchooLicense);
+				expect(mediaSchoolLicenseRepo.saveAll).toBeCalledWith(mediaSchooLicenses);
+			});
+
+			it('should return the saved media school licenses', async () => {
+				const { mediaSchooLicenses } = setup();
+
+				const result = await mediaSchoolLicenseService.saveAllMediaSchoolLicenses(mediaSchooLicenses);
+
+				expect(result.length).toEqual(mediaSchooLicenses.length);
+				expect(result).toEqual(mediaSchooLicenses);
 			});
 		});
 	});
 
-	describe('deleteSchoolLicense', () => {
+	describe('deleteSchoolLicenses', () => {
 		describe('when an existing media school license is given', () => {
 			const setup = () => {
 				const mediaSchooLicense = mediaSchoolLicenseFactory.build();
@@ -93,9 +104,9 @@ describe(MediaSchoolLicenseService.name, () => {
 			it('should delete the media school license', async () => {
 				const { mediaSchooLicense } = setup();
 
-				await mediaSchoolLicenseService.deleteSchoolLicense(mediaSchooLicense);
+				await mediaSchoolLicenseService.deleteSchoolLicenses([mediaSchooLicense]);
 
-				expect(mediaSchoolLicenseRepo.delete).toBeCalledWith(mediaSchooLicense);
+				expect(mediaSchoolLicenseRepo.delete).toBeCalledWith([mediaSchooLicense]);
 			});
 		});
 	});

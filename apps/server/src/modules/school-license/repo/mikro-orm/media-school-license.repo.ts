@@ -29,16 +29,10 @@ export class MediaSchoolLicenseMikroOrmRepo
 		);
 
 		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
-			this.mapEntityToDomainObject(entity)
+			MediaSchoolLicenseEntityMapper.mapEntityToDO(entity)
 		);
 
 		return domainObjects;
-	}
-
-	private mapEntityToDomainObject(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
-		const schoolLicense: MediaSchoolLicense = MediaSchoolLicenseEntityMapper.mapEntityToDO(entity);
-
-		return schoolLicense;
 	}
 
 	protected mapDOToEntityProperties(entityDO: MediaSchoolLicense): EntityData<MediaSchoolLicenseEntity> {

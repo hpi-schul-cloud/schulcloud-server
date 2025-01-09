@@ -18,11 +18,13 @@ export class MediaSchoolLicenseService {
 		return mediaSchoolLicenses;
 	}
 
-	public async saveMediaSchoolLicense(license: MediaSchoolLicense): Promise<void> {
-		await this.mediaSchoolLicenseRepo.save(license);
+	public async deleteSchoolLicenses(licenses: MediaSchoolLicense[]): Promise<void> {
+		await this.mediaSchoolLicenseRepo.delete(licenses);
 	}
 
-	public async deleteSchoolLicense(license: MediaSchoolLicense): Promise<void> {
-		await this.mediaSchoolLicenseRepo.delete(license);
+	public async saveAllMediaSchoolLicenses(licenses: MediaSchoolLicense[]): Promise<MediaSchoolLicense[]> {
+		const mediaSchoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseRepo.saveAll(licenses);
+
+		return mediaSchoolLicenses;
 	}
 }
