@@ -526,7 +526,7 @@ data:
     if [[ $SC_THEME == "thr" ]]; then
       echo "Adding TSP system to systems collection"
 
-      TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(get_secret "$TSP_SYSTEM_OAUTH_CLIENT_SECRET")
+      TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(get_secret $TSP_SYSTEM_OAUTH_CLIENT_SECRET)
       mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
           {
             "_id": ObjectId("66d707f5c5202ba10c5e6256"),
