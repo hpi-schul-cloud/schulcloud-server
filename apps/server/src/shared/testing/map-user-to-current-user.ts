@@ -16,7 +16,7 @@ export const mapUserToCurrentUser = (
 		schoolId: user.school.id,
 		accountId: account ? account.id : new ObjectId().toHexString(),
 		systemId,
-		impersonated,
+		support: impersonated || false,
 		isExternalUser: false,
 	};
 

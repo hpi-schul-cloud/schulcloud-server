@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CourseFeatures } from '@shared/domain/entity';
+import { CourseFeatures, SyncAttribute } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 export interface CourseProps extends AuthorizableObject {
@@ -34,6 +34,8 @@ export interface CourseProps extends AuthorizableObject {
 	groupIds: EntityId[];
 
 	syncedWithGroup?: EntityId;
+
+	excludeFromSync?: SyncAttribute[];
 }
 
 export class Course extends DomainObject<CourseProps> {
@@ -65,8 +67,16 @@ export class Course extends DomainObject<CourseProps> {
 		return this.props.substitutionTeacherIds;
 	}
 
+	set classes(value: EntityId[]) {
+		this.props.classIds = value;
+	}
+
 	get classes(): EntityId[] {
 		return this.props.classIds;
+	}
+
+	set groups(value: EntityId[]) {
+		this.props.groupIds = value;
 	}
 
 	get groups(): EntityId[] {
@@ -87,5 +97,19 @@ export class Course extends DomainObject<CourseProps> {
 
 	get syncedWithGroup(): EntityId | undefined {
 		return this.props.syncedWithGroup;
+	}
+
+	set excludeFromSync(values: SyncAttribute[] | undefined) {
+		this.props.excludeFromSync = values ? [...new Set(values)] : undefined;
+	}
+
+	get excludeFromSync(): SyncAttribute[] | undefined {
+		return this.props.excludeFromSync;
+	}
+
+	public isTeacher(userId: EntityId): boolean {
+		const isTeacher: boolean = this.teachers.some((teacherId: EntityId) => teacherId === userId);
+
+		return isTeacher;
 	}
 }

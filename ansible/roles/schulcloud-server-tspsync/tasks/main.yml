@@ -81,3 +81,77 @@
     when: not WITH_TSP
     tags:
       - cronjob
+
+  - name: API TSP Sync CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-tsp-sync-cronjob.yml.j2
+    when: WITH_TSP_SYNC
+    tags:
+      - cronjob
+
+  - name: remove API TSP Sync CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      api_version: batch/v1
+      kind: CronJob
+      namespace: "{{ NAMESPACE }}"
+      name: api-tsp-sync-cronjob
+    when: not WITH_TSP_SYNC
+    tags:
+      - cronjob
+
+  - name: API TSP Sync CronJob ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-tsp-sync-cronjob-configmap.yml.j2
+      state: "{{ 'present' if WITH_TSP_SYNC|bool else 'absent'}}"
+    tags:
+      - configmap
+      
+  - name: API TSP Sync Init ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-tsp-sync-init-configmap.yml.j2
+      state: "{{ 'present' if WITH_TSP_SYNC|bool else 'absent'}}"
+    tags:
+      - configmap
+
+  - name: Test if TSP Init Job exit
+    kubernetes.core.k8s_info:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: Job
+      name: api-tsp-sync-init
+    register: api_tsp_sync_init_present
+    tags:
+      - job
+
+  - name: API TSP Sync Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-tsp-sync-init.yml.j2
+      state: present
+    when:
+    - WITH_TSP_SYNC
+    - api_tsp_sync_init_present.resources|length == 0
+    tags:
+      - job
+      
+  - name: remove API TSP Sync Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: Job
+      name: api-tsp-sync-init
+      state: absent
+    when: not WITH_TSP_SYNC
+    tags:
+      - job

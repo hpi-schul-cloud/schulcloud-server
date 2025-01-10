@@ -34,7 +34,7 @@ describe(ClassMapper.name, () => {
 							sourceOptions: new ClassSourceOptions({
 								tspUid: entity.sourceOptions?.tspUid,
 							}),
-							userIds: entity.userIds?.map((userId) => userId.toHexString()),
+							userIds: entity.userIds?.map((userId) => userId.toHexString()) || [],
 							successor: entity.successor?.toHexString(),
 							teacherIds: entity.teacherIds.map((teacherId) => teacherId.toHexString()),
 							gradeLevel: entity.gradeLevel,

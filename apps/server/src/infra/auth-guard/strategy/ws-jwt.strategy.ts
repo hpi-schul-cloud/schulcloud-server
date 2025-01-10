@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
-import { authConfig } from '../config';
+import { JwtAuthGuardConfig } from '../config';
 import { ICurrentUser, JwtPayload, StrategyType } from '../interface';
-import { CurrentUserMapper } from '../mapper';
+import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 @Injectable()
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
-	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter) {
-		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([JwtExtractor.fromCookie('jwt')]),
-			ignoreExpiration: false,
-			secretOrKey: authConfig.secret,
-			...authConfig.jwtOptions,
-		});
+	constructor(
+		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		configService: ConfigService<JwtAuthGuardConfig>
+	) {
+		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), configService);
+
+		super(strategyOptions);
 	}
 
 	async validate(payload: JwtPayload): Promise<ICurrentUser> {
@@ -25,7 +26,12 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		try {
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
-			const currentUser = CurrentUserMapper.jwtToICurrentUser(payload);
+			const currentUser = new CurrentUserBuilder(payload)
+				.asExternalUser(payload.isExternalUser)
+				.withExternalSystem(payload.systemId)
+				.asUserSupporter(payload.support)
+				.build();
+
 			return currentUser;
 		} catch (err) {
 			throw new WsException('Unauthorized access');

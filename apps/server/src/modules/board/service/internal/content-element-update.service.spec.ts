@@ -1,17 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { ContentElementUpdateService } from './content-element-update.service';
 import {
+	DrawingContentBody,
+	ExternalToolContentBody,
 	FileContentBody,
 	LinkContentBody,
 	RichTextContentBody,
-	DrawingContentBody,
 	SubmissionContainerContentBody,
-	ExternalToolContentBody,
+	VideoConferenceContentBody,
 } from '../../controller/dto';
 import { BoardNodeRepo } from '../../repo';
-
 import {
 	drawingElementFactory,
 	externalToolElementFactory,
@@ -19,7 +18,9 @@ import {
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
+import { ContentElementUpdateService } from './content-element-update.service';
 
 describe('ContentElementUpdateService', () => {
 	let module: TestingModule;
@@ -122,6 +123,17 @@ describe('ContentElementUpdateService', () => {
 		await service.updateContent(element, content);
 
 		expect(element.contextExternalToolId).toBe('contextExternalToolId');
+		expect(repo.save).toHaveBeenCalledWith(element);
+	});
+
+	it('should update VideoConferenceElement', async () => {
+		const element = videoConferenceElementFactory.build();
+		const content = new VideoConferenceContentBody();
+		content.title = 'vc title';
+
+		await service.updateContent(element, content);
+
+		expect(element.title).toBe('vc title');
 		expect(repo.save).toHaveBeenCalledWith(element);
 	});
 

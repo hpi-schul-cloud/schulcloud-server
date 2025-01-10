@@ -1,5 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property, wrap } from '@mikro-orm/core';
+import {
+	Collection,
+	Embeddable,
+	Embedded,
+	Entity,
+	Index,
+	ManyToMany,
+	ManyToOne,
+	Property,
+	wrap,
+} from '@mikro-orm/core';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
@@ -14,12 +24,15 @@ export interface UserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
+	preferredName?: string;
 	school: SchoolEntity;
+	secondarySchools?: UserSchoolEmbeddable[];
 	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
 	language?: LanguageType;
 	forcePasswordChange?: boolean;
+	discoverable?: boolean;
 	preferences?: Record<string, unknown>;
 	deletedAt?: Date;
 	lastLoginSystemChange?: Date;
@@ -42,6 +55,21 @@ interface UserInfo {
 	customAvatarBackgroundColor?: string;
 }
 
+@Embeddable()
+export class UserSchoolEmbeddable {
+	@Index()
+	@ManyToOne(() => SchoolEntity)
+	school: SchoolEntity;
+
+	@ManyToOne(() => Role)
+	role: Role;
+
+	constructor(props: UserSchoolEmbeddable) {
+		this.school = props.school;
+		this.role = props.role;
+	}
+}
+
 @Entity({ tableName: 'users' })
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
@@ -59,6 +87,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property()
 	lastName: string;
 
+	@Property({ nullable: true })
+	preferredName?: string;
+
 	@Index()
 	@ManyToMany({ fieldName: 'roles', entity: () => Role })
 	roles = new Collection<Role>(this);
@@ -66,6 +97,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Index()
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	school: SchoolEntity;
+
+	@Embedded(() => UserSchoolEmbeddable, { array: true, nullable: true })
+	secondarySchools: UserSchoolEmbeddable[] = [];
 
 	@Property({ nullable: true })
 	@Index()
@@ -95,6 +129,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
+
+	@Property({ nullable: true })
+	discoverable?: boolean;
 
 	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
@@ -135,12 +172,15 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		super();
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
+		this.preferredName = props.preferredName;
 		this.email = props.email;
 		this.school = props.school;
+		this.secondarySchools = props.secondarySchools || [];
 		this.roles.set(props.roles);
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;
 		this.forcePasswordChange = props.forcePasswordChange;
+		this.discoverable = props.discoverable;
 		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 		this.deletedAt = props.deletedAt;

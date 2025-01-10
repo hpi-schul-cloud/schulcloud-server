@@ -40,6 +40,18 @@ describe(DeletedElement.name, () => {
 	});
 
 	it('should set deletedElementType', () => {
+		const description = 'setDescription';
+
+		element.description = description;
+
+		expect(element.description).toEqual(description);
+	});
+
+	it('should return description', () => {
+		expect(element.description).toEqual(undefined);
+	});
+
+	it('should set description', () => {
 		const deletedElementType = ContentElementType.FILE;
 
 		element.deletedElementType = deletedElementType;

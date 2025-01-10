@@ -28,12 +28,20 @@ export class School extends DomainObject<SchoolProps> {
 		return this.props.systemIds;
 	}
 
+	get externalId(): string | undefined {
+		return this.props.externalId;
+	}
+
 	set externalId(externalId: string | undefined) {
 		this.props.externalId = externalId;
 	}
 
 	set ldapLastSync(ldapLastSync: string | undefined) {
 		this.props.ldapLastSync = ldapLastSync;
+	}
+
+	set name(name: string) {
+		this.props.name = name;
 	}
 
 	public getInfo(): SchoolInfo {

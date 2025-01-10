@@ -1,15 +1,29 @@
-import { CreateJwtPayload } from '@infra/auth-guard';
+import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import type { ServerConfig } from '@modules/server';
-import { Injectable } from '@nestjs/common';
+import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
+import { System } from '@modules/system';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { User } from '@shared/domain/entity';
+import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { BruteForceError, UnauthorizedLoggableException } from '../errors';
+import { firstValueFrom } from 'rxjs';
+import { AxiosError, AxiosHeaders, AxiosRequestConfig } from 'axios';
+import { AuthenticationConfig } from '../authentication-config';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
-import { LoginDto } from '../uc/dto';
+import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
+import { CurrentUserMapper } from '../mapper';
+import {
+	BruteForceError,
+	UnauthorizedLoggableException,
+	EndSessionEndpointNotFoundLoggableException,
+	ExternalSystemLogoutFailedLoggableException,
+} from '../errors';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,10 +31,16 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<ServerConfig, true>
-	) {}
+		private readonly configService: ConfigService<AuthenticationConfig, true>,
+		private readonly oauthSessionTokenService: OauthSessionTokenService,
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oauthEncryptionService: EncryptionService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(AuthenticationService.name);
+	}
 
-	async loadAccount(username: string, systemId?: string): Promise<Account> {
+	public async loadAccount(username: string, systemId?: string): Promise<Account> {
 		let account: Account | undefined | null;
 
 		if (systemId) {
@@ -40,22 +60,54 @@ export class AuthenticationService {
 		return account;
 	}
 
-	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
+	private async generateJwtAndAddToWhitelist(
+		createJwtPayload: CreateJwtPayload,
+		expiresIn?: number | string
+	): Promise<string> {
 		const jti = randomUUID();
+		const options: JwtSignOptions = {
+			subject: createJwtPayload.accountId,
+			jwtid: jti,
+		};
 
-		const result = new LoginDto({
-			accessToken: this.jwtService.sign(user, {
-				subject: user.accountId,
-				jwtid: jti,
-			}),
-		});
+		// It is necessary to set expiresIn conditionally like this, because setting it to undefined in the JwtSignOptions overwrites the value from the JwtModuleOptions.
+		if (expiresIn) {
+			options.expiresIn = expiresIn;
+		}
 
-		await this.jwtWhitelistAdapter.addToWhitelist(user.accountId, jti);
+		const accessToken = this.jwtService.sign(createJwtPayload, options);
 
-		return result;
+		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
+
+		return accessToken;
 	}
 
-	async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
+	public async generateCurrentUserJwt(currentUser: ICurrentUser): Promise<string> {
+		const createJwtPayload = JwtPayloadFactory.buildFromCurrentUser(currentUser);
+		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload);
+
+		return jwtToken;
+	}
+
+	public async generateSupportJwt(supportUser: User, targetUser: User): Promise<string> {
+		const targetUserAccount = await this.accountService.findByUserIdOrFail(targetUser.id);
+		const currentUser = CurrentUserMapper.userToICurrentUser(
+			targetUserAccount.id,
+			targetUser,
+			false,
+			targetUserAccount.systemId
+		);
+		const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUser.id);
+		const expiresIn = this.configService.get<number>('JWT_LIFETIME_SUPPORT_SECONDS');
+
+		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);
+
+		this.logger.info(new ShdUserCreateTokenLoggable(supportUser.id, targetUser.id, expiresIn));
+
+		return jwtToken;
+	}
+
+	public async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
 
 		if (this.isValidJwt(decodedJwt)) {
@@ -63,11 +115,15 @@ export class AuthenticationService {
 		}
 	}
 
+	public async removeUserFromWhitelist(account: Account): Promise<void> {
+		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
+	}
+
 	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
 		return typeof decodedJwt?.jti === 'string' && typeof decodedJwt?.accountId === 'string';
 	}
 
-	checkBrutForce(account: Account): void {
+	public checkBrutForce(account: Account): void {
 		if (account.lasttriedFailedLogin) {
 			const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
 
@@ -78,19 +134,63 @@ export class AuthenticationService {
 		}
 	}
 
-	async updateLastLogin(accountId: string): Promise<void> {
+	public async updateLastLogin(accountId: string): Promise<void> {
 		await this.accountService.updateLastLogin(accountId, new Date());
 	}
 
-	async updateLastTriedFailedLogin(id: string): Promise<void> {
+	public async updateLastTriedFailedLogin(id: string): Promise<void> {
 		await this.accountService.updateLastTriedFailedLogin(id, new Date());
 	}
 
-	normalizeUsername(username: string): string {
+	public normalizeUsername(username: string): string {
 		return username.trim().toLowerCase();
 	}
 
-	normalizePassword(password: string): string {
+	public normalizePassword(password: string): string {
 		return password.trim();
+	}
+
+	public async logoutFromExternalSystem(sessionToken: OauthSessionToken, system: System): Promise<void> {
+		if (!system.oauthConfig) {
+			throw new OauthConfigMissingLoggableException(system.id);
+		}
+
+		if (!system?.oauthConfig.endSessionEndpoint) {
+			throw new EndSessionEndpointNotFoundLoggableException(system.id);
+		}
+
+		const now = new Date();
+		if (now > sessionToken.expiresAt) {
+			await this.oauthSessionTokenService.delete(sessionToken);
+			return;
+		}
+
+		const headers: AxiosHeaders = new AxiosHeaders();
+		headers.setContentType('application/x-www-form-urlencoded');
+
+		const config: AxiosRequestConfig = {
+			auth: {
+				username: system.oauthConfig.clientId,
+				password: this.oauthEncryptionService.decrypt(system.oauthConfig.clientSecret),
+			},
+			headers,
+		};
+
+		try {
+			await firstValueFrom(
+				this.httpService.post(
+					system.oauthConfig.endSessionEndpoint,
+					{
+						refresh_token: sessionToken.refreshToken,
+					},
+					config
+				)
+			);
+		} catch (err) {
+			const axiosError = err as AxiosError;
+			throw new ExternalSystemLogoutFailedLoggableException(sessionToken.userId, system.id, axiosError);
+		}
+
+		await this.oauthSessionTokenService.delete(sessionToken);
 	}
 }

@@ -7,5 +7,9 @@ export interface SchulconnexRestClientOptions {
 
 	clientSecret?: string;
 
+	personInfoTimeoutInMs?: number;
+
 	personenInfoTimeoutInMs?: number;
+
+	policiesInfoTimeoutInMs?: number;
 }

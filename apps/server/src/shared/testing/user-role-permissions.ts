@@ -103,6 +103,7 @@ export const teacherPermissions = [
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
 	Permission.CONTEXT_TOOL_ADMIN,
+	Permission.ROOM_CREATE,
 ];
 
 export const adminPermissions = [
@@ -149,4 +150,5 @@ export const superheroPermissions = [
 	Permission.USER_LOGIN_MIGRATION_FORCE,
 	Permission.USER_LOGIN_MIGRATION_ROLLBACK,
 	Permission.INSTANCE_VIEW,
+	Permission.CREATE_SUPPORT_JWT,
 ];

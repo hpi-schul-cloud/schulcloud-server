@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { SchoolEntity, UserLoginMigrationEntity } from '@shared/domain/entity';
+import { SchoolEntity, StorageProviderEntity, UserLoginMigrationEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
@@ -53,6 +53,8 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
 			ldapLastSync: entity.ldapLastSync,
+			storageProvider: entity.storageProvider?.id,
+			fileStorageType: entity.fileStorageType,
 		});
 	}
 
@@ -74,6 +76,10 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 				: undefined,
 			federalState: entityDO.federalState,
 			ldapLastSync: entityDO.ldapLastSync,
+			storageProvider: entityDO.storageProvider
+				? this._em.getReference(StorageProviderEntity, entityDO.storageProvider)
+				: undefined,
+			fileStorageType: entityDO.fileStorageType,
 		};
 	}
 }

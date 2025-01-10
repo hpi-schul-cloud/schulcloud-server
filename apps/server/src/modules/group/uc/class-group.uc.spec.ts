@@ -33,7 +33,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, GroupFilter } from '../domain';
+import { Group, GroupFilter, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto } from './dto';
@@ -182,7 +182,7 @@ describe('ClassGroupUc', () => {
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
 
-				const startDate = schoolYearDo.getProps().startDate;
+				const { startDate } = schoolYearDo.getProps();
 				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({ startDate });
 				const nextSchoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({
 					startDate: schoolYear.endDate,
@@ -407,12 +407,15 @@ describe('ClassGroupUc', () => {
 					});
 				});
 
-				it('should call group service with userId and no pagination', async () => {
+				it('should call group service with userId, group type class and no pagination', async () => {
 					const { teacherUser } = setup();
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({ userId: teacherUser.id });
+					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({
+						userId: teacherUser.id,
+						groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					});
 				});
 			});
 
@@ -767,12 +770,15 @@ describe('ClassGroupUc', () => {
 					});
 				});
 
-				it('should call group service with schoolId and no pagination', async () => {
+				it('should call group service with schoolId, group type class and no pagination', async () => {
 					const { teacherUser } = setup();
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({ schoolId: teacherUser.school.id });
+					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({
+						schoolId: teacherUser.school.id,
+						groupTypes: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					});
 				});
 			});
 

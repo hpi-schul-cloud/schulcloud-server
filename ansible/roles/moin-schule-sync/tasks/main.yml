@@ -1,3 +1,14 @@
+- name: External Secret (moin-schule-sync)
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: moin-schule-sync-external-secret.yml.j2
+    state: "{{ 'present' if WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool else 'absent' }}"
+  when:
+    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+  tags:
+    - 1password
+
 - name: moin-schule-sync secret provisioned by 1Password
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
   kubernetes.core.k8s:

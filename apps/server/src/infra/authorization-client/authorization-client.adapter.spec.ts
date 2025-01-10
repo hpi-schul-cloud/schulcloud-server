@@ -4,16 +4,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import {
-	Action,
 	AuthorizationApi,
+	AuthorizationBodyParams,
 	AuthorizationBodyParamsReferenceType,
+	AuthorizationContextParamsAction,
+	AuthorizationContextParamsRequiredPermissions,
 	AuthorizedReponse,
 } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
 const jwtToken = 'someJwtToken';
-const requiredPermissions = ['somePermissionA', 'somePermissionB'];
+const requiredPermissions: Array<AuthorizationContextParamsRequiredPermissions> = [
+	AuthorizationContextParamsRequiredPermissions.ACCOUNT_CREATE,
+	AuthorizationContextParamsRequiredPermissions.ACCOUNT_DELETE,
+];
 
 describe(AuthorizationClientAdapter.name, () => {
 	let module: TestingModule;
@@ -58,9 +63,9 @@ describe(AuthorizationClientAdapter.name, () => {
 	describe('checkPermissionsByReference', () => {
 		describe('when authorizationReferenceControllerAuthorizeByReference resolves successful', () => {
 			const setup = (props: { isAuthorized: boolean }) => {
-				const params = {
+				const params: AuthorizationBodyParams = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -118,7 +123,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -148,7 +153,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -196,7 +201,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -239,7 +244,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -282,7 +287,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -314,7 +319,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions,
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,

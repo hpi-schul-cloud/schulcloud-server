@@ -1,6 +1,8 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { Room, RoomProps } from './room.do';
 import { roomFactory } from '../../testing';
+import { RoomColor } from '../type';
+import { Room, RoomProps } from './room.do';
 
 describe('Room', () => {
 	let room: Room;
@@ -8,9 +10,10 @@ describe('Room', () => {
 	const roomProps: RoomProps = {
 		id: roomId,
 		name: 'Conference Room',
-		color: 'blue',
+		color: RoomColor.BLUE,
 		startDate: new Date('2024-01-01'),
-		untilDate: new Date('2024-12-31'),
+		endDate: new Date('2024-12-31'),
+		schoolId: new ObjectId().toHexString(),
 		createdAt: new Date('2024-01-01'),
 		updatedAt: new Date('2024-01-01'),
 	};
@@ -41,9 +44,9 @@ describe('Room', () => {
 	});
 
 	it('should get and set color', () => {
-		expect(room.color).toBe('blue');
-		room.color = 'red';
-		expect(room.color).toBe('red');
+		expect(room.color).toBe(RoomColor.BLUE);
+		room.color = RoomColor.RED;
+		expect(room.color).toBe(RoomColor.RED);
 	});
 
 	it('should get and set startDate', () => {
@@ -53,11 +56,11 @@ describe('Room', () => {
 		expect(room.startDate).toEqual(newStartDate);
 	});
 
-	it('should get and set untilDate', () => {
-		expect(room.untilDate).toEqual(new Date('2024-12-31'));
-		const newUntilDate = new Date('2024-11-30');
-		room.untilDate = newUntilDate;
-		expect(room.untilDate).toEqual(newUntilDate);
+	it('should get and set endDate', () => {
+		expect(room.endDate).toEqual(new Date('2024-12-31'));
+		const newEndDate = new Date('2024-11-30');
+		room.endDate = newEndDate;
+		expect(room.endDate).toEqual(newEndDate);
 	});
 
 	it('should get createdAt', () => {

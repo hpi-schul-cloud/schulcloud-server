@@ -1,5 +1,6 @@
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { FileStorageType } from '@src/modules/school/domain';
 import { BaseDO } from './base.do';
 
 /**
@@ -32,6 +33,10 @@ export class LegacySchoolDo extends BaseDO {
 
 	ldapLastSync?: string;
 
+	storageProvider?: EntityId;
+
+	fileStorageType?: FileStorageType;
+
 	constructor(params: LegacySchoolDo) {
 		super();
 		this.id = params.id;
@@ -47,5 +52,7 @@ export class LegacySchoolDo extends BaseDO {
 		this.userLoginMigrationId = params.userLoginMigrationId;
 		this.federalState = params.federalState;
 		this.ldapLastSync = params.ldapLastSync;
+		this.storageProvider = params.storageProvider;
+		this.fileStorageType = params.fileStorageType;
 	}
 }

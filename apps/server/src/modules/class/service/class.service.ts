@@ -49,6 +49,16 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		return classes;
 	}
 
+	public async findClassWithSchoolIdAndExternalId(schoolId: EntityId, externalId: string): Promise<Class | null> {
+		const result: Class | null = await this.classesRepo.findClassWithSchoolIdAndExternalId(schoolId, externalId);
+
+		return result;
+	}
+
+	public async save(classes: Class | Class[]): Promise<void> {
+		await this.classesRepo.save(classes);
+	}
+
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

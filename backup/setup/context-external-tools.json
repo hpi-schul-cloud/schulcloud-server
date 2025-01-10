@@ -12,7 +12,7 @@
 		"schoolTool": {
 			"$oid": "644a46e5d0a8301e6cf25d86"
 		},
-		"contextId": "0000dcfbfb5c7a3f00bf21ab",
+		"contextId": { "$oid" : "0000dcfbfb5c7a3f00bf21ab" },
 		"contextType": "course",
 		"displayName": "Google-Suche",
 		"parameters": [
@@ -26,7 +26,7 @@
 		"_id": {
 			"$oid": "647de3cfab79fd5bd57e68f4"
 		},
-		"contextId": "0000dcfbfb5c7a3f00bf21ab",
+		"contextId": { "$oid" : "0000dcfbfb5c7a3f00bf21ab" },
 		"contextType": "course",
 		"parameters": [],
 		"schoolTool": {

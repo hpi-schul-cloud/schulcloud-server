@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LaunchRequestMethod } from '../../types';
+import { LaunchRequestMethod, LaunchType } from '../../types';
 
 export class ToolLaunchRequestResponse {
 	@ApiProperty({
@@ -29,10 +29,18 @@ export class ToolLaunchRequestResponse {
 	})
 	openNewTab?: boolean;
 
+	@ApiProperty({
+		description: 'Specifies the underlying type of the request',
+		enum: LaunchType,
+		enumName: 'LaunchType',
+	})
+	launchType: LaunchType;
+
 	constructor(props: ToolLaunchRequestResponse) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;
 		this.openNewTab = props.openNewTab;
+		this.launchType = props.launchType;
 	}
 }

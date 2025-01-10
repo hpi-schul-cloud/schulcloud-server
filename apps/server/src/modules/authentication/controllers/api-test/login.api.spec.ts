@@ -1,4 +1,3 @@
-import { ICurrentUser } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/core';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -7,12 +6,11 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
+import { JwtTestFactory, roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import request, { Response } from 'supertest';
@@ -20,10 +18,6 @@ import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginRe
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
-
-const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
-const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
-const privateKey: string | Buffer = keyPair.privateKey.export({ type: 'pkcs1', format: 'pem' });
 
 // It is not completely end-to-end
 // LDAP client is mocked because no suitable LDAP server exists in test environment.
@@ -63,8 +57,8 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKey: jest.fn().mockResolvedValue({
 			kid: 'kid',
 			alg: 'RS256',
-			getPublicKey: jest.fn().mockReturnValue(publicKey),
-			rsaPublicKey: publicKey,
+			getPublicKey: jest.fn().mockReturnValue(JwtTestFactory.getPublicKey()),
+			rsaPublicKey: JwtTestFactory.getPublicKey(),
 		}),
 		getSigningKeys: jest.fn(),
 	};
@@ -358,15 +352,16 @@ describe('Login Controller (api)', () => {
 				expect(response.body.accessToken).toBeDefined();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
 				const decodedToken = jwt.decode(response.body.accessToken);
-				expect(decodedToken).toMatchObject<ICurrentUser>({
+				expect(decodedToken).toMatchObject({
 					userId: user.id,
 					systemId: system.id,
 					roles: [studentRole.id],
 					schoolId: school.id,
 					accountId: account.id,
 					isExternalUser: true,
+					// support: false,
+					// externalIdToken: undefined,
 				});
-				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 	});
@@ -390,28 +385,19 @@ describe('Login Controller (api)', () => {
 				await em.persistAndFlush([system, school, studentRoles, user, account]);
 				em.clear();
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'testUser',
-						iss: system.oauthConfig?.issuer,
-						aud: system.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						// For OIDC provisioning strategy
-						external_sub: userExternalId,
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					iss: system.oauthConfig?.issuer,
+					aud: system.oauthConfig?.clientId,
+					// For OIDC provisioning strategy
+					external_sub: userExternalId,
+				});
 
 				const axiosMock: MockAdapter = new MockAdapter(axios);
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
-					refresh_token: 'refreshToken',
-					access_token: 'accessToken',
+					refresh_token: JwtTestFactory.createJwt(),
+					access_token: JwtTestFactory.createJwt(),
 				});
 
 				return {
@@ -462,6 +448,7 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
+
 		describe('when a valid code is provided with deactivated account', () => {
 			const setup = async (inputExternalId: string) => {
 				const schoolExternalId = 'schoolExternalId';
@@ -479,28 +466,19 @@ describe('Login Controller (api)', () => {
 
 				await em.persistAndFlush([system, school, teacherRoles, user, account]);
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'testUser2',
-						iss: system.oauthConfig?.issuer,
-						aud: system.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						// For OIDC provisioning strategy
-						external_sub: userExternalId,
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					iss: system.oauthConfig?.issuer,
+					aud: system.oauthConfig?.clientId,
+					// For OIDC provisioning strategy
+					external_sub: userExternalId,
+				});
 
 				const axiosMock: MockAdapter = new MockAdapter(axios);
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
-					refresh_token: 'refreshToken',
-					access_token: 'accessToken',
+					refresh_token: JwtTestFactory.createJwt(),
+					access_token: JwtTestFactory.createJwt(),
 				});
 
 				return {

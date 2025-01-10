@@ -1,3 +1,4 @@
+import { UserDiscoverableQuery } from '@src/modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 describe('UserScope', () => {
@@ -48,6 +49,25 @@ describe('UserScope', () => {
 				scope.bySchoolId(schoolId);
 
 				expect(scope.query).toEqual({ school: schoolId });
+			});
+		});
+	});
+
+	describe('byRole is called', () => {
+		describe('when role parameter is undefined', () => {
+			it('should return scope without added role to query', () => {
+				scope.byRoleId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when role parameter is defined', () => {
+			it('should return scope with added role to query', () => {
+				const roleId = 'roleId';
+
+				scope.byRoleId(roleId);
+
+				expect(scope.query).toEqual({ roles: roleId });
 			});
 		});
 	});
@@ -180,6 +200,32 @@ describe('UserScope', () => {
 		});
 	});
 
+	describe('withDiscoverabilityTrue', () => {
+		describe('when undefined', () => {
+			it('should not add a query', () => {
+				scope.withDiscoverableTrue();
+
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when not false', () => {
+			it('should add query to find true and undefined', () => {
+				scope.withDiscoverableTrue(UserDiscoverableQuery.NOT_FALSE);
+
+				expect(scope.query).toEqual({ discoverable: { $ne: false } });
+			});
+		});
+
+		describe('when tue', () => {
+			it('should add a query to find true', () => {
+				scope.withDiscoverableTrue(UserDiscoverableQuery.TRUE);
+
+				expect(scope.query).toEqual({ discoverable: true });
+			});
+		});
+	});
+
 	describe('withDeleted', () => {
 		describe('when deleted users are included', () => {
 			it('should not add a query', () => {
@@ -194,6 +240,25 @@ describe('UserScope', () => {
 				scope.withDeleted(false);
 
 				expect(scope.query).toEqual({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] });
+			});
+		});
+	});
+
+	describe('byTspUid is called', () => {
+		describe('when tsp parameter is defined', () => {
+			it('should return scope with added tspUid to query', () => {
+				const tspUid = 'tspUid';
+
+				scope.byTspUid(tspUid);
+
+				expect(scope.query).toEqual({ sourceOptions: { tspUid } });
+			});
+		});
+
+		describe('when tsp parameter is undefined', () => {
+			it('should return scope without added tspUid to query', () => {
+				scope.byTspUid(undefined);
+				expect(scope.query).toEqual({});
 			});
 		});
 	});

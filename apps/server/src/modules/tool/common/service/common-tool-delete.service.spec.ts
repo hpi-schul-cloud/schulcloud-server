@@ -134,6 +134,7 @@ describe(CommonToolDeleteService.name, () => {
 					new ContextExternalToolDeletedEvent({
 						id: contextExternalTool.id,
 						title: displayName,
+						description: 'description',
 					})
 				);
 			});
@@ -143,7 +144,7 @@ describe(CommonToolDeleteService.name, () => {
 	describe('deleteSchoolExternalTool', () => {
 		describe('when deleting a school external tool', () => {
 			const setup = () => {
-				const externalTool = externalToolFactory.build();
+				const externalTool = externalToolFactory.build({ description: undefined });
 				const schoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
 				});
@@ -199,6 +200,7 @@ describe(CommonToolDeleteService.name, () => {
 					new ContextExternalToolDeletedEvent({
 						id: contextExternalTool.id,
 						title: externalTool.name,
+						description: undefined,
 					})
 				);
 			});
@@ -254,8 +256,31 @@ describe(CommonToolDeleteService.name, () => {
 					new ContextExternalToolDeletedEvent({
 						id: contextExternalTool.id,
 						title: externalTool.name,
+						description: externalTool.description,
 					})
 				);
+			});
+		});
+	});
+
+	describe('deleteContextExternalToolsByCourseId', () => {
+		describe('when deleting a context external tool', () => {
+			const setup = () => {
+				const contextExternalTool = contextExternalToolFactory.build();
+
+				contextExternalToolRepo.find.mockResolvedValueOnce([contextExternalTool]);
+
+				return {
+					contextExternalTool,
+				};
+			};
+
+			it('should delete the context external tool', async () => {
+				const { contextExternalTool } = setup();
+
+				await service.deleteContextExternalToolsByCourseId(contextExternalTool.contextRef.id);
+
+				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool]);
 			});
 		});
 	});

@@ -4,8 +4,7 @@ import { EntityId } from '@shared/domain/types';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
-import { ColumnBoardCopyService } from './internal/column-board-copy.service';
-import { ColumnBoardLinkService } from './internal/column-board-link.service';
+import { ColumnBoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams } from './internal';
 
 @Injectable()
 export class ColumnBoardService {
@@ -13,7 +12,7 @@ export class ColumnBoardService {
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
-		private readonly clumnBoardLinkService: ColumnBoardLinkService
+		private readonly columnBoardLinkService: ColumnBoardLinkService
 	) {}
 
 	async findById(id: EntityId, depth?: number): Promise<ColumnBoard> {
@@ -30,8 +29,8 @@ export class ColumnBoardService {
 		return boards;
 	}
 
-	async updateVisibility(columbBoard: ColumnBoard, visibility: boolean): Promise<void> {
-		await this.boardNodeService.updateVisibility(columbBoard, visibility);
+	async updateVisibility(columnBoard: ColumnBoard, visibility: boolean): Promise<void> {
+		await this.boardNodeService.updateVisibility(columnBoard, visibility);
 	}
 
 	// called from feathers
@@ -45,19 +44,14 @@ export class ColumnBoardService {
 		await this.boardNodeRepo.delete(boardNodes);
 	}
 
-	async copyColumnBoard(props: {
-		originalColumnBoardId: EntityId;
-		destinationExternalReference: BoardExternalReference;
-		userId: EntityId;
-		copyTitle?: string;
-	}): Promise<CopyStatus> {
-		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(props);
+	async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
+		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(params);
 
 		return copyStatus;
 	}
 
 	async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
-		const board = await this.clumnBoardLinkService.swapLinkedIds(boardId, idMap);
+		const board = await this.columnBoardLinkService.swapLinkedIds(boardId, idMap);
 
 		return board;
 	}

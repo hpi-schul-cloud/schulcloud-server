@@ -15,6 +15,7 @@ export const deletedElementFactory = BaseFactory.define<DeletedElement, DeletedE
 			updatedAt: new Date(),
 			title: `Title #${sequence}`,
 			deletedElementType: ContentElementType.EXTERNAL_TOOL,
+			description: 'description',
 		};
 	}
 );

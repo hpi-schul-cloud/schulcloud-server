@@ -22,7 +22,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		super();
 	}
 
-	async validate(username?: string, password?: string): Promise<ICurrentUser> {
+	public async validate(username?: string, password?: string): Promise<ICurrentUser> {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
 
@@ -49,16 +49,15 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		password = TypeGuard.checkNotNullOrUndefined(password, new UnauthorizedException());
 		username = this.authenticationService.normalizeUsername(username);
 		password = this.authenticationService.normalizePassword(password);
+
 		return { username, password };
 	}
 
-	private async checkCredentials(
-		enteredPassword: string,
-		savedPassword: string,
-		account: Account
-	): Promise<void | never> {
+	private async checkCredentials(enteredPassword: string, savedPassword: string, account: Account): Promise<void> {
 		this.authenticationService.checkBrutForce(account);
-		if (!(await bcrypt.compare(enteredPassword, savedPassword))) {
+		const samePassword = await bcrypt.compare(enteredPassword, savedPassword);
+
+		if (!samePassword) {
 			await this.authenticationService.updateLastTriedFailedLogin(account.id);
 			throw new UnauthorizedException();
 		}

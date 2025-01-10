@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CalendarService } from '@infra/calendar';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Account, AccountService } from '@modules/account';
-import { OauthCurrentUser } from '@modules/authentication/interface';
 import {
 	DataDeletedEvent,
 	DeletionErrorLoggableException,
@@ -13,11 +12,12 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleService } from '@modules/role';
+import { RoleDto, RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
@@ -26,9 +26,9 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { CalendarService } from '@src/infra/calendar';
+import { schoolFactory } from '@src/modules/school/testing';
 import { UserDto } from '../uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
+import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -39,7 +39,6 @@ describe('UserService', () => {
 	let userDORepo: DeepMocked<UserDORepo>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
-	let accountService: DeepMocked<AccountService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let eventBus: DeepMocked<EventBus>;
@@ -71,10 +70,6 @@ describe('UserService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: AccountService,
-					useValue: createMock<AccountService>(),
-				},
-				{
 					provide: RegistrationPinService,
 					useValue: createMock<RegistrationPinService>(),
 				},
@@ -104,7 +99,6 @@ describe('UserService', () => {
 		userDORepo = module.get(UserDORepo);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
-		accountService = module.get(AccountService);
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 		calendarService = module.get(CalendarService);
@@ -217,6 +211,27 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('findByIds', () => {
+		beforeEach(() => {
+			const userDO: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				externalId: 'externalUserId',
+			});
+			userDORepo.findByIds.mockResolvedValue([userDO]);
+		});
+
+		it('should provide the userDOs', async () => {
+			const result = await service.findByIds(['id']);
+
+			expect(result).toBeDefined();
+			expect(result).toHaveLength(1);
+			expect(result[0]).toBeInstanceOf(UserDO);
+		});
+	});
+
 	describe('findByIdOrNull', () => {
 		describe('when a user with this id exists', () => {
 			const setup = () => {
@@ -255,53 +270,6 @@ describe('UserService', () => {
 				const result: UserDO | null = await service.findByIdOrNull(userId);
 
 				expect(result).toBeNull();
-			});
-		});
-	});
-
-	describe('getResolvedUser is called', () => {
-		describe('when a resolved user is requested', () => {
-			const setup = () => {
-				const systemId = 'systemId';
-				const role: Role = roleFactory.buildWithId({
-					name: RoleName.STUDENT,
-					permissions: [Permission.DASHBOARD_VIEW],
-				});
-				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
-				const account: Account = new Account({
-					id: 'accountId',
-					systemId,
-					username: 'username',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					activated: true,
-				});
-
-				userDORepo.findById.mockResolvedValue(user);
-				accountService.findByUserIdOrFail.mockResolvedValue(account);
-
-				return {
-					userId: user.id as string,
-					user,
-					account,
-					role,
-					systemId,
-				};
-			};
-
-			it('should return the current user', async () => {
-				const { userId, user, account, role, systemId } = setup();
-
-				const result: OauthCurrentUser = await service.getResolvedUser(userId);
-
-				expect(result).toEqual<OauthCurrentUser>({
-					userId,
-					systemId,
-					schoolId: user.schoolId,
-					accountId: account.id,
-					roles: [role.id],
-					isExternalUser: true,
-				});
 			});
 		});
 	});
@@ -449,6 +417,254 @@ describe('UserService', () => {
 			await service.findUsers(query, options);
 
 			expect(userDORepo.find).toHaveBeenCalledWith(query, options);
+		});
+	});
+
+	describe('findBySchoolRole', () => {
+		it('should call the repo with given schoolId and roleName', async () => {
+			const schoolId = 'schoolId';
+			const role = roleFactory.buildWithId();
+			roleService.findByName.mockResolvedValue(role);
+
+			await service.findBySchoolRole(schoolId, role.name);
+
+			expect(userDORepo.find).toHaveBeenCalledWith({ schoolId, roleId: role.id }, undefined);
+		});
+	});
+
+	describe('findPublicTeachersBySchool', () => {
+		const setup = () => {
+			const school = schoolFactory.build();
+			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+			const teachers = userDoFactory.buildListWithId(2, { schoolId: school.id, roles: [role] });
+
+			const expectedResult = new Page<UserDO>(teachers, 2);
+			userDORepo.find.mockResolvedValue(expectedResult);
+			roleService.findByName.mockResolvedValue(role);
+
+			return { school, role, expectedResult };
+		};
+
+		it('should return result', async () => {
+			const { expectedResult, school } = setup();
+			const result = await service.findPublicTeachersBySchool(school.id);
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		//  "disabled", "opt-in", "opt-out", "enabled"
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "enabled"', () => {
+			it('should query all teachers', async () => {
+				const { school, role } = setup();
+				config.get.mockReturnValue('enabled');
+
+				await service.findPublicTeachersBySchool(school.id);
+
+				expect(userDORepo.find).toHaveBeenCalledWith({ schoolId: school.id, roleId: role.id }, undefined);
+			});
+		});
+
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-out"', () => {
+			it('should query teachers that did not specifically set discoverability to false', async () => {
+				const { school, role } = setup();
+				config.get.mockReturnValue('opt-out');
+
+				await service.findPublicTeachersBySchool(school.id);
+
+				expect(userDORepo.find).toHaveBeenCalledWith(
+					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.NOT_FALSE },
+					undefined
+				);
+			});
+		});
+
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-in"', () => {
+			it('should query only teachers that specifically set discoverability to true', async () => {
+				const { school, role } = setup();
+				config.get.mockReturnValue('opt-in');
+
+				await service.findPublicTeachersBySchool(school.id);
+
+				expect(userDORepo.find).toHaveBeenCalledWith(
+					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.TRUE },
+					undefined
+				);
+			});
+		});
+
+		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "disabled"', () => {
+			it('should return empty result', async () => {
+				const { school } = setup();
+				config.get.mockReturnValue('disabled');
+
+				const result = await service.findPublicTeachersBySchool(school.id);
+
+				expect(result).toEqual(expect.objectContaining({ data: [], total: 0 }));
+			});
+		});
+	});
+
+	describe('updateSecondarySchoolRole', () => {
+		const setupGuestRoles = () => {
+			const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+			const guestStudent = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+
+			roleService.findByName.mockImplementation((name) => {
+				if (name === RoleName.GUESTTEACHER) {
+					return Promise.resolve(new RoleDto(guestTeacher));
+				}
+				if (name === RoleName.GUESTSTUDENT) {
+					return Promise.resolve(new RoleDto(guestStudent));
+				}
+				throw new Error('Unexpected role name');
+			});
+
+			return { guestTeacher, guestStudent };
+		};
+
+		describe('when user is not in targetSchool yet', () => {
+			const setupUserWithRole = (rolename: RoleName) => {
+				const role = roleFactory.buildWithId({ name: rolename });
+				const user = userDoFactory.buildWithId({ roles: [role] });
+				const targetSchool = schoolFactory.build();
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, role, targetSchool };
+			};
+
+			it('should add teacher as guestteacher to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.TEACHER);
+				const { guestTeacher } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+						],
+					}),
+				]);
+			});
+
+			it('should add admin as guestteacher to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.ADMINISTRATOR);
+				const { guestTeacher } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+						],
+					}),
+				]);
+			});
+
+			it('should add student as gueststudent to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.STUDENT);
+				const { guestStudent } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDO>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestStudent.id, name: RoleName.GUESTSTUDENT } },
+						],
+					}),
+				]);
+			});
+
+			it('should throw when user has no recognized role', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.USER);
+				setupGuestRoles();
+
+				await expect(() =>
+					service.addSecondarySchoolToUsers([user.id as string], targetSchool.id)
+				).rejects.toThrowError();
+			});
+		});
+
+		describe('when user is already in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const user = userDoFactory.buildWithId({ roles: [role], schoolId: targetSchool.id });
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool };
+			};
+
+			it('should not change the user', async () => {
+				const { user, targetSchool } = setup();
+				setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+				);
+			});
+		});
+
+		describe('when user is already a guest in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const guestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const user = userDoFactory.buildWithId({
+					roles: [role],
+					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestRole) }],
+				});
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool };
+			};
+
+			it('should not change the user', async () => {
+				const { user, targetSchool } = setup();
+				setupGuestRoles();
+				const expectedSecondarySchools = [...user.secondarySchools];
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: expectedSecondarySchools })])
+				);
+			});
+		});
+	});
+
+	describe('removeSecondarySchool', () => {
+		describe('when user is guest in targetSchool', () => {
+			const setup = () => {
+				const targetSchool = schoolFactory.build();
+				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const user = userDoFactory.buildWithId({
+					roles: [role],
+					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestTeacher) }],
+				});
+
+				userDORepo.findByIds.mockResolvedValueOnce([user]);
+
+				return { user, targetSchool, guestTeacher };
+			};
+
+			it('should remove user from secondary school', async () => {
+				const { user, targetSchool } = setup();
+
+				await service.removeSecondarySchoolFromUsers([user.id as EntityId], targetSchool.id);
+
+				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+				);
+			});
 		});
 	});
 
@@ -859,7 +1075,7 @@ describe('UserService', () => {
 		});
 	});
 
-	describe('findByExternalIdsAndProvidedBySystemId', () => {
+	describe('findMultipleByExternalIds', () => {
 		const setup = () => {
 			const systemId = new ObjectId().toHexString();
 			const userA = userFactory.buildWithId({ externalId: '111' });
@@ -875,39 +1091,27 @@ describe('UserService', () => {
 			};
 		};
 
-		describe('when find users By externalIds and systemId', () => {
-			it('should call findMultipleByExternalIds in userService with externalIds', async () => {
-				const { externalIds, foundUsers, systemId } = setup();
+		it('should call findMultipleByExternalIds in userService with externalIds', async () => {
+			const { externalIds, foundUsers } = setup();
 
-				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+			userRepo.findByExternalIds.mockResolvedValueOnce(foundUsers);
 
-				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+			await service.findMultipleByExternalIds(externalIds);
 
-				expect(service.findMultipleByExternalIds).toHaveBeenCalledWith(externalIds);
-			});
+			expect(userRepo.findByExternalIds).toHaveBeenCalledWith(externalIds);
+		});
 
-			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
-				const { externalIds, foundUsers, systemId } = setup();
+		it('should return array with verified Users', async () => {
+			const { externalIds, foundUsers } = setup();
 
-				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+			userRepo.findByExternalIds.mockResolvedValueOnce(foundUsers);
 
-				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+			const result = await service.findMultipleByExternalIds(externalIds);
 
-				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(foundUsers, systemId);
-			});
-
-			it('should return array with verified Users', async () => {
-				const { externalIds, foundUsers, systemId } = setup();
-
-				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
-				jest.spyOn(accountService, 'findByUserIdsAndSystemId').mockResolvedValueOnce(foundUsers);
-
-				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
-
-				expect(result).toEqual(foundUsers);
-			});
+			expect(result).toEqual(foundUsers);
 		});
 	});
+
 	describe('findUnsynchronizedUserIds', () => {
 		const setup = () => {
 			const currentDate = new Date();
@@ -943,6 +1147,26 @@ describe('UserService', () => {
 				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
 
 				expect(result).toEqual([]);
+			});
+		});
+	});
+
+	describe('findByTspUids', () => {
+		describe('when looking for users with tspUids', () => {
+			const setup = () => {
+				const user = userDoFactory.build();
+				userDORepo.findByTspUids.mockResolvedValueOnce([user]);
+
+				return { user };
+			};
+
+			it('should delegate to the userRepo', async () => {
+				const { user } = setup();
+
+				const result = await service.findByTspUids(['tspUid']);
+
+				expect(result).toStrictEqual([user]);
+				expect(userDORepo.findByTspUids).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

@@ -1,17 +1,26 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import { RoomColor } from '../type';
 
 export interface RoomProps extends AuthorizableObject {
 	id: EntityId;
 	name: string;
-	color: string;
+	color: RoomColor;
 	startDate?: Date;
-	untilDate?: Date;
+	endDate?: Date;
+	schoolId: EntityId;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
+export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId'>;
+export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
+
 export class Room extends DomainObject<RoomProps> {
+	public constructor(props: RoomProps) {
+		super(props);
+	}
+
 	public getProps(): RoomProps {
 		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,28 +39,32 @@ export class Room extends DomainObject<RoomProps> {
 		this.props.name = value;
 	}
 
-	public get color(): string {
+	public get color(): RoomColor {
 		return this.props.color;
 	}
 
-	public set color(value: string) {
+	public set color(value: RoomColor) {
 		this.props.color = value;
+	}
+
+	public get schoolId(): EntityId {
+		return this.props.schoolId;
 	}
 
 	public get startDate(): Date | undefined {
 		return this.props.startDate;
 	}
 
-	public set startDate(value: Date) {
+	public set startDate(value: Date | undefined) {
 		this.props.startDate = value;
 	}
 
-	public get untilDate(): Date | undefined {
-		return this.props.untilDate;
+	public get endDate(): Date | undefined {
+		return this.props.endDate;
 	}
 
-	public set untilDate(value: Date) {
-		this.props.untilDate = value;
+	public set endDate(value: Date | undefined) {
+		this.props.endDate = value;
 	}
 
 	public get createdAt(): Date {

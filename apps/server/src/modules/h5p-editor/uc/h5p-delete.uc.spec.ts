@@ -20,6 +20,7 @@ const createParams = () => {
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
 		isExternalUser: false,
+		support: false,
 	};
 
 	return { content, mockCurrentUser };

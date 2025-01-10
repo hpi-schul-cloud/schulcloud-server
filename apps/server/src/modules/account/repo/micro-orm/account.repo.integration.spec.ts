@@ -68,6 +68,26 @@ describe('account repo', () => {
 		});
 	});
 
+	describe('saveAll', () => {
+		describe('When multiple accounts are given', () => {
+			const setup = () => {
+				const accounts = accountDoFactory.buildList(3);
+				const accountIds = accounts.map((account) => account.id);
+
+				return { accounts, accountIds };
+			};
+
+			it('should save all accounts', async () => {
+				const { accounts, accountIds } = setup();
+
+				await repo.saveAll(accounts);
+
+				const foundAccounts = await em.find(AccountEntity, { id: { $in: accountIds } });
+				expect(foundAccounts.length).toBe(accounts.length);
+			});
+		});
+	});
+
 	describe('findById', () => {
 		describe('When the account exists', () => {
 			const setup = async () => {
@@ -340,30 +360,6 @@ describe('account repo', () => {
 				const [result] = await repo.searchByUsernameExactMatch(originalUsername);
 				expect(result).toHaveLength(1);
 				expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-			});
-		});
-
-		describe('When searching by username', () => {
-			const setup = async () => {
-				const originalUsername = 'USER@EXAMPLE.COM';
-				const partialLowerCaseUsername = 'USER@example.COM';
-				const lowercaseUsername = 'user@example.com';
-				const account = accountFactory.build({ username: originalUsername });
-				await em.persistAndFlush([account]);
-				em.clear();
-				return { originalUsername, partialLowerCaseUsername, lowercaseUsername, account };
-			};
-
-			it('should find account by user name, ignoring case', async () => {
-				const { originalUsername, partialLowerCaseUsername, lowercaseUsername } = await setup();
-
-				let [accounts] = await repo.searchByUsernameExactMatch(partialLowerCaseUsername);
-				expect(accounts).toHaveLength(1);
-				expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-
-				[accounts] = await repo.searchByUsernameExactMatch(lowercaseUsername);
-				expect(accounts).toHaveLength(1);
-				expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 			});
 		});
 

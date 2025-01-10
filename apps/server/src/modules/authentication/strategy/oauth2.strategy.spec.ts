@@ -1,32 +1,30 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { OAuthService, OAuthTokenDto } from '@modules/oauth';
+import { OAuthService, OauthSessionToken, OauthSessionTokenService, OAuthTokenDto } from '@modules/oauth';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { userDoFactory } from '@shared/testing';
-
+import { JwtTestFactory, userDoFactory } from '@shared/testing';
 import { OauthCurrentUser } from '../interface';
-
-import { SchoolInMigrationLoggableException } from '../loggable';
-
-import { AccountNotFoundLoggableException } from '../loggable/account-not-found.loggable-exception';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import {
+	AccountNotFoundLoggableException,
+	SchoolInMigrationLoggableException,
+	UserAccountDeactivatedLoggableException,
+} from '../loggable';
 import { Oauth2Strategy } from './oauth2.strategy';
 
-describe('Oauth2Strategy', () => {
+describe(Oauth2Strategy.name, () => {
 	let module: TestingModule;
 	let strategy: Oauth2Strategy;
 
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
+	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [],
 			providers: [
 				Oauth2Strategy,
 				{
@@ -37,12 +35,17 @@ describe('Oauth2Strategy', () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
+				{
+					provide: OauthSessionTokenService,
+					useValue: createMock<OauthSessionTokenService>(),
+				},
 			],
 		}).compile();
 
 		strategy = module.get(Oauth2Strategy);
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
+		oauthSessionTokenService = module.get(OauthSessionTokenService);
 	});
 
 	afterAll(async () => {
@@ -59,25 +62,52 @@ describe('Oauth2Strategy', () => {
 				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
 				const account = accountDoFactory.build();
+				const expiryDate = new Date();
 
-				const idToken = 'idToken';
+				const idToken = JwtTestFactory.createJwt();
+				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() / 1000 });
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
 						idToken,
 						accessToken: 'accessToken',
-						refreshToken: 'refreshToken',
+						refreshToken,
 					})
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
 
-				return { systemId, user, account, idToken };
+				return {
+					systemId,
+					user,
+					account,
+					idToken,
+					refreshToken,
+					expiryDate,
+				};
 			};
+
+			it('should cache the refresh token', async () => {
+				const { systemId, user, refreshToken, expiryDate } = setup();
+
+				await strategy.validate({
+					body: { code: 'code', redirectUri: 'redirectUri', systemId },
+				});
+
+				expect(oauthSessionTokenService.save).toHaveBeenCalledWith(
+					new OauthSessionToken({
+						id: expect.any(String),
+						systemId,
+						userId: user.id as string,
+						refreshToken,
+						expiresAt: expiryDate,
+					})
+				);
+			});
 
 			it('should return the ICurrentUser', async () => {
 				const { systemId, user, account, idToken } = setup();
 
-				const result: ICurrentUser = await strategy.validate({
+				const result = await strategy.validate({
 					body: { code: 'code', redirectUri: 'redirectUri', systemId },
 				});
 
@@ -89,6 +119,7 @@ describe('Oauth2Strategy', () => {
 					accountId: account.id,
 					externalIdToken: idToken,
 					isExternalUser: true,
+					support: false,
 				});
 			});
 		});

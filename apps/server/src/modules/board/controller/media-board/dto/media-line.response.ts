@@ -1,7 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { MediaBoardColors } from '../../../domain/media-board/types';
-import { TimestampsResponse } from '../../dto';
+import { MediaBoardColors } from '../../../domain';
+import { DeletedElementResponse, TimestampsResponse } from '../../dto';
+import { AnyMediaElementResponse } from './any-media-element.response';
 import { MediaExternalToolElementResponse } from './media-external-tool-element.response';
 
 export class MediaLineResponse {
@@ -13,10 +14,16 @@ export class MediaLineResponse {
 	title: string;
 
 	@ApiProperty({
-		type: [MediaExternalToolElementResponse],
 		description: 'The elements of the media line',
+		type: 'array',
+		items: {
+			oneOf: [
+				{ $ref: getSchemaPath(MediaExternalToolElementResponse) },
+				{ $ref: getSchemaPath(DeletedElementResponse) },
+			],
+		},
 	})
-	elements: MediaExternalToolElementResponse[];
+	elements: AnyMediaElementResponse[];
 
 	@ApiProperty({ description: 'The timestamps of the media line' })
 	timestamps: TimestampsResponse;

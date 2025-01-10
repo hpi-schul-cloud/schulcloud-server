@@ -1,5 +1,5 @@
 {
-	"title": "HPI Schul-Cloud Configuration",
+	"title": "SVS Server Configuration",
 	"type": "object",
 	"additionalProperties": false,
 	"properties": {
@@ -119,11 +119,29 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
+		"JWT_PRIVATE_KEY": {
+			"type": "string",
+			"description": "The private key used to sign JWTs."
+		},
+		"JWT_PUBLIC_KEY": {
+			"type": "string",
+			"description": "The public key used to verify JWTs."
+		},
+		"JWT_SIGNING_ALGORITHM": {
+			"type": "string",
+			"default": "RS256",
+			"description": "The algorithm used to sign JWTs. Must be an asymmetric algorithm."
+		},
 		"JWT_LIFETIME": {
 			"type": "string",
 			"default": "30d",
 			"pattern": "^[0-9]+d$",
 			"description": "Lifetime of generated JWTs in days."
+		},
+		"JWT_LIFETIME_SUPPORT_SECONDS": {
+			"type": "number",
+			"default": 3600,
+			"description": "Lifetime of generated support JWTs."
 		},
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
@@ -164,6 +182,46 @@
 			"type": "string",
 			"default": "",
 			"description": "The key used to sign/verify TSP request tokens."
+		},
+		"TSP_API_CLIENT_BASE_URL": {
+			"type": "string",
+			"default": "",
+			"description": "The TSP API base URL."
+		},
+		"TSP_API_CLIENT_TOKEN_LIFETIME_MS": {
+			"type": "number",
+			"default": "30000",
+			"description": "The TSP token lifetime in milliseconds."
+		},
+		"TSP_SYNC_SCHOOL_LIMIT": {
+			"type": "number",
+			"default": "10",
+			"description": "The amount of schools the sync handles at once."
+		},
+		"TSP_SYNC_SCHOOL_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches schools from the TSP."
+		},
+		"TSP_SYNC_DATA_LIMIT": {
+			"type": "number",
+			"default": "150",
+			"description": "The amount of school data updates the sync handles at once."
+		},
+		"TSP_SYNC_DATA_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches school data from the TSP."
+		},
+		"TSP_SYNC_MIGRATION_LIMIT": {
+			"type": "number",
+			"default": "500",
+			"description": "The amount of users the sync migrates at once."
+		},
+		"FEATURE_TSP_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for TSP migration."
 		},
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",
@@ -803,7 +861,7 @@
 		},
 		"AES_KEY": {
 			"type": "string",
-			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
+			"description": "Symmetric encryption key used to encrypt and decrypt secrets.",
 			"pattern": ".{16}.*"
 		},
 		"FEATURE_ETHERPAD_ENABLED": {
@@ -1091,11 +1149,6 @@
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
 		},
-		"JWT_AUD": {
-			"type": "string",
-			"default": "https://dbildungscloud.de",
-			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
-		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
 			"default": "ticketsystem@dbildungscloud.de",
@@ -1155,6 +1208,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable link elements in column board."
+		},
+		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable video conference elements in column board."
 		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
@@ -1354,12 +1412,12 @@
 		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables new CTL-tool tab in a course"
 		},
 		"FEATURE_LTI_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables old LTI-tool tab in a course"
 		},
 		"FEATURE_SHOW_OUTDATED_USERS": {
@@ -1379,8 +1437,13 @@
 		},
 		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables external tools on the column board"
+		},
+		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables preferred external tools on the column board"
 		},
 		"CTL_TOOLS": {
 			"type": "object",
@@ -1390,6 +1453,11 @@
 					"type": "integer",
 					"default": 300000,
 					"description": "Maximum size of the logo of an external tool in bytes"
+				},
+				"PREFERRED_TOOLS_LIMIT": {
+					"type": "integer",
+					"default": 5,
+					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
 		},
@@ -1489,98 +1557,6 @@
 				"API_KEY": ""
 			}
 		},
-		"TLDRAW": {
-			"type": "object",
-			"description": "Configuration of tldraw related settings",
-			"required": [
-				"PING_TIMEOUT",
-				"FINALIZE_DELAY",
-				"SOCKET_PORT",
-				"GC_ENABLED",
-				"DB_COMPRESS_THRESHOLD",
-				"MAX_DOCUMENT_SIZE",
-				"ASSETS_ENABLED",
-				"ASSETS_SYNC_ENABLED",
-				"ASSETS_MAX_SIZE",
-				"ASSETS_ALLOWED_MIME_TYPES_LIST"
-			],
-			"properties": {
-				"SOCKET_PORT": {
-					"type": "number",
-					"description": "Web socket port for tldraw"
-				},
-				"PING_TIMEOUT": {
-					"type": "number",
-					"description": "Websocket ping timeout in ms"
-				},
-				"FINALIZE_DELAY": {
-					"type": "number",
-					"description": "Delay in milliseconds before checking if can finalize a tldraw board"
-				},
-				"GC_ENABLED": {
-					"type": "boolean",
-					"description": "If tldraw garbage collector should be enabled"
-				},
-				"DB_COMPRESS_THRESHOLD": {
-					"type": "integer",
-					"description": "Mongo documents with same docName compress threshold size"
-				},
-				"MAX_DOCUMENT_SIZE": {
-					"type": "number",
-					"description": "Maximum size of a single tldraw document in mongo"
-				},
-				"ASSETS_ENABLED": {
-					"type": "boolean",
-					"description": "Enables uploading assets to tldraw board"
-				},
-				"ASSETS_SYNC_ENABLED": {
-					"type": "boolean",
-					"description": "Enables synchronization of tldraw board assets with file storage"
-				},
-				"ASSETS_MAX_SIZE": {
-					"type": "integer",
-					"description": "Maximum asset size in bytes"
-				},
-				"ASSETS_ALLOWED_MIME_TYPES_LIST": {
-					"type": "string",
-					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
-					"examples": ["image/gif,image/jpeg,video/webm"]
-				},
-				"PERFORMANCE_MEASURE_ENABLED": {
-					"type": "boolean",
-					"description": "Activate the performance measure for observed areas.",
-					"default": true
-				},
-				"LOG_LEVEL": {
-					"type": "string",
-					"default": "info",
-					"description": "Define log level for tldraw.",
-					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
-				}
-			},
-			"default": {
-				"SOCKET_PORT": 3345,
-				"PING_TIMEOUT": 30000,
-				"FINALIZE_DELAY": 5000,
-				"GC_ENABLED": true,
-				"DB_COMPRESS_THRESHOLD": 400,
-				"MAX_DOCUMENT_SIZE": 15000000,
-				"ASSETS_ENABLED": true,
-				"ASSETS_SYNC_ENABLED": false,
-				"ASSETS_MAX_SIZE": 10485760,
-				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
-			}
-		},
-		"TLDRAW_DB_URL": {
-			"type": "string",
-			"default": "mongodb://127.0.0.1:27017/tldraw",
-			"description": "DB connection url"
-		},
-		"TLDRAW_URI": {
-			"type": "string",
-			"default": "http://localhost:3349",
-			"description": "Address for tldraw management app"
-		},
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
@@ -1603,10 +1579,20 @@
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
 				},
+				"PERSON_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching person info from schulconnex",
+					"default": 3000
+				},
 				"PERSONEN_INFO_TIMEOUT_IN_MS": {
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
 					"default": 120000
+				},
+				"POLICIES_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching policies info from schulconnex",
+					"default": 4000
 				}
 			},
 			"default": {
@@ -1661,6 +1647,10 @@
 			"description": "URL for fetching policies info from moin.schule schulconnex",
 			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
 		},
+		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
+			"type": "number",
+			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
+		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
 			"default": "ws://localhost:4450",
@@ -1680,6 +1670,16 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the rooms feature"
+		},
+		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the external system logout feature"
+		},
+		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
+			"type": "boolean",
+			"default": "false",
+			"description": "if calling sync legacy indexes is allowed, only management module should have access to this, this should not exist in the long term when all entites and their indexes have been migrated"
 		}
 	},
 	"required": []

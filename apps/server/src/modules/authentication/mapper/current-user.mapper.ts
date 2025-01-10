@@ -1,20 +1,23 @@
-import { ICurrentUser } from '@infra/auth-guard';
+import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
 import { ValidationError } from '@shared/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, User } from '@shared/domain/entity';
-import { OauthCurrentUser } from '../interface';
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
-		return {
+		const roles = user.roles.getItems().map((role: Role) => role.id);
+		const currentUser = new CurrentUserBuilder({
 			accountId,
-			systemId,
-			roles: user.roles.getItems().map((role: Role) => role.id),
-			schoolId: user.school.id,
 			userId: user.id,
-			isExternalUser,
-		};
+			schoolId: user.school.id,
+			roles,
+		})
+			.asExternalUser(isExternalUser)
+			.withExternalSystem(systemId)
+			.build();
+
+		return currentUser;
 	}
 
 	static mapToOauthCurrentUser(
@@ -22,19 +25,25 @@ export class CurrentUserMapper {
 		user: UserDO,
 		systemId?: string,
 		externalIdToken?: string
-	): OauthCurrentUser {
+	): ICurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
 		}
 
-		return {
+		const roles = user.roles.map((roleRef: RoleReference) => roleRef.id);
+		const currentUserBuilder = new CurrentUserBuilder({
 			accountId,
-			systemId,
-			roles: user.roles.map((roleRef: RoleReference) => roleRef.id),
-			schoolId: user.schoolId,
 			userId: user.id,
-			externalIdToken,
-			isExternalUser: true,
-		};
+			schoolId: user.schoolId,
+			roles,
+		}).withExternalSystem(systemId);
+
+		if (externalIdToken) {
+			currentUserBuilder.asExternalUserWithToken(externalIdToken);
+		}
+
+		const currentUser = currentUserBuilder.build();
+
+		return currentUser;
 	}
 }

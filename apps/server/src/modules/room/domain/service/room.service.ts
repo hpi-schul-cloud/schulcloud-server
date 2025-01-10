@@ -1,8 +1,11 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { Room } from '../do';
+import { EntityId } from '@shared/domain/types';
+import { ValidationError } from '@shared/common';
 import { RoomRepo } from '../../repo';
+import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 
 @Injectable()
 export class RoomService {
@@ -12,5 +15,61 @@ export class RoomService {
 		const rooms: Page<Room> = await this.roomRepo.findRooms(findOptions);
 
 		return rooms;
+	}
+
+	public async getRoomsByIds(roomIds: EntityId[], findOptions: IFindOptions<Room>): Promise<Page<Room>> {
+		const rooms: Page<Room> = await this.roomRepo.findRoomsByIds(roomIds, findOptions);
+
+		return rooms;
+	}
+
+	public async createRoom(props: RoomCreateProps): Promise<Room> {
+		const roomProps: RoomProps = {
+			id: new ObjectId().toHexString(),
+			name: props.name,
+			color: props.color,
+			schoolId: props.schoolId,
+			// make sure that the dates are not null at runtime
+			startDate: props.startDate ?? undefined,
+			endDate: props.endDate ?? undefined,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+		this.validateTimeSpan(props, roomProps.id);
+		const room = new Room(roomProps);
+
+		await this.roomRepo.save(room);
+
+		return room;
+	}
+
+	public async getSingleRoom(roomId: EntityId): Promise<Room> {
+		const room = await this.roomRepo.findById(roomId);
+
+		return room;
+	}
+
+	public async updateRoom(room: Room, props: RoomUpdateProps): Promise<void> {
+		this.validateTimeSpan(props, room.id);
+
+		room.name = props.name;
+		room.color = props.color;
+		// make sure that the dates are not null at runtime
+		room.startDate = props.startDate ?? undefined;
+		room.endDate = props.endDate ?? undefined;
+
+		await this.roomRepo.save(room);
+	}
+
+	public async deleteRoom(room: Room): Promise<void> {
+		await this.roomRepo.delete(room);
+	}
+
+	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
+		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
+			throw new ValidationError(
+				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
+			);
+		}
 	}
 }

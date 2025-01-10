@@ -5,6 +5,7 @@ import { TimestampsResponse } from '../timestamps.response';
 export class DeletedElementContent {
 	constructor(props: DeletedElementContent) {
 		this.title = props.title;
+		this.description = props.description;
 		this.deletedElementType = props.deletedElementType;
 	}
 
@@ -13,6 +14,9 @@ export class DeletedElementContent {
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
 	deletedElementType: ContentElementType;
+
+	@ApiProperty()
+	description?: string;
 }
 
 export class DeletedElementResponse {

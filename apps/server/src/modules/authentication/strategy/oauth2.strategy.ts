@@ -1,23 +1,36 @@
-import { ICurrentUser } from '@infra/auth-guard';
+import type { ICurrentUser } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
-import { OAuthService, OAuthTokenDto } from '@modules/oauth';
+import {
+	OAuthService,
+	OauthSessionToken,
+	OauthSessionTokenFactory,
+	OauthSessionTokenService,
+	OAuthTokenDto,
+} from '@modules/oauth';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import type { UserDO } from '@shared/domain/domainobject';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { OauthCurrentUser, StrategyType } from '../interface';
-import { AccountNotFoundLoggableException, SchoolInMigrationLoggableException } from '../loggable';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { StrategyType } from '../interface';
+import {
+	AccountNotFoundLoggableException,
+	SchoolInMigrationLoggableException,
+	UserAccountDeactivatedLoggableException,
+} from '../loggable';
 import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUTH2) {
-	constructor(private readonly oauthService: OAuthService, private readonly accountService: AccountService) {
+	constructor(
+		private readonly oauthService: OAuthService,
+		private readonly accountService: AccountService,
+		private readonly oauthSessionTokenService: OauthSessionTokenService
+	) {
 		super();
 	}
 
-	async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
+	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { systemId, redirectUri, code } = request.body;
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
@@ -37,7 +50,15 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			throw new UserAccountDeactivatedLoggableException();
 		}
 
-		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
+		const oauthSessionToken: OauthSessionToken = OauthSessionTokenFactory.build({
+			userId: user.id,
+			systemId,
+			refreshToken: tokenDto.refreshToken,
+		});
+
+		await this.oauthSessionTokenService.save(oauthSessionToken);
+
+		const currentUser: ICurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
 			account.id,
 			user,
 			systemId,

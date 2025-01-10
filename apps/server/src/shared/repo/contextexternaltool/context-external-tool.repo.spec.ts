@@ -8,6 +8,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/too
 import {
 	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
+	ltiDeepLinkFactory,
 } from '@modules/tool/context-external-tool/testing';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
@@ -151,10 +152,12 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const result: ContextExternalTool = await repo.save(domainObject);
 
-				expect(result).toMatchObject({
-					...domainObject.getProps(),
-					id: expect.any(String),
-				});
+				expect(result).toEqual(
+					new ContextExternalTool({
+						...domainObject.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 
@@ -171,6 +174,7 @@ describe(ContextExternalToolRepo.name, () => {
 						schoolToolId: new ObjectId().toHexString(),
 						schoolId: undefined,
 					},
+					ltiDeepLink: ltiDeepLinkFactory.build(),
 				});
 
 				return {
@@ -183,10 +187,12 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const result: ContextExternalTool = await repo.save(domainObject);
 
-				expect(result).toMatchObject({
-					...domainObject.getProps(),
-					id: expect.any(String),
-				});
+				expect(result).toEqual(
+					new ContextExternalTool({
+						...domainObject.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 
@@ -258,13 +264,13 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const query: ContextExternalToolQuery = {
 					context: {
-						id: contextExternalTool1.contextId,
+						id: contextExternalTool1.contextId.toHexString(),
 					},
 				};
 
 				const result: ContextExternalTool[] = await repo.find(query);
 
-				expect(result[0].contextRef.id).toEqual(contextExternalTool1.contextId);
+				expect(result[0].contextRef.id).toEqual(contextExternalTool1.contextId.toHexString());
 			});
 		});
 
@@ -303,7 +309,7 @@ describe(ContextExternalToolRepo.name, () => {
 
 				const query: ContextExternalToolQuery = {
 					context: {
-						id: contextExternalTool1.contextId,
+						id: contextExternalTool1.contextId.toHexString(),
 					},
 				};
 
@@ -373,7 +379,7 @@ describe(ContextExternalToolRepo.name, () => {
 				expect(result.getProps()).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
 					contextRef: {
-						id: contextExternalTool.contextId,
+						id: contextExternalTool.contextId.toHexString(),
 						type: ToolContextType.COURSE,
 					},
 					displayName: contextExternalTool.displayName,
@@ -417,7 +423,7 @@ describe(ContextExternalToolRepo.name, () => {
 				expect(result?.getProps()).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
 					contextRef: {
-						id: contextExternalTool.contextId,
+						id: contextExternalTool.contextId.toHexString(),
 						type: ToolContextType.COURSE,
 					},
 					displayName: contextExternalTool.displayName,

@@ -1,11 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { Constructor, EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { ColumnBoard, MediaBoard } from '../../domain';
 
 export class InvalidBoardTypeLoggableException extends BadRequestException implements Loggable {
 	constructor(
-		private readonly expectedType: new (...args: never[]) => MediaBoard | ColumnBoard,
+		private readonly expectedType: Constructor<MediaBoard | ColumnBoard>,
 		private readonly mediaBoardId: EntityId
 	) {
 		super();

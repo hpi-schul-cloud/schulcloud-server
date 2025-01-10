@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: management-deployment
   namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
   labels:
     app: management-deployment
     app.kubernetes.io/part-of: schulcloud-verbund
@@ -51,6 +57,8 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: api-management-configmap
         - secretRef:
             name: api-secret
         - secretRef:

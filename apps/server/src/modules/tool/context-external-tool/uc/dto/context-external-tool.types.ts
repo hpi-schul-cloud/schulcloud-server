@@ -5,6 +5,6 @@ export type ContextExternalToolDto = ContextExternalToolProps;
 
 export type ContextExternalToolQuery = {
 	id?: string;
-	schoolToolRef?: Partial<SchoolExternalToolRef>;
+	schoolToolRef?: Partial<Omit<SchoolExternalToolRef, 'schoolId'>>;
 	context?: Partial<ContextRef>;
 };

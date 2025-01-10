@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthConfigEntity } from '@modules/system/entity';
 import { SystemService } from '@modules/system/service';
-import { systemFactory } from '@modules/system/testing';
+import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -18,10 +18,11 @@ import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { System } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { externalUserDtoFactory } from '../../provisioning/testing';
 import { OAuthTokenDto } from '../interface';
 import {
-	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
+	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -46,7 +47,7 @@ describe('OAuthService', () => {
 	let module: TestingModule;
 	let service: OAuthService;
 
-	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let oAuthEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
 	let systemService: DeepMocked<SystemService>;
@@ -170,9 +171,6 @@ describe('OAuthService', () => {
 	});
 
 	describe('validateToken', () => {
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
 		describe('when the token is validated', () => {
 			it('should validate id_token and return it decoded', async () => {
 				jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => {
@@ -190,7 +188,116 @@ describe('OAuthService', () => {
 				jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 				await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
-					new IdTokenInvalidLoggableException()
+					new TokenInvalidLoggableException()
+				);
+			});
+		});
+	});
+
+	describe('validateLogoutToken', () => {
+		describe('when the token is valid', () => {
+			const setup = () => {
+				const secret = 'secret';
+				const jwtPayload: JwtPayload = {
+					sub: 'externalUserId',
+					iss: 'externalSystem',
+					events: { 'http://schemas.openid.net/event/backchannel-logout': {} },
+				};
+				const oauthConfig = systemOauthConfigFactory.build();
+
+				oauthAdapterService.getPublicKey.mockResolvedValue(secret);
+				jest.spyOn(jwt, 'verify').mockImplementationOnce(() => jwtPayload);
+
+				return {
+					secret,
+					jwtPayload,
+					oauthConfig,
+				};
+			};
+
+			it('should return the decoded token', async () => {
+				const { oauthConfig, jwtPayload } = setup();
+
+				const result = await service.validateLogoutToken('token', oauthConfig);
+
+				expect(result).toEqual(jwtPayload);
+			});
+		});
+
+		describe('when the validation only returns a string', () => {
+			const setup = () => {
+				const secret = 'secret';
+				const oauthConfig = systemOauthConfigFactory.build();
+
+				oauthAdapterService.getPublicKey.mockResolvedValue(secret);
+				jest.spyOn(jwt, 'verify').mockImplementationOnce(() => 'string');
+
+				return {
+					secret,
+					oauthConfig,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { oauthConfig } = setup();
+
+				await expect(service.validateLogoutToken('token', oauthConfig)).rejects.toEqual(
+					new TokenInvalidLoggableException()
+				);
+			});
+		});
+
+		describe('when the token does not contain the backchannel-logout event', () => {
+			const setup = () => {
+				const secret = 'secret';
+				const jwtPayload: JwtPayload = { sub: 'externalUserId', iss: 'externalSystem' };
+				const oauthConfig = systemOauthConfigFactory.build();
+
+				oauthAdapterService.getPublicKey.mockResolvedValue(secret);
+				jest.spyOn(jwt, 'verify').mockImplementationOnce(() => jwtPayload);
+
+				return {
+					secret,
+					jwtPayload,
+					oauthConfig,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { oauthConfig } = setup();
+
+				await expect(service.validateLogoutToken('token', oauthConfig)).rejects.toEqual(
+					new TokenInvalidLoggableException()
+				);
+			});
+		});
+
+		describe('when the token has a nonce', () => {
+			const setup = () => {
+				const secret = 'secret';
+				const jwtPayload: JwtPayload = {
+					sub: 'externalUserId',
+					iss: 'externalSystem',
+					events: { 'http://schemas.openid.net/event/backchannel-logout': {} },
+					nonce: '8321937182',
+				};
+				const oauthConfig = systemOauthConfigFactory.build();
+
+				oauthAdapterService.getPublicKey.mockResolvedValue(secret);
+				jest.spyOn(jwt, 'verify').mockImplementationOnce(() => jwtPayload);
+
+				return {
+					secret,
+					jwtPayload,
+					oauthConfig,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { oauthConfig } = setup();
+
+				await expect(service.validateLogoutToken('token', oauthConfig)).rejects.toEqual(
+					new TokenInvalidLoggableException()
 				);
 			});
 		});
@@ -272,9 +379,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -323,9 +430,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -370,9 +477,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: 'externalSchoolId',
 						name: 'External School',
@@ -438,9 +545,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -506,9 +613,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -569,9 +676,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -631,9 +738,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,
@@ -698,9 +805,9 @@ describe('OAuthService', () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
-					externalUser: {
+					externalUser: externalUserDtoFactory.build({
 						externalId: externalUserId,
-					},
+					}),
 					externalSchool: {
 						externalId: externalSchoolId,
 						name: school.name,

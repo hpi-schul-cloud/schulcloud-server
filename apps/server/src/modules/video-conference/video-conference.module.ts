@@ -1,6 +1,6 @@
 import { CalendarModule } from '@infra/calendar';
 import { AuthorizationModule } from '@modules/authorization';
-import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -8,20 +8,28 @@ import { Module } from '@nestjs/common';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { LoggerModule } from '@src/core/logger';
+import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
+import { RoleModule } from '../role';
+import { RoomMembershipModule } from '../room-membership';
+import { RoomModule } from '../room';
 
 @Module({
 	imports: [
 		AuthorizationModule,
 		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
+		BoardModule,
 		CalendarModule,
 		HttpModule,
 		LegacySchoolModule,
 		LoggerModule,
+		RoleModule,
+		RoomMembershipModule,
+		RoomModule,
 		UserModule,
 		LearnroomModule,
 		UserModule,

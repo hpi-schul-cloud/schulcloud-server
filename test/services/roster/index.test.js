@@ -5,9 +5,7 @@ const chaiHttp = require('chai-http');
 const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
-const {
-	FeathersRosterService,
-} = require('../../../dist/apps/server/modules/pseudonym/service/feathers-roster.service');
+const { FeathersRosterService } = require('../../../dist/apps/server/modules/roster/service/feathers-roster.service');
 
 chai.use(chaiHttp);
 

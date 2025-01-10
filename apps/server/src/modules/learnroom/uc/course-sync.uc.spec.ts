@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { groupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseDoService } from '../service';
+import { CourseSyncService } from '../service/course-sync.service';
 import { courseFactory } from '../testing';
 import { CourseSyncUc } from './course-sync.uc';
 
@@ -15,6 +16,7 @@ describe(CourseSyncUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let courseService: DeepMocked<CourseDoService>;
 	let groupService: DeepMocked<GroupService>;
+	let courseSyncService: DeepMocked<CourseSyncService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,6 +31,10 @@ describe(CourseSyncUc.name, () => {
 					useValue: createMock<CourseDoService>(),
 				},
 				{
+					provide: CourseSyncService,
+					useValue: createMock<CourseSyncService>(),
+				},
+				{
 					provide: GroupService,
 					useValue: createMock<GroupService>(),
 				},
@@ -39,6 +45,8 @@ describe(CourseSyncUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseDoService);
 		groupService = module.get(GroupService);
+		courseSyncService = module.get(CourseSyncService);
+
 		await setupEntities();
 	});
 
@@ -82,7 +90,7 @@ describe(CourseSyncUc.name, () => {
 
 				await uc.stopSynchronization(user.id, course.id);
 
-				expect(courseService.stopSynchronization).toHaveBeenCalledWith(course);
+				expect(courseSyncService.stopSynchronization).toHaveBeenCalledWith(course);
 			});
 		});
 	});
@@ -110,8 +118,6 @@ describe(CourseSyncUc.name, () => {
 
 				await uc.startSynchronization(user.id, course.id, group.id);
 
-				expect(courseService.findById).toHaveBeenCalledWith(course.id);
-				expect(groupService.findById).toHaveBeenCalledWith(group.id);
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
 					course,
@@ -119,14 +125,27 @@ describe(CourseSyncUc.name, () => {
 				);
 			});
 
-			it('should start the synchronization', async () => {
+			it('should call course do service with the correct course id', async () => {
 				const { user, course, group } = setup();
 
 				await uc.startSynchronization(user.id, course.id, group.id);
 				expect(courseService.findById).toHaveBeenCalledWith(course.id);
-				expect(groupService.findById).toHaveBeenCalledWith(group.id);
+			});
 
-				expect(courseService.startSynchronization).toHaveBeenCalledWith(course, group);
+			it('should call group service with the correct group id', async () => {
+				const { user, course, group } = setup();
+
+				await uc.startSynchronization(user.id, course.id, group.id);
+
+				expect(groupService.findById).toHaveBeenCalledWith(group.id);
+			});
+
+			it('should start the synchronization', async () => {
+				const { user, course, group } = setup();
+
+				await uc.startSynchronization(user.id, course.id, group.id);
+
+				expect(courseSyncService.startSynchronization).toHaveBeenCalledWith(course, group, user);
 			});
 		});
 	});

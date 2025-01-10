@@ -22,6 +22,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 				url: element.url,
 				title: element.title,
 				description: element.description,
+				originalImageUrl: element.originalImageUrl,
 				imageUrl: element.imageUrl,
 			}),
 		});
@@ -29,7 +30,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: LinkElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof LinkElement;
 	}
 }

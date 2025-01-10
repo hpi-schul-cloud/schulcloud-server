@@ -1,4 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CommonCartridgeFileValidatorPipe } from '@modules/common-cartridge/controller/utils';
 import {
 	Body,
 	Controller,
@@ -8,8 +9,6 @@ import {
 	Param,
 	Post,
 	Query,
-	Res,
-	StreamableFile,
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common';
@@ -22,21 +21,19 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNoContentResponse,
 	ApiOperation,
+	ApiProduces,
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
-import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
-import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
-import { CommonCartridgeFileValidatorPipe } from '../utils';
+import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import {
-	CourseExportBodyParams,
 	CourseImportBodyParams,
 	CourseMetadataListResponse,
-	CourseQueryParams,
 	CourseSyncBodyParams,
 	CourseUrlParams,
+	CreateCourseBodyParams,
 } from './dto';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
@@ -46,13 +43,12 @@ import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.
 export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
-		private readonly courseExportUc: CourseExportUc,
 		private readonly courseImportUc: CourseImportUc,
 		private readonly courseSyncUc: CourseSyncUc
 	) {}
 
 	@Get()
-	async findForUser(
+	public async findForUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<CourseMetadataListResponse> {
@@ -64,29 +60,15 @@ export class CourseController {
 		return result;
 	}
 
-	@Post(':courseId/export')
-	async exportCourse(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: CourseUrlParams,
-		@Query() queryParams: CourseQueryParams,
-		@Body() bodyParams: CourseExportBodyParams,
-		@Res({ passthrough: true }) response: Response
-	): Promise<StreamableFile> {
-		const result = await this.courseExportUc.exportCourse(
-			urlParams.courseId,
-			currentUser.userId,
-			queryParams.version,
-			bodyParams.topics,
-			bodyParams.tasks,
-			bodyParams.columnBoards
-		);
-
-		response.set({
-			'Content-Type': 'application/zip',
-			'Content-Disposition': 'attachment;',
-		});
-
-		return new StreamableFile(result);
+	@Post()
+	@ApiOperation({ summary: 'Create a new course.' })
+	@ApiConsumes('application/json')
+	@ApiProduces('application/json')
+	@ApiCreatedResponse({ description: 'Course was successfully created.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async createCourse(@CurrentUser() user: ICurrentUser, @Body() body: CreateCourseBodyParams): Promise<void> {
+		await this.courseUc.createCourse(user, body.title);
 	}
 
 	@Post('import')
@@ -122,6 +104,7 @@ export class CourseController {
 	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
 	@ApiNoContentResponse({ description: 'The course was successfully synchronized to a group.' })
 	@ApiUnprocessableEntityResponse({ description: 'The course is already synchronized with a group.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	public async startSynchronization(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: CourseUrlParams,

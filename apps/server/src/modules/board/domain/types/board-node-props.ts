@@ -49,6 +49,7 @@ export interface LinkElementProps extends BoardNodeProps {
 	title: string;
 	url: string;
 	description?: string;
+	originalImageUrl?: string;
 	imageUrl?: string;
 }
 
@@ -66,9 +67,14 @@ export interface SubmissionItemProps extends BoardNodeProps {
 	userId: EntityId;
 }
 
+export interface VideoConferenceElementProps extends BoardNodeProps {
+	title: string;
+}
+
 export interface DeletedElementProps extends BoardNodeProps {
 	title: string;
 	deletedElementType: ContentElementType;
+	description?: string;
 }
 
 export interface MediaBoardProps extends BoardNodeProps {
@@ -103,4 +109,5 @@ export type AnyBoardNodeProps =
 	| RichTextElementProps
 	| SubmissionContainerElementProps
 	| SubmissionItemProps
+	| VideoConferenceElementProps
 	| MediaBoardNodeProps;

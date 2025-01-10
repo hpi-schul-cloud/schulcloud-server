@@ -2,7 +2,7 @@ import { ContentElementType, DeletedElement } from '../../domain';
 import { DeletedElementContent, DeletedElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
-export class DeletedElementResponseMapper implements BaseResponseMapper {
+export class DeletedElementResponseMapper implements BaseResponseMapper<DeletedElement, DeletedElementResponse> {
 	private static instance: DeletedElementResponseMapper;
 
 	public static getInstance(): DeletedElementResponseMapper {
@@ -18,7 +18,11 @@ export class DeletedElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.DELETED,
-			content: new DeletedElementContent({ title: element.title, deletedElementType: element.deletedElementType }),
+			content: new DeletedElementContent({
+				title: element.title,
+				deletedElementType: element.deletedElementType,
+				description: element.description,
+			}),
 		});
 
 		return result;

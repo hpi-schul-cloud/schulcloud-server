@@ -15,6 +15,10 @@ class CurrentUser implements ICurrentUser {
 
 	isExternalUser: boolean;
 
+	support: boolean;
+
+	supportUserId?: string;
+
 	constructor(data: ICurrentUser) {
 		this.userId = data.userId;
 		this.roles = data.roles;
@@ -22,6 +26,8 @@ class CurrentUser implements ICurrentUser {
 		this.accountId = data.accountId;
 		this.systemId = data.systemId || '';
 		this.isExternalUser = data.isExternalUser;
+		this.support = false;
+		this.supportUserId = data.supportUserId;
 	}
 }
 
@@ -52,5 +58,7 @@ export const currentUserFactory = CurrentUserFactory.define(CurrentUser, () => {
 		accountId: new ObjectId().toHexString(),
 		systemId: new ObjectId().toHexString(),
 		isExternalUser: false,
+		support: false,
+		supportUserId: undefined,
 	};
 });

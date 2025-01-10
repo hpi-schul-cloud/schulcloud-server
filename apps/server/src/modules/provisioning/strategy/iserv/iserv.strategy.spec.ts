@@ -94,6 +94,7 @@ describe('IservProvisioningStrategy', () => {
 				});
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
+					id: new ObjectId().toHexString(),
 					name: RoleName.STUDENT,
 				});
 
@@ -182,7 +183,7 @@ describe('IservProvisioningStrategy', () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.ISERV,
 					}),
-					externalUser: new ExternalUserDto({ externalId: userUUID }),
+					externalUser: new ExternalUserDto({ externalId: userUUID, roles: [] }),
 				});
 
 				const result: ProvisioningDto = await strategy.apply(data);

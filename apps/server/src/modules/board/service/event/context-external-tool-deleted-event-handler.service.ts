@@ -24,6 +24,7 @@ export class ContextExternalToolDeletedEventHandlerService implements IEventHand
 				updatedAt: new Date(),
 				deletedElementType: ContentElementType.EXTERNAL_TOOL,
 				title: event.title,
+				description: event.description,
 			});
 
 			await this.boardNodeService.replace(element, placeholder);

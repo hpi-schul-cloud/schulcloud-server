@@ -1,10 +1,12 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo';
-import { courseFactory, setupEntities, UserAndAccountTestFactory } from '@shared/testing';
+import { courseFactory, currentUserFactory, setupEntities, UserAndAccountTestFactory } from '@shared/testing';
 import { CourseService } from '../service';
 import { CourseUc } from './course.uc';
 
@@ -51,6 +53,10 @@ describe('CourseUc', () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('findAllByUser', () => {
 		const setup = () => {
 			const courses = courseFactory.buildList(5);
@@ -91,6 +97,7 @@ describe('CourseUc', () => {
 			courseService.findById.mockResolvedValue(course);
 			authorizationService.getUserWithPermissions.mockResolvedValue(teacherUser);
 			const mockRoleDto: RoleDto = {
+				id: new ObjectId().toHexString(),
 				name: RoleName.TEACHER,
 				permissions: [Permission.COURSE_DELETE],
 			};
@@ -117,6 +124,46 @@ describe('CourseUc', () => {
 
 			expect(result).toEqual(course);
 			expect(courseService.findById).toHaveBeenCalledWith(course.id);
+		});
+	});
+
+	describe('createCourse', () => {
+		describe('when creating a course', () => {
+			const setup = () => {
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({}, []);
+				const currentUser = currentUserFactory.build({ userId: teacherUser.id });
+				const courseTitle = faker.lorem.words();
+
+				return { currentUser, teacherUser, courseTitle };
+			};
+
+			it('should create a course', async () => {
+				const { currentUser, courseTitle } = setup();
+
+				await expect(uc.createCourse(currentUser, courseTitle)).resolves.not.toThrow();
+				expect(courseService.create).toHaveBeenCalled();
+			});
+		});
+
+		describe('when user does not have permission to create a course', () => {
+			const setup = () => {
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({}, []);
+				const currentUser = currentUserFactory.build({ userId: teacherUser.id });
+				const courseTitle = faker.lorem.words();
+
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new Error('User does not have permission');
+				});
+
+				return { currentUser, teacherUser, courseTitle };
+			};
+
+			it('should throw an error', async () => {
+				const { currentUser, courseTitle } = setup();
+
+				await expect(uc.createCourse(currentUser, courseTitle)).rejects.toThrow();
+				expect(courseService.create).not.toHaveBeenCalled();
+			});
 		});
 	});
 });

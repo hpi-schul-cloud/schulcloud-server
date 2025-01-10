@@ -2,6 +2,7 @@ import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo';
 import { Scope } from '@shared/repo/scope';
+import { UserDiscoverableQuery } from '@src/modules/user/service/user-query.type';
 
 export class UserScope extends Scope<User> {
 	isOutdated(isOutdated?: boolean): UserScope {
@@ -41,6 +42,13 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	byRoleId(roleId?: EntityId): UserScope {
+		if (roleId !== undefined) {
+			this.addQuery({ roles: roleId });
+		}
+		return this;
+	}
+
 	byName(name?: string): UserScope {
 		if (name !== undefined) {
 			const escapedName = name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
@@ -49,9 +57,26 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	withDiscoverableTrue(query?: UserDiscoverableQuery): UserScope {
+		if (query === UserDiscoverableQuery.TRUE) {
+			this.addQuery({ discoverable: true });
+		}
+		if (query === UserDiscoverableQuery.NOT_FALSE) {
+			this.addQuery({ discoverable: { $ne: false } });
+		}
+		return this;
+	}
+
 	withDeleted(deleted?: boolean): UserScope {
 		if (!deleted) {
 			this.addQuery({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] });
+		}
+		return this;
+	}
+
+	byTspUid(tspUid?: string): UserScope {
+		if (tspUid !== undefined) {
+			this.addQuery({ sourceOptions: { tspUid } });
 		}
 		return this;
 	}

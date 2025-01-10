@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { schoolFactory } from '@modules/school/testing';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities, userFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
@@ -72,6 +73,10 @@ describe('ExternalToolConfigurationUc', () => {
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
 				},
 			],
 		}).compile();
@@ -225,8 +230,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should fail when authorizationService throws ForbiddenException', async () => {
 				const { user, tool } = setup();
 
-				const func = async () =>
-					uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+				const func = async () => uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
@@ -237,7 +241,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 		});
 
-		describe('when getting the list of external tools that can be added to a school', () => {
+		describe('when getting the list of school external tools that can be added to a context', () => {
 			const setup = () => {
 				const user: User = userFactory.build();
 				const hiddenTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
@@ -303,7 +307,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should call the toolPermissionHelper with CONTEXT_TOOL_ADMIN permission', async () => {
 				const { user, usedContextExternalTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+				await uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					user,
@@ -315,7 +319,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should call externalToolLogoService', async () => {
 				const { usedTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+				await uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
 
 				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(usedTool);
 			});
@@ -323,7 +327,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should filter for restricted contexts', async () => {
 				const { usedTool, usedSchoolExternalTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+				await uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
 
 				expect(externalToolConfigurationService.filterForContextRestrictions).toHaveBeenCalledWith(
 					[{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool }],
@@ -334,7 +338,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should call filterParametersForScope', async () => {
 				const { usedTool } = setup();
 
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+				await uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
 
 				expect(externalToolConfigurationService.filterParametersForScope).toHaveBeenCalledWith(
 					usedTool,
@@ -345,6 +349,9 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when there are no available tools', () => {
 			const setup = () => {
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.build({ school });
+
 				const toolWithoutSchoolTool: ExternalTool = externalToolFactory.buildWithId(
 					{ isHidden: false },
 					'noSchoolTool'
@@ -361,19 +368,15 @@ describe('ExternalToolConfigurationUc', () => {
 
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([]);
 				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([]);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-				return {};
+				return { user };
 			};
 
 			it('should return empty array', async () => {
-				setup();
+				const { user } = setup();
 
-				const availableTools = await uc.getAvailableToolsForContext(
-					'userId',
-					'schoolId',
-					'contextId',
-					ToolContextType.COURSE
-				);
+				const availableTools = await uc.getAvailableToolsForContext(user.id, 'contextId', ToolContextType.COURSE);
 
 				expect(availableTools).toEqual([]);
 			});
@@ -381,6 +384,8 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when configuration of context external tools is enabled', () => {
 			const setup = () => {
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.build({ school });
 				const usedTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: false }, 'usedToolId');
 
 				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
@@ -402,22 +407,19 @@ describe('ExternalToolConfigurationUc', () => {
 				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
 				return {
+					user,
 					usedTool,
 					usedSchoolExternalTool,
 				};
 			};
 
-			it('should allow to add one tool multiple times to a school', async () => {
-				const { usedTool, usedSchoolExternalTool } = setup();
+			it('should allow to add one tool multiple times to a context', async () => {
+				const { usedTool, usedSchoolExternalTool, user } = setup();
 
-				const availableTools = await uc.getAvailableToolsForContext(
-					'userId',
-					'schoolId',
-					'contextId',
-					ToolContextType.COURSE
-				);
+				const availableTools = await uc.getAvailableToolsForContext(user.id, 'contextId', ToolContextType.COURSE);
 
 				expect(availableTools).toEqual([
 					{
@@ -728,6 +730,152 @@ describe('ExternalToolConfigurationUc', () => {
 				const { userId } = setup();
 
 				await expect(uc.getToolContextTypes(userId)).rejects.toThrow(new UnauthorizedException());
+			});
+		});
+	});
+
+	describe('getPreferedToolsForContext', () => {
+		describe('when the user has insufficient permission', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
+
+				return { user };
+			};
+
+			it('should fail when authorizationService throws ForbiddenException', async () => {
+				const { user } = setup();
+
+				const func = async () => uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+
+				await expect(func).rejects.toThrow(ForbiddenException);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
+			});
+		});
+
+		describe('when getting the list of preferred external tools that can be added to a context', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+				const hiddenExternalTool: ExternalTool = externalToolFactory.build({ isHidden: true, isPreferred: true });
+				const usedExternalTool: ExternalTool = externalToolFactory.build({ isPreferred: true });
+				const unusedExternalTool: ExternalTool = externalToolFactory.build({ isPreferred: true });
+				const externalToolWithoutSchoolTool: ExternalTool = externalToolFactory.build({ isPreferred: true });
+
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					toolId: usedExternalTool.id,
+				});
+				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					toolId: unusedExternalTool.id,
+				});
+
+				externalToolService.findExternalTools.mockResolvedValue(
+					new Page<ExternalTool>(
+						[hiddenExternalTool, usedExternalTool, unusedExternalTool, externalToolWithoutSchoolTool],
+						4
+					)
+				);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+					usedSchoolExternalTool,
+					unusedSchoolExternalTool,
+				]);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
+					{ externalTool: usedExternalTool, schoolExternalTool: usedSchoolExternalTool },
+				]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
+					{ externalTool: usedExternalTool, schoolExternalTool: usedSchoolExternalTool },
+				]);
+
+				return {
+					user,
+					usedExternalTool,
+					usedSchoolExternalTool,
+				};
+			};
+
+			it('should call the authorizationService with CONTEXT_TOOL_ADMIN permission', async () => {
+				const { user } = setup();
+
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);
+			});
+
+			it('should call externalToolLogoService', async () => {
+				const { usedExternalTool } = setup();
+
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(usedExternalTool);
+			});
+
+			it('should filter for restricted contexts', async () => {
+				const { usedExternalTool, usedSchoolExternalTool } = setup();
+
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+
+				expect(externalToolConfigurationService.filterForContextRestrictions).toHaveBeenCalledWith(
+					[{ externalTool: usedExternalTool, schoolExternalTool: usedSchoolExternalTool }],
+					ToolContextType.BOARD_ELEMENT
+				);
+			});
+
+			it('should call filterParametersForScope', async () => {
+				const { usedExternalTool } = setup();
+
+				await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+
+				expect(externalToolConfigurationService.filterParametersForScope).toHaveBeenCalledWith(
+					usedExternalTool,
+					CustomParameterScope.CONTEXT
+				);
+			});
+		});
+
+		describe('when configuration of context external tools is enabled', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({
+					isPreferred: true,
+					iconName: 'iconName',
+				});
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					toolId: externalTool.id,
+					parameters: [],
+				});
+
+				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>([externalTool], 1));
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
+
+				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
+					{ externalTool, schoolExternalTool },
+				]);
+				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([
+					{ externalTool, schoolExternalTool },
+				]);
+
+				return {
+					externalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should allow to add a preferred tool to a given context', async () => {
+				const { externalTool, schoolExternalTool } = setup();
+
+				const preferredTools = await uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+
+				expect(preferredTools).toEqual([
+					{
+						externalTool,
+						schoolExternalTool,
+					},
+				]);
 			});
 		});
 	});

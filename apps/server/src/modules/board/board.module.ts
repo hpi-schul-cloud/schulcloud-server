@@ -1,14 +1,18 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
-import { TldrawClientModule } from '@modules/tldraw-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '../authorization';
+import { RoomMembershipModule } from '../room-membership';
+import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 import {
@@ -30,8 +34,6 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
-import { BoardNodeRule } from './authorisation/board-node.rule';
-import { AuthorizationModule } from '../authorization';
 
 @Module({
 	imports: [
@@ -41,10 +43,14 @@ import { AuthorizationModule } from '../authorization';
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
-		TldrawClientModule,
 		CqrsModule,
+		TldrawClientModule.register({
+			TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
+			TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
+		}),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
+		RoomMembershipModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module

@@ -13,7 +13,7 @@ import { AccountScope } from './scope/account-scope';
 export class AccountRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): typeof AccountEntity {
 		return AccountEntity;
 	}
 
@@ -31,6 +31,13 @@ export class AccountRepo {
 		await this.flush();
 
 		return AccountEntityToDoMapper.mapToDo(saved);
+	}
+
+	public async saveAll(accounts: Account[]): Promise<Account[]> {
+		const savedAccounts = await Promise.all(accounts.map((account) => this.saveWithoutFlush(account)));
+		await this.flush();
+
+		return savedAccounts;
 	}
 
 	public async findById(id: EntityId | ObjectId): Promise<Account> {
@@ -86,34 +93,73 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
-	getObjectReference<Entity extends AnyEntity<Entity>>(
+	public getObjectReference<Entity extends AnyEntity<Entity>>(
 		entityName: EntityName<Entity>,
 		id: Primary<Entity> | Primary<Entity>[]
 	): Entity {
 		return this.em.getReference(entityName, id);
 	}
 
-	public async saveWithoutFlush(account: Account): Promise<void> {
+	public async saveWithoutFlush(account: Account): Promise<Account> {
 		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
 		const existing = await this.em.findOne(AccountEntity, { id: account.id });
 
+		let saved: AccountEntity;
 		if (existing) {
-			this.em.assign(existing, saveEntity);
+			saved = this.em.assign(existing, saveEntity);
 		} else {
 			this.em.persist(saveEntity);
+			saved = saveEntity;
 		}
+
+		return AccountEntityToDoMapper.mapToDo(saved);
 	}
 
 	public async flush(): Promise<void> {
 		await this.em.flush();
 	}
 
-	public async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<Counted<Account[]>> {
-		return this.searchByUsername(username, skip, limit, true);
+	public async searchByUsernameExactMatch(username: string, offset = 0, limit = 1): Promise<Counted<Account[]>> {
+		const [entities, count] = await this.em.findAndCount(
+			this.entityName,
+			{
+				username,
+			},
+			{
+				offset,
+				limit,
+				orderBy: { username: 1 },
+			}
+		);
+		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
+
+		return [accounts, count];
 	}
 
-	public async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<Counted<Account[]>> {
-		return this.searchByUsername(username, skip, limit, false);
+	/**
+	 * @deprecated we want to discourage the usage of this function, because it uses a regular expression
+	 *             for partial matching and this can have some serious performance implications. Use it with caution.
+	 */
+	public async searchByUsernamePartialMatch(username: string, offset = 0, limit = 10): Promise<Counted<Account[]>> {
+		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
+		const [entities, count] = await this.em.findAndCount(
+			this.entityName,
+			{
+				// NOTE: The default behavior of the MongoDB driver allows
+				// to pass regular expressions directly into the where clause
+				// without the need of using the $re operator, this will NOT
+				// work with SQL drivers.
+				username: new RegExp(escapedUsername, 'i'),
+			},
+			{
+				offset,
+				limit,
+				orderBy: { username: 1 },
+			}
+		);
+		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
+
+		return [accounts, count];
 	}
 
 	public async deleteById(accountId: EntityId | ObjectId): Promise<void> {
@@ -140,7 +186,7 @@ export class AccountRepo {
 		return AccountEntityToDoMapper.mapEntitiesToDos(result);
 	}
 
-	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+	public async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
 		const scope = new AccountScope();
 		const userIdScope = new AccountScope();
 
@@ -153,32 +199,5 @@ export class AccountRepo {
 		const result = foundUsers.filter((user) => user.userId !== undefined).map(({ userId }) => userId!.toHexString());
 
 		return result;
-	}
-
-	private async searchByUsername(
-		username: string,
-		offset: number,
-		limit: number,
-		exactMatch: boolean
-	): Promise<Counted<Account[]>> {
-		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
-		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
-		const [entities, count] = await this.em.findAndCount(
-			this.entityName,
-			{
-				// NOTE: The default behavior of the MongoDB driver allows
-				// to pass regular expressions directly into the where clause
-				// without the need of using the $re operator, this will NOT
-				// work with SQL drivers
-				username: new RegExp(searchUsername, 'i'),
-			},
-			{
-				offset,
-				limit,
-				orderBy: { username: 1 },
-			}
-		);
-		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
-		return [accounts, count];
 	}
 }

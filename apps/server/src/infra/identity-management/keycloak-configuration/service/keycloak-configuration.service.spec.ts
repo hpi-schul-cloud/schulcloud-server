@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SymetricKeyEncryptionService } from '@infra/encryption';
+import { SymmetricKeyEncryptionService } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -36,7 +36,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	const kcApiClientMock = createMock<Clients>();
 	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const kcApiRealmsMock = createMock<Realms>();
-	const encryptionServiceMock = createMock<SymetricKeyEncryptionService>();
+	const encryptionServiceMock = createMock<SymmetricKeyEncryptionService>();
 	const adminUsername = 'admin';
 
 	const adminUser: UserRepresentation = {

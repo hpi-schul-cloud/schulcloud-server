@@ -90,6 +90,8 @@ export class ExternalToolRequestMapper {
 			openNewTab: externalToolUpdateParams.openNewTab,
 			restrictToContexts: externalToolUpdateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolUpdateParams.medium),
+			isPreferred: externalToolUpdateParams.isPreferred,
+			iconName: externalToolUpdateParams.iconName,
 		};
 	}
 
@@ -120,6 +122,8 @@ export class ExternalToolRequestMapper {
 			restrictToContexts: externalToolCreateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
 			description: externalToolCreateParams.description,
+			isPreferred: externalToolCreateParams.isPreferred,
+			iconName: externalToolCreateParams.iconName,
 		};
 	}
 

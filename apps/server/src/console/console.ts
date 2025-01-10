@@ -16,6 +16,7 @@ void bootstrap.init().then(async (app) => {
 		await app.init();
 		await bootstrap.boot();
 		await app.close();
+		process.exit(0);
 	} catch (e) {
 		// eslint-disable-next-line no-console
 		console.error(e);

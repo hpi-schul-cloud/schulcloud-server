@@ -4,11 +4,11 @@ import { System, SystemService } from '@modules/system';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
 import { Strategy } from 'passport-custom';
+import { TypeGuard } from '@shared/common';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';
 import { CurrentUserMapper } from '../mapper';
@@ -31,24 +31,27 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
-		const system: System = await this.systemService.findByIdOrFail(systemId);
-		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
+		const [system, school] = await Promise.all([
+			this.systemService.findByIdOrFail(systemId),
+			this.schoolRepo.findById(schoolId),
+		]);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
 			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
 		}
 
-		const account: Account = await this.loadAccount(username, system.id, school);
-		const userId: string = this.checkValue(account.userId);
+		const account = await this.loadAccount(username, system.id, school);
+		const userId = TypeGuard.checkNotNullOrUndefined(account.userId, new UnauthorizedException());
 
 		this.authenticationService.checkBrutForce(account);
 
-		const user: User = await this.userRepo.findById(userId);
-		const ldapDn: string = this.checkValue(user.ldapDn);
+		// The goal of seperation from account and user is that the user is not needed for the authorization, the following code lines invert this goal.
+		const user = await this.userRepo.findById(userId);
+		const ldapDn = TypeGuard.checkNotNullOrUndefined(user.ldapDn, new UnauthorizedException());
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
+		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
 
 		return currentUser;
 	}
@@ -65,13 +68,6 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 		return { username, password, systemId, schoolId };
 	}
 
-	private checkValue<T>(value: T | null | undefined): T | never {
-		if (value === null || value === undefined) {
-			throw new UnauthorizedException();
-		}
-		return value;
-	}
-
 	private async checkCredentials(account: Account, system: System, ldapDn: string, password: string): Promise<void> {
 		try {
 			await this.ldapService.checkLdapCredentials(system, ldapDn, password);
@@ -84,7 +80,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 	}
 
 	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<Account> {
-		const externalSchoolId = this.checkValue(school.externalId);
+		const externalSchoolId = TypeGuard.checkNotNullOrUndefined(school.externalId, new UnauthorizedException());
 
 		let account: Account;
 

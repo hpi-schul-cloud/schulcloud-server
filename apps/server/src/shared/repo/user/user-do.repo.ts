@@ -4,8 +4,10 @@ import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
+import { SecondarySchoolReference, UserDO } from '@shared/domain/domainobject/user.do';
+import { Role, SchoolEntity, User, UserSchoolEmbeddable } from '@shared/domain/entity';
+import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
@@ -17,11 +19,14 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return User;
 	}
 
-	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
+	public async find(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
+			.byTspUid(query.tspUid)
+			.byRoleId(query.roleId)
+			.withDiscoverableTrue(query.discoverable)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.whereLastLoginSystemChangeIsBetween(
@@ -44,18 +49,41 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return page;
 	}
 
-	async findById(id: EntityId, populate = false): Promise<UserDO> {
+	public async findById(id: EntityId, populate = false): Promise<UserDO> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear']);
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 
 		return this.mapEntityToDO(userEntity);
 	}
 
-	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
+	public async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
+		const users = await this._em.find(User, { id: { $in: ids } });
+
+		if (populate) {
+			await Promise.all(
+				users.map((user) =>
+					this._em.populate(user, [
+						'roles',
+						'school.systems',
+						'school.currentYear',
+						'school.name',
+						'secondarySchools.role',
+					])
+				)
+			);
+			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
+		}
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
+	}
+
+	public async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
 		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
 
 		if (!user) {
@@ -63,7 +91,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		}
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -72,7 +100,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return domainObject;
 	}
 
-	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
+	public async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
 		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
 		if (userDo) {
 			return userDo;
@@ -80,7 +108,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		throw new EntityNotFoundError('User');
 	}
 
-	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
+	public async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 
 		if (userEntitys.length > 1) {
@@ -95,7 +123,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDo;
 	}
 
-	async findByEmail(email: string): Promise<UserDO[]> {
+	public async findByEmail(email: string): Promise<UserDO[]> {
 		// find mail case-insensitive by regex
 		const userEntitys: User[] = await this._em.find(User, {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
@@ -108,7 +136,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDos;
 	}
 
-	mapEntityToDO(entity: User): UserDO {
+	public mapEntityToDO(entity: User): UserDO {
 		const user: UserDO = new UserDO({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -116,8 +144,11 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
+			preferredName: entity.preferredName,
 			roles: [],
 			schoolId: entity.school.id,
+			schoolName: entity.school.name,
+			secondarySchools: [],
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
 			importHash: entity.importHash,
@@ -131,6 +162,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
+			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -139,16 +171,34 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 				.map((role: Role): RoleReference => new RoleReference({ id: role.id, name: role.name }));
 		}
 
+		if (entity.secondarySchools) {
+			user.secondarySchools = entity.secondarySchools.map(
+				(school) =>
+					new SecondarySchoolReference({
+						schoolId: school.school.id,
+						role: new RoleReference({ id: school.role.id, name: school.role.name }),
+					})
+			);
+		}
+
 		return user;
 	}
 
-	mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
+	public mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
+			preferredName: entityDO.preferredName,
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
+			secondarySchools: entityDO.secondarySchools.map(
+				(secondarySchool) =>
+					new UserSchoolEmbeddable({
+						school: this._em.getReference(SchoolEntity, secondarySchool.schoolId),
+						role: this._em.getReference(Role, secondarySchool.role.id),
+					})
+			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
@@ -158,7 +208,26 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
 			birthday: entityDO.birthday,
+			sourceOptions: entityDO.sourceOptions
+				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
+				: undefined,
 		};
+	}
+
+	public async findByTspUids(tspUids: string[]): Promise<UserDO[]> {
+		const users = await this._em.find(
+			User,
+			{
+				sourceOptions: { tspUid: { $in: tspUids } },
+			},
+			{
+				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
+			}
+		);
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
 	}
 
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
@@ -172,8 +241,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
-		for (let i = 0; i < roles.length; i += 1) {
-			const role = roles[i];
+		for (const role of roles) {
 			if (!role.roles.isInitialized(true)) {
 				// eslint-disable-next-line no-await-in-loop
 				await this._em.populate(role, ['roles']);

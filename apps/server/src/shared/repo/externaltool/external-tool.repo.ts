@@ -124,6 +124,7 @@ export class ExternalToolRepo {
 			.byClientId(query.clientId)
 			.byHidden(query.isHidden)
 			.byIds(query.ids)
+			.byPreferred(query.isPreferred)
 			.allowEmptyQuery(true);
 
 		if (order._id == null) {

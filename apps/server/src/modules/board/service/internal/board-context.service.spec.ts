@@ -1,21 +1,31 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { GroupTypes } from '@modules/group';
+import { RoomMembershipService } from '@modules/room-membership';
+import { roomMembershipFactory } from '@modules/room-membership/testing';
+import { roomFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo } from '@shared/repo';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { columnFactory, columnBoardFactory } from '../../testing';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { CourseRepo } from '@shared/repo/course';
+import { courseFactory, groupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
+import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
 
-describe(`${BoardContextService.name}`, () => {
+describe(BoardContextService.name, () => {
 	let module: TestingModule;
 	let service: BoardContextService;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let roomMembershipService: DeepMocked<RoomMembershipService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextService,
+				{
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
+				},
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
@@ -24,6 +34,7 @@ describe(`${BoardContextService.name}`, () => {
 		}).compile();
 
 		service = module.get(BoardContextService);
+		roomMembershipService = module.get(RoomMembershipService);
 		courseRepo = module.get(CourseRepo);
 
 		await setupEntities();
@@ -199,6 +210,116 @@ describe(`${BoardContextService.name}`, () => {
 					await service.getUsersWithBoardRoles(columnBoard);
 
 					expect(courseRepo.findById).toHaveBeenCalledWith(columnBoard.context.id);
+				});
+			});
+		});
+
+		describe('when node has a room context', () => {
+			describe('when user with editor role is associated with the room', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const role = roleFactory.build({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
+					const room = roomFactory.build();
+					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+					const columnBoard = columnBoardFactory.build({
+						context: { id: room.id, type: BoardExternalReferenceType.Room },
+					});
+
+					return { columnBoard, role, user };
+				};
+
+				it('should return their information + editor role', async () => {
+					const { columnBoard, role, user } = setup();
+
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+						id: 'foo',
+						roomId: columnBoard.context.id,
+						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
+					});
+
+					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const expected: UserWithBoardRoles[] = [
+						{
+							userId: user.id,
+							roles: [BoardRoles.EDITOR],
+						},
+					];
+
+					expect(result).toEqual(expected);
+				});
+			});
+
+			describe('when user with view role is associated with the room', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const role = roleFactory.build({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
+					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
+					const room = roomFactory.build();
+					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+					const columnBoard = columnBoardFactory.build({
+						context: { id: room.id, type: BoardExternalReferenceType.Room },
+					});
+
+					return { columnBoard, role, user };
+				};
+
+				it('should return their information + reader role', async () => {
+					const { columnBoard, role, user } = setup();
+
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+						id: 'foo',
+						roomId: columnBoard.context.id,
+						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
+					});
+
+					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const expected: UserWithBoardRoles[] = [
+						{
+							userId: user.id,
+							roles: [BoardRoles.READER],
+						},
+					];
+
+					expect(result).toEqual(expected);
+				});
+			});
+
+			describe('when user with not-matching role is associated with the room', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const role = roleFactory.build();
+					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
+					const room = roomFactory.build();
+					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
+					const columnBoard = columnBoardFactory.build({
+						context: { id: room.id, type: BoardExternalReferenceType.Room },
+					});
+
+					return { columnBoard, role, user };
+				};
+
+				it('should return their information + no role', async () => {
+					const { columnBoard, role, user } = setup();
+
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+						id: 'foo',
+						roomId: columnBoard.context.id,
+						members: [{ userId: user.id, roles: [role] }],
+						schoolId: user.school.id,
+					});
+
+					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const expected: UserWithBoardRoles[] = [
+						{
+							userId: user.id,
+							roles: [],
+						},
+					];
+
+					expect(result).toEqual(expected);
 				});
 			});
 		});

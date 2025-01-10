@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
@@ -12,6 +12,7 @@ import {
 	ContextExternalTool,
 	ContextExternalToolLaunchable,
 	ContextRef,
+	CopyContextExternalToolRejectData,
 	RestrictedContextMismatchLoggableException,
 } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
@@ -54,6 +55,11 @@ export class ContextExternalToolService {
 		await this.commonToolDeleteService.deleteContextExternalTool(contextExternalTool);
 	}
 
+	// called from feathers
+	public async deleteContextExternalToolsByCourseId(courseId: EntityId): Promise<void> {
+		await this.commonToolDeleteService.deleteContextExternalToolsByCourseId(courseId);
+	}
+
 	public async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			context: contextRef,
@@ -76,8 +82,9 @@ export class ContextExternalToolService {
 
 	public async copyContextExternalTool(
 		contextExternalTool: ContextExternalTool,
-		contextCopyId: EntityId
-	): Promise<ContextExternalTool> {
+		contextCopyId: EntityId,
+		targetSchoolId: EntityId
+	): Promise<ContextExternalTool | CopyContextExternalToolRejectData> {
 		const copy = new ContextExternalTool({
 			...contextExternalTool.getProps(),
 			id: new ObjectId().toHexString(),
@@ -104,6 +111,23 @@ export class ContextExternalToolService {
 				this.deleteProtectedValues(copy, parameter.name);
 			}
 		});
+
+		if (schoolExternalTool.schoolId !== targetSchoolId) {
+			const correctSchoolExternalTools: SchoolExternalTool[] =
+				await this.schoolExternalToolService.findSchoolExternalTools({
+					toolId: schoolExternalTool.toolId,
+					schoolId: targetSchoolId,
+				});
+
+			if (correctSchoolExternalTools.length) {
+				copy.schoolToolRef.schoolToolId = correctSchoolExternalTools[0].id;
+				copy.schoolToolRef.schoolId = correctSchoolExternalTools[0].schoolId;
+			} else {
+				const copyRejectData = new CopyContextExternalToolRejectData(contextExternalTool.id, externalTool.name);
+
+				return copyRejectData;
+			}
+		}
 
 		const copiedTool: ContextExternalTool = await this.contextExternalToolRepo.save(copy);
 

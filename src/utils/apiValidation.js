@@ -7,7 +7,6 @@ const ignorePathsList = [
 	/|(.*\/accounts\/api($|\/$))/,
 	/|(.*\/accounts\/confirm($|\/$))/,
 	/|(.*\/accounts\/jwtTimer($|\/$))/, // todo: proper api-integrationtests with redis
-	/|(.*\/accounts\/supportJWT($|\/$))/,
 	/|(.*\/activationModel($|\/$))/,
 	/|(.*\/activationModel\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/activation($|\/$))/,
@@ -17,8 +16,6 @@ const ignorePathsList = [
 	/|(.*\/activation\/api($|\/$))/,
 	/|(.*\/alert($|\/$))/,
 	/|(.*\/alert\/api($|\/$))/,
-	/|(.*\/analytics($|\/$))/,
-	/|(.*\/analytics\/api($|\/$))/,
 	/|(.*\/authentication($|\/$))/, // todo: make sure external systems work with spec
 	/|(.*\/authentication\/api($|\/$))/,
 	/|(.*\/base64Files($|\/$))/,

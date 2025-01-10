@@ -1,6 +1,8 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
+import { MediaSourceDataFormat } from '../enum/media-source-data-format.enum';
+import { MediaSourceConfigEmbeddable } from './media-source-oauth-config.embeddable';
 
 export interface MediaSourceEntityProps {
 	id?: EntityId;
@@ -8,23 +10,35 @@ export interface MediaSourceEntityProps {
 	name?: string;
 
 	sourceId: string;
+
+	config?: MediaSourceConfigEmbeddable;
+
+	format?: MediaSourceDataFormat;
 }
 
 @Entity({ tableName: 'media-sources' })
 export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	constructor(props: MediaSourceEntityProps) {
 		super();
-		if (props.id != null) {
+		if (props.id) {
 			this.id = props.id;
 		}
-		this.name = props.name;
 		this.sourceId = props.sourceId;
+		this.name = props.name;
+		this.format = props.format;
+		this.config = props.config;
 	}
-
-	@Property({ nullable: true })
-	name?: string;
 
 	@Index()
 	@Property()
 	sourceId: string;
+
+	@Property({ nullable: true })
+	name?: string;
+
+	@Property({ nullable: true })
+	format?: MediaSourceDataFormat;
+
+	@Embedded(() => MediaSourceConfigEmbeddable, { object: true, nullable: true })
+	config?: MediaSourceConfigEmbeddable;
 }

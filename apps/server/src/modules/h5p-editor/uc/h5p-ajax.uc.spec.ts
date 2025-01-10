@@ -1,4 +1,5 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
 import { HttpException } from '@nestjs/common';
@@ -67,12 +68,13 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling GET', () => {
-		const userMock = {
+		const userMock: ICurrentUser = {
 			userId: 'dummyId',
 			roles: [],
 			schoolId: 'dummySchool',
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
+			support: false,
 		};
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
@@ -109,12 +111,13 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling POST', () => {
-		const userMock = {
+		const userMock: ICurrentUser = {
 			userId: 'dummyId',
 			roles: [],
 			schoolId: 'dummySchool',
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
+			support: false,
 		};
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {

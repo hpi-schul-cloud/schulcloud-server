@@ -3,6 +3,7 @@ import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
+import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
@@ -19,7 +20,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardNodeRepo } from '../board/repo';
+import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
@@ -34,10 +35,10 @@ import {
 	CourseGroupService,
 	CourseRoomsService,
 	CourseService,
+	CourseSyncService,
 	DashboardService,
 	GroupDeletedHandlerService,
 } from './service';
-import { CommonCartridgeFileValidatorPipe } from './utils';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -56,6 +57,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		ClassModule,
 		SchoolModule,
 		GroupModule,
+		RoleModule,
 	],
 	providers: [
 		{
@@ -63,7 +65,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 			useClass: DashboardRepo,
 		},
 		BoardCopyService,
-		BoardNodeRepo,
 		CommonCartridgeExportService,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
@@ -79,6 +80,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		},
 		CourseService,
 		CourseDoService,
+		CourseSyncService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
@@ -92,6 +94,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseCopyService,
 		CourseService,
 		CourseDoService,
+		CourseSyncService,
 		CourseRoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,

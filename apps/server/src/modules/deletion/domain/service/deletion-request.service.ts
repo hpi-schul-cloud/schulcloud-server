@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
-import { DeletionConfig } from '../interface';
+import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 export class DeletionRequestService {

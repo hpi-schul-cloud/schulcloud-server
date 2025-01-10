@@ -1,5 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CustomParameter } from '@modules/tool/common/domain';
+import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
+import { DeepPartial } from 'fishery';
+import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -8,7 +10,7 @@ import {
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
 	ToolConfigType,
-} from '@modules/tool/common/enum';
+} from '../../common/enum';
 import {
 	BasicToolConfig,
 	ExternalTool,
@@ -16,15 +18,13 @@ import {
 	ExternalToolProps,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
-} from '@modules/tool/external-tool/domain';
-import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
-import { DeepPartial } from 'fishery';
+} from '../domain';
 import { fileRecordRefFactory } from './file-record-ref.factory';
 
 export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
 	return {
 		type: ToolConfigType.BASIC,
-		baseUrl: 'https://www.basic-baseUrl.com/',
+		baseUrl: 'https://www.basic-baseurl.com/',
 	};
 });
 
@@ -45,7 +45,7 @@ class Oauth2ToolConfigFactory extends DoBaseFactory<Oauth2ToolConfig, Oauth2Tool
 export const oauth2ToolConfigFactory = Oauth2ToolConfigFactory.define(Oauth2ToolConfig, () => {
 	return {
 		type: ToolConfigType.OAUTH2,
-		baseUrl: 'https://www.oauth2-baseUrl.com/',
+		baseUrl: 'https://www.oauth2-baseurl.com/',
 		clientId: 'clientId',
 		skipConsent: false,
 	};
@@ -54,7 +54,7 @@ export const oauth2ToolConfigFactory = Oauth2ToolConfigFactory.define(Oauth2Tool
 export const lti11ToolConfigFactory = DoBaseFactory.define<Lti11ToolConfig, Lti11ToolConfig>(Lti11ToolConfig, () => {
 	return {
 		type: ToolConfigType.LTI11,
-		baseUrl: 'https://www.lti11-baseUrl.com/',
+		baseUrl: 'https://www.lti11-baseurl.com/',
 		key: 'key',
 		secret: 'secret',
 		privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
@@ -86,10 +86,19 @@ export const customParameterFactory = CustomParameterFactory.define(CustomParame
 });
 
 class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
+	withBasicConfig(customParam?: DeepPartial<BasicToolConfig>): this {
+		const params: DeepPartial<ExternalTool> = {
+			config: basicToolConfigFactory.build(customParam),
+		};
+
+		return this.params(params);
+	}
+
 	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfig>): this {
 		const params: DeepPartial<ExternalTool> = {
 			config: oauth2ToolConfigFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
@@ -97,6 +106,7 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 		const params: DeepPartial<ExternalTool> = {
 			config: lti11ToolConfigFactory.build(customParam),
 		};
+
 		return this.params(params);
 	}
 
@@ -104,6 +114,7 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 		const params: DeepPartial<ExternalTool> = {
 			parameters: customParameterFactory.buildList(number, customParam),
 		};
+
 		return this.params(params);
 	}
 
@@ -149,5 +160,8 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		isDeactivated: false,
 		openNewTab: false,
 		createdAt: new Date(2020, 1, 1),
+		restrictToContexts: undefined,
+		isPreferred: false,
+		iconName: undefined,
 	};
 });

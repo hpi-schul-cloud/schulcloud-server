@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -22,6 +22,8 @@ import {
 	SchoolExternalToolIdParams,
 	SchoolIdParams,
 	ToolContextTypesListResponse,
+	PreferredToolListResponse,
+	ToolContextTypeParams,
 } from './dto';
 
 @ApiTags('Tool')
@@ -84,13 +86,35 @@ export class ToolConfigurationController {
 		const availableTools: ContextExternalToolTemplateInfo[] =
 			await this.externalToolConfigurationUc.getAvailableToolsForContext(
 				currentUser.userId,
-				currentUser.schoolId,
 				params.contextId,
 				params.contextType
 			);
 
 		const mapped: ContextExternalToolConfigurationTemplateListResponse =
 			ToolConfigurationMapper.mapToContextExternalToolConfigurationTemplateListResponse(availableTools);
+
+		return mapped;
+	}
+
+	@Get('preferred-tools')
+	@ApiForbiddenResponse()
+	@ApiOperation({ summary: 'Lists all preferred tools that can be added for a given context' })
+	@ApiOkResponse({
+		description: 'List of preferred tools for a context',
+		type: PreferredToolListResponse,
+	})
+	public async getPreferredToolsForContext(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() context: ToolContextTypeParams
+	): Promise<PreferredToolListResponse> {
+		const preferedTools: ContextExternalToolTemplateInfo[] =
+			await this.externalToolConfigurationUc.getPreferedToolsForContext(
+				currentUser.userId,
+				currentUser.schoolId,
+				context.contextType
+			);
+
+		const mapped: PreferredToolListResponse = ToolConfigurationMapper.mapToPreferredToolListResponse(preferedTools);
 
 		return mapped;
 	}

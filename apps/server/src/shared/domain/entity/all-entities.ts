@@ -6,14 +6,15 @@ import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-re
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
+import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { TldrawDrawing } from '@modules/tldraw/entities';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ImportUser } from '@modules/user-import/entity';
@@ -75,6 +76,7 @@ export const ALL_ENTITIES = [
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
+	RoomMembershipEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,
@@ -96,9 +98,10 @@ export const ALL_ENTITIES = [
 	VideoConference,
 	GroupEntity,
 	RegistrationPinEntity,
-	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
 	InstanceEntity,
 	MediaSourceEntity,
+	OauthSessionTokenEntity,
+	LtiDeepLinkTokenEntity,
 ];

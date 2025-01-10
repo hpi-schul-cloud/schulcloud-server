@@ -6,6 +6,7 @@ class CustomJwtStrategy extends JWTStrategy {
 		const account = await this.app.service('nest-account-service').findById(accountId);
 		account._id = account.id;
 		account.userId = new ObjectId(account.userId);
+
 		return account;
 	}
 }

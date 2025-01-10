@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
 import { CloseUserLoginMigrationUc } from './close-user-login-migration.uc';
@@ -18,6 +18,7 @@ describe(CloseUserLoginMigrationUc.name, () => {
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userLoginMigrationRevertService: DeepMocked<UserLoginMigrationRevertService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -41,6 +42,10 @@ describe(CloseUserLoginMigrationUc.name, () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
+				},
 			],
 		}).compile();
 
@@ -49,6 +54,7 @@ describe(CloseUserLoginMigrationUc.name, () => {
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userLoginMigrationRevertService = module.get(UserLoginMigrationRevertService);
 		authorizationService = module.get(AuthorizationService);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {
@@ -69,10 +75,13 @@ describe(CloseUserLoginMigrationUc.name, () => {
 					closedAt: new Date(2023, 1),
 				});
 				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.build({ id: schoolId });
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				userLoginMigrationService.closeMigration.mockResolvedValueOnce(closedUserLoginMigration);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
 				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValueOnce(true);
 
 				return {
@@ -150,11 +159,14 @@ describe(CloseUserLoginMigrationUc.name, () => {
 					...userLoginMigration,
 					closedAt: new Date(2023, 1),
 				});
-				const schoolId = 'schoolId';
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.build({ id: schoolId });
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				userLoginMigrationService.closeMigration.mockResolvedValueOnce(closedUserLoginMigration);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(false);
 				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValueOnce(false);
 
 				return {
@@ -199,6 +211,57 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				const result = await uc.closeMigration(user.id, schoolId);
 
 				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when the school was migrated, but all migrated users were deleted', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId();
+				const closedUserLoginMigration = new UserLoginMigrationDO({
+					...userLoginMigration,
+					closedAt: new Date(2023, 1),
+				});
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.build({ id: schoolId });
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userLoginMigrationService.closeMigration.mockResolvedValueOnce(closedUserLoginMigration);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolMigrationService.hasSchoolMigratedInMigrationPhase.mockReturnValueOnce(true);
+				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValueOnce(false);
+
+				return {
+					user,
+					schoolId,
+					userLoginMigration,
+					closedUserLoginMigration,
+				};
+			};
+
+			it('should not revert the start of the migration', async () => {
+				const { user, schoolId } = setup();
+
+				await uc.closeMigration(user.id, schoolId);
+
+				expect(userLoginMigrationRevertService.revertUserLoginMigration).not.toHaveBeenCalled();
+			});
+
+			it('should mark all un-migrated users as outdated', async () => {
+				const { user, schoolId, closedUserLoginMigration } = setup();
+
+				await uc.closeMigration(user.id, schoolId);
+
+				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalledWith(closedUserLoginMigration);
+			});
+
+			it('should return the closed user login migration', async () => {
+				const { user, schoolId, closedUserLoginMigration } = setup();
+
+				const result = await uc.closeMigration(user.id, schoolId);
+
+				expect(result).toEqual(closedUserLoginMigration);
 			});
 		});
 	});

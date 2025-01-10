@@ -12,6 +12,7 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+const { SYNC_ATTRIBUTE } = require('../model');
 /**
  * adds all students to a course when a class is added to the course
  * @param hook - contains created/patched object and request body
@@ -153,11 +154,50 @@ const deleteWholeClassFromCourse = (hook) => {
 		});
 };
 
-const compareIdArr = (arr1, arr2) => {
-	if (arr1.length !== arr2.length) {
+const isEditing = (hook, attribute) => {
+	return attribute in hook.data;
+};
+
+const hasArrayValueChanged = (hook, course, attribute) => {
+	const currentArray = course[attribute];
+	const patchArray = hook.data[attribute];
+
+	if (currentArray.length !== patchArray.length) {
+		return true;
+	}
+
+	return currentArray.some((element) => !patchArray.includes(toStringId(element)));
+};
+
+const isValidSyncChange = (hook, course) => {
+	if (isEditing(hook, 'classIds') && hasArrayValueChanged(hook, course, 'classIds')) {
 		return false;
 	}
-	return arr1.every((element) => arr2.includes(toStringId(element)));
+	if (isEditing(hook, 'groupIds') && hasArrayValueChanged(hook, course, 'groupIds')) {
+		return false;
+	}
+	if (isEditing(hook, 'substitutionIds') && hasArrayValueChanged(hook, course, 'substitutionIds')) {
+		return false;
+	}
+	if (
+		!course.excludeFromSync?.includes(SYNC_ATTRIBUTE.TEACHERS) &&
+		isEditing(hook, 'teacherIds') &&
+		hasArrayValueChanged(hook, course, 'teacherIds')
+	) {
+		return false;
+	}
+
+	const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+	const courseStartDate = course.startDate ? moment.utc(course.startDate).format(dateFormat) : undefined;
+	if (isEditing(hook, 'startDate') && courseStartDate !== hook.data.startDate) {
+		return false;
+	}
+	const courseUntilDate = course.untilDate ? moment.utc(course.untilDate).format(dateFormat) : undefined;
+	if (isEditing(hook, 'untilDate') && courseUntilDate !== hook.data.untilDate) {
+		return false;
+	}
+
+	return true;
 };
 
 const restrictChangesToSyncedCourse = async (hook) => {
@@ -165,21 +205,7 @@ const restrictChangesToSyncedCourse = async (hook) => {
 	const courseId = hook.id;
 	const course = await app.service('courses').get(courseId);
 
-	if (course.syncedWithGroup) {
-		const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
-		const courseStartDate = course.startDate ? moment.utc(course.startDate).format(dateFormat) : undefined;
-		const courseUntilDate = course.untilDate ? moment.utc(course.untilDate).format(dateFormat) : undefined;
-
-		if (
-			compareIdArr(course.classIds, hook.data.classIds) &&
-			compareIdArr(course.groupIds, hook.data.groupIds) &&
-			compareIdArr(course.substitutionIds, hook.data.substitutionIds) &&
-			compareIdArr(course.teacherIds, hook.data.teacherIds) &&
-			courseStartDate === hook.data.startDate &&
-			courseUntilDate === hook.data.untilDate
-		) {
-			return hook;
-		}
+	if (course.syncedWithGroup && !isValidSyncChange(hook, course)) {
 		throw new Forbidden("The course doesn't match the synchronized course");
 	}
 	return hook;
@@ -188,6 +214,11 @@ const restrictChangesToSyncedCourse = async (hook) => {
 const removeColumnBoard = async (context) => {
 	const courseId = context.id;
 	await context.app.service('nest-column-board-service').deleteByCourseId(courseId);
+};
+
+const removeContextExternalTools = async (context) => {
+	const courseId = context.id;
+	await context.app.service('nest-context-external-tool-service').deleteContextExternalToolsByCourseId(courseId);
 };
 
 /**
@@ -250,6 +281,7 @@ module.exports = {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
 	removeColumnBoard,
+	removeContextExternalTools,
 	removeSubstitutionDuplicates,
 	courseInviteHook,
 	patchPermissionHook,
