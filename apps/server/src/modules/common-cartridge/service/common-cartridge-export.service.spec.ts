@@ -3,7 +3,8 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { CourseCommonCartridgeMetadataDto } from '@src/infra/courses-client/dto';
+import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
+import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
 import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
@@ -33,7 +34,7 @@ import {
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
 
-describe.skip('CommonCartridgeExportService', () => {
+describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeExportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
@@ -41,6 +42,8 @@ describe.skip('CommonCartridgeExportService', () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
+	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
+	let filesStorageClientAdapterMock: DeepMocked<FilesStorageRestClientAdapter>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
@@ -131,6 +134,14 @@ describe.skip('CommonCartridgeExportService', () => {
 					provide: LessonClientAdapter,
 					useValue: createMock<LessonClientAdapter>(),
 				},
+				{
+					provide: FilesStorageRestClientAdapter,
+					useValue: createMock<FilesStorageRestClientAdapter>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
 
@@ -140,6 +151,8 @@ describe.skip('CommonCartridgeExportService', () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		boardClientAdapterMock = module.get(BoardClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
+		filesMetadataClientAdapterMock = module.get(FilesStorageClientAdapterService);
+		filesStorageClientAdapterMock = module.get(FilesStorageRestClientAdapter);
 	});
 
 	afterAll(async () => {
