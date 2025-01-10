@@ -45,12 +45,10 @@ describe('File Controller (API) - preview', () => {
 	let em: EntityManager;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
 	let antivirusService: DeepMocked<AntivirusService>;
-	let schoolId: EntityId;
-	let appPort: number;
 	let uploadPath: string;
 
 	beforeAll(async () => {
-		appPort = 10000 + createRndInt(10000);
+		const appPort = 10000 + createRndInt(10000);
 
 		module = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
@@ -92,37 +90,49 @@ describe('File Controller (API) - preview', () => {
 		await em.flush();
 	};
 
+	const setupApiClient = async () => {
+		const school = schoolEntityFactory.build();
+		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+
+		await em.persistAndFlush([school, user, account]);
+		em.clear();
+
+		const authValue = JwtAuthenticationFactory.createJwt({
+			accountId: account.id,
+			userId: user.id,
+			schoolId: user.school.id,
+			roles: [user.roles[0].id],
+			support: false,
+			isExternalUser: false,
+		});
+		const apiClient = new TestApiClient(app, '/file', authValue);
+
+		const schoolId = school.id;
+		uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
+
+		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
+		antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
+
+		return apiClient;
+	};
+
+	const uploadFile = async (apiClient: TestApiClient) => {
+		const uploadResponse = await apiClient
+			.post(uploadPath)
+			.attach('file', Buffer.from('abcd'), 'test.png')
+			.set('connection', 'keep-alive')
+			.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
+			.query({});
+		const uploadedFile = uploadResponse.body as FileRecordResponse;
+
+		return uploadedFile;
+	};
+
 	describe('preview', () => {
 		describe('with bad request data', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-
-				await em.persistAndFlush([school, user, account]);
-				em.clear();
-
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, '/file', authValue);
-
-				schoolId = school.id;
-				uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
-
-				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-				antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
-
-				return { apiClient };
-			};
-
 			describe('WHEN recordId is invalid', () => {
 				it('should return status 400', async () => {
-					const { apiClient } = await setup();
+					const apiClient = await setupApiClient();
 					const response = await apiClient.get('/preview/123/test.png').query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
 
@@ -138,21 +148,14 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN width is other than PreviewWidth Enum', () => {
 				it('should return status 400', async () => {
-					const { apiClient } = await setup();
-
-					const uploadResponse = await apiClient
-						.post(uploadPath)
-						.attach('file', Buffer.from('abcd'), 'test.png')
-						.set('connection', 'keep-alive')
-						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-						.query({});
-					const uploadResult = uploadResponse.body as FileRecordResponse;
+					const apiClient = await setupApiClient();
+					const uploadedFile = await uploadFile(apiClient);
 
 					const query = {
 						...defaultQueryParameters,
 						width: 2000,
 					};
-					const response = await apiClient.get(`/preview/${uploadResult.id}/${uploadResult.name}`).query(query);
+					const response = await apiClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
 					const result = response.body as ApiValidationError;
 
 					expect(result.validationErrors).toEqual([
@@ -167,18 +170,11 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN output format is wrong', () => {
 				it('should return status 400', async () => {
-					const { apiClient } = await setup();
-
-					const uploadResponse = await apiClient
-						.post(uploadPath)
-						.attach('file', Buffer.from('abcd'), 'test.png')
-						.set('connection', 'keep-alive')
-						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-						.query({});
-					const uploadResult = uploadResponse.body as FileRecordResponse;
+					const apiClient = await setupApiClient();
+					const uploadedFile = await uploadFile(apiClient);
 
 					const query = { ...defaultQueryParameters, outputFormat: 'image/txt' };
-					const response = await apiClient.get(`/preview/${uploadResult.id}/${uploadResult.name}`).query(query);
+					const response = await apiClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
 					const result = response.body as ApiValidationError;
 
 					expect(result.validationErrors).toEqual([
@@ -193,19 +189,12 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN file does not exist', () => {
 				it('should return status 404', async () => {
-					const { apiClient } = await setup();
-
-					const uploadResponse = await apiClient
-						.post(uploadPath)
-						.attach('file', Buffer.from('abcd'), 'test.png')
-						.set('connection', 'keep-alive')
-						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-						.query({});
-					const uploadResult = uploadResponse.body as FileRecordResponse;
+					const apiClient = await setupApiClient();
+					const uploadedFile = await uploadFile(apiClient);
 
 					const wrongId = new ObjectId().toString();
 					const response = await apiClient
-						.get(`/preview/${wrongId}/${uploadResult.name}`)
+						.get(`/preview/${wrongId}/${uploadedFile.name}`)
 						.query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
 
@@ -216,22 +205,15 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN filename is wrong', () => {
 				it('should return status 404', async () => {
-					const { apiClient } = await setup();
+					const apiClient = await setupApiClient();
+					const uploadedFile = await uploadFile(apiClient);
+					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-					const uploadResponse = await apiClient
-						.post(uploadPath)
-						.attach('file', Buffer.from('abcd'), 'test.png')
-						.set('connection', 'keep-alive')
-						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-						.query({});
-					const uploadResult = uploadResponse.body as FileRecordResponse;
-
-					await setScanStatus(uploadResult.id, ScanStatus.VERIFIED);
 					const error = new NotFoundException();
 					s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 					const response = await apiClient
-						.get(`/preview/${uploadResult.id}/wrong-name.txt`)
+						.get(`/preview/${uploadedFile.id}/wrong-name.txt`)
 						.query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
 
@@ -245,35 +227,8 @@ describe('File Controller (API) - preview', () => {
 			describe('WHEN preview does already exist', () => {
 				describe('WHEN forceUpdate is undefined', () => {
 					const setup = async () => {
-						const school = schoolEntityFactory.build();
-						const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-
-						await em.persistAndFlush([school, user, account]);
-						em.clear();
-
-						const authValue = JwtAuthenticationFactory.createJwt({
-							accountId: account.id,
-							userId: user.id,
-							schoolId: user.school.id,
-							roles: [user.roles[0].id],
-							support: false,
-							isExternalUser: false,
-						});
-						const apiClient = new TestApiClient(app, '/file', authValue);
-
-						schoolId = school.id;
-						uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
-
-						jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-						antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
-
-						const uploadResponse = await apiClient
-							.post(uploadPath)
-							.attach('file', Buffer.from('abcd'), 'test.png')
-							.set('connection', 'keep-alive')
-							.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-							.query({});
-						const uploadedFile = uploadResponse.body as FileRecordResponse;
+						const apiClient = await setupApiClient();
+						const uploadedFile = await uploadFile(apiClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
@@ -312,35 +267,8 @@ describe('File Controller (API) - preview', () => {
 
 				describe('WHEN forceUpdate is false', () => {
 					const setup = async () => {
-						const school = schoolEntityFactory.build();
-						const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-
-						await em.persistAndFlush([school, user, account]);
-						em.clear();
-
-						const authValue = JwtAuthenticationFactory.createJwt({
-							accountId: account.id,
-							userId: user.id,
-							schoolId: user.school.id,
-							roles: [user.roles[0].id],
-							support: false,
-							isExternalUser: false,
-						});
-						const apiClient = new TestApiClient(app, '/file', authValue);
-
-						schoolId = school.id;
-						uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
-
-						jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-						antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
-
-						const uploadResponse = await apiClient
-							.post(uploadPath)
-							.attach('file', Buffer.from('abcd'), 'test.png')
-							.set('connection', 'keep-alive')
-							.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-							.query({});
-						const uploadedFile = uploadResponse.body as FileRecordResponse;
+						const apiClient = await setupApiClient();
+						const uploadedFile = await uploadFile(apiClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
@@ -421,35 +349,8 @@ describe('File Controller (API) - preview', () => {
 
 				describe('WHEN forceUpdate is true', () => {
 					const setup = async () => {
-						const school = schoolEntityFactory.build();
-						const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-
-						await em.persistAndFlush([school, user, account]);
-						em.clear();
-
-						const authValue = JwtAuthenticationFactory.createJwt({
-							accountId: account.id,
-							userId: user.id,
-							schoolId: user.school.id,
-							roles: [user.roles[0].id],
-							support: false,
-							isExternalUser: false,
-						});
-						const apiClient = new TestApiClient(app, '/file', authValue);
-
-						schoolId = school.id;
-						uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
-
-						jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-						antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
-
-						const uploadResponse = await apiClient
-							.post(uploadPath)
-							.attach('file', Buffer.from('abcd'), 'test.png')
-							.set('connection', 'keep-alive')
-							.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-							.query({});
-						const uploadedFile = uploadResponse.body as FileRecordResponse;
+						const apiClient = await setupApiClient();
+						const uploadedFile = await uploadFile(apiClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
@@ -492,37 +393,8 @@ describe('File Controller (API) - preview', () => {
 
 				describe('WHEN preview does not already exist', () => {
 					const setup = async () => {
-						jest.resetAllMocks();
-						await cleanupCollections(em);
-						const school = schoolEntityFactory.build();
-						const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-
-						await em.persistAndFlush([school, user, account]);
-						em.clear();
-
-						const authValue = JwtAuthenticationFactory.createJwt({
-							accountId: account.id,
-							userId: user.id,
-							schoolId: user.school.id,
-							roles: [user.roles[0].id],
-							support: false,
-							isExternalUser: false,
-						});
-						const apiClient = new TestApiClient(app, '/file', authValue);
-
-						schoolId = school.id;
-						uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
-
-						jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-						antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
-
-						const uploadResponse = await apiClient
-							.post(uploadPath)
-							.attach('file', Buffer.from('abcd'), 'test.png')
-							.set('connection', 'keep-alive')
-							.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
-							.query({});
-						const uploadedFile = uploadResponse.body as FileRecordResponse;
+						const apiClient = await setupApiClient();
+						const uploadedFile = await uploadFile(apiClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const error = new NotFoundException();
