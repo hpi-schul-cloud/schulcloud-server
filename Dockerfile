@@ -10,26 +10,28 @@ ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python3
 # to run ldap sync as script curl is needed
 RUN apk add --no-cache curl
+
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
 COPY esbuild esbuild
-RUN npm ci && npm cache clean --force
 COPY config config
 COPY backup backup
 COPY src src
 COPY apps apps
 COPY --from=git /app/serverversion apps/server/static-assets
 COPY scripts/ldapSync.sh scripts/
-RUN npm run build
 
-# Remove devDependencies. The modules transpiled by esbuild are pruned too and must be added again after pruning.
-RUN mkdir temp
-RUN cp -r node_modules/@keycloak/keycloak-admin-client-cjs temp
-RUN cp -r node_modules/file-type-cjs temp
-RUN npm prune --omit=dev
-RUN cp -r temp/keycloak-admin-client-cjs node_modules/@keycloak
-RUN cp -r temp/file-type-cjs node_modules
-RUN rm -rf temp
+RUN npm ci \
+    && npm run build \
+    # Remove dev dependencies. The modules transpiled by esbuild are removed too and must be added again after pruning.
+    && mkdir temp \
+    && cp -r node_modules/@keycloak/keycloak-admin-client-cjs temp \
+    && cp -r node_modules/file-type-cjs temp \
+    && npm prune --omit=dev \
+    && cp -r temp/keycloak-admin-client-cjs node_modules/@keycloak \
+    && cp -r temp/file-type-cjs node_modules \
+    && rm -rf temp \
+    && npm cache clean --force 
 
 ENV NODE_ENV=production
 ENV NO_COLOR="true"
