@@ -35,6 +35,8 @@ import {
 	SubmissionContainerElementResponse,
 	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
+	VideoConferenceElementContentBody,
+	VideoConferenceElementResponse,
 } from './dto';
 import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
 
@@ -71,7 +73,8 @@ export class ElementController {
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
-		DrawingElementContentBody
+		DrawingElementContentBody,
+		VideoConferenceElementContentBody
 	)
 	@ApiResponse({
 		status: 200,
@@ -83,6 +86,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 			],
 		},
 	})

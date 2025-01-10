@@ -52,10 +52,26 @@ describe(LessonClientAdapter.name, () => {
 	describe('getLessonById', () => {
 		describe('When getLessonById is called', () => {
 			const setup = () => {
+				const lessonId = faker.string.uuid();
+				const linkedTasks = createMock<AxiosResponse<LessonLinkedTaskResponse[]>>({
+					data: [
+						{
+							name: faker.lorem.sentence(),
+							description: faker.lorem.sentence(),
+							descriptionInputFormat: faker.helpers.arrayElement(['plainText', 'richTextCk4', 'richTextCk5Simple']),
+							availableDate: faker.date.recent().toString(),
+							dueDate: faker.date.future().toString(),
+							private: faker.datatype.boolean(),
+							publicSubmissions: faker.datatype.boolean(),
+							teamSubmissions: faker.datatype.boolean(),
+						},
+					],
+				});
+
 				const response = createMock<AxiosResponse<LessonResponse>>({
 					data: {
 						_id: faker.string.uuid(),
-						id: faker.string.uuid(),
+						id: lessonId,
 						name: faker.lorem.sentence(),
 						courseId: faker.string.uuid(),
 						courseGroupId: faker.string.uuid(),
@@ -86,6 +102,7 @@ describe(LessonClientAdapter.name, () => {
 					},
 				});
 
+				lessonApiMock.lessonControllerGetLessonTasks.mockResolvedValue(linkedTasks);
 				lessonApiMock.lessonControllerGetLesson.mockResolvedValue(response);
 
 				return { lessonId: response.data.id };
@@ -134,77 +151,6 @@ describe(LessonClientAdapter.name, () => {
 				const { lessonResponseId, adapter } = setup();
 
 				await expect(adapter.getLessonById(lessonResponseId)).rejects.toThrowError(UnauthorizedException);
-			});
-		});
-	});
-
-	describe('getLessonTasks', () => {
-		describe('When getLessonTasks is called', () => {
-			const setup = () => {
-				const lessonId = faker.string.uuid();
-				const response = createMock<AxiosResponse<LessonLinkedTaskResponse[]>>({
-					data: [
-						{
-							name: faker.lorem.sentence(),
-							description: faker.lorem.sentence(),
-							descriptionInputFormat: faker.helpers.arrayElement(['plainText', 'richTextCk4', 'richTextCk5Simple']),
-							availableDate: faker.date.recent().toString(),
-							dueDate: faker.date.future().toString(),
-							private: faker.datatype.boolean(),
-							publicSubmissions: faker.datatype.boolean(),
-							teamSubmissions: faker.datatype.boolean(),
-						},
-					],
-				});
-
-				lessonApiMock.lessonControllerGetLessonTasks.mockResolvedValue(response);
-
-				return { lessonId };
-			};
-
-			it('should call lessonControllerGetLessonTasks', async () => {
-				const { lessonId } = setup();
-
-				await sut.getLessonTasks(lessonId);
-
-				expect(lessonApiMock.lessonControllerGetLessonTasks).toHaveBeenCalled();
-			});
-		});
-
-		describe('When getLessonTasks is called with invalid id', () => {
-			const setup = () => {
-				const lessonResponseId = faker.string.uuid();
-
-				lessonApiMock.lessonControllerGetLessonTasks.mockRejectedValueOnce(new Error('error'));
-
-				return { lessonResponseId };
-			};
-
-			it('should throw an error', async () => {
-				const { lessonResponseId } = setup();
-
-				const result = sut.getLessonTasks(lessonResponseId);
-
-				await expect(result).rejects.toThrowError('error');
-			});
-		});
-
-		describe('When no JWT token is found', () => {
-			const setup = () => {
-				const lessonResponseId = faker.string.uuid();
-				const request = createMock<Request>({
-					headers: {},
-				}) as Request;
-
-				const adapter: LessonClientAdapter = new LessonClientAdapter(lessonApiMock, request);
-
-				return { lessonResponseId, adapter };
-			};
-
-			it('should throw an UnauthorizedError', async () => {
-				const { lessonResponseId, adapter } = setup();
-
-				await expect(adapter.getLessonTasks(lessonResponseId)).rejects.toThrowError(UnauthorizedException);
 			});
 		});
 	});

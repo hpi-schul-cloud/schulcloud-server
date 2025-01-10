@@ -10,11 +10,10 @@ import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
-import { RoomEntity } from '@modules/room/repo/entity';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
+import { RoomEntity } from '@modules/room/repo/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
@@ -99,7 +98,6 @@ export const ALL_ENTITIES = [
 	VideoConference,
 	GroupEntity,
 	RegistrationPinEntity,
-	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
 	InstanceEntity,
