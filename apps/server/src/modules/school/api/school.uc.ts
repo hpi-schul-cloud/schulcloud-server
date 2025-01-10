@@ -133,11 +133,7 @@ export class SchoolUc {
 		return dto;
 	}
 
-	public async getSchoolTeachers(
-		schoolId: EntityId,
-		userId: EntityId,
-		pagination?: PaginationParams
-	): Promise<SchoolUserListResponse> {
+	public async getSchoolTeachers(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
 		const [school, user] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
@@ -149,12 +145,12 @@ export class SchoolUc {
 
 		let result: Page<UserDO>;
 		if (isUserOfSchool) {
-			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER, { pagination });
+			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER);
 		} else {
-			result = await this.userService.findPublicTeachersBySchool(schoolId, { pagination });
+			result = await this.userService.findPublicTeachersBySchool(schoolId);
 		}
 
-		const responseDto = SchoolUserResponseMapper.mapToListResponse(result, pagination);
+		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
 		return responseDto;
 	}
 
