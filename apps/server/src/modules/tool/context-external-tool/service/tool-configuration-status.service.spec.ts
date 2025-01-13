@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
-import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
