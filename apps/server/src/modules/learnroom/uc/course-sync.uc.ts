@@ -29,7 +29,7 @@ export class CourseSyncUc {
 		await this.courseSyncService.stopSynchronization(course);
 	}
 
-	public async startSynchronization(userId: string, courseId: string, groupId: string) {
+	public async startSynchronization(userId: string, courseId: string, groupId: string): Promise<void> {
 		const [course, group, user] = await Promise.all([
 			this.courseService.findById(courseId),
 			this.groupService.findById(groupId),

@@ -1676,6 +1676,16 @@
 			"default": "false",
 			"description": "Enables the external system logout feature"
 		},
+		"VIDIS_API_CLIENT_BASE_URL": {
+			"type": "string",
+			"default": "",
+			"description": "The VIDIS API base URL"
+		},
+		"VIDIS_SYNC_REGION": {
+			"type": "string",
+			"default": "",
+			"description": "The region for fetching activated offers from VIDIS"
+		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
 			"type": "boolean",
 			"default": "false",
