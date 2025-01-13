@@ -1,16 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CreateJwtPayload } from '@infra/auth-guard';
 import jwt, { Algorithm } from 'jsonwebtoken';
-
-interface CreateJwtPayload {
-	accountId: string;
-	userId: string;
-	schoolId: string;
-	roles: string[];
-	systemId?: string;
-	support: boolean;
-	supportUserId?: string;
-	isExternalUser: boolean;
-}
 
 const privateKey = Configuration.get('JWT_PRIVATE_KEY') as string;
 const domain = Configuration.get('SC_DOMAIN') as string;
