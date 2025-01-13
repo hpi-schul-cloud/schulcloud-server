@@ -301,13 +301,10 @@ describe('GroupService', () => {
 			it('should call repo', async () => {
 				const { user, nameQuery, options } = setup();
 
-				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_CLASSES, true, nameQuery, options);
+				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_GROUPS, true, nameQuery, options);
 
 				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
-					new GroupAggregateScope(options)
-						.byUserPermission(user.id, user.school.id, GroupVisibilityPermission.ALL_SCHOOL_CLASSES)
-						.byName(nameQuery)
-						.byAvailableForSync(true)
+					new GroupAggregateScope(options).byName(nameQuery).byAvailableForSync(true).byOrganization(user.school.id)
 				);
 			});
 
@@ -316,7 +313,7 @@ describe('GroupService', () => {
 
 				const result: Page<Group> = await service.findGroupsForUser(
 					user,
-					GroupVisibilityPermission.ALL_SCHOOL_CLASSES,
+					GroupVisibilityPermission.ALL_SCHOOL_GROUPS,
 					true,
 					nameQuery,
 					options
@@ -346,11 +343,7 @@ describe('GroupService', () => {
 				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_GROUPS, true);
 
 				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
-					new GroupAggregateScope().byUserPermission(
-						user.id,
-						user.school.id,
-						GroupVisibilityPermission.ALL_SCHOOL_GROUPS
-					)
+					new GroupAggregateScope().byOrganization(user.school.id)
 				);
 			});
 
@@ -383,9 +376,7 @@ describe('GroupService', () => {
 
 				await service.findGroupsForUser(user, GroupVisibilityPermission.OWN_GROUPS, false);
 
-				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
-					new GroupAggregateScope().byUserPermission(user.id, user.school.id, GroupVisibilityPermission.OWN_GROUPS)
-				);
+				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(new GroupAggregateScope().byUser(user.id));
 			});
 
 			it('should return an empty array', async () => {

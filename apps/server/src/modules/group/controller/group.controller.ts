@@ -9,7 +9,6 @@ import { ErrorResponse } from '@src/core/error/dto';
 import { ClassGroupUc, GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
-	ClassCallerParams,
 	ClassFilterParams,
 	ClassInfoSearchListResponse,
 	ClassSortParams,
@@ -36,14 +35,12 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
-		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.classGroupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
-			callerParams.calledFrom,
 			pagination,
 			sortingQuery.sortBy,
 			sortingQuery.sortOrder
