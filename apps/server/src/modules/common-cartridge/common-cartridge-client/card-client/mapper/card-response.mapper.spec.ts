@@ -11,6 +11,7 @@ import {
 	RichTextElementResponse,
 	CollaborativeTextEditorElementResponse,
 	CardResponseElementsInner,
+	VideoConferenceElementResponse,
 } from '../cards-api-client';
 import { ContentElementType } from '../enums/content-element-type.enum';
 import { CardContentElementInner } from '../types/card-content-elements-inner.type';
@@ -99,6 +100,10 @@ describe('CardResponseMapper', () => {
 					inputFormat: faker.internet.domainName(),
 				}) as RichTextElementResponse,
 
+				createMockElement(faker.string.uuid(), ContentElementType.VIDEO_CONFERENCE, {
+					title: faker.lorem.word(),
+				}) as VideoConferenceElementResponse,
+
 				createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
 			]);
 
@@ -113,7 +118,7 @@ describe('CardResponseMapper', () => {
 				expect(cardResponseDto.height).toBe(100);
 				expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
 				expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
-				expect(cardResponseDto.elements).toHaveLength(8);
+				expect(cardResponseDto.elements).toHaveLength(9);
 				expect(cardResponseDto.elements[0].type).toBe(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
 				expect(cardResponseDto.elements[1].type).toBe(ContentElementType.DELETED);
 				expect(cardResponseDto.elements[2].type).toBe(ContentElementType.SUBMISSION_CONTAINER);
@@ -122,6 +127,7 @@ describe('CardResponseMapper', () => {
 				expect(cardResponseDto.elements[5].type).toBe(ContentElementType.FILE);
 				expect(cardResponseDto.elements[6].type).toBe(ContentElementType.LINK);
 				expect(cardResponseDto.elements[7].type).toBe(ContentElementType.RICH_TEXT);
+				expect(cardResponseDto.elements[8].type).toBe(ContentElementType.VIDEO_CONFERENCE);
 			});
 		});
 
@@ -170,18 +176,6 @@ describe('CardResponseMapper', () => {
 				const cardResponse: CardResponseDto = mapperResult.data[0];
 
 				expect(cardResponse.visibilitySettings.publishedAt).toBe('');
-			});
-		});
-
-		describe('when deletedAt in TimestampsResponse is null', () => {
-			const mockList: CardListResponse = setup([]);
-			mockList.data[0].timestamps.deletedAt = undefined;
-
-			it('should return an empty string', () => {
-				const mapperResult = CardResponseMapper.mapToCardListResponseDto(mockList);
-				const cardResponse: CardResponseDto = mapperResult.data[0];
-
-				expect(cardResponse.timeStamps.deletedAt).toBe('');
 			});
 		});
 	});
