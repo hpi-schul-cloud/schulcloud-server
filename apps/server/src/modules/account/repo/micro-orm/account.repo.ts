@@ -12,18 +12,18 @@ import { AccountScope } from './scope/account-scope';
 
 @Injectable()
 export class AccountRepo extends BaseDomainObjectRepo<Account, AccountEntity> {
-	protected mapDOToEntityProperties(entityDO: Account): EntityData<AccountEntity> {
-		const entityProps: EntityData<AccountEntity> = AccountDoToEntityMapper.mapToEntity(entityDO);
-
-		return entityProps;
-	}
-
 	constructor(protected readonly em: EntityManager) {
 		super(em);
 	}
 
 	get entityName(): EntityName<AccountEntity> {
 		return AccountEntity;
+	}
+
+	protected mapDOToEntityProperties(entityDO: Account): EntityData<AccountEntity> {
+		const entityProps: EntityData<AccountEntity> = AccountDoToEntityMapper.mapToEntity(entityDO);
+
+		return entityProps;
 	}
 
 	public async save(account: Account): Promise<Account> {

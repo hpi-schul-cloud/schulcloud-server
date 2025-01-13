@@ -11,7 +11,7 @@ import { AccountEntityToDoMapper } from './mapper';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 import { Account } from '../../domain';
 
-class AccountRepoSpec extends AccountRepo {
+class AccountTestRepo extends AccountRepo {
 	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
 		return super.mapDOToEntityProperties(entityDO);
 	}
@@ -19,14 +19,14 @@ class AccountRepoSpec extends AccountRepo {
 describe('account repo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
-	let repo: AccountRepoSpec;
+	let repo: AccountTestRepo;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [AccountRepoSpec],
+			providers: [AccountTestRepo],
 		}).compile();
-		repo = module.get(AccountRepoSpec);
+		repo = module.get(AccountTestRepo);
 		em = module.get(EntityManager);
 	});
 
