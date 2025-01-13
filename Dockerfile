@@ -13,9 +13,7 @@ COPY config config
 COPY esbuild esbuild
 COPY src src
 
-RUN npm ci \
-    && npm run build\
-    && npm cache clean --force
+RUN npm ci && npm run build
 
 
 FROM docker.io/node:22-alpine
