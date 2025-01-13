@@ -129,6 +129,16 @@ describe('File Controller (API) - preview', () => {
 	};
 
 	describe('preview', () => {
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, '/file');
+
+				const response = await apiClient.get('/preview/123/test.png').query(defaultQueryParameters);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			describe('WHEN recordId is invalid', () => {
 				it('should return status 400', async () => {

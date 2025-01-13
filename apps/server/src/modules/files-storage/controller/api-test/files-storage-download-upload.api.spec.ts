@@ -103,6 +103,17 @@ describe('files-storage controller (API)', () => {
 			return response;
 		};
 
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const { validId } = await setup();
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				const result = await uploadFile(`/upload/school/123/users/${validId}`, apiClient);
+
+				expect(result.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid schoolId', async () => {
 				const { apiClient, validId } = await setup();
@@ -186,6 +197,27 @@ describe('files-storage controller (API)', () => {
 	});
 
 	describe('upload from url action', () => {
+		describe('with not authenticated user', () => {
+			const setup = () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				const body = {
+					url: 'http://localhost/test.txt',
+					fileName: 'test.txt',
+				};
+
+				return { apiClient, body };
+			};
+
+			it('should return status 401', async () => {
+				const { apiClient, body } = setup();
+
+				const response = await apiClient.post(`/upload-from-url/school/123/users/123`, body);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			const setup = async () => {
 				jest.resetAllMocks();
@@ -415,6 +447,16 @@ describe('files-storage controller (API)', () => {
 	});
 
 	describe('download action', () => {
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				const result = await apiClient.get('/download/123/text.txt');
+
+				expect(result.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			const setup = async () => {
 				jest.resetAllMocks();

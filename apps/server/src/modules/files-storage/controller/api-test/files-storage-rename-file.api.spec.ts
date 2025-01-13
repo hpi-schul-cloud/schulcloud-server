@@ -74,6 +74,16 @@ describe(`${baseRouteName} (api)`, () => {
 		return { user, fileRecord, apiClient };
 	};
 
+	describe('with not authenticated user', () => {
+		it('should return status 401', async () => {
+			const apiClient = new TestApiClient(app, baseRouteName);
+
+			const result = await apiClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+
+			expect(result.status).toEqual(401);
+		});
+	});
+
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid fileRecordId', async () => {
 			const { apiClient } = await setup();
