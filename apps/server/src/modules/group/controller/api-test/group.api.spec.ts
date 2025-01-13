@@ -481,10 +481,6 @@ describe('Group (API)', () => {
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
 					type: GroupEntityTypes.COURSE,
 				});
-				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({
-					organization: school,
-					type: GroupEntityTypes.COURSE,
-				});
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
 					school,
@@ -521,7 +517,6 @@ describe('Group (API)', () => {
 					teacherUser,
 					teachersGroup,
 					availableTeachersGroup,
-					groupWithoutTeacher,
 					school,
 					syncedCourse,
 				]);

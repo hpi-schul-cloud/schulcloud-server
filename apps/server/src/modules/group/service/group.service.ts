@@ -68,11 +68,16 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		options?: IFindOptions<Group>
 	): Promise<Page<Group>> {
 		const scope = new GroupAggregateScope(options)
-			.byUserPermission(user.id, user.school.id, permission)
 			.byName(nameQuery)
 			.byAvailableForSync(
 				availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')
 			);
+
+		if (permission === GroupVisibilityPermission.ALL_SCHOOL_GROUPS) {
+			scope.byOrganization(user.school.id);
+		} else {
+			scope.byUser(user.id);
+		}
 
 		const groups: Page<Group> = await this.groupRepo.findGroupsForScope(scope);
 
