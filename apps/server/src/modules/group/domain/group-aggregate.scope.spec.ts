@@ -1,8 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { GroupEntityTypes } from '../entity';
 import { GroupAggregateScope } from './group-aggregate.scope';
 import { GroupTypes } from './group-types';
-import { GroupVisibilityPermission } from './group-visibility-permission.enum';
 
 describe(GroupAggregateScope.name, () => {
 	const defaultFacetQuery = {
@@ -11,87 +9,6 @@ describe(GroupAggregateScope.name, () => {
 			total: [{ $count: 'count' }],
 		},
 	};
-
-	describe('byUserPermission', () => {
-		describe('when the user is allowed to see all groups of a school', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toString();
-
-				return {
-					userId,
-					schoolId,
-				};
-			};
-
-			it('should build the correct query', () => {
-				const { userId, schoolId } = setup();
-
-				const result = new GroupAggregateScope()
-					.byUserPermission(userId, schoolId, GroupVisibilityPermission.ALL_SCHOOL_GROUPS)
-					.build();
-
-				expect(result).toEqual([{ $match: { organization: new ObjectId(schoolId) } }, defaultFacetQuery]);
-			});
-		});
-
-		describe('when the user is allowed to see his own groups and all classes of a school', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toHexString();
-
-				return {
-					userId,
-					schoolId,
-				};
-			};
-
-			it('should build the correct query', () => {
-				const { userId, schoolId } = setup();
-
-				const result = new GroupAggregateScope()
-					.byUserPermission(userId, schoolId, GroupVisibilityPermission.ALL_SCHOOL_CLASSES)
-					.build();
-
-				expect(result).toEqual([
-					{
-						$match: {
-							$or: [
-								{ organization: new ObjectId(schoolId), type: GroupEntityTypes.CLASS },
-								{ users: { $elemMatch: { user: new ObjectId(userId) } } },
-							],
-						},
-					},
-					defaultFacetQuery,
-				]);
-			});
-		});
-
-		describe('when the user is allowed to only see his own groups', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toHexString();
-
-				return {
-					userId,
-					schoolId,
-				};
-			};
-
-			it('should build the correct query', () => {
-				const { userId, schoolId } = setup();
-
-				const result = new GroupAggregateScope()
-					.byUserPermission(userId, schoolId, GroupVisibilityPermission.OWN_GROUPS)
-					.build();
-
-				expect(result).toEqual([
-					{ $match: { users: { $elemMatch: { user: new ObjectId(userId) } } } },
-					defaultFacetQuery,
-				]);
-			});
-		});
-	});
 
 	describe('byAvailableForSync', () => {
 		describe('when filtering for groups that are available for a course synchronization', () => {

@@ -107,18 +107,16 @@ export class GroupUc {
 	}
 
 	private getGroupVisibilityPermission(user: User, school: School): GroupVisibilityPermission {
-		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
-		if (canSeeFullList) {
-			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
-		}
+		const canSeeAllSchoolGroups: boolean =
+			this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]) ||
+			this.authorizationService.hasPermission(
+				user,
+				school,
+				AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
+			);
 
-		const canSeeAllClasses: boolean = this.authorizationService.hasPermission(
-			user,
-			school,
-			AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
-		);
-		if (canSeeAllClasses) {
-			return GroupVisibilityPermission.ALL_SCHOOL_CLASSES;
+		if (canSeeAllSchoolGroups) {
+			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
 		}
 
 		return GroupVisibilityPermission.OWN_GROUPS;

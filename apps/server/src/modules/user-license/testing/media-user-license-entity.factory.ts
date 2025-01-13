@@ -1,6 +1,6 @@
 import { BaseFactory, userFactory } from '@shared/testing';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { MediaUserLicenseEntity, MediaUserLicenseEntityProps, UserLicenseType } from '../entity';
-import { mediaSourceEntityFactory } from './media-source-entity.factory';
 
 export const mediaUserLicenseEntityFactory = BaseFactory.define<MediaUserLicenseEntity, MediaUserLicenseEntityProps>(
 	MediaUserLicenseEntity,

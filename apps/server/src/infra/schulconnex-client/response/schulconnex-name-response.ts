@@ -1,9 +1,13 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class SchulconnexNameResponse {
 	@IsString()
-	familienname!: string;
+	public familienname!: string;
 
 	@IsString()
-	vorname!: string;
+	public vorname!: string;
+
+	@IsOptional()
+	@IsString()
+	public rufname?: string;
 }
