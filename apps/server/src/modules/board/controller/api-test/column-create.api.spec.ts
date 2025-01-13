@@ -1,115 +1,122 @@
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { ColumnResponse } from '../dto';
 
 const baseRouteName = '/boards';
 
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async post(boardId: string) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}/${boardId}/columns`)
-			.set('Accept', 'application/json');
-
-		return {
-			result: response.body as ColumnResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`board create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		apiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	const setup = async () => {
-		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
-
-		const columnBoardNode = columnBoardEntityFactory.build({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
-		});
-
-		await em.persistAndFlush([user, columnBoardNode]);
-		em.clear();
-
-		return { user, columnBoardNode };
-	};
-
 	describe('with valid user', () => {
-		it('should return status 201', async () => {
-			const { user, columnBoardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		const setup = async () => {
+			await cleanupCollections(em);
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ teachers: [teacherUser] });
+			await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
-			const response = await api.post(columnBoardNode.id);
+			const columnBoardNode = columnBoardEntityFactory.build({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			await em.persistAndFlush([columnBoardNode]);
+			em.clear();
+
+			const loggedInClient = await apiClient.login(teacherAccount);
+
+			return { loggedInClient, columnBoardNode };
+		};
+
+		it('should return status 201', async () => {
+			const { columnBoardNode, loggedInClient } = await setup();
+
+			const response = await loggedInClient.post(`${columnBoardNode.id}/columns`);
 
 			expect(response.status).toEqual(201);
 		});
 
 		it('should return the created column', async () => {
-			const { user, columnBoardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { columnBoardNode, loggedInClient } = await setup();
 
-			const { result } = await api.post(columnBoardNode.id);
+			const result = await loggedInClient.post(`${columnBoardNode.id}/columns`);
+			const response = result.body as ColumnResponse;
 
-			expect(result.id).toBeDefined();
+			expect(response.id).toBeDefined();
 		});
 	});
 
-	describe('with valid user', () => {
+	describe('with unauthorized user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ teachers: [] });
+			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+
+			const columnBoardNode = columnBoardEntityFactory.build({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			await em.persistAndFlush([columnBoardNode]);
+			em.clear();
+
+			const loggedInClient = await apiClient.login(teacherAccount);
+
+			return { loggedInClient, columnBoardNode };
+		};
+
+		it('should return status 403', async () => {
+			const { columnBoardNode, loggedInClient } = await setup();
+
+			const response = await loggedInClient.post(`${columnBoardNode.id}/columns`);
+
+			expect(response.status).toEqual(403);
+		});
+	});
+
+	describe('with not logged in user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ teachers: [] });
+			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+
+			const columnBoardNode = columnBoardEntityFactory.build({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			await em.persistAndFlush([columnBoardNode]);
+			em.clear();
+
+			return { columnBoardNode };
+		};
+
 		it('should return status 403', async () => {
 			const { columnBoardNode } = await setup();
 
-			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
-			currentUser = mapUserToCurrentUser(invalidUser);
+			const response = await apiClient.post(`${columnBoardNode.id}/columns`);
 
-			const response = await api.post(columnBoardNode.id);
-
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(401);
 		});
 	});
 });
