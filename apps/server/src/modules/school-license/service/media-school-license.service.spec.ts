@@ -33,33 +33,6 @@ describe(MediaSchoolLicenseService.name, () => {
 		jest.clearAllMocks();
 	});
 
-	describe('findAllByMediaSourceAndMediumId', () => {
-		describe('when a media source and medium id of existing media school licenses is given', () => {
-			const setup = () => {
-				const mediumId = 'test-medium-id';
-				const mediaSource = mediaSourceFactory.build();
-				const mediaSchooLicenses = mediaSchoolLicenseFactory.buildList(3, { mediaSource, mediumId });
-
-				mediaSchoolLicenseRepo.findAllByMediaSourceAndMediumId.mockResolvedValueOnce(mediaSchooLicenses);
-
-				return {
-					mediaSource,
-					mediumId,
-					mediaSchooLicenses,
-				};
-			};
-
-			it('should find and return the existing media school licenses', async () => {
-				const { mediaSource, mediumId, mediaSchooLicenses } = setup();
-
-				const result = await mediaSchoolLicenseService.findAllByMediaSourceAndMediumId(mediaSource.id, mediumId);
-
-				expect(result).toEqual(expect.arrayContaining(mediaSchooLicenses));
-				expect(mediaSchoolLicenseRepo.findAllByMediaSourceAndMediumId).toBeCalledWith(mediaSource.id, mediumId);
-			});
-		});
-	});
-
 	describe('saveAllMediaSchoolLicenses', () => {
 		describe('when media school licenses are given', () => {
 			const setup = () => {
@@ -91,22 +64,22 @@ describe(MediaSchoolLicenseService.name, () => {
 		});
 	});
 
-	describe('deleteSchoolLicenses', () => {
-		describe('when an existing media school license is given', () => {
+	describe('deleteAllByMediaSource', () => {
+		describe('when a media source id is given', () => {
 			const setup = () => {
-				const mediaSchooLicense = mediaSchoolLicenseFactory.build();
+				const mediaSource = mediaSourceFactory.build();
 
 				return {
-					mediaSchooLicense,
+					mediaSource,
 				};
 			};
 
-			it('should delete the media school license', async () => {
-				const { mediaSchooLicense } = setup();
+			it('should delete the media school license by media source', async () => {
+				const { mediaSource } = setup();
 
-				await mediaSchoolLicenseService.deleteSchoolLicenses([mediaSchooLicense]);
+				await mediaSchoolLicenseService.deleteAllByMediaSource(mediaSource.id);
 
-				expect(mediaSchoolLicenseRepo.delete).toBeCalledWith([mediaSchooLicense]);
+				expect(mediaSchoolLicenseRepo.deleteAllByMediaSource).toBeCalledWith(mediaSource.id);
 			});
 		});
 	});

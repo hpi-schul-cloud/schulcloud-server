@@ -2,13 +2,10 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { MediaSchoolLicenseMikroOrmRepo } from './media-school-license.repo';
-import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
-import { MediaSchoolLicenseEntityMapper } from '../mapper/media-school-license.entity.mapper';
 
 describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 	let module: TestingModule;
@@ -31,60 +28,6 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-	});
-
-	describe('findMediaSchoolLicensesByMediumId', () => {
-		describe('when a medium id of existing media school licenses is provided', () => {
-			const setup = async () => {
-				const mediumId = 'test-medium-id';
-
-				const mediaSourceEntity: MediaSourceEntity = mediaSourceEntityFactory.build();
-				const mediaSchoolLicenses: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(2, {
-					mediaSource: mediaSourceEntity,
-					mediumId,
-				});
-
-				const otherMediaSchoolLicense: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build({
-					mediaSource: mediaSourceEntityFactory.build(),
-					mediumId: 'test-other-medium-id',
-				});
-
-				const licenseWithOtherMediaSource: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build({
-					mediaSource: mediaSourceEntityFactory.build(),
-					mediumId,
-				});
-
-				await em.persistAndFlush([otherMediaSchoolLicense, licenseWithOtherMediaSource, ...mediaSchoolLicenses]);
-				em.clear();
-
-				const expectedDOs: MediaSchoolLicense[] = mediaSchoolLicenses.map(
-					(entity: MediaSchoolLicenseEntity): MediaSchoolLicense => MediaSchoolLicenseEntityMapper.mapEntityToDO(entity)
-				);
-
-				return {
-					mediaSourceId: mediaSourceEntity.id,
-					mediumId,
-					expectedDOs,
-				};
-			};
-
-			it('should return the existing media school licenses', async () => {
-				const { mediaSourceId, mediumId, expectedDOs } = await setup();
-
-				const results: MediaSchoolLicense[] = await repo.findAllByMediaSourceAndMediumId(mediaSourceId, mediumId);
-
-				expect(results.length).toEqual(expectedDOs.length);
-				const sortedExpectedDOs = expectedDOs.sort();
-				results.sort().forEach((result, i) => {
-					expect(result.id).toEqual(sortedExpectedDOs[i].id);
-					expect(result.mediumId).toEqual(sortedExpectedDOs[i].mediumId);
-					expect(result.type).toEqual(sortedExpectedDOs[i].type);
-					expect(result.mediaSource).toEqual(sortedExpectedDOs[i].mediaSource);
-					expect(result.school.id).toEqual(sortedExpectedDOs[i].school.id);
-					expect(result.school.officialSchoolNumber).toEqual(sortedExpectedDOs[i].school.officialSchoolNumber);
-				});
-			});
-		});
 	});
 
 	describe('saveAll', () => {
@@ -116,31 +59,33 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 		});
 	});
 
-	describe('delete', () => {
-		describe('when an existing media school license is provided', () => {
+	describe('deleteAllByMediaSource', () => {
+		describe('when a media source id is provided', () => {
 			const setup = async () => {
-				const mediaSchoolLicenseDO: MediaSchoolLicense = mediaSchoolLicenseFactory.build();
-				const mediaSchoolLicenseEntity: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.buildWithId(
-					{},
-					mediaSchoolLicenseDO.id
-				);
-				const otherEntity: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build();
+				const mediaSource = mediaSourceEntityFactory.build();
+				const mediaSchoolLicenseEntities: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(3, {
+					mediaSource,
+				});
 
-				await em.persistAndFlush([mediaSchoolLicenseEntity, otherEntity]);
+				const otherMediaSource = mediaSourceEntityFactory.build();
+				const otherEntity: MediaSchoolLicenseEntity = mediaSchoolLicenseEntityFactory.build({
+					mediaSource: otherMediaSource,
+				});
+
+				await em.persistAndFlush([...mediaSchoolLicenseEntities, otherEntity]);
 				em.clear();
 
-				return { mediaSchoolLicenseDO };
+				return { mediaSource, otherEntity };
 			};
 
 			it('should delete the media school license', async () => {
-				const { mediaSchoolLicenseDO } = await setup();
+				const { mediaSource, otherEntity } = await setup();
 
-				await repo.delete(mediaSchoolLicenseDO);
+				await repo.deleteAllByMediaSource(mediaSource.id);
 
-				const savedMediaSchoolLicense: MediaSchoolLicenseEntity | null = await em.findOne(MediaSchoolLicenseEntity, {
-					id: mediaSchoolLicenseDO.id,
-				});
-				expect(savedMediaSchoolLicense).toBeNull();
+				const savedMediaSchoolLicenses: MediaSchoolLicenseEntity[] = await em.find(MediaSchoolLicenseEntity, {});
+				expect(savedMediaSchoolLicenses.length).toEqual(1);
+				expect(savedMediaSchoolLicenses[0]._id.toHexString()).toEqual(otherEntity._id.toHexString());
 			});
 		});
 	});

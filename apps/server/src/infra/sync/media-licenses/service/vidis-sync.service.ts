@@ -16,6 +16,8 @@ export class VidisSyncService {
 	) {}
 
 	public async syncMediaSchoolLicenses(mediaSource: MediaSource, vidisOfferItems: OfferDTO[]): Promise<void> {
+		await this.mediaSchoolLicenseService.deleteAllByMediaSource(mediaSource.id);
+
 		const syncItemPromises: Promise<void>[] = vidisOfferItems.map(async (item: OfferDTO): Promise<void> => {
 			if (!item.schoolActivations || !item.offerId) {
 				return;
@@ -23,50 +25,9 @@ export class VidisSyncService {
 
 			const mediumId = item.offerId.toString();
 
-			const officialSchoolNumbers = item.schoolActivations.map((activation) => this.removePrefix(activation));
+			const officialSchoolNumbersFromVidis = item.schoolActivations.map((activation) => this.removePrefix(activation));
 
-			let existingLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseService.findAllByMediaSourceAndMediumId(
-				mediaSource.id,
-				mediumId
-			);
-
-			if (existingLicenses.length) {
-				existingLicenses = await this.removeNoLongerAvailableLicenses(existingLicenses, officialSchoolNumbers);
-			}
-
-			const existingLicenseSchoolNumberSet = new Set(
-				existingLicenses.reduce<string[]>((acc: string[], license: MediaSchoolLicense) => {
-					if (license.school.officialSchoolNumber) {
-						acc.push(license.school.officialSchoolNumber);
-					}
-					return acc;
-				}, [])
-			);
-
-			const newLicensesPromises: Promise<MediaSchoolLicense | null>[] = officialSchoolNumbers.map(
-				async (schoolNumber: string): Promise<MediaSchoolLicense | null> => {
-					if (existingLicenseSchoolNumberSet.has(schoolNumber)) {
-						return null;
-					}
-
-					const newLicense: MediaSchoolLicense | null = await this.buildMediaSchoolLicense(
-						schoolNumber,
-						mediaSource,
-						mediumId
-					);
-
-					return newLicense;
-				}
-			);
-
-			const newLicenses = await Promise.all(newLicensesPromises);
-			const filteredLicenses = newLicenses.filter<MediaSchoolLicense>(
-				(license: MediaSchoolLicense | null) => !!license
-			);
-
-			if (filteredLicenses.length) {
-				await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(filteredLicenses);
-			}
+			await this.createLicenses(officialSchoolNumbersFromVidis, mediaSource, mediumId);
 		});
 
 		await Promise.all(syncItemPromises);
@@ -74,33 +35,6 @@ export class VidisSyncService {
 
 	private removePrefix(input: string): string {
 		return input.replace(/^.*?(\d{5})$/, '$1');
-	}
-
-	private async removeNoLongerAvailableLicenses(
-		existingLicenses: MediaSchoolLicense[],
-		schoolNumbersFromVidis: string[]
-	): Promise<MediaSchoolLicense[]> {
-		const vidisSchoolNumberSet = new Set(schoolNumbersFromVidis);
-
-		const licensesToDelete: MediaSchoolLicense[] = existingLicenses.reduce<MediaSchoolLicense[]>(
-			(acc: MediaSchoolLicense[], license: MediaSchoolLicense) => {
-				if (!license.school.officialSchoolNumber || !vidisSchoolNumberSet.has(license.school.officialSchoolNumber)) {
-					acc.push(license);
-				}
-				return acc;
-			},
-			[]
-		);
-
-		let licensesAfterDelete: MediaSchoolLicense[] = [...existingLicenses];
-		if (licensesToDelete.length) {
-			await this.mediaSchoolLicenseService.deleteSchoolLicenses(licensesToDelete);
-			licensesAfterDelete = existingLicenses.filter(
-				(existingLicense: MediaSchoolLicense) => !licensesToDelete.includes(existingLicense)
-			);
-		}
-
-		return licensesAfterDelete;
 	}
 
 	private async buildMediaSchoolLicense(
@@ -124,5 +58,30 @@ export class VidisSyncService {
 		});
 
 		return license;
+	}
+
+	private async createLicenses(
+		officialSchoolNumbersFromVidis: string[],
+		mediaSource: MediaSource,
+		mediumId: string
+	): Promise<void> {
+		const newLicensesPromises: Promise<MediaSchoolLicense | null>[] = officialSchoolNumbersFromVidis.map(
+			async (schoolNumber: string): Promise<MediaSchoolLicense | null> => {
+				const newLicense: MediaSchoolLicense | null = await this.buildMediaSchoolLicense(
+					schoolNumber,
+					mediaSource,
+					mediumId
+				);
+
+				return newLicense;
+			}
+		);
+
+		const newLicenses = await Promise.all(newLicensesPromises);
+		const filteredLicenses = newLicenses.filter<MediaSchoolLicense>((license: MediaSchoolLicense | null) => !!license);
+
+		if (filteredLicenses.length) {
+			await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(filteredLicenses);
+		}
 	}
 }

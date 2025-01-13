@@ -6,20 +6,10 @@ import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 export class MediaSchoolLicenseService {
 	constructor(@Inject(MEDIA_SCHOOL_LICENSE_REPO) private readonly mediaSchoolLicenseRepo: MediaSchoolLicenseRepo) {}
 
-	public async findAllByMediaSourceAndMediumId(
-		mediaSourceId: EntityId,
-		mediumId: string
-	): Promise<MediaSchoolLicense[]> {
-		const mediaSchoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseRepo.findAllByMediaSourceAndMediumId(
-			mediaSourceId,
-			mediumId
-		);
+	public async deleteAllByMediaSource(mediaSourceId: EntityId): Promise<number> {
+		const deleteCount: number = await this.mediaSchoolLicenseRepo.deleteAllByMediaSource(mediaSourceId);
 
-		return mediaSchoolLicenses;
-	}
-
-	public async deleteSchoolLicenses(licenses: MediaSchoolLicense[]): Promise<void> {
-		await this.mediaSchoolLicenseRepo.delete(licenses);
+		return deleteCount;
 	}
 
 	public async saveAllMediaSchoolLicenses(licenses: MediaSchoolLicense[]): Promise<MediaSchoolLicense[]> {
