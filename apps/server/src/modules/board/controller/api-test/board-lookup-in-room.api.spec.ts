@@ -2,7 +2,14 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, groupEntityFactory, roleFactory, TestApiClient, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	groupEntityFactory,
+	roleFactory,
+	schoolEntityFactory,
+	TestApiClient,
+	userFactory,
+} from '@shared/testing';
 
 import { Permission, RoleName } from '@shared/domain/interface';
 import { accountFactory } from '@src/modules/account/testing';
@@ -60,7 +67,8 @@ describe(`board lookup in room (api)`, () => {
 			],
 		});
 
-		const room = roomEntityFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
@@ -76,6 +84,7 @@ describe(`board lookup in room (api)`, () => {
 			userGroup,
 			room,
 			roomMembership,
+			school,
 		]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

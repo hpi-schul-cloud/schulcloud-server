@@ -52,7 +52,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		const rootIds = boardNodes.map((node) => node.rootId);
 		const parentIds = boardNodes.map((node) => node.parentId).filter((defined) => defined) as EntityId[];
 		const boardNodeMap = await this.getBoardNodeMap([...rootIds, ...parentIds]);
-		const promises = boardNodes.map((boardNode) => {
+		const promises = boardNodes.map(async (boardNode) => {
 			const rootNode = boardNodeMap[boardNode.rootId];
 			return this.boardContextService.getUsersWithBoardRoles(rootNode).then((users) => {
 				return { id: boardNode.id, users };

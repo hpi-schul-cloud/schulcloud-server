@@ -32,8 +32,8 @@ export class BoardContextApiHelperService {
 	}
 
 	private async getBoardContext(nodeId: EntityId): Promise<BoardExternalReference> {
-		const boardNode = await this.boardNodeService.findById(nodeId, 1);
-		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardNode.rootId, 1);
+		const boardNode = await this.boardNodeService.findById(nodeId, 0);
+		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardNode.rootId, 0);
 		return columnBoard.context;
 	}
 
