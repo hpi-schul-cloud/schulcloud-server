@@ -791,6 +791,7 @@ describe('SchoolService', () => {
 				const school = await service.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
 
 				expect(school).toEqual(expectedSchool);
+				expect(school?.officialSchoolNumber).toEqual(expectedSchool.officialSchoolNumber);
 			});
 		});
 
