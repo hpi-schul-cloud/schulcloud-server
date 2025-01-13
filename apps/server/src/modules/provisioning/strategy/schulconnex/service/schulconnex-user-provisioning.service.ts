@@ -7,8 +7,7 @@ import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
-import { UserRoleUnknownLoggableException } from '../../../loggable';
-import { SchoolMissingLoggableException } from '../../../loggable/school-missing.loggable-exception';
+import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';
 
 @Injectable()
 export class SchulconnexUserProvisioningService {
@@ -78,6 +77,7 @@ export class SchulconnexUserProvisioningService {
 	): UserDO {
 		const user: UserDO = foundUser;
 		user.firstName = externalUser.firstName ?? foundUser.firstName;
+		user.preferredName = externalUser.preferredName ?? foundUser.preferredName;
 		user.lastName = externalUser.lastName ?? foundUser.lastName;
 		user.email = externalUser.email ?? foundUser.email;
 		user.roles = roleRefs ?? foundUser.roles;
@@ -91,6 +91,7 @@ export class SchulconnexUserProvisioningService {
 		const user: UserDO = new UserDO({
 			externalId: externalUser.externalId,
 			firstName: externalUser.firstName ?? '',
+			preferredName: externalUser.preferredName,
 			lastName: externalUser.lastName ?? '',
 			email: externalUser.email ?? '',
 			roles: roleRefs ?? [],
