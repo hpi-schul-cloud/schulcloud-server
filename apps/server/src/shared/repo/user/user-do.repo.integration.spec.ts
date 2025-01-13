@@ -9,6 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
@@ -842,6 +843,34 @@ describe('UserRepo', () => {
 						name: role.name,
 					},
 				]);
+			});
+		});
+	});
+
+	describe('findByTspUids', () => {
+		describe('when users are found', () => {
+			const setup = async () => {
+				const tspUid = new ObjectId().toHexString();
+
+				const user: User = userFactory.buildWithId({
+					sourceOptions: new UserSourceOptions({
+						tspUid,
+					}),
+				});
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				return { tspUid, user };
+			};
+
+			it('should return mapped users', async () => {
+				const { tspUid, user } = await setup();
+
+				const result = await repo.findByTspUids([tspUid]);
+
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe(user.id);
 			});
 		});
 	});
