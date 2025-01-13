@@ -434,7 +434,7 @@ describe(GroupUc.name, () => {
 
 				expect(groupService.findGroupsForUser).toHaveBeenCalledWith(
 					user,
-					GroupVisibilityPermission.ALL_SCHOOL_CLASSES,
+					GroupVisibilityPermission.ALL_SCHOOL_GROUPS,
 					true,
 					nameQuery,
 					{ order: { name: SortOrder.asc } }
