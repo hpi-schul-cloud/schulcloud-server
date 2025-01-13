@@ -1,5 +1,5 @@
 import { AccountSave, AccountService } from '@modules/account';
-import { ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
+import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -45,41 +45,60 @@ export class TspProvisioningService {
 	}
 
 	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
-		if (!user.id)
-			throw new BadDataLoggableException('User ID is missing', {
-				externalId: user.externalId,
-			});
-
-		for await (const clazz of classes) {
+		const promises = classes.map(async (clazz) => {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(school.id, clazz.externalId);
 
 			if (currentClass) {
-				// Case: Class exists -> update class
-				currentClass.schoolId = school.id;
-				currentClass.name = clazz.name ?? currentClass.name;
-				currentClass.year = school.currentYear?.id;
-				currentClass.source = this.ENTITY_SOURCE;
-				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
-
-				if (user.roles.some((role) => role.name === RoleName.TEACHER)) currentClass.addTeacher(user.id);
-				if (user.roles.some((role) => role.name === RoleName.STUDENT)) currentClass.addUser(user.id);
-
-				await this.classService.save(currentClass);
+				await this.updateClass(currentClass, clazz, school, user);
 			} else {
-				// Case: Class does not exist yet -> create new class
-				const newClass = ClassFactory.create({
-					name: clazz.name,
-					schoolId: school.id,
-					year: school.currentYear?.id,
-					teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
-					userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
-					source: this.ENTITY_SOURCE,
-					sourceOptions: new ClassSourceOptions({ tspUid: clazz.externalId }),
-				});
-
-				await this.classService.save(newClass);
+				await this.createClass(clazz, school, user);
 			}
+		});
+
+		await Promise.all(promises);
+	}
+
+	private async updateClass(currentClass: Class, clazz: ExternalClassDto, school: School, user: UserDO): Promise<void> {
+		if (!user.id) {
+			throw new BadDataLoggableException('User ID is missing', {
+				externalId: user.externalId,
+			});
 		}
+
+		currentClass.schoolId = school.id;
+		currentClass.name = clazz.name ?? currentClass.name;
+		currentClass.year = school.currentYear?.id;
+		currentClass.source = this.ENTITY_SOURCE;
+		currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
+
+		if (user.roles.some((role) => role.name === RoleName.TEACHER)) {
+			currentClass.addTeacher(user.id);
+		}
+		if (user.roles.some((role) => role.name === RoleName.STUDENT)) {
+			currentClass.addUser(user.id);
+		}
+
+		await this.classService.save(currentClass);
+	}
+
+	private async createClass(clazz: ExternalClassDto, school: School, user: UserDO): Promise<void> {
+		if (!user.id) {
+			throw new BadDataLoggableException('User ID is missing', {
+				externalId: user.externalId,
+			});
+		}
+
+		const newClass = ClassFactory.create({
+			name: clazz.name,
+			schoolId: school.id,
+			year: school.currentYear?.id,
+			teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
+			userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
+			source: this.ENTITY_SOURCE,
+			sourceOptions: new ClassSourceOptions({ tspUid: clazz.externalId }),
+		});
+
+		await this.classService.save(newClass);
 	}
 
 	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDO> {

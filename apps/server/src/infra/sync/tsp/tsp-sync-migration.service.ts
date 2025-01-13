@@ -145,6 +145,7 @@ export class TspSyncMigrationService {
 	}
 
 	private async saveUsersAndAccounts(users: UserDO[], accounts: Account[]): Promise<void> {
+		// These statement should probably not be combined with Promise.all() because last time I tried the performance massively decreased.
 		await this.userService.saveAll(users);
 		await this.accountService.saveAll(accounts);
 	}
