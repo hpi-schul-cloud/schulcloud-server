@@ -1,21 +1,16 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,
 	lessonFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	userFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
 
 // config must be set outside before the server module is importat, otherwise the configuration is already set
 const configBefore = Configuration.toObject({ plainSecrets: true });
@@ -29,20 +24,12 @@ import { ServerTestModule } from '@modules/server';
 describe('Course Rooms copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(FilesStorageClientAdapterService)
 			.useValue(createMock<FilesStorageClientAdapterService>())
 			.compile();
@@ -50,6 +37,8 @@ describe('Course Rooms copy (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+
+		apiClient = new TestApiClient(app, '/course-rooms');
 	});
 
 	afterAll(async () => {
@@ -58,43 +47,48 @@ describe('Course Rooms copy (API)', () => {
 		Configuration.reset(configBefore);
 	});
 
-	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE, Permission.TOPIC_CREATE] });
-		const user = userFactory.build({ roles });
+	describe('when copying course', () => {
+		const setup = async () => {
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ name: 'course #1', teachers: [teacherUser] });
 
-		return user;
-	};
+			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			em.clear();
 
-	it('should respond with 408 on timeout when copying course', async () => {
-		const teacher = setup();
-		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-		await em.persistAndFlush(course);
-		em.clear();
+			const loggedInClient = await apiClient.login(teacherAccount);
 
-		currentUser = mapUserToCurrentUser(teacher);
+			return { loggedInClient, course };
+		};
 
-		const response = await request(app.getHttpServer())
-			.post(`/course-rooms/${course.id}/copy`)
-			.set('Authorization', 'jwt')
-			.send();
+		it('should respond with 408 on timeout', async () => {
+			const { loggedInClient, course } = await setup();
 
-		expect(response.status).toEqual(408);
+			const response = await loggedInClient.post(`/${course.id}/copy`);
+
+			expect(response.status).toEqual(408);
+		});
 	});
 
-	it('should respond with 408 on timeout when copying lesson', async () => {
-		const teacher = setup();
-		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-		const lesson = lessonFactory.build({ name: 'lesson #1', course });
-		await em.persistAndFlush([lesson, course]);
-		em.clear();
+	describe('when copying lesson', () => {
+		const setup = async () => {
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ name: 'course #1', teachers: [teacherUser] });
+			const lesson = lessonFactory.build({ name: 'lesson #1', course });
 
-		currentUser = mapUserToCurrentUser(teacher);
+			await em.persistAndFlush([course, lesson, teacherAccount, teacherUser]);
+			em.clear();
 
-		const response = await request(app.getHttpServer())
-			.post(`/course-rooms/lessons/${lesson.id}/copy`)
-			.set('Authorization', 'jwt')
-			.send();
+			const loggedInClient = await apiClient.login(teacherAccount);
 
-		expect(response.status).toEqual(408);
+			return { loggedInClient, lesson };
+		};
+
+		it('should respond with 408 on timeout', async () => {
+			const { loggedInClient, lesson } = await setup();
+
+			const response = await loggedInClient.post(`/lessons/${lesson.id}/copy`);
+
+			expect(response.status).toEqual(408);
+		});
 	});
 });
