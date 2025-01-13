@@ -2,31 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { MongoDbScope, MongoPatterns } from '@shared/repo';
-import { GroupEntity, GroupEntityTypes } from '../entity';
+import { GroupEntity } from '../entity';
 import { GroupTypes } from './group-types';
-import { GroupVisibilityPermission } from './group-visibility-permission.enum';
 
 export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
-	byUserPermission(userId: EntityId, schoolId: EntityId, permission: GroupVisibilityPermission): this {
-		if (permission === GroupVisibilityPermission.ALL_SCHOOL_GROUPS) {
-			this.byOrganization(schoolId);
-		} else if (permission === GroupVisibilityPermission.ALL_SCHOOL_CLASSES) {
-			this.pipeline.push({
-				$match: {
-					$or: [
-						{ organization: new ObjectId(schoolId), type: GroupEntityTypes.CLASS },
-						{ users: { $elemMatch: { user: new ObjectId(userId) } } },
-					],
-				},
-			});
-		} else {
-			this.byUser(userId);
-		}
-
-		return this;
-	}
-
-	byAvailableForSync(value: boolean | undefined): this {
+	public byAvailableForSync(value: boolean | undefined): this {
 		if (value) {
 			this.pipeline.push(
 				{
@@ -57,7 +37,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 		return this;
 	}
 
-	byUser(id: EntityId | undefined): this {
+	public byUser(id: EntityId | undefined): this {
 		if (id) {
 			this.pipeline.push({ $match: { users: { $elemMatch: { user: new ObjectId(id) } } } });
 		}
@@ -65,7 +45,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 		return this;
 	}
 
-	byOrganization(id: EntityId | undefined): this {
+	public byOrganization(id: EntityId | undefined): this {
 		if (id) {
 			this.pipeline.push({ $match: { organization: new ObjectId(id) } });
 		}
@@ -73,7 +53,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 		return this;
 	}
 
-	byName(nameQuery: string | undefined): this {
+	public byName(nameQuery: string | undefined): this {
 		const escapedName: string | undefined = nameQuery
 			?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '')
 			.trim();

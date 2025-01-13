@@ -1,26 +1,27 @@
+import { faker } from '@faker-js/faker';
 import { TspLegacySchoolMigrationCountLoggable } from './tsp-legacy-school-migration-count.loggable';
 
 describe(TspLegacySchoolMigrationCountLoggable.name, () => {
-	let loggable: TspLegacySchoolMigrationCountLoggable;
+	describe('getLogMessage is called', () => {
+		const setup = () => {
+			const total = faker.number.int();
 
-	beforeAll(() => {
-		loggable = new TspLegacySchoolMigrationCountLoggable(10);
-	});
-
-	describe('when loggable is initialized', () => {
-		it('should be defined', () => {
-			expect(loggable).toBeDefined();
-		});
-	});
-
-	describe('getLogMessage', () => {
-		it('should return a log message', () => {
-			expect(loggable.getLogMessage()).toEqual({
-				message: `Found 10 legacy tsp schools to migrate`,
+			const expected = {
+				message: `Found ${total} legacy tsp schools to migrate`,
 				data: {
-					total: 10,
+					total,
 				},
-			});
+			};
+
+			return { total, expected };
+		};
+
+		it('should return a log message', () => {
+			const { total, expected } = setup();
+
+			const loggable = new TspLegacySchoolMigrationCountLoggable(total);
+
+			expect(loggable.getLogMessage()).toEqual(expected);
 		});
 	});
 });
