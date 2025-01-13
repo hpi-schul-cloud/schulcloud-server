@@ -2,7 +2,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Controller,
 	Delete,
-	ExecutionContext,
 	Get,
 	Headers,
 	HttpStatus,
@@ -14,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { XApiKeyGuard } from '@infra/auth-guard';
 import { accountFactory } from '@src/modules/account/testing';
 import { TestApiClient } from './test-api-client';
 
@@ -261,16 +259,7 @@ describe(TestApiClient.name, () => {
 		beforeAll(async () => {
 			const moduleFixture = await Test.createTestingModule({
 				controllers: [TestXApiKeyController],
-			})
-				.overrideGuard(XApiKeyGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.headers['X-API-KEY'] = API_KEY;
-						return true;
-					},
-				})
-				.compile();
+			}).compile();
 
 			app = moduleFixture.createNestApplication();
 
