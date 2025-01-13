@@ -10,11 +10,11 @@ import {
 	cleanupCollections,
 	courseFactory,
 	fileRecordFactory,
-	JwtAuthenticationFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../files-storage-test.module';

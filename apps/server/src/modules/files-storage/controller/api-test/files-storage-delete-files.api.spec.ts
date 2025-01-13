@@ -11,11 +11,11 @@ import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
-	JwtAuthenticationFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PreviewStatus } from '../../entity';

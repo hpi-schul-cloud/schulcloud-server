@@ -8,11 +8,11 @@ import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
-	JwtAuthenticationFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
 import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
