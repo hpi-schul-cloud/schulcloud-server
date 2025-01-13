@@ -1,6 +1,5 @@
-import { XApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
@@ -16,20 +15,12 @@ describe('Admin API - Users (API)', () => {
 	let app: INestApplication;
 	let testApiClient: TestApiClient;
 	let em: EntityManager;
-	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideGuard(XApiKeyGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					return req.headers['x-api-key'] === API_KEY;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -45,13 +36,17 @@ describe('Admin API - Users (API)', () => {
 		describe('without token', () => {
 			it('should refuse with wrong token', async () => {
 				const client = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
+
 				const response = await client.post('');
-				expect(response.status).toEqual(403);
+
+				expect(response.status).toEqual(401);
 			});
 			it('should refuse without token', async () => {
 				const client = new TestApiClient(app, baseRouteName, '', true);
+
 				const response = await client.post('');
-				expect(response.status).toEqual(403);
+
+				expect(response.status).toEqual(401);
 			});
 		});
 

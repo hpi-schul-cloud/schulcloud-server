@@ -1,68 +1,32 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import {
 	cleanupCollections,
 	fileRecordFactory,
-	mapUserToCurrentUser,
 	schoolEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
-import { Request } from 'express';
-import request from 'supertest';
-import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordParentType } from '../../interface';
-import { FileRecordResponse, RenameFileParams } from '../dto';
+import { FileRecordResponse } from '../dto';
 
-const baseRouteName = '/file/rename/';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async patch(requestString: string, body?: RenameFileParams | Record<string, unknown>) {
-		const response = await request(this.app.getHttpServer())
-			.patch(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json')
-			.send(body || {});
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
+const baseRouteName = '/file/rename';
 
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
-	let fileRecord: FileRecord;
-	let fileRecords: FileRecord[];
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
@@ -72,14 +36,13 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	beforeEach(async () => {
+	const setup = async () => {
 		await cleanupCollections(em);
 		const school = schoolEntityFactory.build();
 		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -91,50 +54,86 @@ describe(`${baseRouteName} (api)`, () => {
 			parentId: school.id,
 			parentType: FileRecordParentType.School,
 		};
-		fileRecords = fileRecordFactory.buildList(3, fileParams);
-		fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: user.id });
+		const fileRecords = fileRecordFactory.buildList(3, fileParams);
+		const fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: user.id });
 		fileRecords.push(fileRecord);
 
 		await em.persistAndFlush([user, ...fileRecords, school]);
 		em.clear();
-		currentUser = mapUserToCurrentUser(user);
+
+		const authValue = JwtAuthenticationFactory.createJwt({
+			accountId: account.id,
+			userId: user.id,
+			schoolId: user.school.id,
+			roles: [user.roles[0].id],
+			support: false,
+			isExternalUser: false,
+		});
+		const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+		return { user, fileRecord, apiClient };
+	};
+
+	describe('with not authenticated user', () => {
+		it('should return status 401', async () => {
+			const apiClient = new TestApiClient(app, baseRouteName);
+
+			const result = await apiClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+
+			expect(result.status).toEqual(401);
+		});
 	});
 
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid fileRecordId', async () => {
-			const response = await api.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
-			expect(response.error.validationErrors).toEqual([
+			const { apiClient } = await setup();
+
+			const result = await apiClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+			const { validationErrors } = result.body as ApiValidationError;
+
+			expect(validationErrors).toEqual([
 				{
 					errors: ['fileRecordId must be a mongodb id'],
 					field: ['fileRecordId'],
 				},
 			]);
-			expect(response.status).toEqual(400);
+			expect(result.status).toEqual(400);
 		});
 
 		it('should return status 400 for empty filename', async () => {
-			const response = await api.patch(`${fileRecord.id}`, { fileName: undefined });
-			expect(response.error.validationErrors).toEqual([
+			const { apiClient, fileRecord } = await setup();
+
+			const result = await apiClient.patch(`${fileRecord.id}`, { fileName: undefined });
+			const { validationErrors } = result.body as ApiValidationError;
+
+			expect(validationErrors).toEqual([
 				{
 					errors: ['fileName should not be empty', 'fileName must be a string'],
 					field: ['fileName'],
 				},
 			]);
-			expect(response.status).toEqual(400);
+			expect(result.status).toEqual(400);
 		});
 
 		it('should return status 409 if filename exists', async () => {
-			const response = await api.patch(`${fileRecord.id}`, { fileName: 'test.txt' });
-			expect(response.error).toEqual({ code: 409, message: 'FILE_NAME_EXISTS', title: 'Conflict', type: 'CONFLICT' });
-			expect(response.status).toEqual(409);
+			const { apiClient, fileRecord } = await setup();
+
+			const result = await apiClient.patch(`${fileRecord.id}`, { fileName: 'test.txt' });
+
+			expect(result.body).toEqual({ code: 409, message: 'FILE_NAME_EXISTS', title: 'Conflict', type: 'CONFLICT' });
+			expect(result.status).toEqual(409);
 		});
 	});
 
 	describe(`with valid request data`, () => {
 		it('should return status 200 for successful request', async () => {
-			const response = await api.patch(`${fileRecord.id}`, { fileName: 'test_1.txt' });
-			expect(response.result.name).toEqual('test_1.txt');
-			expect(response.status).toEqual(200);
+			const { apiClient, fileRecord } = await setup();
+
+			const result = await apiClient.patch(`${fileRecord.id}`, { fileName: 'test_1.txt' });
+			const response = result.body as FileRecordResponse;
+
+			expect(response.name).toEqual('test_1.txt');
+			expect(result.status).toEqual(200);
 		});
 	});
 });
