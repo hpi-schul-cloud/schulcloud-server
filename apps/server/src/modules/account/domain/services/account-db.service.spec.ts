@@ -313,7 +313,19 @@ describe('AccountDbService', () => {
 
 		describe('when user does not exist', () => {
 			const setup = () => {
-				accountRepo.findByUserIdOrFail.mockRejectedValue(new EntityNotFoundError(AccountEntity.name));
+				const mockTeacherUser = userFactory.buildWithId();
+				const mockTeacherAccount = accountDoFactory.build({
+					userId: mockTeacherUser.id,
+					password: defaultPassword,
+				});
+
+				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId | ObjectId): Promise<Account> => {
+					if (mockTeacherUser.id === userId) {
+						return Promise.resolve(mockTeacherAccount);
+					}
+					return Promise.reject(new EntityNotFoundError(AccountEntity.name));
+				});
+				return {};
 			};
 
 			it('should throw EntityNotFoundError', async () => {
@@ -675,6 +687,54 @@ describe('AccountDbService', () => {
 			it('should throw an error', async () => {
 				const { account } = setup();
 				await expect(accountService.save(account)).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('saveAll', () => {
+		describe('when given account that does not exist', () => {
+			const setup = () => {
+				const account = accountDoFactory.build({
+					id: undefined,
+				});
+				const savedAccount = accountDoFactory.build({
+					...account,
+					id: new ObjectId().toHexString(),
+				});
+
+				accountRepo.saveAll.mockResolvedValueOnce([savedAccount]);
+
+				return { account, savedAccount };
+			};
+
+			it('should save it', async () => {
+				const { account, savedAccount } = setup();
+
+				const result = await accountService.saveAll([account]);
+				expect(result).toStrictEqual([savedAccount]);
+			});
+		});
+
+		describe('when given account that exist', () => {
+			const setup = () => {
+				const account = accountDoFactory.build();
+				const foundAccount = accountDoFactory.build();
+				const updateSpy = jest.spyOn(foundAccount, 'update');
+
+				accountRepo.findById.mockResolvedValueOnce(foundAccount);
+				accountRepo.saveAll.mockResolvedValueOnce([foundAccount]);
+
+				return { account, foundAccount, updateSpy };
+			};
+
+			it('should update it', async () => {
+				const { account, foundAccount, updateSpy } = setup();
+
+				const result = await accountService.saveAll([account]);
+
+				expect(updateSpy).toHaveBeenCalledTimes(1);
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe(foundAccount.id);
 			});
 		});
 	});

@@ -2,9 +2,13 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
+import { EncryptionModule } from '@infra/encryption';
+import { VidisClientModule } from '@infra/vidis-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
@@ -18,11 +22,19 @@ import { TspSyncService } from './tsp/tsp-sync.service';
 import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 import { TspFetchService } from './tsp/tsp-fetch.service';
+import { TspSyncMigrationService } from './tsp/tsp-sync-migration.service';
+import { VidisSyncService, VidisSyncStrategy, VidisFetchService } from './media-licenses';
 
 @Module({
 	imports: [
 		LoggerModule,
 		ConsoleWriterModule,
+		SystemModule,
+		SchoolModule,
+		MediaSourceModule,
+		SchoolLicenseModule,
+		EncryptionModule,
+		VidisClientModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspClientModule,
@@ -41,8 +53,18 @@ import { TspFetchService } from './tsp/tsp-fetch.service';
 		SyncUc,
 		SyncService,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspSyncStrategy, TspSyncService, TspOauthDataMapper, TspFetchService, TspLegacyMigrationService]
+			? [
+					TspSyncStrategy,
+					TspSyncService,
+					TspOauthDataMapper,
+					TspFetchService,
+					TspLegacyMigrationService,
+					TspSyncMigrationService,
+			  ]
 			: []),
+		VidisSyncService,
+		VidisSyncStrategy,
+		VidisFetchService,
 	],
 	exports: [SyncConsole],
 })

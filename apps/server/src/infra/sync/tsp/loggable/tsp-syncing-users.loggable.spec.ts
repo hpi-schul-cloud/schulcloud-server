@@ -1,26 +1,27 @@
+import { faker } from '@faker-js/faker';
 import { TspSyncingUsersLoggable } from './tsp-syncing-users.loggable';
 
 describe(TspSyncingUsersLoggable.name, () => {
-	let loggable: TspSyncingUsersLoggable;
+	describe('getLogMessage is called', () => {
+		const setup = () => {
+			const syncingUsers = faker.number.int();
 
-	beforeAll(() => {
-		loggable = new TspSyncingUsersLoggable(10);
-	});
-
-	describe('when loggable is initialized', () => {
-		it('should be defined', () => {
-			expect(loggable).toBeDefined();
-		});
-	});
-
-	describe('getLogMessage', () => {
-		it('should return a log message', () => {
-			expect(loggable.getLogMessage()).toEqual({
-				message: `Syncing 10 users from TSP.`,
+			const expected = {
+				message: `Syncing ${syncingUsers} users from TSP.`,
 				data: {
-					syncingUsers: 10,
+					syncingUsers,
 				},
-			});
+			};
+
+			return { syncingUsers, expected };
+		};
+
+		it('should return a log message', () => {
+			const { syncingUsers, expected } = setup();
+
+			const loggable = new TspSyncingUsersLoggable(syncingUsers);
+
+			expect(loggable.getLogMessage()).toEqual(expected);
 		});
 	});
 });

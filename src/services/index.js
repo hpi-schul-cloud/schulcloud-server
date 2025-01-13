@@ -9,7 +9,6 @@ const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
-const analytics = require('./analytics');
 const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
@@ -57,7 +56,6 @@ module.exports = function initializeServices() {
 	// register services
 	app.configure(docs);
 	app.configure(authentication);
-	app.configure(analytics);
 	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);

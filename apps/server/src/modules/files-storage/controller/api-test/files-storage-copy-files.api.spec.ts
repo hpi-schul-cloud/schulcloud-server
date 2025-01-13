@@ -1,32 +1,29 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	courseFactory,
 	fileRecordFactory,
-	mapUserToCurrentUser,
 	schoolEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
-import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import request from 'supertest';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordParentType, StorageLocation } from '../../interface';
-import { CopyFileParams, CopyFilesOfParentParams, FileRecordListResponse, FileRecordResponse } from '../dto';
+import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
-const baseRouteName = '/file/copy';
+const baseRouteName = '/file';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -34,58 +31,9 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	};
 });
 
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async postUploadFile(routeName: string, fileName: string) {
-		const response = await request(this.app.getHttpServer())
-			.post(routeName)
-			.attach('file', Buffer.from('abcd'), fileName)
-			.set('connection', 'keep-alive')
-			.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async copyFile(requestString: string, body: CopyFileParams) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}${requestString}`)
-			.send(body || {});
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async copy(requestString: string, body: CopyFilesOfParentParams) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json')
-			.send(body || {});
-
-		return {
-			result: response.body as FileRecordListResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -95,14 +43,6 @@ describe(`${baseRouteName} (api)`, () => {
 			.useValue(createMock<AntivirusService>())
 			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
@@ -112,7 +52,6 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
 	});
 
 	afterAll(async () => {
@@ -120,12 +59,33 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('copy files of parent', () => {
-		let validId: string;
-		let targetParentId: EntityId;
-		let copyFilesParams: CopyFilesOfParentParams;
+		describe('with not authenticated user', () => {
+			const setup = () => {
+				const copyFilesParams = {
+					target: {
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: '123',
+						parentId: '123',
+						parentType: FileRecordParentType.Course,
+					},
+				};
+
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				return { apiClient, copyFilesParams };
+			};
+
+			it('should return status 401', async () => {
+				const { apiClient, copyFilesParams } = setup();
+
+				const result = await apiClient.post(`/copy/school/123/users/123`, copyFilesParams);
+
+				expect(result.status).toEqual(401);
+			});
+		});
 
 		describe('with bad request data', () => {
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -134,11 +94,10 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				validId = user.school.id;
-				targetParentId = targetParent.id;
+				const validId = user.school.id;
+				const targetParentId = targetParent.id;
 
-				copyFilesParams = {
+				const copyFilesParams = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
 						storageLocationId: validId,
@@ -146,43 +105,68 @@ describe(`${baseRouteName} (api)`, () => {
 						parentType: FileRecordParentType.Course,
 					},
 				};
-			});
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { apiClient, validId, copyFilesParams };
+			};
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.copy(`/school/123/users/${validId}`, copyFilesParams);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId, copyFilesParams } = await setup();
+
+				const result = await apiClient.post(`/copy/school/123/users/${validId}`, copyFilesParams);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['storageLocationId must be a mongodb id'],
 						field: ['storageLocationId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.copy(`/school/${validId}/users/123`, copyFilesParams);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId, copyFilesParams } = await setup();
+
+				const result = await apiClient.post(`/copy/school/${validId}/users/123`, copyFilesParams);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
 						field: ['parentId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.copy(`/school/${validId}/cookies/${validId}`, copyFilesParams);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId, copyFilesParams } = await setup();
+
+				const result = await apiClient.post(`/copy/school/${validId}/cookies/${validId}`, copyFilesParams);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
 						field: ['parentType'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				copyFilesParams = {
+				const { apiClient, validId } = await setup();
+				const params = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
 						storageLocationId: 'invalidObjectId',
@@ -190,13 +174,15 @@ describe(`${baseRouteName} (api)`, () => {
 						parentType: FileRecordParentType.Task,
 					},
 				};
-				const response = await api.copy(`/school/${validId}/users/${validId}`, copyFilesParams);
+
+				const response = await apiClient.post(`/copy/school/${validId}/users/${validId}`, params);
+
 				expect(response.status).toEqual(400);
 			});
 		});
 
 		describe(`with valid request data`, () => {
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -205,11 +191,10 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				validId = user.school.id;
-				targetParentId = targetParent.id;
+				const validId = user.school.id;
+				const targetParentId = targetParent.id;
 
-				copyFilesParams = {
+				const copyFilesParams = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
 						storageLocationId: validId,
@@ -218,24 +203,36 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-			});
 
-			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
-
-				const response = await api.copy(`/school/${validId}/schools/${validId}`, copyFilesParams);
-
-				expect(response.status).toEqual(201);
-			});
+				return { validId, copyFilesParams, apiClient };
+			};
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
-				const { result } = await api.copy(`/school/${validId}/schools/${validId}`, copyFilesParams);
+				const { validId, copyFilesParams, apiClient } = await setup();
 
-				expect(Array.isArray(result.data)).toBe(true);
-				expect(result.data[0]).toBeDefined();
-				expect(result.data[0]).toStrictEqual({
+				await apiClient
+					.post(`/upload/school/${validId}/schools/${validId}`)
+					.attach('file', Buffer.from('abcd'), 'test1.txt')
+					.set('connection', 'keep-alive')
+					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
+				const result = await apiClient.post(`/copy/school/${validId}/schools/${validId}`, copyFilesParams);
+				const response = result.body as FileRecordListResponse;
+
+				expect(result.status).toEqual(201);
+				expect(Array.isArray(response.data)).toBe(true);
+				expect(response.data[0]).toBeDefined();
+				expect(response.data[0]).toStrictEqual({
 					id: expect.any(String),
 					name: expect.any(String),
 					sourceId: expect.any(String),
@@ -245,11 +242,34 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('copy single file', () => {
-		let copyFileParams: CopyFileParams;
-		let validId: string;
-		let targetParentId: EntityId;
+		describe('with not authenticated user', () => {
+			const setup = () => {
+				const copyFileParams = {
+					target: {
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: '123',
+						parentId: '123',
+						parentType: FileRecordParentType.Course,
+					},
+					fileNamePrefix: 'copy from',
+				};
+
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				return { copyFileParams, apiClient };
+			};
+
+			it('should return status 401', async () => {
+				const { apiClient, copyFileParams } = setup();
+
+				const response = await apiClient.post(`/copy/123`, copyFileParams);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -258,11 +278,10 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				targetParentId = targetParent.id;
+				const targetParentId = targetParent.id;
 
-				validId = user.school.id;
-				copyFileParams = {
+				const validId = user.school.id;
+				const copyFileParams = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
 						storageLocationId: validId,
@@ -271,11 +290,27 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 					fileNamePrefix: 'copy from',
 				};
-			});
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { validId, copyFileParams, apiClient };
+			};
 
 			it('should return status 400 for invalid fileRecordId', async () => {
-				const response = await api.copyFile(`/123`, copyFileParams);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, copyFileParams } = await setup();
+
+				const response = await apiClient.post(`/copy/123`, copyFileParams);
+				const { validationErrors } = response.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['fileRecordId must be a mongodb id'],
 						field: ['fileRecordId'],
@@ -286,9 +321,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		describe(`with valid request data`, () => {
-			let fileRecordId: string;
-
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -297,11 +330,10 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, school, targetParent, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				targetParentId = targetParent.id;
+				const targetParentId = targetParent.id;
 
-				validId = user.school.id;
-				copyFileParams = {
+				const validId = user.school.id;
+				const copyFileParams = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
 						storageLocationId: validId,
@@ -311,24 +343,43 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const { result } = await api.postUploadFile(
-					`/file/upload/school/${school.id}/schools/${school.id}`,
-					'test1.txt'
-				);
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
 
-				fileRecordId = result.id;
-			});
+				const result = await apiClient
+					.post(`/upload/school/${school.id}/schools/${school.id}`)
+					.attach('file', Buffer.from('abcd'), 'test1.txt')
+					.set('connection', 'keep-alive')
+					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
+				const response = result.body as FileRecordResponse;
+
+				const fileRecordId = response.id;
+
+				return { validId, copyFileParams, apiClient, fileRecordId };
+			};
 
 			it('should return status 200 for successful request', async () => {
-				const response = await api.copyFile(`/${fileRecordId}`, copyFileParams);
+				const { fileRecordId, copyFileParams, apiClient } = await setup();
+
+				const response = await apiClient.post(`/copy/${fileRecordId}`, copyFileParams);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				const { result } = await api.copyFile(`/${fileRecordId}`, copyFileParams);
+				const { fileRecordId, copyFileParams, apiClient } = await setup();
 
-				expect(result).toStrictEqual({
+				const result = await apiClient.post(`/copy/${fileRecordId}`, copyFileParams);
+				const response = result.body as FileRecordResponse;
+
+				expect(response).toStrictEqual({
 					id: expect.any(String),
 					name: expect.any(String),
 					sourceId: expect.any(String),
@@ -336,15 +387,18 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements not equal of requested scope', async () => {
+				const { fileRecordId, copyFileParams, apiClient } = await setup();
+
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					parentType: FileRecordParentType.School,
 				});
 
 				await em.persistAndFlush(otherFileRecords);
 				em.clear();
-				const { result } = await api.copyFile(`/${fileRecordId}`, copyFileParams);
+				const result = await apiClient.post(`/copy/${fileRecordId}`, copyFileParams);
+				const response = result.body as FileRecordResponse;
 
-				expect(result.id).not.toEqual(fileRecordId);
+				expect(response.id).not.toEqual(fileRecordId);
 			});
 		});
 	});

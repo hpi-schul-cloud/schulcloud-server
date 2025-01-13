@@ -121,6 +121,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
+	public saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const savePromises = accountSaves.map((accountSave) => this.save(accountSave));
+		const savedAccounts = Promise.all(savePromises);
+
+		return savedAccounts;
+	}
+
 	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const updatedAccountId = await this.identityManager.updateAccount(idmAccountId, idmAccount);
 		if (password) {

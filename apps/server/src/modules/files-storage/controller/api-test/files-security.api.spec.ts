@@ -1,18 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import {
-	cleanupCollections,
-	fileRecordFactory,
-	mapUserToCurrentUser,
-	schoolEntityFactory,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, fileRecordFactory, schoolEntityFactory, UserAndAccountTestFactory } from '@shared/testing';
 import NodeClam from 'clamscan';
-import { Request } from 'express';
 import request from 'supertest';
 import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
@@ -46,7 +38,6 @@ class API {
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
 	let api: API;
 	let validId: string;
 
@@ -54,14 +45,7 @@ describe(`${baseRouteName} (api)`, () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
+
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
 			.compile();
@@ -84,7 +68,6 @@ describe(`${baseRouteName} (api)`, () => {
 		await em.persistAndFlush([user, account]);
 		em.clear();
 
-		currentUser = mapUserToCurrentUser(user);
 		validId = user.school.id;
 	});
 

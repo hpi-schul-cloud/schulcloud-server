@@ -1,21 +1,17 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	cleanupCollections,
 	courseFactory,
-	mapUserToCurrentUser,
-	roleFactory,
 	taskFactory,
-	userFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
 
 // config must be set outside before the server module is imported, otherwise the configuration is already set
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
@@ -29,22 +25,14 @@ import { ServerTestModule } from '@modules/server/server.module';
 describe('Task copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
 	let configBefore: IConfig;
+	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(FilesStorageClientAdapterService)
 			.useValue(createMock<FilesStorageClientAdapterService>())
 			.compile();
@@ -52,6 +40,7 @@ describe('Task copy (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		apiClient = new TestApiClient(app, '/tasks');
 	});
 
 	afterAll(async () => {
@@ -60,27 +49,23 @@ describe('Task copy (API)', () => {
 		Configuration.reset(configBefore);
 	});
 
-	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [] });
-		const user = userFactory.build({ roles });
+	const setup = async () => {
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+		const course = courseFactory.build({ name: 'course #1', teachers: [teacherUser] });
+		const task = taskFactory.build({ name: 'task #1', course });
 
-		return user;
+		await em.persistAndFlush([task, course, teacherAccount, teacherUser]);
+		em.clear();
+
+		const loggedInClient = await apiClient.login(teacherAccount);
+
+		return { loggedInClient, task };
 	};
 
 	it('should respond with 408 on timeout', async () => {
-		const teacher = setup();
-		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-		const task = taskFactory.build({ name: 'task #1', course });
+		const { loggedInClient, task } = await setup();
 
-		await em.persistAndFlush([task, course]);
-		em.clear();
-
-		currentUser = mapUserToCurrentUser(teacher);
-
-		const response = await request(app.getHttpServer())
-			.post(`/tasks/${task.id}/copy`)
-			.set('Authorization', 'jwt')
-			.send();
+		const response = await loggedInClient.post(`${task.id}/copy`);
 
 		expect(response.status).toEqual(408);
 	});

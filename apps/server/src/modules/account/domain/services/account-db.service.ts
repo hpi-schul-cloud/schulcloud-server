@@ -46,9 +46,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
-		const account = this.accountRepo.findByUsernameAndSystemId(username, systemId);
-
-		return account;
+		return this.accountRepo.findByUsernameAndSystemId(username, systemId);
 	}
 
 	public async save(accountSave: AccountSave): Promise<Account> {
@@ -62,6 +60,27 @@ export class AccountServiceDb extends AbstractAccountService {
 		}
 		await account.update(accountSave);
 		return this.accountRepo.save(account);
+	}
+
+	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const updatedAccounts = await Promise.all(
+			accountSaves.map(async (accountSave) => {
+				let account: Account;
+				if (accountSave.id) {
+					const internalId = await this.getInternalId(accountSave.id);
+
+					account = await this.accountRepo.findById(internalId);
+				} else {
+					account = this.createAccount(accountSave);
+				}
+				await account.update(accountSave);
+				return account;
+			})
+		);
+
+		const savedAccounts = this.accountRepo.saveAll(updatedAccounts);
+
+		return savedAccounts;
 	}
 
 	public async updateUsername(accountId: EntityId, username: string): Promise<Account> {
