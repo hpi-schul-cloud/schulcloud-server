@@ -101,6 +101,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(result).toEqual<ExternalUserDto>({
 					externalId: externalUserId,
 					firstName: 'Hans',
+					preferredName: 'Hansi',
 					lastName: 'Peter',
 					email: 'hans.peter@muster-schule.de',
 					roles: [RoleName.ADMINISTRATOR],
