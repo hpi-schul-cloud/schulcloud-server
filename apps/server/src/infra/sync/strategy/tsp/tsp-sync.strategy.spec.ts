@@ -8,25 +8,25 @@ import {
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
 } from '@infra/tsp-client';
+import { Account } from '@modules/account';
+import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
+import { System } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { Account } from '@src/modules/account';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
-import { School } from '@src/modules/school';
-import { schoolFactory } from '@src/modules/school/testing';
-import { System } from '@src/modules/system';
-import { systemFactory } from '@src/modules/system/testing';
-import { SyncStrategyTarget } from '../sync-strategy.types';
+import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
-import { TspSyncMigrationService } from './tsp-sync-migration.service';
 
 describe(TspSyncStrategy.name, () => {
 	let module: TestingModule;

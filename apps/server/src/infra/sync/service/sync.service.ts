@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { TspSyncStrategy } from '../tsp/tsp-sync.strategy';
+import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
