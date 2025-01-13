@@ -12,16 +12,15 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-
 import { Logger } from '@src/core/logger';
-import { robjExportSchuleFactory } from '@src/infra/tsp-client/testing';
-import { Account } from '@src/modules/account';
-import { OauthDataDto, ProvisioningService } from '@src/modules/provisioning';
+import { robjExportSchuleFactory } from '@infra/tsp-client/testing';
+import { Account } from '@modules/account';
+import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import {
 	externalUserDtoFactory,
 	oauthDataDtoFactory,
 	provisioningSystemDtoFactory,
-} from '@src/modules/provisioning/testing';
+} from '@modules/provisioning/testing';
 import { School } from '@src/modules/school';
 import { schoolFactory } from '@src/modules/school/testing';
 import { System } from '@src/modules/system';

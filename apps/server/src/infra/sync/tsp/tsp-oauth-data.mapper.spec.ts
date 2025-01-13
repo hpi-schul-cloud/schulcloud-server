@@ -11,11 +11,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	robjExportSchuelerFactory,
-	robjExportLehrerFactory,
-	robjExportKlasseFactory,
-} from '@src/infra/tsp-client/testing';
+import { robjExportSchuelerFactory, robjExportLehrerFactory, robjExportKlasseFactory } from '@infra/tsp-client/testing';
 import { Logger } from '@src/core/logger';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { schoolFactory } from '@src/modules/school/testing';
