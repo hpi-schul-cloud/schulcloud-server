@@ -6,3 +6,4 @@ export { CardResponseDto } from './card-response.dto';
 export { CardListResponseDto } from './card-list-response.dto';
 export { TimestampResponseDto } from './timestamp-response.dto';
 export { VisibilitySettingsResponseDto } from './visibility-settings-response.dto';
+export { FileElementResponseDto } from './file-element-response.dto';

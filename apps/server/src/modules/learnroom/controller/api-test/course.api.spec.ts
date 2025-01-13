@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker/locale/af_ZA';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -13,6 +12,7 @@ import {
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { readFile } from 'node:fs/promises';
+import { faker } from '@faker-js/faker';
 import { CourseMetadataListResponse } from '../dto';
 import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
 

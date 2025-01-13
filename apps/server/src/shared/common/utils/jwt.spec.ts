@@ -3,13 +3,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtFromRequestFunction } from 'passport-jwt';
-import { JwtExtractor } from './jwt';
+import { extractJwtFromRequest, JwtExtractor } from './jwt';
 
 describe('JwtExtractor', () => {
 	let request: DeepMocked<Request>;
 
 	beforeEach(() => {
 		request = createMock<Request>();
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('fromCookie extractor', () => {
@@ -44,17 +48,34 @@ describe('JwtExtractor', () => {
 	});
 
 	describe('extractJwtFromRequest', () => {
-		describe('when no token is found', () => {
-			it('should throw an UnauthorizedException', () => {
-				expect(() => JwtExtractor.extractJwtFromRequest(request)).toThrow(UnauthorizedException);
+		describe('when jwt is present in the request', () => {
+			const setup = () => {
+				const token = faker.string.alphanumeric(42);
+
+				request.headers.authorization = `Bearer ${token}`;
+
+				return token;
+			};
+
+			it('should return the jwt', () => {
+				const token = setup();
+
+				const result = extractJwtFromRequest(request);
+
+				expect(result).toEqual(token);
 			});
 		});
 
-		it('should return the token if exists in cookie', () => {
-			const token = faker.string.alphanumeric(42);
-			request.headers.authorization = `Bearer ${token}`;
+		describe('when jwt is not present in the request', () => {
+			const setup = () => {
+				request.headers.authorization = undefined;
+			};
 
-			expect(JwtExtractor.extractJwtFromRequest(request)).toEqual(token);
+			it('should throw an UnauthorizedException', () => {
+				setup();
+
+				expect(() => extractJwtFromRequest(request)).toThrow(UnauthorizedException);
+			});
 		});
 	});
 });

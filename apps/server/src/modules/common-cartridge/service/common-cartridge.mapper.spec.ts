@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { FileDto } from '@modules/files-storage-client';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import {
 	boardTaskFactory,
@@ -24,6 +26,7 @@ import {
 	LessonContentDtoComponent,
 	LessonContentDtoComponentValues,
 } from '../common-cartridge-client/lesson-client/dto';
+import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
 
 const GEOGEBRA_BASE_URL = 'https://geogebra.org';
 
@@ -368,6 +371,38 @@ describe('CommonCartridgeExportMapper', () => {
 					identifier: createIdentifier(linkElement.id),
 					title: linkElement.content.title,
 					url: linkElement.content.url,
+				});
+			});
+		});
+	});
+
+	describe('mapFileToResource', () => {
+		describe('when mapping file to resource', () => {
+			const setup = () => {
+				const file = Buffer.from(faker.lorem.paragraphs(100));
+				const fileRecord: FileDto = {
+					id: faker.string.uuid(),
+					name: 'file.zip',
+					parentId: faker.string.uuid(),
+					parentType: FileRecordParentType.Course,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				};
+
+				return { file, fileRecord };
+			};
+
+			it('should return resource', () => {
+				const { file, fileRecord } = setup();
+
+				const result = sut.mapFileToResource(fileRecord, file);
+
+				expect(result).toEqual<CommonCartridgeResourceProps>({
+					type: CommonCartridgeResourceType.FILE,
+					identifier: expect.any(String),
+					title: fileRecord.name,
+					fileName: fileRecord.name,
+					fileContent: file,
 				});
 			});
 		});

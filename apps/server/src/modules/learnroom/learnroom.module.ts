@@ -17,18 +17,15 @@ import {
 	DashboardModelMapper,
 	DashboardRepo,
 	LegacyBoardRepo,
-	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
-import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import { ColumnBoardNodeRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
-	CommonCartridgeExportService,
 	CommonCartridgeImportService,
 	CourseCopyService,
 	CourseDoService,
@@ -65,10 +62,8 @@ import {
 			useClass: DashboardRepo,
 		},
 		BoardCopyService,
-		CommonCartridgeExportService,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
-		CommonCartridgeExportMapper,
 		CommonCartridgeImportMapper,
 		CourseCopyService,
 		CourseGroupRepo,
@@ -86,7 +81,6 @@ import {
 		DashboardService,
 		LegacyBoardRepo,
 		CourseRoomsService,
-		UserRepo,
 		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
 	],
@@ -96,7 +90,6 @@ import {
 		CourseDoService,
 		CourseSyncService,
 		CourseRoomsService,
-		CommonCartridgeExportService,
 		CommonCartridgeImportService,
 		CourseGroupService,
 		DashboardService,

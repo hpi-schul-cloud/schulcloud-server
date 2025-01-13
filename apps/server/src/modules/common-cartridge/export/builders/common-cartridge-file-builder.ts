@@ -73,7 +73,10 @@ export class CommonCartridgeFileBuilder {
 		archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
 
 		resources.forEach((resource) => {
-			archive.addFile(resource.getFilePath(), Buffer.from(resource.getFileContent()));
+			const fileContent = resource.getFileContent();
+			const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
+
+			archive.addFile(resource.getFilePath(), buffer);
 		});
 
 		return archive.toBuffer();
