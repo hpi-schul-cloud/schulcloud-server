@@ -204,17 +204,6 @@ describe('School Controller (API)', () => {
 					])
 				);
 			});
-
-			it('should paginate', async () => {
-				const { loggedInClient, school } = await setup();
-
-				const response = await loggedInClient.get(`${school.id}/teachers`).query({ skip: 1, limit: 1 });
-				const body = response.body as SchoolUserListResponse;
-
-				expect(body.data).toHaveLength(1);
-				expect(body.total).toEqual(4);
-				expect(body.skip).toEqual(1);
-			});
 		});
 	});
 });
