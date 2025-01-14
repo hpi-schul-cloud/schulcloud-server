@@ -19,7 +19,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return User;
 	}
 
-	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
+	public async find(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
@@ -49,7 +49,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return page;
 	}
 
-	async findById(id: EntityId, populate = false): Promise<UserDO> {
+	public async findById(id: EntityId, populate = false): Promise<UserDO> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
@@ -60,7 +60,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return this.mapEntityToDO(userEntity);
 	}
 
-	async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
+	public async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
 		const users = await this._em.find(User, { id: { $in: ids } });
 
 		if (populate) {
@@ -83,7 +83,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDOs;
 	}
 
-	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
+	public async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
 		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
 
 		if (!user) {
@@ -100,7 +100,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return domainObject;
 	}
 
-	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
+	public async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
 		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
 		if (userDo) {
 			return userDo;
@@ -108,7 +108,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		throw new EntityNotFoundError('User');
 	}
 
-	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
+	public async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 
 		if (userEntitys.length > 1) {
@@ -123,7 +123,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDo;
 	}
 
-	async findByEmail(email: string): Promise<UserDO[]> {
+	public async findByEmail(email: string): Promise<UserDO[]> {
 		// find mail case-insensitive by regex
 		const userEntitys: User[] = await this._em.find(User, {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
@@ -136,7 +136,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDos;
 	}
 
-	mapEntityToDO(entity: User): UserDO {
+	public mapEntityToDO(entity: User): UserDO {
 		const user: UserDO = new UserDO({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -184,7 +184,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return user;
 	}
 
-	mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
+	public mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
@@ -212,6 +212,22 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
 				: undefined,
 		};
+	}
+
+	public async findByTspUids(tspUids: string[]): Promise<UserDO[]> {
+		const users = await this._em.find(
+			User,
+			{
+				sourceOptions: { tspUid: { $in: tspUids } },
+			},
+			{
+				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
+			}
+		);
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
 	}
 
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {

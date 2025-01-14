@@ -215,7 +215,7 @@
 		},
 		"TSP_SYNC_MIGRATION_LIMIT": {
 			"type": "number",
-			"default": "100",
+			"default": "500",
 			"description": "The amount of users the sync migrates at once."
 		},
 		"FEATURE_TSP_MIGRATION_ENABLED": {
@@ -1675,6 +1675,16 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
+		},
+		"VIDIS_API_CLIENT_BASE_URL": {
+			"type": "string",
+			"default": "",
+			"description": "The VIDIS API base URL"
+		},
+		"VIDIS_SYNC_REGION": {
+			"type": "string",
+			"default": "",
+			"description": "The region for fetching activated offers from VIDIS"
 		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
 			"type": "boolean",

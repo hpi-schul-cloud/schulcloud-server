@@ -1,29 +1,33 @@
+import { faker } from '@faker-js/faker';
 import { TspSchoolsSyncedLoggable } from './tsp-schools-synced.loggable';
 
 describe(TspSchoolsSyncedLoggable.name, () => {
-	let loggable: TspSchoolsSyncedLoggable;
+	describe('getLogMessage is called', () => {
+		const setup = () => {
+			const tspSchoolCount = faker.number.int();
+			const processedSchools = faker.number.int();
+			const createdSchools = faker.number.int();
+			const updatedSchools = faker.number.int();
 
-	beforeAll(() => {
-		loggable = new TspSchoolsSyncedLoggable(10, 10, 5, 5);
-	});
-
-	describe('when loggable is initialized', () => {
-		it('should be defined', () => {
-			expect(loggable).toBeDefined();
-		});
-	});
-
-	describe('getLogMessage', () => {
-		it('should return a log message', () => {
-			expect(loggable.getLogMessage()).toEqual({
-				message: `Synced schools: Of 10 schools 10 were processed. 5 were created and 5 were updated`,
+			const expected = {
+				message: `Synced schools: Of ${tspSchoolCount} schools ${processedSchools} were processed. ${createdSchools} were created and ${updatedSchools} were updated`,
 				data: {
-					tspSchoolCount: 10,
-					processedSchools: 10,
-					createdSchools: 5,
-					updatedSchools: 5,
+					tspSchoolCount,
+					processedSchools,
+					createdSchools,
+					updatedSchools,
 				},
-			});
+			};
+
+			return { tspSchoolCount, processedSchools, createdSchools, updatedSchools, expected };
+		};
+
+		it('should return a log message', () => {
+			const { tspSchoolCount, processedSchools, createdSchools, updatedSchools, expected } = setup();
+
+			const loggable = new TspSchoolsSyncedLoggable(tspSchoolCount, processedSchools, createdSchools, updatedSchools);
+
+			expect(loggable.getLogMessage()).toEqual(expected);
 		});
 	});
 });

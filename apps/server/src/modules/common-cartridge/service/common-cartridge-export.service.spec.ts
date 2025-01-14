@@ -2,9 +2,10 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
+import { CoursesClientAdapter } from '@infra/courses-client';
+import { CourseCommonCartridgeMetadataDto } from '@src/infra/courses-client/dto';
 import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CourseCommonCartridgeMetadataDto, CoursesClientAdapter } from '../common-cartridge-client/course-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
@@ -59,10 +60,10 @@ describe('CommonCartridgeExportService', () => {
 		const boardSkeleton: BoardSkeletonDto = columnBoardFactory.build();
 		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.build();
 		const boardTask: BoardTaskDto = boardTaskFactory.build();
-		boardTask.courseName = courseMetadata.courseName;
+		boardTask.courseName = courseMetadata.title;
 
 		const room: RoomBoardDto = roomFactory.build();
-		room.title = courseMetadata.courseName;
+		room.title = courseMetadata.title;
 		room.elements[0].content = boardTask;
 		room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
 		room.elements[1].content.id = lesson.lessonId;
@@ -151,7 +152,7 @@ describe('CommonCartridgeExportService', () => {
 
 	describe('exportCourse', () => {
 		describe('when using version 1.1', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, true);
 
 			it('should use schema version 1.1.0', async () => {
 				const { archive } = await setup();
@@ -163,7 +164,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.courseName)
+					createXmlString('mnf:string', courseMetadata.title)
 				);
 			});
 
@@ -222,7 +223,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when using version 1.3', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_3_0, true, true, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_3_0, true, true, true);
 
 			it('should use schema version 1.3.0', async () => {
 				const { archive } = await setup();
@@ -234,7 +235,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.courseName)
+					createXmlString('mnf:string', courseMetadata.title)
 				);
 			});
 
@@ -305,7 +306,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when topics array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
 
 			it("shouldn't add lessons", async () => {
 				const { archive, lessons } = await setup();
@@ -317,7 +318,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when tasks array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
 
 			it("shouldn't add tasks", async () => {
 				const { archive, boardTask } = await setup();
@@ -327,7 +328,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when columnBoards array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
+			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
 
 			it("shouldn't add column boards", async () => {
 				const { archive, boardSkeleton } = await setup();

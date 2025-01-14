@@ -155,7 +155,7 @@ export class CommonCartridgeImportService {
 		column: Column,
 		cardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
-	) {
+	): Promise<void> {
 		const card = this.boardNodeFactory.buildCard();
 		const { title } = this.mapper.mapOrganizationToCard(cardProps);
 		card.title = title;
@@ -174,7 +174,7 @@ export class CommonCartridgeImportService {
 		parser: CommonCartridgeFileParser,
 		card: Card,
 		cardElementProps: CommonCartridgeImportOrganizationProps
-	) {
+	): Promise<void> {
 		if (cardElementProps.isResource) {
 			const resource = parser.getResource(cardElementProps);
 			const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
