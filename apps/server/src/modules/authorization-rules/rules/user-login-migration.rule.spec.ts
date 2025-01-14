@@ -9,7 +9,10 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { schoolEntityFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
 
 describe('UserLoginMigrationRule', () => {

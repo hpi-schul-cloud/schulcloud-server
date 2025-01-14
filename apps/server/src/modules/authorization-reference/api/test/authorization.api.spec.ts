@@ -1,17 +1,16 @@
 import { EntityManager } from '@mikro-orm/core';
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+} from '@modules/authorization';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Permission } from '@shared/domain/interface';
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizableReferenceType,
-} from '@modules/authorization';
-import { AuthorizationReponseMapper } from '../mapper';
 import { AuthorizationBodyParams } from '../dto';
+import { AuthorizationReponseMapper } from '../mapper';
 
 const createExamplePostData = (userId: string): AuthorizationBodyParams => {
 	const referenceType = AuthorizableReferenceType.User;

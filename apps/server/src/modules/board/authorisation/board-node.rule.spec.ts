@@ -1,11 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper, AuthorizationInjectionService, Action } from '@modules/authorization';
-import { BoardNodeRule } from './board-node.rule';
 import { columnBoardFactory, drawingElementFactory, fileElementFactory, submissionItemFactory } from '../testing';
+import { BoardNodeRule } from './board-node.rule';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;

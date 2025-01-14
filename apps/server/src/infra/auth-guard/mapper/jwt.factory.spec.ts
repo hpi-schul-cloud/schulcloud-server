@@ -1,4 +1,5 @@
-import { currentUserFactory, setupEntities } from '@shared/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { CreateJwtPayload } from '../interface';
 import { JwtPayloadFactory } from './jwt.factory';

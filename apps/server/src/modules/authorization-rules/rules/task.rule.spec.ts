@@ -1,8 +1,13 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
