@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -7,14 +8,13 @@ import {} from '@shared/domain/entity';
 import { Permission, VideoConferenceScope } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { ScopeInfo, VideoConferenceInfo, VideoConferenceState } from './dto';
 import { VideoConferenceInfoUc } from './video-conference-info.uc';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 
 describe('VideoConferenceInfoUc', () => {
 	let module: TestingModule;
@@ -385,11 +385,10 @@ describe('VideoConferenceInfoUc', () => {
 			describe('when scope is a video conference element', () => {
 				const setup = (scopeName: VideoConferenceScope) => {
 					const user: UserDO = userDoFactory.buildWithId();
-					const currentUserId: string = user.id as string;
 					const scope = { scope: scopeName, id: new ObjectId().toHexString() };
 					const scopeInfo: ScopeInfo = {
 						scopeId: scope.id,
-						scopeName: scopeName,
+						scopeName,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};

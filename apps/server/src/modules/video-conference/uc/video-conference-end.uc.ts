@@ -2,13 +2,13 @@ import { UserService } from '@modules/user';
 import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef, VideoConference, VideoConferenceState } from './dto';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 
 @Injectable()
 export class VideoConferenceEndUc {
@@ -19,7 +19,7 @@ export class VideoConferenceEndUc {
 		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
-	async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
+	public async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
 		/* need to be replace with
 		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),

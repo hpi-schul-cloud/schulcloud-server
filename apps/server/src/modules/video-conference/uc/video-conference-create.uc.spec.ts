@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,14 +7,13 @@ import { UserDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceCreateUc } from './video-conference-create.uc';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 
 describe('VideoConferenceCreateUc', () => {
 	let module: TestingModule;

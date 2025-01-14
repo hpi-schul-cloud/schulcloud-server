@@ -2,11 +2,11 @@ import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, C
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { CourseFeatures } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { BoardFeature } from '../board/domain';
-import { CourseFeatures } from '@shared/domain/entity';
 import { LegacySchoolService } from '../legacy-school';
-import { ConfigService } from '@nestjs/config';
 import { VideoConferenceConfig } from '../video-conference';
 
 @Injectable()
@@ -60,7 +60,7 @@ export class BoardContextApiHelperService {
 			const course = await this.courseService.findById(context.id);
 
 			if (
-				(await this.isVideoConferenceEnabledForCourse(course.features)) ||
+				this.isVideoConferenceEnabledForCourse(course.features) ||
 				(await this.isVideoConferenceEnabledForSchool(course.school.id)) ||
 				this.isVideoConferenceEnabledForConfig()
 			) {
@@ -84,11 +84,11 @@ export class BoardContextApiHelperService {
 		throw new Error(`Unsupported board reference type ${context.type as string}`);
 	}
 
-	private async isVideoConferenceEnabledForCourse(courseFeatures?: CourseFeatures[]): Promise<boolean> {
+	private isVideoConferenceEnabledForCourse(courseFeatures?: CourseFeatures[]): boolean {
 		return (courseFeatures ?? []).includes(CourseFeatures.VIDEOCONFERENCE);
 	}
 
-	private async isVideoConferenceEnabledForSchool(schoolId: EntityId): Promise<boolean> {
+	private isVideoConferenceEnabledForSchool(schoolId: EntityId): Promise<boolean> {
 		return this.legacySchoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
 	}
 

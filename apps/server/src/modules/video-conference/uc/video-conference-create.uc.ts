@@ -1,7 +1,9 @@
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
@@ -15,8 +17,6 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
-import { VideoConferenceScope } from '@shared/domain/interface';
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -27,7 +27,11 @@ export class VideoConferenceCreateUc {
 		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
-	async createIfNotRunning(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+	public async createIfNotRunning(
+		currentUserId: EntityId,
+		scope: ScopeRef,
+		options: VideoConferenceOptions
+	): Promise<void> {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
 		try {
@@ -98,7 +102,7 @@ export class VideoConferenceCreateUc {
 		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
 	}
 
-	private throwIfNotModerator(role: BBBRole, errorMessage: string) {
+	private throwIfNotModerator(role: BBBRole, errorMessage: string): void {
 		if (role !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION, errorMessage);
 		}

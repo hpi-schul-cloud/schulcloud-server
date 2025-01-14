@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,13 +7,12 @@ import { UserDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBService, VideoConferenceService } from '../service';
 import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceEndUc } from './video-conference-end.uc';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 
 describe('VideoConferenceEndUc', () => {
 	let module: TestingModule;
@@ -181,7 +181,7 @@ describe('VideoConferenceEndUc', () => {
 					const scope = { scope: scopeName, id: new ObjectId().toHexString() };
 					const scopeInfo: ScopeInfo = {
 						scopeId: scope.id,
-						scopeName: scopeName,
+						scopeName,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};
