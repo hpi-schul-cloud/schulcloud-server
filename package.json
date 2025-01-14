@@ -119,7 +119,9 @@
 		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api",
 		"generate-client:lessons-api":"openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api",
 		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
-		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api"
+		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
+		"pregenerate-client:boards-api": "rimraf ./apps/server/src/infra/boards-client/generated",
+		"generate-client:boards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key boards-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
