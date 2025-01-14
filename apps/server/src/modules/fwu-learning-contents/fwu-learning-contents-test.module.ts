@@ -1,3 +1,4 @@
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
@@ -27,6 +28,7 @@ const imports = [
 	LoggerModule,
 	RabbitMQWrapperTestModule,
 	S3ClientModule.register([s3Config]),
+	AuthGuardModule.register([AuthGuardOptions.JWT]),
 ];
 const controllers = [FwuLearningContentsController];
 const providers = [FwuLearningContentsUc];
