@@ -1,73 +1,46 @@
-import { TypeGuard, PrimitiveType, PrimitiveTypeArray } from '@shared/common';
+import { PrimitiveType, PrimitiveTypeArray } from '@shared/common';
+import { plainToClassFromExist } from 'class-transformer';
+import { validateSync, ValidationError } from 'class-validator';
 
 type ValueObjectTyp = PrimitiveType | PrimitiveTypeArray;
 
-export abstract class ValueObject<T extends ValueObjectTyp> {
-	public readonly value: T;
+export interface ValueObjectProps {
+	[index: string]: unknown;
+}
 
-	constructor(value: T) {
-		// TODO: No Test for the execution order exists for now, but we must clarify if we want first the modifcation, or first the validation
-		// For operations with truncat before make more sense. Adding before/after modifications are also possible, but it can be overload the interface
-		const modifiedValue = this.modified(value);
-		this.checkValue(modifiedValue);
-		this.value = Object.freeze(modifiedValue);
+export abstract class BaseValueObject<T extends ValueObjectProps | ValueObjectTyp> {
+	constructor(props: T) {
+		Object.assign(this, plainToClassFromExist(this, props));
+		console.log('Ich bin im constructor');
+		//this.isValid();
 	}
 
-	/** Use this method with override for add validations. */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected validation(value: unknown): boolean {
+	public validate(): ValidationError[] {
+		const result = validateSync(this);
+		return result;
+	}
+
+	public isValid(): boolean {
+		const result = this.validate();
+		return result.length === 0;
+	}
+
+	public checkValue(): void {
+		if (!this.isValid()) {
+			throw new Error(`ValueObject ${this.constructor.name} validation is failed for input ${JSON.stringify(this)}`);
+		}
+	}
+
+	/*public equals(vo: BaseValueObject<T>): boolean {
+		const thisKeys = Object.keys(this);
+
+		for (const key of thisKeys) {
+			if (typeof vo !== 'object' || vo === null || !(key in vo) || this[key] !== vo[key]) return false;
+		}
+
+		if (vo === this) return true;
+		if (vo == null || vo.constructor !== this.constructor) return false;
+
 		return true;
-	}
-
-	/** Use this method with override for add modifications, before execute the validation. */
-	protected modified(value: T): T {
-		// TODO: Why eslint think that T is from type any is unlear for me.
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return value;
-	}
-
-	// TODO: make this method sense if we not can add this as static MyValueObject.isValidValue() ?
-	// Should it be optional by adding in extended class, or as abstract that it must be implemented?
-	/*
-	public isValidValue(value: unknown): boolean {
-		return this.validation(value);
-	}
-	*/
-	// TODO: Same questions make it sense without static to set it public?
-	// If not than we can change it to private for a less overloaded interface at the value object
-	private checkValue(value: unknown): void {
-		if (!this.validation(value)) {
-			throw new Error(`ValueObject ${this.constructor.name} validation is failed for input ${JSON.stringify(value)}`);
-		}
-	}
-
-	/** The equal methode of ValueObjects check the value is equal not the reference. */
-	public equals(vo: ValueObject<T>): boolean {
-		if (!TypeGuard.isSameClassTyp(this, vo)) {
-			return false;
-		}
-
-		if (TypeGuard.isPrimitiveType(vo.value)) {
-			return vo.value === this.value;
-		}
-
-		if (TypeGuard.isArray(vo.value) && TypeGuard.isArray(this.value)) {
-			return TypeGuard.isShallowEqualArray(this.value, vo.value);
-		}
-
-		return false;
-
-		/*
-		VS
-
-		
-		let isEqual = false;
-		if (TypeGuard.isPrimitiveType(vo.value)) {
-			isEqual = vo.value === this.value;
-		} else if (TypeGuard.isArray(vo.value) && TypeGuard.isArray(this.value)) {
-			isEqual = TypeGuard.isShallowEqualArray(this.value, vo.value);
-		}
-
-		return isEqual; */
-	}
+	}*/
 }
