@@ -9,13 +9,14 @@ import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
+import { createConfigModuleOptions } from '@shared/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { AdminApiRegistrationPinModule } from '../registration-pin/admin-api-registration-pin.module';
 import { adminApiServerConfig } from './admin-api-server.config';
 
