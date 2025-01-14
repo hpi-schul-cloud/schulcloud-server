@@ -86,13 +86,13 @@ describe('ValueObject', () => {
 		it('should be return true by same reference', () => {
 			const { nameThor1 } = setup();
 
-			//expect(nameThor1.equals(nameThor1)).toBe(true);
+			// expect(nameThor1.equals(nameThor1)).toBe(true);
 		});
 
 		it('should be return true by different references', () => {
 			const { nameThor1, nameThor2 } = setup();
 
-			//expect(nameThor1.equals(nameThor2)).toBe(true);
+			// expect(nameThor1.equals(nameThor2)).toBe(true);
 		});
 
 		it.only('should be return false by different values', () => {
@@ -125,7 +125,7 @@ describe('ValueObject', () => {
 
 			const name = new FullName({ firstName, lastName });
 
-			//expect(name.equals(name)).toBe(true);
+			// expect(name.equals(name)).toBe(true);
 		});
 
 		it('should be return true by different values', () => {
@@ -135,7 +135,7 @@ describe('ValueObject', () => {
 			const name = new FullName({ firstName, lastName });
 			const name1 = new FullName({ firstName, lastName });
 
-			///expect(name.equals(name1)).toBe(true);
+			/// expect(name.equals(name1)).toBe(true);
 		});
 
 		it('should be return false by different values', () => {
@@ -146,11 +146,11 @@ describe('ValueObject', () => {
 			const name = new FullName({ firstName, lastName });
 			const name1 = new FullName({ firstName, lastName: lastName1 });
 
-			//expect(name.equals(name1)).toBe(false);
+			// expect(name.equals(name1)).toBe(false);
 		});
 	});
 
-	/*describe('By usage of primitive array as value object', () => {
+	/* describe('By usage of primitive array as value object', () => {
 		const setup = () => {
 			class Names extends BaseValueObject<string[]> {}
 
@@ -306,5 +306,5 @@ describe('ValueObject', () => {
 
 			expect(nameThor1.equals(otherThor)).toBe(false);
 		});
-	});*/
+	}); */
 });

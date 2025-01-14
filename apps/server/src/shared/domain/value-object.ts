@@ -2,7 +2,7 @@ import { PrimitiveType, PrimitiveTypeArray } from '@shared/common';
 import { plainToClassFromExist } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 
-type ValueObjectTyp = PrimitiveType | PrimitiveTypeArray;
+export type ValueObjectTyp = PrimitiveType | PrimitiveTypeArray;
 
 export interface ValueObjectProps {
 	[index: string]: unknown;
@@ -31,7 +31,7 @@ export abstract class BaseValueObject<T extends ValueObjectProps | ValueObjectTy
 		}
 	}
 
-	/*public equals(vo: BaseValueObject<T>): boolean {
+	public equals(vo: BaseValueObject<T>): boolean {
 		const thisKeys = Object.keys(this);
 
 		for (const key of thisKeys) {
@@ -42,5 +42,5 @@ export abstract class BaseValueObject<T extends ValueObjectProps | ValueObjectTy
 		if (vo == null || vo.constructor !== this.constructor) return false;
 
 		return true;
-	}*/
+	}
 }
