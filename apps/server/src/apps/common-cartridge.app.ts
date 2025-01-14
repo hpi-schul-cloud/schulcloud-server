@@ -1,18 +1,18 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
+import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import {
-	AppStartLoggable,
-	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
 	createAndStartPrometheusMetricsAppIfEnabled,
+	enableOpenApiDocs,
 } from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
 async function bootstrap() {
 	sourceMapInstall();

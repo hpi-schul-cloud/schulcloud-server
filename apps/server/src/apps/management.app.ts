@@ -4,13 +4,13 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
-import { install as sourceMapInstall } from 'source-map-support';
-import { LegacyLogger } from '@src/core/logger';
-import { ManagementServerModule } from '@modules/management';
 import { MikroORM } from '@mikro-orm/core';
-import legacyAppPromise = require('../../../../src/app');
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { ManagementServerModule } from '@modules/management/management-server.app.module';
+import { LegacyLogger } from '@src/core/logger';
+import { install as sourceMapInstall } from 'source-map-support';
 import { enableOpenApiDocs } from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
