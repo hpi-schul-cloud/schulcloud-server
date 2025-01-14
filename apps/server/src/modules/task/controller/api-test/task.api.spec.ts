@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

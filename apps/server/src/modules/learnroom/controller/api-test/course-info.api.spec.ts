@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity } from '@shared/domain/entity';

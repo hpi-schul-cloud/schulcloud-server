@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 
 describe(`card update height (api)`, () => {
 	let app: INestApplication;

@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { BoardNodeEntity } from '../../repo';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
+import { BoardNodeEntity } from '../../repo';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,

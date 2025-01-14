@@ -12,7 +12,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ServerTestModule } from '@src/modules/server/server.app.module';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
 
 describe('Users Admin Students Controller (API)', () => {
