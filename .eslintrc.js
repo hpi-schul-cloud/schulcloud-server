@@ -158,8 +158,9 @@ module.exports = {
 							{
 								patterns: [
 									{
-										group: ['@apps/**', '@infra/**', '@shared/**'],
-										message: 'apps-modules may NOT import from @apps, @infra or @shared',
+										group: ['@apps/**', '@infra/**', '@modules', '@shared/**'],
+										message: 'apps-modules may NOT import from @apps, @infra, @modules or @shared',
+										allow: ['@modules/**/*.app.module.ts'],
 									},
 								],
 							},
