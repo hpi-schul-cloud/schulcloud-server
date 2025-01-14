@@ -1,6 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { PaginationParams } from '@shared/controller';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
