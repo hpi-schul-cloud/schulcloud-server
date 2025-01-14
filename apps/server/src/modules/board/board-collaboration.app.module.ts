@@ -9,7 +9,6 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
 import { CoreModule } from '@src/core';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
-import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
 import { config } from './board-collaboration.config';
@@ -51,7 +50,6 @@ const testConfig = () => {
 	imports: [
 		...imports,
 		ConfigModule.forRoot(createConfigModuleOptions(testConfig)),
-		AuthenticationApiModule,
 		MongoMemoryDatabaseModule.forRoot({
 			...defaultMikroOrmOptions,
 			entities: ALL_ENTITIES,
