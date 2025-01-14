@@ -4,13 +4,8 @@ import { Test } from '@nestjs/testing';
 
 import { MongoIoAdapter } from '@infra/socketio';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import {
-	cleanupCollections,
-	courseFactory,
-	JwtAuthenticationFactory,
-	schoolEntityFactory,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, schoolEntityFactory, UserAndAccountTestFactory } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';

@@ -18,7 +18,6 @@ export * from './filerecord.factory';
 export * from './group-entity.factory';
 export * from './h5p-content.factory';
 export * from './import-user.factory';
-export * from './jwt-authentication.factory';
 export * from './jwt.test.factory';
 export * from './jwtpayload.factory';
 export * from './legacy-file-entity-mock.factory';

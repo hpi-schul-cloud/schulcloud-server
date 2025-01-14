@@ -8,13 +8,8 @@ import { INestApplication, NotFoundException, StreamableFile } from '@nestjs/com
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	JwtAuthenticationFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FileRecord, ScanStatus } from '../../entity';
