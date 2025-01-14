@@ -1,4 +1,4 @@
-import { ServerConsoleModule } from '@modules/server-console/server-console.module';
+import { ServerConsoleModule } from '@modules/server-console/server-console.app.module';
 import { INestApplicationContext } from '@nestjs/common';
 import { CommanderError } from 'commander';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';

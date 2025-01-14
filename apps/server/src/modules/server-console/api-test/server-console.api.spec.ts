@@ -1,7 +1,7 @@
 import { INestApplicationContext } from '@nestjs/common';
 
 import { ConsoleWriterService } from '@infra/console';
-import { ServerConsoleModule } from '@modules/server-console/server-console.module';
+import { ServerConsoleModule } from '@modules/server-console/server-console.app.module';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 

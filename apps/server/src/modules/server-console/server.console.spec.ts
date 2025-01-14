@@ -1,6 +1,6 @@
 import { ConsoleWriterService } from '@infra/console';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerConsoleModule } from './server-console.module';
+import { ServerConsoleModule } from './server-console.app.module';
 import { ServerConsole } from './server.console';
 
 describe('ServerConsole', () => {
