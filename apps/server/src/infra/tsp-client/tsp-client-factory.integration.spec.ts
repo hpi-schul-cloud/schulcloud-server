@@ -23,7 +23,7 @@ describe.skip('TspClientFactory Integration', () => {
 					getOrThrow: (key: string) => {
 						switch (key) {
 							case 'TSP_API_CLIENT_BASE_URL':
-								return 'https://test2.schulportal-thueringen.de/tip-ms/api';
+								return 'https://test.schulportal-thueringen.de/tip-ms/api';
 							case 'TSP_API_CLIENT_TOKEN_LIFETIME_MS':
 								return 30_000;
 							default:

@@ -1,26 +1,22 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
-	mapUserToCurrentUser,
-	roleFactory,
 	schoolEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
-	userFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
-import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import request from 'supertest';
 import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
@@ -28,7 +24,7 @@ import { FileRecordParentType } from '../../interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
-const baseRouteName = '/file/restore';
+const baseRouteName = '/file';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -36,83 +32,9 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	};
 });
 
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async postUploadFile(routeName: string, fileName: string) {
-		const response = await request(this.app.getHttpServer())
-			.post(routeName)
-			.attach('file', Buffer.from('abcd'), fileName)
-			.set('connection', 'keep-alive')
-			.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async restoreFile(requestString: string) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json');
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async restore(requestString: string, query?: string | Record<string, unknown>) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json')
-			.query(query || {});
-
-		return {
-			result: response.body as FileRecordListResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async deleteFile(requestString: string) {
-		const response = await request(this.app.getHttpServer())
-			.delete(`/file/delete${requestString}`)
-			.set('Accept', 'application/json');
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async delete(requestString: string, query?: string | Record<string, unknown>) {
-		const response = await request(this.app.getHttpServer())
-			.delete(`/file/delete${requestString}`)
-			.set('Accept', 'application/json')
-			.query(query || {});
-
-		return {
-			result: response.body as FileRecordListResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -122,14 +44,6 @@ describe(`${baseRouteName} (api)`, () => {
 			.useValue(createMock<AntivirusService>())
 			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
@@ -139,7 +53,6 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
 	});
 
 	afterAll(async () => {
@@ -147,60 +60,88 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('restore files of parent', () => {
-		describe('with bad request data', () => {
-			let validId: string;
+		describe('with not authenticated uer', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
 
-			beforeEach(async () => {
+				const result = await apiClient.post(`/restore/school/123/users/123`);
+
+				expect(result.status).toEqual(401);
+			});
+		});
+
+		describe('with bad request data', () => {
+			const setup = async () => {
 				await cleanupCollections(em);
-				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolEntityFactory.build();
-				const user = userFactory.build({ roles, school });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([user]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				validId = user.school.id;
-			});
+				const validId = user.school.id;
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { validId, apiClient };
+			};
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.restore(`/school/123/users/${validId}`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId } = await setup();
+
+				const result = await apiClient.post(`/restore/school/123/users/${validId}`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['storageLocationId must be a mongodb id'],
 						field: ['storageLocationId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.restore(`/school/${validId}/users/123`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId } = await setup();
+
+				const result = await apiClient.post(`/restore/school/${validId}/users/123`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
 						field: ['parentId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.restore(`/school/${validId}/cookies/${validId}`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId } = await setup();
+
+				const result = await apiClient.post(`/restore/school/${validId}/cookies/${validId}`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
 						field: ['parentType'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 		});
 
 		describe(`with valid request data`, () => {
-			let validId: string;
-
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -208,30 +149,56 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				validId = user.school.id;
+				const validId = user.school.id;
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-			});
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { validId, apiClient };
+			};
+
+			const uploadFile = async (apiClient: TestApiClient, path: string, fileName: string) => {
+				const result = await apiClient
+					.post(path)
+					.attach('file', Buffer.from('abcd'), fileName)
+					.set('connection', 'keep-alive')
+					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
+
+				return result.body as FileRecordResponse;
+			};
 
 			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
-				await api.delete(`/school/${validId}/schools/${validId}`);
+				const { validId, apiClient } = await setup();
+				await uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				const response = await api.restore(`/school/${validId}/schools/${validId}`);
+				await apiClient.delete(`/school/${validId}/schools/${validId}`);
+
+				const response = await apiClient.post(`/restore/school/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
-				await api.delete(`/school/${validId}/schools/${validId}`);
+				const { validId, apiClient } = await setup();
+				await uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				const { result } = await api.restore(`/school/${validId}/schools/${validId}`);
+				await apiClient.delete(`/delete/school/${validId}/schools/${validId}`);
 
-				expect(Array.isArray(result.data)).toBe(true);
-				expect(result.data[0]).toBeDefined();
-				expect(result.data[0]).toStrictEqual({
+				const result = await apiClient.post(`/restore/school/${validId}/schools/${validId}`);
+				const response = result.body as FileRecordListResponse;
+
+				expect(Array.isArray(response.data)).toBe(true);
+				expect(response.data[0]).toBeDefined();
+				expect(response.data[0]).toStrictEqual({
 					creatorId: expect.any(String),
 					id: expect.any(String),
 					name: expect.any(String),
@@ -248,25 +215,27 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements of requested scope', async () => {
+				const { validId, apiClient } = await setup();
+
 				const otherParentId = new ObjectId().toHexString();
-				const uploadResponse = await Promise.all([
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
+				const fileRecords = await Promise.all([
+					uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
+					uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
+					uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
+					uploadFile(apiClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
+					uploadFile(apiClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
+					uploadFile(apiClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
 				]);
 
-				const fileRecords = uploadResponse.map(({ result }) => result);
-				await api.delete(`/school/${validId}/schools/${validId}`);
+				await apiClient.delete(`/delete/school/${validId}/schools/${validId}`);
 
-				const { result } = await api.restore(`/school/${validId}/schools/${validId}`);
+				const result = await apiClient.post(`/restore/school/${validId}/schools/${validId}`);
+				const response = result.body as FileRecordListResponse;
 
-				const resultData: FileRecordResponse[] = result.data;
+				const resultData: FileRecordResponse[] = response.data;
 				const ids: EntityId[] = resultData.map((o) => o.id);
 
-				expect(result.total).toEqual(3);
+				expect(response.total).toEqual(3);
 				expect(ids.sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
 			});
 		});
@@ -274,32 +243,47 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('restore single file', () => {
 		describe('with bad request data', () => {
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
-				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolEntityFactory.build();
-				const user = userFactory.build({ roles, school });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([user]);
 				em.clear();
-			});
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { apiClient };
+			};
 
 			it('should return status 400 for invalid fileRecordId', async () => {
-				const response = await api.restoreFile(`/123`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient } = await setup();
+
+				const result = await apiClient.post(`/restore/123`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['fileRecordId must be a mongodb id'],
 						field: ['fileRecordId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 		});
 
 		describe(`with valid request data`, () => {
 			let fileRecordId: string;
 
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -307,30 +291,50 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
 
-				const { result } = await api.postUploadFile(
-					`/file/upload/school/${school.id}/schools/${school.id}`,
-					'test1.txt'
-				);
+				const result = (
+					await apiClient
+						.post(`/upload/school/${school.id}/schools/${school.id}`)
+						.attach('file', Buffer.from('abcd'), 'test1.txt')
+						.set('connection', 'keep-alive')
+						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
+				).body as FileRecordResponse;
 
 				fileRecordId = result.id;
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-			});
+
+				return { apiClient };
+			};
 
 			it('should return status 200 for successful request', async () => {
-				await api.deleteFile(`/${fileRecordId}`);
-				const response = await api.restoreFile(`/${fileRecordId}`);
+				const { apiClient } = await setup();
+
+				await apiClient.delete(`/delete/${fileRecordId}`);
+
+				const response = await apiClient.post(`/restore/${fileRecordId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				await api.deleteFile(`/${fileRecordId}`);
-				const { result } = await api.restoreFile(`/${fileRecordId}`);
+				const { apiClient } = await setup();
 
-				expect(result).toStrictEqual({
+				await apiClient.delete(`/delete/${fileRecordId}`);
+
+				const result = await apiClient.post(`/restore/${fileRecordId}`);
+				const response = result.body as FileRecordResponse;
+
+				expect(response).toStrictEqual({
 					creatorId: expect.any(String),
 					id: expect.any(String),
 					name: expect.any(String),
@@ -347,6 +351,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements of requested scope', async () => {
+				const { apiClient } = await setup();
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					parentType: FileRecordParentType.School,
 				});
@@ -354,10 +359,12 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush(otherFileRecords);
 				em.clear();
 
-				await api.deleteFile(`/${fileRecordId}`);
-				const { result } = await api.restoreFile(`/${fileRecordId}`);
+				await apiClient.delete(`/delete/${fileRecordId}`);
 
-				expect(result.id).toEqual(fileRecordId);
+				const result = await apiClient.post(`/restore/${fileRecordId}`);
+				const response = result.body as FileRecordResponse;
+
+				expect(response.id).toEqual(fileRecordId);
 			});
 		});
 	});

@@ -30,7 +30,7 @@ export class MyNewService {
 ## How the code generation works
 
 > IMPORTANT: Currently we are using the `openapi.json` and not the spec from 
-> https://test2.schulportal-thueringen.de/tip-ms/api/swagger.json, because we have to patch the security schemas
+> https://test.schulportal-thueringen.de/tip-ms/api/swagger.json, because we have to patch the security schemas
 > manually into to the specification so the generator can generate them correctly. The provided
 > specification does not contain all necessary definitions. Only the `Export` endpoints are
 > decorated with the security definitions.

@@ -315,4 +315,47 @@ describe('SchoolMikroOrmRepo', () => {
 			});
 		});
 	});
+
+	describe('getSchoolByOfficialSchoolNumber', () => {
+		describe('when a school with the provided official school number exists', () => {
+			const setup = async () => {
+				const officialSchoolNumber = '00100';
+				const schoolEntity = schoolEntityFactory.build({
+					officialSchoolNumber,
+				});
+
+				const otherSchoolEntity = schoolEntityFactory.build({
+					officialSchoolNumber: '11011',
+				});
+
+				await em.persistAndFlush([schoolEntity, otherSchoolEntity]);
+				em.clear();
+
+				const expectedSchoolDO = SchoolEntityMapper.mapToDo(schoolEntity);
+
+				return {
+					officialSchoolNumber,
+					expectedSchoolDO,
+				};
+			};
+
+			it('should return the existing school', async () => {
+				const { officialSchoolNumber, expectedSchoolDO } = await setup();
+
+				const school = await repo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school).toEqual(expectedSchoolDO);
+			});
+		});
+
+		describe('when a school with the provided official school number does not exist', () => {
+			it('should return null', async () => {
+				const officialSchoolNumber = '00100';
+
+				const school = await repo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school).toBeNull();
+			});
+		});
+	});
 });
