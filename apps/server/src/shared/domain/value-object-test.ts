@@ -45,6 +45,12 @@ function ValueObjectTest3<T extends ValueObjectProps>(propsClass: T) {
 	return function ValueObjectConverter(): BaseValueObject<T> {
 		class SpecificValueObjectClass extends BaseValueObject<T> {
 			public static _type = 'ValueObject';
+
+			constructor() {
+				super(propsClass);
+				Object.assign(this, plainToClassFromExist(this, propsClass));
+				validateSync(this);
+			}
 		}
 
 		return SpecificValueObjectClass;
