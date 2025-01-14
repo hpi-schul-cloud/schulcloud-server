@@ -23,7 +23,7 @@ export class UserImportFetchUc {
 		private readonly systemService: SystemService
 	) {}
 
-	public async populateImportUsers(currentUserId: EntityId): Promise<void> {
+	public async populateImportUsers(currentUserId: EntityId, matchByPreferredName = false): Promise<void> {
 		if (!this.configService.get('FEATURE_USER_MIGRATION_ENABLED')) {
 			throw new UserMigrationIsNotEnabledLoggableException(currentUserId);
 		}
@@ -49,7 +49,8 @@ export class UserImportFetchUc {
 
 		const matchedImportUsers: ImportUser[] = await this.userImportService.matchUsers(
 			filteredFetchedData,
-			userLoginMigration
+			userLoginMigration,
+			matchByPreferredName
 		);
 
 		await this.userImportService.deleteImportUsersBySchool(user.school);

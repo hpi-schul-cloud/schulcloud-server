@@ -6,6 +6,8 @@ import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
+import { VidisClientConfig } from '@infra/vidis-client';
+import { VidisSyncConfig } from '@infra/sync/media-licenses';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -73,7 +75,9 @@ export interface ServerConfig
 		AlertConfig,
 		ShdConfig,
 		OauthConfig,
-		EncryptionConfig {
+		EncryptionConfig,
+		VidisClientConfig,
+		VidisSyncConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -321,6 +325,12 @@ const config: ServerConfig = {
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	VIDIS_API_CLIENT_BASE_URL: Configuration.has('VIDIS_API_CLIENT_BASE_URL')
+		? (Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string)
+		: undefined,
+	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
+		? (Configuration.get('VIDIS_SYNC_REGION') as string)
+		: undefined,
 };
 
 export const serverConfig = () => config;

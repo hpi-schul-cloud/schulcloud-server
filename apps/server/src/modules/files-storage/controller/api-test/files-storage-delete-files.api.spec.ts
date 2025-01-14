@@ -2,24 +2,22 @@ import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
 
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
+import { ApiValidationError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
-	mapUserToCurrentUser,
 	schoolEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
 import NodeClam from 'clamscan';
-import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import request from 'supertest';
 import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
@@ -27,7 +25,7 @@ import { FileRecordParentType } from '../../interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
-const baseRouteName = '/file/delete';
+const baseRouteName = '/file';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -35,58 +33,9 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	};
 });
 
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async postUploadFile(routeName: string, fileName: string) {
-		const response = await request(this.app.getHttpServer())
-			.post(routeName)
-			.attach('file', Buffer.from('abcd'), fileName)
-			.set('connection', 'keep-alive')
-			.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async deleteFile(requestString: string) {
-		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json');
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
-	async delete(requestString: string, query?: string | Record<string, unknown>) {
-		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json')
-			.query(query || {});
-
-		return {
-			result: response.body as FileRecordListResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -96,14 +45,6 @@ describe(`${baseRouteName} (api)`, () => {
 			.useValue(createMock<AntivirusService>())
 			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
@@ -113,7 +54,6 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
 	});
 
 	afterAll(async () => {
@@ -121,10 +61,18 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('delete files of parent', () => {
-		describe('with bad request data', () => {
-			let validId: string;
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
 
-			beforeEach(async () => {
+				const result = await apiClient.delete(`/delete/school/123/users/123`);
+
+				expect(result.status).toEqual(401);
+			});
+		});
+
+		describe('with bad request data', () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -132,48 +80,79 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				validId = user.school.id;
-			});
+				const validId = user.school.id;
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { apiClient, validId };
+			};
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.delete(`/school/123/users/${validId}`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId } = await setup();
+
+				const result = await apiClient.delete(`/delete/school/123/users/${validId}`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['storageLocationId must be a mongodb id'],
 						field: ['storageLocationId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.delete(`/school/${validId}/users/123`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId } = await setup();
+
+				const result = await apiClient.delete(`/delete/school/${validId}/users/123`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
 						field: ['parentId'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.delete(`/school/${validId}/cookies/${validId}`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient, validId } = await setup();
+
+				const result = await apiClient.delete(`/delete/school/${validId}/cookies/${validId}`);
+				const { validationErrors } = result.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
 						field: ['parentType'],
 					},
 				]);
-				expect(response.status).toEqual(400);
+				expect(result.status).toEqual(400);
 			});
 		});
 
 		describe(`with valid request data`, () => {
-			let validId: string;
+			const uploadFile = async (apiClient: TestApiClient, schoolId: string, parentId: string, fileName: string) => {
+				const response = await apiClient
+					.post(`/upload/school/${schoolId}/schools/${parentId}`)
+					.attach('file', Buffer.from('abcd'), fileName)
+					.set('connection', 'keep-alive')
+					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
 
-			beforeEach(async () => {
+				return response.body as FileRecordResponse;
+			};
+
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -181,28 +160,35 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
-				validId = user.school.id;
+				const validId = user.school.id;
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
-			});
 
-			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
 
-				const response = await api.delete(`/school/${validId}/schools/${validId}`);
-
-				expect(response.status).toEqual(200);
-			});
+				return { apiClient, validId };
+			};
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				const { apiClient, validId } = await setup();
 
-				const { result } = await api.delete(`/school/${validId}/schools/${validId}`);
+				await uploadFile(apiClient, validId, validId, 'test1.txt');
 
-				expect(Array.isArray(result.data)).toBe(true);
-				expect(result.data[0]).toBeDefined();
-				expect(result.data[0]).toStrictEqual({
+				const result = await apiClient.delete(`/delete/school/${validId}/schools/${validId}`);
+				const response = result.body as FileRecordListResponse;
+
+				expect(result.status).toEqual(200);
+				expect(Array.isArray(response.data)).toBe(true);
+				expect(response.data[0]).toBeDefined();
+				expect(response.data[0]).toStrictEqual({
 					creatorId: expect.any(String),
 					id: expect.any(String),
 					name: expect.any(String),
@@ -220,43 +206,69 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements of requested scope', async () => {
+				const { apiClient, validId } = await setup();
 				const otherParentId = new ObjectId().toHexString();
-				const uploadResponse = await Promise.all([
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
-					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
+				const fileRecords = await Promise.all([
+					await uploadFile(apiClient, validId, validId, 'test1.txt'),
+					await uploadFile(apiClient, validId, validId, 'test2.txt'),
+					await uploadFile(apiClient, validId, validId, 'test3.txt'),
+					await uploadFile(apiClient, validId, otherParentId, 'other1.txt'),
+					await uploadFile(apiClient, validId, otherParentId, 'other2.txt'),
+					await uploadFile(apiClient, validId, otherParentId, 'other3.txt'),
 				]);
 
-				const fileRecords = uploadResponse.map(({ result }) => result);
+				const result = await apiClient.delete(`/delete/school/${validId}/schools/${validId}`);
+				const response = result.body as FileRecordListResponse;
 
-				const { result } = await api.delete(`/school/${validId}/schools/${validId}`);
-
-				const resultData: FileRecordResponse[] = result.data;
+				const resultData: FileRecordResponse[] = response.data;
 				const ids: EntityId[] = resultData.map((o) => o.id);
 
-				expect(result.total).toEqual(3);
+				expect(response.total).toEqual(3);
 				expect(ids.sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
 			});
 		});
 	});
 
 	describe('delete single file', () => {
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				const response = await apiClient.delete(`/delete/123`);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([user, account]);
 				em.clear();
-			});
+
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+
+				return { apiClient };
+			};
 
 			it('should return status 400 for invalid fileRecordId', async () => {
-				const response = await api.deleteFile(`/123`);
-				expect(response.error.validationErrors).toEqual([
+				const { apiClient } = await setup();
+
+				const response = await apiClient.delete(`/delete/123`);
+				const { validationErrors } = response.body as ApiValidationError;
+
+				expect(validationErrors).toEqual([
 					{
 						errors: ['fileRecordId must be a mongodb id'],
 						field: ['fileRecordId'],
@@ -267,9 +279,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		describe(`with valid request data`, () => {
-			let fileRecordId: string;
-
-			beforeEach(async () => {
+			const setup = async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
@@ -277,26 +287,42 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([user, account]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
+				const authValue = JwtAuthenticationFactory.createJwt({
+					accountId: account.id,
+					userId: user.id,
+					schoolId: user.school.id,
+					roles: [user.roles[0].id],
+					support: false,
+					isExternalUser: false,
+				});
+				const apiClient = new TestApiClient(app, baseRouteName, authValue);
 
-				const { result } = await api.postUploadFile(
-					`/file/upload/school/${school.id}/schools/${school.id}`,
-					'test1.txt'
-				);
+				const result = await apiClient
+					.post(`/upload/school/${school.id}/schools/${school.id}`)
+					.attach('file', Buffer.from('abcd'), 'test1.txt')
+					.set('connection', 'keep-alive')
+					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
+				const response = result.body as FileRecordResponse;
+				const fileRecordId = response.id;
 
-				fileRecordId = result.id;
-			});
+				return { apiClient, fileRecordId };
+			};
 
 			it('should return status 200 for successful request', async () => {
-				const response = await api.deleteFile(`/${fileRecordId}`);
+				const { apiClient, fileRecordId } = await setup();
+
+				const response = await apiClient.delete(`/delete/${fileRecordId}`);
 
 				expect(response.status).toEqual(200);
 			});
 
 			it('should return right type of data', async () => {
-				const { result } = await api.deleteFile(`/${fileRecordId}`);
+				const { apiClient, fileRecordId } = await setup();
 
-				expect(result).toStrictEqual({
+				const result = await apiClient.delete(`/delete/${fileRecordId}`);
+				const response = result.body as FileRecordResponse;
+
+				expect(response).toStrictEqual({
 					creatorId: expect.any(String),
 					id: expect.any(String),
 					name: expect.any(String),
@@ -314,6 +340,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements of requested scope', async () => {
+				const { apiClient, fileRecordId } = await setup();
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					parentType: FileRecordParentType.School,
 				});
@@ -321,9 +348,10 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush(otherFileRecords);
 				em.clear();
 
-				const { result } = await api.deleteFile(`/${fileRecordId}`);
+				const result = await apiClient.delete(`/delete/${fileRecordId}`);
+				const response = result.body as FileRecordResponse;
 
-				expect(result.id).toEqual(fileRecordId);
+				expect(response.id).toEqual(fileRecordId);
 			});
 		});
 	});

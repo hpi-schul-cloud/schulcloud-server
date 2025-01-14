@@ -16,7 +16,7 @@ import {
 	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser, GroupVisibilityPermission } from '../domain';
+import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { GroupRepo } from './group.repo';
 
@@ -493,215 +493,74 @@ describe(GroupRepo.name, () => {
 		});
 
 		describe('when searching for available groups for a course synchronization', () => {
-			describe('when the user only has permission to view this own groups', () => {
-				const setup = async () => {
-					const school = schoolEntityFactory.buildWithId();
-					const user = userFactory.buildWithId({ school });
-					const availableCourseGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.COURSE,
-						users: [
-							new GroupUserEmbeddable({
-								user,
-								role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
-							}),
-						],
-						organization: school,
-					});
-					const synchronizedCourseGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.COURSE,
-						users: [
-							new GroupUserEmbeddable({
-								user,
-								role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
-							}),
-						],
-						organization: school,
-					});
-					const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
-						syncedWithGroup: synchronizedCourseGroup,
-					});
-
-					const synchronizedClassGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.CLASS,
-						users: [
-							new GroupUserEmbeddable({
-								user,
-								role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
-							}),
-						],
-						organization: school,
-					});
-					const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
-						syncedWithGroup: synchronizedClassGroup,
-					});
-
-					const otherGroup = groupEntityFactory.buildWithId();
-
-					const scope = new GroupAggregateScope()
-						.byUserPermission(user.id, school.id, GroupVisibilityPermission.OWN_GROUPS)
-						.byAvailableForSync(true);
-
-					await em.persistAndFlush([
-						availableCourseGroup,
-						synchronizedCourseGroup,
-						courseSynchronizedWithCourseGroup,
-						synchronizedClassGroup,
-						courseSynchronizedWithClassGroup,
-						otherGroup,
-					]);
-					em.clear();
-
-					return {
-						scope,
-						availableCourseGroup,
-						synchronizedClassGroup,
-					};
-				};
-
-				it('should return the groups that are available and contain the user', async () => {
-					const { availableCourseGroup, synchronizedClassGroup, scope } = await setup();
-
-					const result: Page<Group> = await repo.findGroupsForScope(scope);
-
-					expect(result.total).toEqual(2);
-					expect(result.data).toHaveLength(2);
-					expect(result.data[0].id).toEqual(availableCourseGroup.id);
-					expect(result.data[1].id).toEqual(synchronizedClassGroup.id);
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
+				const availableCourseGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.COURSE,
+					users: [
+						new GroupUserEmbeddable({
+							user,
+							role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
+						}),
+					],
+					organization: school,
 				});
-			});
-
-			describe('when the user has permission to view this own groups and all classes of the school', () => {
-				const setup = async () => {
-					const school = schoolEntityFactory.buildWithId();
-					const user = userFactory.buildWithId({ school });
-					const availableCourseGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.COURSE,
-						users: [
-							new GroupUserEmbeddable({
-								user,
-								role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
-							}),
-						],
-						organization: school,
-					});
-					const synchronizedCourseGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.COURSE,
-						users: [
-							new GroupUserEmbeddable({
-								user,
-								role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
-							}),
-						],
-						organization: school,
-					});
-					const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
-						syncedWithGroup: synchronizedCourseGroup,
-					});
-
-					const synchronizedClassGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.CLASS,
-						users: [],
-						organization: school,
-					});
-					const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
-						syncedWithGroup: synchronizedClassGroup,
-					});
-
-					const otherGroup = groupEntityFactory.buildWithId();
-
-					const scope = new GroupAggregateScope()
-						.byUserPermission(user.id, school.id, GroupVisibilityPermission.ALL_SCHOOL_CLASSES)
-						.byAvailableForSync(true);
-
-					await em.persistAndFlush([
-						availableCourseGroup,
-						synchronizedCourseGroup,
-						courseSynchronizedWithCourseGroup,
-						synchronizedClassGroup,
-						courseSynchronizedWithClassGroup,
-						otherGroup,
-					]);
-					em.clear();
-
-					return {
-						scope,
-						availableCourseGroup,
-						synchronizedClassGroup,
-					};
-				};
-
-				it('should return the groups that are available to the user', async () => {
-					const { availableCourseGroup, synchronizedClassGroup, scope } = await setup();
-
-					const result: Page<Group> = await repo.findGroupsForScope(scope);
-
-					expect(result.total).toEqual(2);
-					expect(result.data).toHaveLength(2);
-					expect(result.data[0].id).toEqual(availableCourseGroup.id);
-					expect(result.data[1].id).toEqual(synchronizedClassGroup.id);
+				const synchronizedCourseGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.COURSE,
+					users: [
+						new GroupUserEmbeddable({
+							user,
+							role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
+						}),
+					],
+					organization: school,
 				});
-			});
-
-			describe('when the user has permission to view this all groups of the school', () => {
-				const setup = async () => {
-					const school = schoolEntityFactory.buildWithId();
-					const user = userFactory.buildWithId({ school });
-					const availableCourseGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.COURSE,
-						users: [],
-						organization: school,
-					});
-					const synchronizedCourseGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.COURSE,
-						users: [],
-						organization: school,
-					});
-					const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
-						syncedWithGroup: synchronizedCourseGroup,
-					});
-
-					const synchronizedClassGroup = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.CLASS,
-						users: [],
-						organization: school,
-					});
-					const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
-						syncedWithGroup: synchronizedClassGroup,
-					});
-
-					const otherGroup = groupEntityFactory.buildWithId();
-
-					const scope = new GroupAggregateScope()
-						.byUserPermission(user.id, school.id, GroupVisibilityPermission.ALL_SCHOOL_GROUPS)
-						.byAvailableForSync(true);
-
-					await em.persistAndFlush([
-						availableCourseGroup,
-						synchronizedCourseGroup,
-						courseSynchronizedWithCourseGroup,
-						synchronizedClassGroup,
-						courseSynchronizedWithClassGroup,
-						otherGroup,
-					]);
-					em.clear();
-
-					return {
-						scope,
-						availableCourseGroup,
-						synchronizedClassGroup,
-					};
-				};
-
-				it('should return all groups of the school that are available', async () => {
-					const { availableCourseGroup, synchronizedClassGroup, scope } = await setup();
-
-					const result: Page<Group> = await repo.findGroupsForScope(scope);
-
-					expect(result.total).toEqual(2);
-					expect(result.data).toHaveLength(2);
-					expect(result.data[0].id).toEqual(availableCourseGroup.id);
-					expect(result.data[1].id).toEqual(synchronizedClassGroup.id);
+				const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
+					syncedWithGroup: synchronizedCourseGroup,
 				});
+
+				const synchronizedClassGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.CLASS,
+					users: [
+						new GroupUserEmbeddable({
+							user,
+							role: roleFactory.buildWithId({ name: RoleName.STUDENT }),
+						}),
+					],
+					organization: school,
+				});
+				const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
+					syncedWithGroup: synchronizedClassGroup,
+				});
+
+				const scope = new GroupAggregateScope().byAvailableForSync(true);
+
+				await em.persistAndFlush([
+					availableCourseGroup,
+					synchronizedCourseGroup,
+					courseSynchronizedWithCourseGroup,
+					synchronizedClassGroup,
+					courseSynchronizedWithClassGroup,
+				]);
+				em.clear();
+
+				return {
+					scope,
+					availableCourseGroup,
+					synchronizedClassGroup,
+				};
+			};
+
+			it('should return the groups that are available', async () => {
+				const { availableCourseGroup, synchronizedClassGroup, scope } = await setup();
+
+				const result: Page<Group> = await repo.findGroupsForScope(scope);
+
+				expect(result.total).toEqual(2);
+				expect(result.data).toHaveLength(2);
+				expect(result.data[0].id).toEqual(availableCourseGroup.id);
+				expect(result.data[1].id).toEqual(synchronizedClassGroup.id);
 			});
 		});
 
