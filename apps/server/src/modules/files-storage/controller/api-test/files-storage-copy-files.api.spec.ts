@@ -59,6 +59,31 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('copy files of parent', () => {
+		describe('with not authenticated user', () => {
+			const setup = () => {
+				const copyFilesParams = {
+					target: {
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: '123',
+						parentId: '123',
+						parentType: FileRecordParentType.Course,
+					},
+				};
+
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				return { apiClient, copyFilesParams };
+			};
+
+			it('should return status 401', async () => {
+				const { apiClient, copyFilesParams } = setup();
+
+				const result = await apiClient.post(`/copy/school/123/users/123`, copyFilesParams);
+
+				expect(result.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
@@ -217,6 +242,32 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('copy single file', () => {
+		describe('with not authenticated user', () => {
+			const setup = () => {
+				const copyFileParams = {
+					target: {
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: '123',
+						parentId: '123',
+						parentType: FileRecordParentType.Course,
+					},
+					fileNamePrefix: 'copy from',
+				};
+
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				return { copyFileParams, apiClient };
+			};
+
+			it('should return status 401', async () => {
+				const { apiClient, copyFileParams } = setup();
+
+				const response = await apiClient.post(`/copy/123`, copyFileParams);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			const setup = async () => {
 				await cleanupCollections(em);

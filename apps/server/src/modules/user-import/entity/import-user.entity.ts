@@ -16,6 +16,7 @@ export interface ImportUserProperties {
 	externalId: string;
 	// descriptive properties
 	firstName: string;
+	preferredName?: string;
 	lastName: string;
 	email: string; // TODO VO
 	roleNames?: ImportUserRoleName[];
@@ -43,6 +44,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;
 		this.firstName = props.firstName;
+		this.preferredName = props.preferredName;
 		this.lastName = props.lastName;
 		this.email = props.email;
 		if (Array.isArray(props.roleNames) && props.roleNames.length > 0) this.roleNames.push(...props.roleNames);
@@ -80,6 +82,9 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 
 	@Property()
 	firstName: string;
+
+	@Property({ nullable: true })
+	preferredName?: string;
 
 	@Property()
 	lastName: string;

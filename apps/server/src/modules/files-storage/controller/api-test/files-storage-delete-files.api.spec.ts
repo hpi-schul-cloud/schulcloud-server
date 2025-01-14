@@ -61,6 +61,16 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('delete files of parent', () => {
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				const result = await apiClient.delete(`/delete/school/123/users/123`);
+
+				expect(result.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
@@ -220,6 +230,16 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('delete single file', () => {
+		describe('with not authenticated user', () => {
+			it('should return status 401', async () => {
+				const apiClient = new TestApiClient(app, baseRouteName);
+
+				const response = await apiClient.delete(`/delete/123`);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
 		describe('with bad request data', () => {
 			const setup = async () => {
 				await cleanupCollections(em);

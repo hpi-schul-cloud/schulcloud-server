@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
-import { TaskListResponse } from '@modules/task/controller/dto/task.response';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -11,6 +10,7 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { TaskListResponse } from '../dto/task.response';
 
 describe('Task controller (API)', () => {
 	let app: INestApplication;

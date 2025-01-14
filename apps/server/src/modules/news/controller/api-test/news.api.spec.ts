@@ -13,8 +13,8 @@ import moment from 'moment';
 describe('News Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let newsApiclient: TestApiClient;
-	let teamsApicClient: TestApiClient;
+	let newsApiClient: TestApiClient;
+	let teamsApiClient: TestApiClient;
 
 	const courseTargetId = new ObjectId().toHexString();
 	const unpublishedCourseTargetId = new ObjectId().toHexString();
@@ -51,8 +51,8 @@ describe('News Controller (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 
-		newsApiclient = new TestApiClient(app, '/news');
-		teamsApicClient = new TestApiClient(app, '/team');
+		newsApiClient = new TestApiClient(app, '/news');
+		teamsApiClient = new TestApiClient(app, '/team');
 	});
 
 	beforeEach(async () => {
@@ -90,7 +90,7 @@ describe('News Controller (API)', () => {
 
 				await em.persistAndFlush([studentAccount, studentUser]);
 
-				const loggedInClient = await newsApiclient.login(studentAccount);
+				const loggedInClient = await newsApiClient.login(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -142,7 +142,7 @@ describe('News Controller (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			it('should return 401 status', async () => {
-				await newsApiclient.get().expect(401);
+				await newsApiClient.get().expect(401);
 			});
 		});
 	});
@@ -154,7 +154,7 @@ describe('News Controller (API)', () => {
 
 				await em.persistAndFlush([studentAccount, studentUser]);
 
-				const loggedInClient = await newsApiclient.login(studentAccount);
+				const loggedInClient = await newsApiClient.login(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -188,7 +188,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { news } = await setup();
 
-				await newsApiclient.get(`${news._id.toHexString()}`).expect(401);
+				await newsApiClient.get(`${news._id.toHexString()}`).expect(401);
 			});
 		});
 	});
@@ -201,7 +201,7 @@ describe('News Controller (API)', () => {
 
 				await em.persistAndFlush([studentAccount, studentUser]);
 
-				const loggedInClient = await teamsApicClient.login(studentAccount);
+				const loggedInClient = await teamsApiClient.login(studentAccount);
 
 				return { loggedInClient, news };
 			};
@@ -236,7 +236,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				await setup();
 
-				await teamsApicClient.get(`${teamTargetId}/news`).expect(401);
+				await teamsApiClient.get(`${teamTargetId}/news`).expect(401);
 			});
 		});
 	});
@@ -248,7 +248,7 @@ describe('News Controller (API)', () => {
 
 				await em.persistAndFlush([studentAccount, studentUser]);
 
-				const loggedInClient = await newsApiclient.login(studentAccount);
+				const loggedInClient = await newsApiClient.login(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -301,7 +301,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { params } = setup();
 
-				await newsApiclient.post().send(params).expect(401);
+				await newsApiClient.post().send(params).expect(401);
 			});
 		});
 	});
@@ -313,7 +313,7 @@ describe('News Controller (API)', () => {
 
 				await em.persistAndFlush([studentAccount, studentUser]);
 
-				const loggedInClient = await newsApiclient.login(studentAccount);
+				const loggedInClient = await newsApiClient.login(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -370,7 +370,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { params, news } = await setup();
 
-				await newsApiclient.patch(`${news._id.toHexString()}`).send(params).expect(401);
+				await newsApiClient.patch(`${news._id.toHexString()}`).send(params).expect(401);
 			});
 		});
 	});
@@ -382,7 +382,7 @@ describe('News Controller (API)', () => {
 
 				await em.persistAndFlush([studentAccount, studentUser]);
 
-				const loggedInClient = await newsApiclient.login(studentAccount);
+				const loggedInClient = await newsApiClient.login(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -418,7 +418,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { newsId } = await setup();
 
-				await newsApiclient.delete(`${newsId}`).expect(401);
+				await newsApiClient.delete(`${newsId}`).expect(401);
 			});
 		});
 	});

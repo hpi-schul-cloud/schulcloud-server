@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { CreateJwtPayload } from '@src/infra/auth-guard';
+import { CreateJwtPayload } from '@infra/auth-guard';
 import jwt, { Algorithm } from 'jsonwebtoken';
 
 const privateKey = Configuration.get('JWT_PRIVATE_KEY') as string;

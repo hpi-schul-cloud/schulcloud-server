@@ -25,14 +25,18 @@ export class ContextExternalToolRule implements Rule<ContextExternalToolEntity |
 		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;
+		const secondarySchools = user.secondarySchools ?? [];
+		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
+		const schoolIds = [user.school.id, ...secondarySchoolIds];
 		if (object instanceof ContextExternalToolEntity) {
 			hasPermission =
 				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
-				user.school.id === object.schoolTool.school.id;
+				schoolIds.includes(object.schoolTool.school.id);
 		} else {
 			hasPermission =
 				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
-				user.school.id === object.schoolToolRef.schoolId;
+				object.schoolToolRef.schoolId !== undefined &&
+				schoolIds.includes(object.schoolToolRef.schoolId);
 		}
 		return hasPermission;
 	}
