@@ -2,7 +2,6 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
 import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
@@ -98,10 +97,9 @@ export class SchoolController {
 	@JwtAuthentication()
 	public async getTeachers(
 		@Param() urlParams: SchoolUrlParams,
-		@CurrentUser() user: ICurrentUser,
-		@Query() pagination: PaginationParams
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolUserListResponse> {
-		const res = await this.schoolUc.getSchoolTeachers(urlParams.schoolId, user.userId, pagination);
+		const res = await this.schoolUc.getSchoolTeachers(urlParams.schoolId, user.userId);
 		return res;
 	}
 }
