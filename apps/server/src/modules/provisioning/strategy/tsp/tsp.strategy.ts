@@ -29,7 +29,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 
 	public override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const payload = await this.parseAndValidateToken(input);
-		const { externalUserDto, externalSchoolDto, externalClassDtoList } = this.extractDateFromPayload(payload);
+		const { externalUserDto, externalSchoolDto, externalClassDtoList } = this.extractDataFromPayload(payload);
 
 		const oauthDataDto = new OauthDataDto({
 			system: input.system,
@@ -93,7 +93,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		return payload;
 	}
 
-	private extractDateFromPayload(payload: TspJwtPayload): {
+	private extractDataFromPayload(payload: TspJwtPayload): {
 		externalUserDto: ExternalUserDto;
 		externalSchoolDto: ExternalSchoolDto;
 		externalClassDtoList: ExternalClassDto[];

@@ -38,7 +38,7 @@ export class TspOauthDataMapper {
 		const oauthDataDtos: OauthDataDto[] = [];
 
 		oauthDataDtos.push(
-			...this.mapTspTeacherToOauthDataDtos(tspTeachers, systemDto, externalSchools, externalClasses, teacherForClasses)
+			...this.mapTspTeachersToOauthDataDtos(tspTeachers, systemDto, externalSchools, externalClasses, teacherForClasses)
 		);
 		oauthDataDtos.push(...this.mapTspStudentsToOauthDataDtos(tspStudents, systemDto, externalSchools, externalClasses));
 
@@ -94,7 +94,7 @@ export class TspOauthDataMapper {
 		return { externalClasses, teacherForClasses };
 	}
 
-	private mapTspTeacherToOauthDataDtos(
+	private mapTspTeachersToOauthDataDtos(
 		tspTeachers: RobjExportLehrer[],
 		systemDto: ProvisioningSystemDto,
 		externalSchools: Map<string, ExternalSchoolDto>,
