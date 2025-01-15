@@ -45,7 +45,6 @@ jest.mock('jwks-rsa', () => () => {
 describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
 	let configService: ConfigService;
 
@@ -56,7 +55,6 @@ describe('UserLoginMigrationController (API)', () => {
 			imports: [ServerTestModule],
 		}).compile();
 
-		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
@@ -435,6 +433,8 @@ describe('UserLoginMigrationController (API)', () => {
 			targetUserId: string,
 			officialSchoolNumber: string
 		) => {
+			const axiosMock = new MockAdapter(axios);
+
 			axiosMock
 				.onPost(targetSystem.oauthConfig?.tokenEndpoint)
 				.replyOnce<OauthTokenResponse>(200, {
