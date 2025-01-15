@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { ApiValidationError } from '../models';
 // @ts-ignore
+import type { BoardResponse } from '../models';
+// @ts-ignore
 import type { CreateBoardBodyParams } from '../models';
 // @ts-ignore
 import type { CreateBoardResponse } from '../models';
@@ -73,6 +75,44 @@ export const BoardApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Get the skeleton of a a board.
+         * @param {string} boardId The id of the board.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boardControllerGetBoardSkeleton: async (boardId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'boardId' is not null or undefined
+            assertParamExists('boardControllerGetBoardSkeleton', 'boardId', boardId)
+            const localVarPath = `/boards/{boardId}`
+                .replace(`{${"boardId"}}`, encodeURIComponent(String(boardId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -96,6 +136,19 @@ export const BoardApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['BoardApi.boardControllerCreateBoard']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @summary Get the skeleton of a a board.
+         * @param {string} boardId The id of the board.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boardControllerGetBoardSkeleton(boardId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BoardResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boardControllerGetBoardSkeleton(boardId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoardApi.boardControllerGetBoardSkeleton']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -116,6 +169,16 @@ export const BoardApiFactory = function (configuration?: Configuration, basePath
         boardControllerCreateBoard(createBoardBodyParams: CreateBoardBodyParams, options?: any): AxiosPromise<CreateBoardResponse> {
             return localVarFp.boardControllerCreateBoard(createBoardBodyParams, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Get the skeleton of a a board.
+         * @param {string} boardId The id of the board.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boardControllerGetBoardSkeleton(boardId: string, options?: any): AxiosPromise<BoardResponse> {
+            return localVarFp.boardControllerGetBoardSkeleton(boardId, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -134,6 +197,16 @@ export interface BoardApiInterface {
      * @memberof BoardApiInterface
      */
     boardControllerCreateBoard(createBoardBodyParams: CreateBoardBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<CreateBoardResponse>;
+
+    /**
+     * 
+     * @summary Get the skeleton of a a board.
+     * @param {string} boardId The id of the board.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoardApiInterface
+     */
+    boardControllerGetBoardSkeleton(boardId: string, options?: RawAxiosRequestConfig): AxiosPromise<BoardResponse>;
 
 }
 
@@ -154,6 +227,18 @@ export class BoardApi extends BaseAPI implements BoardApiInterface {
      */
     public boardControllerCreateBoard(createBoardBodyParams: CreateBoardBodyParams, options?: RawAxiosRequestConfig) {
         return BoardApiFp(this.configuration).boardControllerCreateBoard(createBoardBodyParams, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get the skeleton of a a board.
+     * @param {string} boardId The id of the board.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoardApi
+     */
+    public boardControllerGetBoardSkeleton(boardId: string, options?: RawAxiosRequestConfig) {
+        return BoardApiFp(this.configuration).boardControllerGetBoardSkeleton(boardId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

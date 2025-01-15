@@ -35,10 +35,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:BoardController_createBoard"
+					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton"
 				},
 				"globalProperty": {
-					"models": "CreateBoardBodyParams:CreateBoardResponse",
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse",
 					"apis": "",
 					"supportingFiles": ""
 				},
