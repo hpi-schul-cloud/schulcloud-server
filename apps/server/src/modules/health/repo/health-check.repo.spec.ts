@@ -5,7 +5,6 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { HealthCheckEntity } from './entity';
 import { HealthCheckRepo } from './health-check.repo';
-import { afterEach } from 'node:test';
 
 describe(HealthCheckRepo.name, () => {
 	let module: TestingModule;

@@ -442,7 +442,7 @@ describe(MediaAvailableLineUc.name, () => {
 	describe('updateAvailableLineColor', () => {
 		describe('when changes the color of the available line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -473,7 +473,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -497,7 +497,7 @@ describe(MediaAvailableLineUc.name, () => {
 	describe('collapseAvailableLine', () => {
 		describe('when changing the visibility of the available line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -528,7 +528,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

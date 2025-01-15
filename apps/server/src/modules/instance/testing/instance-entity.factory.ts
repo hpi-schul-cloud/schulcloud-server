@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory, BaseFactory } from '@testing/factory/base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { InstanceEntity, InstanceEntityProps } from '../entity';
 
 export const instanceEntityFactory = BaseFactory.define<InstanceEntity, InstanceEntityProps>(InstanceEntity, () => {

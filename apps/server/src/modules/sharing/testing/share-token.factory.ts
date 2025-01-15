@@ -1,9 +1,9 @@
-import { ShareToken, ShareTokenProperties } from '@modules/sharing/entity/share-token.entity';
-import { ShareTokenContextType, ShareTokenParentType } from '@modules/sharing/domainobject/share-token.do';
-import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { nanoid } from 'nanoid';
+import { ShareTokenContextType, ShareTokenParentType } from '@modules/sharing/domainobject/share-token.do';
+import { ShareToken, ShareTokenProperties } from '@modules/sharing/entity/share-token.entity';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
+import { nanoid } from 'nanoid';
 
 class ShareTokenFactory extends BaseFactory<ShareToken, ShareTokenProperties> {
 	withParentTypeCourse(): this {

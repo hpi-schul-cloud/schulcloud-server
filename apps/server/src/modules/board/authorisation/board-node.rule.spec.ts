@@ -3,6 +3,9 @@ import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@mod
 import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { columnBoardFactory, drawingElementFactory, fileElementFactory, submissionItemFactory } from '../testing';
 import { BoardNodeRule } from './board-node.rule';
 

@@ -10,7 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, EntityId } from '@shared/domain/types';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { fileRecordFactory, fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';

@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
-import { courseFactory } from '@modules/learnroom/testing';
 import { RoomService } from '@modules/room';
 import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory } from '@testing/factory/course.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';

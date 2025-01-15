@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
-import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
+import { courseFactory } from '@testing/factory/course.factory';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';

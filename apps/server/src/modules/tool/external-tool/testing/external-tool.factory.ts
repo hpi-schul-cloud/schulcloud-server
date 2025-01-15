@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
+import { DoBaseFactory } from '@testing/factory/domainobject';
 import { DeepPartial } from 'fishery';
 import { CustomParameter } from '../../common/domain';
 import {

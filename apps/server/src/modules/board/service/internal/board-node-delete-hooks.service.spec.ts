@@ -5,6 +5,7 @@ import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
+import { setupEntities } from '@testing/setup-entities';
 import {
 	collaborativeTextEditorFactory,
 	drawingElementFactory,

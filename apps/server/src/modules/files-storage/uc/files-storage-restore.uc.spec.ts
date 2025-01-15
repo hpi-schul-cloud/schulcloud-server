@@ -9,6 +9,8 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';

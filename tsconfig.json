@@ -19,6 +19,7 @@
 		"incremental": true,
 		"paths": {
 			"@shared/*": ["apps/server/src/shared/*"],
+			"@src/*": ["apps/server/src/*"],
 			"@modules/*": ["apps/server/src/modules/*"],
 			"@infra/*": ["apps/server/src/infra/*"],
 			"@testing/*": ["apps/server/src/testing/*"],

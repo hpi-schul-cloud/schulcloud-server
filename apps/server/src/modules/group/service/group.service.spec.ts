@@ -19,7 +19,6 @@ import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
-import { describe } from 'node:test';
 
 describe('GroupService', () => {
 	let module: TestingModule;

@@ -16,7 +16,6 @@ import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { GroupRule } from './group.rule';
-import { describe } from 'node:test';
 
 describe('GroupRule', () => {
 	let module: TestingModule;

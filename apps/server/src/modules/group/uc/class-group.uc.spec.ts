@@ -30,6 +30,7 @@ import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { groupFactory } from '@testing/factory/domainobject';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';

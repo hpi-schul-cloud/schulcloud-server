@@ -17,17 +17,15 @@ import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
-import {
-	courseFactory,
-	lessonFactory,
-	schoolEntityFactory,
-	setupEntities,
-	shareTokenFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { RoomMembershipService } from '@src/modules/room-membership';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';

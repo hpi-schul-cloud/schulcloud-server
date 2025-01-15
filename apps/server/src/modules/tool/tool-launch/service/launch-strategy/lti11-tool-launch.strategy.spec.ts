@@ -8,8 +8,8 @@ import { InternalServerErrorException, UnprocessableEntityException } from '@nes
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import { userDoFactory } from '@shared/testing';
-import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { pseudonymFactory } from '@testing/factory/domainobject';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { Authorization } from 'oauth-1.0a';
 import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';

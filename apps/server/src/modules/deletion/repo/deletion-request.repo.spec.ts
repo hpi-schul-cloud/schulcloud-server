@@ -11,7 +11,6 @@ import { DeletionRequestRepo } from './deletion-request.repo';
 import { DeletionRequestEntity } from './entity';
 import { deletionRequestEntityFactory } from './entity/testing';
 import { DeletionRequestMapper } from './mapper';
-import { afterEach } from 'node:test';
 
 describe(DeletionRequestRepo.name, () => {
 	let module: TestingModule;

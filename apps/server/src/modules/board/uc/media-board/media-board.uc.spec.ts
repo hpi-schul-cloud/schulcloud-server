@@ -3,6 +3,7 @@ import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modu
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { BoardLayout, MediaBoardNodeFactory } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
@@ -74,7 +75,7 @@ describe(MediaBoardUc.name, () => {
 	describe('getMediaBoardForUser', () => {
 		describe('when the user has no media board', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -111,7 +112,7 @@ describe(MediaBoardUc.name, () => {
 
 		describe('when the user has a media board', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -147,7 +148,7 @@ describe(MediaBoardUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
 
@@ -167,7 +168,7 @@ describe(MediaBoardUc.name, () => {
 	describe('createLine', () => {
 		describe('when the user creates a new media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
@@ -202,7 +203,7 @@ describe(MediaBoardUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -224,7 +225,7 @@ describe(MediaBoardUc.name, () => {
 	describe('setLayout', () => {
 		describe('when the user changes the layout of the media board', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build({
 					layout: BoardLayout.LIST,
 				});
@@ -257,7 +258,7 @@ describe(MediaBoardUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

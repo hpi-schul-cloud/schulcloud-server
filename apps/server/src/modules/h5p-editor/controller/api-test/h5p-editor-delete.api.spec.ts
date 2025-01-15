@@ -11,11 +11,7 @@ import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
-import {
-	H5P_CONTENT_S3_CONNECTION,
-	H5P_CONTENT_S3_CONNECTION,
-	H5P_LIBRARIES_S3_CONNECTION,
-} from '../../h5p-editor.config';
+import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;

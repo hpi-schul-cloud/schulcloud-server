@@ -22,7 +22,6 @@ import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordParentType } from '../../interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
-import { describe } from 'node:test';
 
 const baseRouteName = '/file';
 

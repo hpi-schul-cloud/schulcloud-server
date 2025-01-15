@@ -6,7 +6,7 @@ import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { fileRecordFactory, fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, ScanStatus } from '../entity';

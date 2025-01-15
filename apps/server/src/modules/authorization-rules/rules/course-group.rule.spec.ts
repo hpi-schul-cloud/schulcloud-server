@@ -1,8 +1,8 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';

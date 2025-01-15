@@ -6,6 +6,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
+import { courseFactory } from '@testing/factory/course.factory';
 import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -75,7 +76,7 @@ describe('Group (API)', () => {
 						},
 					],
 				});
-				const course: CourseEntity = courseEntityFactory.buildWithId({ syncedWithGroup: group });
+				const course: CourseEntity = courseFactory.buildWithId({ syncedWithGroup: group });
 
 				await em.persistAndFlush([
 					school,
@@ -302,7 +303,7 @@ describe('Group (API)', () => {
 					type: GroupEntityTypes.COURSE,
 				});
 
-				const syncedCourse: CourseEntity = courseEntityFactory.build({
+				const syncedCourse: CourseEntity = courseFactory.build({
 					school,
 					syncedWithGroup: groupInSchool,
 				});
@@ -479,7 +480,7 @@ describe('Group (API)', () => {
 					type: GroupEntityTypes.COURSE,
 				});
 
-				const syncedCourse: CourseEntity = courseEntityFactory.build({
+				const syncedCourse: CourseEntity = courseFactory.build({
 					school,
 					syncedWithGroup: teachersGroup,
 				});

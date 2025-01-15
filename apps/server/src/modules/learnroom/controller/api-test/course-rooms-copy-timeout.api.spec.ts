@@ -5,6 +5,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -14,7 +15,6 @@ const configBefore = Configuration.toObject({ plainSecrets: true });
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
-import { courseFactory } from '@modules/learnroom/testing';
 import { ServerTestModule } from '@modules/server';
 
 // This needs to be in a separate test file because of the above configuration.
