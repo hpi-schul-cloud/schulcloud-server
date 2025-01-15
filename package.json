@@ -216,7 +216,7 @@
 		"mongoose-id-validator": "^0.6.0",
 		"mongoose-lean-virtuals": "^0.8.1",
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
-		"nanoid": "^3.3.4",
+		"nanoid": "^5.0.9",
 		"nest-winston": "^1.9.7",
 		"nestjs-console": "^9.0.0",
 		"oauth-1.0a": "^2.2.6",
