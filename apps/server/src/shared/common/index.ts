@@ -1,3 +1,4 @@
+export { createConfigModuleOptions } from './config-module-options';
 export { RequestTimeout } from './decorators';
 export { defaultMikroOrmOptions } from './defaultMikroOrmOptions';
 export * from './error';

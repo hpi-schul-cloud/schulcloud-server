@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@infra/console';
 import { DatabaseManagementUc } from '@modules/management/uc/database-management.uc';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AbstractBootstrapConsole, BootstrapConsole } from 'nestjs-console';
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {
@@ -19,6 +19,6 @@ export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule
 
 export const execute = async (bootstrap: BootstrapConsole, args: string[]): Promise<void> => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const commandResponse = await bootstrap.boot([process.argv0, 'console', ...args]);
+	await bootstrap.boot([process.argv0, 'console', ...args]);
 	return Promise.resolve();
 };

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { HealthApiModule, HealthEntities } from '@src/modules/health';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
+import { HealthApiModule, HealthEntities } from '@modules/health';
 import { serverConfig } from '@modules/server';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@shared/common';
 
 /**
  * Internal server module used for testing.

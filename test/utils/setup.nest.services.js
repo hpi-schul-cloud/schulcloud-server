@@ -8,13 +8,13 @@ const { ConfigModule } = require('@nestjs/config');
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
-const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/config/database.config');
+const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/imports-from-feathers');
 const { ALL_ENTITIES } = require('../../dist/apps/server/shared/domain/entity/all-entities');
 const { TeamService } = require('../../dist/apps/server/modules/teams/service/team.service');
 const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
-const { createConfigModuleOptions } = require('../../dist/apps/server/config/config-module-options');
+const { createConfigModuleOptions } = require('../../dist/apps/server/shared/common/config-module-options');
 const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
 
 const setupNestServices = async (app) => {

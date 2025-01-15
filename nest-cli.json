@@ -39,7 +39,7 @@
 		"console": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "console/console",
+			"entryFile": "apps/server-console.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
