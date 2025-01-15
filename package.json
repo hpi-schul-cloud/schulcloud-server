@@ -265,7 +265,7 @@
 		"@aws-sdk/client-s3": "^3.726.1",
 		"@faker-js/faker": "^8.0.2",
 		"@feathersjs/adapter-tests": "^5.0.31",
-		"@golevelup/ts-jest": "^0.6.1",
+		"@golevelup/ts-jest": "0.5.0",
 		"@jest-mock/express": "^1.4.5",
 		"@nestjs/cli": "^10.4.9",
 		"@nestjs/schematics": "^10.2.3",
