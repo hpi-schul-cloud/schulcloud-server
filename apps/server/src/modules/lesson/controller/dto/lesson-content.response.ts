@@ -10,6 +10,7 @@ import {
 	ComponentTextProperties,
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
+import { LessonResources } from './lesson-resources.model';
 
 // eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
@@ -54,13 +55,7 @@ class ComponentInternalPropsImpl implements ComponentInternalProperties {
 
 class ComponentLernstorePropsImpl implements ComponentLernstoreProperties {
 	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component' })
-	resources!: {
-		client: string;
-		description: string;
-		merlinReference?: string;
-		title: string;
-		url: string;
-	}[];
+	resources!: LessonResources[];
 }
 @ApiExtraModels(
 	ComponentTextPropsImpl,
