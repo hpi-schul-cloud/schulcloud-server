@@ -60,9 +60,9 @@ export class BoardController {
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
+		const { board, features } = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
-		const response = BoardResponseMapper.mapToResponse(board);
+		const response = BoardResponseMapper.mapToResponse(board, features);
 
 		return response;
 	}

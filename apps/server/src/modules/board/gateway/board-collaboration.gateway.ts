@@ -216,8 +216,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const board = await this.boardUc.findBoard(userId, data.boardId);
-			const responsePayload = BoardResponseMapper.mapToResponse(board);
+			const { board, features } = await this.boardUc.findBoard(userId, data.boardId);
+			const responsePayload = BoardResponseMapper.mapToResponse(board, features);
 			await emitter.joinRoom(board);
 			emitter.emitSuccess(responsePayload);
 		} catch (err) {

@@ -10,6 +10,7 @@ import { MetricsService } from './metrics/metrics.service';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 import { RoomModule } from '../room';
+import { BoardContextApiHelperModule } from '../board-context';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { RoomModule } from '../room';
 		UserModule,
 		RoomMembershipModule,
 		RoomModule,
+		BoardContextApiHelperModule,
 	],
 	providers: [
 		BoardCollaborationGateway,

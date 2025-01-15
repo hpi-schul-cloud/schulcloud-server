@@ -14,9 +14,17 @@ import {
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 import { RoomModule } from '../room';
+import { BoardContextApiHelperModule } from '../board-context';
 
 @Module({
-	imports: [BoardModule, LoggerModule, RoomMembershipModule, RoomModule, forwardRef(() => AuthorizationModule)],
+	imports: [
+		BoardModule,
+		LoggerModule,
+		RoomMembershipModule,
+		RoomModule,
+		forwardRef(() => AuthorizationModule),
+		BoardContextApiHelperModule,
+	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
 	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CourseRepo],
 })

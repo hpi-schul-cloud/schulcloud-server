@@ -2,7 +2,9 @@ import { UserService } from '@modules/user';
 import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
@@ -14,10 +16,11 @@ export class VideoConferenceInfoUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
-	async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceInfo> {
+	public async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceInfo> {
 		/* need to be replace with
 		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
@@ -26,7 +29,12 @@ export class VideoConferenceInfoUc {
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 
-		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
+		const schoolId =
+			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
+				: user.schoolId;
+
+		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
 
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
