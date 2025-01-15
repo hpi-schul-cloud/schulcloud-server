@@ -56,7 +56,7 @@ export class CommonCartridgeImportService {
 				id: course.id,
 			},
 			layout: BoardLayout.COLUMNS,
-			title: boardProps.title || '',
+			title: boardProps.title === '' ? 'Importiertes Spaltenboard' : boardProps.title,
 		});
 		await this.boardNodeService.addRoot(columnBoard);
 
