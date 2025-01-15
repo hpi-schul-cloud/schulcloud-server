@@ -1,11 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { Course } from '@shared/domain/entity';
 import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeType } from '@modules/board/domain';
 import { BoardNodeEntity } from '@modules/board/repo';
@@ -15,19 +9,23 @@ import {
 	columnEntityFactory,
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
+import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
-import {
-	cleanupCollections,
-	courseFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { shareTokenFactory } from '../../testing/share-token.factory';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Course } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType } from '../../domainobject/share-token.do';
+import { shareTokenFactory } from '../../testing/share-token.factory';
 import { ShareTokenImportBodyParams } from '../dto';
 
 describe(`Share Token Import (API)`, () => {

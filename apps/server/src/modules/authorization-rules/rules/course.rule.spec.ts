@@ -3,7 +3,10 @@ import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory as courseEntityFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseRule } from './course.rule';
 
 describe('CourseRule', () => {

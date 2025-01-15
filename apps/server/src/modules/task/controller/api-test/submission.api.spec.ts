@@ -7,15 +7,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Submission } from '@shared/domain/entity';
-import {
-	cleanupCollections,
-	courseFactory,
-	courseGroupFactory,
-	submissionFactory,
-	taskFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 describe('Submission Controller (API)', () => {
 	describe('find statuses by task', () => {

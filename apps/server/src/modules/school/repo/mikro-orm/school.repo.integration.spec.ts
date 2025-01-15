@@ -5,15 +5,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	federalStateFactory as federalStateEntityFactory,
-	schoolEntityFactory,
-	schoolYearFactory as schoolYearEntityFactory,
-	systemEntityFactory,
-} from '@shared/testing';
-import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
+import { federalStateFactory as federalStateEntityFactory } from '@testing/factory/federal-state.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { FileStorageType, SCHOOL_REPO } from '../../domain';
 import { federalStateFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';

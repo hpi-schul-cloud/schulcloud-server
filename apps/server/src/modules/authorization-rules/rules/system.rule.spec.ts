@@ -10,7 +10,10 @@ import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { schoolEntityFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { SystemRule } from './system.rule';
 
 describe(SystemRule.name, () => {
