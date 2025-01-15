@@ -7,6 +7,7 @@ import { CourseRepo } from '@shared/repo/course';
 import { setupEntities, userFactory } from '@shared/testing';
 import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { RoomService } from '@src/modules/room';
 import { RoomMembershipService } from '@src/modules/room-membership';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
@@ -24,6 +25,7 @@ describe(BoardUc.name, () => {
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
+	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -62,6 +64,10 @@ describe(BoardUc.name, () => {
 					useValue: createMock<RoomMembershipService>(),
 				},
 				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
+				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -75,6 +81,7 @@ describe(BoardUc.name, () => {
 		columnBoardService = module.get(ColumnBoardService);
 		courseRepo = module.get(CourseRepo);
 		boardNodeFactory = module.get(BoardNodeFactory);
+		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 		await setupEntities();
 	});
 
@@ -233,13 +240,21 @@ describe(BoardUc.name, () => {
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
-		it('should return the column board object', async () => {
+		it('should call the board context api helper service to get features', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.findBoard(user.id, boardId);
+
+			expect(boardContextApiHelperService.getFeaturesForBoardNode).toHaveBeenCalledWith(boardId);
+		});
+
+		it('should return the column board object + features', async () => {
 			const { user, board } = globalSetup();
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await uc.findBoard(user.id, board.id);
 
-			expect(result).toEqual(board);
+			expect(result).toEqual({ board, features: [] });
 		});
 	});
 
