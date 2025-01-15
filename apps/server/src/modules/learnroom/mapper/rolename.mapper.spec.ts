@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { UserAndAccountTestFactory, courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@src/testing/factory/course.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { RoleNameMapper } from './rolename.mapper';
 
 describe('rolename mapper', () => {

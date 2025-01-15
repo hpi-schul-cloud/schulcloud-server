@@ -6,7 +6,10 @@ import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo';
-import { courseFactory, currentUserFactory, setupEntities, UserAndAccountTestFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseService } from '../service';
 import { CourseUc } from './course.uc';
 

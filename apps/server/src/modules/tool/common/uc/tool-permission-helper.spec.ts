@@ -7,13 +7,15 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
-import { BoardNodeAuthorizableService, BoardNodeAuthorizable, BoardNodeService } from '@modules/board';
+import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 
 import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';

@@ -6,7 +6,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { JwtTestFactory, userDoFactory } from '@shared/testing';
+import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { OauthCurrentUser } from '../interface';
 import {
 	AccountNotFoundLoggableException,
