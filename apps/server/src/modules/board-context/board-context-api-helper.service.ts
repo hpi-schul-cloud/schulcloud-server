@@ -1,7 +1,7 @@
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CourseFeatures } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
@@ -81,7 +81,7 @@ export class BoardContextApiHelperService {
 		}
 
 		/* istanbul ignore next */
-		throw new Error(`Unsupported board reference type ${context.type as string}`);
+		throw new BadRequestException(`Unsupported board reference type ${context.type as string}`);
 	}
 
 	private isVideoConferenceEnabledForCourse(courseFeatures?: CourseFeatures[]): boolean {
