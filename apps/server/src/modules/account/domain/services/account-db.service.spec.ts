@@ -405,17 +405,12 @@ describe('AccountDbService', () => {
 			};
 
 			it('should update account', async () => {
-				const { mockStudentUser, mockTeacherAccount } = setup();
+				const { mockTeacherAccount } = setup();
 
 				const ret = await accountService.save(mockTeacherAccount);
+
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject({
-					id: mockTeacherAccount.id,
-					username: mockTeacherAccount.username,
-					activated: mockTeacherAccount.activated,
-					systemId: mockTeacherAccount.systemId,
-					userId: new ObjectId(mockStudentUser.id),
-				});
+				expect(ret).toEqual(mockTeacherAccount);
 			});
 		});
 
