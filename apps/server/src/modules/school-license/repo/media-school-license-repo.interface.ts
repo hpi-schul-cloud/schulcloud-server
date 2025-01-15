@@ -5,6 +5,8 @@ export interface MediaSchoolLicenseRepo {
 	saveAll(domainObjects: MediaSchoolLicense[]): Promise<MediaSchoolLicense[]>;
 
 	deleteAllByMediaSource(mediaSourceId: EntityId): Promise<number>;
+
+	findMediaSchoolLicensesBySchoolId(schoolId: string): Promise<MediaSchoolLicense[]>;
 }
 
 export const MEDIA_SCHOOL_LICENSE_REPO = 'MEDIA_SCHOOL_LICENSE_REPO';

@@ -1,3 +1,4 @@
+import { ExternalToolMedium } from '@modules/tool/external-tool/domain/';
 import { Inject } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { MediaSchoolLicense } from '../domain';
@@ -16,5 +17,23 @@ export class MediaSchoolLicenseService {
 		const mediaSchoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseRepo.saveAll(licenses);
 
 		return mediaSchoolLicenses;
+	}
+
+	public async findMediaSchoolLicensesBySchoolId(schoolId: string): Promise<MediaSchoolLicense[]> {
+		const mediaSchoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseRepo.findMediaSchoolLicensesBySchoolId(schoolId);
+
+		return mediaSchoolLicenses;
+	}
+
+	public hasLicenseForExternalTool(
+		externalToolMedium: ExternalToolMedium,
+		mediaSchoolLicense: MediaSchoolLicense[]
+	): boolean {
+		return mediaSchoolLicense.some(
+			(license: MediaSchoolLicense) =>
+				license.mediumId === externalToolMedium.mediumId &&
+				license.mediaSource?.sourceId === externalToolMedium.mediaSourceId
+		);
 	}
 }
