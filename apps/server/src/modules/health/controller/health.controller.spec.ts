@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus } from '@nestjs/common';
-import { Response } from 'express';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { HttpStatus } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Response } from 'express';
 
 import { HealthUC } from '@src/modules/health/uc';
-import { setupEntities } from '@shared/testing';
-import { HealthController } from './health.controller';
+import { setupEntities } from '@testing/setup-entities';
 import { HealthStatus, HealthStatuses } from '../domain';
+import { HealthController } from './health.controller';
 
 describe(HealthController.name, () => {
 	const contentTypeApplicationHealthJSON = 'application/health+json';

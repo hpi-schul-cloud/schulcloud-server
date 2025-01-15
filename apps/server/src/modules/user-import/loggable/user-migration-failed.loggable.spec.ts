@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
-import { importUserFactory, setupEntities } from '@shared/testing';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { UserMigrationFailedLoggable } from './user-migration-failed.loggable';
 
 describe(UserMigrationFailedLoggable.name, () => {

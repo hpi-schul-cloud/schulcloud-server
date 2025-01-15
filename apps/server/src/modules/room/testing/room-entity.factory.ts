@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityFactory } from '@shared/testing/factory/entity.factory';
-import { RoomEntity } from '../repo/entity/room.entity';
+import { EntityFactory } from '@testing/factory/entity.factory';
 import { RoomProps } from '../domain';
 import { RoomColor } from '../domain/type';
+import { RoomEntity } from '../repo/entity/room.entity';
 
 export const roomEntityFactory = EntityFactory.define<RoomEntity, RoomProps>(RoomEntity, ({ sequence }) => {
 	return {

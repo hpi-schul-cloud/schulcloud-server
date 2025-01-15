@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
-import { accountDoFactory } from '@src/modules/account/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';

@@ -3,7 +3,9 @@ import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@mod
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, schoolEntityFactory, setupEntities } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';
 import { roomFactory } from '../room/testing';
 import { BoardContextApiHelperService } from './board-context-api-helper.service';

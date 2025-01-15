@@ -1,7 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { RuleManager } from '.';
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationInjectionService } from './authorization-injection.service';

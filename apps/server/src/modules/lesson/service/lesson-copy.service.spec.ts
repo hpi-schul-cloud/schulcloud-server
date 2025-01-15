@@ -18,14 +18,12 @@ import {
 	Material,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import {
-	courseFactory,
-	lessonFactory,
-	materialFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { materialFactory } from '@testing/factory/material.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { LessonRepo } from '../repository';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
