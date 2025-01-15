@@ -27,7 +27,7 @@ export class CommonCartridgeImportService {
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
-	counter = 0;
+	public counter = 0;
 
 	public async importFile(user: User, file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);

@@ -11,14 +11,17 @@ import { InputFormat } from '@shared/domain/types';
 
 @Injectable()
 export class CommonCartridgeImportMapper {
-	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps, withTitle = true) {
+	public mapOrganizationToColumn(
+		organization: CommonCartridgeOrganizationProps,
+		withTitle = true
+	): { title: string; height: number } {
 		return {
 			title: withTitle ? organization.title : '',
 			height: 150,
 		};
 	}
 
-	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps) {
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps): { title: string } {
 		return {
 			title: organization.title,
 		};
