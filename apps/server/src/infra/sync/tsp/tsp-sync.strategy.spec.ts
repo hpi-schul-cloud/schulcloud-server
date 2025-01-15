@@ -13,8 +13,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { Account } from '@src/modules/account';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@src/modules/provisioning';
+import { robjExportSchuleFactory } from '@infra/tsp-client/testing';
+import { Account } from '@modules/account';
+import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
+import {
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '@modules/provisioning/testing';
 import { School } from '@src/modules/school';
 import { schoolFactory } from '@src/modules/school/testing';
 import { System } from '@src/modules/system';
@@ -23,10 +29,10 @@ import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncService } from './tsp-sync.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
-import { TspSyncMigrationService } from './tsp-sync-migration.service';
 
 describe(TspSyncStrategy.name, () => {
 	let module: TestingModule;
@@ -161,12 +167,12 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
-				const oauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
+				const oauthDataDto = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build({
 						systemId: faker.string.alpha(),
 						provisioningStrategy: SystemProvisioningStrategy.TSP,
 					}),
-					externalUser: new ExternalUserDto({
+					externalUser: externalUserDtoFactory.build({
 						externalId: faker.string.alpha(),
 						roles: [],
 					}),
@@ -278,10 +284,7 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does not exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
@@ -301,10 +304,7 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 				const school = schoolFactory.build();
 
@@ -326,10 +326,8 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when tsp school does not have a schulnummer', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: undefined,
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
+				tspSchool.schuleNummer = undefined;
 				const tspSchools = [tspSchool];
 
 				setupMockServices({

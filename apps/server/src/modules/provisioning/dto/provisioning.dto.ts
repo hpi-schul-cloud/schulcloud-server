@@ -1,5 +1,5 @@
 export class ProvisioningDto {
-	externalUserId: string;
+	public externalUserId: string;
 
 	constructor(provisioningDto: ProvisioningDto) {
 		this.externalUserId = provisioningDto.externalUserId;

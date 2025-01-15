@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { System, SystemService } from '@modules/system';
-import { systemFactory } from '@modules/system/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { provisioningDtoFactory, oauthDataDtoFactory } from '@modules/provisioning/testing';
+import { provisioningSystemDtoFactory } from '@modules/provisioning/testing/provisioning-system-dto.factory';
+import { systemFactory } from '@modules/system/testing';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
 import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
-import { externalUserDtoFactory } from '../testing';
 import { ProvisioningService } from './provisioning.service';
 
 describe('ProvisioningService', () => {
@@ -78,18 +79,16 @@ describe('ProvisioningService', () => {
 			provisioningUrl: 'https://api.moin.schule/',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
-		const provisioningSystemDto: ProvisioningSystemDto = new ProvisioningSystemDto({
+		const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 			systemId: system.id,
 			provisioningUrl: 'https://api.moin.schule/',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
-		const externalUser = externalUserDtoFactory.build();
-		const oauthDataDto: OauthDataDto = new OauthDataDto({
+		const oauthDataDto: OauthDataDto = oauthDataDtoFactory.build({
 			system: provisioningSystemDto,
-			externalUser,
 		});
-		const provisioningDto: ProvisioningDto = new ProvisioningDto({
-			externalUserId: externalUser.externalId,
+		const provisioningDto: ProvisioningDto = provisioningDtoFactory.build({
+			externalUserId: 'externalUserId',
 		});
 
 		return {
