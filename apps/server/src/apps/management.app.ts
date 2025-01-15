@@ -8,8 +8,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ManagementServerModule } from '@modules/management/management-server.app.module';
 import { LegacyLogger } from '@src/core/logger';
 import { install as sourceMapInstall } from 'source-map-support';
-import { enableOpenApiDocs } from './helpers';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap(): Promise<void> {

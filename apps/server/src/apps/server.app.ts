@@ -27,9 +27,9 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	AppStartLoggable,
 	createAndStartPrometheusMetricsAppIfEnabled,
+	createRequestLoggerMiddleware,
 	enableOpenApiDocs,
 } from './helpers';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
