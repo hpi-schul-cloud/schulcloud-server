@@ -60,9 +60,9 @@ export class BoardContextApiHelperService {
 			const course = await this.courseService.findById(context.id);
 
 			if (
-				this.isVideoConferenceEnabledForCourse(course.features) ||
-				(await this.isVideoConferenceEnabledForSchool(course.school.id)) ||
-				this.isVideoConferenceEnabledForConfig()
+				this.isVideoConferenceEnabledForConfig() &&
+				(await this.isVideoConferenceEnabledForSchool(course.school.id)) &&
+				this.isVideoConferenceEnabledForCourse(course.features)
 			) {
 				features.push(BoardFeature.VIDEOCONFERENCE);
 			}
@@ -73,7 +73,7 @@ export class BoardContextApiHelperService {
 		if (context.type === BoardExternalReferenceType.Room) {
 			const room = await this.roomService.getSingleRoom(context.id);
 
-			if ((await this.isVideoConferenceEnabledForSchool(room.schoolId)) || this.isVideoConferenceEnabledForConfig()) {
+			if (this.isVideoConferenceEnabledForConfig() && (await this.isVideoConferenceEnabledForSchool(room.schoolId))) {
 				features.push(BoardFeature.VIDEOCONFERENCE);
 			}
 

@@ -121,55 +121,57 @@ describe('BoardContextApiHelperService', () => {
 			};
 
 			describe('when video conference is enabled for course', () => {
-				it('should return video conference feature', async () => {
-					const { boardNode, course } = setup();
+				describe('and video conference is enabled for school and config', () => {
+					it('should return video conference feature', async () => {
+						const { boardNode, course } = setup();
 
-					course.features = [CourseFeatures.VIDEOCONFERENCE];
-					legacySchoolService.hasFeature.mockResolvedValueOnce(false);
-					configService.get.mockReturnValueOnce(false);
+						course.features = [CourseFeatures.VIDEOCONFERENCE];
+						legacySchoolService.hasFeature.mockResolvedValueOnce(true);
+						configService.get.mockReturnValueOnce(true);
 
-					const result = await service.getFeaturesForBoardNode(boardNode.id);
+						const result = await service.getFeaturesForBoardNode(boardNode.id);
 
-					expect(result).toEqual([BoardFeature.VIDEOCONFERENCE]);
+						expect(result).toEqual([BoardFeature.VIDEOCONFERENCE]);
+					});
+				});
+
+				describe('and video conference is disabled for school', () => {
+					it('should not return feature', async () => {
+						const { boardNode, course } = setup();
+
+						course.features = [CourseFeatures.VIDEOCONFERENCE];
+						legacySchoolService.hasFeature.mockResolvedValueOnce(false);
+						configService.get.mockReturnValueOnce(true);
+
+						const result = await service.getFeaturesForBoardNode(boardNode.id);
+
+						expect(result).toEqual([]);
+					});
+				});
+
+				describe('and video conference is disabled for config', () => {
+					it('should not return feature', async () => {
+						const { boardNode, course } = setup();
+
+						course.features = [CourseFeatures.VIDEOCONFERENCE];
+						legacySchoolService.hasFeature.mockResolvedValueOnce(true);
+						configService.get.mockReturnValueOnce(false);
+
+						const result = await service.getFeaturesForBoardNode(boardNode.id);
+
+						expect(result).toEqual([]);
+					});
 				});
 			});
 
-			describe('when video conference is enabled for school', () => {
-				it('should return video conference feature', async () => {
-					const { boardNode, course } = setup();
-
-					course.features = [];
-					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					configService.get.mockReturnValueOnce(false);
-
-					const result = await service.getFeaturesForBoardNode(boardNode.id);
-
-					expect(result).toEqual([BoardFeature.VIDEOCONFERENCE]);
-				});
-			});
-
-			describe('when video conference is enabled for config', () => {
-				it('should return video conference feature', async () => {
-					const { boardNode, course } = setup();
-
-					course.features = [];
-					legacySchoolService.hasFeature.mockResolvedValueOnce(false);
-					configService.get.mockReturnValueOnce(true);
-
-					const result = await service.getFeaturesForBoardNode(boardNode.id);
-
-					expect(result).toEqual([BoardFeature.VIDEOCONFERENCE]);
-				});
-			});
-
-			describe('when video conference is disabled entirely', () => {
+			describe('when video conference is disabled for course', () => {
 				it('should not return feature', async () => {
 					const { boardNode } = setup();
 
 					const course = courseFactory.build();
 					courseService.findById.mockResolvedValueOnce(course);
-					legacySchoolService.hasFeature.mockResolvedValueOnce(false);
-					configService.get.mockReturnValueOnce(false);
+					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
+					configService.get.mockReturnValueOnce(true);
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -194,12 +196,12 @@ describe('BoardContextApiHelperService', () => {
 				return { boardNode: column, room };
 			};
 
-			describe('when video conference is enabled for school', () => {
+			describe('when video conference is enabled for school and config', () => {
 				it('should return video conference feature', async () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					configService.get.mockReturnValueOnce(false);
+					configService.get.mockReturnValueOnce(true);
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -207,8 +209,8 @@ describe('BoardContextApiHelperService', () => {
 				});
 			});
 
-			describe('when video conference is enabled for config', () => {
-				it('should return video conference feature', async () => {
+			describe('when video conference is disabled for school', () => {
+				it('should not return feature', async () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(false);
@@ -216,7 +218,20 @@ describe('BoardContextApiHelperService', () => {
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
-					expect(result).toEqual([BoardFeature.VIDEOCONFERENCE]);
+					expect(result).toEqual([]);
+				});
+			});
+
+			describe('when video conference is disabled for config', () => {
+				it('should not return feature', async () => {
+					const { boardNode } = setup();
+
+					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
+					configService.get.mockReturnValueOnce(false);
+
+					const result = await service.getFeaturesForBoardNode(boardNode.id);
+
+					expect(result).toEqual([]);
 				});
 			});
 
