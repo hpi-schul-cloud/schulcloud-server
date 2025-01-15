@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { MediaLine, MediaLineProps, ROOT_PATH } from '../domain';
 import { MediaBoardColors } from '../domain/media-board/types';
 

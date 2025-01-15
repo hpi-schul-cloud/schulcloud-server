@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { DeletionRequestRepo } from '../../repo';
 import { deletionRequestFactory, deletionTestConfig } from '../testing';

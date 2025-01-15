@@ -6,7 +6,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ManagementServerTestModule } from '@modules/management/management-server.module';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCollections } from '@shared/testing';
+import { createCollections } from '@testing/create-collections';
 import request from 'supertest';
 
 describe('Database Management Controller (API)', () => {

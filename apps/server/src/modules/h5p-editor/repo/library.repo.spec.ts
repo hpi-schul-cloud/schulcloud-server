@@ -1,11 +1,11 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 
 import { ILibraryMetadata } from '@lumieducation/h5p-server';
-import { LibraryRepo } from './library.repo';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { FileMetadata, InstalledLibrary } from '../entity';
+import { LibraryRepo } from './library.repo';
 
 describe('LibraryRepo', () => {
 	let module: TestingModule;
