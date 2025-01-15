@@ -1,4 +1,7 @@
-import { courseFactory, courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseGroupEntity', () => {

@@ -5,14 +5,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	cleanupCollections,
-	schoolEntityFactory,
-	schoolSystemOptionsEntityFactory,
-	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { schoolSystemOptionsEntityFactory } from '@testing/factory/school-system-options-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { SchoolSystemOptionsEntity } from '../../entity';
 import { ProvisioningOptionsInterface } from '../../interface';
 import { SchulConneXProvisioningOptionsResponse } from '../dto';

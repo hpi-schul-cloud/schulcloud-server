@@ -1,5 +1,5 @@
 import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '@modules/legacy-school/entity';
-import { SystemProvisioningStrategy } from '../../domain/interface/system-provisioning.strategy';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseFactory } from './base.factory';
 import { schoolEntityFactory } from './school-entity.factory';
 import { systemEntityFactory } from './systemEntityFactory';

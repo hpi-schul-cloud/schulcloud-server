@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { StorageLocation } from '@modules/files-storage/interface';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ToolConfig } from '@modules/tool/tool-config';
-import { copyContextExternalToolRejectDataFactory } from '@modules/tool/context-external-tool/testing';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import {
+	contextExternalToolFactory,
+	copyContextExternalToolRejectDataFactory,
+} from '@modules/tool/context-external-tool/testing';
+import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { CopyFileDto } from '@src/modules/files-storage-client/dto';
-import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
 
+import { setupEntities } from '@testing/setup-entities';
 import {
 	Card,
 	CollaborativeTextEditorElement,

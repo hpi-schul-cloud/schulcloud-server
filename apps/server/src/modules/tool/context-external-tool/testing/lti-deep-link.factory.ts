@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { CustomParameterEntry } from '../../common/domain';
 import { LtiDeepLink } from '../domain';
 

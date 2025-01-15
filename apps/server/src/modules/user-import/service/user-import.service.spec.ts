@@ -11,15 +11,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import {
-	importUserFactory,
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { ImportUserRepo } from '../repo';
@@ -247,7 +244,48 @@ describe(UserImportService.name, () => {
 				it('should return all users as auto matched', async () => {
 					const { user1, user2, importUser1, importUser2, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, false);
+
+					expect(result).toEqual([
+						{ ...importUser1, user: user1, matchedBy: MatchCreator.AUTO },
+						{ ...importUser2, user: user2, matchedBy: MatchCreator.AUTO },
+					]);
+				});
+			});
+
+			describe('when preferred names are used and all users have unique names', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
+					const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
+					const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						preferredName: user1.preferredName,
+						lastName: user1.lastName,
+					});
+					const importUser2: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user2.firstName,
+						lastName: user2.lastName,
+					});
+
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user2]);
+
+					return {
+						user1,
+						user2,
+						importUser1,
+						importUser2,
+						userLoginMigration,
+					};
+				};
+
+				it('should return users with preferred name matched by preferred name and users without matched by first name', async () => {
+					const { user1, user2, importUser1, importUser2, userLoginMigration } = setup();
+
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, true);
 
 					expect(result).toEqual([
 						{ ...importUser1, user: user1, matchedBy: MatchCreator.AUTO },
@@ -286,7 +324,7 @@ describe(UserImportService.name, () => {
 				it('should return the users without a match', async () => {
 					const { importUser1, importUser2, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, false);
 
 					expect(result).toEqual([importUser1, importUser2]);
 				});
@@ -318,7 +356,7 @@ describe(UserImportService.name, () => {
 				it('should return the users without a match', async () => {
 					const { importUser1, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1], userLoginMigration);
+					const result: ImportUser[] = await service.matchUsers([importUser1], userLoginMigration, false);
 
 					expect(result).toEqual([importUser1]);
 				});
@@ -354,7 +392,7 @@ describe(UserImportService.name, () => {
 				it('should return the users without a match', async () => {
 					const { importUser1, importUser2, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, false);
 
 					result.forEach((importUser) => expect(importUser.matchedBy).toBeUndefined());
 				});
@@ -387,7 +425,7 @@ describe(UserImportService.name, () => {
 				it('should return the user without a match', async () => {
 					const { importUser1, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1], userLoginMigration);
+					const result: ImportUser[] = await service.matchUsers([importUser1], userLoginMigration, false);
 
 					result.forEach((importUser) => expect(importUser.matchedBy).toBeUndefined());
 				});

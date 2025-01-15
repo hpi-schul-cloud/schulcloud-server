@@ -1,7 +1,7 @@
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@shared/testing';
+import { TestApiClient } from '@testing/test-api-client';
 import { ConfigResponse } from '../dto';
 
 describe('Server Controller (API)', () => {

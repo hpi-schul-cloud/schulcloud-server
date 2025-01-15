@@ -1,6 +1,6 @@
-import { BaseFactory } from '@shared/testing';
-import { MediaSourceAuthMethod } from '../enum';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { MediaSourceOauthConfigEmbeddable } from '../entity';
+import { MediaSourceAuthMethod } from '../enum';
 
 export const mediaSourceOAuthConfigEmbeddableFactory = BaseFactory.define<
 	MediaSourceOauthConfigEmbeddable,

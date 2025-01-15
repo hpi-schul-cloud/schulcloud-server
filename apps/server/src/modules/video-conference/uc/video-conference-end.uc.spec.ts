@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { userDoFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBService, VideoConferenceService } from '../service';

@@ -4,12 +4,13 @@ import { School, SchoolService } from '@modules/school';
 import { SystemService, SystemType } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { federalStateFactory, schoolYearFactory } from '@shared/testing';
 import { FederalStateService, SchoolYearService } from '@src/modules/legacy-school';
 import { FileStorageType, SchoolProps } from '@src/modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@src/modules/school/testing';
 import { systemFactory } from '@src/modules/system/testing';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
