@@ -1,5 +1,5 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { NotFoundError } from '@mikro-orm/core';
+import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -10,18 +10,24 @@ import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountRepo } from './account.repo';
 import { AccountEntityToDoMapper } from './mapper';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { Account } from '../../domain';
 
-describe('account repo', () => {
+class AccountTestRepo extends AccountRepo {
+	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
+		return super.mapDOToEntityProperties(entityDO);
+	}
+}
+describe('AccountRepo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
-	let repo: AccountRepo;
+	let repo: AccountTestRepo;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [AccountRepo],
+			providers: [AccountTestRepo],
 		}).compile();
-		repo = module.get(AccountRepo);
+		repo = module.get(AccountTestRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -35,6 +41,17 @@ describe('account repo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(AccountEntity);
+	});
+
+	describe('mapDOToEntityProperties', () => {
+		describe('When an account is given', () => {
+			it('should map the account to an entity', () => {
+				const account = accountDoFactory.build();
+				const entityProps: EntityData<AccountEntity> = repo.mapDOToEntityPropertiesSpec(account);
+
+				expect(entityProps).toEqual(expect.objectContaining(account.getProps()));
+			});
+		});
 	});
 
 	describe('save', () => {
