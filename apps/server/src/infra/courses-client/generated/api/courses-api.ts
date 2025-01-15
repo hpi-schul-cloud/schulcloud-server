@@ -25,6 +25,8 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 import type { CourseCommonCartridgeMetadataResponse } from '../models';
 // @ts-ignore
 import type { CreateCourseBodyParams } from '../models';
+// @ts-ignore
+import type { CreateCourseResponse } from '../models';
 /**
  * CoursesApi - axios parameter creator
  * @export
@@ -126,7 +128,7 @@ export const CoursesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async courseControllerCreateCourse(createCourseBodyParams: CreateCourseBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async courseControllerCreateCourse(createCourseBodyParams: CreateCourseBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateCourseResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.courseControllerCreateCourse(createCourseBodyParams, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CoursesApi.courseControllerCreateCourse']?.[localVarOperationServerIndex]?.url;
@@ -162,7 +164,7 @@ export const CoursesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        courseControllerCreateCourse(createCourseBodyParams: CreateCourseBodyParams, options?: any): AxiosPromise<void> {
+        courseControllerCreateCourse(createCourseBodyParams: CreateCourseBodyParams, options?: any): AxiosPromise<CreateCourseResponse> {
             return localVarFp.courseControllerCreateCourse(createCourseBodyParams, options).then((request) => request(axios, basePath));
         },
         /**
@@ -192,7 +194,7 @@ export interface CoursesApiInterface {
      * @throws {RequiredError}
      * @memberof CoursesApiInterface
      */
-    courseControllerCreateCourse(createCourseBodyParams: CreateCourseBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+    courseControllerCreateCourse(createCourseBodyParams: CreateCourseBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<CreateCourseResponse>;
 
     /**
      * 
