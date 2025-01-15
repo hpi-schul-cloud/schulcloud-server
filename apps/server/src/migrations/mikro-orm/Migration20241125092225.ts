@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20241125092225 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		// Add GUESTSTUDENT role
 		await this.getCollection('roles').insertOne({
 			name: 'guestStudent',
@@ -17,7 +17,7 @@ export class Migration20241125092225 extends Migration {
 		console.info('Added GUESTTEACHER role');
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		// Remove GUESTSTUDENT role
 		await this.getCollection('roles').deleteOne({ name: 'guestStudent' });
 		console.info('Rollback: Removed GUESTSTUDENT role');

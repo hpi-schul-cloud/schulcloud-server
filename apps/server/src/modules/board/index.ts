@@ -10,6 +10,7 @@ export {
 	BoardNode,
 	BoardNodeAuthorizable,
 	BoardNodeFactory,
+	BoardNodeType,
 	// @modules/authorization/domain/rules/board-node.rule.ts
 	BoardRoles,
 	Card,
@@ -18,6 +19,7 @@ export {
 	ContentElementType,
 	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
 	MediaBoard,
+	MediaBoardColors,
 	SubmissionItem,
 	UserWithBoardRoles,
 	isCard,

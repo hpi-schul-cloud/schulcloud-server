@@ -135,6 +135,13 @@ module.exports = {
 			},
 			overrides: [
 				{
+					files: ['apps/server/src/migrations/mikro-orm/**/*.ts'],
+					rules: {
+						'filename-rules/match': [1, 'PascalCase'],
+						'no-console': 'off',
+					},
+				},
+				{
 					files: ['**/*spec.ts'],
 					plugins: ['jest'],
 					env: {
@@ -158,8 +165,8 @@ module.exports = {
 							{
 								patterns: [
 									{
-										group: ['@apps/**', '@infra/**', '@shared/**'],
-										message: 'apps-modules may NOT import from @apps, @infra or @shared',
+										group: ['@apps/**', '@infra/**', '@shared/**', 'apps/server/src/migrations/**'],
+										message: 'apps-modules may NOT import from @apps, @infra, @shared, or migrations',
 									},
 								],
 							},
@@ -175,7 +182,7 @@ module.exports = {
 								patterns: [
 									{
 										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**'],
-										message: 'core-modules may NOT import from @apps, @core, @infra or @modules',
+										message: 'core-modules may NOT import from @apps, @core, @infra, or @modules',
 									},
 								],
 							},
@@ -190,8 +197,8 @@ module.exports = {
 							{
 								patterns: [
 									{
-										group: ['@apps/**', '@core/**', '@modules/**'],
-										message: 'infra-modules may NOT import from @apps, @core or @modules',
+										group: ['@apps/**', '@core/**', '@modules/**', 'apps/server/src/migrations/**'],
+										message: 'infra-modules may NOT import from @apps, @core, @modules, or migrations',
 									},
 								],
 							},
@@ -222,8 +229,15 @@ module.exports = {
 							{
 								patterns: [
 									{
-										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**', '@shared/**'],
-										message: 'shared modules may NOT import from @apps, @core, @infra, @modules or @shared',
+										group: [
+											'@apps/**',
+											'@core/**',
+											'@infra/**',
+											'@modules/**',
+											'@shared/**',
+											'apps/server/src/migrations/**',
+										],
+										message: 'shared modules may NOT import from @apps, @core, @infra, @modules, or @shared',
 									},
 								],
 							},

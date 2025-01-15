@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240605065231 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const filerecords = await this.driver.nativeUpdate(
 			'filerecords',
 			{},
@@ -11,7 +11,7 @@ export class Migration20240605065231 extends Migration {
 		console.info(`${filerecords.affectedRows} Filerecords were migrated to "storageLocationId" and "storageLocation"`);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const filerecords = await this.driver.nativeUpdate(
 			'filerecords',
 			{},

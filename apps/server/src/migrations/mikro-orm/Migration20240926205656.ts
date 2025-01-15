@@ -1,10 +1,8 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import CryptoJs from 'crypto-js';
 
-// eslint-disable-next-line no-process-env
-
 export class Migration20240926205656 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		// eslint-disable-next-line no-process-env
 		const { AES_KEY } = process.env;
 
@@ -30,7 +28,7 @@ export class Migration20240926205656 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		// eslint-disable-next-line no-process-env
 		const { AES_KEY } = process.env;
 

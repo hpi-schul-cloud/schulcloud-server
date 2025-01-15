@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240724090901 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const superheroRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'superhero' },
 			{
@@ -18,7 +18,7 @@ export class Migration20240724090901 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const superheroRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'superhero' },
 			{

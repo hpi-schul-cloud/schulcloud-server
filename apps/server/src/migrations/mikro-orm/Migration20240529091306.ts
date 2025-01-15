@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240529091306 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const systemOptions = await this.driver.nativeUpdate(
 			'school-system-options',
 			{},
@@ -13,7 +13,7 @@ export class Migration20240529091306 extends Migration {
 		);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const systemOptions = await this.driver.nativeUpdate(
 			'school-system-options',
 			{},

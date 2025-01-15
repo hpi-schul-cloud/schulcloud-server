@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240320122229 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const columBoardResponse = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ $and: [{ type: 'column-board' }, { title: '' }] },
@@ -10,8 +10,8 @@ export class Migration20240320122229 extends Migration {
 		console.info(`Updated ${columBoardResponse.affectedRows} records in boardnodes`);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async down(): Promise<void> {
+	// eslint-disable-next-line @typescript-eslint/require-await, require-await
+	public async down(): Promise<void> {
 		console.error(`boardnodes cannot be rolled-back. It must be restored from backup!`);
 	}
 }

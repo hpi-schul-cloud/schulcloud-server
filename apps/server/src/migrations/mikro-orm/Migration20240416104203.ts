@@ -2,7 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 
 // add migration wizard permissions to admin role
 export class Migration20240416104203 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'thr') {
 			const adminRoleUpdate = await this.driver.nativeUpdate(
@@ -25,7 +25,7 @@ export class Migration20240416104203 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'thr') {
 			const adminRoleUpdate = await this.driver.nativeUpdate(
