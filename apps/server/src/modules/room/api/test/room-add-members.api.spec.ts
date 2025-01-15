@@ -6,13 +6,13 @@ import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
-import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { roomEntityFactory } from '../../testing/room-entity.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;

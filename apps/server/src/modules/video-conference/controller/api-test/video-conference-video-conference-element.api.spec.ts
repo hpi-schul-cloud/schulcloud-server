@@ -16,10 +16,6 @@ import {
 } from '@src/modules/board/testing';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { Response } from 'supertest';
-import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -28,6 +24,10 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { userFactory } from '@testing/factory/user.factory';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { Response } from 'supertest';
+import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;

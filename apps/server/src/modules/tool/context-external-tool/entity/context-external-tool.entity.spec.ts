@@ -1,11 +1,14 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { setupEntities } from '@testing/setup-entities';
+import { ToolConfigType } from '../../common/enum';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
 	ExternalToolConfigEntity,
 	ExternalToolEntity,
 } from '../../external-tool/entity';
