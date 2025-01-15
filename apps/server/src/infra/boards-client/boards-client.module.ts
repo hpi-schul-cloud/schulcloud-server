@@ -30,4 +30,4 @@ import { Configuration, BoardApi } from './generated';
 	],
 	exports: [BoardsClientAdapter],
 })
-export class BoardClientModule {}
+export class BoardsClientModule {}
