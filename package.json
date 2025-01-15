@@ -124,6 +124,11 @@
 		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
 	},
+	"overrides": {
+		"gm": {
+			"cross-spawn": "6.0.6"
+		}
+	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.726.1",
 		"@feathersjs/adapter-commons": "^5.0.31",
