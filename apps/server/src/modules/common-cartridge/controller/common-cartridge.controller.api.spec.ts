@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { CoursesApi } from '@src/infra/courses-client/generated';
 import supertest from 'supertest';
-import { CommonCartridgeApiModule } from '../common-cartridge-api.module';
+import { CommonCartridgeApiModule } from '../common-cartridge-api.app.module';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../export/common-cartridge.enums';
 

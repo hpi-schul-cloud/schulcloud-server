@@ -4,7 +4,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { CopyApiResponse } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, LegacyBoard, Task } from '@shared/domain/entity';

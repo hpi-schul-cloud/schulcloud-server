@@ -1,17 +1,17 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { TestApiClient, cleanupCollections, groupEntityFactory, roleFactory, userFactory } from '@shared/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { TestApiClient, cleanupCollections, groupEntityFactory, roleFactory, userFactory } from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 

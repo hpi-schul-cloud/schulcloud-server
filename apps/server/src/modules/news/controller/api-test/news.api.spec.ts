@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@modules/news/controller/dto';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { News, User } from '@shared/domain/entity';

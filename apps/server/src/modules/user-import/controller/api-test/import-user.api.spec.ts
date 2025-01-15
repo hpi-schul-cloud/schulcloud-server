@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { serverConfig, ServerConfig } from '@modules/server';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { SystemEntity } from '@modules/system/entity';
 import {
 	FilterImportUserParams,

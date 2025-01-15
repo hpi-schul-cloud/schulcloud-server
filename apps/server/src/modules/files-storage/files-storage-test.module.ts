@@ -1,12 +1,12 @@
-import { DynamicModule, Module } from '@nestjs/common';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { DynamicModule, Module } from '@nestjs/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { FileRecord } from './entity';
-import { FilesStorageApiModule } from './files-storage-api.module';
+import { FilesStorageApiModule } from './files-storage-api.app.module';
 
 const imports = [
 	FilesStorageApiModule,

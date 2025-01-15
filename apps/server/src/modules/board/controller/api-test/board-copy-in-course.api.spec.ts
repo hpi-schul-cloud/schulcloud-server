@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { BoardExternalReferenceType, ColumnBoardProps } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
-import { BoardExternalReferenceType, ColumnBoardProps } from '../../domain';
 
 const baseRouteName = '/boards';
 

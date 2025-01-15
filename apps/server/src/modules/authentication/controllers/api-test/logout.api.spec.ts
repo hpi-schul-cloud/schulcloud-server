@@ -1,28 +1,28 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
-import { ServerTestModule } from '@modules/server/server.module';
-import { serverConfig, ServerConfig } from '@modules/server';
-import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
+import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
+import { serverConfig, ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemOauthConfigFactory } from '@modules/system/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	cleanupCollections,
-	JwtTestFactory,
 	currentUserFactory,
+	JwtTestFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
 	systemOauthConfigEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { Cache } from 'cache-manager';
-import { Response } from 'supertest';
-import { Request } from 'express';
-import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { Cache } from 'cache-manager';
+import { Request } from 'express';
+import { Response } from 'supertest';
 
 jest.mock('jwks-rsa', () => () => {
 	return {

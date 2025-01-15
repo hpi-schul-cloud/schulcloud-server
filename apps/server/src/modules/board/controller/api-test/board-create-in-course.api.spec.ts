@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { BoardNodeEntity } from '../../repo';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
+import { BoardNodeEntity } from '../../repo';
 import { CreateBoardBodyParams } from '../dto';
 
 const baseRouteName = '/boards';

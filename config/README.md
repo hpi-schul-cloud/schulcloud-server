@@ -254,7 +254,7 @@ Mocking in api tests.
     Configuration.set('MY_ENVIREMENT_VARIABLE', 'value');
 
     // eslint-disable-next-line import/first
-    import { ServerTestModule } from '@src/modules/server/server.module';
+    import { ServerTestModule } from '@src/modules/server/server.app.module';
 
     describe('XXX', () => {
 

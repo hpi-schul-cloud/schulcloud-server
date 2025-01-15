@@ -8,10 +8,9 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { FwuLearningContentsModule } from '@modules/fwu-learning-contents/fwu-learning-contents.app.module';
 import { LegacyLogger } from '@src/core/logger';
-import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
-import { enableOpenApiDocs } from './helpers';
+import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
 
 async function bootstrap() {
 	sourceMapInstall();
