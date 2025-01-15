@@ -3,9 +3,11 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.modul
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
-import { courseFactory, schoolEntityFactory, TestApiClient } from '@shared/testing';
 // admin-api-context-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { courseFactory } from '@testing/factory/course.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { ToolContextType } from '../../../common/enum';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';

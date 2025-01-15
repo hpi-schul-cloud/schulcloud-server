@@ -3,7 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities, userFactory } from '@shared/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationRollbackService } from '../service';
 import { UserLoginMigrationRollbackUc } from './user-login-migration-rollback.uc';
 

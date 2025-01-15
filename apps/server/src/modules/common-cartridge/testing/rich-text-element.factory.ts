@@ -1,8 +1,8 @@
-import { BaseFactory } from '@shared/testing';
 import { faker } from '@faker-js/faker';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
-import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
 import { RichTextElementContentDto } from '../common-cartridge-client/card-client/dto/rich-text-element-content.dto';
+import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
 
 export const richTextElementContentFactory = Factory.define<RichTextElementContentDto>(() => {

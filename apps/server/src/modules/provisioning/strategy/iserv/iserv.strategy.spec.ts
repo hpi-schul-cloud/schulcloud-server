@@ -6,11 +6,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import {
 	IdTokenExtractionFailureLoggableException,
 	IdTokenUserNotFoundLoggableException,
 } from '@src/modules/oauth/loggable';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
