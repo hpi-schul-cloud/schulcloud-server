@@ -32,7 +32,7 @@ import {
 } from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a separate express instance
