@@ -1,14 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import {
-	cleanupCollections,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { SchoolUserListResponse } from '../dto/response/school-user.response';
 
 describe('School Controller (API)', () => {

@@ -3,7 +3,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { Controller, Get, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { ICurrentUser } from '../interface';
 import { CurrentUser, JWT, JwtAuthentication } from './jwt-auth.decorator';
 

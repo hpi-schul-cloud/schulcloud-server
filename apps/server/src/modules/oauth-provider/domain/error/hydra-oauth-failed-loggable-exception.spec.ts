@@ -1,4 +1,4 @@
-import { axiosErrorFactory } from '@shared/testing/factory';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
 import { HydraOauthFailedLoggableException } from './hydra-oauth-failed-loggable-exception';
 

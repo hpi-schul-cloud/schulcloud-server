@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { ROOT_PATH, VideoConferenceElement, VideoConferenceElementProps } from '../domain';
 
 export const videoConferenceElementFactory = BaseFactory.define<VideoConferenceElement, VideoConferenceElementProps>(

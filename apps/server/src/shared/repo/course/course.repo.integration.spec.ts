@@ -5,7 +5,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {

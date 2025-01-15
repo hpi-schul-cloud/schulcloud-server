@@ -17,7 +17,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { LegacyLogger } from '@src/core/logger';
-import { cleanupCollections, schoolEntityFactory } from '../../testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe(ContextExternalToolRepo.name, () => {

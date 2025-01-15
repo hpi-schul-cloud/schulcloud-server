@@ -4,12 +4,10 @@ import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	schoolEntityFactory,
-	schoolSystemOptionsEntityFactory,
-	schoolSystemOptionsFactory,
-	systemEntityFactory,
-} from '@shared/testing';
+import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { schoolSystemOptionsEntityFactory } from '@testing/factory/school-system-options-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsEntity } from '../entity';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';

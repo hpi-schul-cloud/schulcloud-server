@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory, userFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { UUID } from 'bson';
 import { LtiDeepLinkTokenEntity, LtiDeepLinkTokenEntityProps } from '../entity';
 

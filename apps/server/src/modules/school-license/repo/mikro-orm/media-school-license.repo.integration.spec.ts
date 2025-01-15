@@ -1,11 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { MediaSchoolLicenseMikroOrmRepo } from './media-school-license.repo';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
+import { MediaSchoolLicenseMikroOrmRepo } from './media-school-license.repo';
 
 describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 	let module: TestingModule;
