@@ -92,6 +92,7 @@ describe('Collaborative Storage Service', () => {
 
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the adapter', async () => {
+			mockId = 'mockId';
 			jest.spyOn(service, 'findTeamById').mockResolvedValue({
 				id: 'testId',
 				name: 'testTeam',
@@ -108,6 +109,7 @@ describe('Collaborative Storage Service', () => {
 		});
 
 		it('should throw a forbidden exception', async () => {
+			mockId = 'mockId';
 			authService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});
