@@ -16,7 +16,7 @@ class AccountTestRepo extends AccountRepo {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
-describe('account repo', () => {
+describe('AccountRepo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
 	let repo: AccountTestRepo;

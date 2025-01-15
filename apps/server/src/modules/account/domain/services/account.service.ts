@@ -244,42 +244,38 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findById(id: string): Promise<Account> {
-		const account = await this.accountImpl.findById(id);
+	public findById(id: string): Promise<Account> {
+		const account = this.accountImpl.findById(id);
 		return account;
 	}
 
-	public async findMultipleByUserId(userIds: string[]): Promise<Account[]> {
-		const accounts = await this.accountImpl.findMultipleByUserId(userIds);
+	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
+		const accounts = this.accountImpl.findMultipleByUserId(userIds);
 		return accounts;
 	}
 
-	public async findByUserId(userId: string): Promise<Account | null> {
-		const account = await this.accountImpl.findByUserId(userId);
+	public findByUserId(userId: string): Promise<Account | null> {
+		const account = this.accountImpl.findByUserId(userId);
 		return account;
 	}
 
-	public async findByUserIdOrFail(userId: string): Promise<Account> {
-		const account = await this.accountImpl.findByUserIdOrFail(userId);
+	public findByUserIdOrFail(userId: string): Promise<Account> {
+		const account = this.accountImpl.findByUserIdOrFail(userId);
 		return account;
 	}
 
-	public async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
-		const account = await this.accountImpl.findByUsernameAndSystemId(username, systemId);
+	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
+		const account = this.accountImpl.findByUsernameAndSystemId(username, systemId);
 		return account;
 	}
 
-	public async searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise<Counted<Account[]>> {
-		const result = await this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
+		const result = this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 		return result;
 	}
 
-	public async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
-		const result = await this.accountImpl.searchByUsernameExactMatch(userName);
+	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
+		const result = this.accountImpl.searchByUsernameExactMatch(userName);
 		return result;
 	}
 
@@ -416,8 +412,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	public async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
-		const result = await this.accountImpl.validatePassword(account, comparePassword);
+	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
+		const result = this.accountImpl.validatePassword(account, comparePassword);
 		return result;
 	}
 
@@ -458,8 +454,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	public async findMany(offset = 0, limit = 100): Promise<Account[]> {
-		const accounts = await this.accountDb.findMany(offset, limit);
+	public findMany(offset = 0, limit = 100): Promise<Account[]> {
+		const accounts = this.accountDb.findMany(offset, limit);
 		return accounts;
 	}
 

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PrivacyProtect, SanitizeHtml } from '@shared/controller';
 import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
 import { passwordPattern } from '../../../domain/password-pattern';
@@ -16,20 +16,16 @@ export class PatchMyAccountParams {
 	@IsString()
 	@IsOptional()
 	@Matches(passwordPattern)
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new password for the current user.',
-		required: false,
-		nullable: true,
 	})
 	public passwordNew?: string;
 
 	@IsEmail()
 	@SanitizeHtml()
 	@IsOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new email address for the current user.',
-		required: false,
-		nullable: true,
 	})
 	public email?: string;
 
@@ -37,10 +33,8 @@ export class PatchMyAccountParams {
 	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new first name for the current user.',
-		required: false,
-		nullable: true,
 	})
 	public firstName?: string;
 
@@ -48,10 +42,8 @@ export class PatchMyAccountParams {
 	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new last name for the current user.',
-		required: false,
-		nullable: true,
 	})
 	public lastName?: string;
 }

@@ -173,8 +173,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-	public async findMany(_offset: number, _limit: number): Promise<Account[]> {
-		throw new NotImplementedException();
+	public findMany(_offset: number, _limit: number): Promise<Account[]> {
+		return Promise.reject(new NotImplementedException());
 	}
 
 	private async getOptionalIdmAccount(accountId: string): Promise<string | undefined> {
