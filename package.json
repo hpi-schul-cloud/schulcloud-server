@@ -127,6 +127,9 @@
 	"overrides": {
 		"gm": {
 			"cross-spawn": "6.0.6"
+		},
+		"@mikro-orm/migrations-mongodb": {
+			"mongodb": "^4.17.0"
 		}
 	},
 	"dependencies": {
