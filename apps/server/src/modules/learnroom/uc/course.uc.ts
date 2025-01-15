@@ -38,13 +38,14 @@ export class CourseUc {
 		return course;
 	}
 
-	public async createCourse(currentUser: ICurrentUser, name: string): Promise<void> {
+	public async createCourse(currentUser: ICurrentUser, name: string): Promise<Course> {
 		const user = await this.authService.getUserWithPermissions(currentUser.userId);
 
 		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
 		const course = new Course({ teachers: [user], school: user.school, name });
+		const savedCourse = await this.courseService.create(course);
 
-		await this.courseService.create(course);
+		return savedCourse;
 	}
 }
