@@ -6,6 +6,7 @@ import { DeletionRequest } from '../domain/do';
 import { DeletionRequestEntity } from './entity';
 import { DeletionRequestMapper } from './mapper';
 import { DeletionRequestScope } from './scope';
+import { StatusModel } from '../domain/types';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -31,11 +32,15 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(threshold: number, limit?: number): Promise<DeletionRequest[]> {
-		const currentDate = new Date();
-		const modificationThreshold = new Date(Date.now() - threshold);
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(modificationThreshold);
-		const order = { createdAt: SortOrder.desc };
+	async findAllItemsToExecution(olderThan: Date, limit: number): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byDeleteAfter(new Date());
+		scope.byStatus(StatusModel.REGISTERED, olderThan);
+		// TODO failed and hanging pending should be handled differently
+		scope.byStatus(StatusModel.FAILED, olderThan);
+		scope.byStatus(StatusModel.PENDING, olderThan);
+
+		const order = { createdAt: SortOrder.desc }; // TODO why decending order? Should it not be ascending?
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
 			limit,
@@ -47,8 +52,9 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	async countPendingDeletionRequests(): Promise<number> {
-		const scope = new DeletionRequestScope().byStatusPending();
+	async countPendingDeletionRequests(olderThan: Date): Promise<number> {
+		const scope = new DeletionRequestScope();
+		scope.byStatus(StatusModel.PENDING, olderThan);
 
 		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
 

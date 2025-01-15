@@ -9,10 +9,16 @@ import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 export class DeletionRequestService {
+	private modificationThreshold: Date;
+
 	constructor(
 		private readonly deletionRequestRepo: DeletionRequestRepo,
 		private readonly configService: ConfigService<DeletionConfig, true>
-	) {}
+	) {
+		const threshold = this.configService.get<number>('ADMIN_API__MODIFICATION_THRESHOLD_MS');
+		const modificationThreshold = new Date(Date.now() - threshold);
+		this.modificationThreshold = modificationThreshold;
+	}
 
 	async createDeletionRequest(
 		targetRefId: EntityId,
@@ -41,15 +47,14 @@ export class DeletionRequestService {
 		return deletionRequest;
 	}
 
-	async findAllItemsToExecute(limit?: number): Promise<DeletionRequest[]> {
-		const threshold = this.configService.get<number>('ADMIN_API__MODIFICATION_THRESHOLD_MS');
-		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(threshold, limit);
+	async findAllItemsToExecute(limit: number): Promise<DeletionRequest[]> {
+		const deletionRequests = await this.deletionRequestRepo.findAllItemsToExecution(this.modificationThreshold, limit);
 
-		return itemsToDelete;
+		return deletionRequests;
 	}
 
 	async countPendingDeletionRequests(): Promise<number> {
-		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.countPendingDeletionRequests();
+		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.countPendingDeletionRequests(this.modificationThreshold);
 
 		return numberItemsWithStatusPending;
 	}

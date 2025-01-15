@@ -76,42 +76,39 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 
 	async executeDeletionRequests(limit?: number): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
-		const maxAmountOfDeletionRequestsDoConcurrently = this.configService.get<number>(
-			'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
-		);
-		const callsDelayMilliseconds = this.configService.get<number>('ADMIN_API__DELETION_DELAY_MILLISECONDS');
-		let tasks: DeletionRequest[] = [];
+
+		const max = this.configService.get<number>('ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS');
+
+		let deletionRequests: DeletionRequest[] = [];
 
 		do {
-			const numberOfDeletionRequestsWithStatusPending =
-				// eslint-disable-next-line no-await-in-loop
-				await this.deletionRequestService.countPendingDeletionRequests();
-			const numberOfDeletionRequestsToProccess =
-				maxAmountOfDeletionRequestsDoConcurrently - numberOfDeletionRequestsWithStatusPending;
+			// eslint-disable-next-line no-await-in-loop
+			const pendingCount = await this.deletionRequestService.countPendingDeletionRequests();
+			limit = limit ?? max - pendingCount;
+
 			this.logger.debug({
 				action: 'numberItemsWithStatusPending, amountWillingToTake',
-				numberOfDeletionRequestsWithStatusPending,
-				numberOfDeletionRequestsToProccess,
+				numberOfDeletionRequestsWithStatusPending: pendingCount,
+				numberOfDeletionRequestsToProccess: limit,
 			});
 			// eslint-disable-next-line no-await-in-loop
-			if (numberOfDeletionRequestsToProccess > 0) {
+			if (limit > 0) {
 				// eslint-disable-next-line no-await-in-loop
-				tasks = await this.deletionRequestService.findAllItemsToExecute(numberOfDeletionRequestsToProccess);
+				deletionRequests = await this.deletionRequestService.findAllItemsToExecute(limit);
+
+				this.logger.debug({ action: 'processing deletion request', deletionRequests });
 				// eslint-disable-next-line no-await-in-loop
 				await Promise.all(
-					tasks.map(async (req) => {
+					deletionRequests.map(async (req) => {
 						await this.executeDeletionRequest(req);
 					})
 				);
 			}
-			// short sleep mode to give time for deletion process to do their work
-			if (callsDelayMilliseconds && callsDelayMilliseconds > 0) {
-				// eslint-disable-next-line no-await-in-loop
-				await new Promise((resolve) => {
-					setTimeout(resolve, callsDelayMilliseconds);
-				});
-			}
-		} while (tasks.length > 0);
+
+			// eslint-disable-next-line no-await-in-loop
+			await this.sleep();
+		} while (deletionRequests.length > 0);
+
 		this.logger.debug({ action: 'deletion process completed' });
 	}
 
@@ -149,5 +146,17 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
+	}
+
+	// short sleep mode to give time for deletion process to do its work
+	private async sleep() {
+		const delay = this.configService.get<number>('ADMIN_API__DELETION_DELAY_MILLISECONDS');
+		if (delay > 0) {
+			return new Promise((resolve) => {
+				setTimeout(resolve, delay);
+			});
+		}
+
+		return Promise.resolve();
 	}
 }

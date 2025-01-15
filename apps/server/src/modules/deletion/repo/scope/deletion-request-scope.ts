@@ -9,21 +9,12 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byStatus(fifteenMinutesAgo: Date): this {
-		this.addQuery({
-			$or: [
-				{ status: StatusModel.FAILED },
-				{
-					$and: [{ status: [StatusModel.REGISTERED, StatusModel.PENDING] }, { updatedAt: { $lt: fifteenMinutesAgo } }],
-				},
-			],
-		});
-
-		return this;
-	}
-
-	byStatusPending(): this {
-		this.addQuery({ status: [StatusModel.PENDING] });
+	byStatus(status: StatusModel, olderThan: Date): this {
+		if (olderThan) {
+			this.addQuery({ $and: [{ status }, { updatedAt: { $lt: olderThan } }] });
+		} else {
+			this.addQuery({ status });
+		}
 
 		return this;
 	}
