@@ -7,7 +7,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';

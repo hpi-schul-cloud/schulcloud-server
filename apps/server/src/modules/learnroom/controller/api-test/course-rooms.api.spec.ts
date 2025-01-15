@@ -4,19 +4,17 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { CopyApiResponse } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
+import { courseFactory } from '@modules/learnroom/testing';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, LegacyBoard, Task } from '@shared/domain/entity';
-import {
-	boardFactory,
-	cleanupCollections,
-	courseFactory,
-	lessonFactory,
-	taskFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { boardFactory } from '@testing/factory/board.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;

@@ -1,21 +1,19 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseFactory } from '@modules/learnroom/testing';
 import { type SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	courseFactory,
-	groupEntityFactory,
-	groupFactory,
-	roleFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { groupFactory } from '@testing/factory/domainobject';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { GroupRepo } from './group.repo';

@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from '../service/files-storage.service';

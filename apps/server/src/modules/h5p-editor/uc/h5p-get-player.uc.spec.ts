@@ -4,8 +4,9 @@ import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/
 import { H5PEditor, H5PPlayer, IPlayerModel } from '@lumieducation/h5p-server';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { h5pContentFactory, setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules/user';
+import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';

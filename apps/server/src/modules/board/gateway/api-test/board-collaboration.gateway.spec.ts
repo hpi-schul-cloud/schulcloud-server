@@ -3,10 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 import { MongoIoAdapter } from '@infra/socketio';
+import { courseFactory } from '@modules/learnroom/testing';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import { cleanupCollections, courseFactory, schoolEntityFactory, UserAndAccountTestFactory } from '@shared/testing';
-import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
-import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { getSocketApiClient, waitForEvent } from '@testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
 import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';

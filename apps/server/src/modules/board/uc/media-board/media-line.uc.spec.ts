@@ -3,13 +3,13 @@ import { Action } from '@modules/authorization';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
+import { MediaBoard, MediaLine } from '../../domain';
+import { MediaBoardColors } from '../../domain/media-board/types';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaLineUc } from './media-line.uc';
-import { MediaBoard, MediaLine } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
 
 describe(MediaLineUc.name, () => {
 	let module: TestingModule;

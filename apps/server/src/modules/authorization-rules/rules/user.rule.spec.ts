@@ -5,7 +5,6 @@ import { Permission } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
-import { beforeEach } from 'node:test';
 import { UserRule } from './user.rule';
 
 describe('UserRule', () => {
