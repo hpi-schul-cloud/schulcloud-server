@@ -3,10 +3,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
+import { roleDtoFactory } from '@modules/role/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SyncAttribute } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import {

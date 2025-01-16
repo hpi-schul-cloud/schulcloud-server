@@ -11,6 +11,7 @@ import {
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
 import { RoleDto, RoleService } from '@modules/role';
+import { roleDtoFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -19,7 +20,6 @@ import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
