@@ -9,7 +9,6 @@ import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
 import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	ExternalGroupDto,
@@ -20,7 +19,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
-import { externalGroupDtoFactory, externalUserDtoFactory } from '../../testing';
+import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,

@@ -3,12 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
+import { courseFactory } from '@modules/learnroom/testing';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { externalGroupDtoFactory } from '@modules/provisioning/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -17,14 +17,13 @@ import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@sh
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { courseFactory } from '@src/modules/learnroom/testing';
 import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../../../testing';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
 describe(SchulconnexGroupProvisioningService.name, () => {
