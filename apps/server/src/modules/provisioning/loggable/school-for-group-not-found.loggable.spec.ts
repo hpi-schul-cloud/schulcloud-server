@@ -1,6 +1,6 @@
-import { externalSchoolDtoFactory } from '@shared/testing';
-import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
+import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../dto';
+import { externalGroupDtoFactory } from '../testing';
 import { SchoolForGroupNotFoundLoggable } from './school-for-group-not-found.loggable';
 
 describe('SchoolForGroupNotFoundLoggable', () => {

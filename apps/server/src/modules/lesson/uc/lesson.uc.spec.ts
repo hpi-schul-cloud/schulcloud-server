@@ -3,7 +3,10 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/learnroom/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { LessonService } from '../service';
 import { LessonUC } from './lesson.uc';
 

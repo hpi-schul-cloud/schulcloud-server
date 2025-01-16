@@ -6,7 +6,8 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ApiValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 const baseRouteName = '/user/language';
 

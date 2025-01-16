@@ -2,7 +2,11 @@ import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@mod
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, courseGroupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 

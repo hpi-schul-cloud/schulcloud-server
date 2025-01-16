@@ -24,9 +24,12 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { schoolFactory } from '@src/modules/school/testing';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 import { UserService } from './user.service';

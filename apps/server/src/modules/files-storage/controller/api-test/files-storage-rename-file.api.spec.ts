@@ -4,14 +4,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import {
-	cleanupCollections,
-	fileRecordFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { JwtAuthenticationFactory } from '@shared/testing/factory/jwt-authentication.factory';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordParentType } from '../../interface';
