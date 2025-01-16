@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions } from '@shared/common';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { FilesStorageConsumer } from './controller';
