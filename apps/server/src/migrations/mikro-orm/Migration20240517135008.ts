@@ -1,8 +1,8 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { MediaBoardColors, BoardLayout } from '@modules/board/domain';
+import { MediaBoardColors, BoardLayout } from '@modules/board';
 
 export class Migration20240517135008 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const mediaBoards = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ type: 'media-board' },
@@ -30,7 +30,7 @@ export class Migration20240517135008 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const mediaBoards = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ type: 'media-board' },
