@@ -1,6 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
-import { groupFactory, roleFactory, userDoFactory } from '@shared/testing';
+import { groupFactory } from '@testing/factory/domainobject';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { Group } from './group';
 import { GroupUser } from './group-user';
 

@@ -4,13 +4,11 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import {
-	federalStateFactory,
-	legacySchoolDoFactory,
-	schoolYearFactory,
-	setupEntities,
-	storageProviderFactory,
-} from '@shared/testing';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
+import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolYearService } from './school-year.service';

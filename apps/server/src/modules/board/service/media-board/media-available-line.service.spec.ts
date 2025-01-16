@@ -15,7 +15,8 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { setupEntities, userFactory } from '@shared/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
 

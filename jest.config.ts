@@ -27,6 +27,7 @@ let config: Config.InitialOptions = {
 		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
 		'^@modules/(.*)$': '<rootDir>/apps/server/src/modules/$1',
 		'^@infra/(.*)$': '<rootDir>/apps/server/src/infra/$1',
+		'^@testing/(.*)$': '<rootDir>/apps/server/src/testing/$1',
 	},
 	maxWorkers: 2, // limited for not taking all workers within of a single github action
 	workerIdleMemoryLimit: '1.5GB', // without this, jest can lead to big memory leaks and out of memory errors

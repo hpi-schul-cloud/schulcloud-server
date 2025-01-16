@@ -2,9 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { cleanupCollections, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
 import { ServerTestModule } from '@src/modules/server';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 describe('Collaborative Text Editor Controller (API)', () => {
 	let app: INestApplication;

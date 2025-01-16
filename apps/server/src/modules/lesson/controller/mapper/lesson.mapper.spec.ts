@@ -1,5 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
 import { LessonMapper } from './lesson.mapper';
 

@@ -8,16 +8,13 @@ import { systemOauthConfigFactory } from '@modules/system/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	cleanupCollections,
-	currentUserFactory,
-	JwtTestFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	systemOauthConfigEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory, systemOauthConfigEntityFactory } from '@testing/factory/systemEntityFactory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Cache } from 'cache-manager';

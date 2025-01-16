@@ -1,4 +1,4 @@
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { ICurrentUser } from '../interface';
 import { CurrentUserBuilder } from './current-user.factory';

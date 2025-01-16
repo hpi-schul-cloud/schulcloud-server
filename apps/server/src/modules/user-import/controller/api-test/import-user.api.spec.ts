@@ -24,18 +24,16 @@ import { PaginationParams } from '@shared/controller';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	importUserFactory,
-	roleFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { ImportUser, MatchCreator } from '../../entity';
 
 describe('ImportUser Controller (API)', () => {

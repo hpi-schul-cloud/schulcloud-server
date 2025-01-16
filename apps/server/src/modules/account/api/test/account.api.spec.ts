@@ -5,7 +5,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { TestApiClient, cleanupCollections, roleFactory, schoolEntityFactory, userFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { AccountEntity } from '../../domain/entity/account.entity';
 import { accountFactory } from '../../testing';
 import {

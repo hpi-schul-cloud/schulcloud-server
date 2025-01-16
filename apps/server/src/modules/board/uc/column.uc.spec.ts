@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
 import { BoardNodeService } from '../service';
 import { BoardNodePermissionService } from '../service/board-node-permission.service';

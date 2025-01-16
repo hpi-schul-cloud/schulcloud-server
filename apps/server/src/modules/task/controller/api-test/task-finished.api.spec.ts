@@ -2,14 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	cleanupCollections,
-	courseFactory,
-	lessonFactory,
-	taskFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { TaskListResponse } from '../dto/task.response';
 
 describe('Task controller (API)', () => {

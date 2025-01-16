@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory, storageProviderFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { FileEntity, FileEntityProps } from '../..';
 import { FileOwnerModel } from '../../../domain';
 import { filePermissionEntityFactory } from './file-permission-entity.factory';

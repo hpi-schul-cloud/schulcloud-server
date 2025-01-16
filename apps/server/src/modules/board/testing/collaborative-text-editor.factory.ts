@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { CollaborativeTextEditorElement, CollaborativeTextEditorElementProps, ROOT_PATH } from '../domain';
 
 export const collaborativeTextEditorFactory = BaseFactory.define<

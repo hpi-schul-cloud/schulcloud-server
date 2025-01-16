@@ -12,8 +12,12 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '@shared/repo';
-import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { courseFactory } from '@testing/factory/course.factory';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';

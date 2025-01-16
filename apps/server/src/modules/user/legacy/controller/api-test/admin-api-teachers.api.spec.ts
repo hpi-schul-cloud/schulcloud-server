@@ -3,16 +3,14 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import {
-	roleFactory,
-	schoolEntityFactory,
-	schoolYearFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
 import { ServerTestModule } from '@src/modules/server/server.app.module';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
 
 describe('Users Admin Teachers Controller (API)', () => {
