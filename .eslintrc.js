@@ -135,13 +135,6 @@ module.exports = {
 			},
 			overrides: [
 				{
-					files: ['apps/server/src/migrations/mikro-orm/**/*.ts'],
-					rules: {
-						'filename-rules/match': [1, 'PascalCase'],
-						'no-console': 'off',
-					},
-				},
-				{
 					files: ['**/*spec.ts'],
 					plugins: ['jest'],
 					env: {
@@ -171,6 +164,8 @@ module.exports = {
 								],
 							},
 						],
+						'filename-rules/match': [1, 'PascalCase'],
+						'no-console': 'off',
 					},
 				},
 				{
