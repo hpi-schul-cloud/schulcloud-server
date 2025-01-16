@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { LegacyLogger } from '@src/core/logger';
 import { install as sourceMapInstall } from 'source-map-support';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	const nestApp = await NestFactory.createApplicationContext(H5PLibraryManagementModule);

@@ -15,7 +15,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { enableOpenApiDocs } from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a seperate express instance

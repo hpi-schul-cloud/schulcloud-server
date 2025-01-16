@@ -14,7 +14,7 @@ import {
 } from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	const nestAdminServerExpress = express();

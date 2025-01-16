@@ -12,7 +12,7 @@ import { FwuLearningContentsModule } from '@modules/fwu-learning-contents/fwu-le
 import { LegacyLogger } from '@src/core/logger';
 import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a seperate express instance
