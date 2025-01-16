@@ -1,11 +1,11 @@
-import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '@modules/group/entity';
 import { ExternalSourceEmbeddable } from '@modules/system/entity';
 import { RoleName } from '@shared/domain/interface';
-import { BaseFactory } from './base.factory';
-import { roleFactory } from './role.factory';
-import { schoolEntityFactory } from './school-entity.factory';
-import { systemEntityFactory } from './systemEntityFactory';
-import { userFactory } from './user.factory';
+import { BaseFactory } from '../../../testing/factory/base.factory';
+import { roleFactory } from '../../../testing/factory/role.factory';
+import { schoolEntityFactory } from '../../../testing/factory/school-entity.factory';
+import { systemEntityFactory } from '../../../testing/factory/systemEntityFactory';
+import { userFactory } from '../../../testing/factory/user.factory';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '../entity';
 
 export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityProps>(GroupEntity, ({ sequence }) => {
 	return {

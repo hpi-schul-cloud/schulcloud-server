@@ -7,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { courseFactory } from '@testing/factory/course.factory';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
@@ -16,6 +15,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
+import { groupEntityFactory } from '../../testing';
 import { ClassRootType } from '../../uc/dto/class-root-type';
 import { ClassInfoSearchListResponse } from '../dto';
 import { ClassSortQueryType } from '../dto/interface';
