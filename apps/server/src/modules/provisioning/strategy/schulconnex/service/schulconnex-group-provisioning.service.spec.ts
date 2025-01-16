@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
 import { courseFactory } from '@modules/learnroom/testing';
@@ -17,7 +18,7 @@ import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@sh
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';

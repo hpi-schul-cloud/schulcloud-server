@@ -12,7 +12,6 @@ import { Page, UserDO } from '@shared/domain/domainobject';
 import { Role, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { groupFactory } from '@testing/factory/domainobject';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -22,6 +21,7 @@ import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
+import { groupFactory } from '../testing';
 import { ResolvedGroupDto } from './dto';
 import { GroupUc } from './group.uc';
 

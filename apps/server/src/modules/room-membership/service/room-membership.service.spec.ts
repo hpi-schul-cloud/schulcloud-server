@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Group, GroupService, GroupTypes } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { RoomService } from '@modules/room/domain';
 import { roomFactory } from '@modules/room/testing';
@@ -9,7 +10,6 @@ import { UserService } from '@modules/user';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { groupFactory } from '@testing/factory/domainobject';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';

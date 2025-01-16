@@ -8,14 +8,13 @@ import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
-import { groupFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
-import { groupEntityFactory } from '../testing';
+import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
 
 describe(GroupRepo.name, () => {

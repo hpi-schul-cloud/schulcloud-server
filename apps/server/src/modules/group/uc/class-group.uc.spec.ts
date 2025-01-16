@@ -28,7 +28,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { groupFactory } from '@testing/factory/domainobject';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -39,6 +38,7 @@ import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupFilter, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
+import { groupFactory } from '../testing';
 import { ClassInfoDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 
