@@ -5,6 +5,8 @@ export class ExternalUserDto {
 
 	public firstName?: string;
 
+	public preferredName?: string;
+
 	public lastName?: string;
 
 	public email?: string;
@@ -16,6 +18,7 @@ export class ExternalUserDto {
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;
 		this.firstName = props.firstName;
+		this.preferredName = props.preferredName;
 		this.lastName = props.lastName;
 		this.email = props.email;
 		this.roles = props.roles;

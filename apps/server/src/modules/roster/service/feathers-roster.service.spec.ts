@@ -23,15 +23,12 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import {
-	courseFactory,
-	legacySchoolDoFactory,
-	pseudonymFactory,
-	schoolEntityFactory,
-	setupEntities,
-	UserAndAccountTestFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
 

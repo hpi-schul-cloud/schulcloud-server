@@ -1,8 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { DeletionLog } from '../domain/do';
 import { deletionLogFactory } from '../domain/testing';
 import { DeletionLogRepo } from './deletion-log.repo';

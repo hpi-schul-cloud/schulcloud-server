@@ -7,13 +7,14 @@ import { SynchronizationEntity, SynchronizationModule } from '@modules/synchroni
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { LoggerModule } from '@src/core/logger';
-import { ConsoleModule } from 'nestjs-console';
+import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { idpConsoleConfigConfig } from './idp-console.config';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { LoggerModule } from '@src/core/logger';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
+import { ConsoleModule } from 'nestjs-console';
 import { IdpSyncConsole, SynchronizationUc } from './api';
+import { idpConsoleConfigConfig } from './idp-console.config';
 
 @Module({
 	imports: [

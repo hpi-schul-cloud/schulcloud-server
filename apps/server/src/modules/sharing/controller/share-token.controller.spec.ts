@@ -1,7 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, currentUserFactory, setupEntities, shareTokenFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenUC } from '../uc';
 import { ShareTokenInfoDto } from '../uc/dto';

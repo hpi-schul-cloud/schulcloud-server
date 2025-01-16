@@ -1,4 +1,4 @@
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { generateSeedData } from './generateSeedData';
 import * as roleModule from './roles';
 

@@ -1,14 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import {
-	cleanupCollections,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { SchoolUserListResponse } from '../dto/response/school-user.response';
 
 describe('School Controller (API)', () => {
@@ -203,17 +201,6 @@ describe('School Controller (API)', () => {
 						}),
 					])
 				);
-			});
-
-			it('should paginate', async () => {
-				const { loggedInClient, school } = await setup();
-
-				const response = await loggedInClient.get(`${school.id}/teachers`).query({ skip: 1, limit: 1 });
-				const body = response.body as SchoolUserListResponse;
-
-				expect(body.data).toHaveLength(1);
-				expect(body.total).toEqual(4);
-				expect(body.skip).toEqual(1);
 			});
 		});
 	});

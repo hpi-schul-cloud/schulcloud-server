@@ -40,7 +40,6 @@
 		"setup:idm": "npm run setup:idm:seed && npm run setup:idm:configure",
 		"build": "npm run nest:build",
 		"postinstall": "node ./esbuild/esmodules-bundler.js",
-		"copy-files": "copyfiles src/**/*.yaml build",
 		"inspect": "npm run build && node --inspect=5959 build/src/",
 		"inspect-container": "npm run build && node --inspect=0.0.0.0:5959 build/src/",
 		"start": "npm run nest:start:prod",
@@ -99,6 +98,9 @@
 		"nest:start:common-cartridge:dev": "nest start common-cartridge --watch --",
 		"nest:start:common-cartridge:debug": "nest start common-cartridge --debug --watch --",
 		"nest:start:sync": "npm run nest:start:console -- sync run",
+		"nest:start:sync:vidis": "npm run nest:start:console -- sync run vidis",
+		"nest:start:sync:vidis:dev": "npm run nest:start:console  --watch -- sync run vidis",
+		"nest:start:sync:vidis:debug": "npm run nest:start:console --watch --debug -- sync run vidis",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest \"^((?!(\\.load)\\.spec\\.ts).)*\"",
 		"nest:test:unit": "jest \"^((?!(\\.api|\\.load)\\.spec\\.ts).)*\\.spec\\.ts$\"",
@@ -119,7 +121,8 @@
 		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api",
 		"generate-client:lessons-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key svs-lesson-api",
 		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
-		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api"
+		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
+		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.617.0",
@@ -184,7 +187,6 @@
 		"commander": "^8.1.0",
 		"compression": "^1.6.2",
 		"cors": "^2.8.1",
-		"cross-env": "^7.0.0",
 		"crypto-js": "^4.2.0",
 		"disposable-email-domains": "^1.0.56",
 		"es6-promisify": "^7.0.0",
@@ -195,7 +197,6 @@
 		"feathers-swagger": "^3.0.0",
 		"file-type": "^18.5.0",
 		"fishery": "^2.2.2",
-		"freeport": "^1.0.5",
 		"gm": "^1.25.0",
 		"html-entities": "^2.3.2",
 		"i18next": "^23.3.0",
@@ -254,6 +255,8 @@
 		"yaml": "^2.5.0"
 	},
 	"devDependencies": {
+		"cross-env": "^7.0.0",
+		"freeport": "^1.0.5",
 		"@aws-sdk/client-s3": "^3.617.0",
 		"@faker-js/faker": "^8.0.2",
 		"@feathersjs/adapter-tests": "^5.0.29",
