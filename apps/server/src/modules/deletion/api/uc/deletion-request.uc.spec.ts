@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
