@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240528140356 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const mediaBoards = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ type: 'media-board' },
@@ -15,7 +15,7 @@ export class Migration20240528140356 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const mediaBoards = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ type: 'media-board' },

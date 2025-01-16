@@ -8,7 +8,8 @@ import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { JwtTestFactory, userDoFactory } from '@shared/testing';
+import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { AccountSystemMismatchLoggableException, InvalidTokenLoggableException } from '../loggable';
 import { LogoutService } from './logout.service';
 

@@ -1,10 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { MediaSourceProps, MediaSource } from '../domain';
+import { MediaSource, MediaSourceProps } from '../domain';
 import { MediaSourceDataFormat } from '../enum';
-import { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
 import { mediaSourceBasicAuthConfigFactory } from './media-source-basic-auth-config.factory';
+import { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
 
 class MediaSourceFactory extends BaseFactory<MediaSource, MediaSourceProps> {
 	public withBasicAuthConfig(): this {

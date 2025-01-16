@@ -5,13 +5,11 @@ import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
-import {
-	cleanupCollections,
-	externalToolPseudonymEntityFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { externalToolPseudonymEntityFactory } from '@testing/factory/external-tool-pseudonym.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
 import { ExternalToolPseudonymEntity } from '../../entity';

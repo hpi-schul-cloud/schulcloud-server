@@ -3,7 +3,7 @@ import { AuthorizationClientModule } from '@infra/authorization-client';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions } from '@shared/common';
 import { CoreModule } from '@src/core';
 import { FileSecurityController, FilesStorageConfigController, FilesStorageController } from './controller';
 import { authorizationClientConfig, config } from './files-storage.config';
