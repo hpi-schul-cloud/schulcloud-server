@@ -3,7 +3,6 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { TestApiClient, cleanupCollections, groupEntityFactory, roleFactory, userFactory } from '@shared/testing';
 import { accountFactory } from '@src/modules/account/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
