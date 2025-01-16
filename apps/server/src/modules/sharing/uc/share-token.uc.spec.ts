@@ -10,6 +10,7 @@ import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
@@ -18,16 +19,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { LegacyLogger } from '@src/core/logger';
-import { RoomMembershipService } from '@src/modules/room-membership';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
+import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
@@ -492,7 +492,7 @@ describe('ShareTokenUC', () => {
 		it('should return service result', async () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const shareToken = shareTokenFactory.build();
+			const shareToken = shareTokenDOFactory.build();
 
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 			courseService.findById.mockResolvedValueOnce(course);
@@ -521,7 +521,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 					parentId: course.id,
 				};
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: course.name });
 
 				return { user, school, shareToken, course };
@@ -575,7 +575,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Lesson,
 					parentId: lesson.id,
 				};
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: lesson.name });
 
 				return { user, school, shareToken, lesson, course };
@@ -629,7 +629,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Task,
 					parentId: task.id,
 				};
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: task.name });
 
 				return { user, school, shareToken, task, course };
@@ -681,7 +681,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.ColumnBoard,
 					parentId: columnBoard.id,
 				};
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: columnBoard.title });
 
 				columnBoardService.findById.mockResolvedValueOnce(columnBoard);
@@ -730,7 +730,7 @@ describe('ShareTokenUC', () => {
 					const schoolEntity = schoolEntityFactory.buildWithId();
 					const school = schoolFactory.build();
 					const user = userFactory.buildWithId({ school: schoolEntity });
-					const shareToken = shareTokenFactory.build({
+					const shareToken = shareTokenDOFactory.build({
 						context: { contextType: ShareTokenContextType.School, contextId: schoolEntity.id },
 					});
 					const parentName = 'name';
@@ -769,7 +769,7 @@ describe('ShareTokenUC', () => {
 				const setup = () => {
 					const schoolEntity = schoolEntityFactory.buildWithId();
 					const user = userFactory.buildWithId({ school: schoolEntity });
-					const shareToken = shareTokenFactory.build({
+					const shareToken = shareTokenDOFactory.build({
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						context: { contextType: 'unknown', contextId: schoolEntity.id },
@@ -794,7 +794,7 @@ describe('ShareTokenUC', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
-				const shareToken = shareTokenFactory.build();
+				const shareToken = shareTokenDOFactory.build();
 				const parentName = 'name';
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName });
 				return { user, school, shareToken };
@@ -821,7 +821,7 @@ describe('ShareTokenUC', () => {
 					parentType: 'invalid',
 					parentId: course.id,
 				};
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: 'foo' });
 
 				return { user, shareToken };
@@ -843,7 +843,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-				const shareToken = shareTokenFactory.build();
+				const shareToken = shareTokenDOFactory.build();
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
 				const course = courseFactory.buildWithId();
@@ -924,7 +924,7 @@ describe('ShareTokenUC', () => {
 				lessonCopyService.copyLesson.mockResolvedValueOnce(status);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Lesson, parentId: lesson._id.toString() };
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
 				return { user, school, shareToken, status, course, lesson };
@@ -1010,7 +1010,7 @@ describe('ShareTokenUC', () => {
 				taskCopyService.copyTask.mockResolvedValueOnce(status);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Task, parentId: task._id.toString() };
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
 				return { user, school, shareToken, status, course, task };
@@ -1090,7 +1090,7 @@ describe('ShareTokenUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
 				return { user, shareToken, school, course, columnBoard };
@@ -1168,7 +1168,7 @@ describe('ShareTokenUC', () => {
 					parentType: 'invalid',
 					parentId: course.id,
 				};
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
 				return { user, shareToken };
@@ -1200,7 +1200,7 @@ describe('ShareTokenUC', () => {
 				};
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 
-				const shareToken = shareTokenFactory.build({
+				const shareToken = shareTokenDOFactory.build({
 					payload: { parentType: ShareTokenParentType.Course, parentId: course.id },
 					context: { contextType: ShareTokenContextType.School, contextId: schoolEntity.id },
 				});
@@ -1237,7 +1237,7 @@ describe('ShareTokenUC', () => {
 				};
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 
-				const shareToken = shareTokenFactory.build({
+				const shareToken = shareTokenDOFactory.build({
 					payload: { parentType: ShareTokenParentType.Course, parentId: course.id },
 				});
 				service.lookupToken.mockResolvedValueOnce(shareToken);
