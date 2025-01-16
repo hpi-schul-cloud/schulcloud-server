@@ -8,13 +8,12 @@ import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { pseudonymFactory } from '@testing/factory/domainobject';
-import { pseudonymEntityFactory } from '@testing/factory/pseudonym.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
+import { externalToolPseudonymEntityFactory, pseudonymEntityFactory } from '../testing';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
-import { externalToolPseudonymEntityFactory } from '../testing';
 
 describe('ExternalToolPseudonymRepo', () => {
 	let module: TestingModule;

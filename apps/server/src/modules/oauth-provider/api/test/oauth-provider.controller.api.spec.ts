@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { ServerTestModule } from '@modules/server';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -7,7 +8,6 @@ import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { ltiToolFactory } from '@testing/factory/ltitool.factory';
-import { pseudonymEntityFactory } from '@testing/factory/pseudonym.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';

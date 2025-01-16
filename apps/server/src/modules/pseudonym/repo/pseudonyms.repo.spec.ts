@@ -7,11 +7,11 @@ import { Pseudonym } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { pseudonymFactory } from '@testing/factory/domainobject';
-import { pseudonymEntityFactory } from '@testing/factory/pseudonym.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymEntity } from '../entity';
 import { PseudonymsRepo } from './pseudonyms.repo';
+import { pseudonymEntityFactory } from '../testing';
 
 describe('PseudonymRepo', () => {
 	let module: TestingModule;
