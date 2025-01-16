@@ -5,7 +5,7 @@ import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { accountDoFactory } from '@src/modules/account/testing';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';

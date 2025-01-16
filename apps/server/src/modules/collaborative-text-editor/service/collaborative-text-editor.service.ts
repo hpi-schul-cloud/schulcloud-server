@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
 import { ServerConfig } from '@src/modules/server';
 import { GetCollaborativeTextEditorForParentParams } from '../api/dto/get-collaborative-text-editor-for-parent.params';

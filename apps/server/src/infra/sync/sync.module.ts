@@ -12,7 +12,7 @@ import { SchoolLicenseModule } from '@modules/school-license/school-license.modu
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { SyncConsole } from './console/sync.console';
 import { SyncService } from './service/sync.service';

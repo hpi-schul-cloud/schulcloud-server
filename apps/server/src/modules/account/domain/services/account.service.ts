@@ -17,7 +17,7 @@ import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, Valid
 import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';

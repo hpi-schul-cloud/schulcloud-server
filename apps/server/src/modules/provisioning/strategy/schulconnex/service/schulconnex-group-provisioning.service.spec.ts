@@ -16,7 +16,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { courseFactory } from '@src/modules/learnroom/testing';
 import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';

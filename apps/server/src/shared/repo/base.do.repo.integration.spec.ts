@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { BaseDO } from '@src/shared/domain/domainobject';
 
 const TEST_CREATED_AT = new Date('2022-01-01');

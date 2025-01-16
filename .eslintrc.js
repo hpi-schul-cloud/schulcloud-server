@@ -122,7 +122,7 @@ module.exports = {
 					{
 						patterns: [
 							{
-								group: ['@src/apps/**', '@src/core/**', '@src/modules/*/*', '@src/shared/**'],
+								group: ['@src/apps/**', '@core/**', '@src/modules/*/*', '@src/shared/**'],
 								message: 'Remove src/ from import path',
 							},
 							{

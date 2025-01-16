@@ -16,7 +16,7 @@ import { ServerModule } from '@modules/server';
 import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@core/logger';
 import { AccountUc } from '@modules/account/api/account.uc';
 import express from 'express';
 import { join } from 'path';

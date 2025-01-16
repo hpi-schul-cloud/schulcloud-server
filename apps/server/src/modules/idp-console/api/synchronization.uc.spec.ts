@@ -6,7 +6,7 @@ import { synchronizationFactory } from '@modules/synchronization/domain/testing'
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { AccountService } from '@src/modules/account';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';

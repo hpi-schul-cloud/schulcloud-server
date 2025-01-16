@@ -18,10 +18,11 @@
 		"baseUrl": "./",
 		"incremental": true,
 		"paths": {
+			"@core/*": ["apps/server/src/core/*"],
+			"@infra/*": ["apps/server/src/infra/*"],
+			"@modules/*": ["apps/server/src/modules/*"],
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"],
-			"@modules/*": ["apps/server/src/modules/*"],
-			"@infra/*": ["apps/server/src/infra/*"],
 			"@testing/*": ["apps/server/src/testing/*"],
 		}
 	}

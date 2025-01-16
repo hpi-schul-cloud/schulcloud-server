@@ -12,7 +12,7 @@ import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { SchulconnexClientModule } from '@src/infra/schulconnex-client/schulconnex-client.module';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';

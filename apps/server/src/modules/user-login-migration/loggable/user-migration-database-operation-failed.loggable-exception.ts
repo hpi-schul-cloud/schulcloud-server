@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorUtils } from '@src/core/error/utils';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorUtils } from '@core/error/utils';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 
 export class UserMigrationDatabaseOperationFailedLoggableException
 	extends InternalServerErrorException

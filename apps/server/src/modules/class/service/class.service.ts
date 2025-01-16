@@ -15,7 +15,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 

@@ -4,7 +4,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { RoomService } from '@src/modules/room';
 import { RoomMembershipService } from '@src/modules/room-membership';
 import { courseFactory } from '@testing/factory/course.factory';

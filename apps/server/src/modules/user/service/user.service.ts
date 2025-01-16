@@ -25,7 +25,7 @@ import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';

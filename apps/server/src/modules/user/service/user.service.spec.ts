@@ -24,7 +24,7 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { schoolFactory } from '@src/modules/school/testing';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';

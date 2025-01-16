@@ -1,4 +1,4 @@
-import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@core/logger';
 
 export class IdmCallbackLoggableException implements Loggable {
 	constructor(private readonly callbackError: any) {}

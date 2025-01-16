@@ -5,7 +5,7 @@ import {
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
 } from '@infra/metrics';
-import { LogMessage, Loggable, Logger } from '@src/core/logger';
+import { LogMessage, Loggable, Logger } from '@core/logger';
 import { AppStartLoggable } from './app-start-loggable';
 
 export const enum PrometheusMetricsSetupState {

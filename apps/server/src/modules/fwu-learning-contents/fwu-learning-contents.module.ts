@@ -1,3 +1,5 @@
+import { CoreModule } from '@core/core.module';
+import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
@@ -10,8 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';

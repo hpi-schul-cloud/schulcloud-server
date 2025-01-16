@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@core/logger';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';

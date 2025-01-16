@@ -6,7 +6,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { News, User } from '@shared/domain/entity';
 import { EntityId, NewsTargetModel } from '@shared/domain/types';
-import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
+import { API_VALIDATION_ERROR_TYPE } from '@core/error/server-error-types';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import moment from 'moment';

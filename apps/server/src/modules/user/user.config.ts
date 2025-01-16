@@ -1,5 +1,5 @@
 import { RoleConfig } from '@modules/role';
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 import { CalendarConfig } from '@infra/calendar';
 import { AccountConfig } from '@modules/account';
 import { RegistrationPinConfig } from '@modules/registration-pin';

@@ -13,7 +13,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { System } from '@src/modules/system';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';

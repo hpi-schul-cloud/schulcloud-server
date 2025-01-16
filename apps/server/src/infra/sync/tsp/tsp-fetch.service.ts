@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
-import { Logger } from '@src/core/logger';
+import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,

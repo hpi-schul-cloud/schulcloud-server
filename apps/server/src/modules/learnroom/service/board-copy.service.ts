@@ -21,7 +21,7 @@ import {
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@src/modules/files-storage/interface';
 import { sortBy } from 'lodash';
 import { ColumnBoardNodeRepo } from '../repo';

@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserDO } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
 import { TspMigrationBatchSummaryLoggable } from './loggable/tsp-migration-batch-summary.loggable';
 import { TspMigrationsFetchedLoggable } from './loggable/tsp-migrations-fetched.loggable';

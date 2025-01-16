@@ -1,3 +1,5 @@
+import { CoreModule } from '@core/core.module';
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
@@ -47,8 +49,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';

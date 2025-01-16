@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { etherpadClientConfig } from './config';
 import { CollaborativeTextEditorService } from './service/collaborative-text-editor.service';

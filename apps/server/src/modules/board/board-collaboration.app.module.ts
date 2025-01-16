@@ -1,3 +1,4 @@
+import { CoreModule } from '@core/core.module';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
@@ -7,7 +8,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
-import { CoreModule } from '@src/core';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';

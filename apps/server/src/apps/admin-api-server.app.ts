@@ -2,7 +2,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@core/logger';
 import { AdminApiServerModule } from '@modules/server/admin-api.server.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';

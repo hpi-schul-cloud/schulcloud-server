@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { H5PLibraryManagementModule, H5PLibraryManagementService } from '@modules/h5p-library-management';
 
 async function bootstrap() {

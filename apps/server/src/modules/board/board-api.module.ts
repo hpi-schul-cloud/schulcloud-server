@@ -1,7 +1,7 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { forwardRef, Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { RoomMembershipModule } from '@src/modules/room-membership';
 import { BoardModule } from './board.module';
 import {

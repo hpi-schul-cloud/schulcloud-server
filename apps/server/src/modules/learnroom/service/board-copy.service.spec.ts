@@ -9,7 +9,7 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
 import { columnBoardFactory } from '@src/modules/board/testing';
 import { StorageLocation } from '@src/modules/files-storage/interface';

@@ -18,7 +18,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface';
-import { ErrorResponse } from '@src/core/error/dto';
+import { ErrorResponse } from '@core/error/dto';
 import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';

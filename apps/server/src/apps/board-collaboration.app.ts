@@ -7,7 +7,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@core/logger';
 import { RedisIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import express from 'express';

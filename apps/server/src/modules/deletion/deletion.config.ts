@@ -5,7 +5,7 @@ import { NewsConfig } from '@modules/news';
 import { PseudonymConfig } from '@modules/pseudonym';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { TeamsConfig } from '@modules/teams';
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 import { CalendarConfig } from '@src/infra/calendar';
 
 export interface DeletionConfig

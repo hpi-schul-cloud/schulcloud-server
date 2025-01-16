@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@src/core/logger';
+import { Loggable, LogMessage } from '@core/logger';
 
 export class DeletedUserDataLoggable implements Loggable {
 	constructor(private readonly userId: string) {}

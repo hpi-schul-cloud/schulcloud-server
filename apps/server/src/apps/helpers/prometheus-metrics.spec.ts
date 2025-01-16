@@ -6,7 +6,7 @@ import {
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
 } from '@infra/metrics';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express';
 import {
 	PrometheusMetricsSetupState,

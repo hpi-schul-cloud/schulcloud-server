@@ -1,7 +1,7 @@
 import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { System } from '@src/modules/system';
 import pLimit from 'p-limit';

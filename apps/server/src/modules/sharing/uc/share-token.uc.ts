@@ -19,7 +19,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { RoomMembershipService } from '@src/modules/room-membership';
 import {
 	ShareTokenContext,

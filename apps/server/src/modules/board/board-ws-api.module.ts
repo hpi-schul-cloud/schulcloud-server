@@ -2,7 +2,7 @@ import { AuthorizationModule } from '@modules/authorization';
 import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardModule } from './board.module';
 import { BoardCollaborationGateway } from './gateway/board-collaboration.gateway';

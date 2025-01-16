@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
-import { Logger } from '@src/core/logger';
+import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,
