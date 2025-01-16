@@ -18,7 +18,7 @@ export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule
 }
 
 export const execute = async (bootstrap: BootstrapConsole, args: string[]): Promise<void> => {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	await bootstrap.boot([process.argv0, 'console', ...args]);
+
 	return Promise.resolve();
 };
