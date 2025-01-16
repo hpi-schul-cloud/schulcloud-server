@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
 import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
+import { Test, TestingModule } from '@nestjs/testing';
+import { teamFactory } from '@testing/factory/team.factory';
+import { setupEntities } from '@testing/setup-entities';
 
 describe('TeamMapper', () => {
 	let module: TestingModule;

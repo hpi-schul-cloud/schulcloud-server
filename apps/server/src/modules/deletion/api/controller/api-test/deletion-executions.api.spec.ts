@@ -1,7 +1,7 @@
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@shared/testing';
+import { TestApiClient } from '@testing/test-api-client';
 
 const baseRouteName = '/deletionExecutions';
 

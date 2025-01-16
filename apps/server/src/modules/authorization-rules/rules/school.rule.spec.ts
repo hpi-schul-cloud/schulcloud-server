@@ -7,7 +7,9 @@ import {
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {

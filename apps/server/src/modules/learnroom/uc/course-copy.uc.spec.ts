@@ -6,7 +6,9 @@ import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 

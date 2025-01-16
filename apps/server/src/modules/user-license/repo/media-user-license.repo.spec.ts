@@ -1,17 +1,18 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { User as UserEntity } from '@shared/domain/entity';
-import { cleanupCollections, userFactory } from '@shared/testing';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceConfigMapper } from '@modules/media-source/repo';
 import {
-	mediaSourceFactory,
-	mediaSourceEntityFactory,
 	mediaSourceBasicConfigEmbeddableFactory,
+	mediaSourceEntityFactory,
+	mediaSourceFactory,
 	mediaSourceOAuthConfigEmbeddableFactory,
 } from '@modules/media-source/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { User as UserEntity } from '@shared/domain/entity';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { userFactory } from '@testing/factory/user.factory';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity } from '../entity';
 import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';

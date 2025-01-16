@@ -3,9 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { TestApiClient, schoolEntityFactory } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { nanoid } from 'nanoid';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 

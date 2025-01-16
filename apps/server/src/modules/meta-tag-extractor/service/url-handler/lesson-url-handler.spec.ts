@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LessonService } from '@modules/lesson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity } from '@shared/domain/entity';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { LessonUrlHandler } from './lesson-url-handler';
 
 describe(LessonUrlHandler.name, () => {

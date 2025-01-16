@@ -1,7 +1,7 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { LtiDeepLinkToken } from '../../domain';
 import { LtiDeepLinkTokenEntity } from '../../entity';
 import { ltiDeepLinkTokenEntityFactory, ltiDeepLinkTokenFactory } from '../../testing';

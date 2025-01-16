@@ -1,5 +1,5 @@
-import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { setupEntities } from '@testing/setup-entities';
 import { RegistrationPinEntity } from '.';
 
 describe(RegistrationPinEntity.name, () => {
