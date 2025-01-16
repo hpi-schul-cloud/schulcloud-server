@@ -10,13 +10,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { importUserFactory } from '@testing/factory/import-user.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
+import { importUserFactory } from '../testing';
 import { SchulconnexFetchImportUsersService } from './schulconnex-fetch-import-users.service';
 
 describe(SchulconnexFetchImportUsersService.name, () => {

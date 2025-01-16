@@ -1,4 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { accountFactory } from '@modules/account/testing';
 import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.module';
 import { SystemEntity } from '@modules/system/entity';
@@ -24,10 +26,7 @@ import { PaginationParams } from '@shared/controller';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { importUserFactory } from '@testing/factory/import-user.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
@@ -35,6 +34,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ImportUser, MatchCreator } from '../../entity';
+import { importUserFactory } from '../../testing';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;

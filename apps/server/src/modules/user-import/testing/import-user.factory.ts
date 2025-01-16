@@ -1,11 +1,11 @@
-import { ImportUserRoleName, ImportUser, ImportUserProperties, MatchCreator } from '@modules/user-import/entity';
+import { ImportUser, ImportUserProperties, ImportUserRoleName, MatchCreator } from '@modules/user-import/entity';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { DeepPartial } from 'fishery';
 import { v4 as uuidv4 } from 'uuid';
-import { BaseFactory } from './base.factory';
-import { schoolEntityFactory } from './school-entity.factory';
-import { systemEntityFactory } from './systemEntityFactory';
 
 class ImportUserFactory extends BaseFactory<ImportUser, ImportUserProperties> {
 	matched(matchedBy: MatchCreator, user: User): this {

@@ -5,6 +5,7 @@ import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
 import { type SystemEntity } from '@modules/system/entity';
 import { ImportUser } from '@modules/user-import/entity';
+import { importUserFactory } from '@modules/user-import/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,7 +14,6 @@ import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migra
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ErrorResponse } from '@src/core/error/dto';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { importUserFactory } from '@testing/factory/import-user.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
