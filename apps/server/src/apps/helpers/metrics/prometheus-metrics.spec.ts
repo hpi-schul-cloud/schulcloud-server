@@ -15,9 +15,9 @@ import {
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './prometheus-metrics';
 
-jest.mock('@infra/metrics', () => {
+jest.mock('./prometheus', () => {
 	const moduleMock: unknown = {
-		...jest.requireActual('@infra/metrics'),
+		...jest.requireActual('./prometheus'),
 		createAPIResponseTimeMetricMiddleware: jest.fn(),
 		createPrometheusMetricsApp: jest.fn(),
 	};
