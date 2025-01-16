@@ -2,7 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 export class Migration20241120100616 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const cursor = this.getCollection<{ contextType: string; contextId: ObjectId; schoolTool: ObjectId }>(
 			'context-external-tools'
 		).find({
@@ -58,8 +58,8 @@ export class Migration20241120100616 extends Migration {
 		);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async down(): Promise<void> {
+	// eslint-disable-next-line @typescript-eslint/require-await, require-await
+	public async down(): Promise<void> {
 		console.info('Unfortunately the deleted documents cannot be restored. Use a backup.');
 	}
 }
