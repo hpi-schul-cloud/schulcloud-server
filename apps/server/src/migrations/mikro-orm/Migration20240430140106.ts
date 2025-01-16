@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240430140106 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const superheroRoleUpdate = await this.driver.nativeUpdate(
 			'roles',
 			{ name: 'superhero' },
@@ -19,7 +19,7 @@ export class Migration20240430140106 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const superheroRoleUpdate = await this.driver.nativeUpdate(
 			'roles',
 			{ name: 'superhero' },
