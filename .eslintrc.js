@@ -158,6 +158,22 @@ module.exports = {
 					},
 				},
 				{
+					files: ['apps/server/src/migrations/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@apps/**', '@infra/**', '@shared/**', 'apps/server/src/migrations/**'],
+										message: 'apps/server/src/migrations may NOT import from @apps, @infra, @shared, or migrations',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
 					files: ['apps/server/src/apps/**/*.ts'],
 					rules: {
 						'@typescript-eslint/no-restricted-imports': [
