@@ -14,17 +14,13 @@ import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { boardFactory } from '@testing/factory/board.factory';
-import {
-	columnboardBoardElementFactory,
-	lessonBoardElementFactory,
-	taskBoardElementFactory,
-} from '@testing/factory/boardelement.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ColumnBoardNodeRepo } from '../repo';
+import { columnboardBoardElementFactory, lessonBoardElementFactory, taskBoardElementFactory } from '../testing';
 import { BoardCopyService } from './board-copy.service';
 
 describe('board copy service', () => {
