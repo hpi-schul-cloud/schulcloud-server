@@ -8,13 +8,13 @@ import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {

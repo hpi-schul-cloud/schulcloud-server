@@ -2,10 +2,10 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
+import { fileRecordFactory } from '../testing';
 import { FileRecordRepo } from './filerecord.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);

@@ -6,7 +6,6 @@ import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, ScanStatus } from '../entity';
@@ -16,6 +15,7 @@ import { createPath } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {

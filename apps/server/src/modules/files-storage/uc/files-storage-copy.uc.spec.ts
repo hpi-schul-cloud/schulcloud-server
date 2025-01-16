@@ -10,7 +10,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { CopyFilesOfParentParams, FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';
@@ -19,6 +18,7 @@ import { FileRecordParentType, StorageLocation } from '../interface';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
