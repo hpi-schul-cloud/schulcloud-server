@@ -248,7 +248,8 @@ module.exports = {
 											'@shared/**',
 											'apps/server/src/migrations/**',
 										],
-										message: 'shared modules may NOT import from @apps, @core, @infra, @modules, or @shared',
+										message:
+											'shared modules may NOT import from @apps, @core, @infra, @modules, @shared, or migrations',
 									},
 								],
 							},
