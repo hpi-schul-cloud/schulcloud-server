@@ -122,10 +122,6 @@ module.exports = {
 					{
 						patterns: [
 							{
-								group: ['@src/apps/**', '@core/**', '@src/modules/*/*', '@src/shared/**'],
-								message: 'Remove src/ from import path',
-							},
-							{
 								group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
 								message: 'Do not deep import from a module',
 							},
