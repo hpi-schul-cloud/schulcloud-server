@@ -19,6 +19,7 @@
 		"incremental": true,
 		"paths": {
 			"@core/*": ["apps/server/src/core/*"],
+			"@imports-from-feathers": ["apps/server/src/imports-from-feathers"],
 			"@infra/*": ["apps/server/src/infra/*"],
 			"@modules/*": ["apps/server/src/modules/*"],
 			"@shared/*": ["apps/server/src/shared/*"],

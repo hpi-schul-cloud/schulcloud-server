@@ -1,5 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
@@ -11,7 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { H5PContent, InstalledLibrary } from './entity';
 import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';

@@ -1,3 +1,5 @@
+import { LoggerModule } from '@core/logger';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
@@ -10,8 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { LoggerModule } from '@core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ConsoleModule } from 'nestjs-console';
 import { IdpSyncConsole, SynchronizationUc } from './api';
 import { idpConsoleConfigConfig } from './idp-console.config';

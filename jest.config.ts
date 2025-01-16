@@ -24,6 +24,7 @@ let config: Config.InitialOptions = {
 	moduleNameMapper: {
 		// add ts-config path's here as regex
 		'^@core/(.*)$': '<rootDir>/apps/server/src/core/$1',
+		'^@imports-from-feathers$': '<rootDir>apps/server/src/imports-from-feathers',
 		'^@infra/(.*)$': '<rootDir>/apps/server/src/infra/$1',
 		'^@modules/(.*)$': '<rootDir>/apps/server/src/modules/$1',
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
