@@ -30,7 +30,7 @@ COPY scripts/ldapSync.sh scripts/
 COPY src src
 
 COPY --from=builder /app/dist dist
-COPY --from=builder /app/serverversion apps/server/static-assets
+COPY --from=builder /app/serverversion apps/server/static-assets/serverversion
 
 # The postinstall script must be disabled, because esbuild is a dev dependency and not installed here.
 RUN npm pkg delete scripts.postinstall \
