@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
+import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MediaSchoolLicense } from '../domain';
+import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 import { mediaSchoolLicenseFactory } from '../testing';
 import { MediaSchoolLicenseService } from './media-school-license.service';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolMedium } from '../../tool/external-tool/domain';
-import { MediaSchoolLicense } from '../domain';
 
 describe(MediaSchoolLicenseService.name, () => {
 	let module: TestingModule;

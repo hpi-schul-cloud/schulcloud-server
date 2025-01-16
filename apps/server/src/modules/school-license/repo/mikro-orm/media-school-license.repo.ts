@@ -1,8 +1,10 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaSource } from '@modules/media-source/domain';
+import { MediaSourceMapper } from '@modules/media-source/repo';
 import { Injectable } from '@nestjs/common';
-import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { EntityId } from '@shared/domain/types';
+import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { SchoolLicenseType } from '../../enum';
@@ -41,12 +43,30 @@ export class MediaSchoolLicenseMikroOrmRepo
 		scope.bySchoolId(schoolId);
 		scope.bySchoolLicenseType(SchoolLicenseType.MEDIA_LICENSE);
 
-		const entities: MediaSchoolLicenseEntity[] = await this.em.find(MediaSchoolLicenseEntity, scope.query);
+		const entities: MediaSchoolLicenseEntity[] = await this.em.find(MediaSchoolLicenseEntity, scope.query, {});
 
 		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
-			MediaSchoolLicenseEntityMapper.mapEntityToDO(entity)
+			this.mapEntityToDomainObject(entity)
 		);
 
 		return domainObjects;
+	}
+
+	private mapEntityToDomainObject(entity: MediaSchoolLicenseEntity): MediaSchoolLicense {
+		let mediaSource: MediaSource | undefined;
+
+		if (entity.mediaSource) {
+			mediaSource = MediaSourceMapper.mapEntityToDo(entity.mediaSource);
+		}
+
+		const mediaSchoolLicense: MediaSchoolLicense = new MediaSchoolLicense({
+			id: entity.id,
+			schoolId: entity.school.id,
+			mediumId: entity.mediumId,
+			mediaSource,
+			type: entity.type,
+		});
+
+		return mediaSchoolLicense;
 	}
 }

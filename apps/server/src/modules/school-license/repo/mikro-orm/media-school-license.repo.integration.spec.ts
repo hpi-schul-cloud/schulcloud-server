@@ -1,8 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { MediaSourceEntity } from '@modules/media-source/entity';
 import { Test, TestingModule } from '@nestjs/testing';
+import { mediaSourceEntityFactory } from '@src/modules/media-source/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
 import { MediaSchoolLicenseMikroOrmRepo } from './media-school-license.repo';
@@ -29,7 +32,26 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 	});
-
+	describe('findMediaSchoolLicensesBySchoolId', () => {
+		describe('when media school licenses exist', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
+				const mediaSchoolLicenseEntities: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(3, {
+					school,
+					mediaSource,
+				});
+				await em.persistAndFlush([school, mediaSource, ...mediaSchoolLicenseEntities]);
+				em.clear();
+				return { mediaSchoolLicenseEntities, school };
+			};
+			it('should find all the media school licenses for a school', async () => {
+				const { mediaSchoolLicenseEntities, school } = await setup();
+				const mediaSchoolLicenses: MediaSchoolLicense[] = await repo.findMediaSchoolLicensesBySchoolId(school.id);
+				expect(mediaSchoolLicenses.length).toEqual(mediaSchoolLicenseEntities.length);
+			});
+		});
+	});
 	describe('saveAll', () => {
 		describe('when media school licenses is provided', () => {
 			const setup = () => {
