@@ -1,4 +1,4 @@
-import { DomainErrorHandler } from '@core/domain-error-handler';
+import { DomainErrorHandler } from '@core/error';
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
