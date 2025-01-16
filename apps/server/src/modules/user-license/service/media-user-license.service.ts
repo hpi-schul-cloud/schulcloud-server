@@ -1,8 +1,8 @@
+import { MediaSourceRepo } from '@modules/media-source/repo';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaUserLicense } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaSourceRepo } from '@src/modules/media-source/repo';
 import { MediaUserLicenseRepo } from '../repo';
 
 @Injectable()

@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
+import { CoursesApi } from '@infra/courses-client/generated';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoursesApi } from '@src/infra/courses-client/generated';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import supertest from 'supertest';
 import { CommonCartridgeApiModule } from '../common-cartridge-api.module';

@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Migration } from '@mikro-orm/migrations-mongodb';
+import { FileRecordParentType } from '@modules/files-storage/interface';
 import { RoleName } from '@shared/domain/interface';
-import { FileRecordParentType } from '@src/modules/files-storage/interface';
 
 export class Migration20240315140224 extends Migration {
 	async up(): Promise<void> {

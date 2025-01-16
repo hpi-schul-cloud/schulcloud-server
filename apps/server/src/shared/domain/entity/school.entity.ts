@@ -12,10 +12,10 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { LanguageType } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';

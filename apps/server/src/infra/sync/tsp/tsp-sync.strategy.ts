@@ -1,9 +1,9 @@
+import { Logger } from '@core/logger';
+import { ProvisioningService } from '@modules/provisioning';
 import { School } from '@modules/school';
+import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@core/logger';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { System } from '@src/modules/system';
 import pLimit from 'p-limit';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';

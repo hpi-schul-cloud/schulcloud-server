@@ -1,8 +1,10 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
+import { courseFactory } from '@modules/learnroom/testing';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -16,8 +18,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
-import { courseFactory } from '@src/modules/learnroom/testing';
 import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';

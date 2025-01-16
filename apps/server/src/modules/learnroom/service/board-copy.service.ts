@@ -1,5 +1,7 @@
+import { LegacyLogger } from '@core/logger';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
@@ -21,8 +23,6 @@ import {
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
-import { LegacyLogger } from '@core/logger';
-import { StorageLocation } from '@src/modules/files-storage/interface';
 import { sortBy } from 'lodash';
 import { ColumnBoardNodeRepo } from '../repo';
 

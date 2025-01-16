@@ -1,8 +1,11 @@
+import { LoggerModule } from '@core/logger';
+import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system/system.module';
@@ -10,10 +13,7 @@ import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
-import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
-import { SchulconnexClientModule } from '@src/infra/schulconnex-client/schulconnex-client.module';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {

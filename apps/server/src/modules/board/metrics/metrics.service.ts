@@ -1,8 +1,8 @@
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import { UserService } from '@src/modules/user';
-import { Gauge, Summary, register, Counter } from 'prom-client';
+import { Counter, Gauge, Summary, register } from 'prom-client';
 
 type ClientId = string;
 type Role = 'owner' | 'editor' | 'viewer';

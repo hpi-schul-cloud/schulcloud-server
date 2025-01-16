@@ -1,6 +1,7 @@
 import { SchulconnexResponse } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { accountFactory } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -8,7 +9,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import { accountFactory } from '@src/modules/account/testing';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
