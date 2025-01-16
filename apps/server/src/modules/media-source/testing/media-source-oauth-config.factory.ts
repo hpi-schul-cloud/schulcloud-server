@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { MediaSourceOauthConfig } from '../domain';
 import { MediaSourceAuthMethod } from '../enum';
 

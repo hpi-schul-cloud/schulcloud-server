@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { MediaSourceBasicAuthConfigEmbeddable } from '../entity';
 
 export const mediaSourceBasicConfigEmbeddableFactory = BaseFactory.define<

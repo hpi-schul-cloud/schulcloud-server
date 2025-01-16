@@ -1,12 +1,10 @@
 import { courseFactory } from '@modules/learnroom/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	courseFactory as courseEntityFactory,
-	roleFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {

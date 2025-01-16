@@ -6,13 +6,11 @@ import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMeta
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import {
-	courseFactory,
-	h5pContentFactory,
-	lessonFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { Readable } from 'stream';
 import { H5PContent, H5PContentParentType, H5PContentProperties } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';

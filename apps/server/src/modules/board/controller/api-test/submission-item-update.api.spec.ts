@@ -2,7 +2,11 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import {
 	cardEntityFactory,
@@ -11,7 +15,6 @@ import {
 	submissionContainerElementEntityFactory,
 	submissionItemEntityFactory,
 } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/board-submissions';
 describe('submission item update (api)', () => {

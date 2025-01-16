@@ -15,7 +15,10 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { setupEntities } from '@testing/setup-entities';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 

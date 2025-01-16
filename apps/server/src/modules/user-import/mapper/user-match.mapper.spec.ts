@@ -1,10 +1,12 @@
 import { RoleName } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { MatchType, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
+import { MatchCreator } from '../entity';
 import { ImportUserMatchMapper } from './match.mapper';
 import { UserMatchMapper } from './user-match.mapper';
-import { MatchCreator } from '../entity';
 
 describe('[UserMatchMapper]', () => {
 	beforeAll(async () => {

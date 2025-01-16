@@ -4,7 +4,9 @@ import { FederalStateService, LegacySchoolService, SchoolYearService } from '@mo
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
-import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@shared/testing';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchoolNameRequiredLoggableException } from '../../../loggable';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';

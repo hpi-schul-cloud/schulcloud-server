@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolFeature } from '@shared/domain/types';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { School, SchoolProps } from '../domain';
 import { federalStateFactory } from './federal-state.factory';
 

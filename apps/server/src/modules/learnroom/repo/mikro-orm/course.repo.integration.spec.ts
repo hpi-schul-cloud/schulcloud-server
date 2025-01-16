@@ -15,15 +15,13 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	courseFactory as courseEntityFactory,
-	courseGroupFactory as courseGroupEntityFactory,
-	groupEntityFactory,
-	groupFactory,
-	schoolEntityFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory as courseGroupEntityFactory } from '@testing/factory/coursegroup.factory';
+import { groupFactory } from '@testing/factory/domainobject';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { Course, COURSE_REPO, CourseProps, CourseStatus } from '../../domain';
 import { courseFactory } from '../../testing';
 import { CourseMikroOrmRepo } from './course.repo';

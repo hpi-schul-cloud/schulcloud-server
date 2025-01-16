@@ -2,15 +2,13 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
-import {
-	cleanupCollections,
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {

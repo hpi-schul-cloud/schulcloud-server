@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCollections } from '@shared/testing';
+import { createCollections } from '@testing/create-collections';
 import { DatabaseManagementService } from './database-management.service';
 
 const randomChars = () => new ObjectId().toHexString();
