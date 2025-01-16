@@ -7,12 +7,12 @@ import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { schoolSystemOptionsEntityFactory } from '@testing/factory/school-system-options-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { SchoolSystemOptionsEntity } from '../../entity';
 import { ProvisioningOptionsInterface } from '../../interface';
+import { schoolSystemOptionsEntityFactory } from '../../testing';
 import { SchulConneXProvisioningOptionsResponse } from '../dto';
 
 const baseRouteName = '/schools';
