@@ -5,18 +5,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Role, SchoolEntity, TargetModels, User, VideoConference } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	courseFactory,
-	roleFactory,
-	schoolEntityFactory,
-	userFactory,
-} from '@shared/testing';
-import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { linkElementFactory, richTextElementFactory } from '@modules/board/testing';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -15,8 +16,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { linkElementFactory, richTextElementFactory } from '@modules/board/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 

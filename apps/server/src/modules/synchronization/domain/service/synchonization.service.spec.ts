@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
-import { SynchronizationService } from './synchronization.service';
 import { Synchronization } from '..';
 import { SynchronizationRepo } from '../../repo';
 import { synchronizationFactory } from '../testing';
+import { SynchronizationService } from './synchronization.service';
 
 describe(SynchronizationService.name, () => {
 	let module: TestingModule;

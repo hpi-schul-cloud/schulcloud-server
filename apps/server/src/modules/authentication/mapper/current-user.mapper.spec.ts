@@ -1,7 +1,11 @@
 import { ValidationError } from '@shared/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';

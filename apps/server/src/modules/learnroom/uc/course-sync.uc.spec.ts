@@ -3,7 +3,9 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { GroupService } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { groupFactory, setupEntities, userFactory } from '@shared/testing';
+import { groupFactory } from '@testing/factory/domainobject';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseDoService } from '../service';
 import { CourseSyncService } from '../service/course-sync.service';
 import { courseFactory } from '../testing';

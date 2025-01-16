@@ -8,7 +8,8 @@ import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject';
-import { ltiToolDOFactory, setupEntities } from '@shared/testing';
+import { ltiToolDOFactory } from '@testing/factory/domainobject';
+import { setupEntities } from '@testing/setup-entities';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 describe(OauthProviderLoginFlowService.name, () => {

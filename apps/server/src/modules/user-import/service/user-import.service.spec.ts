@@ -11,15 +11,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import {
-	importUserFactory,
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { ImportUserRepo } from '../repo';

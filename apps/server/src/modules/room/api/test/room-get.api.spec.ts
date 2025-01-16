@@ -1,18 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	groupEntityFactory,
-	roleFactory,
-	schoolEntityFactory,
-} from '@shared/testing';
-import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 
 describe('Room Controller (API)', () => {

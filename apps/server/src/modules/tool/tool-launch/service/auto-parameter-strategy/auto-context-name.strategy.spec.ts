@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardCommonToolService, BoardExternalReferenceType, ColumnBoard, BoardNodeService } from '@modules/board';
+import { BoardCommonToolService, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
-import { courseFactory, setupEntities } from '@shared/testing';
-import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';

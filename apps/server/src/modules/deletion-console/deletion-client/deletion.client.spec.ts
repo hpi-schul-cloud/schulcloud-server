@@ -1,14 +1,14 @@
-import { of, throwError } from 'rxjs';
-import { AxiosResponse } from 'axios';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { AxiosResponse } from 'axios';
+import { of, throwError } from 'rxjs';
 import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
-import { DeletionRequestOutput } from './interface';
-import { DeletionClient } from './deletion.client';
 import { DeletionConsoleConfig } from '../deletion.config';
+import { DeletionClient } from './deletion.client';
+import { DeletionRequestOutput } from './interface';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;
