@@ -3,15 +3,15 @@ import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '@src/modules/user';
-import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { H5PContentParentType } from '../entity';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
+import { h5pContentFactory } from '../testing';
 import { LumiUserWithContentData } from '../types/lumi-types';
 import { H5PEditorUc } from './h5p.uc';
 

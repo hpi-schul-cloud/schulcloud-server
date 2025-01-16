@@ -1,11 +1,6 @@
-import {
-	ContentMetadata,
-	H5PContent,
-	H5PContentParentType,
-	H5PContentProperties,
-} from '@src/modules/h5p-editor/entity';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { ContentMetadata, H5PContent, H5PContentParentType, H5PContentProperties } from '../entity';
 
 class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {}
 
