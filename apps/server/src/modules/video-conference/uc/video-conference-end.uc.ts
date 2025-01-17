@@ -1,44 +1,30 @@
-import { UserService } from '@modules/user';
-import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
+import { ErrorStatus } from '../error/error-status.enum';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef, VideoConference, VideoConferenceState } from './dto';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
 @Injectable()
 export class VideoConferenceEndUc {
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService
+		private readonly videoConferenceFeatureService: VideoConferenceFeatureService
 	) {}
 
 	public async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
-		/* need to be replace with
-		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.videoConferenceService.loadScopeResources(scopeId, scope),
-		]);
-		*/
-		const user: UserDO = await this.userService.findById(currentUserId);
-		const userId: string = user.id as string;
+		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
 
-		const schoolId =
-			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
-				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
-				: user.schoolId;
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
-		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
-
-		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(userId, scope.id, scope.scope);
-
-		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(userId, scopeInfo.scopeId, scope.scope);
+		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
+			currentUserId,
+			scopeInfo.scopeId,
+			scope.scope
+		);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);

@@ -8,12 +8,12 @@ import { ConfigService } from '@nestjs/config';
 import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
-import { VideoConferenceElement } from '@src/modules/board/domain';
-import { Room, RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
+import { VideoConferenceElement } from '@modules/board/domain';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -195,21 +195,7 @@ export class VideoConferenceService {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	public async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
-		if (!this.isVideoConferenceFeatureEnabled) {
-			throw new ForbiddenException(
-				ErrorStatus.SCHOOL_FEATURE_DISABLED,
-				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'
-			);
-		}
-
-		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
-		if (!schoolFeatureEnabled) {
-			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
-		}
-	}
-
-	public sanitizeString(text: string) {
+	public sanitizeString(text: string): string {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 
@@ -308,7 +294,7 @@ export class VideoConferenceService {
 		return vcDo;
 	}
 
-	private async saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
+	private saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
 		return this.videoConferenceRepo.save(videoConference);
 	}
 }

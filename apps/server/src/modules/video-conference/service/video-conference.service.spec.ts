@@ -14,14 +14,14 @@ import { Course, TeamUserEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
-import { VideoConferenceElement } from '@src/modules/board/domain';
-import { columnBoardFactory, videoConferenceElementFactory } from '@src/modules/board/testing';
-import { GroupTypes } from '@src/modules/group';
-import { RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
-import { roomMembershipFactory } from '@src/modules/room-membership/testing';
-import { roomFactory } from '@src/modules/room/testing';
+import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
+import { VideoConferenceElement } from '@modules/board/domain';
+import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
+import { GroupTypes } from '@modules/group';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
+import { roomMembershipFactory } from '@modules/room-membership/testing';
+import { roomFactory } from '@modules/room/testing';
 import { courseFactory } from '@testing/factory/course.factory';
 import { groupFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -946,52 +946,6 @@ describe(VideoConferenceService.name, () => {
 				const callDetermineBbbRole = () => service.determineBbbRole(userId, elementId, conferenceScope);
 
 				await expect(callDetermineBbbRole).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
-			});
-		});
-	});
-
-	describe('throwOnFeaturesDisabled', () => {
-		const setup = (schoolFeatureEnabled = true) => {
-			schoolService.hasFeature.mockResolvedValueOnce(schoolFeatureEnabled);
-			const schoolId = 'school-id';
-
-			return {
-				schoolId,
-			};
-		};
-
-		describe('when video conference feature is globally disabled', () => {
-			it('should throw a ForbiddenException', async () => {
-				const { schoolId } = setup(false);
-
-				configService.get.mockReturnValue(false);
-
-				const func = () => service.throwOnFeaturesDisabled(schoolId);
-
-				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED));
-			});
-		});
-
-		describe('when video conference feature is disabled for the school', () => {
-			it('should throw a ForbiddenException', async () => {
-				const { schoolId } = setup(false);
-
-				const func = () => service.throwOnFeaturesDisabled(schoolId);
-
-				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED));
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
-			});
-		});
-
-		describe('when video conference feature is enabled for the school', () => {
-			it('should not throw an exception', async () => {
-				schoolService.hasFeature.mockResolvedValue(true);
-				const { schoolId } = setup();
-
-				const func = () => service.throwOnFeaturesDisabled(schoolId);
-
-				await expect(func()).resolves.toBeUndefined();
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 	});
