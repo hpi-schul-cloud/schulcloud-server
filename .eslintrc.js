@@ -179,6 +179,10 @@ module.exports = {
 										group: ['@apps/**', '@infra/**', '@shared/**', 'apps/server/src/migrations/**'],
 										message: 'apps-modules may NOT import from @apps, @infra, @shared, or migrations',
 									},
+									{
+										group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+										message: 'Do not deep import from a module',
+									},
 								],
 							},
 						],
@@ -194,6 +198,10 @@ module.exports = {
 									{
 										group: ['@apps/**', '@core/**', '@infra/**', '@modules/**'],
 										message: 'core-modules may NOT import from @apps, @core, @infra, or @modules',
+									},
+									{
+										group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+										message: 'Do not deep import from a module',
 									},
 								],
 							},
@@ -211,6 +219,10 @@ module.exports = {
 										group: ['@apps/**', '@core/**', '@modules/**', 'apps/server/src/migrations/**'],
 										message: 'infra-modules may NOT import from @apps, @core, @modules, or migrations',
 									},
+									{
+										group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+										message: 'Do not deep import from a module',
+									},
 								],
 							},
 						],
@@ -226,6 +238,10 @@ module.exports = {
 									{
 										group: ['@apps/**'],
 										message: 'modules-modules may NOT import from @apps',
+									},
+									{
+										group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+										message: 'Do not deep import from a module',
 									},
 								],
 							},
@@ -250,6 +266,10 @@ module.exports = {
 										],
 										message:
 											'shared modules may NOT import from @apps, @core, @infra, @modules, @shared, or migrations',
+									},
+									{
+										group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+										message: 'Do not deep import from a module',
 									},
 								],
 							},
