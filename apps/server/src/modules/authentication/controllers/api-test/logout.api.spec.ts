@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
 import { serverConfig, ServerConfig } from '@modules/server';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemOauthConfigFactory } from '@modules/system/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';

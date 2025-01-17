@@ -3,7 +3,7 @@ import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { serverConfig, ServerConfig } from '@modules/server';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
