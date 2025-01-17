@@ -277,6 +277,22 @@ module.exports = {
 					},
 				},
 				{
+					files: ['apps/server/src/testing/**/*.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'error',
+							{
+								patterns: [
+									{
+										group: ['@modules/*', '!@modules/account'],
+										message: 'testing may NOT import from @modules',
+									},
+								],
+							},
+						],
+					},
+				},
+				{
 					files: ['apps/server/src/**/*.entity.ts'],
 					rules: {
 						'@typescript-eslint/explicit-member-accessibility': [
