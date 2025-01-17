@@ -33,6 +33,7 @@ import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
+import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -173,9 +174,15 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async changeRolesOfMembers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomUrlParams
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: ChangeRoomRoleBodyParams
 	): Promise<void> {
-		await this.roomUc.changeRolesOfMembers(currentUser.userId, urlParams.roomId);
+		await this.roomUc.changeRolesOfMembers(
+			currentUser.userId,
+			urlParams.roomId,
+			bodyParams.userIds,
+			bodyParams.roleName
+		);
 	}
 
 	@Patch(':roomId/members/remove')

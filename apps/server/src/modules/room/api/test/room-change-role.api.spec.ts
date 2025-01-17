@@ -1,7 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
 import {
 	TestApiClient,
@@ -10,11 +9,13 @@ import {
 	groupEntityFactory,
 	roleFactory,
 	schoolEntityFactory,
+	userFactory,
 } from '@shared/testing';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -48,28 +49,17 @@ describe('Room Controller (API)', () => {
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
-				UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const targetUser = userFactory.buildWithId({ school: teacherUser.school });
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
-			const role = roleFactory.buildWithId({
-				name: RoleName.ROOMADMIN,
-				permissions: [
-					Permission.ROOM_VIEW,
-					Permission.ROOM_EDIT,
-					Permission.ROOM_MEMBERS_ADD,
-					Permission.ROOM_MEMBERS_REMOVE,
-					Permission.ROOM_MEMBERS_CHANGE_ROLE,
-				],
-			});
-			const roomEditorRole = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
-			});
+			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			// TODO: add more than one user
 			const userGroupEntity = groupEntityFactory.buildWithId({
-				users: [{ role, user: teacherUser }],
+				users: [
+					{ role: roomOwnerRole, user: teacherUser },
+					{ role: roomViewerRole, user: targetUser },
+				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
 				externalSource: undefined,
@@ -88,15 +78,18 @@ describe('Room Controller (API)', () => {
 				teacherGuestRole,
 				studentGuestRole,
 				roomEditorRole,
-				otherTeacherUser,
-				otherTeacherAccount,
+				roomAdminRole,
+				roomOwnerRole,
+				roomViewerRole,
+				targetUser,
+				targetUser,
 				userGroupEntity,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, otherTeacherUser };
+			return { loggedInClient, room, targetUser };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -120,11 +113,12 @@ describe('Room Controller (API)', () => {
 			};
 
 			it('should return forbidden error', async () => {
-				const { room, otherTeacherUser } = await setupRoomWithMembers();
+				const { room, targetUser } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-					userIds: [otherTeacherUser.id],
+					userIds: [targetUser.id],
+					role: RoleName.ROOMEDITOR,
 				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -133,11 +127,12 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
+				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-					userIds: [otherTeacherUser.id],
+					userIds: [targetUser.id],
+					role: RoleName.ROOMEDITOR,
 				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -146,10 +141,11 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has the required permissions', () => {
 			it('should return OK', async () => {
-				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
+				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-					userIds: [otherTeacherUser.id],
+					userIds: [targetUser.id],
+					role: RoleName.ROOMEDITOR,
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);

@@ -143,8 +143,9 @@ export class RoomUc {
 
 	public async changeRolesOfMembers(
 		currentUserId: EntityId,
-		roomId: EntityId
-		// userIds: Array<EntityId>
+		roomId: EntityId,
+		userIds: Array<EntityId>,
+		roleName: string
 	): Promise<void> {
 		this.checkFeatureEnabled();
 		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_CHANGE_ROLE]);
