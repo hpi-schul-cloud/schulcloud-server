@@ -125,12 +125,6 @@ export class RoomUc {
 		return memberResponses;
 	}
 
-	public async addMembersToRoom(currentUserId: EntityId, roomId: EntityId, userIds: Array<EntityId>): Promise<void> {
-		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
-		await this.roomMembershipService.addMembersToRoom(roomId, userIds);
-	}
-
 	private mapToMember(member: UserWithRoomRoles, user: UserDO): RoomMemberResponse {
 		return new RoomMemberResponse({
 			userId: member.userId,
@@ -139,6 +133,22 @@ export class RoomUc {
 			roleName: member.roles[0].name,
 			schoolName: user.schoolName ?? '',
 		});
+	}
+
+	public async addMembersToRoom(currentUserId: EntityId, roomId: EntityId, userIds: Array<EntityId>): Promise<void> {
+		this.checkFeatureEnabled();
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.roomMembershipService.addMembersToRoom(roomId, userIds);
+	}
+
+	public async changeRolesOfMembers(
+		currentUserId: EntityId,
+		roomId: EntityId
+		// userIds: Array<EntityId>
+	): Promise<void> {
+		this.checkFeatureEnabled();
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_CHANGE_ROLE]);
+		return Promise.resolve();
 	}
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
