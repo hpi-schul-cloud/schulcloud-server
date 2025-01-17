@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
+import { externalToolPseudonymEntityFactory, pseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { ServerTestModule } from '@modules/server';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
