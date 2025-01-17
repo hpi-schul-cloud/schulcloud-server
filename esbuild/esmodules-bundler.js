@@ -3,7 +3,7 @@ const { dtsPlugin } = require('esbuild-plugin-d.ts');
 const { build } = require('esbuild');
 const fs = require('fs');
 const { resolve } = require('path');
-// add files to be transformed from ESModules to CommonJS in the following list
+// add files to be transformed from CommonJs to EsModules in the following list
 const options = [
 	{
 		name: 'keycloak-admin-client-lib',
